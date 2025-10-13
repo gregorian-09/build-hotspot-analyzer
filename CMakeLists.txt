@@ -4,4 +4,7 @@ project(BuildtimeHotspotAnalyzer)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(BuildtimeHotspotAnalyzer main.cpp
-        headers/bha/utils/string_utils.h)
+        headers/bha/utils/string_utils.h
+        sources/bha/utils/string_utils.cpp)
+
+include_directories(${PROJECT_SOURCE_DIR}/headers)
