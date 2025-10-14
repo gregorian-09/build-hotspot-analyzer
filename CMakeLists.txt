@@ -6,6 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(USE_SYSTEM_OPENSSL "Use the system-installed OpenSSL" ON)
 
+include(FetchContent)
+
+FetchContent_Declare(
+        simdjson
+        GIT_REPOSITORY https://github.com/simdjson/simdjson.git
+        GIT_TAG v4.0.7
+)
+
+FetchContent_MakeAvailable(simdjson)
+
 if(USE_SYSTEM_OPENSSL)
     if(DEFINED ENV{OPENSSL_ROOT_DIR})
         set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
@@ -27,10 +37,13 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         headers/bha/utils/file_utils.h
         sources/bha/utils/file_utils.cpp
         headers/bha/utils/hash_utils.h
-        sources/bha/utils/hash_utils.cpp)
+        sources/bha/utils/hash_utils.cpp
+        headers/bha/utils/json_utils.h
+        sources/bha/utils/json_utils.cpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
 
 target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE OpenSSL::SSL
+        PRIVATE simdjson
 )
