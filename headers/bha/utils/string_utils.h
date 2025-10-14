@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace bhs::utils
+namespace bha::utils
 {
     /**
      * Split a string into substrings separated by a delimiter.
