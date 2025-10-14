@@ -7,6 +7,8 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         headers/bha/utils/string_utils.h
         sources/bha/utils/string_utils.cpp
         headers/bha/utils/path_utils.h
-        sources/bha/utils/path_utils.cpp)
+        sources/bha/utils/path_utils.cpp
+        headers/bha/utils/file_utils.h
+        sources/bha/utils/file_utils.cpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
