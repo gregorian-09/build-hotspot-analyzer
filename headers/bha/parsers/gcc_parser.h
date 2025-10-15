@@ -104,7 +104,7 @@ private:
      * @param content The raw report text.
      * @return A Result containing parsed time entries, or an Error on failure.
      */
-    core::Result<std::vector<TimeEntry>> parse_time_entries(
+    static core::Result<std::vector<TimeEntry>> parse_time_entries(
         std::string_view content
     );
 
@@ -118,7 +118,7 @@ private:
      * @param file_path Path to the analyzed report file.
      * @return A Result containing the constructed `CompilationUnit`.
      */
-    core::Result<core::CompilationUnit> build_compilation_unit(
+    static core::Result<core::CompilationUnit> build_compilation_unit(
         const std::vector<TimeEntry>& entries,
         std::string_view file_path
     );
@@ -130,7 +130,7 @@ private:
      * @param entries Parsed GCC time entries.
      * @param unit Compilation unit to populate.
      */
-    void extract_timing_from_entries(
+    static void extract_timing_from_entries(
         const std::vector<TimeEntry>& entries,
         core::CompilationUnit& unit
     );
@@ -144,7 +144,7 @@ private:
      * @param content The raw report text.
      * @return Extracted file path, or an empty string if none found.
      */
-    std::string extract_file_path_from_content(
+    static std::string extract_file_path_from_content(
         std::string_view content
     );
 
@@ -155,7 +155,7 @@ private:
      * @param line A single line from the report file.
      * @return True if the line is part of a time entry, false otherwise.
      */
-    [[nodiscard]] bool is_time_report_line(std::string_view line) const;
+    [[nodiscard]] static bool is_time_report_line(std::string_view line) ;
 
     /**
      * Parses an individual GCC time-report line into a `TimeEntry` structure.
@@ -165,7 +165,7 @@ private:
      * @param line A single line from the report.
      * @return Parsed `TimeEntry`, or std::nullopt if parsing fails.
      */
-    std::optional<TimeEntry> parse_time_entry_line(std::string_view line);
+    static std::optional<TimeEntry> parse_time_entry_line(std::string_view line);
 };
 
 } // namespace bha::parsers
