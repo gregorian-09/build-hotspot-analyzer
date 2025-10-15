@@ -39,7 +39,9 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         headers/bha/utils/hash_utils.h
         sources/bha/utils/hash_utils.cpp
         headers/bha/utils/json_utils.h
-        sources/bha/utils/json_utils.cpp)
+        sources/bha/utils/json_utils.cpp
+        headers/bha/core/error.h
+        sources/bha/core/error.cpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
 
