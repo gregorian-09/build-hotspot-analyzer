@@ -13,7 +13,7 @@
 namespace bha::core {
 
     /**
-     * @brief Represents the result of an operation that can either succeed with a value or fail with an error.
+     * Represents the result of an operation that can either succeed with a value or fail with an error.
      *
      * @tparam T The type of the successful result value.
      */
@@ -105,7 +105,7 @@ namespace bha::core {
         }
 
         /**
-         * @brief Applies a function to the value if successful.
+         * Applies a function to the value if successful.
          *
          * @tparam F The callable type.
          * @return A new Result containing the transformed value or the same error.
@@ -125,7 +125,7 @@ namespace bha::core {
         }
 
         /**
-         * @brief Chains another operation if successful.
+         * Chains another operation if successful.
          *
          * The function must return another Result type.
          */
@@ -144,7 +144,7 @@ namespace bha::core {
         }
 
         /**
-         * @brief Handles failure by providing a fallback via @p func.
+         * Handles failure by providing a fallback via @p func.
          * @return The result of @p func if failure, otherwise this result.
          */
         template<typename F>
@@ -164,7 +164,7 @@ namespace bha::core {
     };
 
     /**
-     * @brief Specialization for Result<void>, representing success or failure without a value.
+     * Specialization for Result<void>, representing success or failure without a value.
      */
     template<>
     class Result<void> {
