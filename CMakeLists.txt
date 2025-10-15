@@ -54,6 +54,14 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/core/types.cpp
         headers/bha/core/config.h
         sources/bha/core/config.cpp
+        headers/bha/parsers/parser.h
+        sources/parsers/parser.cpp
+        headers/bha/parsers/clang_parser.h
+        sources/parsers/clang_parser.cpp
+        headers/bha/parsers/gcc_parser.h
+        sources/parsers/gcc_parser.cpp
+        headers/bha/parsers/msvc_parser.h
+        sources/parsers/msvc_parser.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
