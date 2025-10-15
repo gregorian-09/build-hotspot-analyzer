@@ -14,7 +14,14 @@ FetchContent_Declare(
         GIT_TAG v4.0.7
 )
 
+FetchContent_Declare(
+        tomlplusplus
+        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+        GIT_TAG v3.4.0
+)
+
 FetchContent_MakeAvailable(simdjson)
+FetchContent_MakeAvailable(tomlplusplus)
 
 if(USE_SYSTEM_OPENSSL)
     if(DEFINED ENV{OPENSSL_ROOT_DIR})
@@ -44,11 +51,15 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/core/error.cpp
         headers/bha/core/result.h
         headers/bha/core/types.h
-        sources/bha/core/types.cpp)
+        sources/bha/core/types.cpp
+        headers/bha/core/config.h
+        sources/bha/core/config.cpp
+)
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
 
 target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE OpenSSL::SSL
-        PRIVATE simdjson
+        PRIVATE simdjson::simdjson
+        PRIVATE tomlplusplus::tomlplusplus
 )
