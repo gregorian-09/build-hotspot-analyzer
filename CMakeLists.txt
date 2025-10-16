@@ -62,6 +62,8 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/parsers/gcc_parser.cpp
         headers/bha/parsers/msvc_parser.h
         sources/bha/parsers/msvc_parser.cpp
+        headers/bha/graph/graph_algorithms.h
+        sources/bha/graph/graph_algorithms.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
