@@ -74,6 +74,8 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/analysis/hotspot_analyzer.cpp
         headers/bha/analysis/dependency_analyzer.h
         sources/bha/analysis/dependency_analyzer.cpp
+        headers/bha/analysis/impact_analyzer.h
+        sources/bha/analysis/impact_analyzer.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
