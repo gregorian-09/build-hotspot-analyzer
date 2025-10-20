@@ -80,6 +80,18 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/analysis/template_analyzer.cpp
         headers/bha/analysis/pch_analyzer.h
         sources/bha/analysis/pch_analyzer.cpp
+        sources/bha/suggestions/forward_decl_suggester.cpp
+        headers/bha/suggestions/forward_decl_suggester.h
+        headers/bha/suggestions/pch_optimizer.h
+        sources/bha/suggestions/pch_optimizer.cpp
+        headers/bha/suggestions/confidence_calculator.h
+        sources/bha/suggestions/confidence_calculator.cpp
+        headers/bha/suggestions/header_splitter.h
+        sources/bha/suggestions/header_splitter.cpp
+        headers/bha/suggestions/suggestion_engine.h
+        headers/bha/suggestions/pimpl_suggester.h
+        sources/bha/suggestions/pimpl_suggester.cpp
+        sources/bha/suggestions/suggestion_engine.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
