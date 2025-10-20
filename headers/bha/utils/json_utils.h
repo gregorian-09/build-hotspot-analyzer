@@ -13,6 +13,17 @@
 
 namespace bha::utils
 {
+    namespace detail {
+        template<typename T>
+        struct is_vector : std::false_type {};
+
+        template<typename T>
+        struct is_vector<std::vector<T>> : std::true_type {};
+
+        template<typename T>
+        constexpr bool is_vector_v = is_vector<T>::value;
+    }
+
     /**
      * @class JsonDocument
      * Represents a JSON document for parsing and querying.
@@ -310,7 +321,32 @@ namespace bha::utils
      * @return The JSON string representation of the value.
      */
     template<typename T>
-    std::string serialize_to_json(const T& value);
+    std::string serialize_to_json(const T& value) {
+        if constexpr (std::is_same_v<T, std::string>) {
+            return to_json_string(value);
+        } else if constexpr (std::is_same_v<T, bool>) {
+            return to_json_bool(value);
+        } else if constexpr (std::is_same_v<T, double>) {
+            return to_json_number(value);
+        } else if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
+            return to_json_number(static_cast<int64_t>(value));
+        } else if constexpr (detail::is_vector_v<T>) {
+            std::string result = "[";
+            for (size_t i = 0; i < value.size(); ++i) {
+                result += serialize_to_json(value[i]);
+                if (i < value.size() - 1) {
+                    result += ",";
+                }
+            }
+            result += "]";
+            return result;
+        } else if constexpr (std::is_null_pointer_v<T>) {
+            return to_json_null();
+        } else {
+            static_assert(false, "Unsupported type for JSON serialization");
+        }
+        return "";
+    }
 
     /**
      * Deserializes a JSON string into a value.
@@ -319,7 +355,77 @@ namespace bha::utils
      * @return An optional containing the deserialized value if successful, otherwise std::nullopt.
      */
     template<typename T>
-    std::optional<T> deserialize_from_json(std::string_view json);
+    std::optional<T> deserialize_from_json(const std::string_view json) {
+        if (!is_valid_json(json)) {
+            return std::nullopt;
+        }
+
+        if constexpr (std::is_same_v<T, std::string>) {
+            return parse_json_string(json);
+        } else if constexpr (std::is_same_v<T, bool>) {
+            return parse_json_bool(json);
+        } else if constexpr (std::is_same_v<T, double>) {
+            return parse_json_double(json);
+        } else if constexpr (std::is_same_v<T, int64_t>) {
+            return parse_json_int(json);
+        } else if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
+            if (auto result = parse_json_int(json)) {
+                return static_cast<T>(result.value());
+            }
+            return std::nullopt;
+        } else if constexpr (detail::is_vector_v<T>) {
+            using element_type = typename T::value_type;
+
+            JsonDocument doc;
+            if (!doc.parse(json) || !doc.is_array()) {
+                return std::nullopt;
+            }
+
+            T result;
+            const size_t size = doc.array_size();
+
+            if (size == 0) {
+                return result;
+            }
+
+            auto& raw_doc = doc.get_document();
+            size_t index = 0;
+
+            for (auto elem : raw_doc) {
+                std::string elem_str;
+                if (elem.type() == simdjson::ondemand::json_type::string) {
+                    elem_str = "\"" + std::string(elem.get_string().value()) + "\"";
+                } else if (elem.type() == simdjson::ondemand::json_type::number) {
+                    elem_str = std::to_string(elem.get_double().value());
+                } else if (elem.type() == simdjson::ondemand::json_type::boolean) {
+                    elem_str = elem.get_bool().value() ? "true" : "false";
+                } else if (elem.type() == simdjson::ondemand::json_type::null) {
+                    elem_str = "null";
+                } else {
+                    return std::nullopt;
+                }
+
+                if (auto deserialized = deserialize_from_json<element_type>(elem_str)) {
+                    result.push_back(deserialized.value());
+                } else {
+                    return std::nullopt;
+                }
+
+                ++index;
+                if (index >= size) break;
+            }
+
+            return result;
+        } else if constexpr (std::is_same_v<T, std::nullptr_t>) {
+            if (json == "null") {
+                return nullptr;
+            }
+            return std::nullopt;
+        } else {
+            static_assert(false, "Unsupported type for JSON deserialization");
+        }
+        return std::nullopt;
+    }
 }
 
 #endif //JSON_UTILS_H
