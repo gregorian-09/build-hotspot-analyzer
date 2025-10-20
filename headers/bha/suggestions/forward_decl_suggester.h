@@ -70,13 +70,11 @@ namespace bha::suggestions {
          *
          * @param file_path Path to the source file being analyzed.
          * @param trace The build trace containing timing and dependency information.
-         * @param graph The dependency graph representing file relationships.
          * @return A Result containing a list of @ref core::Suggestion objects.
          */
-        core::Result<std::vector<core::Suggestion>> suggest_forward_declarations(
+        static static core::Result<std::vector<core::Suggestion>> suggest_forward_declarations(
             const std::string& file_path,
-            const core::BuildTrace& trace,
-            const core::DependencyGraph& graph
+            const core::BuildTrace& trace
         );
 
         /**
@@ -89,7 +87,7 @@ namespace bha::suggestions {
          * @param trace The build trace for timing context.
          * @return A Result containing a list of @ref ForwardDeclOpportunity entries.
          */
-        core::Result<std::vector<ForwardDeclOpportunity>> analyze_includes(
+        static core::Result<std::vector<ForwardDeclOpportunity>> analyze_includes(
             const std::string& file_path,
             const core::BuildTrace& trace
         );
@@ -100,7 +98,7 @@ namespace bha::suggestions {
          * @param file_path Path to the file to parse.
          * @return A Result containing a list of class names.
          */
-        core::Result<std::vector<std::string>> extract_classes(
+        static static core::Result<std::vector<std::string>> extract_classes(
             const std::string& file_path
         );
 
@@ -110,7 +108,7 @@ namespace bha::suggestions {
          * @param file_path Path to the file to analyze.
          * @return A Result containing a list of include file paths.
          */
-        core::Result<std::vector<std::string>> extract_includes(
+        static core::Result<std::vector<std::string>> extract_includes(
             const std::string& file_path
         );
 
@@ -122,9 +120,9 @@ namespace bha::suggestions {
          * @param opportunity The opportunity to evaluate.
          * @return A floating-point confidence score between 0.0 and 1.0.
          */
-        [[nodiscard]] double calculate_confidence(
+        [[nodiscard]] static double calculate_confidence(
             const ForwardDeclOpportunity& opportunity
-        ) const;
+        ) ;
 
         /**
          * Estimates the compile-time savings achievable by removing an include.
@@ -133,7 +131,7 @@ namespace bha::suggestions {
          * @param trace The build trace with timing data.
          * @return A Result containing the estimated time savings in milliseconds.
          */
-        core::Result<double> estimate_time_savings(
+        static core::Result<double> estimate_time_savings(
             const std::string& include_file,
             const core::BuildTrace& trace
         );
@@ -146,10 +144,10 @@ namespace bha::suggestions {
          * @param class_name The class name to search for.
          * @return True if the class is used by pointer, false otherwise.
          */
-        [[nodiscard]] bool is_class_used_by_pointer(
+        [[nodiscard]] static bool is_class_used_by_pointer(
             const std::string& file_content,
             const std::string& class_name
-        ) const;
+        );
 
         /**
          * Determines if a class is used by reference in the given file.
@@ -158,10 +156,10 @@ namespace bha::suggestions {
          * @param class_name The class name to search for.
          * @return True if the class is used by reference, false otherwise.
          */
-        [[nodiscard]] bool is_class_used_by_reference(
+        [[nodiscard]] static bool is_class_used_by_reference(
             const std::string& file_content,
             const std::string& class_name
-        ) const;
+        );
 
         /**
          * Determines if a class is used by value in the given file.
@@ -170,10 +168,10 @@ namespace bha::suggestions {
          * @param class_name The class name to search for.
          * @return True if the class is used by value, false otherwise.
          */
-        [[nodiscard]] bool is_class_used_by_value(
+        [[nodiscard]] static bool is_class_used_by_value(
             const std::string& file_content,
             const std::string& class_name
-        ) const;
+        );
 
         /**
          * Determines whether a full class definition is required for correct compilation.
@@ -182,10 +180,10 @@ namespace bha::suggestions {
          * @param class_name The class name to analyze.
          * @return True if the full definition is needed, false otherwise.
          */
-        [[nodiscard]] bool is_full_definition_needed(
+        [[nodiscard]] static bool is_full_definition_needed(
             const std::string& file_content,
             const std::string& class_name
-        ) const;
+        );
 
         /**
          * Counts how many times a given class name appears in a source file.
@@ -194,10 +192,10 @@ namespace bha::suggestions {
          * @param class_name The class to count.
          * @return The number of occurrences found.
          */
-        [[nodiscard]] int count_usage(
+        [[nodiscard]] static int count_usage(
             const std::string& file_content,
             const std::string& class_name
-        ) const;
+        );
     };
 
 } // namespace bha::suggestions
