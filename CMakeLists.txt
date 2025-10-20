@@ -70,6 +70,8 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/parsers/unified_format.cpp
         headers/bha/graph/compressed_graph.h
         sources/bha/graph/compressed_graph.cpp
+        headers/bha/analysis/hotspot_analyzer.h
+        sources/bha/analysis/hotspot_analyzer.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
