@@ -92,6 +92,16 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         headers/bha/suggestions/pimpl_suggester.h
         sources/bha/suggestions/pimpl_suggester.cpp
         sources/bha/suggestions/suggestion_engine.cpp
+        headers/bha/build_systems/build_adapter.h
+        sources/bha/build_systems/build_adapter_factory.cpp
+        headers/bha/build_systems/cmake_adapter.h
+        headers/bha/build_systems/ninja_adapter.h
+        headers/bha/build_systems/make_adapter.h
+        headers/bha/build_systems/msbuild_adapter.h
+        sources/bha/build_systems/cmake_adapter.cpp
+        sources/bha/build_systems/ninja_adapter.cpp
+        sources/bha/build_systems/make_adapter.cpp
+        sources/bha/build_systems/msbuild_adapter.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
