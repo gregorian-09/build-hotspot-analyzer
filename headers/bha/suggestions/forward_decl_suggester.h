@@ -72,7 +72,7 @@ namespace bha::suggestions {
          * @param trace The build trace containing timing and dependency information.
          * @return A Result containing a list of @ref core::Suggestion objects.
          */
-        static static core::Result<std::vector<core::Suggestion>> suggest_forward_declarations(
+        static core::Result<std::vector<core::Suggestion>> suggest_forward_declarations(
             const std::string& file_path,
             const core::BuildTrace& trace
         );
@@ -98,7 +98,7 @@ namespace bha::suggestions {
          * @param file_path Path to the file to parse.
          * @return A Result containing a list of class names.
          */
-        static static core::Result<std::vector<std::string>> extract_classes(
+/        static core::Result<std::vector<std::string>> extract_classes(
             const std::string& file_path
         );
 
