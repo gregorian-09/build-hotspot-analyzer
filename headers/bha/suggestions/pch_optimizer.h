@@ -62,7 +62,7 @@ namespace bha::suggestions {
          * @param current_pch_headers The current list of headers in the PCH file.
          * @return A Result containing a @ref PCHOptimizationResult with recommendations.
          */
-        static static core::Result<PCHOptimizationResult> optimize_pch(
+        static core::Result<PCHOptimizationResult> optimize_pch(
             const core::BuildTrace& trace,
             const core::DependencyGraph& graph,
             const std::vector<std::string>& current_pch_headers
