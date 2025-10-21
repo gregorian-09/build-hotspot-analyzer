@@ -98,7 +98,7 @@ namespace bha::suggestions {
          * @param file_path Path to the file to parse.
          * @return A Result containing a list of class names.
          */
-/        static core::Result<std::vector<std::string>> extract_classes(
+        static core::Result<std::vector<std::string>> extract_classes(
             const std::string& file_path
         );
 
