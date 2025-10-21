@@ -30,13 +30,13 @@ namespace bha::suggestions {
         auto& symbol_cache = symbol_cache_result.value();
 
         if (symbol_cache.all_symbols.size() < min_cluster_size * 2) {
-            return core::Result<HeaderSplitSuggestion>::failure(core::Error{
-                .code = core::ErrorCode::ANALYSIS_ERROR,
-                .message = "Not enough symbols to justify splitting"
-            });
+            return core::Result<HeaderSplitSuggestion>::failure(core::Error(
+                core::ErrorCode::ANALYSIS_ERROR,
+                "Not enough symbols to justify splitting"
+            ));
         }
 
-        std::vector<std::string> symbols(
+        std::vector symbols(
             symbol_cache.all_symbols.begin(),
             symbol_cache.all_symbols.end()
         );
@@ -66,10 +66,10 @@ namespace bha::suggestions {
         }
 
         if (clusters.size() < 2) {
-            return core::Result<HeaderSplitSuggestion>::failure(core::Error{
-                .code = core::ErrorCode::ANALYSIS_ERROR,
-                .message = "Clustering did not produce meaningful splits"
-            });
+            return core::Result<HeaderSplitSuggestion>::failure(core::Error(
+                core::ErrorCode::ANALYSIS_ERROR,
+                "Clustering did not produce meaningful splits"
+            ));
         }
 
         double benefit = calculate_split_benefit(
@@ -78,10 +78,10 @@ namespace bha::suggestions {
         );
 
         if (!is_split_worthwhile(benefit, clusters)) {
-            return core::Result<HeaderSplitSuggestion>::failure(core::Error{
-                .code = core::ErrorCode::ANALYSIS_ERROR,
-                .message = "Estimated benefit too small to justify split"
-            });
+            return core::Result<HeaderSplitSuggestion>::failure(core::Error(
+                core::ErrorCode::ANALYSIS_ERROR,
+                "Estimated benefit too small to justify split"
+            ));
         }
 
         HeaderSplitSuggestion suggestion;
@@ -141,10 +141,10 @@ namespace bha::suggestions {
         const int target_clusters
     ) {
         if (co_usage_matrix.empty()) {
-            return core::Result<ClusteringResult>::failure(core::Error{
-                .code = core::ErrorCode::ANALYSIS_ERROR,
-                .message = "Empty co-usage matrix"
-            });
+            return core::Result<ClusteringResult>::failure(core::Error(
+                core::ErrorCode::ANALYSIS_ERROR,
+                "Empty co-usage matrix"
+            ));
         }
 
         const auto affinity = compute_affinity_matrix(co_usage_matrix);
@@ -208,10 +208,10 @@ namespace bha::suggestions {
         }
 
         if (cache.all_symbols.empty()) {
-            return core::Result<SymbolUsageCache>::failure(core::Error{
-                .code = core::ErrorCode::PARSE_ERROR,
-                .message = "Could not extract symbols from header"
-            });
+            return core::Result<SymbolUsageCache>::failure(core::Error(
+                core::ErrorCode::PARSE_ERROR,
+                "Could not extract symbols from header"
+            ));
         }
 
         return core::Result<SymbolUsageCache>::success(std::move(cache));
