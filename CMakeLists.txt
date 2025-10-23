@@ -20,8 +20,15 @@ FetchContent_Declare(
         GIT_TAG v3.4.0
 )
 
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.12.0
+)
+
 FetchContent_MakeAvailable(simdjson)
 FetchContent_MakeAvailable(tomlplusplus)
+FetchContent_MakeAvailable(json)
 
 if(USE_SYSTEM_OPENSSL)
     if(DEFINED ENV{OPENSSL_ROOT_DIR})
@@ -102,6 +109,20 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/build_systems/ninja_adapter.cpp
         sources/bha/build_systems/make_adapter.cpp
         sources/bha/build_systems/msbuild_adapter.cpp
+        headers/bha/export/exporter.h
+        headers/bha/export/json_exporter.h
+        headers/bha/export/html_exporter.h
+        headers/bha/export/csv_exporter.h
+        headers/bha/export/markdown_exporter.h
+        headers/bha/export/text_exporter.h
+        sources/bha/export/exporter_factory.cpp
+        sources/bha/export/json_exporter.cpp
+        sources/bha/export/html_exporter.cpp
+        sources/bha/export/csv_exporter.cpp
+        sources/bha/export/text_exporter.cpp
+        sources/bha/export/markdown_exporter.cpp
+        headers/bha/export/report_generator.h
+        sources/bha/export/report_generator.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
@@ -110,4 +131,5 @@ target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE OpenSSL::SSL
         PRIVATE simdjson::simdjson
         PRIVATE tomlplusplus::tomlplusplus
+        PRIVATE nlohmann_json::nlohmann_json
 )
