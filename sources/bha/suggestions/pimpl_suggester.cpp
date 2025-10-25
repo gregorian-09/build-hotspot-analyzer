@@ -84,7 +84,7 @@ namespace bha::suggestions {
             }
 
             analysis.private_includes_count = 2;
-            analysis.estimated_savings_ms = analysis.private_members_count * 5.0;
+            analysis.estimated_savings_ms = static_cast<double>(analysis.private_members_count) * 5.0;
         }
 
         return analysis;
