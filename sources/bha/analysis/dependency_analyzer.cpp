@@ -200,7 +200,7 @@ namespace bha::analysis {
                utils::contains(file, "/include/c++/");
     }
 
-    int DependencyAnalyzer::estimate_severity(DependencyIssue::Type type, int magnitude) {
+    int DependencyAnalyzer::estimate_severity(const DependencyIssue::Type type, const int magnitude) {
         switch (type) {
             case DependencyIssue::Type::CIRCULAR_DEPENDENCY:
                 return 90 + std::min(magnitude, 10);
