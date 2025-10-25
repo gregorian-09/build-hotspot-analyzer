@@ -123,6 +123,8 @@ add_executable(BuildtimeHotspotAnalyzer main.cpp
         sources/bha/export/markdown_exporter.cpp
         headers/bha/export/report_generator.h
         sources/bha/export/report_generator.cpp
+        headers/bha/analysis/analysis_engine.h
+        sources/bha/analysis/analysis_engine.cpp
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/headers)
