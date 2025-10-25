@@ -56,8 +56,8 @@ namespace bha::suggestions {
 
         std::ranges::sort(all_suggestions,
                           [](const core::Suggestion& a, const core::Suggestion& b) {
-                              double score_a = a.confidence * a.estimated_time_savings_ms;
-                              double score_b = b.confidence * b.estimated_time_savings_ms;
+                              const double score_a = a.confidence * a.estimated_time_savings_ms;
+                              const double score_b = b.confidence * b.estimated_time_savings_ms;
                               return score_a > score_b;
                           });
 
@@ -78,10 +78,9 @@ namespace bha::suggestions {
         const core::BuildTrace& trace
     ) {
         std::vector<core::Suggestion> suggestions;
-        ForwardDeclSuggester suggester;
 
         for (const auto& unit : trace.compilation_units) {
-            if (auto result = suggester.suggest_forward_declarations(unit.file_path, trace); result.is_success()) {
+            if (auto result = ForwardDeclSuggester::suggest_forward_declarations(unit.file_path, trace); result.is_success()) {
                 suggestions.insert(suggestions.end(),
                                  result.value().begin(),
                                  result.value().end());
@@ -108,7 +107,7 @@ namespace bha::suggestions {
                 continue;
             }
 
-            auto split_result = header_splitter_->suggest_split(
+            auto split_result = HeaderSplitter::suggest_split(
                 node,
                 dependents,
                 options.header_split_min_symbols
@@ -128,9 +127,8 @@ namespace bha::suggestions {
         const core::DependencyGraph& graph
     ) {
         std::vector<core::Suggestion> suggestions;
-        analysis::PCHAnalyzer analyzer;
 
-        auto candidates_result = analyzer.identify_pch_candidates(trace, graph, 5, 0.5);
+        auto candidates_result = analysis::PCHAnalyzer::identify_pch_candidates(trace, graph, 5, 0.5);
         if (!candidates_result.is_success()) {
             return core::Result<std::vector<core::Suggestion>>::success(std::move(suggestions));
         }
@@ -159,10 +157,9 @@ namespace bha::suggestions {
         const core::BuildTrace& trace
     ) {
         std::vector<core::Suggestion> suggestions;
-        PIMPLSuggester suggester;
 
         for (const auto& unit : trace.compilation_units) {
-            if (auto result = suggester.suggest_pimpl_patterns(unit.file_path); result.is_success()) {
+            if (auto result = PIMPLSuggester::suggest_pimpl_patterns(unit.file_path); result.is_success()) {
                 suggestions.insert(suggestions.end(),
                                  result.value().begin(),
                                  result.value().end());
