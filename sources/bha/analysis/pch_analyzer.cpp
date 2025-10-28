@@ -33,7 +33,7 @@ namespace bha::analysis {
 
             const double compile_time = compile_times.contains(header) ? compile_times.at(header) : 0.0;
             const double potential_savings = compile_time * count * 0.8;
-            const double benefit_score = calculate_pch_benefit_score(header, count, compile_time, total_files);
+            const double benefit_score = calculate_pch_benefit_score(count, compile_time, total_files);
 
             PCHCandidate candidate;
             candidate.header = header;
@@ -148,7 +148,6 @@ namespace bha::analysis {
     }
 
     double PCHAnalyzer::calculate_pch_benefit_score(
-        const std::string& header,
         const int inclusion_count,
         const double compile_time_ms,
         const int total_files

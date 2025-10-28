@@ -120,14 +120,12 @@ namespace bha::analysis {
          *
          * Combines inclusion frequency, compile-time impact, and relative importance.
          *
-         * @param header The header file being evaluated.
          * @param inclusion_count Number of times the header is included.
          * @param compile_time_ms Average compile time associated with the header.
          * @param total_files Total number of files in the project.
          * @return The calculated benefit score.
          */
         static double calculate_pch_benefit_score(
-            const std::string& header,
             int inclusion_count,
             double compile_time_ms,
             int total_files
