@@ -61,6 +61,7 @@ namespace bha::core {
 
         INTERNAL_ERROR,
         NOT_IMPLEMENTED,
+        NOT_FOUND,
         UNKNOWN_ERROR
     };
 
