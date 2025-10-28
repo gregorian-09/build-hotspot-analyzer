@@ -89,7 +89,7 @@ namespace bha::build_systems {
                 }
                 if (auto args = obj.find_field("arguments"); !args.error()) {
                     for (auto arg : args.get_array()) {
-                        cmd.arguments.push_back(std::string(arg.get_string().value()));
+                        cmd.arguments.emplace_back(arg.get_string().value());
                     }
                 }
                 if (auto output = obj.find_field("output"); !output.error()) {

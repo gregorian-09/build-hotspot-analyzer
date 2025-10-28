@@ -96,7 +96,7 @@ namespace bha::build_systems {
          * Parses the `.ninja_log` file to extract build timings and targets.
          * @return Vector of parsed NinjaBuildEntry objects.
          */
-        core::Result<std::vector<NinjaBuildEntry>> parse_ninja_log() const;
+        [[nodiscard]] core::Result<std::vector<NinjaBuildEntry>> parse_ninja_log() const;
 
     private:
         std::filesystem::path ninja_log_path_;   ///< Path to `.ninja_log` file.
