@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(USE_SYSTEM_OPENSSL "Use the system-installed OpenSSL" ON)
+option(USE_SYSTEM_SQLITE3 "Use the system-installed SQLite3" ON)
 
 include(FetchContent)
 
@@ -87,6 +88,8 @@ target_sources(BuildtimeHotspotAnalyzer
         sources/bha/export/markdown_exporter.cpp
         sources/bha/export/report_generator.cpp
         sources/bha/analysis/analysis_engine.cpp
+        sources/bha/storage/database.cpp
+        sources/bha/storage/sqlite_backend.cpp
 )
 
 target_include_directories(BuildtimeHotspotAnalyzer
@@ -99,4 +102,5 @@ target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE simdjson::simdjson
         PRIVATE tomlplusplus::tomlplusplus
         PRIVATE nlohmann_json::nlohmann_json
+        PRIVATE SQLite::SQLite3
 )
