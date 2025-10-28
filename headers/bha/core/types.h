@@ -90,6 +90,10 @@ namespace bha::core {
 
         std::vector<std::string> get_all_nodes() const;
 
+        const std::unordered_map<std::string, std::vector<DependencyEdge>>& get_adjacency_list() const {
+            return adjacency_list_;
+        }
+
         void clear();
 
     private:
