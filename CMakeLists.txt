@@ -42,6 +42,37 @@ if(NOT OpenSSL_FOUND)
     message(FATAL_ERROR "OpenSSL not found. Please install or specify OPENSSL_ROOT_DIR.")
 endif()
 
+if(USE_SYSTEM_SQLITE3)
+    if(DEFINED ENV{SQLITE3_ROOT_DIR})
+        set(SQLITE3_ROOT_DIR $ENV{SQLITE3_ROOT_DIR})
+    endif()
+
+    find_package(SQLite3 REQUIRED)
+else()
+    FetchContent_Declare(
+            sqlite3
+            URL https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip
+            URL_HASH SHA3_256=5c0a29703e7b6cf36ca3be8c8d2a2c2d8c6a4b8f7e1f2f8f4e0c3e7b7c7f9e8d
+    )
+
+    FetchContent_MakeAvailable(sqlite3)
+
+    add_library(SQLite::SQLite3 INTERFACE IMPORTED)
+    target_include_directories(SQLite::SQLite3 INTERFACE ${sqlite3_SOURCE_DIR})
+    target_sources(SQLite::SQLite3 INTERFACE ${sqlite3_SOURCE_DIR}/sqlite3.c)
+    target_compile_definitions(SQLite::SQLite3 INTERFACE
+            SQLITE_ENABLE_FTS5
+            SQLITE_ENABLE_RTREE
+    )
+endif()
+
+if(NOT SQLite3_FOUND AND USE_SYSTEM_SQLITE3)
+    message(FATAL_ERROR
+            "SQLite3 not found. Please install or specify SQLITE3_ROOT_DIR, or set USE_SYSTEM_SQLITE3=OFF."
+    )
+endif()
+
+
 add_executable(BuildtimeHotspotAnalyzer
         main.cpp
 )
