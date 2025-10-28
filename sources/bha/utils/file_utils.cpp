@@ -48,7 +48,7 @@ bool write_file(const std::string_view path, const std::string_view content) {
         return false;
     }
 
-    file.write(content.data(), content.size());
+    file.write(content.data(), static_cast<std::streamsize>(content.size()));
     return file.good();
 }
 
@@ -73,7 +73,7 @@ bool append_to_file(const std::string_view path, const std::string_view content)
         return false;
     }
 
-    file.write(content.data(), content.size());
+    file.write(content.data(), static_cast<std::streamsize>(content.size()));
     return file.good();
 }
 
@@ -154,7 +154,7 @@ bool write_binary_file(const std::string_view path, const std::vector<char>& dat
         return false;
     }
 
-    file.write(data.data(), data.size());
+    file.write(data.data(), static_cast<std::streamsize>(data.size()));
     return file.good();
 }
 
@@ -170,16 +170,17 @@ std::optional<std::string> read_file_chunk(const std::string_view path, const si
         return std::nullopt;
     }
 
-    file.seekg(offset);
+    file.seekg(static_cast<std::streamoff>(offset), std::ios::beg);
+
     if (!file.good()) {
         return std::nullopt;
     }
 
     std::string buffer(size, '\0');
-    file.read(buffer.data(), size);
+    file.read(buffer.data(), static_cast<std::streamsize>(size));
 
     if (file.gcount() > 0) {
-        buffer.resize(file.gcount());
+        buffer.resize(static_cast<size_t>(file.gcount()));
         return buffer;
     }
 
@@ -239,7 +240,7 @@ std::optional<std::vector<char>> FileReader::read_bytes(const size_t count) {
     }
 
     std::vector<char> buffer(count);
-    stream_.read(buffer.data(), count);
+    stream_.read(buffer.data(), static_cast<std::streamsize>(count));
 
     if (stream_.gcount() > 0) {
         buffer.resize(stream_.gcount());
@@ -292,7 +293,7 @@ bool FileWriter::write(const std::string_view content) {
         return false;
     }
 
-    stream_.write(content.data(), content.size());
+    stream_.write(content.data(), static_cast<std::streamsize>(content.size()));
     return stream_.good();
 }
 
