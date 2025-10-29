@@ -1,0 +1,20 @@
+{
+  "name": "buildtime-hotspot-analyzer",
+  "version": "1.0.0",
+  "description": "Build-time hotspot analyzer for C++ projects",
+  "dependencies": [
+    "simdjson",
+    "tomlplusplus",
+    "nlohmann-json",
+    "openssl",
+    "sqlite3",
+    "gtest"
+  ],
+  "builtin-baseline": "a62ce77d56ee07513b4b67de1ec2daeaebfae51a",
+  "overrides": [
+    {
+      "name": "openssl",
+      "version": "3.3.2"
+    }
+  ]
+}
