@@ -11,6 +11,7 @@ find_package(OpenSSL REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 add_executable(BuildtimeHotspotAnalyzer main.cpp)
+add_subdirectory(tests)
 
 target_sources(BuildtimeHotspotAnalyzer
         PRIVATE
@@ -73,6 +74,3 @@ target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE nlohmann_json::nlohmann_json
         PRIVATE SQLite::SQLite3
 )
-
-enable_testing()
-add_subdirectory(tests)
