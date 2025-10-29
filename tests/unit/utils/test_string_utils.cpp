@@ -8,11 +8,12 @@
 using namespace bha::utils;
 
 TEST(StringUtilsTest, SplitSingleChar) {
-    const auto result = split("hello,world,test", ',');
-    ASSERT_EQ(result.size(), 3);
+    const auto result = split("hello,world,test,main", ',');
+    ASSERT_EQ(result.size(), 4);
     EXPECT_EQ(result[0], "hello");
     EXPECT_EQ(result[1], "world");
     EXPECT_EQ(result[2], "test");
+    EXPECT_EQ(result[3], "main");
 }
 
 TEST(StringUtilsTest, SplitEmptyString) {
