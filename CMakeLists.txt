@@ -4,78 +4,13 @@ project(BuildtimeHotspotAnalyzer)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(USE_SYSTEM_OPENSSL "Use the system-installed OpenSSL" ON)
-option(USE_SYSTEM_SQLITE3 "Use the system-installed SQLite3" ON)
+find_package(simdjson CONFIG REQUIRED)
+find_package(tomlplusplus CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(SQLite3 REQUIRED)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        simdjson
-        GIT_REPOSITORY https://github.com/simdjson/simdjson.git
-        GIT_TAG v4.0.7
-)
-FetchContent_Declare(
-        tomlplusplus
-        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
-        GIT_TAG v3.4.0
-)
-FetchContent_Declare(
-        json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.12.0
-)
-
-FetchContent_MakeAvailable(simdjson)
-FetchContent_MakeAvailable(tomlplusplus)
-FetchContent_MakeAvailable(json)
-
-if(USE_SYSTEM_OPENSSL)
-    if(DEFINED ENV{OPENSSL_ROOT_DIR})
-        set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
-    endif()
-    find_package(OpenSSL REQUIRED)
-else()
-    find_package(OpenSSL REQUIRED)
-endif()
-
-if(NOT OpenSSL_FOUND)
-    message(FATAL_ERROR "OpenSSL not found. Please install or specify OPENSSL_ROOT_DIR.")
-endif()
-
-if(USE_SYSTEM_SQLITE3)
-    if(DEFINED ENV{SQLITE3_ROOT_DIR})
-        set(SQLITE3_ROOT_DIR $ENV{SQLITE3_ROOT_DIR})
-    endif()
-
-    find_package(SQLite3 REQUIRED)
-else()
-    FetchContent_Declare(
-            sqlite3
-            URL https://www.sqlite.org/2024/sqlite-amalgamation-3460100.zip
-            URL_HASH SHA3_256=5c0a29703e7b6cf36ca3be8c8d2a2c2d8c6a4b8f7e1f2f8f4e0c3e7b7c7f9e8d
-    )
-
-    FetchContent_MakeAvailable(sqlite3)
-
-    add_library(SQLite::SQLite3 INTERFACE IMPORTED)
-    target_include_directories(SQLite::SQLite3 INTERFACE ${sqlite3_SOURCE_DIR})
-    target_sources(SQLite::SQLite3 INTERFACE ${sqlite3_SOURCE_DIR}/sqlite3.c)
-    target_compile_definitions(SQLite::SQLite3 INTERFACE
-            SQLITE_ENABLE_FTS5
-            SQLITE_ENABLE_RTREE
-    )
-endif()
-
-if(NOT SQLite3_FOUND AND USE_SYSTEM_SQLITE3)
-    message(FATAL_ERROR
-            "SQLite3 not found. Please install or specify SQLITE3_ROOT_DIR, or set USE_SYSTEM_SQLITE3=OFF."
-    )
-endif()
-
-
-add_executable(BuildtimeHotspotAnalyzer
-        main.cpp
-)
+add_executable(BuildtimeHotspotAnalyzer main.cpp)
 
 target_sources(BuildtimeHotspotAnalyzer
         PRIVATE
@@ -121,6 +56,9 @@ target_sources(BuildtimeHotspotAnalyzer
         sources/bha/analysis/analysis_engine.cpp
         sources/bha/storage/database.cpp
         sources/bha/storage/sqlite_backend.cpp
+        sources/bha/security/input_validator.cpp
+        sources/bha/security/resource_limiter.cpp
+        sources/bha/security/anonymizer.cpp
 )
 
 target_include_directories(BuildtimeHotspotAnalyzer
@@ -135,3 +73,6 @@ target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE nlohmann_json::nlohmann_json
         PRIVATE SQLite::SQLite3
 )
+
+enable_testing()
+add_subdirectory(tests)
