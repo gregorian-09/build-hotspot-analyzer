@@ -1,5 +1,7 @@
 find_package(GTest CONFIG REQUIRED)
 
+enable_testing()
+
 add_library(bha_core STATIC
         ${PROJECT_SOURCE_DIR}/sources/bha/utils/string_utils.cpp
         ${PROJECT_SOURCE_DIR}/sources/bha/utils/path_utils.cpp
