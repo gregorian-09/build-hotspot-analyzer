@@ -32,9 +32,7 @@ namespace bha::build_systems {
         return core::Result<BuildSystemInfo>::success(std::move(info));
     }
 
-    core::Result<std::vector<CompileCommand>> MakeAdapter::extract_compile_commands(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<CompileCommand>> MakeAdapter::extract_compile_commands() {
         auto dry_run_result = run_make_dry_run();
         if (!dry_run_result.is_success()) {
             return core::Result<std::vector<CompileCommand>>::failure(
@@ -45,6 +43,7 @@ namespace bha::build_systems {
         auto commands = extract_compile_commands_from_output(dry_run_result.value());
 
         std::vector<CompileCommand> compile_commands;
+        const std::string build_dir = makefile_path_.parent_path().string();
         for (const auto& cmd_str : commands) {
             CompileCommand cmd;
             cmd.directory = build_dir;
@@ -85,9 +84,8 @@ namespace bha::build_systems {
         return core::Result<std::vector<std::string>>::success(std::move(trace_files));
     }
 
-    core::Result<std::map<std::string, std::vector<std::string>>> MakeAdapter::get_targets(
-        const std::string& build_dir
-    ) {
+    core::Result<std::map<std::string, std::vector<std::string>>> MakeAdapter::get_targets()
+    {
         std::map<std::string, std::vector<std::string>> targets;
 
         auto makefile_result = parse_makefile(makefile_path_.string());
@@ -106,9 +104,8 @@ namespace bha::build_systems {
         );
     }
 
-    core::Result<std::vector<std::string>> MakeAdapter::get_build_order(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<std::string>> MakeAdapter::get_build_order()
+    {
         std::vector<std::string> build_order;
 
         auto makefile_result = parse_makefile(makefile_path_.string());

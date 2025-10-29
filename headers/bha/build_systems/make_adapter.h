@@ -44,12 +44,9 @@ namespace bha::build_systems {
 
         /**
          * Extracts compile commands by analyzing Make build output.
-         * @param build_dir Path to the build directory.
          * @return List of compile commands.
          */
-        core::Result<std::vector<CompileCommand>> extract_compile_commands(
-            const std::string& build_dir
-        ) override;
+        core::Result<std::vector<CompileCommand>> extract_compile_commands() override;
 
         /**
          * Retrieves trace or log files produced by the Make build.
@@ -62,21 +59,15 @@ namespace bha::build_systems {
 
         /**
          * Lists all targets defined in the Makefile.
-         * @param build_dir Path to the build directory.
          * @return Map of target names and their corresponding dependencies.
          */
-        core::Result<std::map<std::string, std::vector<std::string>>> get_targets(
-            const std::string& build_dir
-        ) override;
+        [[nodiscard]] core::Result<std::map<std::string, std::vector<std::string>>> get_targets() override;
 
         /**
          * Determines the order in which Make builds its targets.
-         * @param build_dir Path to the build directory.
          * @return Ordered list of target names.
          */
-        core::Result<std::vector<std::string>> get_build_order(
-            const std::string& build_dir
-        ) override;
+        [[nodiscard]] core::Result<std::vector<std::string>> get_build_order() override;
 
         /**
          * Enables tracing or instrumentation during Make builds.

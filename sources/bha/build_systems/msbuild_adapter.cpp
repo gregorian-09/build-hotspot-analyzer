@@ -32,9 +32,7 @@ namespace bha::build_systems {
         return core::Result<BuildSystemInfo>::success(std::move(info));
     }
 
-    core::Result<std::vector<CompileCommand>> MSBuildAdapter::extract_compile_commands(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<CompileCommand>> MSBuildAdapter::extract_compile_commands() {
         auto projects_result = find_vcxproj_files();
         if (!projects_result.is_success()) {
             return core::Result<std::vector<CompileCommand>>::failure(
@@ -43,6 +41,7 @@ namespace bha::build_systems {
         }
 
         std::vector<CompileCommand> commands;
+        const std::string build_dir = solution_path_.parent_path().string();
 
         for (const auto& proj_path : projects_result.value()) {
             auto project_result = parse_vcxproj(proj_path);
@@ -83,9 +82,8 @@ namespace bha::build_systems {
         return core::Result<std::vector<std::string>>::success(std::move(trace_files));
     }
 
-    core::Result<std::map<std::string, std::vector<std::string>>> MSBuildAdapter::get_targets(
-        const std::string& build_dir
-    ) {
+    core::Result<std::map<std::string, std::vector<std::string>>> MSBuildAdapter::get_targets()
+    {
         std::map<std::string, std::vector<std::string>> targets;
 
         auto projects_result = find_vcxproj_files();
@@ -107,9 +105,8 @@ namespace bha::build_systems {
         );
     }
 
-    core::Result<std::vector<std::string>> MSBuildAdapter::get_build_order(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<std::string>> MSBuildAdapter::get_build_order()
+    {
         std::vector<std::string> build_order;
 
         auto projects_result = find_vcxproj_files();
@@ -236,7 +233,7 @@ namespace bha::build_systems {
         }
 
         std::vector<MSBuildProject> projects;
-        const std::regex project_regex("Project\\(\"\\{[^}]+\\}\"\\)\\s*=\\s*\"([^\"]+)\",\\s*\"([^\"]+)\"");
+        const std::regex project_regex(R"lit(Project\("\{[^}]+\}"\)\s*=\s*"([^"]+)",\s*"([^"]+)")lit");
 
         for (const auto& line : *lines_opt) {
             if (std::smatch match; std::regex_search(line, match, project_regex)) {

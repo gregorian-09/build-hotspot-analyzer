@@ -73,21 +73,23 @@ namespace bha::export_module {
          * @param field The unescaped field string.
          * @return The properly escaped CSV field.
          */
-        std::string escape_csv_field(const std::string& field) const;
+        [[nodiscard]] std::string escape_csv_field(const std::string& field) const;
 
         /**
          * Serializes metric data (especially hotspots) into CSV rows.
          * @param metrics The metrics summary including hotspot info.
          * @return A CSV-formatted string for hotspots section.
          */
-        std::string hotspots_to_csv(const core::MetricsSummary& metrics) const;
+        [[nodiscard]] std::string hotspots_to_csv(const core::MetricsSummary& metrics) const;
 
         /**
          * Serializes suggestion entries into CSV rows.
          * @param suggestions The vector of suggestions to output.
          * @return A CSV-formatted string for suggestions section.
          */
-        std::string suggestions_to_csv(const std::vector<core::Suggestion>& suggestions) const;
+        [[nodiscard]] std::string suggestions_to_csv(const std::vector<core::Suggestion>& suggestions) const;
+
+        static std::string trace_to_csv(const core::BuildTrace& trace);
     };
 
 } // namespace bha::export_module

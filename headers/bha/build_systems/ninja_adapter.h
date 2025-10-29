@@ -47,12 +47,9 @@ namespace bha::build_systems {
 
         /**
          * Extracts compile commands from the Ninja build database.
-         * @param build_dir Path to the build directory.
          * @return List of compile commands for all translation units.
          */
-        core::Result<std::vector<CompileCommand>> extract_compile_commands(
-            const std::string& build_dir
-        ) override;
+        core::Result<std::vector<CompileCommand>> extract_compile_commands() override;
 
         /**
          * Retrieves Ninja trace or log files for profiling and diagnostics.
@@ -65,21 +62,15 @@ namespace bha::build_systems {
 
         /**
          * Lists all build targets defined in the Ninja build file.
-         * @param build_dir Path to the build directory.
          * @return Map of target names to their corresponding dependencies or outputs.
          */
-        core::Result<std::map<std::string, std::vector<std::string>>> get_targets(
-            const std::string& build_dir
-        ) override;
+        [[nodiscard]] core::Result<std::map<std::string, std::vector<std::string>>> get_targets() override;
 
         /**
          * Determines the order in which Ninja builds targets.
-         * @param build_dir Path to the build directory.
          * @return Ordered list of target names reflecting build dependencies.
          */
-        core::Result<std::vector<std::string>> get_build_order(
-            const std::string& build_dir
-        ) override;
+        [[nodiscard]] core::Result<std::vector<std::string>> get_build_order() override;
 
         /**
          * Enables build tracing or instrumentation within Ninja builds.

@@ -34,9 +34,8 @@ namespace bha::build_systems {
         return core::Result<BuildSystemInfo>::success(std::move(info));
     }
 
-    core::Result<std::vector<CompileCommand>> CMakeAdapter::extract_compile_commands(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<CompileCommand>> CMakeAdapter::extract_compile_commands()
+    {
         if (!has_compile_commands_json()) {
             return core::Result<std::vector<CompileCommand>>::failure(
                 core::Error{
@@ -96,7 +95,7 @@ namespace bha::build_systems {
                 }
                 if (auto args = obj.find_field("arguments"); !args.error()) {
                     for (auto arg : args.get_array()) {
-                        cmd.arguments.push_back(std::string(arg.get_string().value()));
+                        cmd.arguments.emplace_back(arg.get_string().value());
                     }
                 }
                 if (auto output = obj.find_field("output"); !output.error()) {
@@ -134,12 +133,11 @@ namespace bha::build_systems {
         return core::Result<std::vector<std::string>>::success(std::move(trace_files));
     }
 
-    core::Result<std::map<std::string, std::vector<std::string>>> CMakeAdapter::get_targets(
-        const std::string& build_dir
-    ) {
+    core::Result<std::map<std::string, std::vector<std::string>>> CMakeAdapter::get_targets()
+    {
         std::map<std::string, std::vector<std::string>> targets;
         namespace fs = std::filesystem;
-        const fs::path targets_file = fs::path(build_dir) / "CMakeFiles" / "TargetDirectories.txt";
+        const fs::path targets_file = compile_commands_path_.parent_path() / "CMakeFiles" / "TargetDirectories.txt";
 
         if (!utils::file_exists(targets_file.string())) {
             return core::Result<std::map<std::string, std::vector<std::string>>>::success(
@@ -165,12 +163,11 @@ namespace bha::build_systems {
         );
     }
 
-    core::Result<std::vector<std::string>> CMakeAdapter::get_build_order(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<std::string>> CMakeAdapter::get_build_order()
+    {
         std::vector<std::string> build_order;
 
-        auto commands_result = extract_compile_commands(build_dir);
+        auto commands_result = extract_compile_commands();
         if (!commands_result.is_success()) {
             return core::Result<std::vector<std::string>>::failure(
                 commands_result.error()

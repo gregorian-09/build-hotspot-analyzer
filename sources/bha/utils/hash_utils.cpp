@@ -195,7 +195,7 @@ std::vector<uint8_t> from_hex_string(const std::string_view hex) {
 
     for (size_t i = 0; i < hex.size(); i += 2) {
         std::string byte_str(hex.substr(i, 2));
-        uint8_t byte = static_cast<uint8_t>(std::stoi(byte_str, nullptr, 16));
+        auto byte = static_cast<uint8_t>(std::stoi(byte_str, nullptr, 16));
         bytes.push_back(byte);
     }
 
@@ -210,7 +210,7 @@ std::string generate_uuid() {
     const uint64_t part1 = dis(gen);
     const uint64_t part2 = dis(gen);
 
-    std::array<uint8_t, 16> bytes;
+    std::array<uint8_t, 16> bytes{};
     std::memcpy(&bytes[0], &part1, 8);
     std::memcpy(&bytes[8], &part2, 8);
 

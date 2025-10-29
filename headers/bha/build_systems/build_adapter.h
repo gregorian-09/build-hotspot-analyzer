@@ -78,12 +78,9 @@ namespace bha::build_systems {
         /**
          * Extracts compile commands from the build system invocation.
          *
-         * @param build_dir Path to the build directory.
          * @return A Result containing a vector of @ref CompileCommand entries.
          */
-        virtual core::Result<std::vector<CompileCommand>> extract_compile_commands(
-            const std::string& build_dir
-        ) = 0;
+        virtual core::Result<std::vector<CompileCommand>> extract_compile_commands() = 0;
 
         /**
          * Retrieves trace or log files relevant to the build.
@@ -98,22 +95,16 @@ namespace bha::build_systems {
         /**
          * Retrieves mapping from target names to the files they contain.
          *
-         * @param build_dir Path to the build directory.
          * @return A Result containing a map from target name to list of file paths.
          */
-        virtual core::Result<std::map<std::string, std::vector<std::string>>> get_targets(
-            const std::string& build_dir
-        ) = 0;
+        virtual core::Result<std::map<std::string, std::vector<std::string>>> get_targets() = 0;
 
         /**
          * Retrieves the build order of targets or files from the build system.
          *
-         * @param build_dir Path to the build directory.
          * @return A Result containing a vector of file or target paths in build order.
          */
-        virtual core::Result<std::vector<std::string>> get_build_order(
-            const std::string& build_dir
-        ) = 0;
+        virtual core::Result<std::vector<std::string>> get_build_order() = 0;
 
         /**
          * Enables compiler tracing in the build system for profiling or analysis.

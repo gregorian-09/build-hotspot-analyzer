@@ -34,10 +34,8 @@ namespace bha::build_systems {
         return core::Result<BuildSystemInfo>::success(std::move(info));
     }
 
-    core::Result<std::vector<CompileCommand>> NinjaAdapter::extract_compile_commands(
-        const std::string& build_dir
-    ) {
-        std::filesystem::path compile_commands = std::filesystem::path(build_dir) / "compile_commands.json";
+    core::Result<std::vector<CompileCommand>> NinjaAdapter::extract_compile_commands() {
+        std::filesystem::path compile_commands = ninja_build_path_.parent_path() / "compile_commands.json";
 
         if (!utils::file_exists(compile_commands.string())) {
             return core::Result<std::vector<CompileCommand>>::failure(
@@ -130,9 +128,8 @@ namespace bha::build_systems {
         return core::Result<std::vector<std::string>>::success(std::move(trace_files));
     }
 
-    core::Result<std::map<std::string, std::vector<std::string>>> NinjaAdapter::get_targets(
-        const std::string& build_dir
-    ) {
+    core::Result<std::map<std::string, std::vector<std::string>>> NinjaAdapter::get_targets()
+    {
         std::map<std::string, std::vector<std::string>> targets;
 
         if (!utils::file_exists(ninja_build_path_.string())) {
@@ -166,9 +163,8 @@ namespace bha::build_systems {
         );
     }
 
-    core::Result<std::vector<std::string>> NinjaAdapter::get_build_order(
-        const std::string& build_dir
-    ) {
+    core::Result<std::vector<std::string>> NinjaAdapter::get_build_order()
+    {
         std::vector<std::string> build_order;
 
         auto log_result = parse_ninja_log();
