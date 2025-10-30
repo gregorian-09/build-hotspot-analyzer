@@ -187,19 +187,43 @@ std::string to_hex_string(const uint64_t value) {
 }
 
 std::vector<uint8_t> from_hex_string(const std::string_view hex) {
-    std::vector<uint8_t> bytes;
+    std::vector<uint8_t> output;
+    if ((hex.size() & 1) != 0) {
+        return output;
+    }
+    output.reserve(hex.size() / 2);
 
-    if (hex.size() % 2 != 0) {
-        return bytes;
+    auto is_hex_digit = [](const char c) {
+        const auto uc = static_cast<unsigned char>(c);
+        return std::isxdigit(uc) != 0;
+    };
+
+    for (size_t pos = 0; pos < hex.size(); pos += 2) {
+        const char high_nibble_char = hex[pos];
+        const char low_nibble_char = hex[pos + 1];
+
+        if (!is_hex_digit(high_nibble_char) || !is_hex_digit(low_nibble_char)) {
+            return {};
+        }
+
+        std::string two_chars;
+        two_chars.push_back(high_nibble_char);
+        two_chars.push_back(low_nibble_char);
+
+        try {
+            const int parsed_value = std::stoi(two_chars, nullptr, 16);
+            if (parsed_value < 0 || parsed_value > 0xFF) {
+                return {};
+            }
+            output.push_back(static_cast<uint8_t>(parsed_value));
+        } catch (const std::invalid_argument &) {
+            return {};
+        } catch (const std::out_of_range &) {
+            return {};
+        }
     }
 
-    for (size_t i = 0; i < hex.size(); i += 2) {
-        std::string byte_str(hex.substr(i, 2));
-        auto byte = static_cast<uint8_t>(std::stoi(byte_str, nullptr, 16));
-        bytes.push_back(byte);
-    }
-
-    return bytes;
+    return output;
 }
 
 std::string generate_uuid() {
