@@ -208,7 +208,8 @@ std::string make_preferred(const std::string_view path) {
 
 bool create_directories(const std::string_view path) {
     std::error_code ec;
-    return fs::create_directories(fs::path(path), ec);
+    fs::create_directories(fs::path(path), ec);
+    return !ec;
 }
 
 std::optional<uintmax_t> file_size(const std::string_view path) {
