@@ -66,7 +66,7 @@ namespace bha::utils {
         if (!content) {
             return "";
         }
-        return compute_hash(md, content->data());
+        return compute_hash(md, std::string_view(content->data(), content->size()));
     }
 
     std::string compute_sha256_file(const std::string_view path) {
