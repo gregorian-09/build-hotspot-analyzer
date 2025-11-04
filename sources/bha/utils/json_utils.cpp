@@ -38,7 +38,48 @@ bool JsonDocument::parse_file(const std::string_view path) {
 }
 
 bool JsonDocument::is_valid() const {
-    return doc_.has_value();
+    if (!doc_.has_value()) {
+        return false;
+    }
+
+    try {
+        simdjson::ondemand::parser temp_parser;
+        auto temp_doc = temp_parser.iterate(json_data_);
+        if (temp_doc.error()) {
+            return false;
+        }
+
+        auto type_result = temp_doc.type();
+        if (type_result.error()) {
+            return false;
+        }
+
+        if (const auto type = type_result.value(); type == simdjson::ondemand::json_type::object) {
+            auto obj_result = temp_doc.get_object();
+            if (obj_result.error()) {
+                return false;
+            }
+            for (auto field : obj_result.value()) {
+                if (auto key_result = field.unescaped_key(); key_result.error()) {
+                    return false;
+                }
+            }
+        } else if (type == simdjson::ondemand::json_type::array) {
+            auto arr_result = temp_doc.get_array();
+            if (arr_result.error()) {
+                return false;
+            }
+            for (auto elem : arr_result.value()) {
+                if (auto elem_type = elem.type(); elem_type.error()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    } catch (const simdjson::simdjson_error&) {
+        return false;
+    }
 }
 
 std::optional<std::string> JsonDocument::get_string(const std::string_view key) {
@@ -190,7 +231,29 @@ std::optional<bool> parse_json_bool(const std::string_view json) {
 
 bool is_valid_json(const std::string_view json) {
     JsonDocument doc;
-    return doc.parse(json);
+    if (!doc.parse(json)) {
+        return false;
+    }
+
+    try {
+        auto& raw_doc = doc.get_document();
+
+        if (const auto type = raw_doc.type().value(); type == simdjson::ondemand::json_type::array) {
+            auto array = raw_doc.get_array().value();
+            if (const auto count = array.count_elements(); count.error()) {
+                return false;
+            }
+        } else if (type == simdjson::ondemand::json_type::object) {
+            auto obj = raw_doc.get_object().value();
+            if (const auto count = obj.count_fields(); count.error()) {
+                return false;
+            }
+        }
+
+        return true;
+    } catch (const simdjson::simdjson_error&) {
+        return false;
+    }
 }
 
 std::optional<std::string> get_json_value(const std::string_view json, const std::string_view key) {
