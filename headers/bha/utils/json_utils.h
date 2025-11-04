@@ -382,37 +382,53 @@ namespace bha::utils
             }
 
             T result;
-            const size_t size = doc.array_size();
-
-            if (size == 0) {
-                return result;
-            }
-
             auto& raw_doc = doc.get_document();
-            size_t index = 0;
 
-            for (auto elem : raw_doc) {
-                std::string elem_str;
-                if (elem.type() == simdjson::ondemand::json_type::string) {
-                    elem_str = "\"" + std::string(elem.get_string().value()) + "\"";
-                } else if (elem.type() == simdjson::ondemand::json_type::number) {
-                    elem_str = std::to_string(elem.get_double().value());
-                } else if (elem.type() == simdjson::ondemand::json_type::boolean) {
-                    elem_str = elem.get_bool().value() ? "true" : "false";
-                } else if (elem.type() == simdjson::ondemand::json_type::null) {
-                    elem_str = "null";
-                } else {
-                    return std::nullopt;
+            try {
+                for (auto elem : raw_doc) {
+                    auto type_result = elem.type();
+                    if (type_result.error()) {
+                        return std::nullopt;
+                    }
+                    const auto type = type_result.value();
+
+                    if constexpr (std::is_same_v<element_type, std::string>) {
+                        if (type != simdjson::ondemand::json_type::string) {
+                            return std::nullopt;
+                        }
+                        result.push_back(std::string(elem.get_string().value()));
+                    } else if constexpr (std::is_same_v<element_type, bool>) {
+                        if (type != simdjson::ondemand::json_type::boolean) {
+                            return std::nullopt;
+                        }
+                        result.push_back(elem.get_bool().value());
+                    } else if constexpr (std::is_same_v<element_type, double>) {
+                        if (type != simdjson::ondemand::json_type::number) {
+                            return std::nullopt;
+                        }
+                        result.push_back(elem.get_double().value());
+                    } else if constexpr (std::is_same_v<element_type, int64_t>) {
+                        if (type != simdjson::ondemand::json_type::number) {
+                            return std::nullopt;
+                        }
+                        result.push_back(elem.get_int64().value());
+                    } else if constexpr (std::is_integral_v<element_type> && !std::is_same_v<element_type, bool>) {
+                        if (type != simdjson::ondemand::json_type::number) {
+                            return std::nullopt;
+                        }
+                        result.push_back(static_cast<element_type>(elem.get_int64().value()));
+                    } else if constexpr (std::is_same_v<element_type, std::nullptr_t>) {
+                        if (type != simdjson::ondemand::json_type::null) {
+                            return std::nullopt;
+                        }
+                        result.push_back(nullptr);
+                    } else {
+                        static_assert(false, "Unsupported element type for vector deserialization");
+                        return std::nullopt;
+                    }
                 }
-
-                if (auto deserialized = deserialize_from_json<element_type>(elem_str)) {
-                    result.push_back(deserialized.value());
-                } else {
-                    return std::nullopt;
-                }
-
-                ++index;
-                if (index >= size) break;
+            } catch (const simdjson::simdjson_error&) {
+                return std::nullopt;
             }
 
             return result;
@@ -423,8 +439,8 @@ namespace bha::utils
             return std::nullopt;
         } else {
             static_assert(false, "Unsupported type for JSON deserialization");
+            return std::nullopt;
         }
-        return std::nullopt;
     }
 }
 
