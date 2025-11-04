@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 3.31)
-project(BuildtimeHotspotAnalyzer)
+project(BuildtimeHotspotAnalyzer VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    include(CTest)
+endif()
 
 find_package(simdjson CONFIG REQUIRED)
 find_package(tomlplusplus CONFIG REQUIRED)
@@ -10,11 +16,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(SQLite3 REQUIRED)
 
-add_executable(BuildtimeHotspotAnalyzer main.cpp)
-add_subdirectory(tests)
-
-target_sources(BuildtimeHotspotAnalyzer
-        PRIVATE
+add_library(bha_core STATIC
         sources/bha/utils/string_utils.cpp
         sources/bha/utils/path_utils.cpp
         sources/bha/utils/file_utils.cpp
@@ -62,15 +64,27 @@ target_sources(BuildtimeHotspotAnalyzer
         sources/bha/security/anonymizer.cpp
 )
 
-target_include_directories(BuildtimeHotspotAnalyzer
-        PRIVATE
-        ${PROJECT_SOURCE_DIR}/headers
+target_include_directories(bha_core
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/headers>
+        $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(BuildtimeHotspotAnalyzer
-        PRIVATE OpenSSL::SSL
-        PRIVATE simdjson::simdjson
-        PRIVATE tomlplusplus::tomlplusplus
-        PRIVATE nlohmann_json::nlohmann_json
-        PRIVATE SQLite::SQLite3
+target_link_libraries(bha_core
+        PUBLIC
+        OpenSSL::SSL
+        simdjson::simdjson
+        tomlplusplus::tomlplusplus
+        nlohmann_json::nlohmann_json
+        SQLite::SQLite3
 )
+
+add_executable(BuildtimeHotspotAnalyzer main.cpp)
+
+target_link_libraries(BuildtimeHotspotAnalyzer
+        PRIVATE bha_core
+)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
