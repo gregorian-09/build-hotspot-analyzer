@@ -191,7 +191,7 @@ std::optional<std::string> read_file_chunk(const std::string_view path, const si
 }
 
 FileReader::FileReader(std::string_view path)
-    : stream_(std::string(path), std::ios::in | std::ios::binary) {
+    : stream_(std::string(path)) {
 }
 
 FileReader::~FileReader() {
