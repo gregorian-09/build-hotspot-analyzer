@@ -31,7 +31,7 @@ namespace bha::parsers {
     ) {
         try {
             simdjson::ondemand::parser parser;
-            simdjson::padded_string json_data(content);
+            simdjson::padded_string json_data{std::string(content)};
             auto doc = parser.iterate(json_data);
 
             auto events_result = parse_trace_events(doc.value());
@@ -132,8 +132,8 @@ namespace bha::parsers {
                     event.tid = static_cast<int>(tid_result.value());
                 }
 
-                if (event_value["args"]) {
-                    auto args = event_value["args"];
+                if (auto args_result = event_value["args"]; args_result.error() == simdjson::SUCCESS) {
+                    auto args = args_result.value();
                     if (auto detail_result = args["detail"].get_string(); detail_result.error() == simdjson::SUCCESS) {
                         event.detail = std::string(detail_result.value());
                     }
