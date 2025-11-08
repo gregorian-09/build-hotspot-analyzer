@@ -83,7 +83,6 @@ public:
      */
     [[nodiscard]] std::vector<std::string> get_supported_extensions() const override;
 
-private:
     /**
      * Represents a single entry in a GCC time-report.
      *
