@@ -164,16 +164,17 @@ namespace bha::parsers {
                 utils::contains(lower_name, "name lookup") ||
                 utils::contains(lower_name, "template")) {
                 parsing_time += time_ms;
-            } else if (utils::contains(lower_name, "preprocessing") ||
-                       utils::contains(lower_name, "phase setup")) {
-                unit.preprocessing_time_ms += time_ms;
-            } else if (utils::contains(lower_name, "expand") ||
-                       utils::contains(lower_name, "RTL generation")) {
-                codegen_time += time_ms;
-            } else if (utils::contains(lower_name, "opt") ||
-                       utils::contains(lower_name, "phase opt")) {
-                optimization_time += time_ms;
-            }
+                } else if (utils::contains(lower_name, "preprocessing") ||
+                           utils::contains(lower_name, "phase setup")) {
+                    unit.preprocessing_time_ms += time_ms;
+                           } else if (utils::contains(lower_name, "rtl generation") ||
+                                      utils::contains(lower_name, "expand")) {
+                               codegen_time += time_ms;
+                                      } else if (utils::contains(lower_name, "opt") ||
+                                                 utils::contains(lower_name, "phase opt") ||
+                                                 utils::contains(lower_name, "generate")) {
+                                          optimization_time += time_ms;
+                                                 }
         }
 
         unit.total_time_ms = total_time;
@@ -186,22 +187,15 @@ namespace bha::parsers {
         const std::string_view content
     ) {
         for (const auto lines = utils::split_lines(content); const auto& line : lines) {
-            if (utils::ends_with(line, ".cpp") ||
-                utils::ends_with(line, ".cc") ||
-                utils::ends_with(line, ".cxx") ||
-                utils::ends_with(line, ".c")) {
-
-                for (auto parts = utils::split(line, ' '); const auto& part : parts) {
-                    if (utils::ends_with(part, ".cpp") ||
-                        utils::ends_with(part, ".cc") ||
-                        utils::ends_with(part, ".cxx") ||
-                        utils::ends_with(part, ".c")) {
-                        return part;
+            for (auto parts = utils::split(line, ' '); const auto& part : parts) {
+                if (utils::ends_with(part, ".cpp") ||
+                    utils::ends_with(part, ".cc") ||
+                    utils::ends_with(part, ".cxx") ||
+                    utils::ends_with(part, ".c")) {
+                    return part;
                     }
-                }
             }
         }
-
         return "unknown";
     }
 
@@ -233,14 +227,38 @@ namespace bha::parsers {
         const auto parts = utils::split(time_part, ' ');
 
         std::vector<std::string> values;
+        bool skip_next = false;
+
         for (const auto& part : parts) {
-            if (std::string cleaned = utils::trim(part); !cleaned.empty() && cleaned != "(" && cleaned != ")") {
-                if (cleaned.back() == '%' || cleaned.back() == ')') {
-                    cleaned.pop_back();
+            std::string cleaned = utils::trim(part);
+
+            if (cleaned.empty()) {
+                continue;
+            }
+
+            if (cleaned == "(" || cleaned == ")") {
+                continue;
+            }
+
+            if (cleaned.back() == ')') {
+                skip_next = false;
+                continue;
+            }
+
+            if (cleaned == "(") {
+                skip_next = true;
+                continue;
+            }
+
+            if (skip_next) {
+                if (cleaned.back() == '%') {
+                    skip_next = false;
                 }
-                if (!cleaned.empty() && (std::isdigit(cleaned[0]) || cleaned[0] == '.')) {
-                    values.push_back(cleaned);
-                }
+                continue;
+            }
+
+            if (!cleaned.empty() && (std::isdigit(cleaned[0]) || cleaned[0] == '.')) {
+                values.push_back(cleaned);
             }
         }
 
@@ -249,10 +267,6 @@ namespace bha::parsers {
                 entry.usr_time = std::stod(values[0]);
                 entry.sys_time = std::stod(values[1]);
                 entry.wall_time = std::stod(values[2]);
-
-                if (values.size() >= 4) {
-                    entry.percentage = std::stod(values[3]);
-                }
 
                 return entry;
             } catch (const std::exception&) {
