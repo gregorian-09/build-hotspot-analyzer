@@ -34,6 +34,13 @@ namespace bha::parsers {
             simdjson::padded_string json_data{std::string(content)};
             auto doc = parser.iterate(json_data);
 
+            if (doc.error() != simdjson::SUCCESS) {
+                return core::Result<std::vector<core::CompilationUnit>>::failure(
+                    core::ErrorCode::JSON_PARSE_ERROR,
+                    "Failed to parse JSON document"
+                );
+            }
+
             auto events_result = parse_trace_events(doc.value());
             if (!events_result.is_success()) {
                 return core::Result<std::vector<core::CompilationUnit>>::failure(
@@ -42,6 +49,13 @@ namespace bha::parsers {
             }
 
             const auto& events = events_result.value();
+
+            if (events.empty()) {
+                return core::Result<std::vector<core::CompilationUnit>>::failure(
+                    core::ErrorCode::JSON_PARSE_ERROR,
+                    "No trace events found in JSON"
+                );
+            }
 
             std::string file_path = extract_file_path_from_events(events);
 
@@ -105,7 +119,15 @@ namespace bha::parsers {
         std::vector<TraceEvent> events;
 
         try {
-            for (auto trace_events = doc["traceEvents"]; auto event_value : trace_events) {
+            auto trace_events_result = doc["traceEvents"];
+            if (trace_events_result.error() != simdjson::SUCCESS) {
+                return core::Result<std::vector<TraceEvent>>::failure(
+                    core::ErrorCode::JSON_PARSE_ERROR,
+                    "Missing or invalid 'traceEvents' field"
+                );
+            }
+
+            for (auto trace_events = trace_events_result.value(); auto event_value : trace_events) {
                 TraceEvent event;
 
                 if (auto name_result = event_value["name"].get_string(); name_result.error() == simdjson::SUCCESS) {
