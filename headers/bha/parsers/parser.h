@@ -166,6 +166,19 @@ namespace bha::parsers
          * Returns a list of all compiler types that have registered parsers.
          */
         static std::vector<CompilerType> get_supported_compilers();
+
+        /**
+         * Detects the compiler version of the executable located at the given path.
+         *
+         * @param compiler_path a string view representing the path to the compiler binary or executable.
+         * @param out_version an output parameter (by reference) which will be set to the version string if detection succeeds.
+         * @return a Result holding the detected {@enum CompilerType} on success, or an error code on failure.
+         */
+        static core::Result<CompilerType> detect_compiler_version(
+            std::string_view compiler_path,
+            std::string& out_version
+        );
+
     };
 
 }
