@@ -67,11 +67,10 @@ namespace bha::parsers
     }
 
     CompilerType ParserFactory::detect_compiler_from_file(std::string_view file_path) {
-        auto content = utils::read_file(file_path);
-        if (!content) {
-            std::string ext = utils::get_extension(file_path);
+        const auto content = utils::read_file(file_path);
 
-            if (ext == ".json") {
+        if (!content || content->empty()) {
+            if (const std::string ext = utils::get_extension(file_path); ext == ".json") {
                 return CompilerType::CLANG;
             } else if (ext == ".txt" || ext == ".log") {
                 return CompilerType::GCC;
@@ -136,7 +135,7 @@ namespace bha::parsers
         return CompilerType::UNKNOWN;
     }
 
-    core::Result<CompilerType> detect_compiler_version(
+    core::Result<CompilerType> ParserFactory::detect_compiler_version(
         const std::string_view compiler_path,
         std::string& out_version
     ) {
