@@ -75,7 +75,6 @@ namespace bha::parsers {
          */
         [[nodiscard]] std::vector<std::string> get_supported_extensions() const override;
 
-    private:
         /**
          * Represents an entry of compilation time data in MSVC trace output.
          */
