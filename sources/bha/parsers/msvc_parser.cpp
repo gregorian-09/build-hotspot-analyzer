@@ -292,32 +292,49 @@ namespace bha::parsers {
         return entry;
     }
 
-    std::optional<MSVCTraceParser::TemplateEntry> 
+    std::optional<MSVCTraceParser::TemplateEntry>
     MSVCTraceParser::parse_template_line(const std::string_view line) {
         const std::string trimmed = utils::trim(line);
-        
+
         if (trimmed.empty()) {
             return std::nullopt;
         }
 
-        const auto parts = utils::split(trimmed, ':');
-        if (parts.size() < 2) {
+        // Find the delimiter colon (skip :: in template names)
+        size_t colon_pos = std::string::npos;
+        for (size_t i = 0; i < trimmed.length(); ++i) {
+            if (trimmed[i] == ':') {
+                // Check if this is part of ::
+                if (i + 1 < trimmed.length() && trimmed[i + 1] == ':') {
+                    ++i; // Skip the ::
+                    continue;
+                }
+                colon_pos = i;
+                break;
+            }
+        }
+
+        if (colon_pos == std::string::npos) {
             return std::nullopt;
         }
 
-        const std::string time_part = utils::trim(parts[0]);
-        const std::string template_part = utils::trim(parts[1]);
+        const std::string time_part = utils::trim(trimmed.substr(0, colon_pos));
+        const std::string template_part = utils::trim(trimmed.substr(colon_pos + 1));
+
+        if (template_part.empty()) {
+            return std::nullopt;
+        }
 
         const double time_seconds = parse_time_value(time_part);
-        
+
         if (time_seconds <= 0.0) {
             return std::nullopt;
         }
-        
+
         TemplateEntry entry;
         entry.template_name = template_part;
         entry.time_seconds = time_seconds;
-        
+
         return entry;
     }
 
