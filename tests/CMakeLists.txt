@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.31)
 find_package(GTest CONFIG REQUIRED)
 
 file(GLOB_RECURSE UNIT_TEST_SOURCES "unit/*.cpp")
