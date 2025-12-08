@@ -134,7 +134,7 @@ TEST_F(MSVCParserTest, CanParse_NotMSVCTrace) {
 }
 
 TEST_F(MSVCParserTest, CanParse_MissingBothMarkers) {
-    const std::string content = "Some build output without c1xx.dll or time()";
+    const std::string content = "Some build output without the required markers";
     const std::string file_path = create_trace_file("no_markers.txt", content);
     EXPECT_FALSE(parser->can_parse(file_path));
 }
@@ -698,7 +698,7 @@ time(another.h=0.2000)
 TEST_F(MSVCParserTest, MainFile_WithPath) {
     const std::string trace = R"(
 c1xx.dll
-time(C:\\Project\\src\\main.cpp=1.0000)
+time(C:\Project\src\main.cpp=1.0000)
 )";
 
     auto result = parser->parse_string(trace);
