@@ -18,8 +18,8 @@ namespace bha::core {
     struct TemplateInstantiation {
         std::string template_name;
         std::string instantiation_context;
-        double time_ms;
-        int instantiation_depth;
+        double time_ms = 0.0;
+        int instantiation_depth = 0.0;
         std::vector<std::string> call_stack;
     };
 
