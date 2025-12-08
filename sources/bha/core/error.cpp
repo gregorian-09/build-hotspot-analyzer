@@ -142,11 +142,6 @@ namespace bha::core {
             case ErrorCode::SECURITY_ERROR:
                 return ErrorSeverity::FATAL;
 
-            case ErrorCode::FILE_NOT_FOUND:
-            case ErrorCode::UNSUPPORTED_FORMAT:
-            case ErrorCode::UNSUPPORTED_COMPILER:
-                return ErrorSeverity::WARNING;
-
             default:
                 return ErrorSeverity::ERROR;
         }
