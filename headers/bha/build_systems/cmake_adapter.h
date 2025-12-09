@@ -74,6 +74,7 @@ namespace bha::build_systems {
     private:
         std::filesystem::path compile_commands_path_; ///< Path to compile_commands.json file.
         std::filesystem::path cmake_cache_path_;      ///< Path to CMakeCache.txt file.
+        std::string build_dir_;                       ///< Build directory
 
         /**
          * Retrieves the installed version of CMake.

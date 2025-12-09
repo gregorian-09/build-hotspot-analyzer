@@ -10,11 +10,10 @@
 namespace bha::build_systems {
 
     CMakeAdapter::CMakeAdapter(const std::string& build_dir)
-        : compile_commands_path_(std::filesystem::path(build_dir) / "compile_commands.json"),
-          cmake_cache_path_(std::filesystem::path(build_dir) / "CMakeCache.txt")
-    {
-        build_dir_ = build_dir;
-    }
+    : compile_commands_path_(std::filesystem::path(build_dir) / "compile_commands.json"),
+      cmake_cache_path_(std::filesystem::path(build_dir) / "CMakeCache.txt"),
+      build_dir_(build_dir)
+    {}
 
     core::Result<BuildSystemInfo> CMakeAdapter::detect_build_system(
         const std::string& build_dir
