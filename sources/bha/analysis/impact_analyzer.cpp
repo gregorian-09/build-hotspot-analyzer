@@ -40,10 +40,7 @@ namespace bha::analysis {
         const core::DependencyGraph& graph
     ) {
         if (!graph.has_node(changed_file)) {
-            return core::Result<std::vector<std::string>>::failure(
-                core::ErrorCode::INVALID_ARGUMENT,
-                "File not found in dependency graph: " + changed_file
-            );
+            return core::Result<std::vector<std::string>>::success({});
         }
 
         auto affected = graph::get_transitive_dependents(graph, changed_file);
