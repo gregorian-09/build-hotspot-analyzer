@@ -158,7 +158,7 @@ namespace bha::analysis {
         const core::BuildTrace& trace
     ) {
         const double compile_time = get_compile_time(file, trace);
-        const int num_dependents = count_dependents(file, graph);
+        const int num_dependents = graph.has_node(file) ? count_dependents(file, graph) : 0;
         const double depth_weight = calculate_depth_weight(file, graph);
 
         return compile_time * num_dependents * depth_weight;
@@ -170,8 +170,9 @@ namespace bha::analysis {
     ) {
         std::unordered_map<std::string, double> scores;
 
-        for (const auto nodes = graph.get_all_nodes(); const auto& node : nodes) {
-            scores[node] = calculate_impact_score(node, graph, trace);
+        for (const auto& unit : trace.compilation_units) {
+            const auto& file = unit.file_path;
+            scores[file] = calculate_impact_score(file, graph, trace);
         }
 
         return scores;
@@ -226,6 +227,10 @@ namespace bha::analysis {
         const std::string& file,
         const core::DependencyGraph& graph
     ) {
+        if (!graph.has_node(file)) {
+            // Treat missing files as depth 0, weight = 1.0
+            return 1.0;
+        }
         const int depth = graph::calculate_depth(graph, file);
         return 1.0 / (1.0 + depth);
     }
