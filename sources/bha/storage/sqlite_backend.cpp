@@ -73,6 +73,12 @@ namespace bha::storage {
         )";
     }
 
+    namespace {
+        std::string safe_string(const unsigned char* text) {
+            return text ? std::string(reinterpret_cast<const char*>(text)) : "";
+        }
+    }
+
     SQLiteBackend::SQLiteBackend(std::string db_path)
         : db_path_(std::move(db_path)) {}
 
@@ -163,7 +169,7 @@ namespace bha::storage {
         }
 
         sqlite3_bind_text(stmt, 1, build.id.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int64(stmt, 2, build.timestamp);
+        sqlite3_bind_int64(stmt, 2, build.timestamp / 1000);
         sqlite3_bind_text(stmt, 3, build.commit_sha.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 4, build.branch.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 5, build.configuration.c_str(), -1, SQLITE_TRANSIENT);
@@ -349,13 +355,13 @@ namespace bha::storage {
         rc = sqlite3_step(stmt);
         if (rc == SQLITE_ROW) {
             BuildRecord record{
-                .id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .timestamp = sqlite3_column_int64(stmt, 1),
-                .commit_sha = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)),
-                .branch = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)),
-                .configuration = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)),
-                .platform = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)),
-                .build_system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6)),
+                .id = safe_string(sqlite3_column_text(stmt, 0)),
+                .timestamp = sqlite3_column_int64(stmt, 1) * 1000,
+                .commit_sha = safe_string(sqlite3_column_text(stmt, 2)),
+                .branch = safe_string(sqlite3_column_text(stmt, 3)),
+                .configuration = safe_string(sqlite3_column_text(stmt, 4)),
+                .platform = safe_string(sqlite3_column_text(stmt, 5)),
+                .build_system = safe_string(sqlite3_column_text(stmt, 6)),
                 .total_time_ms = sqlite3_column_double(stmt, 7),
                 .is_clean_build = sqlite3_column_int(stmt, 8) != 0,
                 .file_count = sqlite3_column_int(stmt, 9)
@@ -393,13 +399,13 @@ namespace bha::storage {
         rc = sqlite3_step(stmt);
         if (rc == SQLITE_ROW) {
             BuildRecord record{
-                .id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .timestamp = sqlite3_column_int64(stmt, 1),
-                .commit_sha = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)),
-                .branch = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)),
-                .configuration = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)),
-                .platform = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)),
-                .build_system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6)),
+                .id = safe_string(sqlite3_column_text(stmt, 0)),
+                .timestamp = sqlite3_column_int64(stmt, 1) * 1000,
+                .commit_sha = safe_string(sqlite3_column_text(stmt, 2)),
+                .branch = safe_string(sqlite3_column_text(stmt, 3)),
+                .configuration = safe_string(sqlite3_column_text(stmt, 4)),
+                .platform = safe_string(sqlite3_column_text(stmt, 5)),
+                .build_system = safe_string(sqlite3_column_text(stmt, 6)),
                 .total_time_ms = sqlite3_column_double(stmt, 7),
                 .is_clean_build = sqlite3_column_int(stmt, 8) != 0,
                 .file_count = sqlite3_column_int(stmt, 9)
@@ -447,13 +453,13 @@ namespace bha::storage {
         rc = sqlite3_step(stmt);
         if (rc == SQLITE_ROW) {
             BuildRecord record{
-                .id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .timestamp = sqlite3_column_int64(stmt, 1),
-                .commit_sha = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)),
-                .branch = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)),
-                .configuration = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)),
-                .platform = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)),
-                .build_system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6)),
+                .id = safe_string(sqlite3_column_text(stmt, 0)),
+                .timestamp = sqlite3_column_int64(stmt, 1) * 1000,
+                .commit_sha = safe_string(sqlite3_column_text(stmt, 2)),
+                .branch = safe_string(sqlite3_column_text(stmt, 3)),
+                .configuration = safe_string(sqlite3_column_text(stmt, 4)),
+                .platform = safe_string(sqlite3_column_text(stmt, 5)),
+                .build_system = safe_string(sqlite3_column_text(stmt, 6)),
                 .total_time_ms = sqlite3_column_double(stmt, 7),
                 .is_clean_build = sqlite3_column_int(stmt, 8) != 0,
                 .file_count = sqlite3_column_int(stmt, 9)
@@ -502,13 +508,13 @@ namespace bha::storage {
         std::vector<BuildRecord> records;
         while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
             BuildRecord record{
-                .id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .timestamp = sqlite3_column_int64(stmt, 1),
-                .commit_sha = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)),
-                .branch = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)),
-                .configuration = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)),
-                .platform = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)),
-                .build_system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6)),
+                .id = safe_string(sqlite3_column_text(stmt, 0)),
+                .timestamp = sqlite3_column_int64(stmt, 1) * 1000,
+                .commit_sha = safe_string(sqlite3_column_text(stmt, 2)),
+                .branch = safe_string(sqlite3_column_text(stmt, 3)),
+                .configuration = safe_string(sqlite3_column_text(stmt, 4)),
+                .platform = safe_string(sqlite3_column_text(stmt, 5)),
+                .build_system = safe_string(sqlite3_column_text(stmt, 6)),
                 .total_time_ms = sqlite3_column_double(stmt, 7),
                 .is_clean_build = sqlite3_column_int(stmt, 8) != 0,
                 .file_count = sqlite3_column_int(stmt, 9)
@@ -552,8 +558,8 @@ namespace bha::storage {
         std::vector<CompilationRecord> records;
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             CompilationRecord record{
-                .build_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .file_path = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)),
+                .build_id = safe_string(sqlite3_column_text(stmt, 0)),
+                .file_path = safe_string(sqlite3_column_text(stmt, 1)),
                 .total_time_ms = sqlite3_column_double(stmt, 2),
                 .preprocessing_time_ms = sqlite3_column_double(stmt, 3),
                 .parsing_time_ms = sqlite3_column_double(stmt, 4),
@@ -589,9 +595,9 @@ namespace bha::storage {
         std::vector<DependencyRecord> records;
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             DependencyRecord record{
-                .build_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .source_file = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)),
-                .target_file = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)),
+                .build_id = safe_string(sqlite3_column_text(stmt, 0)),
+                .source_file = safe_string(sqlite3_column_text(stmt, 1)),
+                .target_file = safe_string(sqlite3_column_text(stmt, 2)),
                 .is_direct = sqlite3_column_int(stmt, 3) != 0,
                 .line_number = sqlite3_column_int(stmt, 4)
             };
@@ -627,12 +633,12 @@ namespace bha::storage {
         std::vector<HotspotRecord> records;
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             HotspotRecord record{
-                .build_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
-                .file_path = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)),
+                .build_id = safe_string(sqlite3_column_text(stmt, 0)),
+                .file_path = safe_string(sqlite3_column_text(stmt, 1)),
                 .time_ms = sqlite3_column_double(stmt, 2),
                 .impact_score = sqlite3_column_double(stmt, 3),
                 .num_dependents = sqlite3_column_int(stmt, 4),
-                .category = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5))
+                .category = safe_string(sqlite3_column_text(stmt, 5))
             };
             records.push_back(record);
         }
@@ -838,16 +844,14 @@ namespace bha::storage {
 
         rc = sqlite3_step(stmt);
         if (rc == SQLITE_ROW) {
-            const auto version = reinterpret_cast<const char*>(
-                sqlite3_column_text(stmt, 0));
+            const auto version = safe_string(sqlite3_column_text(stmt, 0));
 
             sqlite3_finalize(stmt);
 
-            if (std::string(version) != "1.0") {
+            if (version != "1.0") {
                 return core::Result<void>::failure(core::Error{
                     core::ErrorCode::DATABASE_ERROR,
-                    "Incompatible schema version: " +
-                              std::string(version) + " (expected 1.0)"
+                    "Incompatible schema version: " + version + " (expected 1.0)"
                 });
             }
 
