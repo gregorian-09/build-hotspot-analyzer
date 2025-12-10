@@ -45,8 +45,13 @@ std::optional<std::vector<std::string>> read_lines(const std::string_view path) 
 }
 
 bool write_file(const std::string_view path, const std::string_view content) {
-    std::ofstream file(std::string(path), std::ios::out | std::ios::binary);
+    const std::filesystem::path p(path);
 
+    if (!p.parent_path().empty()) {
+        std::filesystem::create_directories(p.parent_path());
+    }
+
+    std::ofstream file(p, std::ios::out | std::ios::binary);
     if (!file.is_open()) {
         return false;
     }
@@ -54,6 +59,7 @@ bool write_file(const std::string_view path, const std::string_view content) {
     file.write(content.data(), static_cast<std::streamsize>(content.size()));
     return file.good();
 }
+
 
 bool write_lines(const std::string_view path, const std::vector<std::string>& lines) {
     std::ofstream file{std::string(path)};
