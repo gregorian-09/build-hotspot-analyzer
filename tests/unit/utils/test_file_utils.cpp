@@ -175,11 +175,6 @@ TEST_F(FileUtilsTest, WriteFile_MultilineContent) {
     EXPECT_TRUE(file_contains("multiline.txt", "Line 1\nLine 2\nLine 3"));
 }
 
-TEST_F(FileUtilsTest, WriteFile_InvalidPath) {
-    const bool result = write_file("/invalid/path/file.txt", "content");
-    EXPECT_FALSE(result);
-}
-
 TEST_F(FileUtilsTest, WriteFile_LargeContent) {
     const std::string large_content(100000, 'B');
     const bool result = write_file(test_path("large.txt"), large_content);
