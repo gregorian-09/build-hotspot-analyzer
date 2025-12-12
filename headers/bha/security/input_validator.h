@@ -65,7 +65,7 @@ namespace bha::security {
          * @param json_path Path to the JSON file.
          * @return Success or an error if invalid or exceeds allowed complexity.
          */
-        [[nodiscard]] core::Result<void> validate_json_structure(const std::string& json_path) const;
+        [[nodiscard]] static core::Result<void> validate_json_structure(const std::string& json_path);
 
         /**
          * Validate a build trace file before processing.
@@ -92,6 +92,22 @@ namespace bha::security {
          * @return True if traversal detected, false otherwise.
          */
         static bool contains_path_traversal(const std::string& path);
+
+        /**
+         * Converts a glob-style pattern into an ECMAScript-compatible regular expression
+         *
+         *  Supported glob syntax:
+         *  - '*' matches zero or more characters
+         *  - '?' matches exactly one character
+         *  - All other characters are treated as literals and escaped when required
+         *
+         * The resulting regular expression is anchored with '^' and '$' to ensure
+         * full-string (path) matching rather than substring matching.
+         *
+         * @param glob Glob pattern to convert
+         * @return Equivalent ECMAScript regular expression string
+         */
+        static std::string glob_to_regex(const std::string& glob);
 
         /**
          * Check if the path matches any blocked pattern.

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fstream>
 #include <regex>
+#include <simdjson.h>
 
 namespace fs = std::filesystem;
 
@@ -104,8 +105,7 @@ namespace bha::security {
         return core::Result<void>::success();
     }
 
-    core::Result<void> InputValidator::validate_json_structure(const std::string& json_path) const
-    {
+    core::Result<void> InputValidator::validate_json_structure(const std::string& json_path) {
         std::ifstream file(json_path);
         if (!file.is_open()) {
             return core::Result<void>::failure(core::Error{
@@ -114,52 +114,21 @@ namespace bha::security {
             });
         }
 
-        int depth = 0;
-        int max_depth = 0;
-        char ch;
-        bool in_string = false;
-        bool escaped = false;
+        std::string content(
+            (std::istreambuf_iterator(file)),
+            std::istreambuf_iterator<char>()
+        );
 
-        while (file.get(ch)) {
-            if (escaped) {
-                escaped = false;
-                continue;
-            }
+        try {
+            simdjson::dom::parser parser;
+            simdjson::dom::element doc = parser.parse(content);
 
-            if (ch == '\\') {
-                escaped = true;
-                continue;
-            }
-
-            if (ch == '"') {
-                in_string = !in_string;
-                continue;
-            }
-
-            if (in_string) {
-                continue;
-            }
-
-            if (ch == '{' || ch == '[') {
-                depth++;
-                max_depth = std::max(max_depth, depth);
-
-                if (max_depth > static_cast<int>(options_.max_json_depth)) {
-                    return core::Result<void>::failure(core::Error{
-                        core::ErrorCode::VALIDATION_ERROR,
-                        "JSON nesting too deep (max: " +
-                                  std::to_string(options_.max_json_depth) + ")"
-                    });
-                }
-            } else if (ch == '}' || ch == ']') {
-                depth--;
-            }
-        }
-
-        if (depth != 0) {
+            (void)doc;
+        } catch (const simdjson::simdjson_error& e)
+        {
             return core::Result<void>::failure(core::Error{
                 core::ErrorCode::PARSE_ERROR,
-                "Unbalanced JSON brackets"
+                e.what()
             });
         }
 
@@ -225,17 +194,14 @@ namespace bha::security {
     }
 
     bool InputValidator::matches_blocked_pattern(const std::string& path) const {
-        for (const auto& pattern : options_.blocked_patterns) {
+        return std::ranges::any_of(options_.blocked_patterns, [&](const std::string& pattern) {
             try {
-                if (std::regex regex_pattern(pattern); std::regex_search(path, regex_pattern)) {
-                    return true;
-                }
+                const std::regex rx(glob_to_regex(pattern), std::regex::ECMAScript);
+                return std::regex_search(path, rx);
             } catch (...) {
-                continue;
+                return false;
             }
-        }
-
-        return false;
+        });
     }
 
     bool InputValidator::is_within_allowed_directories(const std::string& path) const {
@@ -269,6 +235,31 @@ namespace bha::security {
     {
         return fs::weakly_canonical(path).string();
     }
+
+    std::string InputValidator::glob_to_regex(const std::string& glob) {
+        std::string rx;
+        rx.reserve(glob.size() * 2);
+
+        rx += "^";
+        for (const char c : glob) {
+            switch (c) {
+            case '*': rx += ".*"; break;
+            case '?': rx += "."; break;
+            case '.': rx += "\\."; break;
+            case '/': rx += "/"; break;
+            default:
+                if (std::isalnum(static_cast<unsigned char>(c)))
+                    rx += c;
+                else {
+                    rx += "\\";
+                    rx += c;
+                }
+            }
+        }
+        rx += "$";
+        return rx;
+    }
+
 
     bool InputValidator::is_symbolic_link(const std::string& path)
     {
