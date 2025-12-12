@@ -43,17 +43,19 @@ namespace bha::security {
             return core::Result<void>::success();
         }
 
-        if (const auto elapsed = get_elapsed_time(); elapsed > limits_.max_execution_time) {
+        const auto elapsed = get_elapsed_time();
+        if (const auto max_duration = limits_.max_execution_time; elapsed > max_duration) {
             return core::Result<void>::failure(core::Error{
                 core::ErrorCode::TIMEOUT,
                 "Execution time limit exceeded: " +
-                          std::to_string(elapsed.count()) + "s / " +
-                          std::to_string(limits_.max_execution_time.count()) + "s"
+                std::to_string(elapsed.count()) + "s / " +
+                std::to_string(max_duration.count()) + "s"
             });
         }
 
         return core::Result<void>::success();
     }
+
 
     core::Result<void> ResourceLimiter::check_graph_size_limit(const size_t nodes, const size_t edges) const
     {
@@ -93,8 +95,8 @@ namespace bha::security {
     }
 
     void ResourceLimiter::reset() {
-        timer_started_ = false;
         start_time_ = std::chrono::steady_clock::time_point{};
+        timer_started_ = false;
     }
 
     size_t ResourceLimiter::get_current_memory_usage()
@@ -120,13 +122,9 @@ namespace bha::security {
     #endif
     }
 
-    std::chrono::seconds ResourceLimiter::get_elapsed_time() const {
-        if (!timer_started_) {
-            return std::chrono::seconds{0};
-        }
-
-        const auto now = std::chrono::steady_clock::now();
-        return std::chrono::duration_cast<std::chrono::seconds>(now - start_time_);
+    std::chrono::duration<double> ResourceLimiter::get_elapsed_time() const {
+        if (!timer_started_) return std::chrono::duration<double>{0};
+        return std::chrono::steady_clock::now() - start_time_;
     }
 
 } // namespace bha::security

@@ -92,7 +92,7 @@ namespace bha::security {
          *
          * @return Duration elapsed.
          */
-        [[nodiscard]] std::chrono::seconds get_elapsed_time() const;
+        [[nodiscard]] std::chrono::duration<double> get_elapsed_time() const;
 
     private:
         Limits limits_;                                     ///< Resource limits configuration
