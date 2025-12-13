@@ -135,6 +135,7 @@ namespace bha::suggestions {
             suggestion.description = "This header is frequently included and would benefit from precompilation.";
             suggestion.estimated_time_savings_ms = 50.0;
             suggestion.is_safe = true;
+            suggestion.affected_files.push_back(header);
 
             suggestions.push_back(suggestion);
         }
@@ -150,6 +151,7 @@ namespace bha::suggestions {
             suggestion.description = "This header is rarely used and could be removed to reduce PCH build time.";
             suggestion.estimated_time_savings_ms = 25.0;
             suggestion.is_safe = true;
+            suggestion.affected_files.push_back(header);
 
             suggestions.push_back(suggestion);
         }
