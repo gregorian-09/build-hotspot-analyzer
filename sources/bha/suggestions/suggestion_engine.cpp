@@ -179,7 +179,7 @@ namespace bha::suggestions {
         std::ranges::sort(suggestions,
                           [](const core::Suggestion& a, const core::Suggestion& b) {
                               return a.confidence * a.estimated_time_savings_ms >
-                                  b.confidence * b.estimated_time_savings_ms;
+                                     b.confidence * b.estimated_time_savings_ms;
                           });
 
         std::vector<core::Suggestion> filtered;
@@ -194,8 +194,16 @@ namespace bha::suggestions {
 
         suggestions = std::move(filtered);
 
-        return core::Result<core::Suggestion>::success(core::Suggestion{});
+        if (!suggestions.empty()) {
+            return core::Result<core::Suggestion>::success(suggestions.front());
+        }
+
+        return core::Result<core::Suggestion>::failure(core::Error{
+            core::ErrorCode::ANALYSIS_ERROR,
+            "No suggestion passed filters"
+        });
     }
+
 
     bool SuggestionEngine::should_include_suggestion(
         const core::Suggestion& suggestion,
