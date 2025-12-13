@@ -368,6 +368,9 @@ namespace bha::suggestions {
         const std::vector<std::string>& dependent_files,
         const SymbolUsageCache& usage_cache
     ) {
+        if (clusters.empty() || dependent_files.empty()) {
+            return 0.0;
+        }
         double total_reduction = 0.0;
 
         for (const auto& file : dependent_files) {
