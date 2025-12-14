@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(CTest)
+enable_testing()
+option(BUILD_TESTING "Build tests" ON)
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     include(CTest)
@@ -85,6 +89,6 @@ target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE bha_core
 )
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
