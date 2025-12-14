@@ -291,14 +291,57 @@ namespace bha::core
     }
 
     void Config::merge_with(const Config& other) {
-        if (!other.project_name.empty()) project_name = other.project_name;
-        if (!other.build_system.empty()) build_system = other.build_system;
+        if (!other.project_name.empty()) {
+            project_name = other.project_name;
+        }
+        if (!other.build_system.empty()) {
+            build_system = other.build_system;
+        }
+
+        const Config defaults = default_config();
+
+        if (other.analysis.hotspot_threshold_ms != defaults.analysis.hotspot_threshold_ms) {
+            analysis.hotspot_threshold_ms = other.analysis.hotspot_threshold_ms;
+        }
+
+        if (other.output.format != defaults.output.format) {
+            output.format = other.output.format;
+        }
+
+        for (const auto& p : other.filters.ignore_paths) {
+            filters.ignore_paths.push_back(p);
+        }
+    }
+
+    bool Config::wildcard_match(const std::string& text, const std::string& pattern) {
+        const int n = static_cast<int>(text.size());
+        const int m = static_cast<int>(pattern.size());
+        int i = 0, j = 0, star = -1, match = 0;
+        while (i < n) {
+            if (j < m && (pattern[j] == '?' || pattern[j] == text[i])) {
+                ++i; ++j;
+            } else if (j < m && pattern[j] == '*') {
+                star = j;
+                match = i;
+                ++j;
+            } else if (star != -1) {
+                j = star + 1;
+                ++match;
+                i = match;
+            } else {
+                return false;
+            }
+        }
+        while (j < m && pattern[j] == '*') {
+            ++j;
+        }
+        return j == m;
     }
 
     bool Config::is_path_ignored(const std::string& path) const {
         return std::ranges::any_of(filters.ignore_paths,
         [&](const std::string& pattern) {
-            return utils::contains(path, pattern);
+            return wildcard_match(path, pattern);
         });
     }
 

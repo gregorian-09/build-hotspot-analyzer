@@ -189,6 +189,25 @@ namespace bha::core {
         void merge_with(const Config& other);
 
         /**
+         * Match a text string against a wildcard pattern.
+         *
+         * This function checks whether the given text matches the pattern using
+         * shell‑style wildcards:
+         *
+         * - '*' matches zero or more characters.
+         * - '?' matches exactly one character.
+         *
+         * The matching is case‑sensitive and processes the pattern from left to right.
+         *
+         * @param text     The string to be tested against the pattern.
+         * @param pattern  The wildcard pattern to match against. '*' can stand
+         *                 for any sequence (including empty); '?' stands for any
+         *                 single character.
+         * @return true if the text matches the pattern; false otherwise.
+         */
+        static bool wildcard_match(const std::string& text, const std::string& pattern);
+
+        /**
          * Determine whether `path` should be ignored according to filter rules.
          *
          * @param path Filesystem path to check.
