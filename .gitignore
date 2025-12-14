@@ -1,3 +1,6 @@
 # Ignore Integrated Development Environment (IDE) settings
 .idea
 build
+
+# Ignore Temporary Testing Folder
+Testing
