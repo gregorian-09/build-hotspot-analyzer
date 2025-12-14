@@ -5,6 +5,8 @@
 #ifndef RESULT_H
 #define RESULT_H
 
+#include <simdjson.h>
+
 #include "bha/core/error.h"
 #include <variant>
 #include <stdexcept>
