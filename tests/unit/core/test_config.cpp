@@ -23,7 +23,7 @@ protected:
         }
     }
 
-    std::string create_test_file(const std::string& filename, const std::string& content) const {
+    [[nodiscard]] std::string create_test_file(const std::string& filename, const std::string& content) const {
         const fs::path file_path = temp_dir / filename;
         std::ofstream file(file_path);
         file << content;
@@ -71,55 +71,55 @@ TEST_F(ConfigTest, DefaultConfig) {
 }
 
 TEST_F(ConfigTest, OutputFormatToString) {
-    EXPECT_EQ(to_string(OutputFormat::TEXT), "TEXT");
-    EXPECT_EQ(to_string(OutputFormat::JSON), "JSON");
-    EXPECT_EQ(to_string(OutputFormat::CSV), "CSV");
-    EXPECT_EQ(to_string(OutputFormat::MARKDOWN), "MARKDOWN");
-    EXPECT_EQ(to_string(OutputFormat::HTML), "HTML");
+    EXPECT_EQ(to_string(OutputFormat::TEXT), "text");
+    EXPECT_EQ(to_string(OutputFormat::JSON), "json");
+    EXPECT_EQ(to_string(OutputFormat::CSV), "csv");
+    EXPECT_EQ(to_string(OutputFormat::MARKDOWN), "markdown");
+    EXPECT_EQ(to_string(OutputFormat::HTML), "html");
 }
 
 TEST_F(ConfigTest, OutputFormatFromString) {
-    EXPECT_EQ(output_format_from_string("TEXT"), OutputFormat::TEXT);
-    EXPECT_EQ(output_format_from_string("JSON"), OutputFormat::JSON);
-    EXPECT_EQ(output_format_from_string("CSV"), OutputFormat::CSV);
-    EXPECT_EQ(output_format_from_string("MARKDOWN"), OutputFormat::MARKDOWN);
-    EXPECT_EQ(output_format_from_string("HTML"), OutputFormat::HTML);
+    EXPECT_EQ(output_format_from_string("text"), OutputFormat::TEXT);
+    EXPECT_EQ(output_format_from_string("json"), OutputFormat::JSON);
+    EXPECT_EQ(output_format_from_string("csv"), OutputFormat::CSV);
+    EXPECT_EQ(output_format_from_string("markdown"), OutputFormat::MARKDOWN);
+    EXPECT_EQ(output_format_from_string("html"), OutputFormat::HTML);
 }
 
 TEST_F(ConfigTest, GraphLayoutToString) {
-    EXPECT_EQ(to_string(GraphLayout::FORCE_DIRECTED), "FORCE_DIRECTED");
-    EXPECT_EQ(to_string(GraphLayout::HIERARCHICAL), "HIERARCHICAL");
-    EXPECT_EQ(to_string(GraphLayout::CIRCULAR), "CIRCULAR");
+    EXPECT_EQ(to_string(GraphLayout::FORCE_DIRECTED), "force_directed");
+    EXPECT_EQ(to_string(GraphLayout::HIERARCHICAL), "hierarchical");
+    EXPECT_EQ(to_string(GraphLayout::CIRCULAR), "circular");
 }
 
 TEST_F(ConfigTest, GraphLayoutFromString) {
-    EXPECT_EQ(graph_layout_from_string("FORCE_DIRECTED"), GraphLayout::FORCE_DIRECTED);
-    EXPECT_EQ(graph_layout_from_string("HIERARCHICAL"), GraphLayout::HIERARCHICAL);
-    EXPECT_EQ(graph_layout_from_string("CIRCULAR"), GraphLayout::CIRCULAR);
+    EXPECT_EQ(graph_layout_from_string("force_directed"), GraphLayout::FORCE_DIRECTED);
+    EXPECT_EQ(graph_layout_from_string("hierarchical"), GraphLayout::HIERARCHICAL);
+    EXPECT_EQ(graph_layout_from_string("circular"), GraphLayout::CIRCULAR);
 }
 
 TEST_F(ConfigTest, ColorSchemeToString) {
-    EXPECT_EQ(to_string(ColorScheme::HEATMAP), "HEATMAP");
-    EXPECT_EQ(to_string(ColorScheme::CATEGORICAL), "CATEGORICAL");
-    EXPECT_EQ(to_string(ColorScheme::MONOCHROME), "MONOCHROME");
+    EXPECT_EQ(to_string(ColorScheme::HEATMAP), "heatmap");
+    EXPECT_EQ(to_string(ColorScheme::CATEGORICAL), "categorical");
+    EXPECT_EQ(to_string(ColorScheme::MONOCHROME), "monochrome");
 }
 
 TEST_F(ConfigTest, ColorSchemeFromString) {
-    EXPECT_EQ(color_scheme_from_string("HEATMAP"), ColorScheme::HEATMAP);
-    EXPECT_EQ(color_scheme_from_string("CATEGORICAL"), ColorScheme::CATEGORICAL);
-    EXPECT_EQ(color_scheme_from_string("MONOCHROME"), ColorScheme::MONOCHROME);
+    EXPECT_EQ(color_scheme_from_string("heatmap"), ColorScheme::HEATMAP);
+    EXPECT_EQ(color_scheme_from_string("categorical"), ColorScheme::CATEGORICAL);
+    EXPECT_EQ(color_scheme_from_string("monochrome"), ColorScheme::MONOCHROME);
 }
 
 TEST_F(ConfigTest, StorageBackendToString) {
-    EXPECT_EQ(to_string(StorageBackend::MEMORY), "MEMORY");
-    EXPECT_EQ(to_string(StorageBackend::SQLITE), "SQLITE");
-    EXPECT_EQ(to_string(StorageBackend::POSTGRESQL), "POSTGRESQL");
+    EXPECT_EQ(to_string(StorageBackend::MEMORY), "memory");
+    EXPECT_EQ(to_string(StorageBackend::SQLITE), "sqlite");
+    EXPECT_EQ(to_string(StorageBackend::POSTGRESQL), "postgresql");
 }
 
 TEST_F(ConfigTest, StorageBackendFromString) {
-    EXPECT_EQ(storage_backend_from_string("MEMORY"), StorageBackend::MEMORY);
-    EXPECT_EQ(storage_backend_from_string("SQLITE"), StorageBackend::SQLITE);
-    EXPECT_EQ(storage_backend_from_string("POSTGRESQL"), StorageBackend::POSTGRESQL);
+    EXPECT_EQ(storage_backend_from_string("memory"), StorageBackend::MEMORY);
+    EXPECT_EQ(storage_backend_from_string("sqlite"), StorageBackend::SQLITE);
+    EXPECT_EQ(storage_backend_from_string("postgresql"), StorageBackend::POSTGRESQL);
 }
 
 TEST_F(ConfigTest, ValidateDefaultConfig) {
@@ -189,8 +189,7 @@ TEST_F(ConfigTest, LoadFromStringJSON) {
         }
     })";
 
-    const auto result = Config::load_from_string(json_config);
-    if (result.is_success()) {
+    if (const auto result = Config::load_from_string(json_config); result.is_success()) {
         const auto& config = result.value();
         EXPECT_EQ(config.project_name, "TestProject");
         EXPECT_EQ(config.build_system, "ninja");
@@ -212,9 +211,8 @@ TEST_F(ConfigTest, LoadFromFile) {
     })";
 
     const std::string config_path = create_test_file("config.json", json_config);
-    const auto result = Config::load_from_file(config_path);
 
-    if (result.is_success()) {
+    if (const auto result = Config::load_from_file(config_path); result.is_success()) {
         const auto& config = result.value();
         EXPECT_EQ(config.project_name, "FileProject");
         EXPECT_EQ(config.build_system, "make");
@@ -232,14 +230,11 @@ TEST_F(ConfigTest, SaveToFile) {
     config.build_system = "cmake";
 
     const std::string save_path = (temp_dir / "saved_config.json").string();
-    const auto save_result = config.save_to_file(save_path);
 
-    if (save_result.is_success()) {
+    if (const auto save_result = config.save_to_file(save_path); save_result.is_success()) {
         EXPECT_TRUE(fs::exists(save_path));
 
-        // Try to load it back
-        const auto load_result = Config::load_from_file(save_path);
-        if (load_result.is_success()) {
+        if (const auto load_result = Config::load_from_file(save_path); load_result.is_success()) {
             const auto& loaded = load_result.value();
             EXPECT_EQ(loaded.project_name, "SaveTest");
             EXPECT_EQ(loaded.build_system, "cmake");
