@@ -9,133 +9,163 @@
 #include "bha/core/result.h"
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace bha::parsers {
 
     /**
      * @class UnifiedFormatSerializer
      * Provides serialization and deserialization of BuildTrace and CompilationUnit objects
-     *        into a unified, portable JSON-based format.
+     * into a unified, portable JSON-based format.
      *
-     * The UnifiedFormatSerializer class is responsible for converting build data structures
-     * (such as CompilationUnit and BuildTrace) into a consistent intermediate representation.
-     * This enables exporting, importing, and exchanging analysis results across systems
-     * and toolchains. It also supports versioning for backward compatibility.
+     * Converts build data structures into a consistent intermediate representation.
+     * Supports versioning and full round-trip serialization/deserialization.
      */
     class UnifiedFormatSerializer {
     public:
         /**
-         * Serializes a CompilationUnit object to a unified JSON string.
+         * Serializes a CompilationUnit into a JSON string.
          *
-         * @param unit The compilation unit to serialize.
-         * @return A Result containing the JSON string on success, or an error if serialization fails.
+         * @param unit The CompilationUnit to serialize.
+         * @return A Result containing the serialized JSON string on success, or an error.
          */
-        static core::Result<std::string> serialize_compilation_unit(
-            const core::CompilationUnit& unit
-        );
+        static core::Result<std::string> serialize_compilation_unit(const core::CompilationUnit& unit);
 
         /**
-         * Serializes a BuildTrace object to a unified JSON string.
+         * Serializes a BuildTrace into a JSON string.
          *
-         * @param trace The build trace to serialize.
-         * @return A Result containing the JSON string or an error on failure.
+         * @param trace The BuildTrace to serialize.
+         * @return A Result containing the serialized JSON string on success, or an error.
          */
-        static core::Result<std::string> serialize_build_trace(
-            const core::BuildTrace& trace
-        );
+        static core::Result<std::string> serialize_build_trace(const core::BuildTrace& trace);
 
         /**
-         * Saves a BuildTrace to a file in unified JSON format.
+         * Saves a BuildTrace to a file in JSON format.
          *
-         * @param trace The build trace to save.
-         * @param file_path Path to the output file.
+         * @param trace The BuildTrace to save.
+         * @param file_path The file path where the JSON will be written.
          * @return A Result indicating success or failure.
          */
-        static core::Result<void> save_to_file(
-            const core::BuildTrace& trace,
-            const std::string& file_path
-        );
+        static core::Result<void> save_to_file(const core::BuildTrace& trace, const std::string& file_path);
 
         /**
-         * Deserializes a CompilationUnit from a unified JSON string.
+         * Deserializes a CompilationUnit from a JSON string.
          *
-         * @param json JSON string representing the serialized compilation unit.
-         * @return A Result containing the deserialized CompilationUnit or an error if parsing fails.
+         * @param json JSON string representing the CompilationUnit.
+         * @return A Result containing the deserialized CompilationUnit or an error.
          */
-        static core::Result<core::CompilationUnit> deserialize_compilation_unit(
-            std::string_view json
-        );
+        static core::Result<core::CompilationUnit> deserialize_compilation_unit(std::string_view json);
 
         /**
-         * Deserializes a BuildTrace from a unified JSON string.
+         * Deserializes a BuildTrace from a JSON string.
          *
-         * @param json JSON string representing the serialized build trace.
-         * @return A Result containing the deserialized BuildTrace or an error if parsing fails.
+         * @param json JSON string representing the BuildTrace.
+         * @return A Result containing the deserialized BuildTrace or an error.
          */
-        static core::Result<core::BuildTrace> deserialize_build_trace(
-            std::string_view json
-        );
+        static core::Result<core::BuildTrace> deserialize_build_trace(std::string_view json);
 
         /**
-         * Loads and deserializes a BuildTrace from a unified JSON file.
+         * Loads and deserializes a BuildTrace from a JSON file.
          *
-         * @param file_path Path to the file to load.
-         * @return A Result containing the BuildTrace or an error if the file cannot be read or parsed.
+         * @param file_path Path to the JSON file.
+         * @return A Result containing the deserialized BuildTrace or an error.
          */
-        static core::Result<core::BuildTrace> load_from_file(
-            const std::string& file_path
-        );
+        static core::Result<core::BuildTrace> load_from_file(const std::string& file_path);
 
         /**
-         * Retrieves the current version of the Unified Intermediate Format (UIF).
+         * Retrieves the current version of the Unified Intermediate Format.
          *
-         * @return A string representing the UIF version used by the serializer.
+         * @return The current UIF version string.
          */
         static std::string get_current_version();
 
     private:
-        static constexpr auto UIF_VERSION = "1.0"; ///< Current Unified Intermediate Format version.
+        static constexpr auto UIF_VERSION = "1.0";
 
         /**
-         * Serializes a TemplateInstantiation object to JSON.
+         * Serializes a TemplateInstantiation object to a JSON string.
          *
-         * @param inst The template instantiation to serialize.
-         * @return A JSON string representation of the template instantiation.
+         * @param inst The TemplateInstantiation object.
+         * @return The JSON string representing the object.
          */
-        static std::string serialize_template_instantiation(
-            const core::TemplateInstantiation& inst
-        );
-
-        /**
-         * Serializes a DependencyGraph into JSON format.
-         *
-         * @param graph The dependency graph to serialize.
-         * @return A JSON string representing the dependency graph.
-         */
-        static std::string serialize_dependency_graph(
-            const core::DependencyGraph& graph
-        );
-
-        /**
-         * Serializes a MetricsSummary into JSON format.
-         *
-         * @param metrics The metrics summary to serialize.
-         * @return A JSON string representing the metrics summary.
-         */
-        static std::string serialize_metrics_summary(
-            const core::MetricsSummary& metrics
-        );
+        static std::string serialize_template_instantiation(const core::TemplateInstantiation& inst);
 
         /**
          * Deserializes a TemplateInstantiation from a JSON string.
          *
-         * @param json The JSON representation of the template instantiation.
-         * @return A Result containing the deserialized TemplateInstantiation or an error on failure.
+         * @param json JSON string representing the TemplateInstantiation.
+         * @return A Result containing the deserialized object or an error.
          */
-        static core::Result<core::TemplateInstantiation> deserialize_template_instantiation(
-            const std::string& json
-        );
+        static core::Result<core::TemplateInstantiation> deserialize_template_instantiation(const std::string& json);
+
+        /**
+         * Serializes a DependencyGraph to a JSON string.
+         *
+         * @param graph The DependencyGraph to serialize.
+         * @return The JSON string representing the graph.
+         */
+        static std::string serialize_dependency_graph(const core::DependencyGraph& graph);
+
+        /**
+         * Deserializes a DependencyGraph from a JSON string.
+         *
+         * @param json JSON string representing the DependencyGraph.
+         * @return The deserialized DependencyGraph object.
+         */
+        static core::DependencyGraph deserialize_dependency_graph(const std::string& json);
+
+        /**
+         * Serializes a MetricsSummary object to a JSON string.
+         *
+         * @param metrics The MetricsSummary object.
+         * @return The JSON string representing the metrics.
+         */
+        static std::string serialize_metrics_summary(const core::MetricsSummary& metrics);
+
+        /**
+         * Deserializes a MetricsSummary from a JSON string.
+         *
+         * @param json JSON string representing the MetricsSummary.
+         * @return The deserialized MetricsSummary object.
+         */
+        static core::MetricsSummary deserialize_metrics_summary(const std::string& json);
+
+        /**
+         * Deserializes a Hotspot object from a JSON string.
+         *
+         * @param json JSON string representing the Hotspot.
+         * @return The deserialized Hotspot object.
+         */
+        static core::Hotspot deserialize_hotspot(const std::string& json);
+
+        /**
+         * Deserializes a TemplateHotspot object from a JSON string.
+         *
+         * @param json JSON string representing the TemplateHotspot.
+         * @return The deserialized TemplateHotspot object.
+         */
+        static core::TemplateHotspot deserialize_template_hotspot(const std::string& json);
+
+        /**
+         * Deserializes a Suggestion object from a JSON string.
+         *
+         * @param json JSON string representing the Suggestion.
+         * @return The deserialized Suggestion object.
+         */
+        static core::Suggestion deserialize_suggestion(const std::string& json);
+
+        /**
+         * Utility function to deserialize an array of objects from JSON.
+         *
+         * @tparam T The type of objects in the array.
+         * @param json JSON string representing the array.
+         * @param deserializer Function pointer to the deserialization function for type T.
+         * @return A vector of deserialized objects.
+         */
+        template<typename T>
+        static std::vector<T> deserialize_array(const std::string& json, core::Result<T> (*deserializer)(const std::string&));
     };
-}
+
+} // namespace bha::parsers
 
 #endif //UNIFIED_FORMAT_H
