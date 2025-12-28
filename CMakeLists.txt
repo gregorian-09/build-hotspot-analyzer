@@ -5,14 +5,17 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(CTest)
-enable_testing()
-option(BUILD_TESTING "Build tests" ON)
+option(BUILD_TESTING "Build tests" OFF)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    include(CTest)
 endif()
+
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/headers/bha/version.h.in
+        ${CMAKE_CURRENT_BINARY_DIR}/headers/bha/version.h
+        @ONLY
+)
 
 find_package(simdjson CONFIG REQUIRED)
 find_package(tomlplusplus CONFIG REQUIRED)
@@ -66,12 +69,16 @@ add_library(bha_core STATIC
         sources/bha/security/input_validator.cpp
         sources/bha/security/resource_limiter.cpp
         sources/bha/security/anonymizer.cpp
+        dashboard/backend/server.cpp
 )
 
 target_include_directories(bha_core
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/headers>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/headers>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>
+        ${CMAKE_CURRENT_SOURCE_DIR}/dashboard/backend
 )
 
 target_link_libraries(bha_core
@@ -83,12 +90,23 @@ target_link_libraries(bha_core
         SQLite::SQLite3
 )
 
-add_executable(BuildtimeHotspotAnalyzer main.cpp)
+if(WIN32)
+    target_link_libraries(bha_core PRIVATE ws2_32)
+endif()
+
+add_executable(BuildtimeHotspotAnalyzer
+        cli/main.cpp
+        cli/cli_parser.cpp
+        cli/app.cpp
+        sources/bha/cli/build_detector.cpp
+)
 
 target_link_libraries(BuildtimeHotspotAnalyzer
         PRIVATE bha_core
 )
 
 if(BUILD_TESTING)
+    include(CTest)
+    enable_testing()
     add_subdirectory(tests)
 endif()

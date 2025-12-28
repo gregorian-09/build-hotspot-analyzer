@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.31)
-find_package(GTest CONFIG REQUIRED)
 
-file(GLOB_RECURSE UNIT_TEST_SOURCES "unit/*.cpp")
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+file(GLOB_RECURSE UNIT_TEST_SOURCES CONFIGURE_DEPENDS
+        unit/*.cpp
+)
 
 if(UNIT_TEST_SOURCES)
     add_executable(unit_tests ${UNIT_TEST_SOURCES})
@@ -13,13 +17,14 @@ if(UNIT_TEST_SOURCES)
             GTest::gtest_main
     )
 
-    include(GoogleTest)
     gtest_discover_tests(unit_tests
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
 
-file(GLOB_RECURSE INTEGRATION_TEST_SOURCES "integration/*.cpp")
+file(GLOB_RECURSE INTEGRATION_TEST_SOURCES CONFIGURE_DEPENDS
+        integration/*.cpp
+)
 
 if(INTEGRATION_TEST_SOURCES)
     add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
