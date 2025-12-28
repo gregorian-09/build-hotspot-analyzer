@@ -1,0 +1,25 @@
+add_executable(bha_tests
+        unit/utils/test_path_utils.cpp
+        unit/utils/test_string_utils.cpp
+        unit/parsers/test_clang_parser.cpp
+        unit/parsers/test_gcc_parser.cpp
+        unit/parsers/test_msvc_parser.cpp
+        unit/parsers/test_intel_parser.cpp
+        unit/parsers/test_nvcc_parser.cpp
+        unit/graph/test_graph.cpp
+        unit/core/test_error.cpp
+        unit/core/test_result.cpp
+        unit/core/test_types.cpp
+)
+
+target_link_libraries(bha_tests
+        PRIVATE
+        bha::bha
+        bha::warnings
+        GTest::gtest
+        GTest::gtest_main
+        $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
+        $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
+)
+
+gtest_discover_tests(bha_tests)
