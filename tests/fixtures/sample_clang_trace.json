@@ -1,0 +1,15 @@
+{
+  "traceEvents": [
+    {"pid":1,"tid":0,"ph":"X","ts":0,"dur":1500000,"name":"ExecuteCompiler","args":{"detail":"/project/src/main.cpp"}},
+    {"pid":1,"tid":0,"ph":"X","ts":100,"dur":1000000,"name":"Total Frontend"},
+    {"pid":1,"tid":0,"ph":"X","ts":1000100,"dur":500000,"name":"Total Backend"},
+    {"pid":1,"tid":0,"ph":"X","ts":200,"dur":50000,"name":"Source","args":{"detail":"/project/include/header.h"}},
+    {"pid":1,"tid":0,"ph":"X","ts":300,"dur":30000,"name":"Source","args":{"detail":"/project/include/utils.h"}},
+    {"pid":1,"tid":0,"ph":"X","ts":500,"dur":100000,"name":"InstantiateClass","args":{"detail":"std::vector<int>","file":"/project/src/main.cpp","line":42}},
+    {"pid":1,"tid":0,"ph":"X","ts":600,"dur":80000,"name":"InstantiateClass","args":{"detail":"std::map<std::string, int>","file":"/project/src/main.cpp","line":55}},
+    {"pid":1,"tid":0,"ph":"X","ts":700,"dur":50000,"name":"InstantiateFunction","args":{"detail":"void foo<int>()","file":"/project/src/main.cpp","line":100}},
+    {"pid":1,"tid":0,"ph":"X","ts":800,"dur":25000,"name":"InstantiateClass","args":{"detail":"std::vector<int>","file":"/project/src/main.cpp","line":120}},
+    {"pid":1,"tid":0,"ph":"X","ts":1100000,"dur":200000,"name":"CodeGen Function","args":{"detail":"main"}},
+    {"pid":1,"tid":0,"ph":"X","ts":1300000,"dur":100000,"name":"Total OptModule"}
+  ]
+}
