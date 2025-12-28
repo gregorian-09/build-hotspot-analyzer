@@ -48,7 +48,7 @@ namespace bha::parsers {
 
         [[nodiscard]] Result<CompilationUnit, Error> parse_content(
             std::string_view content,
-            const fs::path& source_hint = {}
+            const fs::path& source_hint
         ) const override;
     };
 
@@ -83,7 +83,7 @@ namespace bha::parsers {
 
         [[nodiscard]] Result<CompilationUnit, Error> parse_content(
             std::string_view content,
-            const fs::path& source_hint = {}
+            const fs::path& source_hint
         ) const override;
     };
 
