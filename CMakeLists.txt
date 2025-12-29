@@ -119,8 +119,7 @@ FetchContent_MakeAvailable(json)
 # =============================================================================
 
 # Header-only core library (for now)
-add_library(bha_core INTERFACE
-        headers/bha/types.hpp)
+add_library(bha_core INTERFACE)
 add_library(bha::core ALIAS bha_core)
 
 target_include_directories(bha_core INTERFACE
@@ -143,6 +142,15 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/msvc_parser.cpp
         sources/bha/parsers/intel_parser.cpp
         sources/bha/graph/graph.cpp
+        sources/bha/build_systems/adapter.cpp
+        sources/bha/suggestions/forward_decl_suggester.cpp
+        sources/bha/suggestions/header_split_suggester.cpp
+        sources/bha/suggestions/include_suggester.cpp
+        sources/bha/suggestions/pch_suggester.cpp
+        sources/bha/suggestions/pimpl_suggester.cpp
+        sources/bha/suggestions/suggester_registry.cpp
+        sources/bha/suggestions/template_suggester.cpp
+        sources/bha/suggestions/unity_build_suggester.cpp
 )
 
 target_link_libraries(bha_lib
