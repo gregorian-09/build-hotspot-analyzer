@@ -10,6 +10,12 @@ add_executable(bha_tests
         unit/core/test_error.cpp
         unit/core/test_result.cpp
         unit/core/test_types.cpp
+        unit/suggestions/test_forward_decl_suggester.cpp
+        unit/suggestions/test_header_split_suggester.cpp
+        unit/suggestions/test_include_suggester.cpp
+        unit/suggestions/test_pch_suggester.cpp
+        unit/suggestions/test_pimpl_suggester.cpp
+        unit/suggestions/test_template_suggester.cpp
 )
 
 target_link_libraries(bha_tests
