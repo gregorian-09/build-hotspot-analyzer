@@ -16,6 +16,14 @@ add_executable(bha_tests
         unit/suggestions/test_pch_suggester.cpp
         unit/suggestions/test_pimpl_suggester.cpp
         unit/suggestions/test_template_suggester.cpp
+        unit/analyzers/test_dependency_analyzer.cpp
+        unit/analyzers/test_file_analyzer.cpp
+        unit/analyzers/test_pch_analyzer.cpp
+        unit/analyzers/test_performance_analyzer.cpp
+        unit/analyzers/test_symbol_analyzer.cpp
+        unit/analyzers/test_template_analyzer.cpp
+        unit/exporters/test_exporter.cpp
+        unit/git/test_git_integration.cpp
 )
 
 target_link_libraries(bha_tests
