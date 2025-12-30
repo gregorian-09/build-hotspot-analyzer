@@ -151,6 +151,15 @@ target_sources(bha_lib PRIVATE
         sources/bha/suggestions/suggester_registry.cpp
         sources/bha/suggestions/template_suggester.cpp
         sources/bha/suggestions/unity_build_suggester.cpp
+        sources/bha/analyzers/analyzer_registry.cpp
+        sources/bha/analyzers/dependency_analyzer.cpp
+        sources/bha/analyzers/file_analyzer.cpp
+        sources/bha/analyzers/pch_analyzer.cpp
+        sources/bha/analyzers/performance_analyzer.cpp
+        sources/bha/analyzers/symbol_analyzer.cpp
+        sources/bha/analyzers/template_analyzer.cpp
+        sources/bha/exporters/exporter.cpp
+        sources/bha/git/git_integration.cpp
 )
 
 target_link_libraries(bha_lib
