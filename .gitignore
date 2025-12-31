@@ -8,3 +8,4 @@ Testing
 # Ignore bha config files and database
 .bha-config.toml
 bha.db
+.venv
