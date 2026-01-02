@@ -344,18 +344,18 @@ PYBIND11_MODULE(_bha_native, m) {
     // Analysis Results
     // ========================================================================
 
-    py::class_<bha::analyzers::FileAnalysisResult>(m, "FileAnalysisResult", "File analysis result")
+    py::class_<bha::analyzers::FileAnalysisResult, std::shared_ptr<bha::analyzers::FileAnalysisResult>>(m, "FileAnalysisResult", "File analysis result")
         .def(py::init<>())
         .def_readwrite("file", &bha::analyzers::FileAnalysisResult::file)
         .def_property("compile_time_ms",
-            [](const bha::analyzers::FileAnalysisResult& f) { return duration_to_ms(f.compile_time); },
-            [](bha::analyzers::FileAnalysisResult& f, const double ms) { f.compile_time = ms_to_duration(ms); })
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f) { return duration_to_ms(f->compile_time); },
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f, const double ms) { f->compile_time = ms_to_duration(ms); })
         .def_property("frontend_time_ms",
-            [](const bha::analyzers::FileAnalysisResult& f) { return duration_to_ms(f.frontend_time); },
-            [](bha::analyzers::FileAnalysisResult& f, const double ms) { f.frontend_time = ms_to_duration(ms); })
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f) { return duration_to_ms(f->frontend_time); },
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f, const double ms) { f->frontend_time = ms_to_duration(ms); })
         .def_property("backend_time_ms",
-            [](const bha::analyzers::FileAnalysisResult& f) { return duration_to_ms(f.backend_time); },
-            [](bha::analyzers::FileAnalysisResult& f, const double ms) { f.backend_time = ms_to_duration(ms); })
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f) { return duration_to_ms(f->backend_time); },
+            [](const std::shared_ptr<bha::analyzers::FileAnalysisResult>& f, const double ms) { f->backend_time = ms_to_duration(ms); })
         .def_readwrite("breakdown", &bha::analyzers::FileAnalysisResult::breakdown)
         .def_readwrite("time_percent", &bha::analyzers::FileAnalysisResult::time_percent)
         .def_readwrite("rank", &bha::analyzers::FileAnalysisResult::rank)
