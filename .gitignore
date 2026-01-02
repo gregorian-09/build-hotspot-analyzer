@@ -9,3 +9,6 @@ Testing
 .bha-config.toml
 bha.db
 .venv
+
+__pycache__/
+*.py[cod]
