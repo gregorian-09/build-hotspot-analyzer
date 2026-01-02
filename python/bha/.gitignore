@@ -1,0 +1,9 @@
+# Compiled Python extensions (built by CMake)
+*.so
+*.pyd
+*.dylib
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
