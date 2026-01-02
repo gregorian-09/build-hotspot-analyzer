@@ -10,8 +10,8 @@ project(bha
 # =============================================================================
 
 option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
-option(BHA_BUILD_CLI "Build command-line interface" ON)
-option(BHA_BUILD_PYTHON "Build Python bindings" OFF)
+option(BHA_BUILD_CLI "Build command-line interface" OFF)
+option(BHA_BUILD_PYTHON "Build Python bindings" ON)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS "Enable sanitizers (address, undefined)" OFF)
@@ -107,12 +107,23 @@ endif()
 # nlohmann/json for JSON parsing
 include(FetchContent)
 
-FetchContent_Declare(
-        json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.3
-)
-FetchContent_MakeAvailable(json)
+find_package(nlohmann_json CONFIG QUIET)
+
+if(NOT nlohmann_json_FOUND)
+    message(STATUS "nlohmann_json not found on system, using FetchContent")
+
+    include(FetchContent)
+
+    FetchContent_Declare(
+            json
+            GIT_REPOSITORY https://github.com/nlohmann/json.git
+            GIT_TAG v3.11.3
+    )
+    FetchContent_MakeAvailable(json)
+else()
+    message(STATUS "Using system-installed nlohmann_json")
+endif()
+
 
 # =============================================================================
 # Main Library
@@ -133,6 +144,9 @@ target_include_directories(bha_core INTERFACE
 # Full library (will contain implementations)
 add_library(bha_lib STATIC)
 add_library(bha::bha ALIAS bha_lib)
+
+# Make this static library suitable for linking into shared modules
+set_target_properties(bha_lib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_sources(bha_lib PRIVATE
         sources/bha/parsers/gcc_parser.cpp
@@ -193,16 +207,26 @@ endif()
 if(BHA_BUILD_TESTS)
     enable_testing()
 
-    FetchContent_Declare(
-            googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG v1.14.0
-    )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
+    find_package(GTest CONFIG QUIET)
+
+    if(NOT GTest_FOUND)
+        include(FetchContent)
+
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+        FetchContent_Declare(
+                googletest
+                GIT_REPOSITORY https://github.com/google/googletest.git
+                GIT_TAG v1.14.0
+        )
+        FetchContent_MakeAvailable(googletest)
+    endif()
+
+    if(NOT TARGET GTest::gtest)
+        message(FATAL_ERROR "GoogleTest not found")
+    endif()
 
     include(GoogleTest)
-
     add_subdirectory(tests)
 endif()
 
@@ -212,16 +236,22 @@ endif()
 
 if(BHA_BUILD_PYTHON)
     find_package(Python COMPONENTS Interpreter Development REQUIRED)
+    find_package(pybind11 CONFIG QUIET)
 
-    FetchContent_Declare(
-            pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11.git
-            GIT_TAG v2.11.1
-    )
-    FetchContent_MakeAvailable(pybind11)
+    if(NOT pybind11_FOUND)
+        include(FetchContent)
+
+        FetchContent_Declare(
+                pybind11
+                GIT_REPOSITORY https://github.com/pybind/pybind11.git
+                GIT_TAG v2.11.1
+        )
+        FetchContent_MakeAvailable(pybind11)
+    endif()
 
     add_subdirectory(python)
 endif()
+
 
 # =============================================================================
 # Documentation
