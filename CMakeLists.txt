@@ -10,7 +10,7 @@ project(bha
 # =============================================================================
 
 option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
-option(BHA_BUILD_CLI "Build command-line interface" OFF)
+option(BHA_BUILD_CLI "Build command-line interface" ON)
 option(BHA_BUILD_PYTHON "Build Python bindings" ON)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
@@ -174,20 +174,30 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/template_analyzer.cpp
         sources/bha/exporters/exporter.cpp
         sources/bha/git/git_integration.cpp
+        sources/bha/storage/storage.cpp
 )
 
 target_link_libraries(bha_lib
         PUBLIC
-        bha::core
-        nlohmann_json::nlohmann_json
+            bha::core
         PRIVATE
-        bha::warnings
-        $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
-        $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
+            bha::warnings
+            nlohmann_json::nlohmann_json
+            $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
+            $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
 
 if(BHA_BUILD_CLI)
     add_executable(bha
+            cli/commands/analyze_cmd.cpp
+            cli/commands/baseline_cmd.cpp
+            cli/commands/command.cpp
+            cli/commands/compare_cmd.cpp
+            cli/commands/export_cmd.cpp
+            cli/commands/snapshot_cmd.cpp
+            cli/commands/suggest_cmd.cpp
+            cli/formatter.cpp
+            cli/progress.cpp
             cli/main.cpp
     )
 
