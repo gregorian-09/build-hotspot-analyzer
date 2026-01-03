@@ -36,15 +36,15 @@ namespace bha::git
         CommandResult execute_command_impl(
             const std::string& command,
             const fs::path& working_dir,
-            Duration timeout
+            const Duration timeout
         ) {
             CommandResult result;
-            auto start_time = std::chrono::steady_clock::now();
+            const auto start_time = std::chrono::steady_clock::now();
 
             SECURITY_ATTRIBUTES sa;
             sa.nLength = sizeof(sa);
             sa.bInheritHandle = TRUE;
-            sa.lpSecurityAttributes = nullptr;
+            sa.lpSecurityDescriptor = nullptr;
 
             HANDLE stdout_read = nullptr, stdout_write = nullptr;
             HANDLE stderr_read = nullptr, stderr_write = nullptr;
@@ -64,7 +64,7 @@ namespace bha::git
             PROCESS_INFORMATION pi = {};
 
             std::string cmd = command;
-            std::string dir = working_dir.string();
+            const std::string dir = working_dir.string();
 
             if (!CreateProcessA(
                 nullptr,
@@ -85,10 +85,9 @@ namespace bha::git
             CloseHandle(stdout_write);
             CloseHandle(stderr_write);
 
-            auto timeout_ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
-            DWORD wait_result = WaitForSingleObject(pi.hProcess, static_cast<DWORD>(timeout_ms.count()));
+            const auto timeout_ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
 
-            if (wait_result == WAIT_TIMEOUT) {
+            if (const DWORD wait_result = WaitForSingleObject(pi.hProcess, static_cast<DWORD>(timeout_ms.count())); wait_result == WAIT_TIMEOUT) {
                 TerminateProcess(pi.hProcess, 1);
                 result.exit_code = -2;  // Timeout
             } else {
@@ -114,7 +113,7 @@ namespace bha::git
             CloseHandle(pi.hProcess);
             CloseHandle(pi.hThread);
 
-            auto end_time = std::chrono::steady_clock::now();
+            const auto end_time = std::chrono::steady_clock::now();
             result.execution_time = std::chrono::duration_cast<Duration>(end_time - start_time);
 
             return result;
