@@ -25,6 +25,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Use modern FindPython (disables legacy PythonInterp behavior)
+set(PYBIND11_FINDPYTHON ON)
+
 # Generate compile_commands.json for IDE support
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
