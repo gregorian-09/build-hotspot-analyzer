@@ -66,7 +66,7 @@ namespace bha::string_utils
     }
 
     TEST(JoinTest, JoinEmpty) {
-        constexpr std::vector<std::string> empty;
+        const std::vector<std::string> empty;
         EXPECT_EQ(join(empty, ","), "");
     }
 
