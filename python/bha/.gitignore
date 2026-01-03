@@ -2,6 +2,8 @@
 *.so
 *.pyd
 *.dylib
+*.pdb
+*.ilk
 
 # Python cache
 __pycache__/
