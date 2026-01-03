@@ -5,7 +5,6 @@
 #include "bha/suggestions/pimpl_suggester.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -34,7 +33,7 @@ namespace bha::suggestions
             std::vector<std::string> exts = {".h", ".hpp", ".hxx", ".H", ".hh"};
 
             for (const auto& ext : exts) {
-                headers.push_back(fs::path(base.string() + ext));
+                headers.emplace_back(base.string() + ext);
             }
 
             const std::vector<std::string> src_dirs = {"/src/", "/source/", "/sources/"};
@@ -267,7 +266,7 @@ namespace bha::suggestions
         for (const auto& header : headers) {
             std::string header_path = header.path.string();
             for (const auto& includer : header.included_by) {
-                header_dependents[header_path].insert(includer);
+                header_dependents[header_path].insert(includer.string());
             }
         }
 
