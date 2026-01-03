@@ -10,6 +10,7 @@
 #include <cmath>
 
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
 #include <io.h>
 #define isatty _isatty
@@ -94,7 +95,7 @@ namespace bha::cli
     }
 
     void ProgressBar::update(const std::size_t current) {
-        current_ = std::min(current, total_);
+        current_ = (std::min)(current, total_);
         if (is_tty_) {
             render();
         }
