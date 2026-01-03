@@ -66,9 +66,9 @@ namespace bha::build_systems
 
                 CloseHandle(write_pipe);
 
-                std::array<char, 4096> buffer;
+                std::array<char, 4096> buffer{};
                 DWORD bytes_read;
-                while (ReadFile(read_pipe, buffer.data(), buffer.size(), &bytes_read, nullptr)
+                while (ReadFile(read_pipe, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr)
                        && bytes_read > 0) {
                     output.append(buffer.data(), bytes_read);
                        }
