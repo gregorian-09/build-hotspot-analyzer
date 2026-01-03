@@ -29,9 +29,17 @@ namespace bha::storage
          * Formats a timestamp to ISO 8601.
          */
         std::string format_timestamp(const Timestamp ts) {
-            const auto time_t = std::chrono::system_clock::to_time_t(ts);
+            const auto time_t_val = std::chrono::system_clock::to_time_t(ts);
             std::ostringstream ss;
-            ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%dT%H:%M:%SZ");
+
+#ifdef _WIN32
+            std::tm time_info;
+            gmtime_s(&time_info, &time_t_val);
+            ss << std::put_time(&time_info, "%Y-%m-%dT%H:%M:%SZ");
+#else
+            ss << std::put_time(std::gmtime(&time_t_val), "%Y-%m-%dT%H:%M:%SZ");
+#endif
+
             return ss.str();
         }
 
