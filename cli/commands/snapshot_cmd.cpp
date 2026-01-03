@@ -24,10 +24,18 @@ namespace bha::cli
         /**
          * Formats a timestamp for display.
          */
-        std::string format_time(const Timestamp ts) {
-            const auto time_t = std::chrono::system_clock::to_time_t(ts);
+        static std::string format_time(const Timestamp ts) {
+            const auto time_t_val = std::chrono::system_clock::to_time_t(ts);
             std::ostringstream ss;
-            ss << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S");
+
+#ifdef _WIN32
+            std::tm time_info{};
+            localtime_s(&time_info, &time_t_val);
+            ss << std::put_time(&time_info, "%Y-%m-%d %H:%M:%S");
+#else
+            ss << std::put_time(std::localtime(&time_t_val), "%Y-%m-%d %H:%M:%S");
+#endif
+
             return ss.str();
         }
 
