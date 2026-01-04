@@ -10,7 +10,6 @@
 #include <cmath>
 
 #ifdef _WIN32
-#define NOMINMAX
 #include <windows.h>
 #include <io.h>
 #define isatty _isatty
