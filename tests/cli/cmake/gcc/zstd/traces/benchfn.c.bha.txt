@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/benchfn.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/common -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/compress -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/dictBuilder -ftime-report -O3 -DNDEBUG -MD -MT build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/benchfn.c.o -MF build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/benchfn.c.o.d -o build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/benchfn.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/benchfn.c
+# Timestamp: 2026-01-05T17:52:22+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 36%)
+ phase parsing                      :   0.00 (  0%)   0.01 ( 33%)   0.06 ( 29%)  1460k ( 29%)
+ phase opt and generate             :   0.05 ( 83%)   0.02 ( 67%)   0.14 ( 67%)  1760k ( 35%)
+ phase last asm                     :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   216  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   784  (  0%)
+ callgraph functions expansion      :   0.04 ( 67%)   0.01 ( 33%)   0.12 ( 57%)  1382k ( 27%)
+ callgraph ipa passes               :   0.01 ( 17%)   0.00 (  0%)   0.02 ( 10%)   268k (  5%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  4040  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   497k ( 10%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.04 ( 19%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   701k ( 14%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    27k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    59k (  1%)
+ tree VRP                           :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    33k (  1%)
+ tree PTA                           :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)  6216  (  0%)
+ dominator optimization             :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    24k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.01 ( 33%)   0.01 (  5%)   151k (  3%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1736  (  0%)
+ integrated RA                      :   0.02 ( 33%)   0.00 (  0%)   0.01 (  5%)   311k (  6%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  2544  (  0%)
+ LRA rematerialization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    13k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    33k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)    33k (  1%)
+ TOTAL                              :   0.06          0.03          0.21         5041k
+
+# Exit code: 0

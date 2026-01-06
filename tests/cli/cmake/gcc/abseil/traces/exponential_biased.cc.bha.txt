@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/profiling/internal/exponential_biased.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/profiling/CMakeFiles/exponential_biased.dir/internal/exponential_biased.cc.o -MF absl/profiling/CMakeFiles/exponential_biased.dir/internal/exponential_biased.cc.o.d -o absl/profiling/CMakeFiles/exponential_biased.dir/internal/exponential_biased.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/profiling/internal/exponential_biased.cc
+# Timestamp: 2026-01-05T17:54:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1882k (  5%)
+ phase parsing                      :   0.16 ( 73%)   0.14 ( 93%)   0.43 ( 78%)    32M ( 82%)
+ phase lang. deferred               :   0.04 ( 18%)   0.01 (  7%)   0.09 ( 16%)  4752k ( 12%)
+ phase opt and generate             :   0.02 (  9%)   0.00 (  0%)   0.02 (  4%)   683k (  2%)
+ |name lookup                       :   0.05 ( 23%)   0.03 ( 20%)   0.13 ( 24%)  1271k (  3%)
+ |overload resolution               :   0.02 (  9%)   0.01 (  7%)   0.03 (  5%)  1342k (  3%)
+ callgraph functions expansion      :   0.02 (  9%)   0.00 (  0%)   0.02 (  4%)   421k (  1%)
+ trivially dead code                :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   144  (  0%)
+ preprocessing                      :   0.04 ( 18%)   0.01 (  7%)   0.11 ( 20%)  5353k ( 13%)
+ parser (global)                    :   0.04 ( 18%)   0.07 ( 47%)   0.17 ( 31%)    14M ( 37%)
+ parser struct body                 :   0.03 ( 14%)   0.01 (  7%)   0.04 (  7%)  3963k ( 10%)
+ parser function body               :   0.02 (  9%)   0.01 (  7%)   0.05 (  9%)  3058k (  7%)
+ parser inl. func. body             :   0.01 (  5%)   0.01 (  7%)   0.01 (  2%)  1804k (  4%)
+ parser inl. meth. body             :   0.02 (  9%)   0.02 ( 13%)   0.01 (  2%)  1515k (  4%)
+ template instantiation             :   0.04 ( 18%)   0.02 ( 13%)   0.10 ( 18%)  7259k ( 18%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)   183k (  0%)
+ scev constant prop                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   576  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ TOTAL                              :   0.22          0.15          0.55           40M
+
+# Exit code: 0

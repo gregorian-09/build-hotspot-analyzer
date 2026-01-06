@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/table/block_based/parsed_full_filter_block.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/table/block_based/parsed_full_filter_block.cc.o -MF CMakeFiles/rocksdb-shared.dir/table/block_based/parsed_full_filter_block.cc.o.d -o CMakeFiles/rocksdb-shared.dir/table/block_based/parsed_full_filter_block.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/table/block_based/parsed_full_filter_block.cc
+# Timestamp: 2026-01-05T19:37:57+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.54 ( 68%)   1.00 ( 82%)   3.24 ( 63%)   261M ( 77%)
+ phase lang. deferred               :   0.67 ( 30%)   0.21 ( 17%)   1.78 ( 34%)    72M ( 21%)
+ phase opt and generate             :   0.05 (  2%)   0.01 (  1%)   0.14 (  3%)  3331k (  1%)
+ |name lookup                       :   0.46 ( 20%)   0.17 ( 14%)   1.05 ( 20%)    10M (  3%)
+ |overload resolution               :   0.55 ( 24%)   0.24 ( 20%)   1.08 ( 21%)    64M ( 19%)
+ garbage collection                 :   0.15 (  7%)   0.01 (  1%)   0.30 (  6%)     0  (  0%)
+ callgraph construction             :   0.02 (  1%)   0.00 (  0%)   0.05 (  1%)  1651k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  7840  (  0%)
+ callgraph functions expansion      :   0.01 (  0%)   0.00 (  0%)   0.05 (  1%)   517k (  0%)
+ callgraph ipa passes               :   0.02 (  1%)   0.01 (  1%)   0.03 (  1%)   864k (  0%)
+ ipa pure const                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.10 (  4%)   0.24 ( 20%)   0.29 (  6%)  7441k (  2%)
+ parser (global)                    :   0.17 (  8%)   0.16 ( 13%)   0.52 ( 10%)    55M ( 16%)
+ parser struct body                 :   0.20 (  9%)   0.09 (  7%)   0.29 (  6%)    40M ( 12%)
+ parser function body               :   0.08 (  4%)   0.05 (  4%)   0.16 (  3%)  6017k (  2%)
+ parser inl. func. body             :   0.11 (  5%)   0.05 (  4%)   0.22 (  4%)    10M (  3%)
+ parser inl. meth. body             :   0.27 ( 12%)   0.12 ( 10%)   0.60 ( 12%)    39M ( 12%)
+ template instantiation             :   1.05 ( 46%)   0.43 ( 35%)   2.23 ( 43%)   166M ( 49%)
+ constant expression evaluation     :   0.04 (  2%)   0.02 (  2%)   0.26 (  5%)  2213k (  1%)
+ constraint normalization           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   756k (  0%)
+ constraint satisfaction            :   0.03 (  1%)   0.02 (  2%)   0.05 (  1%)  4015k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1256  (  0%)
+ tree VRP                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    19k (  0%)
+ PHI merge                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   936  (  0%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.02 (  2%)   0.05 (  1%)  3200  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1008  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    78k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   148k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.05 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ TOTAL                              :   2.26          1.22          5.17          338M
+
+# Exit code: 0

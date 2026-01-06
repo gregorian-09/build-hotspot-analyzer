@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: lolwut6.c
+# Output: lolwut6.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o lolwut6.o -c lolwut6.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1828k ( 12%)
+ phase parsing                      :   0.07 ( 88%)   0.06 (100%)   0.13 ( 81%)    12M ( 84%)
+ phase opt and generate             :   0.01 ( 12%)   0.00 (  0%)   0.02 ( 12%)   474k (  3%)
+ dump files                         :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    97k (  1%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.00 (  0%)   0.01 (  6%)   278k (  2%)
+ preprocessing                      :   0.03 ( 37%)   0.02 ( 33%)   0.05 ( 31%)  2819k ( 19%)
+ lexical analysis                   :   0.04 ( 50%)   0.00 (  0%)   0.05 ( 31%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 33%)   0.01 (  6%)  5461k ( 37%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)   167k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)   702k (  5%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)  2639k ( 18%)
+ TOTAL                              :   0.08          0.06          0.16           14M

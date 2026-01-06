@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: src/prof_log.c
+# Output: src/prof_log.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/prof_log.o src/prof_log.c
+# Timestamp: 2026-01-05T20:43:13+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  3%)
+ phase parsing                      :   0.14 ( 41%)   0.22 ( 73%)   0.38 ( 57%)    25M ( 46%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    96  (  0%)
+ phase opt and generate             :   0.20 ( 59%)   0.08 ( 27%)   0.28 ( 42%)    28M ( 51%)
+ dump files                         :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.01 (  3%)   0.02 (  3%)   882k (  2%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)   197k (  0%)
+ callgraph ipa passes               :   0.05 ( 15%)   0.03 ( 10%)   0.07 ( 10%)    13M ( 24%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16k (  0%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  4464  (  0%)
+ df reg dead/unused notes           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   425k (  1%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.03 (  9%)   0.06 ( 20%)   0.07 ( 10%)    13M ( 25%)
+ lexical analysis                   :   0.05 ( 15%)   0.07 ( 23%)   0.18 ( 27%)     0  (  0%)
+ parser (global)                    :   0.01 (  3%)   0.03 ( 10%)   0.06 (  9%)  5833k ( 10%)
+ parser inl. func. body             :   0.05 ( 15%)   0.06 ( 20%)   0.08 ( 12%)  5604k ( 10%)
+ inline parameters                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    98k (  0%)
+ integration                        :   0.03 (  9%)   0.01 (  3%)   0.02 (  3%)    10M ( 18%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1404k (  2%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.01 (  3%)   0.00 (  0%)   184  (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   332k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1554k (  3%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ expand                             :   0.03 (  9%)   0.01 (  3%)   0.01 (  1%)  4788k (  8%)
+ post expand cleanups               :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    87k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.04 (  6%)  4881k (  9%)
+ LRA non-specific                   :   0.03 (  9%)   0.00 (  0%)   0.02 (  3%)    32k (  0%)
+ LRA create live ranges             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5088  (  0%)
+ shorten branches                   :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  3%)   0.07 ( 10%)   840k (  1%)
+ access analysis                    :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1992  (  0%)
+ rest of compilation                :   0.03 (  9%)   0.00 (  0%)   0.00 (  0%)   273k (  0%)
+ TOTAL                              :   0.34          0.30          0.67           55M

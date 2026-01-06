@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: siphash.c
+# Output: siphash.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o siphash.o -c siphash.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 45%)
+ phase parsing                      :   0.01 ( 33%)   0.01 (100%)   0.04 ( 67%)  1703k ( 42%)
+ phase opt and generate             :   0.02 ( 67%)   0.00 (  0%)   0.02 ( 33%)   514k ( 13%)
+ callgraph ipa passes               :   0.02 ( 67%)   0.00 (  0%)   0.02 ( 33%)   267k (  7%)
+ preprocessing                      :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)   535k ( 13%)
+ lexical analysis                   :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 33%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 17%)   728k ( 18%)
+ tree Early VRP                     :   0.02 ( 67%)   0.00 (  0%)   0.02 ( 33%)    47k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 17%)   154k (  4%)
+ TOTAL                              :   0.03          0.01          0.06         4046k

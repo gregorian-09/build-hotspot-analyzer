@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/crc32c.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/crc32c.cc.o -MF CMakeFiles/leveldb.dir/util/crc32c.cc.o.d -o CMakeFiles/leveldb.dir/util/crc32c.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/crc32c.cc
+# Timestamp: 2026-01-05T19:49:00+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  1744k (  4%)
+ phase parsing                      :   0.20 ( 83%)   0.16 ( 89%)   0.66 ( 89%)    35M ( 85%)
+ phase lang. deferred               :   0.01 (  4%)   0.01 (  6%)   0.02 (  3%)  3126k (  7%)
+ phase opt and generate             :   0.03 ( 12%)   0.01 (  6%)   0.04 (  5%)  1531k (  4%)
+ |name lookup                       :   0.02 (  8%)   0.01 (  6%)   0.09 ( 12%)  1702k (  4%)
+ |overload resolution               :   0.01 (  4%)   0.01 (  6%)   0.08 ( 11%)  2167k (  5%)
+ callgraph functions expansion      :   0.02 (  8%)   0.01 (  6%)   0.04 (  5%)  1075k (  3%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   213k (  1%)
+ preprocessing                      :   0.05 ( 21%)   0.05 ( 28%)   0.14 ( 19%)  2040k (  5%)
+ parser (global)                    :   0.06 ( 25%)   0.04 ( 22%)   0.20 ( 27%)    14M ( 35%)
+ parser struct body                 :   0.05 ( 21%)   0.00 (  0%)   0.09 ( 12%)  8018k ( 19%)
+ parser function body               :   0.00 (  0%)   0.01 (  6%)   0.02 (  3%)   547k (  1%)
+ parser inl. func. body             :   0.01 (  4%)   0.03 ( 17%)   0.04 (  5%)  2715k (  6%)
+ parser inl. meth. body             :   0.01 (  4%)   0.03 ( 17%)   0.06 (  8%)  3385k (  8%)
+ template instantiation             :   0.03 ( 12%)   0.01 (  6%)   0.10 ( 14%)  7452k ( 17%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   182k (  0%)
+ tree operand scan                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    50k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   126k (  0%)
+ tree FRE                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    34k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1920  (  0%)
+ CSE                                :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)   744  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   149k (  0%)
+ integrated RA                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   102k (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   448  (  0%)
+ TOTAL                              :   0.24          0.18          0.74           41M
+
+# Exit code: 0

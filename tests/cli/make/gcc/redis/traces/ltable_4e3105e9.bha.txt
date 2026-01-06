@@ -1,0 +1,52 @@
+# BHA Trace
+# Source: ltable.c
+# Output: ltable.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o ltable.o ltable.c
+# Timestamp: 2026-01-05T20:42:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.01 (  8%)   0.02 ( 40%)   0.10 ( 26%)  3315k ( 35%)
+ phase opt and generate             :   0.12 ( 92%)   0.03 ( 60%)   0.28 ( 74%)  4429k ( 46%)
+ callgraph functions expansion      :   0.09 ( 69%)   0.03 ( 60%)   0.23 ( 61%)  3373k ( 35%)
+ callgraph ipa passes               :   0.03 ( 23%)   0.00 (  0%)   0.05 ( 13%)   744k (  8%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    15k (  0%)
+ ipa SRA                            :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   120k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.02 (  5%)  1728k ( 18%)
+ lexical analysis                   :   0.01 (  8%)   0.00 (  0%)   0.07 ( 18%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 20%)   0.01 (  3%)  1196k ( 13%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    54k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  8392  (  0%)
+ tree VRP                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    94k (  1%)
+ tree PTA                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)    24k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    11k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)    21k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    62k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    27k (  0%)
+ tree slp vectorization             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   205k (  2%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   127k (  1%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)    37k (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  5552  (  0%)
+ loop init                          :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)   315k (  3%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.03 (  8%)   216  (  0%)
+ combiner                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   221k (  2%)
+ if-conversion                      :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  6624  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   606k (  6%)
+ reload CSE regs                    :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    40k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    43k (  0%)
+ combine stack adjustments          :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ scheduling 2                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1144  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    90k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.04 ( 11%)    66k (  1%)
+ remove unused locals               :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.13          0.05          0.38         9565k

@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: src/pa_extra.c
+# Output: src/pa_extra.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/pa_extra.o src/pa_extra.c
+# Timestamp: 2026-01-05T20:43:12+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.15 ( 79%)   0.21 (100%)   0.38 ( 90%)    25M ( 84%)
+ phase opt and generate             :   0.04 ( 21%)   0.00 (  0%)   0.04 ( 10%)  3238k ( 11%)
+ callgraph ipa passes               :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   836k (  3%)
+ preprocessing                      :   0.05 ( 26%)   0.05 ( 24%)   0.10 ( 24%)    13M ( 46%)
+ lexical analysis                   :   0.04 ( 21%)   0.10 ( 48%)   0.13 ( 31%)     0  (  0%)
+ parser (global)                    :   0.03 ( 16%)   0.02 ( 10%)   0.07 ( 17%)  5695k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)   254k (  1%)
+ parser inl. func. body             :   0.03 ( 16%)   0.03 ( 14%)   0.07 ( 17%)  5382k ( 18%)
+ integration                        :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   448k (  1%)
+ tree CFG cleanup                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    50k (  0%)
+ integrated RA                      :   0.02 ( 11%)   0.00 (  0%)   0.01 (  2%)   900k (  3%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    82k (  0%)
+ TOTAL                              :   0.19          0.21          0.42           30M

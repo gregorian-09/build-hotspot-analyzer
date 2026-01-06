@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: lzf_d.c
+# Output: lzf_d.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o lzf_d.o -c lzf_d.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 64%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)   650k ( 23%)
+ phase opt and generate             :   0.01 (100%)   0.00 (  0%)   0.01 ( 50%)   381k ( 13%)
+ callgraph ipa passes               :   0.01 (100%)   0.00 (  0%)   0.01 ( 50%)   213k (  7%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)   211k (  7%)
+ tree Early VRP                     :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)  8808  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)    10k (  0%)
+ TOTAL                              :   0.01          0.00          0.02         2860k

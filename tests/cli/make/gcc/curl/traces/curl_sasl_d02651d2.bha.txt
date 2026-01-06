@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: curl_sasl.c
+# Output: libcurlu_la-curl_sasl.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c curl_sasl.c -fPIC -DPIC -o libcurlu_la-curl_sasl.o
+# Timestamp: 2026-01-05T20:44:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 15%)
+ phase parsing                      :   0.04 ( 57%)   0.05 ( 71%)   0.17 ( 77%)  6494k ( 54%)
+ phase opt and generate             :   0.03 ( 43%)   0.02 ( 29%)   0.04 ( 18%)  3682k ( 31%)
+ dump files                         :   0.01 ( 14%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph construction             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    57k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   336k (  3%)
+ preprocessing                      :   0.02 ( 29%)   0.00 (  0%)   0.06 ( 27%)  2389k ( 20%)
+ lexical analysis                   :   0.01 ( 14%)   0.04 ( 57%)   0.05 ( 23%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.01 ( 14%)   0.04 ( 18%)  2877k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   351k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   520k (  4%)
+ loop init                          :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    73k (  1%)
+ integrated RA                      :   0.01 ( 14%)   0.01 ( 14%)   0.00 (  0%)  1779k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  5936  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   174k (  1%)
+ TOTAL                              :   0.07          0.07          0.22           11M

@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jquant1-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant1-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant1-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant1-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jquant1-12.c
+# Timestamp: 2026-01-05T18:14:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.01 (  7%)   0.03 ( 43%)   0.09 ( 31%)  2789k ( 26%)
+ phase opt and generate             :   0.14 ( 93%)   0.04 ( 57%)   0.20 ( 69%)  6326k ( 58%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    21k (  0%)
+ callgraph functions expansion      :   0.13 ( 87%)   0.04 ( 57%)   0.18 ( 62%)  5449k ( 50%)
+ callgraph ipa passes               :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)   605k (  6%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ df live regs                       :   0.02 ( 13%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   248k (  2%)
+ alias stmt walking                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ lexical analysis                   :   0.01 (  7%)   0.01 ( 14%)   0.07 ( 24%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1344k ( 12%)
+ parser function body               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   162k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 14%)   0.01 (  3%)   245k (  2%)
+ tree VRP                           :   0.01 (  7%)   0.00 (  0%)   0.02 (  7%)   167k (  2%)
+ tree Early VRP                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    75k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    27k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   122k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    23k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    46k (  0%)
+ tree RPO VN                        :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    24k (  0%)
+ tree forward propagate             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  4648  (  0%)
+ tree loop invariant motion         :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)   848  (  0%)
+ unroll and jam                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  1912  (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   329k (  3%)
+ loop init                          :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   375k (  3%)
+ CPROP                              :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    82k (  1%)
+ combiner                           :   0.02 ( 13%)   0.00 (  0%)   0.02 (  7%)   313k (  3%)
+ integrated RA                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   835k (  8%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    55k (  1%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ scheduling 2                       :   0.01 (  7%)   0.00 (  0%)   0.04 ( 14%)    28k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   936  (  0%)
+ TOTAL                              :   0.15          0.07          0.29           10M
+
+# Exit code: 0

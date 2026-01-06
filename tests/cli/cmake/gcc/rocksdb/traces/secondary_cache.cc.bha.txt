@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/secondary_cache.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/cache/secondary_cache.cc.o -MF CMakeFiles/rocksdb-shared.dir/cache/secondary_cache.cc.o.d -o CMakeFiles/rocksdb-shared.dir/cache/secondary_cache.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/secondary_cache.cc
+# Timestamp: 2026-01-05T19:33:18+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.18 ( 75%)   0.71 ( 83%)   3.29 ( 84%)   185M ( 79%)
+ phase lang. deferred               :   0.37 ( 23%)   0.15 ( 17%)   0.61 ( 16%)    45M ( 19%)
+ phase opt and generate             :   0.03 (  2%)   0.00 (  0%)   0.02 (  1%)  1173k (  0%)
+ |name lookup                       :   0.32 ( 20%)   0.20 ( 23%)   0.91 ( 23%)  7307k (  3%)
+ |overload resolution               :   0.34 ( 22%)   0.15 ( 17%)   0.67 ( 17%)    38M ( 16%)
+ callgraph construction             :   0.03 (  2%)   0.00 (  0%)   0.02 (  1%)  1157k (  0%)
+ preprocessing                      :   0.07 (  4%)   0.18 ( 21%)   0.52 ( 13%)  3282k (  1%)
+ parser (global)                    :   0.19 ( 12%)   0.11 ( 13%)   0.59 ( 15%)    52M ( 23%)
+ parser struct body                 :   0.23 ( 15%)   0.09 ( 10%)   0.44 ( 11%)    31M ( 13%)
+ parser function body               :   0.04 (  3%)   0.00 (  0%)   0.07 (  2%)  2896k (  1%)
+ parser inl. func. body             :   0.08 (  5%)   0.03 (  3%)   0.19 (  5%)  8084k (  3%)
+ parser inl. meth. body             :   0.18 ( 11%)   0.10 ( 12%)   0.48 ( 12%)    26M ( 12%)
+ template instantiation             :   0.70 ( 44%)   0.32 ( 37%)   1.41 ( 36%)   101M ( 43%)
+ constant expression evaluation     :   0.02 (  1%)   0.00 (  0%)   0.11 (  3%)  1633k (  1%)
+ constraint normalization           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   520k (  0%)
+ constraint satisfaction            :   0.02 (  1%)   0.01 (  1%)   0.04 (  1%)  3055k (  1%)
+ varconst                           :   0.01 (  1%)   0.02 (  2%)   0.00 (  0%)   896  (  0%)
+ symout                             :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ TOTAL                              :   1.58          0.86          3.93          234M
+
+# Exit code: 0

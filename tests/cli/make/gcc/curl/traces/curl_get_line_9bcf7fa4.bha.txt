@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: curl_get_line.c
+# Output: libcurlu_la-curl_get_line.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c curl_get_line.c -fPIC -DPIC -o libcurlu_la-curl_get_line.o
+# Timestamp: 2026-01-05T20:44:33+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 ( 75%)   0.10 ( 67%)  4588k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 25%)   0.04 ( 27%)  1983k ( 24%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   145k (  2%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 25%)   0.04 ( 27%)  1985k ( 24%)
+ lexical analysis                   :   0.02 ( 67%)   0.02 ( 50%)   0.04 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)  2127k ( 25%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    59k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1276k ( 15%)
+ access analysis                    :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   168  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   123k (  1%)
+ TOTAL                              :   0.03          0.04          0.15         8392k

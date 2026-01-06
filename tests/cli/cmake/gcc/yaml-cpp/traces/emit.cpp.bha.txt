@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/emit.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/emit.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/emit.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/emit.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/emit.cpp
+# Timestamp: 2026-01-05T18:12:29+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1876k (  2%)
+ phase parsing                      :   0.33 ( 80%)   0.25 ( 89%)   0.80 ( 76%)    69M ( 87%)
+ phase lang. deferred               :   0.03 (  7%)   0.01 (  4%)   0.10 ( 10%)  5955k (  7%)
+ phase opt and generate             :   0.05 ( 12%)   0.02 (  7%)   0.14 ( 13%)  3270k (  4%)
+ |name lookup                       :   0.05 ( 12%)   0.05 ( 18%)   0.21 ( 20%)  2565k (  3%)
+ |overload resolution               :   0.00 (  0%)   0.02 (  7%)   0.07 (  7%)  4964k (  6%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   248k (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  8952  (  0%)
+ callgraph functions expansion      :   0.03 (  7%)   0.00 (  0%)   0.09 (  9%)  1431k (  2%)
+ callgraph ipa passes               :   0.01 (  2%)   0.02 (  7%)   0.04 (  4%)  1100k (  1%)
+ ipa function summary               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    24k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.05 ( 12%)   0.09 ( 32%)   0.16 ( 15%)  5945k (  7%)
+ parser (global)                    :   0.06 ( 15%)   0.05 ( 18%)   0.13 ( 12%)    28M ( 35%)
+ parser struct body                 :   0.05 ( 12%)   0.04 ( 14%)   0.13 ( 12%)    11M ( 14%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   102k (  0%)
+ parser function body               :   0.04 ( 10%)   0.01 (  4%)   0.08 (  8%)  2319k (  3%)
+ parser inl. func. body             :   0.03 (  7%)   0.02 (  7%)   0.05 (  5%)  4110k (  5%)
+ parser inl. meth. body             :   0.02 (  5%)   0.02 (  7%)   0.12 ( 11%)  6815k (  8%)
+ template instantiation             :   0.11 ( 27%)   0.03 ( 11%)   0.19 ( 18%)    17M ( 21%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   195k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   366k (  0%)
+ tree CFG construction              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   123k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   107k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    35k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  2128  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   114k (  0%)
+ PRE                                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2032  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   228k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    30k (  0%)
+ TOTAL                              :   0.41          0.28          1.05           80M
+
+# Exit code: 0

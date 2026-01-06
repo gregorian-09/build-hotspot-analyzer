@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: tool_cfgable.c
+# Output: libcurltool_la-tool_cfgable.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_cfgable.c -fPIC -DPIC -o libcurltool_la-tool_cfgable.o
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.03 ( 75%)   0.03 ( 75%)   0.06 ( 75%)  5284k ( 54%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 25%)   0.02 ( 25%)  2662k ( 27%)
+ cfg cleanup                        :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 25%)  2222k ( 23%)
+ lexical analysis                   :   0.02 ( 50%)   0.02 ( 50%)   0.03 ( 38%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 13%)  2306k ( 24%)
+ parser enumerator list             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   382k (  4%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)    59k (  1%)
+ loop init                          :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    61k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)  1477k ( 15%)
+ TOTAL                              :   0.04          0.04          0.08         9767k

@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: evict.c
+# Output: evict.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o evict.o -c evict.c
+# Timestamp: 2026-01-05T20:43:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  9%)
+ phase parsing                      :   0.08 ( 73%)   0.09 ( 90%)   0.18 ( 82%)    17M ( 85%)
+ phase opt and generate             :   0.03 ( 27%)   0.01 ( 10%)   0.04 ( 18%)  1335k (  6%)
+ callgraph construction             :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)   232k (  1%)
+ callgraph ipa passes               :   0.02 ( 18%)   0.01 ( 10%)   0.03 ( 14%)   772k (  4%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    84k (  0%)
+ alias stmt walking                 :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ preprocessing                      :   0.02 ( 18%)   0.02 ( 20%)   0.04 ( 18%)  6733k ( 32%)
+ lexical analysis                   :   0.02 ( 18%)   0.03 ( 30%)   0.10 ( 45%)     0  (  0%)
+ parser (global)                    :   0.03 ( 27%)   0.02 ( 20%)   0.03 ( 14%)  7214k ( 34%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   529k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)   713k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   248k (  1%)
+ tree Early VRP                     :   0.01 (  9%)   0.00 (  0%)   0.01 (  5%)    53k (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)  2816  (  0%)
+ symout                             :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)  2669k ( 12%)
+ TOTAL                              :   0.11          0.10          0.22           20M

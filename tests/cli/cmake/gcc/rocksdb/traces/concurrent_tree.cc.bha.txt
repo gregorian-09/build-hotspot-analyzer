@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/transactions/lock/range/range_tree/lib/locktree/concurrent_tree.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/locktree/concurrent_tree.cc.o -MF CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/locktree/concurrent_tree.cc.o.d -o CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/locktree/concurrent_tree.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/transactions/lock/range/range_tree/lib/locktree/concurrent_tree.cc
+# Timestamp: 2026-01-05T19:41:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1886k (  5%)
+ phase parsing                      :   0.17 ( 85%)   0.20 ( 95%)   0.67 ( 93%)    35M ( 92%)
+ phase opt and generate             :   0.03 ( 15%)   0.01 (  5%)   0.05 (  7%)   844k (  2%)
+ |name lookup                       :   0.06 ( 30%)   0.01 (  5%)   0.14 ( 19%)  1684k (  4%)
+ |overload resolution               :   0.01 (  5%)   0.02 ( 10%)   0.03 (  4%)  1135k (  3%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.02 ( 10%)   0.00 (  0%)   0.05 (  7%)   606k (  2%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   118k (  0%)
+ preprocessing                      :   0.03 ( 15%)   0.04 ( 19%)   0.19 ( 26%)  2017k (  5%)
+ parser (global)                    :   0.05 ( 25%)   0.08 ( 38%)   0.22 ( 31%)    15M ( 40%)
+ parser struct body                 :   0.03 ( 15%)   0.02 ( 10%)   0.05 (  7%)  7506k ( 19%)
+ parser function body               :   0.01 (  5%)   0.02 ( 10%)   0.02 (  3%)   670k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.06 (  8%)  2389k (  6%)
+ parser inl. meth. body             :   0.05 ( 25%)   0.02 ( 10%)   0.05 (  7%)  4782k ( 12%)
+ template instantiation             :   0.00 (  0%)   0.02 ( 10%)   0.05 (  7%)  3688k (  9%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)    80k (  0%)
+ tree CFG construction              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   160  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    12k (  0%)
+ rest of compilation                :   0.02 ( 10%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.20          0.21          0.72           38M
+
+# Exit code: 0

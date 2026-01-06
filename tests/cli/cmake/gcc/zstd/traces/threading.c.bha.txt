@@ -1,0 +1,15 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/threading.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/threading.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/threading.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/threading.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/threading.c
+# Timestamp: 2026-01-05T17:52:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 71%)
+ phase parsing                      :   0.01 (100%)   0.00 (  0%)   0.02 ( 67%)   749k ( 29%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)     0  (  0%)
+ preprocessing                      :   0.01 (100%)   0.00 (  0%)   0.02 ( 67%)   264k ( 10%)
+ TOTAL                              :   0.01          0.00          0.03         2572k
+
+# Exit code: 0

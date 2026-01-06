@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/test_util/sync_point.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/test_util/sync_point.cc.o -MF CMakeFiles/rocksdb-shared.dir/test_util/sync_point.cc.o.d -o CMakeFiles/rocksdb-shared.dir/test_util/sync_point.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/test_util/sync_point.cc
+# Timestamp: 2026-01-05T19:38:45+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.47 ( 76%)   0.95 ( 84%)   4.02 ( 82%)   242M ( 78%)
+ phase lang. deferred               :   0.43 ( 22%)   0.16 ( 14%)   0.73 ( 15%)    62M ( 20%)
+ phase opt and generate             :   0.04 (  2%)   0.02 (  2%)   0.12 (  2%)  2990k (  1%)
+ |name lookup                       :   0.37 ( 19%)   0.16 ( 14%)   1.24 ( 25%)  9314k (  3%)
+ |overload resolution               :   0.45 ( 23%)   0.16 ( 14%)   0.89 ( 18%)    52M ( 17%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)  1529k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4832  (  0%)
+ callgraph functions expansion      :   0.02 (  1%)   0.01 (  1%)   0.05 (  1%)   591k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)   644k (  0%)
+ ipa function splitting             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ preprocessing                      :   0.10 (  5%)   0.19 ( 17%)   0.51 ( 10%)  7428k (  2%)
+ parser (global)                    :   0.18 (  9%)   0.16 ( 14%)   0.76 ( 16%)    55M ( 18%)
+ parser struct body                 :   0.16 (  8%)   0.10 (  9%)   0.43 (  9%)    37M ( 12%)
+ parser function body               :   0.07 (  4%)   0.04 (  4%)   0.11 (  2%)  5589k (  2%)
+ parser inl. func. body             :   0.07 (  4%)   0.04 (  4%)   0.22 (  5%)    10M (  3%)
+ parser inl. meth. body             :   0.34 ( 18%)   0.11 ( 10%)   0.63 ( 13%)    37M ( 12%)
+ template instantiation             :   0.93 ( 48%)   0.42 ( 37%)   1.87 ( 38%)   146M ( 47%)
+ constant expression evaluation     :   0.02 (  1%)   0.02 (  2%)   0.13 (  3%)  2022k (  1%)
+ constraint normalization           :   0.01 (  1%)   0.02 (  2%)   0.01 (  0%)   520k (  0%)
+ constraint satisfaction            :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)  3031k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   117k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    37k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    35k (  0%)
+ varconst                           :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)  2304  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    82k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   704  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    18k (  0%)
+ TOTAL                              :   1.94          1.13          4.88          309M
+
+# Exit code: 0

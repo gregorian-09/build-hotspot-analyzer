@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: http2.c
+# Output: libcurlu_la-http2.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c http2.c -fPIC -DPIC -o libcurlu_la-http2.o
+# Timestamp: 2026-01-05T20:44:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 ( 75%)   0.07 ( 78%)  4599k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 25%)   0.02 ( 22%)  1968k ( 23%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)     0  (  0%)
+ preprocessing                      :   0.02 ( 67%)   0.00 (  0%)   0.03 ( 33%)  2025k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 50%)   0.02 ( 22%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 22%)  2108k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   268k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1298k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  3200  (  0%)
+ final                              :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)    83k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    12k (  0%)
+ TOTAL                              :   0.03          0.04          0.09         8388k

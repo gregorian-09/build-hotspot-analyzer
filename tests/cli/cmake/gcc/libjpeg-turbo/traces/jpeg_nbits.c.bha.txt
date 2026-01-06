@@ -1,0 +1,18 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jpeg_nbits.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jpeg_nbits.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jpeg_nbits.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jpeg_nbits.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jpeg_nbits.c
+# Timestamp: 2026-01-05T18:14:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.06 (100%)   0.13 (100%)   0.25 ( 96%)  7943k ( 81%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  3264  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 (  8%)   0.03 ( 12%)    14k (  0%)
+ lexical analysis                   :   0.03 ( 50%)   0.05 ( 38%)   0.12 ( 46%)     0  (  0%)
+ parser (global)                    :   0.03 ( 50%)   0.07 ( 54%)   0.10 ( 38%)  7928k ( 81%)
+ variable output                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    88  (  0%)
+ TOTAL                              :   0.06          0.13          0.26         9766k
+
+# Exit code: 0

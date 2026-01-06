@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/generic_printer.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/generic_printer_internal.dir/internal/generic_printer.cc.o -MF absl/strings/CMakeFiles/generic_printer_internal.dir/internal/generic_printer.cc.o.d -o absl/strings/CMakeFiles/generic_printer_internal.dir/internal/generic_printer.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/generic_printer.cc
+# Timestamp: 2026-01-05T17:54:32+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  1%)
+ phase parsing                      :   0.61 ( 73%)   0.44 ( 86%)   1.72 ( 84%)   106M ( 83%)
+ phase lang. deferred               :   0.10 ( 12%)   0.03 (  6%)   0.14 (  7%)    14M ( 11%)
+ phase opt and generate             :   0.13 ( 15%)   0.04 (  8%)   0.18 (  9%)  5523k (  4%)
+ |name lookup                       :   0.16 ( 19%)   0.06 ( 12%)   0.35 ( 17%)  4139k (  3%)
+ |overload resolution               :   0.10 ( 12%)   0.02 (  4%)   0.14 (  7%)    14M ( 12%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   629k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  7872  (  0%)
+ callgraph functions expansion      :   0.08 ( 10%)   0.01 (  2%)   0.11 (  5%)  2614k (  2%)
+ callgraph ipa passes               :   0.04 (  5%)   0.03 (  6%)   0.06 (  3%)  1767k (  1%)
+ ipa SRA                            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5080  (  0%)
+ preprocessing                      :   0.08 ( 10%)   0.13 ( 25%)   0.36 ( 18%)  6538k (  5%)
+ parser (global)                    :   0.10 ( 12%)   0.10 ( 20%)   0.50 ( 25%)    33M ( 26%)
+ parser struct body                 :   0.06 (  7%)   0.05 ( 10%)   0.16 (  8%)    18M ( 14%)
+ parser function body               :   0.04 (  5%)   0.04 (  8%)   0.11 (  5%)  4841k (  4%)
+ parser inl. func. body             :   0.08 ( 10%)   0.03 (  6%)   0.11 (  5%)    11M (  9%)
+ parser inl. meth. body             :   0.07 (  8%)   0.03 (  6%)   0.16 (  8%)    11M (  9%)
+ template instantiation             :   0.27 ( 32%)   0.08 ( 16%)   0.38 ( 19%)    34M ( 27%)
+ constant expression evaluation     :   0.01 (  1%)   0.01 (  2%)   0.08 (  4%)   853k (  1%)
+ integration                        :   0.01 (  1%)   0.01 (  2%)   0.03 (  1%)   840k (  1%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   156k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2024  (  0%)
+ tree Early VRP                     :   0.01 (  1%)   0.01 (  2%)   0.00 (  0%)   115k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    35k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    58k (  0%)
+ backwards jump threading           :   0.01 (  1%)   0.01 (  2%)   0.00 (  0%)    15k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    79k (  0%)
+ tree conservative DCE              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   168  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dominance computation              :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ dead store elim1                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ if-conversion                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   376k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    38k (  0%)
+ TOTAL                              :   0.84          0.51          2.04          127M
+
+# Exit code: 0

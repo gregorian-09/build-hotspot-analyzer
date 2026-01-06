@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: memory_prefetch.c
+# Output: memory_prefetch.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o memory_prefetch.o -c memory_prefetch.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.06 ( 86%)   0.09 ( 90%)   0.17 ( 85%)    12M ( 82%)
+ phase opt and generate             :   0.01 ( 14%)   0.01 ( 10%)   0.03 ( 15%)   866k (  6%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   888  (  0%)
+ callgraph ipa passes               :   0.01 ( 14%)   0.01 ( 10%)   0.03 ( 15%)   537k (  4%)
+ lto stream output                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ ipa free lang data                 :   0.01 ( 14%)   0.00 (  0%)   0.01 (  5%)    88k (  1%)
+ preprocessing                      :   0.03 ( 43%)   0.04 ( 40%)   0.03 ( 15%)  2792k ( 18%)
+ lexical analysis                   :   0.01 ( 14%)   0.01 ( 10%)   0.05 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.03 ( 30%)   0.07 ( 35%)  5498k ( 36%)
+ parser inl. func. body             :   0.01 ( 14%)   0.00 (  0%)   0.01 (  5%)   712k (  5%)
+ loop init                          :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    31k (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 10%)   0.01 (  5%)  2653k ( 18%)
+ TOTAL                              :   0.07          0.10          0.20           14M

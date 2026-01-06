@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/rdgif.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -DBMP_SUPPORTED -DGIF_SUPPORTED -DPPM_SUPPORTED -DTARGA_SUPPORTED -MD -MT sharedlib/CMakeFiles/cjpeg.dir/__/src/rdgif.c.o -MF sharedlib/CMakeFiles/cjpeg.dir/__/src/rdgif.c.o.d -o sharedlib/CMakeFiles/cjpeg.dir/__/src/rdgif.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/rdgif.c
+# Timestamp: 2026-01-05T18:14:54+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 21%)
+ phase parsing                      :   0.02 ( 17%)   0.01 ( 33%)   0.11 ( 35%)  2598k ( 30%)
+ phase opt and generate             :   0.10 ( 83%)   0.02 ( 67%)   0.19 ( 61%)  4248k ( 49%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)  1896  (  0%)
+ callgraph functions expansion      :   0.09 ( 75%)   0.02 ( 67%)   0.14 ( 45%)  2988k ( 34%)
+ callgraph ipa passes               :   0.01 (  8%)   0.00 (  0%)   0.05 ( 16%)   944k ( 11%)
+ ipa icf                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    19k (  0%)
+ df must-initialized regs           :   0.01 (  8%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   132k (  2%)
+ alias stmt walking                 :   0.02 ( 17%)   0.00 (  0%)   0.00 (  0%)  6680  (  0%)
+ preprocessing                      :   0.01 (  8%)   0.00 (  0%)   0.03 ( 10%)   745k (  9%)
+ lexical analysis                   :   0.01 (  8%)   0.01 ( 33%)   0.05 ( 16%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1143k ( 13%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)   274k (  3%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  6056  (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   235k (  3%)
+ dominator optimization             :   0.01 (  8%)   0.01 ( 33%)   0.00 (  0%)    91k (  1%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1120  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   131k (  2%)
+ tree FRE                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    30k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    16k (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ dead store elim1                   :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    41k (  0%)
+ CPROP                              :   0.01 (  8%)   0.01 ( 33%)   0.01 (  3%)    53k (  1%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   848  (  0%)
+ reload                             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   216  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    49k (  1%)
+ initialize rtl                     :   0.01 (  8%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ access analysis                    :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  1872  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)    39k (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ TOTAL                              :   0.12          0.03          0.31         8666k
+
+# Exit code: 0

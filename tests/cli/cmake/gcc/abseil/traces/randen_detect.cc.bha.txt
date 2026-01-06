@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen_detect.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_internal_randen_hwaes.dir/internal/randen_detect.cc.o -MF absl/random/CMakeFiles/random_internal_randen_hwaes.dir/internal/randen_detect.cc.o.d -o absl/random/CMakeFiles/random_internal_randen_hwaes.dir/internal/randen_detect.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen_detect.cc
+# Timestamp: 2026-01-05T17:54:18+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  3%)
+ phase parsing                      :   0.25 ( 89%)   0.26 ( 96%)   0.84 ( 93%)    47M ( 90%)
+ phase lang. deferred               :   0.02 (  7%)   0.01 (  4%)   0.04 (  4%)  3288k (  6%)
+ phase opt and generate             :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   185k (  0%)
+ |name lookup                       :   0.03 ( 11%)   0.04 ( 15%)   0.20 ( 22%)  2286k (  4%)
+ |overload resolution               :   0.02 (  7%)   0.01 (  4%)   0.05 (  6%)  3147k (  6%)
+ callgraph functions expansion      :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    73k (  0%)
+ preprocessing                      :   0.01 (  4%)   0.08 ( 30%)   0.25 ( 28%)  1964k (  4%)
+ parser (global)                    :   0.11 ( 39%)   0.06 ( 22%)   0.21 ( 23%)    16M ( 31%)
+ parser struct body                 :   0.03 ( 11%)   0.03 ( 11%)   0.04 (  4%)  9900k ( 18%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.04 (  4%)  2547k (  5%)
+ parser inl. func. body             :   0.01 (  4%)   0.01 (  4%)   0.06 (  7%)  3629k (  7%)
+ parser inl. meth. body             :   0.02 (  7%)   0.05 ( 19%)   0.09 ( 10%)  4733k (  9%)
+ template instantiation             :   0.07 ( 25%)   0.04 ( 15%)   0.18 ( 20%)    12M ( 23%)
+ constant expression evaluation     :   0.02 (  7%)   0.00 (  0%)   0.01 (  1%)   114k (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.28          0.27          0.90           52M
+
+# Exit code: 0

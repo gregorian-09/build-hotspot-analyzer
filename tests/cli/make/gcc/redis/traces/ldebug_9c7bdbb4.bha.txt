@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: ldebug.c
+# Output: ldebug.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o ldebug.o ldebug.c
+# Timestamp: 2026-01-05T20:42:44+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.02 ( 13%)   0.02 ( 67%)   0.09 ( 24%)  3595k ( 34%)
+ phase opt and generate             :   0.13 ( 87%)   0.01 ( 33%)   0.29 ( 76%)  5241k ( 49%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2336  (  0%)
+ callgraph functions expansion      :   0.12 ( 80%)   0.00 (  0%)   0.23 ( 61%)  3748k ( 35%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 ( 33%)   0.04 ( 11%)  1044k ( 10%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    57k (  1%)
+ df reaching defs                   :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.01 (  7%)   0.00 (  0%)   0.02 (  5%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   117k (  1%)
+ alias stmt walking                 :   0.01 (  7%)   0.00 (  0%)   0.02 (  5%)    23k (  0%)
+ preprocessing                      :   0.01 (  7%)   0.01 ( 33%)   0.04 ( 11%)  1802k ( 17%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.02 (  5%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1314k ( 12%)
+ parser struct body                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    56k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   287k (  3%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    63k (  1%)
+ tree PTA                           :   0.02 ( 13%)   0.00 (  0%)   0.01 (  3%)    39k (  0%)
+ dominator optimization             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   123k (  1%)
+ backwards jump threading           :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    37k (  0%)
+ tree aggressive DCE                :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    88k (  1%)
+ tree DSE                           :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  2424  (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)    47k (  0%)
+ tree NRV optimization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   336  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  8%)     0  (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   229k (  2%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)     0  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    93k (  1%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2200  (  0%)
+ combiner                           :   0.02 ( 13%)   0.00 (  0%)   0.00 (  0%)   159k (  2%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    39k (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   240  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   108k (  1%)
+ initialize rtl                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    63k (  1%)
+ TOTAL                              :   0.15          0.03          0.38           10M

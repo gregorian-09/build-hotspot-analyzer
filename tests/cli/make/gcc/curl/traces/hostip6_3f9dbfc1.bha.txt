@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: hostip6.c
+# Output: libcurlu_la-hostip6.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c hostip6.c -fPIC -DPIC -o libcurlu_la-hostip6.o
+# Timestamp: 2026-01-05T20:44:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.03 ( 75%)   0.06 ( 86%)   0.15 ( 88%)  5985k ( 62%)
+ phase opt and generate             :   0.01 ( 25%)   0.00 (  0%)   0.01 (  6%)  1887k ( 19%)
+ phase finalize                     :   0.00 (  0%)   0.01 ( 14%)   0.01 (  6%)     0  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.02 ( 29%)   0.04 ( 24%)  2362k ( 24%)
+ lexical analysis                   :   0.01 ( 25%)   0.00 (  0%)   0.07 ( 41%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.02 ( 29%)   0.03 ( 18%)  2856k ( 29%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   342k (  4%)
+ parser function body               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    73k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 13%)
+ LRA non-specific                   :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2912  (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.04          0.07          0.17         9692k

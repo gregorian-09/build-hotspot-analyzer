@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/ostream_wrapper.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/ostream_wrapper.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/ostream_wrapper.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/ostream_wrapper.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/ostream_wrapper.cpp
+# Timestamp: 2026-01-05T18:12:32+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1876k (  4%)
+ phase parsing                      :   0.21 ( 75%)   0.13 ( 81%)   0.71 ( 77%)    37M ( 83%)
+ phase lang. deferred               :   0.02 (  7%)   0.00 (  0%)   0.04 (  4%)  3103k (  7%)
+ phase opt and generate             :   0.05 ( 18%)   0.03 ( 19%)   0.15 ( 16%)  2880k (  6%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.03 ( 11%)   0.02 ( 13%)   0.26 ( 28%)  1690k (  4%)
+ |overload resolution               :   0.03 ( 11%)   0.01 (  6%)   0.03 (  3%)  2497k (  5%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   164k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  5960  (  0%)
+ callgraph functions expansion      :   0.02 (  7%)   0.02 ( 12%)   0.06 (  7%)   958k (  2%)
+ callgraph ipa passes               :   0.02 (  7%)   0.01 (  6%)   0.07 (  8%)  1325k (  3%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8904  (  0%)
+ preprocessing                      :   0.06 ( 21%)   0.05 ( 31%)   0.05 (  5%)  1944k (  4%)
+ parser (global)                    :   0.02 (  7%)   0.02 ( 13%)   0.31 ( 34%)    14M ( 33%)
+ parser struct body                 :   0.04 ( 14%)   0.00 (  0%)   0.10 ( 11%)  6714k ( 15%)
+ parser function body               :   0.01 (  4%)   0.01 (  6%)   0.06 (  7%)  1910k (  4%)
+ parser inl. func. body             :   0.01 (  4%)   0.02 ( 12%)   0.05 (  5%)  3945k (  9%)
+ parser inl. meth. body             :   0.04 ( 14%)   0.03 ( 19%)   0.08 (  9%)  3779k (  8%)
+ template instantiation             :   0.05 ( 18%)   0.00 (  0%)   0.06 (  7%)  7570k ( 16%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)    94k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)    31k (  0%)
+ tree gimplify                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   262k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  6%)   0.01 (  1%)  2800  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    28k (  0%)
+ backwards jump threading           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    32k (  0%)
+ tree code sinking                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  8656  (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1024  (  0%)
+ tree aggressive DCE                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   106k (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)     0  (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   160  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8912  (  0%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  9840  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    26k (  0%)
+ TOTAL                              :   0.28          0.16          0.92           45M
+
+# Exit code: 0

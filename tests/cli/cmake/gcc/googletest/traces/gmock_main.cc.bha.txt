@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googlemock/src/gmock_main.cc
+# Command: /usr/bin/g++ -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googlemock/include -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googlemock -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest/include -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest -ftime-report -O3 -DNDEBUG -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -MD -MT googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -MF googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o.d -o googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googlemock/src/gmock_main.cc
+# Timestamp: 2026-01-05T17:46:03+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  1%)
+ phase parsing                      :   0.84 ( 78%)   0.63 ( 90%)   1.79 ( 84%)   157M ( 81%)
+ phase lang. deferred               :   0.22 ( 20%)   0.07 ( 10%)   0.31 ( 15%)    35M ( 18%)
+ phase opt and generate             :   0.02 (  2%)   0.00 (  0%)   0.01 (  0%)   875k (  0%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.27 ( 25%)   0.07 ( 10%)   0.44 ( 21%)  6469k (  3%)
+ |overload resolution               :   0.21 ( 19%)   0.08 ( 11%)   0.36 ( 17%)    23M ( 12%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   655k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    95k (  0%)
+ preprocessing                      :   0.09 (  8%)   0.16 ( 23%)   0.31 ( 15%)  7563k (  4%)
+ parser (global)                    :   0.15 ( 14%)   0.13 ( 19%)   0.32 ( 15%)    51M ( 27%)
+ parser struct body                 :   0.15 ( 14%)   0.07 ( 10%)   0.18 (  8%)    24M ( 13%)
+ parser enumerator list             :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)   205k (  0%)
+ parser function body               :   0.06 (  6%)   0.06 (  9%)   0.13 (  6%) 10187k (  5%)
+ parser inl. func. body             :   0.02 (  2%)   0.03 (  4%)   0.09 (  4%)  7223k (  4%)
+ parser inl. meth. body             :   0.12 ( 11%)   0.07 ( 10%)   0.21 ( 10%)    15M (  8%)
+ template instantiation             :   0.41 ( 38%)   0.15 ( 21%)   0.85 ( 40%)    75M ( 39%)
+ constant expression evaluation     :   0.04 (  4%)   0.01 (  1%)   0.01 (  0%)   617k (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  6480  (  0%)
+ varconst                           :   0.00 (  0%)   0.02 (  3%)   0.00 (  0%)   896  (  0%)
+ TOTAL                              :   1.08          0.70          2.12          195M
+
+# Exit code: 0

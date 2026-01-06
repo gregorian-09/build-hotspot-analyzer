@@ -1,0 +1,18 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/leak_check.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/debugging/CMakeFiles/leak_check.dir/leak_check.cc.o -MF absl/debugging/CMakeFiles/leak_check.dir/leak_check.cc.o.d -o absl/debugging/CMakeFiles/leak_check.dir/leak_check.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/leak_check.cc
+# Timestamp: 2026-01-05T17:54:05+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)  1882k ( 55%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1099k ( 32%)
+ phase opt and generate             :   0.01 (100%)   0.00 (  0%)   0.02 ( 67%)   424k ( 12%)
+ dump files                         :   0.01 (100%)   0.00 (  0%)   0.01 ( 33%)     0  (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   331k ( 10%)
+ callgraph ipa passes               :   0.01 (100%)   0.00 (  0%)   0.01 ( 33%)    72k (  2%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   728  (  0%)
+ TOTAL                              :   0.01          0.00          0.03         3406k
+
+# Exit code: 0

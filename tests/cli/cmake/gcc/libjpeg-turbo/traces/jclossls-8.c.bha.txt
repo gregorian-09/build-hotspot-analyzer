@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jclossls-8.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jclossls-8.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jclossls-8.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jclossls-8.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jclossls-8.c
+# Timestamp: 2026-01-05T18:14:49+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1819k ( 23%)
+ phase parsing                      :   0.02 ( 20%)   0.03 ( 60%)   0.06 ( 35%)  2696k ( 34%)
+ phase opt and generate             :   0.07 ( 70%)   0.02 ( 40%)   0.10 ( 59%)  3319k ( 42%)
+ phase finalize                     :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.07 ( 70%)   0.02 ( 40%)   0.10 ( 59%)  2790k ( 36%)
+ df reaching defs                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    28k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 24%)   777k ( 10%)
+ lexical analysis                   :   0.01 ( 10%)   0.01 ( 20%)   0.01 (  6%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1331k ( 17%)
+ parser inl. func. body             :   0.01 ( 10%)   0.01 ( 20%)   0.00 (  0%)   245k (  3%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    15k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    54k (  1%)
+ tree PRE                           :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    51k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    26k (  0%)
+ tree forward propagate             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    43k (  1%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  9144  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   139k (  2%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   400  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   415k (  5%)
+ scheduling 2                       :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ final                              :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    45k (  1%)
+ initialize rtl                     :   0.01 ( 10%)   0.00 (  0%)   0.01 (  6%)    12k (  0%)
+ tree loop if-conversion            :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2464  (  0%)
+ rest of compilation                :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    59k (  1%)
+ TOTAL                              :   0.10          0.05          0.17         7835k
+
+# Exit code: 0

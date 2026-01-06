@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: redisassert.c
+# Output: redisassert.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o redisassert.o -c redisassert.c
+# Timestamp: 2026-01-05T20:43:23+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 44%)
+ phase parsing                      :   0.01 ( 33%)   0.01 (100%)   0.03 ( 60%)  2168k ( 53%)
+ phase opt and generate             :   0.02 ( 67%)   0.00 (  0%)   0.02 ( 40%)   127k (  3%)
+ callgraph ipa passes               :   0.02 ( 67%)   0.00 (  0%)   0.02 ( 40%)    81k (  2%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 40%)     0  (  0%)
+ ipa lto decl out                   :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   264  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   577k ( 14%)
+ parser (global)                    :   0.01 ( 33%)   0.00 (  0%)   0.01 ( 20%)   849k ( 21%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   228k (  6%)
+ loop init                          :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  3152  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)   419k ( 10%)
+ TOTAL                              :   0.03          0.01          0.05         4124k

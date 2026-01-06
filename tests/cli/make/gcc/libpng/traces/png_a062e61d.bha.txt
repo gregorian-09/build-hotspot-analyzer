@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: png.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c png.c
+# Timestamp: 2026-01-05T20:46:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 13%)
+ phase parsing                      :   0.03 ( 33%)   0.04 ( 80%)   0.07 ( 47%)  5986k ( 42%)
+ phase opt and generate             :   0.06 ( 67%)   0.01 ( 20%)   0.08 ( 53%)  6441k ( 45%)
+ callgraph construction             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   168k (  1%)
+ callgraph ipa passes               :   0.01 ( 11%)   0.00 (  0%)   0.01 (  7%)   659k (  5%)
+ cfg cleanup                        :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  5224  (  0%)
+ df scan insns                      :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  3216  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   105k (  1%)
+ preprocessing                      :   0.01 ( 11%)   0.02 ( 40%)   0.02 ( 13%)  3029k ( 21%)
+ lexical analysis                   :   0.02 ( 22%)   0.01 ( 20%)   0.04 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  2028k ( 14%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   769k (  5%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   228k (  2%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1249k (  9%)
+ integrated RA                      :   0.03 ( 33%)   0.00 (  0%)   0.03 ( 20%)  2169k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    32k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   286k (  2%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   184k (  1%)
+ TOTAL                              :   0.09          0.05          0.15           13M

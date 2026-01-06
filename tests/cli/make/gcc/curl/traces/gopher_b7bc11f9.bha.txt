@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: gopher.c
+# Output: libcurlu_la-gopher.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c gopher.c -fPIC -DPIC -o libcurlu_la-gopher.o
+# Timestamp: 2026-01-05T20:44:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.04 ( 80%)   0.06 ( 86%)   0.19 ( 76%)  6504k ( 62%)
+ phase opt and generate             :   0.01 ( 20%)   0.01 ( 14%)   0.06 ( 24%)  2133k ( 20%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   156k (  1%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.04 ( 57%)   0.09 ( 36%)  2394k ( 23%)
+ lexical analysis                   :   0.02 ( 40%)   0.01 ( 14%)   0.07 ( 28%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.01 ( 14%)   0.01 (  4%)  3033k ( 29%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   362k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   346k (  3%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1302k ( 12%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    66k (  1%)
+ rest of compilation                :   0.01 ( 20%)   0.00 (  0%)   0.02 (  8%)   123k (  1%)
+ TOTAL                              :   0.05          0.07          0.25           10M

@@ -1,0 +1,46 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/monitoring/thread_status_util_debug.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/monitoring/thread_status_util_debug.cc.o -MF CMakeFiles/rocksdb-shared.dir/monitoring/thread_status_util_debug.cc.o.d -o CMakeFiles/rocksdb-shared.dir/monitoring/thread_status_util_debug.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/monitoring/thread_status_util_debug.cc
+# Timestamp: 2026-01-05T19:37:14+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.33 ( 72%)   0.82 ( 83%)   3.95 ( 83%)   211M ( 77%)
+ phase lang. deferred               :   0.44 ( 24%)   0.16 ( 16%)   0.72 ( 15%)    57M ( 21%)
+ phase opt and generate             :   0.07 (  4%)   0.01 (  1%)   0.09 (  2%)  4237k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.35 ( 19%)   0.14 ( 14%)   1.12 ( 23%)  8339k (  3%)
+ |overload resolution               :   0.47 ( 26%)   0.17 ( 17%)   0.84 ( 18%)    49M ( 18%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)  1426k (  1%)
+ callgraph functions expansion      :   0.04 (  2%)   0.00 (  0%)   0.05 (  1%)  1689k (  1%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   812k (  0%)
+ ipa inheritance graph              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ ipa cp                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    37k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.09 (  5%)   0.21 ( 21%)   0.48 ( 10%)  3321k (  1%)
+ parser (global)                    :   0.10 (  5%)   0.16 ( 16%)   0.70 ( 15%)    49M ( 18%)
+ parser struct body                 :   0.14 (  8%)   0.05 (  5%)   0.39 (  8%)    32M ( 12%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   306k (  0%)
+ parser function body               :   0.03 (  2%)   0.04 (  4%)   0.12 (  3%)  3024k (  1%)
+ parser inl. func. body             :   0.08 (  4%)   0.02 (  2%)   0.21 (  4%)  8577k (  3%)
+ parser inl. meth. body             :   0.29 ( 16%)   0.11 ( 11%)   0.62 ( 13%)    32M ( 12%)
+ template instantiation             :   0.97 ( 53%)   0.33 ( 33%)   1.83 ( 38%)   133M ( 49%)
+ constant expression evaluation     :   0.04 (  2%)   0.04 (  4%)   0.13 (  3%)  2173k (  1%)
+ constraint satisfaction            :   0.03 (  2%)   0.02 (  2%)   0.09 (  2%)  3011k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    25k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    10k (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    41k (  0%)
+ tree iv optimization               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    92k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    31k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.04 (  1%)  1920  (  0%)
+ loop unrolling                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  4520  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.05 (  1%)     0  (  0%)
+ access analysis                    :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1224  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ TOTAL                              :   1.84          0.99          4.78          274M
+
+# Exit code: 0

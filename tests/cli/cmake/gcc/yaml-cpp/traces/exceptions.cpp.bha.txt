@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/exceptions.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/exceptions.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/exceptions.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/exceptions.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/exceptions.cpp
+# Timestamp: 2026-01-05T18:12:30+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)  1876k (  4%)
+ phase parsing                      :   0.16 ( 80%)   0.16 ( 84%)   0.43 ( 84%)    35M ( 84%)
+ phase lang. deferred               :   0.02 ( 10%)   0.00 (  0%)   0.02 (  4%)  3233k (  8%)
+ phase opt and generate             :   0.02 ( 10%)   0.02 ( 11%)   0.05 ( 10%)  1883k (  4%)
+ |name lookup                       :   0.05 ( 25%)   0.03 ( 16%)   0.14 ( 27%)  1528k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.01 (  5%)   0.03 (  6%)  2505k (  6%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3624  (  0%)
+ callgraph functions expansion      :   0.02 ( 10%)   0.01 (  5%)   0.03 (  6%)  1267k (  3%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)   372k (  1%)
+ preprocessing                      :   0.04 ( 20%)   0.06 ( 32%)   0.09 ( 18%)  1856k (  4%)
+ parser (global)                    :   0.04 ( 20%)   0.02 ( 11%)   0.12 ( 24%)    13M ( 32%)
+ parser struct body                 :   0.03 ( 15%)   0.02 ( 11%)   0.03 (  6%)  6522k ( 15%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   152k (  0%)
+ parser function body               :   0.01 (  5%)   0.00 (  0%)   0.05 ( 10%)  2328k (  5%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 11%)   0.03 (  6%)  2641k (  6%)
+ parser inl. meth. body             :   0.01 (  5%)   0.01 (  5%)   0.04 (  8%)  3662k (  9%)
+ template instantiation             :   0.04 ( 20%)   0.02 ( 11%)   0.07 ( 14%)  8326k ( 19%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)    94k (  0%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6760  (  0%)
+ tree PRE                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ varconst                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  7168  (  0%)
+ loop fini                          :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    32k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    30k (  0%)
+ rest of compilation                :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    61k (  0%)
+ TOTAL                              :   0.20          0.19          0.51           41M
+
+# Exit code: 0

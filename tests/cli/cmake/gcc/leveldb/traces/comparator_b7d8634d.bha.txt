@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/comparator.cc
+# Output: CMakeFiles/leveldb.dir/util/comparator.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/comparator.cc.o -MF CMakeFiles/leveldb.dir/util/comparator.cc.o.d -o CMakeFiles/leveldb.dir/util/comparator.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/comparator.cc
+# Timestamp: 2026-01-05T20:10:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  1880k (  4%)
+ phase parsing                      :   0.30 ( 79%)   0.20 ( 87%)   1.95 ( 87%)    44M ( 86%)
+ phase lang. deferred               :   0.05 ( 13%)   0.02 (  9%)   0.20 (  9%)  4388k (  8%)
+ phase opt and generate             :   0.03 (  8%)   0.01 (  4%)   0.05 (  2%)  1236k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.04 ( 17%)   0.59 ( 26%)  2177k (  4%)
+ |overload resolution               :   0.01 (  3%)   0.01 (  4%)   0.15 (  7%)  2697k (  5%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)   240k (  0%)
+ callgraph functions expansion      :   0.02 (  5%)   0.01 (  4%)   0.04 (  2%)   625k (  1%)
+ ipa pure const                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  4176  (  0%)
+ preprocessing                      :   0.03 (  8%)   0.07 ( 30%)   0.31 ( 14%)  2098k (  4%)
+ parser (global)                    :   0.10 ( 26%)   0.05 ( 22%)   0.46 ( 21%)    17M ( 33%)
+ parser struct body                 :   0.09 ( 24%)   0.02 (  9%)   0.25 ( 11%)  9511k ( 18%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   105k (  0%)
+ parser function body               :   0.01 (  3%)   0.01 (  4%)   0.05 (  2%)   842k (  2%)
+ parser inl. func. body             :   0.01 (  3%)   0.02 (  9%)   0.19 (  8%)  3421k (  6%)
+ parser inl. meth. body             :   0.02 (  5%)   0.01 (  4%)   0.23 ( 10%)  4038k (  8%)
+ template instantiation             :   0.09 ( 24%)   0.04 ( 17%)   0.57 ( 25%)    11M ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)   174k (  0%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   728  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   128  (  0%)
+ if-conversion 2                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    25k (  0%)
+ TOTAL                              :   0.38          0.23          2.24           51M

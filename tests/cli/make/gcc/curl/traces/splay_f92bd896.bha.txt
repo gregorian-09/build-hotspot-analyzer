@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: splay.c
+# Output: libcurlu_la-splay.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c splay.c -fPIC -DPIC -o libcurlu_la-splay.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 21%)
+ phase parsing                      :   0.03 ( 75%)   0.03 ( 75%)   0.07 ( 78%)  4617k ( 52%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 25%)   0.02 ( 22%)  2384k ( 27%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    60k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)   186k (  2%)
+ preprocessing                      :   0.03 ( 75%)   0.01 ( 25%)   0.02 ( 22%)  1984k ( 22%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.03 ( 33%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.01 ( 11%)  2129k ( 24%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)   128  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 25%)   0.01 ( 11%)  1428k ( 16%)
+ shorten branches                   :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.04          0.04          0.09         8822k

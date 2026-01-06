@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdsample-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdsample-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdsample-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdsample-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdsample-12.c
+# Timestamp: 2026-01-05T18:14:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 19%)
+ phase parsing                      :   0.01 (  7%)   0.02 ( 40%)   0.09 ( 25%)  2696k ( 27%)
+ phase opt and generate             :   0.13 ( 93%)   0.03 ( 60%)   0.26 ( 72%)  5309k ( 54%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.12 ( 86%)   0.02 ( 40%)   0.23 ( 64%)  4700k ( 48%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 ( 20%)   0.03 (  8%)   407k (  4%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    49k (  1%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   199k (  2%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 ( 20%)   0.02 (  6%)    18k (  0%)
+ preprocessing                      :   0.01 (  7%)   0.00 (  0%)   0.03 (  8%)   758k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  8%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 20%)   0.03 (  8%)  1321k ( 13%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   235k (  2%)
+ inline parameters                  :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  5776  (  0%)
+ tree VRP                           :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)   101k (  1%)
+ tree copy propagation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1224  (  0%)
+ dominator optimization             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    88k (  1%)
+ backwards jump threading           :   0.02 ( 14%)   0.02 ( 40%)   0.02 (  6%)    44k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)    10k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)   110k (  1%)
+ tree FRE                           :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    10k (  0%)
+ complete unrolling                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   191k (  2%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   648k (  7%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ CSE                                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%) 10040  (  0%)
+ PRE                                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  4440  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)   312k (  3%)
+ integrated RA                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   634k (  6%)
+ LRA rematerialization              :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   456  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ initialize rtl                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    58k (  1%)
+ TOTAL                              :   0.14          0.05          0.36         9826k
+
+# Exit code: 0

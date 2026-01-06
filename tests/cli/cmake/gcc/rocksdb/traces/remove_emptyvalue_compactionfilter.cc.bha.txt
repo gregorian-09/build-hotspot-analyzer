@@ -1,0 +1,52 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/compaction_filters/remove_emptyvalue_compactionfilter.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/utilities/compaction_filters/remove_emptyvalue_compactionfilter.cc.o -MF CMakeFiles/rocksdb-shared.dir/utilities/compaction_filters/remove_emptyvalue_compactionfilter.cc.o.d -o CMakeFiles/rocksdb-shared.dir/utilities/compaction_filters/remove_emptyvalue_compactionfilter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/compaction_filters/remove_emptyvalue_compactionfilter.cc
+# Timestamp: 2026-01-05T19:39:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1886k (  2%)
+ phase parsing                      :   0.56 ( 81%)   0.40 ( 89%)   1.89 ( 84%)    92M ( 88%)
+ phase lang. deferred               :   0.06 (  9%)   0.03 (  7%)   0.16 (  7%)  7649k (  7%)
+ phase opt and generate             :   0.07 ( 10%)   0.02 (  4%)   0.18 (  8%)  3431k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.08 ( 12%)   0.10 ( 22%)   0.55 ( 25%)  3775k (  4%)
+ |overload resolution               :   0.07 ( 10%)   0.03 (  7%)   0.22 ( 10%)  8355k (  8%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   366k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6256  (  0%)
+ callgraph functions expansion      :   0.04 (  6%)   0.02 (  4%)   0.11 (  5%)  1656k (  2%)
+ callgraph ipa passes               :   0.02 (  3%)   0.00 (  0%)   0.05 (  2%)  1030k (  1%)
+ ipa inlining heuristics            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    96k (  0%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9936  (  0%)
+ alias stmt walking                 :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)  1512  (  0%)
+ preprocessing                      :   0.07 ( 10%)   0.06 ( 13%)   0.26 ( 12%)  2593k (  2%)
+ parser (global)                    :   0.13 ( 19%)   0.14 ( 31%)   0.48 ( 21%)    28M ( 27%)
+ parser struct body                 :   0.09 ( 13%)   0.05 ( 11%)   0.25 ( 11%)    17M ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   216k (  0%)
+ parser function body               :   0.02 (  3%)   0.01 (  2%)   0.04 (  2%)  1409k (  1%)
+ parser inl. func. body             :   0.04 (  6%)   0.01 (  2%)   0.15 (  7%)  7948k (  7%)
+ parser inl. meth. body             :   0.09 ( 13%)   0.04 (  9%)   0.25 ( 11%)    11M ( 11%)
+ template instantiation             :   0.17 ( 25%)   0.09 ( 20%)   0.56 ( 25%)    29M ( 28%)
+ constant expression evaluation     :   0.01 (  1%)   0.02 (  4%)   0.04 (  2%)   342k (  0%)
+ constraint normalization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   153k (  0%)
+ constraint satisfaction            :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   434k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    13k (  0%)
+ tree CFG construction              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   126k (  0%)
+ tree VRP                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    41k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    27k (  0%)
+ isolate eroneous paths             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9928  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    42k (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   240  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ branch prediction                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ combiner                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    22k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   419k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   768  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)    52k (  0%)
+ TOTAL                              :   0.69          0.45          2.24          105M
+
+# Exit code: 0

@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: src/emap.c
+# Output: src/emap.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/emap.o src/emap.c
+# Timestamp: 2026-01-05T20:43:09+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1819k (  4%)
+ phase parsing                      :   0.16 ( 57%)   0.21 ( 78%)   0.39 ( 67%)    25M ( 57%)
+ phase opt and generate             :   0.12 ( 43%)   0.06 ( 22%)   0.18 ( 31%)    17M ( 39%)
+ callgraph construction             :   0.00 (  0%)   0.02 (  7%)   0.00 (  0%)   399k (  1%)
+ callgraph ipa passes               :   0.02 (  7%)   0.02 (  7%)   0.05 (  9%)  7537k ( 17%)
+ df scan insns                      :   0.01 (  4%)   0.01 (  4%)   0.01 (  2%)  2640  (  0%)
+ preprocessing                      :   0.05 ( 18%)   0.09 ( 33%)   0.14 ( 24%)    13M ( 31%)
+ lexical analysis                   :   0.05 ( 18%)   0.05 ( 19%)   0.12 ( 21%)     0  (  0%)
+ parser (global)                    :   0.03 ( 11%)   0.03 ( 11%)   0.03 (  5%)  5710k ( 13%)
+ parser inl. func. body             :   0.03 ( 11%)   0.04 ( 15%)   0.10 ( 17%)  5410k ( 12%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   112k (  0%)
+ integration                        :   0.01 (  4%)   0.01 (  4%)   0.02 (  3%)  5897k ( 13%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    40  (  0%)
+ tree operand scan                  :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)   779k (  2%)
+ dominance computation              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.02 (  7%)   0.01 (  4%)   0.03 (  5%)  3395k (  7%)
+ integrated RA                      :   0.02 (  7%)   0.00 (  0%)   0.03 (  5%)  3478k (  8%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    53k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   302k (  1%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    90k (  0%)
+ shorten branches                   :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)   211k (  0%)
+ TOTAL                              :   0.28          0.27          0.58           44M

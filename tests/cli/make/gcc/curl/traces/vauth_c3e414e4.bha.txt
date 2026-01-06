@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: vauth/vauth.c
+# Output: vauth/libcurl_la-vauth.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c vauth/vauth.c -fPIC -DPIC -o vauth/libcurl_la-vauth.o
+# Timestamp: 2026-01-05T20:44:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.04 (100%)   0.05 (100%)   0.19 ( 90%)  5872k ( 60%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)  2102k ( 21%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   151k (  2%)
+ preprocessing                      :   0.01 ( 25%)   0.02 ( 40%)   0.04 ( 19%)  2329k ( 24%)
+ lexical analysis                   :   0.01 ( 25%)   0.02 ( 40%)   0.12 ( 57%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.01 ( 20%)   0.03 ( 14%)  2738k ( 28%)
+ parser enumerator list             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   342k (  3%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    18k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1325k ( 14%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   128k (  1%)
+ TOTAL                              :   0.04          0.05          0.21         9794k

@@ -1,0 +1,68 @@
+# BHA Trace
+# Source: hiredis.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -std=c99 -c -O3 -fPIC -ftime-report -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -ftime-report -pedantic hiredis.c
+# Timestamp: 2026-01-05T20:42:44+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1532k ( 10%)
+ phase parsing                      :   0.02 (  5%)   0.01 ( 20%)   0.07 ( 15%)  2856k ( 18%)
+ phase opt and generate             :   0.34 ( 92%)   0.04 ( 80%)   0.39 ( 83%)    11M ( 72%)
+ phase last asm                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    66k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3960  (  0%)
+ callgraph functions expansion      :   0.30 ( 81%)   0.03 ( 60%)   0.34 ( 72%)  8539k ( 54%)
+ callgraph ipa passes               :   0.04 ( 11%)   0.01 ( 20%)   0.05 ( 11%)  1603k ( 10%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    62k (  0%)
+ ipa function splitting             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    53k (  0%)
+ ipa icf                            :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ cfg construction                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ cfg cleanup                        :   0.01 (  3%)   0.01 ( 20%)   0.00 (  0%)    72k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5056  (  0%)
+ df live&initialized regs           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   266k (  2%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.05 ( 11%)   646k (  4%)
+ lexical analysis                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1133k (  7%)
+ parser function body               :   0.00 (  0%)   0.01 ( 20%)   0.01 (  2%)   367k (  2%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree VRP                           :   0.03 (  8%)   0.00 (  0%)   0.02 (  4%)   208k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   111k (  1%)
+ tree copy propagation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1408  (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    69k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   146k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    45k (  0%)
+ dominator optimization             :   0.02 (  5%)   0.00 (  0%)   0.01 (  2%)   234k (  1%)
+ backwards jump threading           :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   151k (  1%)
+ tree CCP                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   279k (  2%)
+ tree FRE                           :   0.02 (  5%)   0.01 ( 20%)   0.03 (  6%)    71k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    26k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   133k (  1%)
+ tree DSE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   378k (  2%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   896k (  6%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    18k (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    78k (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   521k (  3%)
+ CPROP                              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   172k (  1%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%) 10152  (  0%)
+ CSE 2                              :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    14k (  0%)
+ combiner                           :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   211k (  1%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.02 (  4%)  1558k ( 10%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    32k (  0%)
+ LRA rematerialization              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ reload CSE regs                    :   0.02 (  5%)   0.00 (  0%)   0.01 (  2%)    94k (  1%)
+ load CSE after reload              :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   176  (  0%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    60k (  0%)
+ final                              :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   428k (  3%)
+ symout                             :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1077k (  7%)
+ var-tracking dataflow              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  8520  (  0%)
+ var-tracking emit                  :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   208k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 20%)   0.04 (  9%)   205k (  1%)
+ TOTAL                              :   0.37          0.05          0.47           15M

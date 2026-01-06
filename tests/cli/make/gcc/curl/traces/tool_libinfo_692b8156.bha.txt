@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: tool_libinfo.c
+# Output: libcurltool_la-tool_libinfo.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_libinfo.c -fPIC -DPIC -o libcurltool_la-tool_libinfo.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.02 ( 67%)   0.04 (100%)   0.08 ( 73%)  4959k ( 56%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 27%)  2150k ( 24%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.03 ( 27%)  2113k ( 24%)
+ lexical analysis                   :   0.02 ( 67%)   0.03 ( 75%)   0.04 ( 36%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.01 (  9%)  2296k ( 26%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)  1324k ( 15%)
+ initialize rtl                     :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 18%)    12k (  0%)
+ TOTAL                              :   0.03          0.04          0.11         8929k

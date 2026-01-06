@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: script_lua.c
+# Output: script_lua.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o script_lua.o -c script_lua.c
+# Timestamp: 2026-01-05T20:43:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1828k (  8%)
+ phase parsing                      :   0.09 ( 60%)   0.11 ( 79%)   0.22 ( 73%)    18M ( 79%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.06 ( 40%)   0.02 ( 14%)   0.07 ( 23%)  3261k ( 14%)
+ callgraph construction             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   768k (  3%)
+ callgraph optimization             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  1376  (  0%)
+ callgraph ipa passes               :   0.05 ( 33%)   0.02 ( 14%)   0.07 ( 23%)  1990k (  8%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   264k (  1%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ lto stream output                  :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa lto gimple out                 :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    13k (  0%)
+ ipa pure const                     :   0.01 (  7%)   0.01 (  7%)   0.00 (  0%)    11k (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    79k (  0%)
+ preprocessing                      :   0.04 ( 27%)   0.04 ( 29%)   0.08 ( 27%)  6827k ( 29%)
+ lexical analysis                   :   0.02 ( 13%)   0.06 ( 43%)   0.07 ( 23%)     0  (  0%)
+ parser (global)                    :   0.02 ( 13%)   0.02 ( 14%)   0.05 ( 17%)  7421k ( 31%)
+ parser struct body                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   554k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)   717k (  3%)
+ inline parameters                  :   0.01 (  7%)   0.00 (  0%)   0.02 (  7%)    96k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    48k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  9944  (  0%)
+ dominance computation              :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2699k ( 11%)
+ TOTAL                              :   0.15          0.14          0.30           23M

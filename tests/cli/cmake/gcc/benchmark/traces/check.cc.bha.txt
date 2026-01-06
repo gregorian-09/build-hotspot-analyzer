@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/check.cc
+# Command: /usr/bin/g++ -DBENCHMARK_HAS_PTHREAD_AFFINITY -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src -ftime-report -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark.dir/check.cc.o -MF src/CMakeFiles/benchmark.dir/check.cc.o.d -o src/CMakeFiles/benchmark.dir/check.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/check.cc
+# Timestamp: 2026-01-05T18:44:07+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1752k (  3%)
+ phase parsing                      :   0.27 ( 84%)   0.24 ( 92%)   0.83 ( 86%)    49M ( 85%)
+ phase lang. deferred               :   0.05 ( 16%)   0.01 (  4%)   0.13 ( 13%)  6709k ( 11%)
+ phase opt and generate             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   308k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.04 ( 13%)   0.02 (  8%)   0.19 ( 20%)  1988k (  3%)
+ |overload resolution               :   0.03 (  9%)   0.00 (  0%)   0.09 (  9%)  3717k (  6%)
+ callgraph functions expansion      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    60k (  0%)
+ preprocessing                      :   0.05 ( 16%)   0.08 ( 31%)   0.13 ( 13%)  5841k ( 10%)
+ parser (global)                    :   0.06 ( 19%)   0.05 ( 19%)   0.17 ( 18%)    16M ( 29%)
+ parser struct body                 :   0.02 (  6%)   0.02 (  8%)   0.14 ( 14%)  8904k ( 15%)
+ parser enumerator list             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   110k (  0%)
+ parser function body               :   0.03 (  9%)   0.04 ( 15%)   0.12 ( 12%)  2433k (  4%)
+ parser inl. func. body             :   0.05 ( 16%)   0.01 (  4%)   0.07 (  7%)  4996k (  8%)
+ parser inl. meth. body             :   0.03 (  9%)   0.01 (  4%)   0.07 (  7%)  3691k (  6%)
+ template instantiation             :   0.06 ( 19%)   0.04 ( 15%)   0.22 ( 23%)    13M ( 23%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   202k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4504  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.32          0.26          0.97           57M
+
+# Exit code: 0

@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: src/mutex.c
+# Output: src/mutex.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/mutex.o src/mutex.c
+# Timestamp: 2026-01-05T20:43:12+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.13 ( 87%)   0.24 ( 96%)   0.38 ( 93%)    25M ( 86%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    96  (  0%)
+ phase opt and generate             :   0.02 ( 13%)   0.01 (  4%)   0.02 (  5%)  2483k (  8%)
+ preprocessing                      :   0.04 ( 27%)   0.12 ( 48%)   0.14 ( 34%)    13M ( 47%)
+ lexical analysis                   :   0.05 ( 33%)   0.06 ( 24%)   0.13 ( 32%)     0  (  0%)
+ parser (global)                    :   0.02 ( 13%)   0.02 (  8%)   0.07 ( 17%)  5690k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   254k (  1%)
+ parser inl. func. body             :   0.02 ( 13%)   0.03 ( 12%)   0.05 ( 12%)  5390k ( 18%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7128  (  0%)
+ expand                             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   400k (  1%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4344  (  0%)
+ thread pro- & epilogue             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    35k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.15          0.25          0.41           29M

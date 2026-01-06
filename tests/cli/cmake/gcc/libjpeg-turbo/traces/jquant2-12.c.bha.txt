@@ -1,0 +1,61 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jquant2-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant2-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant2-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jquant2-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jquant2-12.c
+# Timestamp: 2026-01-05T18:14:54+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 12%)
+ phase parsing                      :   0.02 (  8%)   0.02 ( 33%)   0.11 ( 23%)  2888k ( 19%)
+ phase opt and generate             :   0.23 ( 92%)   0.04 ( 67%)   0.36 ( 77%)    10M ( 69%)
+ dump files                         :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.20 ( 80%)   0.03 ( 50%)   0.33 ( 70%)  8904k ( 58%)
+ callgraph ipa passes               :   0.03 ( 12%)   0.01 ( 17%)   0.03 (  6%)   993k (  6%)
+ df live regs                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    58k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.01 (  4%)   0.01 ( 17%)   0.04 (  9%)   780k (  5%)
+ lexical analysis                   :   0.01 (  4%)   0.01 ( 17%)   0.03 (  6%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  1335k (  9%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   234k (  2%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   256k (  2%)
+ integration                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   188k (  1%)
+ tree VRP                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   356k (  2%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   115k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   106k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   181k (  1%)
+ backwards jump threading           :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    27k (  0%)
+ tree CCP                           :   0.02 (  8%)   0.00 (  0%)   0.01 (  2%)    58k (  0%)
+ tree PRE                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   276k (  2%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    94k (  1%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    45k (  0%)
+ complete unrolling                 :   0.02 (  8%)   0.01 ( 17%)   0.03 (  6%)   738k (  5%)
+ tree vectorization                 :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   585k (  4%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   745k (  5%)
+ tree iv optimization               :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   704k (  5%)
+ dominance frontiers                :   0.01 (  4%)   0.01 ( 17%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ expand                             :   0.02 (  8%)   0.00 (  0%)   0.00 (  0%)   434k (  3%)
+ forward prop                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  9768  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   516k (  3%)
+ loop invariant motion              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3104  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1024  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    79k (  1%)
+ CSE 2                              :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)  8576  (  0%)
+ combiner                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   402k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.03 (  6%)   985k (  6%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  6%)   102k (  1%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    25k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)    10k (  0%)
+ reload CSE regs                    :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   108k (  1%)
+ load CSE after reload              :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)  3608  (  0%)
+ thread pro- & epilogue             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    30k (  0%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    35k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   107k (  1%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    62k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ TOTAL                              :   0.25          0.06          0.47           14M
+
+# Exit code: 0

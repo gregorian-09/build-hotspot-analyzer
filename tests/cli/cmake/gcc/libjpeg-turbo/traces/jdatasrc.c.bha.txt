@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdatasrc.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jdatasrc.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jdatasrc.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jdatasrc.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdatasrc.c
+# Timestamp: 2026-01-05T18:14:51+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 36%)
+ phase parsing                      :   0.02 ( 50%)   0.02 ( 67%)   0.09 ( 60%)  2240k ( 44%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    96  (  0%)
+ phase opt and generate             :   0.02 ( 50%)   0.01 ( 33%)   0.05 ( 33%)   977k ( 19%)
+ callgraph functions expansion      :   0.02 ( 50%)   0.01 ( 33%)   0.04 ( 27%)   614k ( 12%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   162k (  3%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.03 ( 20%)   703k ( 14%)
+ lexical analysis                   :   0.01 ( 25%)   0.00 (  0%)   0.02 ( 13%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.00 (  0%)   0.03 ( 20%)  1097k ( 22%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 33%)   0.01 (  7%)   128k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    32k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   288  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    17k (  0%)
+ initialize rtl                     :   0.01 ( 25%)   0.00 (  0%)   0.01 (  7%)    12k (  0%)
+ rest of compilation                :   0.01 ( 25%)   0.00 (  0%)   0.02 ( 13%)    23k (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ TOTAL                              :   0.04          0.03          0.15         5038k
+
+# Exit code: 0

@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/status.cc
+# Output: CMakeFiles/leveldb.dir/util/status.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/status.cc.o -MF CMakeFiles/leveldb.dir/util/status.cc.o.d -o CMakeFiles/leveldb.dir/util/status.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/status.cc
+# Timestamp: 2026-01-05T20:10:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1880k (  4%)
+ phase parsing                      :   0.28 ( 78%)   0.23 ( 92%)   1.82 ( 86%)    44M ( 85%)
+ phase lang. deferred               :   0.04 ( 11%)   0.01 (  4%)   0.11 (  5%)  4335k (  8%)
+ phase opt and generate             :   0.04 ( 11%)   0.01 (  4%)   0.17 (  8%)  1964k (  4%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.05 ( 14%)   0.05 ( 20%)   0.60 ( 28%)  2174k (  4%)
+ |overload resolution               :   0.04 ( 11%)   0.01 (  4%)   0.14 (  7%)  2805k (  5%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   277k (  1%)
+ callgraph functions expansion      :   0.03 (  8%)   0.01 (  4%)   0.12 (  6%)   798k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.04 (  2%)   682k (  1%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.03 (  8%)   0.05 ( 20%)   0.33 ( 16%)  2096k (  4%)
+ parser (global)                    :   0.07 ( 19%)   0.06 ( 24%)   0.37 ( 17%)    17M ( 33%)
+ parser struct body                 :   0.05 ( 14%)   0.04 ( 16%)   0.28 ( 13%)  8834k ( 16%)
+ parser function body               :   0.00 (  0%)   0.02 (  8%)   0.10 (  5%)  1198k (  2%)
+ parser inl. func. body             :   0.05 ( 14%)   0.00 (  0%)   0.16 (  8%)  3292k (  6%)
+ parser inl. meth. body             :   0.01 (  3%)   0.03 ( 12%)   0.14 (  7%)  4032k (  8%)
+ template instantiation             :   0.10 ( 28%)   0.04 ( 16%)   0.48 ( 23%)    11M ( 23%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.05 (  2%)   161k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   198k (  0%)
+ tree Early VRP                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    62k (  0%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  5880  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    25k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    62k (  0%)
+ tree DSE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  7304  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   280  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4376  (  0%)
+ forward prop                       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  3824  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   133k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   528  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)    15k (  0%)
+ TOTAL                              :   0.36          0.25          2.12           52M

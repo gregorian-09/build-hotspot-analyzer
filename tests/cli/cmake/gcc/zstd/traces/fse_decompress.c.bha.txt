@@ -1,0 +1,55 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/fse_decompress.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/fse_decompress.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/fse_decompress.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/fse_decompress.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/fse_decompress.c
+# Timestamp: 2026-01-05T17:52:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 12%)
+ phase parsing                      :   0.03 ( 11%)   0.04 ( 67%)   0.08 ( 21%)  3710k ( 24%)
+ phase opt and generate             :   0.25 ( 89%)   0.02 ( 33%)   0.30 ( 77%)  9934k ( 64%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.22 ( 79%)   0.01 ( 17%)   0.25 ( 64%)  7353k ( 48%)
+ callgraph ipa passes               :   0.03 ( 11%)   0.01 ( 17%)   0.04 ( 10%)  2004k ( 13%)
+ cfg cleanup                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    44k (  0%)
+ df reaching defs                   :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    88k (  1%)
+ alias analysis                     :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)   237k (  2%)
+ preprocessing                      :   0.02 (  7%)   0.03 ( 50%)   0.01 (  3%)   684k (  4%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 17%)   0.04 ( 10%)     0  (  0%)
+ parser (global)                    :   0.01 (  4%)   0.00 (  0%)   0.02 (  5%)  1665k ( 11%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1253k (  8%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    59k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1915k ( 12%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   190k (  1%)
+ tree CFG cleanup                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   175k (  1%)
+ tree Early VRP                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   103k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   181k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   367k (  2%)
+ dominator optimization             :   0.02 (  7%)   0.00 (  0%)   0.01 (  3%)   258k (  2%)
+ backwards jump threading           :   0.02 (  7%)   0.00 (  0%)   0.03 (  8%)   157k (  1%)
+ tree CCP                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)    33k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   315k (  2%)
+ tree FRE                           :   0.01 (  4%)   0.01 ( 17%)   0.01 (  3%)   137k (  1%)
+ tree forward propagate             :   0.01 (  4%)   0.01 ( 17%)   0.01 (  3%)    54k (  0%)
+ loop splitting                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  6728  (  0%)
+ complete unrolling                 :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)   207k (  1%)
+ tree slp vectorization             :   0.01 (  4%)   0.00 (  0%)   0.02 (  5%)  1098k (  7%)
+ dominance computation              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   428k (  3%)
+ PRE                                :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)   256  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    14k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   489k (  3%)
+ integrated RA                      :   0.01 (  4%)   0.00 (  0%)   0.02 (  5%)   617k (  4%)
+ LRA rematerialization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ combine stack adjustments          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ peephole 2                         :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)  2232  (  0%)
+ machine dep reorg                  :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)   208  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    89k (  1%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  3%)    20k (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ TOTAL                              :   0.28          0.06          0.39           15M
+
+# Exit code: 0

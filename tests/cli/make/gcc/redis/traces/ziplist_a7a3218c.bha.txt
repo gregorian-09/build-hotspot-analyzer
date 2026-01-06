@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ziplist.c
+# Output: ziplist.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o ziplist.o -c ziplist.c
+# Timestamp: 2026-01-05T20:43:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1828k ( 20%)
+ phase parsing                      :   0.03 ( 38%)   0.02 ( 67%)   0.05 ( 42%)  4075k ( 44%)
+ phase opt and generate             :   0.05 ( 62%)   0.01 ( 33%)   0.06 ( 50%)  3458k ( 37%)
+ callgraph ipa passes               :   0.05 ( 62%)   0.01 ( 33%)   0.06 ( 50%)  1778k ( 19%)
+ ipa function summary               :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)    89k (  1%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ lto stream output                  :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  4864  (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    16k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   921k ( 10%)
+ lexical analysis                   :   0.03 ( 38%)   0.00 (  0%)   0.02 ( 17%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)  1507k ( 16%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   584k (  6%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   435k (  5%)
+ inline parameters                  :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)   108k (  1%)
+ tree Early VRP                     :   0.01 ( 13%)   0.00 (  0%)   0.01 (  8%)    87k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.01 ( 33%)   0.01 (  8%)    39k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    23k (  0%)
+ remove unused locals               :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.08          0.03          0.12         9362k

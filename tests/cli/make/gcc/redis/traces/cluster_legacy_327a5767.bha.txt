@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: cluster_legacy.c
+# Output: cluster_legacy.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o cluster_legacy.o -c cluster_legacy.c
+# Timestamp: 2026-01-05T20:43:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  5%)
+ phase parsing                      :   0.17 ( 42%)   0.14 ( 70%)   0.33 ( 53%)    21M ( 56%)
+ phase opt and generate             :   0.22 ( 55%)   0.06 ( 30%)   0.29 ( 47%)    14M ( 39%)
+ phase finalize                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  1827k (  5%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  7896  (  0%)
+ callgraph ipa passes               :   0.20 ( 50%)   0.05 ( 25%)   0.26 ( 42%)  9954k ( 26%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ lto stream output                  :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ ipa lto gimple out                 :   0.02 (  5%)   0.00 (  0%)   0.01 (  2%)    67k (  0%)
+ ipa icf                            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  8800  (  0%)
+ ipa free lang data                 :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    89k (  0%)
+ alias stmt walking                 :   0.01 (  3%)   0.00 (  0%)   0.03 (  5%)    47k (  0%)
+ preprocessing                      :   0.08 ( 20%)   0.03 ( 15%)   0.07 ( 11%)  6944k ( 18%)
+ lexical analysis                   :   0.01 (  3%)   0.04 ( 20%)   0.11 ( 18%)     0  (  0%)
+ parser (global)                    :   0.03 (  8%)   0.04 ( 20%)   0.03 (  5%)  7559k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   572k (  1%)
+ parser function body               :   0.05 ( 13%)   0.01 (  5%)   0.09 ( 15%)  2880k (  8%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   721k (  2%)
+ early inlining heuristics          :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   199k (  1%)
+ inline parameters                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   458k (  1%)
+ integration                        :   0.01 (  2%)   0.00 (  0%)   0.01 (  2%)  3415k (  9%)
+ tree gimplify                      :   0.02 (  5%)   0.00 (  0%)   0.01 (  2%)  2549k (  7%)
+ tree CFG construction              :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   839k (  2%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ tree Early VRP                     :   0.02 (  5%)   0.01 (  5%)   0.03 (  5%)   363k (  1%)
+ tree PTA                           :   0.02 (  5%)   0.02 ( 10%)   0.02 (  3%)   170k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   696k (  2%)
+ tree operand scan                  :   0.01 (  2%)   0.00 (  0%)   0.01 (  2%)  1273k (  3%)
+ tree CCP                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    65k (  0%)
+ tree FRE                           :   0.01 (  3%)   0.01 (  5%)   0.00 (  0%)   203k (  1%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   170k (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)  2827k (  7%)
+ if to switch conversion            :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    24  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3016  (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ address taken                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.40          0.20          0.62           37M

@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/arena.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/memory/arena.cc.o -MF CMakeFiles/rocksdb-shared.dir/memory/arena.cc.o.d -o CMakeFiles/rocksdb-shared.dir/memory/arena.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/arena.cc
+# Timestamp: 2026-01-05T19:36:47+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   0.76 ( 73%)   0.67 ( 92%)   2.07 ( 78%)   132M ( 84%)
+ phase lang. deferred               :   0.11 ( 11%)   0.03 (  4%)   0.19 (  7%)    14M (  9%)
+ phase opt and generate             :   0.17 ( 16%)   0.03 (  4%)   0.37 ( 14%)  9060k (  6%)
+ |name lookup                       :   0.20 ( 19%)   0.11 ( 15%)   0.47 ( 18%)  5455k (  3%)
+ |overload resolution               :   0.11 ( 11%)   0.07 ( 10%)   0.19 (  7%)    15M ( 10%)
+ callgraph functions expansion      :   0.12 ( 12%)   0.00 (  0%)   0.27 ( 10%)  3944k (  2%)
+ callgraph ipa passes               :   0.04 (  4%)   0.03 (  4%)   0.09 (  3%)  3026k (  2%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    29k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    37k (  0%)
+ preprocessing                      :   0.10 ( 10%)   0.15 ( 21%)   0.31 ( 12%)  3098k (  2%)
+ parser (global)                    :   0.11 ( 11%)   0.19 ( 26%)   0.53 ( 20%)    33M ( 21%)
+ parser struct body                 :   0.07 (  7%)   0.07 ( 10%)   0.32 ( 12%)    25M ( 16%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2311k (  1%)
+ parser function body               :   0.04 (  4%)   0.01 (  1%)   0.13 (  5%)  3336k (  2%)
+ parser inl. func. body             :   0.06 (  6%)   0.01 (  1%)   0.08 (  3%)  7009k (  4%)
+ parser inl. meth. body             :   0.14 ( 13%)   0.09 ( 12%)   0.26 ( 10%)    21M ( 14%)
+ template instantiation             :   0.33 ( 32%)   0.17 ( 23%)   0.58 ( 22%)    50M ( 32%)
+ constant expression evaluation     :   0.02 (  2%)   0.01 (  1%)   0.03 (  1%)   541k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    53k (  0%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   340k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)  1128k (  1%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   899k (  1%)
+ tree eh                            :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    64k (  0%)
+ tree VRP                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    61k (  0%)
+ tree PTA                           :   0.02 (  2%)   0.00 (  0%)   0.01 (  0%)    97k (  0%)
+ tree SSA incremental               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    91k (  0%)
+ tree operand scan                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   642k (  0%)
+ dominator optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   103k (  0%)
+ tree FRE                           :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)    81k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    39k (  0%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   209k (  0%)
+ tree iv optimization               :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    80k (  0%)
+ tree copy headers                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  5016  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2000  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ CSE 2                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    52k (  0%)
+ combiner                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   105k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   411k (  0%)
+ hard reg cprop                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   384  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2392  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    16k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.05 (  2%)    56k (  0%)
+ TOTAL                              :   1.04          0.73          2.64          158M
+
+# Exit code: 0

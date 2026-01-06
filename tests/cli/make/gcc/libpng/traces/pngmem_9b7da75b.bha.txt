@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: pngmem.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c pngmem.c
+# Timestamp: 2026-01-05T20:46:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 26%)
+ phase parsing                      :   0.02 ( 67%)   0.02 ( 67%)   0.06 ( 86%)  4405k ( 64%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 33%)   0.01 ( 14%)   697k ( 10%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.01 ( 14%)  2392k ( 35%)
+ lexical analysis                   :   0.02 ( 67%)   0.00 (  0%)   0.01 ( 14%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.04 ( 57%)  1816k ( 26%)
+ integrated RA                      :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   319k (  5%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)    33k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.03          0.03          0.07         6922k

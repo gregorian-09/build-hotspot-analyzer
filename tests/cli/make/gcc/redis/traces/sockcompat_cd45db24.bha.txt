@@ -1,0 +1,16 @@
+# BHA Trace
+# Source: sockcompat.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -std=c99 -c -O3 -fPIC -ftime-report -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -ftime-report -pedantic sockcompat.c
+# Timestamp: 2026-01-05T20:42:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1532k ( 51%)
+ phase parsing                      :   0.01 (100%)   0.00 (  0%)   0.05 (100%)  1448k ( 49%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   498k ( 17%)
+ lexical analysis                   :   0.01 (100%)   0.00 (  0%)   0.04 ( 80%)     0  (  0%)
+ TOTAL                              :   0.01          0.00          0.05         2986k

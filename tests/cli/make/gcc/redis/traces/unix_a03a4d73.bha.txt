@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: unix.c
+# Output: unix.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o unix.o -c unix.c
+# Timestamp: 2026-01-05T20:43:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.06 ( 75%)   0.06 (100%)   0.13 ( 87%)    12M ( 83%)
+ phase opt and generate             :   0.02 ( 25%)   0.00 (  0%)   0.02 ( 13%)   680k (  5%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.00 (  0%)   0.02 ( 13%)   381k (  3%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    20k (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    82k (  1%)
+ preprocessing                      :   0.04 ( 50%)   0.04 ( 67%)   0.03 ( 20%)  2821k ( 19%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.06 ( 40%)     0  (  0%)
+ parser (global)                    :   0.02 ( 25%)   0.02 ( 33%)   0.01 (  7%)  5481k ( 37%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   702k (  5%)
+ inline parameters                  :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    32k (  0%)
+ tree gimplify                      :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)    58k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)  2567k ( 17%)
+ TOTAL                              :   0.08          0.06          0.15           14M

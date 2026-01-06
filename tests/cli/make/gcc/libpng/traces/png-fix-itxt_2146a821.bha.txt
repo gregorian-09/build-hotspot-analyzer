@@ -1,0 +1,15 @@
+# BHA Trace
+# Source: contrib/tools/png-fix-itxt.c
+# Output: contrib/tools/png-fix-itxt.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c -o contrib/tools/png-fix-itxt.o contrib/tools/png-fix-itxt.c
+# Timestamp: 2026-01-05T20:46:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)  1819k ( 50%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.02 ( 67%)  1408k ( 39%)
+ preprocessing                      :   0.01 (100%)   0.01 (100%)   0.02 ( 67%)   542k ( 15%)
+ TOTAL                              :   0.01          0.01          0.03         3643k

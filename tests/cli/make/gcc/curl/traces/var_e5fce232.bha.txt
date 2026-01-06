@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: var.c
+# Output: libcurltool_la-var.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c var.c -fPIC -DPIC -o libcurltool_la-var.o
+# Timestamp: 2026-01-05T20:44:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 18%)
+ phase parsing                      :   0.03 ( 60%)   0.03 ( 60%)   0.11 ( 73%)  5323k ( 52%)
+ phase opt and generate             :   0.02 ( 40%)   0.02 ( 40%)   0.03 ( 20%)  3044k ( 30%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    64k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   301k (  3%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 20%)   0.03 ( 20%)  2211k ( 22%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 27%)     0  (  0%)
+ parser (global)                    :   0.02 ( 40%)   0.01 ( 20%)   0.01 (  7%)  2312k ( 23%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   395k (  4%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   121k (  1%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   322k (  3%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)     0  (  0%)
+ loop init                          :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    69k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1487k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  4544  (  0%)
+ rest of compilation                :   0.01 ( 20%)   0.00 (  0%)   0.01 (  7%)   139k (  1%)
+ TOTAL                              :   0.05          0.05          0.15        10187k

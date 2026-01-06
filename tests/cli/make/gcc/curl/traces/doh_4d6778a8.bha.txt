@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: doh.c
+# Output: libcurlu_la-doh.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c doh.c -fPIC -DPIC -o libcurlu_la-doh.o
+# Timestamp: 2026-01-05T20:44:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1819k (  8%)
+ phase parsing                      :   0.12 ( 75%)   0.22 ( 96%)   0.61 ( 81%)    14M ( 64%)
+ phase opt and generate             :   0.04 ( 25%)   0.01 (  4%)   0.13 ( 17%)  6836k ( 29%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    94k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    81k (  0%)
+ callgraph ipa passes               :   0.01 (  6%)   0.00 (  0%)   0.01 (  1%)   455k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1680  (  0%)
+ preprocessing                      :   0.04 ( 25%)   0.04 ( 17%)   0.15 ( 20%)  8038k ( 34%)
+ lexical analysis                   :   0.05 ( 31%)   0.10 ( 43%)   0.26 ( 35%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 (  5%)  2855k ( 12%)
+ parser function body               :   0.03 ( 19%)   0.08 ( 35%)   0.16 ( 21%)  3735k ( 16%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1449k (  6%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1131k (  5%)
+ tree CFG cleanup                   :   0.01 (  6%)   0.00 (  0%)   0.01 (  1%)  5688  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ out of ssa                         :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  6424  (  0%)
+ post expand cleanups               :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    36k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2092k (  9%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    12k (  0%)
+ access analysis                    :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  1472  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   194k (  1%)
+ TOTAL                              :   0.16          0.23          0.75           23M

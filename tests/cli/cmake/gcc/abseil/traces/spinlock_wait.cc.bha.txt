@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/spinlock_wait.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/spinlock_wait.dir/internal/spinlock_wait.cc.o -MF absl/base/CMakeFiles/spinlock_wait.dir/internal/spinlock_wait.cc.o.d -o absl/base/CMakeFiles/spinlock_wait.dir/internal/spinlock_wait.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/spinlock_wait.cc
+# Timestamp: 2026-01-05T17:53:57+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)  1882k ( 14%)
+ phase parsing                      :   0.04 ( 67%)   0.04 ( 80%)   0.17 ( 74%)    10M ( 79%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   311k (  2%)
+ phase opt and generate             :   0.02 ( 33%)   0.01 ( 20%)   0.03 ( 13%)   573k (  4%)
+ |name lookup                       :   0.00 (  0%)   0.01 ( 20%)   0.05 ( 22%)   566k (  4%)
+ dump files                         :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.01 ( 17%)   0.01 ( 20%)   0.03 ( 13%)   330k (  3%)
+ callgraph ipa passes               :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   142k (  1%)
+ preprocessing                      :   0.01 ( 17%)   0.02 ( 40%)   0.02 (  9%)   939k (  7%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.07 ( 30%)  3166k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 20%)   0.02 (  9%)  2104k ( 16%)
+ parser inl. func. body             :   0.01 ( 17%)   0.01 ( 20%)   0.02 (  9%)  1224k (  9%)
+ parser inl. meth. body             :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)   737k (  6%)
+ template instantiation             :   0.02 ( 33%)   0.00 (  0%)   0.03 ( 13%)  2373k ( 18%)
+ tree SSA rewrite                   :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   408  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    96  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    10k (  0%)
+ TOTAL                              :   0.06          0.05          0.23           12M
+
+# Exit code: 0

@@ -1,0 +1,16 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/tracing.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/tracing_internal.dir/internal/tracing.cc.o -MF absl/base/CMakeFiles/tracing_internal.dir/internal/tracing.cc.o.d -o absl/base/CMakeFiles/tracing_internal.dir/internal/tracing.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/tracing.cc
+# Timestamp: 2026-01-05T17:53:59+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k ( 58%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1084k ( 33%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)   272k (  8%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)    60k (  2%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)  1336  (  0%)
+ TOTAL                              :   0.00          0.00          0.02         3239k
+
+# Exit code: 0

@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/colorprint.cc
+# Command: /usr/bin/g++ -DBENCHMARK_HAS_PTHREAD_AFFINITY -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src -ftime-report -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark.dir/colorprint.cc.o -MF src/CMakeFiles/benchmark.dir/colorprint.cc.o.d -o src/CMakeFiles/benchmark.dir/colorprint.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/colorprint.cc
+# Timestamp: 2026-01-05T18:44:08+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1752k (  2%)
+ phase parsing                      :   0.33 ( 79%)   0.28 ( 93%)   1.14 ( 89%)    67M ( 86%)
+ phase lang. deferred               :   0.04 ( 10%)   0.00 (  0%)   0.05 (  4%)  7145k (  9%)
+ phase opt and generate             :   0.05 ( 12%)   0.01 (  3%)   0.07 (  5%)  2654k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.09 ( 21%)   0.03 ( 10%)   0.25 ( 20%)  2362k (  3%)
+ |overload resolution               :   0.05 ( 12%)   0.00 (  0%)   0.09 (  7%)  4710k (  6%)
+ callgraph construction             :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   326k (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  8272  (  0%)
+ callgraph functions expansion      :   0.03 (  7%)   0.00 (  0%)   0.02 (  2%)  1047k (  1%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   952k (  1%)
+ ipa inheritance graph              :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  3008  (  0%)
+ ipa icf                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1088  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.06 ( 14%)   0.10 ( 33%)   0.21 ( 16%)  6238k (  8%)
+ parser (global)                    :   0.04 ( 10%)   0.08 ( 27%)   0.40 ( 31%)    26M ( 34%)
+ parser struct body                 :   0.05 ( 12%)   0.04 ( 13%)   0.10 (  8%)    11M ( 14%)
+ parser function body               :   0.05 ( 12%)   0.04 ( 13%)   0.04 (  3%)  4767k (  6%)
+ parser inl. func. body             :   0.04 ( 10%)   0.02 (  7%)   0.14 ( 11%)  5351k (  7%)
+ parser inl. meth. body             :   0.04 ( 10%)   0.00 (  0%)   0.06 (  5%)  4873k (  6%)
+ template instantiation             :   0.08 ( 19%)   0.00 (  0%)   0.21 ( 16%)    15M ( 20%)
+ constant expression evaluation     :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   314k (  0%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    28k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ backwards jump threading           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ tree DSE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   185k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.42          0.30          1.28           78M
+
+# Exit code: 0

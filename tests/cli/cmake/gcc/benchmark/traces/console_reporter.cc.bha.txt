@@ -1,0 +1,61 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/console_reporter.cc
+# Command: /usr/bin/g++ -DBENCHMARK_HAS_PTHREAD_AFFINITY -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src -ftime-report -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark.dir/console_reporter.cc.o -MF src/CMakeFiles/benchmark.dir/console_reporter.cc.o.d -o src/CMakeFiles/benchmark.dir/console_reporter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/console_reporter.cc
+# Timestamp: 2026-01-05T18:44:09+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1752k (  1%)
+ phase parsing                      :   0.61 ( 69%)   0.40 ( 87%)   1.27 ( 70%)    99M ( 81%)
+ phase lang. deferred               :   0.09 ( 10%)   0.03 (  7%)   0.25 ( 14%)    13M ( 11%)
+ phase opt and generate             :   0.18 ( 20%)   0.03 (  7%)   0.30 ( 16%)  7789k (  6%)
+ |name lookup                       :   0.19 ( 22%)   0.08 ( 17%)   0.35 ( 19%)  4299k (  3%)
+ |overload resolution               :   0.08 (  9%)   0.05 ( 11%)   0.23 ( 13%)    11M (  9%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.01 (  1%)   579k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    11k (  0%)
+ callgraph functions expansion      :   0.14 ( 16%)   0.01 (  2%)   0.17 (  9%)  4154k (  3%)
+ callgraph ipa passes               :   0.03 (  3%)   0.02 (  4%)   0.10 (  5%)  2353k (  2%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ trivially dead code                :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   130k (  0%)
+ preprocessing                      :   0.10 ( 11%)   0.13 ( 28%)   0.25 ( 14%)  6350k (  5%)
+ parser (global)                    :   0.07 (  8%)   0.07 ( 15%)   0.20 ( 11%)    33M ( 27%)
+ parser struct body                 :   0.08 (  9%)   0.06 ( 13%)   0.13 (  7%)    16M ( 13%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   129k (  0%)
+ parser function body               :   0.05 (  6%)   0.02 (  4%)   0.08 (  4%)  4191k (  3%)
+ parser inl. func. body             :   0.03 (  3%)   0.00 (  0%)   0.08 (  4%)  5062k (  4%)
+ parser inl. meth. body             :   0.10 ( 11%)   0.06 ( 13%)   0.19 ( 10%) 10010k (  8%)
+ template instantiation             :   0.26 ( 30%)   0.08 ( 17%)   0.55 ( 30%)    38M ( 31%)
+ constant expression evaluation     :   0.01 (  1%)   0.00 (  0%)   0.03 (  2%)   338k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    69k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1193k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   436k (  0%)
+ tree Early VRP                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   167k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  2%)   0.03 (  2%)    76k (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   136k (  0%)
+ tree SSA incremental               :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    84k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   421k (  0%)
+ dominator optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    90k (  0%)
+ tree CCP                           :   0.02 (  2%)   0.00 (  0%)   0.02 (  1%)    20k (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    82k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2512  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   490k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4632  (  0%)
+ CSE                                :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   107k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    31k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    66k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   511k (  0%)
+ LRA rematerialization              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ peephole 2                         :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  4488  (  0%)
+ hard reg cprop                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   288  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    34k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1256  (  0%)
+ TOTAL                              :   0.88          0.46          1.82          122M
+
+# Exit code: 0

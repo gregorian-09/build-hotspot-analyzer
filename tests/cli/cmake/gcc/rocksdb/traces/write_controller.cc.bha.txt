@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/write_controller.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/db/write_controller.cc.o -MF CMakeFiles/rocksdb-shared.dir/db/write_controller.cc.o.d -o CMakeFiles/rocksdb-shared.dir/db/write_controller.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/write_controller.cc
+# Timestamp: 2026-01-05T19:36:03+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1886k (  1%)
+ phase parsing                      :   0.91 ( 74%)   0.56 ( 88%)   1.86 ( 72%)   156M ( 82%)
+ phase lang. deferred               :   0.26 ( 21%)   0.07 ( 11%)   0.58 ( 23%)    29M ( 16%)
+ phase opt and generate             :   0.06 (  5%)   0.00 (  0%)   0.13 (  5%)  2673k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ |name lookup                       :   0.26 ( 21%)   0.03 (  5%)   0.59 ( 23%)  5793k (  3%)
+ |overload resolution               :   0.23 ( 19%)   0.07 ( 11%)   0.53 ( 21%)    25M ( 13%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.02 (  1%)  1051k (  1%)
+ callgraph functions expansion      :   0.03 (  2%)   0.00 (  0%)   0.07 (  3%)   854k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)   553k (  0%)
+ df reg dead/unused notes           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8688  (  0%)
+ preprocessing                      :   0.08 (  7%)   0.11 ( 17%)   0.24 (  9%)  3125k (  2%)
+ parser (global)                    :   0.16 ( 13%)   0.15 ( 23%)   0.36 ( 14%)    48M ( 26%)
+ parser struct body                 :   0.09 (  7%)   0.10 ( 16%)   0.28 ( 11%)    30M ( 16%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   306k (  0%)
+ parser function body               :   0.03 (  2%)   0.02 (  3%)   0.07 (  3%)  6918k (  4%)
+ parser inl. func. body             :   0.09 (  7%)   0.01 (  2%)   0.14 (  5%)  7957k (  4%)
+ parser inl. meth. body             :   0.20 ( 16%)   0.04 (  6%)   0.30 ( 12%)    19M ( 10%)
+ template instantiation             :   0.40 ( 33%)   0.16 ( 25%)   0.94 ( 37%)    65M ( 34%)
+ constant expression evaluation     :   0.07 (  6%)   0.02 (  3%)   0.04 (  2%)  1333k (  1%)
+ constraint normalization           :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)   518k (  0%)
+ constraint satisfaction            :   0.04 (  3%)   0.00 (  0%)   0.03 (  1%)  2759k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   125k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    51k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.01 (  1%)   0.01 (  2%)   0.01 (  0%)   256  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3912  (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    32k (  0%)
+ address taken                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   1.23          0.64          2.57          190M
+
+# Exit code: 0

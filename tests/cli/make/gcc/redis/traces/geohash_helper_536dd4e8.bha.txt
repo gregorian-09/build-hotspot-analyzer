@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: geohash_helper.c
+# Output: geohash_helper.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o geohash_helper.o -c geohash_helper.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 23%)
+ phase parsing                      :   0.02 ( 67%)   0.04 (100%)   0.06 ( 75%)  5605k ( 71%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 25%)   514k (  6%)
+ callgraph ipa passes               :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 25%)   311k (  4%)
+ preprocessing                      :   0.00 (  0%)   0.03 ( 75%)   0.02 ( 25%)  2779k ( 35%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 25%)   0.02 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 ( 33%)   0.00 (  0%)   0.01 ( 12%)  2420k ( 30%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 13%)   129k (  2%)
+ tree PTA                           :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  2216  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.02 ( 25%)  2528  (  0%)
+ TOTAL                              :   0.03          0.04          0.08         7948k

@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: uint-table.c
+# Output: libcurlu_la-uint-table.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c uint-table.c -fPIC -DPIC -o libcurlu_la-uint-table.o
+# Timestamp: 2026-01-05T20:44:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.04 ( 80%)   0.03 ( 75%)   0.09 ( 82%)  4630k ( 51%)
+ phase opt and generate             :   0.01 ( 20%)   0.01 ( 25%)   0.02 ( 18%)  2663k ( 29%)
+ dump files                         :   0.01 ( 20%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   206k (  2%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 25%)   0.03 ( 27%)  1982k ( 22%)
+ lexical analysis                   :   0.03 ( 60%)   0.01 ( 25%)   0.02 ( 18%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 18%)  2136k ( 23%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 ( 18%)   113k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)    33k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1595k ( 18%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)  5240  (  0%)
+ TOTAL                              :   0.05          0.04          0.11         9113k

@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/test/test-stress.c
+# Command: /usr/bin/gcc -DMI_BUILD_RELEASE -DMI_CMAKE_BUILD_TYPE=release -DUSE_STD_MALLOC=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/include -ftime-report -O3 -DNDEBUG -std=gnu11 -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden -Wstrict-prototypes -ftls-model=initial-exec -fno-builtin-malloc -MD -MT CMakeFiles/mimalloc-test-stress-dynamic.dir/test/test-stress.c.o -MF CMakeFiles/mimalloc-test-stress-dynamic.dir/test/test-stress.c.o.d -o CMakeFiles/mimalloc-test-stress-dynamic.dir/test/test-stress.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/test/test-stress.c
+# Timestamp: 2026-01-05T17:45:45+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1818k ( 25%)
+ phase parsing                      :   0.02 ( 25%)   0.03 ( 60%)   0.11 ( 50%)  2792k ( 39%)
+ phase opt and generate             :   0.06 ( 75%)   0.02 ( 40%)   0.11 ( 50%)  2596k ( 36%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph functions expansion      :   0.06 ( 75%)   0.02 ( 40%)   0.09 ( 41%)  2081k ( 29%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)   369k (  5%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  2448  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 18%)   781k ( 11%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.02 (  9%)     0  (  0%)
+ parser (global)                    :   0.02 ( 25%)   0.01 ( 20%)   0.04 ( 18%)  1493k ( 21%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   201k (  3%)
+ integration                        :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)   110k (  2%)
+ tree VRP                           :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    66k (  1%)
+ tree SSA incremental               :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    15k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   280  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  6968  (  0%)
+ CPROP                              :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    55k (  1%)
+ CSE 2                              :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  4032  (  0%)
+ combiner                           :   0.01 ( 12%)   0.00 (  0%)   0.03 ( 14%)   121k (  2%)
+ if-conversion                      :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  1000  (  0%)
+ LRA non-specific                   :   0.01 ( 13%)   0.00 (  0%)   0.01 (  5%)    26k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    13k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    35k (  0%)
+ TOTAL                              :   0.08          0.05          0.22         7208k
+
+# Exit code: 0
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1818k ( 26%)
+ phase parsing                      :   0.02 ( 22%)   0.02 ( 67%)   0.08 ( 50%)  2346k ( 34%)
+ phase opt and generate             :   0.07 ( 78%)   0.01 ( 33%)   0.08 ( 50%)  2740k ( 40%)
+ callgraph functions expansion      :   0.06 ( 67%)   0.00 (  0%)   0.07 ( 44%)  2093k ( 30%)
+ callgraph ipa passes               :   0.01 ( 11%)   0.01 ( 33%)   0.01 (  6%)   374k (  5%)
+ rebuild jump labels                :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 11%)   0.02 ( 67%)   0.00 (  0%)   713k ( 10%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.06 ( 38%)     0  (  0%)
+ parser (global)                    :   0.01 ( 11%)   0.00 (  0%)   0.02 ( 12%)  1265k ( 18%)
+ tree PTA                           :   0.01 ( 11%)   0.01 ( 33%)   0.00 (  0%)  9944  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    78k (  1%)
+ tree CCP                           :   0.01 ( 11%)   0.00 (  0%)   0.02 ( 12%)    16k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    87k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    21k (  0%)
+ tree forward propagate             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  8824  (  0%)
+ dominance computation              :   0.01 ( 11%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ CSE                                :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  5096  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   244k (  4%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  4872  (  0%)
+ rest of compilation                :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ TOTAL                              :   0.09          0.03          0.16         6906k
+
+# Exit code: 0

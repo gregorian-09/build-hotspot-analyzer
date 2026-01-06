@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: tool_dirhie.c
+# Output: libcurltool_la-tool_dirhie.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_dirhie.c -fPIC -DPIC -o libcurltool_la-tool_dirhie.o
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.03 ( 75%)   0.03 ( 75%)   0.07 ( 78%)  5119k ( 57%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 25%)   0.02 ( 22%)  2071k ( 23%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)   153k (  2%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1344  (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.01 ( 25%)   0.03 ( 33%)  2179k ( 24%)
+ lexical analysis                   :   0.02 ( 50%)   0.01 ( 25%)   0.02 ( 22%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 22%)  2269k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   182k (  2%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  1300k ( 14%)
+ rest of compilation                :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   126k (  1%)
+ TOTAL                              :   0.04          0.04          0.09         9010k

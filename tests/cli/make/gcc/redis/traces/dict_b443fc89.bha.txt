@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: dict.c
+# Output: dict.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o dict.o -c dict.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 14%)
+ phase parsing                      :   0.04 ( 31%)   0.06 (100%)   0.10 ( 50%)  6301k ( 47%)
+ phase opt and generate             :   0.09 ( 69%)   0.00 (  0%)   0.10 ( 50%)  5367k ( 40%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1040k (  8%)
+ callgraph optimization             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  4008  (  0%)
+ callgraph ipa passes               :   0.08 ( 62%)   0.00 (  0%)   0.09 ( 45%)  3218k ( 24%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   189k (  1%)
+ ipa cp                             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   132k (  1%)
+ lto stream compression             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa lto gimple out                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    13k (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    10k (  0%)
+ preprocessing                      :   0.03 ( 23%)   0.02 ( 33%)   0.03 ( 15%)  1722k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 33%)   0.01 (  5%)  2638k ( 20%)
+ parser function body               :   0.01 (  8%)   0.02 ( 33%)   0.02 ( 10%)   582k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   212k (  2%)
+ tree eh                            :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  7224  (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   316k (  2%)
+ tree Early VRP                     :   0.02 ( 15%)   0.00 (  0%)   0.01 (  5%)   231k (  2%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    25k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    54k (  0%)
+ dominance computation              :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    51k (  0%)
+ if to switch conversion            :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    64  (  0%)
+ TOTAL                              :   0.13          0.06          0.20           13M

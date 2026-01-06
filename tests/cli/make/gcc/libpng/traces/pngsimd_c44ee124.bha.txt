@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: pngsimd.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c pngsimd.c
+# Timestamp: 2026-01-05T20:46:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1819k (  6%)
+ phase parsing                      :   0.21 ( 95%)   0.31 ( 97%)   0.54 ( 95%)    27M ( 88%)
+ phase opt and generate             :   0.01 (  5%)   0.01 (  3%)   0.02 (  4%)  1827k (  6%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   566k (  2%)
+ preprocessing                      :   0.04 ( 18%)   0.07 ( 22%)   0.16 ( 28%)  5512k ( 18%)
+ lexical analysis                   :   0.05 ( 23%)   0.11 ( 34%)   0.15 ( 26%)     0  (  0%)
+ parser (global)                    :   0.07 ( 32%)   0.09 ( 28%)   0.14 ( 25%)    13M ( 44%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    89k (  0%)
+ parser inl. func. body             :   0.05 ( 23%)   0.04 ( 13%)   0.08 ( 14%)  7982k ( 26%)
+ out of ssa                         :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  1296  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   494k (  2%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    96  (  0%)
+ TOTAL                              :   0.22          0.32          0.57           30M

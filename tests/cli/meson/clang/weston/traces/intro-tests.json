@@ -1,0 +1,4567 @@
+[
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/acer-p1276.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-acer-p1276",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/acer-p1276.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-acer-p1276",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/apple-xdr-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-apple-xdr-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/apple-xdr-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-apple-xdr-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/ayaneo-wxga.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-ayaneo-wxga",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/ayaneo-wxga.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-ayaneo-wxga",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/custom-uncommon-cta-vesa.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-custom-uncommon-cta-vesa",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/custom-uncommon-cta-vesa.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-custom-uncommon-cta-vesa",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/dell-2408wfp-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-dell-2408wfp-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/dell-2408wfp-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-dell-2408wfp-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/goldstar-e2441.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-goldstar-e2441",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/goldstar-e2441.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-goldstar-e2441",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/goldstar-ite6604-hdmi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-goldstar-ite6604-hdmi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/goldstar-ite6604-hdmi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-goldstar-ite6604-hdmi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/hp-5dq99aa-hdmi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-hp-5dq99aa-hdmi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/hp-5dq99aa-hdmi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-hp-5dq99aa-hdmi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/msi-mag321curv-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-msi-mag321curv-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/msi-mag321curv-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-msi-mag321curv-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/panasonic-mei96a2-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-panasonic-mei96a2-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/panasonic-mei96a2-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-panasonic-mei96a2-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/qemu.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-qemu",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/qemu.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-qemu",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/samsung-s27a950d-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-samsung-s27a950d-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/samsung-s27a950d-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-samsung-s27a950d-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/sun-gh19ps-dvi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-sun-gh19ps-dvi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/sun-gh19ps-dvi.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-sun-gh19ps-dvi",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/tcl-smart-tv-5655.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-tcl-smart-tv-5655",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/tcl-smart-tv-5655.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-tcl-smart-tv-5655",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/viewsonic-vp2768-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-viewsonic-vp2768-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/viewsonic-vp2768-dp.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-viewsonic-vp2768-dp",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cvt.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-cvt",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cvt.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-cvt",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/philips-ftv-490.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-philips-ftv-490",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/philips-ftv-490.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-philips-ftv-490",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/samsung-q800t-hdmi2.0.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-samsung-q800t-hdmi2.0",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/samsung-q800t-hdmi2.0.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-samsung-q800t-hdmi2.0",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-timings.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-cta-timings",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-timings.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-cta-timings",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/hitachi-55r6+.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-hitachi-55r6+",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/hitachi-55r6+.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-hitachi-55r6+",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-vfpdb.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-cta-vfpdb",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-vfpdb.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-cta-vfpdb",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/philips-ftv-2017.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-philips-ftv-2017",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/philips-ftv-2017.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-philips-ftv-2017",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-decode-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-timings.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "decode-cta-timings",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "10843e1@@di-edid-decode@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/test/./edid-print-check.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/../repo/subprojects/display-info/test/data/cta-timings.edid"
+    ],
+    "env": {
+      "DI_EDID_DECODE": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode",
+      "DI_EDID_PRINT": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/test/di-edid-print",
+      "LD_LIBRARY_PATH": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info"
+    },
+    "name": "print-cta-timings",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "display-info"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "3f0a38c@@di-edid-print@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/linux-dmabuf/linux-dmabuf-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-stable_linux_dmabuf_linux_dmabuf_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/presentation-time/presentation-time.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-stable_presentation_time_presentation_time_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/tablet/tablet-v2.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-stable_tablet_tablet_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/viewporter/viewporter.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-stable_viewporter_viewporter_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/xdg-shell/xdg-shell.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-stable_xdg_shell_xdg_shell_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/alpha-modifier/alpha-modifier-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_alpha_modifier_alpha_modifier_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/color-management/color-management-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_color_management_color_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/color-representation/color-representation-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_color_representation_color_representation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/commit-timing/commit-timing-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_commit_timing_commit_timing_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/content-type/content-type-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_content_type_content_type_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/cursor-shape/cursor-shape-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_cursor_shape_cursor_shape_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/drm-lease/drm-lease-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_drm_lease_drm_lease_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-background-effect/ext-background-effect-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_background_effect_ext_background_effect_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-data-control/ext-data-control-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_data_control_ext_data_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-idle-notify/ext-idle-notify-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_idle_notify_ext_idle_notify_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-image-capture-source/ext-image-capture-source-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_image_capture_source_ext_image_capture_source_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-session-lock/ext-session-lock-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_session_lock_ext_session_lock_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-transient-seat/ext-transient-seat-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_transient_seat_ext_transient_seat_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-workspace/ext-workspace-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_ext_workspace_ext_workspace_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/fifo/fifo-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_fifo_fifo_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/fractional-scale/fractional-scale-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_fractional_scale_fractional_scale_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/pointer-warp/pointer-warp-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_pointer_warp_pointer_warp_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/security-context/security-context-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_security_context_security_context_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/single-pixel-buffer/single-pixel-buffer-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_single_pixel_buffer_single_pixel_buffer_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/tearing-control/tearing-control-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_tearing_control_tearing_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-activation/xdg-activation-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_activation_xdg_activation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-dialog/xdg-dialog-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_dialog_xdg_dialog_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-system-bell/xdg-system-bell-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_system_bell_xdg_system_bell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xwayland-shell/xwayland-shell-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-staging_xwayland_shell_xwayland_shell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/input-method/input-method-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_input_method_input_method_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/input-timestamps/input-timestamps-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_input_timestamps_input_timestamps_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/primary-selection/primary-selection-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_primary_selection_primary_selection_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_relative_pointer_relative_pointer_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/tablet/tablet-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_tablet_tablet_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/tablet/tablet-unstable-v2.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_tablet_tablet_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/text-input/text-input-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_text_input_text_input_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/text-input/text-input-unstable-v3.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_text_input_text_input_unstable_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_foreign_xdg_foreign_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-output/xdg-output-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_output_xdg_output_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-shell/xdg-shell-unstable-v5.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_shell_xdg_shell_unstable_v5_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-shell/xdg-shell-unstable-v6.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xdg_shell_xdg_shell_unstable_v6_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/experimental/xx-input-method/xx-input-method-v2.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-experimental_xx_input_method_xx_input_method_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/experimental/xx-session-management/xx-session-management-v1.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-experimental_xx_session_management_xx_session_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/tests/scan.sh",
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/experimental/xx-text-input/xx-text-input-v3.xml"
+    ],
+    "env": {
+      "SCANNER": "/usr/local/bin/wayland-scanner"
+    },
+    "name": "scan-experimental_xx_text_input_xx_text_input_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-stable_linux_dmabuf_linux_dmabuf_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-stable_linux_dmabuf_linux_dmabuf_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-stable_linux_dmabuf_linux_dmabuf_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-stable_linux_dmabuf_linux_dmabuf_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-stable_linux_dmabuf_linux_dmabuf_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-stable_linux_dmabuf_linux_dmabuf_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-stable_presentation_time_presentation_time_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-stable_presentation_time_presentation_time_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-stable_presentation_time_presentation_time_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-stable_presentation_time_presentation_time_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-stable_presentation_time_presentation_time_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-stable_presentation_time_presentation_time_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-stable_tablet_tablet_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-stable_tablet_tablet_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-stable_tablet_tablet_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-stable_tablet_tablet_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-stable_tablet_tablet_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-stable_tablet_tablet_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-stable_viewporter_viewporter_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-stable_viewporter_viewporter_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-stable_viewporter_viewporter_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-stable_viewporter_viewporter_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-stable_viewporter_viewporter_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-stable_viewporter_viewporter_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-stable_xdg_shell_xdg_shell_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-stable_xdg_shell_xdg_shell_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-stable_xdg_shell_xdg_shell_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-stable_xdg_shell_xdg_shell_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-stable_xdg_shell_xdg_shell_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-stable_xdg_shell_xdg_shell_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_alpha_modifier_alpha_modifier_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_alpha_modifier_alpha_modifier_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_alpha_modifier_alpha_modifier_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_alpha_modifier_alpha_modifier_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_alpha_modifier_alpha_modifier_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_alpha_modifier_alpha_modifier_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_color_management_color_management_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_color_management_color_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_color_management_color_management_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_color_management_color_management_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_color_management_color_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_color_management_color_management_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_color_representation_color_representation_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_color_representation_color_representation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_color_representation_color_representation_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_color_representation_color_representation_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_color_representation_color_representation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_color_representation_color_representation_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_commit_timing_commit_timing_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_commit_timing_commit_timing_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_commit_timing_commit_timing_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_commit_timing_commit_timing_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_commit_timing_commit_timing_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_commit_timing_commit_timing_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_content_type_content_type_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_content_type_content_type_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_content_type_content_type_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_content_type_content_type_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_content_type_content_type_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_content_type_content_type_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_cursor_shape_cursor_shape_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_cursor_shape_cursor_shape_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_cursor_shape_cursor_shape_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_cursor_shape_cursor_shape_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_cursor_shape_cursor_shape_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_cursor_shape_cursor_shape_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_drm_lease_drm_lease_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_drm_lease_drm_lease_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_drm_lease_drm_lease_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_drm_lease_drm_lease_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_drm_lease_drm_lease_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_drm_lease_drm_lease_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_background_effect_ext_background_effect_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_background_effect_ext_background_effect_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_background_effect_ext_background_effect_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_background_effect_ext_background_effect_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_background_effect_ext_background_effect_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_background_effect_ext_background_effect_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_data_control_ext_data_control_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_data_control_ext_data_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_data_control_ext_data_control_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_data_control_ext_data_control_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_data_control_ext_data_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_data_control_ext_data_control_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_foreign_toplevel_list_ext_foreign_toplevel_list_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_idle_notify_ext_idle_notify_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_idle_notify_ext_idle_notify_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_idle_notify_ext_idle_notify_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_idle_notify_ext_idle_notify_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_idle_notify_ext_idle_notify_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_idle_notify_ext_idle_notify_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_image_capture_source_ext_image_capture_source_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_image_capture_source_ext_image_capture_source_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_image_capture_source_ext_image_capture_source_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_image_capture_source_ext_image_capture_source_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_image_capture_source_ext_image_capture_source_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_image_capture_source_ext_image_capture_source_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_image_copy_capture_ext_image_copy_capture_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_session_lock_ext_session_lock_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_session_lock_ext_session_lock_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_session_lock_ext_session_lock_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_session_lock_ext_session_lock_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_session_lock_ext_session_lock_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_session_lock_ext_session_lock_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_transient_seat_ext_transient_seat_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_transient_seat_ext_transient_seat_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_transient_seat_ext_transient_seat_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_transient_seat_ext_transient_seat_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_transient_seat_ext_transient_seat_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_transient_seat_ext_transient_seat_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_ext_workspace_ext_workspace_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_ext_workspace_ext_workspace_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_ext_workspace_ext_workspace_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_ext_workspace_ext_workspace_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_ext_workspace_ext_workspace_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_ext_workspace_ext_workspace_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_fifo_fifo_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_fifo_fifo_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_fifo_fifo_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_fifo_fifo_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_fifo_fifo_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_fifo_fifo_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_fractional_scale_fractional_scale_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_fractional_scale_fractional_scale_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_fractional_scale_fractional_scale_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_fractional_scale_fractional_scale_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_fractional_scale_fractional_scale_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_fractional_scale_fractional_scale_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_linux_drm_syncobj_linux_drm_syncobj_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_pointer_warp_pointer_warp_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_pointer_warp_pointer_warp_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_pointer_warp_pointer_warp_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_pointer_warp_pointer_warp_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_pointer_warp_pointer_warp_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_pointer_warp_pointer_warp_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_security_context_security_context_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_security_context_security_context_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_security_context_security_context_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_security_context_security_context_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_security_context_security_context_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_security_context_security_context_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_single_pixel_buffer_single_pixel_buffer_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_single_pixel_buffer_single_pixel_buffer_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_single_pixel_buffer_single_pixel_buffer_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_single_pixel_buffer_single_pixel_buffer_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_single_pixel_buffer_single_pixel_buffer_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_single_pixel_buffer_single_pixel_buffer_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_tearing_control_tearing_control_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_tearing_control_tearing_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_tearing_control_tearing_control_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_tearing_control_tearing_control_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_tearing_control_tearing_control_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_tearing_control_tearing_control_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_activation_xdg_activation_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_activation_xdg_activation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_activation_xdg_activation_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_activation_xdg_activation_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_activation_xdg_activation_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_activation_xdg_activation_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_dialog_xdg_dialog_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_dialog_xdg_dialog_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_dialog_xdg_dialog_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_dialog_xdg_dialog_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_dialog_xdg_dialog_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_dialog_xdg_dialog_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_system_bell_xdg_system_bell_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_system_bell_xdg_system_bell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_system_bell_xdg_system_bell_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_system_bell_xdg_system_bell_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_system_bell_xdg_system_bell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_system_bell_xdg_system_bell_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_toplevel_drag_xdg_toplevel_drag_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_toplevel_icon_xdg_toplevel_icon_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xdg_toplevel_tag_xdg_toplevel_tag_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-staging_xwayland_shell_xwayland_shell_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-staging_xwayland_shell_xwayland_shell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-staging_xwayland_shell_xwayland_shell_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-staging_xwayland_shell_xwayland_shell_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-staging_xwayland_shell_xwayland_shell_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-staging_xwayland_shell_xwayland_shell_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_fullscreen_shell_fullscreen_shell_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_idle_inhibit_idle_inhibit_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_input_method_input_method_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_input_method_input_method_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_input_method_input_method_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_input_method_input_method_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_input_method_input_method_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_input_method_input_method_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_input_timestamps_input_timestamps_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_input_timestamps_input_timestamps_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_input_timestamps_input_timestamps_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_input_timestamps_input_timestamps_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_input_timestamps_input_timestamps_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_input_timestamps_input_timestamps_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_keyboard_shortcuts_inhibit_keyboard_shortcuts_inhibit_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_linux_dmabuf_linux_dmabuf_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_linux_explicit_synchronization_linux_explicit_synchronization_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_pointer_constraints_pointer_constraints_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_pointer_gestures_pointer_gestures_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_primary_selection_primary_selection_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_primary_selection_primary_selection_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_primary_selection_primary_selection_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_primary_selection_primary_selection_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_primary_selection_primary_selection_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_primary_selection_primary_selection_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_relative_pointer_relative_pointer_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_relative_pointer_relative_pointer_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_relative_pointer_relative_pointer_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_relative_pointer_relative_pointer_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_relative_pointer_relative_pointer_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_relative_pointer_relative_pointer_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_tablet_tablet_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_tablet_tablet_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_tablet_tablet_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_tablet_tablet_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_tablet_tablet_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_tablet_tablet_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_tablet_tablet_unstable_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_tablet_tablet_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_tablet_tablet_unstable_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_tablet_tablet_unstable_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_tablet_tablet_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_tablet_tablet_unstable_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_text_input_text_input_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_text_input_text_input_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_text_input_text_input_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_text_input_text_input_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_text_input_text_input_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_text_input_text_input_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_text_input_text_input_unstable_v3_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_text_input_text_input_unstable_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_text_input_text_input_unstable_v3_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_text_input_text_input_unstable_v3_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_text_input_text_input_unstable_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_text_input_text_input_unstable_v3_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xdg_decoration_xdg_decoration_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xdg_foreign_xdg_foreign_unstable_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_output_xdg_output_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_output_xdg_output_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_output_xdg_output_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xdg_output_xdg_output_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xdg_output_xdg_output_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xdg_output_xdg_output_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v5_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v5_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v5_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v5_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v5_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v5_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v6_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v6_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xdg_shell_xdg_shell_unstable_v6_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v6_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v6_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xdg_shell_xdg_shell_unstable_v6_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-unstable_xwayland_keyboard_grab_xwayland_keyboard_grab_unstable_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-experimental_xx_input_method_xx_input_method_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-experimental_xx_input_method_xx_input_method_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-experimental_xx_input_method_xx_input_method_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-experimental_xx_input_method_xx_input_method_v2_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-experimental_xx_input_method_xx_input_method_v2_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-experimental_xx_input_method_xx_input_method_v2_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-experimental_xx_session_management_xx_session_management_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-experimental_xx_session_management_xx_session_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-experimental_xx_session_management_xx_session_management_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-experimental_xx_session_management_xx_session_management_v1_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-experimental_xx_session_management_xx_session_management_v1_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-experimental_xx_session_management_xx_session_management_v1_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-pedantic-experimental_xx_text_input_xx_text_input_v3_xml"
+    ],
+    "env": {},
+    "name": "test-build-pedantic-experimental_xx_text_input_xx_text_input_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-pedantic-experimental_xx_text_input_xx_text_input_v3_xml@exe"
+    ],
+    "extra_paths": []
+  },
+  {
+    "cmd": [
+      "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/tests/test-build-cxx-experimental_xx_text_input_xx_text_input_v3_xml"
+    ],
+    "env": {},
+    "name": "test-build-cxx-experimental_xx_text_input_xx_text_input_v3_xml",
+    "workdir": null,
+    "timeout": 30,
+    "suite": [
+      "wayland-protocols"
+    ],
+    "is_parallel": true,
+    "priority": 0,
+    "protocol": "exitcode",
+    "depends": [
+      "4a08742@@test-build-cxx-experimental_xx_text_input_xx_text_input_v3_xml@exe"
+    ],
+    "extra_paths": []
+  }
+]

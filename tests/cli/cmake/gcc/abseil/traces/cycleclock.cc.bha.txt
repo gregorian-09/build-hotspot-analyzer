@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/cycleclock.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/base.dir/internal/cycleclock.cc.o -MF absl/base/CMakeFiles/base.dir/internal/cycleclock.cc.o.d -o absl/base/CMakeFiles/base.dir/internal/cycleclock.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/cycleclock.cc
+# Timestamp: 2026-01-05T17:53:57+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k ( 12%)
+ phase parsing                      :   0.05 ( 83%)   0.05 ( 83%)   0.11 ( 85%)    12M ( 82%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 ( 17%)   0.01 (  8%)   679k (  4%)
+ phase opt and generate             :   0.01 ( 17%)   0.00 (  0%)   0.01 (  8%)   239k (  2%)
+ |name lookup                       :   0.00 (  0%)   0.00 (  0%)   0.02 ( 15%)   838k (  5%)
+ callgraph functions expansion      :   0.01 ( 17%)   0.00 (  0%)   0.01 (  8%)    60k (  0%)
+ preprocessing                      :   0.01 ( 17%)   0.02 ( 33%)   0.03 ( 23%)   718k (  5%)
+ parser (global)                    :   0.01 ( 17%)   0.01 ( 17%)   0.01 (  8%)  3493k ( 22%)
+ parser struct body                 :   0.01 ( 17%)   0.01 ( 17%)   0.03 ( 23%)  3335k ( 21%)
+ parser inl. func. body             :   0.01 ( 17%)   0.00 (  0%)   0.01 (  8%)   282k (  2%)
+ parser inl. meth. body             :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)  1287k (  8%)
+ template instantiation             :   0.00 (  0%)   0.02 ( 33%)   0.02 ( 15%)  4609k ( 29%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    80k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 17%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.06          0.06          0.13           15M
+
+# Exit code: 0

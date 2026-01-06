@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/str_replace.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings.dir/str_replace.cc.o -MF absl/strings/CMakeFiles/strings.dir/str_replace.cc.o.d -o absl/strings/CMakeFiles/strings.dir/str_replace.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/str_replace.cc
+# Timestamp: 2026-01-05T17:54:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.38 ( 72%)   0.31 ( 89%)   1.01 ( 78%)    81M ( 83%)
+ phase lang. deferred               :   0.05 (  9%)   0.03 (  9%)   0.08 (  6%)  9888k ( 10%)
+ phase opt and generate             :   0.10 ( 19%)   0.01 (  3%)   0.19 ( 15%)  4963k (  5%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.06 ( 11%)   0.02 (  6%)   0.32 ( 25%)  3382k (  3%)
+ |overload resolution               :   0.03 (  6%)   0.01 (  3%)   0.06 (  5%)    10M ( 11%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    10k (  0%)
+ callgraph functions expansion      :   0.07 ( 13%)   0.00 (  0%)   0.11 (  8%)  2220k (  2%)
+ callgraph ipa passes               :   0.03 (  6%)   0.01 (  3%)   0.06 (  5%)  1751k (  2%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    26k (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3184  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    17k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.08 ( 15%)   0.09 ( 26%)   0.26 ( 20%)  6205k (  6%)
+ parser (global)                    :   0.08 ( 15%)   0.10 ( 29%)   0.25 ( 19%)    29M ( 30%)
+ parser struct body                 :   0.03 (  6%)   0.03 (  9%)   0.07 (  5%)    12M ( 12%)
+ parser function body               :   0.02 (  4%)   0.01 (  3%)   0.05 (  4%)  2917k (  3%)
+ parser inl. func. body             :   0.07 ( 13%)   0.03 (  9%)   0.11 (  8%)  9901k ( 10%)
+ parser inl. meth. body             :   0.06 ( 11%)   0.02 (  6%)   0.09 (  7%)  9587k ( 10%)
+ template instantiation             :   0.08 ( 15%)   0.06 ( 17%)   0.23 ( 18%)    20M ( 21%)
+ constant expression evaluation     :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   404k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   339k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    41k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    51k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   288k (  0%)
+ dominator optimization             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    77k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    52k (  0%)
+ tree FRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    49k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    13k (  0%)
+ dominance computation              :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ lower subreg                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5256  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  5200  (  0%)
+ combiner                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    50k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   302k (  0%)
+ LRA non-specific                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ reload CSE regs                    :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ address taken                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.53          0.35          1.30           97M
+
+# Exit code: 0

@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/interfaces/catch_interfaces_generatortracker.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/interfaces/catch_interfaces_generatortracker.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/interfaces/catch_interfaces_generatortracker.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/interfaces/catch_interfaces_generatortracker.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/interfaces/catch_interfaces_generatortracker.cpp
+# Timestamp: 2026-01-05T18:11:40+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1882k (  5%)
+ phase parsing                      :   0.13 ( 72%)   0.16 ( 94%)   0.35 ( 76%)    31M ( 81%)
+ phase lang. deferred               :   0.03 ( 17%)   0.00 (  0%)   0.03 (  7%)  3226k (  8%)
+ phase opt and generate             :   0.02 ( 11%)   0.01 (  6%)   0.07 ( 15%)  2177k (  6%)
+ |name lookup                       :   0.03 ( 17%)   0.02 ( 12%)   0.12 ( 26%)  1447k (  4%)
+ |overload resolution               :   0.04 ( 22%)   0.00 (  0%)   0.02 (  4%)  1803k (  5%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3240  (  0%)
+ callgraph functions expansion      :   0.02 ( 11%)   0.00 (  0%)   0.04 (  9%)   455k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   458k (  1%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4064  (  0%)
+ df live regs                       :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.02 ( 11%)   0.09 ( 53%)   0.08 ( 17%)  1718k (  4%)
+ parser (global)                    :   0.02 ( 11%)   0.03 ( 18%)   0.09 ( 20%)    13M ( 35%)
+ parser struct body                 :   0.02 ( 11%)   0.01 (  6%)   0.06 ( 13%)  6013k ( 15%)
+ parser function body               :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   324k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  6%)   0.03 (  7%)  2629k (  7%)
+ parser inl. meth. body             :   0.03 ( 17%)   0.01 (  6%)   0.06 ( 13%)  2329k (  6%)
+ template instantiation             :   0.05 ( 28%)   0.01 (  6%)   0.06 ( 13%)  8135k ( 21%)
+ constant expression evaluation     :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   101k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    83k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1069k (  3%)
+ dominator optimization             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)     0  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   152  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6488  (  0%)
+ TOTAL                              :   0.18          0.17          0.46           38M
+
+# Exit code: 0

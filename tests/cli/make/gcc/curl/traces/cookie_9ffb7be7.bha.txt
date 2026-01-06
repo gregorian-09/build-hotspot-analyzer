@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: cookie.c
+# Output: libcurlu_la-cookie.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c cookie.c -fPIC -DPIC -o libcurlu_la-cookie.o
+# Timestamp: 2026-01-05T20:44:33+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 13%)
+ phase parsing                      :   0.03 ( 38%)   0.07 ( 88%)   0.21 ( 68%)  6560k ( 46%)
+ phase opt and generate             :   0.05 ( 62%)   0.01 ( 12%)   0.09 ( 29%)  5745k ( 41%)
+ dump files                         :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   597k (  4%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2184  (  0%)
+ alias analysis                     :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ preprocessing                      :   0.03 ( 38%)   0.04 ( 50%)   0.05 ( 16%)  2378k ( 17%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 25%)   0.10 ( 32%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 12%)   0.06 ( 19%)  2805k ( 20%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   515k (  4%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 ( 12%)   0.02 (  6%)   144  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ expand                             :   0.01 ( 12%)   0.00 (  0%)   0.01 (  3%)   884k (  6%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    44k (  0%)
+ integrated RA                      :   0.01 ( 13%)   0.00 (  0%)   0.02 (  6%)  2338k ( 17%)
+ shorten branches                   :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.08          0.08          0.31           13M

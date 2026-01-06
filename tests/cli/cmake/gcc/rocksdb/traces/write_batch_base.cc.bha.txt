@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/write_batch_base.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/db/write_batch_base.cc.o -MF CMakeFiles/rocksdb-shared.dir/db/write_batch_base.cc.o.d -o CMakeFiles/rocksdb-shared.dir/db/write_batch_base.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/write_batch_base.cc
+# Timestamp: 2026-01-05T19:36:02+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1886k (  2%)
+ phase parsing                      :   0.40 ( 80%)   0.32 ( 89%)   1.21 ( 88%)    74M ( 87%)
+ phase lang. deferred               :   0.04 (  8%)   0.02 (  6%)   0.08 (  6%)  6705k (  8%)
+ phase opt and generate             :   0.06 ( 12%)   0.02 (  6%)   0.08 (  6%)  2460k (  3%)
+ |name lookup                       :   0.09 ( 18%)   0.09 ( 25%)   0.22 ( 16%)  2882k (  3%)
+ |overload resolution               :   0.08 ( 16%)   0.03 (  8%)   0.16 ( 12%)  7373k (  8%)
+ callgraph functions expansion      :   0.05 ( 10%)   0.01 (  3%)   0.07 (  5%)  1365k (  2%)
+ callgraph ipa passes               :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)   611k (  1%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.05 ( 10%)   0.06 ( 17%)   0.22 ( 16%)  2504k (  3%)
+ parser (global)                    :   0.07 ( 14%)   0.09 ( 25%)   0.25 ( 18%)    25M ( 30%)
+ parser struct body                 :   0.07 ( 14%)   0.02 (  6%)   0.13 (  9%)    14M ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   236k (  0%)
+ parser function body               :   0.02 (  4%)   0.00 (  0%)   0.02 (  1%)  2916k (  3%)
+ parser inl. func. body             :   0.04 (  8%)   0.02 (  6%)   0.10 (  7%)  6405k (  7%)
+ parser inl. meth. body             :   0.09 ( 18%)   0.04 ( 11%)   0.15 ( 11%) 10001k ( 11%)
+ template instantiation             :   0.10 ( 20%)   0.10 ( 28%)   0.34 ( 25%)    19M ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)   343k (  0%)
+ constraint satisfaction            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   419k (  0%)
+ integration                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   300k (  0%)
+ tree SSA incremental               :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)    14k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    19k (  0%)
+ tree linearize phis                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ expand vars                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  9504  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    10k (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   292k (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    17k (  0%)
+ LRA create live ranges             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2544  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    28k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    61k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.50          0.36          1.38           85M
+
+# Exit code: 0

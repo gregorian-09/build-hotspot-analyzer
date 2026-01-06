@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: strdup.c
+# Output: libcurlu_la-strdup.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c strdup.c -fPIC -DPIC -o libcurlu_la-strdup.o
+# Timestamp: 2026-01-05T20:44:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.04 (100%)   0.09 ( 82%)  4565k ( 54%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 18%)  2049k ( 24%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)     0  (  0%)
+ preprocessing                      :   0.02 ( 67%)   0.02 ( 50%)   0.02 ( 18%)  1978k ( 23%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.05 ( 45%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 18%)  2113k ( 25%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)    56k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1324k ( 16%)
+ rest of compilation                :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   128k (  2%)
+ TOTAL                              :   0.03          0.04          0.11         8434k

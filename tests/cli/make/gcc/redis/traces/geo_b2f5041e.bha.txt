@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: geo.c
+# Output: geo.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o geo.o -c geo.c
+# Timestamp: 2026-01-05T20:43:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 11%)
+ phase parsing                      :   0.06 ( 67%)   0.07 ( 88%)   0.14 ( 78%)    12M ( 76%)
+ phase opt and generate             :   0.03 ( 33%)   0.01 ( 12%)   0.04 ( 22%)  2097k ( 13%)
+ callgraph construction             :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)   481k (  3%)
+ callgraph ipa passes               :   0.03 ( 33%)   0.00 (  0%)   0.04 ( 22%)  1104k (  7%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1288  (  0%)
+ ipa SRA                            :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  7024  (  0%)
+ preprocessing                      :   0.02 ( 22%)   0.04 ( 50%)   0.05 ( 28%)  2849k ( 17%)
+ lexical analysis                   :   0.03 ( 33%)   0.02 ( 25%)   0.06 ( 33%)     0  (  0%)
+ parser (global)                    :   0.01 ( 11%)   0.00 (  0%)   0.01 (  6%)  5521k ( 33%)
+ parser function body               :   0.00 (  0%)   0.01 ( 13%)   0.01 (  6%)   335k (  2%)
+ tree Early VRP                     :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    65k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    22k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   136k (  1%)
+ tree CCP                           :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    47k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2671k ( 16%)
+ TOTAL                              :   0.09          0.08          0.18           16M

@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/examples/triangle-opengles.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/deps -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -ftime-report -O3 -DNDEBUG -std=gnu99 -MD -MT examples/CMakeFiles/triangle-opengles.dir/triangle-opengles.c.o -MF examples/CMakeFiles/triangle-opengles.dir/triangle-opengles.c.o.d -o examples/CMakeFiles/triangle-opengles.dir/triangle-opengles.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/examples/triangle-opengles.c
+# Timestamp: 2026-01-05T18:15:46+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 15%)
+ phase parsing                      :   0.03 ( 25%)   0.03 ( 60%)   0.08 ( 42%)  5167k ( 42%)
+ phase opt and generate             :   0.09 ( 75%)   0.02 ( 40%)   0.11 ( 58%)  5234k ( 43%)
+ callgraph functions expansion      :   0.08 ( 67%)   0.02 ( 40%)   0.09 ( 47%)  3892k ( 32%)
+ callgraph ipa passes               :   0.01 (  8%)   0.00 (  0%)   0.02 ( 11%)  1047k (  9%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    73k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.02 ( 11%)  1983k ( 16%)
+ lexical analysis                   :   0.02 ( 17%)   0.02 ( 40%)   0.04 ( 21%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)  2098k ( 17%)
+ parser inl. func. body             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   733k (  6%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   523k (  4%)
+ tree PTA                           :   0.02 ( 17%)   0.00 (  0%)   0.00 (  0%)    74k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   111k (  1%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  5480  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   490k (  4%)
+ forward prop                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  2656  (  0%)
+ CSE                                :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  4344  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  2640  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    85k (  1%)
+ integrated RA                      :   0.01 (  8%)   0.00 (  0%)   0.01 (  5%)   485k (  4%)
+ reload CSE regs                    :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    49k (  0%)
+ scheduling 2                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    71k (  1%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ if to switch conversion            :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  3800  (  0%)
+ rest of compilation                :   0.01 (  8%)   0.01 ( 20%)   0.00 (  0%)    42k (  0%)
+ TOTAL                              :   0.12          0.05          0.19           11M
+
+# Exit code: 0

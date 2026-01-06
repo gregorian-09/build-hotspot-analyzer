@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/filter_policy.cc
+# Output: CMakeFiles/leveldb.dir/util/filter_policy.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/filter_policy.cc.o -MF CMakeFiles/leveldb.dir/util/filter_policy.cc.o.d -o CMakeFiles/leveldb.dir/util/filter_policy.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/filter_policy.cc
+# Timestamp: 2026-01-05T20:10:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1880k (  6%)
+ phase parsing                      :   0.15 ( 88%)   0.14 ( 93%)   0.73 ( 85%)    26M ( 84%)
+ phase lang. deferred               :   0.02 ( 12%)   0.01 (  7%)   0.08 (  9%)  3114k ( 10%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   198k (  1%)
+ |name lookup                       :   0.03 ( 18%)   0.00 (  0%)   0.20 ( 23%)  1396k (  4%)
+ |overload resolution               :   0.02 ( 12%)   0.01 (  7%)   0.07 (  8%)  1723k (  5%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   102k (  0%)
+ preprocessing                      :   0.02 ( 12%)   0.06 ( 40%)   0.20 ( 23%)  1636k (  5%)
+ parser (global)                    :   0.04 ( 24%)   0.02 ( 13%)   0.14 ( 16%)  8747k ( 27%)
+ parser struct body                 :   0.04 ( 24%)   0.02 ( 13%)   0.10 ( 12%)  6194k ( 19%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   312k (  1%)
+ parser inl. func. body             :   0.02 ( 12%)   0.03 ( 20%)   0.06 (  7%)  2756k (  9%)
+ parser inl. meth. body             :   0.00 (  0%)   0.01 (  7%)   0.08 (  9%)  2170k (  7%)
+ template instantiation             :   0.04 ( 24%)   0.01 (  7%)   0.20 ( 23%)  8016k ( 25%)
+ constant expression evaluation     :   0.01 (  6%)   0.00 (  0%)   0.02 (  2%)    98k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3056  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4872  (  0%)
+ TOTAL                              :   0.17          0.15          0.86           31M

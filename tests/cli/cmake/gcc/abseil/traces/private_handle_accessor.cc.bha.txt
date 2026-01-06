@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/flags/internal/private_handle_accessor.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/flags/CMakeFiles/flags_private_handle_accessor.dir/internal/private_handle_accessor.cc.o -MF absl/flags/CMakeFiles/flags_private_handle_accessor.dir/internal/private_handle_accessor.cc.o.d -o absl/flags/CMakeFiles/flags_private_handle_accessor.dir/internal/private_handle_accessor.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/flags/internal/private_handle_accessor.cc
+# Timestamp: 2026-01-05T17:54:06+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  3%)
+ phase parsing                      :   0.31 ( 94%)   0.25 ( 89%)   0.91 ( 88%)    53M ( 90%)
+ phase lang. deferred               :   0.01 (  3%)   0.02 (  7%)   0.07 (  7%)  3787k (  6%)
+ phase opt and generate             :   0.01 (  3%)   0.01 (  4%)   0.04 (  4%)   594k (  1%)
+ |name lookup                       :   0.08 ( 24%)   0.06 ( 21%)   0.28 ( 27%)  2607k (  4%)
+ |overload resolution               :   0.04 ( 12%)   0.00 (  0%)   0.07 (  7%)  3465k (  6%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.01 (  3%)   0.01 (  4%)   0.03 (  3%)   370k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    74k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ preprocessing                      :   0.04 ( 12%)   0.09 ( 32%)   0.15 ( 15%)  2102k (  3%)
+ parser (global)                    :   0.07 ( 21%)   0.06 ( 21%)   0.27 ( 26%)    18M ( 30%)
+ parser struct body                 :   0.04 ( 12%)   0.03 ( 11%)   0.11 ( 11%)    11M ( 19%)
+ parser function body               :   0.02 (  6%)   0.02 (  7%)   0.06 (  6%)  1546k (  3%)
+ parser inl. func. body             :   0.02 (  6%)   0.01 (  4%)   0.06 (  6%)  3307k (  5%)
+ parser inl. meth. body             :   0.04 ( 12%)   0.02 (  7%)   0.08 (  8%)  6740k ( 11%)
+ template instantiation             :   0.08 ( 24%)   0.04 ( 14%)   0.22 ( 21%)    14M ( 24%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   253k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1136  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7400  (  0%)
+ rest of compilation                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.33          0.28          1.03           59M
+
+# Exit code: 0

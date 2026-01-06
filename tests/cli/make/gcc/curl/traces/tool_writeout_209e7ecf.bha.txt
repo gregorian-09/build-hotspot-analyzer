@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: tool_writeout.c
+# Output: libcurltool_la-tool_writeout.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_writeout.c -fPIC -DPIC -o libcurltool_la-tool_writeout.o
+# Timestamp: 2026-01-05T20:44:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 16%)
+ phase parsing                      :   0.04 ( 57%)   0.06 ( 86%)   0.14 ( 74%)  5727k ( 50%)
+ phase opt and generate             :   0.03 ( 43%)   0.01 ( 14%)   0.04 ( 21%)  3946k ( 34%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 14%)   0.01 (  5%)    67k (  1%)
+ callgraph ipa passes               :   0.01 ( 14%)   0.01 ( 14%)   0.01 (  5%)   338k (  3%)
+ alias analysis                     :   0.01 ( 14%)   0.00 (  0%)   0.01 (  5%)    14k (  0%)
+ preprocessing                      :   0.01 ( 14%)   0.04 ( 57%)   0.04 ( 21%)  2447k ( 21%)
+ lexical analysis                   :   0.01 ( 14%)   0.00 (  0%)   0.09 ( 47%)     0  (  0%)
+ parser (global)                    :   0.02 ( 29%)   0.01 ( 14%)   0.01 (  5%)  2374k ( 21%)
+ parser function body               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   306k (  3%)
+ inline parameters                  :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree switch lowering               :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1636k ( 14%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ TOTAL                              :   0.07          0.07          0.19           11M

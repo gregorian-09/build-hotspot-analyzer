@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: ae.c
+# Output: ae.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o ae.o -c ae.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 21%)
+ phase parsing                      :   0.04 ( 67%)   0.03 ( 75%)   0.08 ( 73%)  5583k ( 64%)
+ phase opt and generate             :   0.02 ( 33%)   0.01 ( 25%)   0.03 ( 27%)  1278k ( 15%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   180k (  2%)
+ callgraph ipa passes               :   0.02 ( 33%)   0.01 ( 25%)   0.02 ( 18%)   783k (  9%)
+ ipa function summary               :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    51k (  1%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)     0  (  0%)
+ preprocessing                      :   0.01 ( 17%)   0.02 ( 50%)   0.03 ( 27%)  1679k ( 19%)
+ lexical analysis                   :   0.02 ( 33%)   0.00 (  0%)   0.03 ( 27%)     0  (  0%)
+ parser (global)                    :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)  2122k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   107k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 18%)   403k (  5%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)  7784  (  0%)
+ tree FRE                           :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ uninit var analysis                :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.06          0.04          0.11         8690k

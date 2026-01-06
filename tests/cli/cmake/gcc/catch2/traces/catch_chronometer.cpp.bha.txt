@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/benchmark/catch_chronometer.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/benchmark/catch_chronometer.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/benchmark/catch_chronometer.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/benchmark/catch_chronometer.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/benchmark/catch_chronometer.cpp
+# Timestamp: 2026-01-05T18:11:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1882k ( 16%)
+ phase parsing                      :   0.04 ( 80%)   0.03 (100%)   0.17 ( 85%)  8973k ( 78%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   389k (  3%)
+ phase opt and generate             :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)   228k (  2%)
+ |name lookup                       :   0.00 (  0%)   0.01 ( 33%)   0.04 ( 20%)   711k (  6%)
+ |overload resolution               :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)   460k (  4%)
+ callgraph construction             :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)    92k (  1%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 33%)   0.03 ( 15%)   621k (  5%)
+ parser (global)                    :   0.01 ( 20%)   0.01 ( 33%)   0.03 ( 15%)  2840k ( 25%)
+ parser struct body                 :   0.01 ( 20%)   0.00 (  0%)   0.05 ( 25%)  2352k ( 20%)
+ parser inl. meth. body             :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)   735k (  6%)
+ template instantiation             :   0.00 (  0%)   0.01 ( 33%)   0.05 ( 25%)  2600k ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    72k (  1%)
+ TOTAL                              :   0.05          0.03          0.20           11M
+
+# Exit code: 0

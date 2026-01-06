@@ -1,0 +1,52 @@
+# BHA Trace
+# Source: networking.c
+# Output: networking.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o networking.o -c networking.c
+# Timestamp: 2026-01-05T20:43:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  5%)
+ phase parsing                      :   0.16 ( 44%)   0.15 ( 79%)   0.32 ( 57%)    20M ( 63%)
+ phase opt and generate             :   0.20 ( 56%)   0.04 ( 21%)   0.24 ( 43%)    10M ( 32%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1567k (  5%)
+ callgraph optimization             :   0.03 (  8%)   0.00 (  0%)   0.00 (  0%)  6176  (  0%)
+ callgraph ipa passes               :   0.18 ( 50%)   0.04 ( 21%)   0.22 ( 39%)  6676k ( 20%)
+ ipa cp                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   513k (  2%)
+ ipa function splitting             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   539k (  2%)
+ lto stream compression             :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)     0  (  0%)
+ lto stream output                  :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa lto gimple out                 :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    46k (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   296  (  0%)
+ ipa pure const                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ ipa free lang data                 :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    82k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    35k (  0%)
+ preprocessing                      :   0.05 ( 14%)   0.03 ( 16%)   0.08 ( 14%)  7233k ( 21%)
+ lexical analysis                   :   0.02 (  6%)   0.04 ( 21%)   0.06 ( 11%)     0  (  0%)
+ parser (global)                    :   0.04 ( 11%)   0.04 ( 21%)   0.08 ( 14%)  7434k ( 22%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   528k (  2%)
+ parser function body               :   0.05 ( 14%)   0.02 ( 11%)   0.07 ( 13%)  2527k (  7%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 11%)   0.00 (  0%)   797k (  2%)
+ early inlining heuristics          :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    76k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   800k (  2%)
+ tree gimplify                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  2208k (  6%)
+ tree Early VRP                     :   0.02 (  6%)   0.01 (  5%)   0.01 (  2%)   312k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)   141k (  0%)
+ tree SSA rewrite                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   562k (  2%)
+ tree SSA incremental               :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)    41k (  0%)
+ tree operand scan                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1139k (  3%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    50k (  0%)
+ tree FRE                           :   0.02 (  6%)   0.00 (  0%)   0.03 (  5%)   156k (  0%)
+ tree forward propagate             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ PHI merge                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    37k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2848  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   262k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2661k (  8%)
+ uninit var analysis                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  4872  (  0%)
+ TOTAL                              :   0.36          0.19          0.56           33M

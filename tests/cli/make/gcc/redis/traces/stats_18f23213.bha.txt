@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: src/stats.c
+# Output: src/stats.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/stats.o src/stats.c
+# Timestamp: 2026-01-05T20:43:15+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  2%)
+ phase parsing                      :   0.16 ( 29%)   0.27 ( 84%)   0.45 ( 50%)    28M ( 35%)
+ phase opt and generate             :   0.40 ( 71%)   0.05 ( 16%)   0.45 ( 50%)    50M ( 63%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  3408k (  4%)
+ callgraph ipa passes               :   0.06 ( 11%)   0.03 (  9%)   0.07 (  8%)    19M ( 24%)
+ ipa dead code removal              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa inlining heuristics            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    41k (  0%)
+ trivially dead code                :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)  2880  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  1000k (  1%)
+ alias analysis                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   409k (  0%)
+ preprocessing                      :   0.07 ( 12%)   0.11 ( 34%)   0.09 ( 10%)    14M ( 18%)
+ lexical analysis                   :   0.03 (  5%)   0.12 ( 38%)   0.19 ( 21%)     0  (  0%)
+ parser (global)                    :   0.03 (  5%)   0.01 (  3%)   0.06 (  7%)  5810k (  7%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.04 (  4%)  2228k (  3%)
+ parser inl. func. body             :   0.02 (  4%)   0.03 (  9%)   0.07 (  8%)  5516k (  7%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   473k (  1%)
+ integration                        :   0.03 (  5%)   0.02 (  6%)   0.04 (  4%)    15M ( 20%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  2048k (  2%)
+ tree CFG cleanup                   :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)  6136  (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)   462k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1512k (  2%)
+ dominance computation              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2059k (  2%)
+ expand                             :   0.04 (  7%)   0.00 (  0%)   0.06 (  7%)    11M ( 14%)
+ loop init                          :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    90k (  0%)
+ integrated RA                      :   0.08 ( 14%)   0.00 (  0%)   0.09 ( 10%)  7632k (  9%)
+ LRA non-specific                   :   0.02 (  4%)   0.00 (  0%)   0.03 (  3%)    16k (  0%)
+ LRA create live ranges             :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)  1848  (  0%)
+ reload                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1440  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)    98k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ final                              :   0.03 (  5%)   0.00 (  0%)   0.03 (  3%)  2304k (  3%)
+ access analysis                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1944  (  0%)
+ rest of compilation                :   0.01 (  2%)   0.01 (  3%)   0.05 (  6%)   380k (  0%)
+ TOTAL                              :   0.56          0.32          0.90           80M

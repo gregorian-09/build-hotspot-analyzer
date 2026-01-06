@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/xxhash.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/xxhash.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/xxhash.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/xxhash.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/xxhash.c
+# Timestamp: 2026-01-05T17:52:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1819k ( 20%)
+ phase parsing                      :   0.02 ( 20%)   0.01 ( 20%)   0.06 ( 23%)  1744k ( 20%)
+ phase opt and generate             :   0.08 ( 80%)   0.04 ( 80%)   0.19 ( 73%)  5312k ( 60%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)     0  (  0%)
+ callgraph functions expansion      :   0.07 ( 70%)   0.03 ( 60%)   0.15 ( 58%)  3880k ( 44%)
+ callgraph ipa passes               :   0.01 ( 10%)   0.01 ( 20%)   0.04 ( 15%)   963k ( 11%)
+ ipa icf                            :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  8776  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    46k (  1%)
+ alias analysis                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   153k (  2%)
+ preprocessing                      :   0.01 ( 10%)   0.00 (  0%)   0.02 (  8%)   623k (  7%)
+ lexical analysis                   :   0.01 ( 10%)   0.01 ( 20%)   0.02 (  8%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   767k (  9%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   103k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    74k (  1%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   352k (  4%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    85k (  1%)
+ tree Early VRP                     :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    68k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   187k (  2%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    70k (  1%)
+ backwards jump threading           :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    36k (  0%)
+ tree FRE                           :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree slp vectorization             :   0.02 ( 20%)   0.00 (  0%)   0.03 ( 12%)   987k ( 11%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    30k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ combiner                           :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   181k (  2%)
+ integrated RA                      :   0.01 ( 10%)   0.01 ( 20%)   0.01 (  4%)   672k (  8%)
+ LRA non-specific                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    48k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 ( 12%)    73k (  1%)
+ TOTAL                              :   0.10          0.05          0.26         8877k
+
+# Exit code: 0

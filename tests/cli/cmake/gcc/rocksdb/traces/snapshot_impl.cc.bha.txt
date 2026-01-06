@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/snapshot_impl.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/db/snapshot_impl.cc.o -MF CMakeFiles/rocksdb-shared.dir/db/snapshot_impl.cc.o.d -o CMakeFiles/rocksdb-shared.dir/db/snapshot_impl.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/snapshot_impl.cc
+# Timestamp: 2026-01-05T19:35:40+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.10 ( 73%)   0.85 ( 82%)   2.77 ( 69%)   206M ( 78%)
+ phase lang. deferred               :   0.39 ( 26%)   0.18 ( 17%)   1.14 ( 28%)    54M ( 21%)
+ phase opt and generate             :   0.02 (  1%)   0.01 (  1%)   0.08 (  2%)  1615k (  1%)
+ |name lookup                       :   0.37 ( 25%)   0.21 ( 20%)   1.13 ( 28%)  7981k (  3%)
+ |overload resolution               :   0.33 ( 22%)   0.20 ( 19%)   0.94 ( 23%)    47M ( 18%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.04 (  1%)  1310k (  0%)
+ callgraph functions expansion      :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   228k (  0%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ preprocessing                      :   0.07 (  5%)   0.17 ( 16%)   0.33 (  8%)  3305k (  1%)
+ parser (global)                    :   0.13 (  9%)   0.16 ( 15%)   0.36 (  9%)    50M ( 19%)
+ parser struct body                 :   0.18 ( 12%)   0.08 (  8%)   0.34 (  8%)    30M ( 12%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   307k (  0%)
+ parser function body               :   0.02 (  1%)   0.03 (  3%)   0.10 (  3%)  3963k (  1%)
+ parser inl. func. body             :   0.08 (  5%)   0.02 (  2%)   0.16 (  4%)    12M (  5%)
+ parser inl. meth. body             :   0.18 ( 12%)   0.08 (  8%)   0.42 ( 11%)    27M ( 10%)
+ template instantiation             :   0.75 ( 50%)   0.45 ( 43%)   1.87 ( 47%)   126M ( 48%)
+ constant expression evaluation     :   0.04 (  3%)   0.01 (  1%)   0.19 (  5%)  1814k (  1%)
+ constraint normalization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   584k (  0%)
+ constraint satisfaction            :   0.02 (  1%)   0.03 (  3%)   0.06 (  2%)  3028k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%) 10032  (  0%)
+ tree copy headers                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  5528  (  0%)
+ symout                             :   0.01 (  1%)   0.00 (  0%)   0.05 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9856  (  0%)
+ TOTAL                              :   1.51          1.04          4.00          263M
+
+# Exit code: 0

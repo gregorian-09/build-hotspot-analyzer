@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/malloc_stats.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/db/malloc_stats.cc.o -MF CMakeFiles/rocksdb-shared.dir/db/malloc_stats.cc.o.d -o CMakeFiles/rocksdb-shared.dir/db/malloc_stats.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/malloc_stats.cc
+# Timestamp: 2026-01-05T19:35:25+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1886k (  3%)
+ phase parsing                      :   0.36 ( 92%)   0.27 ( 96%)   0.76 ( 93%)    65M ( 90%)
+ phase lang. deferred               :   0.03 (  8%)   0.01 (  4%)   0.04 (  5%)  5108k (  7%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   247k (  0%)
+ |name lookup                       :   0.11 ( 28%)   0.06 ( 21%)   0.14 ( 17%)  2540k (  3%)
+ |overload resolution               :   0.06 ( 15%)   0.02 (  7%)   0.08 ( 10%)  4820k (  6%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   172k (  0%)
+ preprocessing                      :   0.04 ( 10%)   0.11 ( 39%)   0.18 ( 22%)  2455k (  3%)
+ parser (global)                    :   0.07 ( 18%)   0.04 ( 14%)   0.19 ( 23%)    26M ( 36%)
+ parser struct body                 :   0.07 ( 18%)   0.05 ( 18%)   0.07 (  9%)    14M ( 20%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)   801k (  1%)
+ parser inl. func. body             :   0.03 (  8%)   0.02 (  7%)   0.08 ( 10%)  5018k (  7%)
+ parser inl. meth. body             :   0.07 ( 18%)   0.01 (  4%)   0.11 ( 13%)  7260k ( 10%)
+ template instantiation             :   0.11 ( 28%)   0.04 ( 14%)   0.13 ( 16%)    13M ( 19%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   265k (  0%)
+ TOTAL                              :   0.39          0.28          0.82           72M
+
+# Exit code: 0

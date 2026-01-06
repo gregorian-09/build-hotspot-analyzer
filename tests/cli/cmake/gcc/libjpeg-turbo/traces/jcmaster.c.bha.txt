@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jcmaster.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jcmaster.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jcmaster.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jcmaster.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jcmaster.c
+# Timestamp: 2026-01-05T18:14:50+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1819k ( 19%)
+ phase parsing                      :   0.02 ( 14%)   0.03 ( 75%)   0.07 ( 27%)  2789k ( 29%)
+ phase opt and generate             :   0.12 ( 86%)   0.01 ( 25%)   0.18 ( 69%)  5014k ( 52%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   301k (  3%)
+ callgraph functions expansion      :   0.11 ( 79%)   0.00 (  0%)   0.15 ( 58%)  3893k ( 40%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 ( 25%)   0.02 (  8%)   514k (  5%)
+ ipa function splitting             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ ipa free inline summary            :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 (  7%)   0.02 ( 50%)   0.04 ( 15%)   753k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.03 ( 12%)     0  (  0%)
+ parser (global)                    :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  1312k ( 14%)
+ parser function body               :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   208k (  2%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    77k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    30k (  0%)
+ tree CCP                           :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  7688  (  0%)
+ tree linearize phis                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ complete unrolling                 :   0.01 (  7%)   0.00 (  0%)   0.01 (  4%)   199k (  2%)
+ tree slp vectorization             :   0.01 (  7%)   0.00 (  0%)   0.01 (  4%)   308k (  3%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   432k (  4%)
+ CSE                                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ loop init                          :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   202k (  2%)
+ loop versioning                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    56  (  0%)
+ combiner                           :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    94k (  1%)
+ integrated RA                      :   0.02 ( 14%)   0.00 (  0%)   0.03 ( 12%)   434k (  5%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    71k (  1%)
+ thread pro- & epilogue             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    31k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    78k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1632  (  0%)
+ rest of compilation                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ TOTAL                              :   0.14          0.04          0.26         9623k
+
+# Exit code: 0

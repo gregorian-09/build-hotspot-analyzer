@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdicc.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jdicc.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jdicc.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jdicc.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdicc.c
+# Timestamp: 2026-01-05T18:14:52+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 34%)
+ phase parsing                      :   0.01 ( 25%)   0.03 (100%)   0.09 ( 64%)  2594k ( 48%)
+ phase opt and generate             :   0.03 ( 75%)   0.00 (  0%)   0.05 ( 36%)   987k ( 18%)
+ callgraph functions expansion      :   0.02 ( 50%)   0.00 (  0%)   0.03 ( 21%)   797k ( 15%)
+ callgraph ipa passes               :   0.01 ( 25%)   0.00 (  0%)   0.01 (  7%)   111k (  2%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  5808  (  0%)
+ ipa SRA                            :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2432  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 14%)   736k ( 14%)
+ lexical analysis                   :   0.01 ( 25%)   0.01 ( 33%)   0.05 ( 36%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 14%)  1304k ( 24%)
+ parser function body               :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    40k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    52k (  1%)
+ tree CFG cleanup                   :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  7208  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    28k (  1%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    24k (  0%)
+ loop invariant motion              :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   288  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    61k (  1%)
+ TOTAL                              :   0.04          0.03          0.14         5402k
+
+# Exit code: 0

@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/util/murmurhash.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/util/murmurhash.cc.o -MF CMakeFiles/rocksdb-shared.dir/util/murmurhash.cc.o.d -o CMakeFiles/rocksdb-shared.dir/util/murmurhash.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/util/murmurhash.cc
+# Timestamp: 2026-01-05T19:39:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1886k (  4%)
+ phase parsing                      :   0.22 ( 81%)   0.15 ( 88%)   0.77 ( 79%)    39M ( 85%)
+ phase lang. deferred               :   0.04 ( 15%)   0.02 ( 12%)   0.16 ( 16%)  4787k ( 10%)
+ phase opt and generate             :   0.01 (  4%)   0.00 (  0%)   0.03 (  3%)   548k (  1%)
+ |name lookup                       :   0.04 ( 15%)   0.01 (  6%)   0.23 ( 24%)  1818k (  4%)
+ |overload resolution               :   0.03 ( 11%)   0.00 (  0%)   0.11 ( 11%)  3487k (  7%)
+ callgraph functions expansion      :   0.01 (  4%)   0.00 (  0%)   0.03 (  3%)   348k (  1%)
+ preprocessing                      :   0.03 ( 11%)   0.06 ( 35%)   0.13 ( 13%)  1796k (  4%)
+ parser (global)                    :   0.05 ( 19%)   0.03 ( 18%)   0.24 ( 25%)    14M ( 30%)
+ parser struct body                 :   0.01 (  4%)   0.02 ( 12%)   0.10 ( 10%)  8018k ( 17%)
+ parser enumerator list             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ parser inl. func. body             :   0.04 ( 15%)   0.00 (  0%)   0.11 ( 11%)  4777k ( 10%)
+ parser inl. meth. body             :   0.05 ( 19%)   0.01 (  6%)   0.11 ( 11%)  4480k (  9%)
+ template instantiation             :   0.07 ( 26%)   0.04 ( 24%)   0.20 ( 21%)    10M ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  6%)   0.03 (  3%)   187k (  0%)
+ tree loop unswitching              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  1256  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   160  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    27k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.27          0.17          0.97           46M
+
+# Exit code: 0

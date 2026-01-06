@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: openldap.c
+# Output: libcurlu_la-openldap.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c openldap.c -fPIC -DPIC -o libcurlu_la-openldap.o
+# Timestamp: 2026-01-05T20:44:39+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 (100%)   0.04 (100%)   0.10 ( 77%)  4571k ( 55%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 15%)  1887k ( 23%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ preprocessing                      :   0.02 (100%)   0.01 ( 25%)   0.02 ( 15%)  2001k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 50%)   0.05 ( 38%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  2106k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   268k (  3%)
+ parser function body               :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    73k (  1%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.02          0.04          0.13         8278k

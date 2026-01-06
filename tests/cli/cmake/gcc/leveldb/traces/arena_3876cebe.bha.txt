@@ -1,0 +1,52 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/arena.cc
+# Output: CMakeFiles/leveldb.dir/util/arena.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/arena.cc.o -MF CMakeFiles/leveldb.dir/util/arena.cc.o.d -o CMakeFiles/leveldb.dir/util/arena.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/arena.cc
+# Timestamp: 2026-01-05T20:10:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1880k (  7%)
+ phase parsing                      :   0.13 ( 72%)   0.09 ( 82%)   0.77 ( 73%)    22M ( 83%)
+ phase lang. deferred               :   0.01 (  6%)   0.00 (  0%)   0.03 (  3%)   940k (  3%)
+ phase opt and generate             :   0.04 ( 22%)   0.02 ( 18%)   0.23 ( 22%)  1909k (  7%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.03 ( 27%)   0.21 ( 20%)  1253k (  5%)
+ |overload resolution               :   0.01 (  6%)   0.00 (  0%)   0.04 (  4%)   632k (  2%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    87k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  4416  (  0%)
+ callgraph functions expansion      :   0.03 ( 17%)   0.01 (  9%)   0.15 ( 14%)   910k (  3%)
+ callgraph ipa passes               :   0.01 (  6%)   0.01 (  9%)   0.07 (  7%)   690k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4088  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2680  (  0%)
+ preprocessing                      :   0.02 ( 11%)   0.00 (  0%)   0.10 (  9%)   698k (  3%)
+ parser (global)                    :   0.06 ( 33%)   0.04 ( 36%)   0.20 ( 19%)  7443k ( 27%)
+ parser struct body                 :   0.01 (  6%)   0.02 ( 18%)   0.18 ( 17%)  6942k ( 25%)
+ parser function body               :   0.01 (  6%)   0.00 (  0%)   0.03 (  3%)   433k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  9%)   0.02 (  2%)   672k (  2%)
+ parser inl. meth. body             :   0.01 (  6%)   0.02 ( 18%)   0.11 ( 10%)  2743k ( 10%)
+ template instantiation             :   0.03 ( 17%)   0.00 (  0%)   0.14 ( 13%)  5053k ( 18%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    10k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1544  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    63k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  9%)   0.00 (  0%)    41k (  0%)
+ backwards jump threading           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    58k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   880  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    40  (  0%)
+ PRE                                :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   304  (  0%)
+ integrated RA                      :   0.01 (  6%)   0.00 (  0%)   0.01 (  1%)   154k (  1%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    14k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   624  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3376  (  0%)
+ rest of compilation                :   0.01 (  6%)   0.00 (  0%)   0.01 (  1%)    24k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.01 (  9%)   0.00 (  0%)     0  (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.18          0.11          1.06           27M

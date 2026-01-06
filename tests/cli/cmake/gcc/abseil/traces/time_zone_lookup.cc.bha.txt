@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/time/internal/cctz/src/time_zone_lookup.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/time_zone_lookup.cc.o -MF absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/time_zone_lookup.cc.o.d -o absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/time_zone_lookup.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/time/internal/cctz/src/time_zone_lookup.cc
+# Timestamp: 2026-01-05T17:54:40+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.42 ( 84%)   0.29 ( 91%)   1.00 ( 89%)    78M ( 90%)
+ phase lang. deferred               :   0.03 (  6%)   0.02 (  6%)   0.05 (  4%)  4559k (  5%)
+ phase opt and generate             :   0.05 ( 10%)   0.01 (  3%)   0.05 (  4%)  2648k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.07 ( 14%)   0.05 ( 16%)   0.19 ( 17%)  3185k (  4%)
+ |overload resolution               :   0.03 (  6%)   0.03 (  9%)   0.05 (  4%)  5002k (  6%)
+ callgraph functions expansion      :   0.03 (  6%)   0.01 (  3%)   0.03 (  3%)  1101k (  1%)
+ callgraph ipa passes               :   0.02 (  4%)   0.00 (  0%)   0.02 (  2%)   924k (  1%)
+ ipa inlining heuristics            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    47k (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   576  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.07 ( 14%)   0.06 ( 19%)   0.18 ( 16%)  2428k (  3%)
+ parser (global)                    :   0.05 ( 10%)   0.10 ( 31%)   0.39 ( 35%)    27M ( 31%)
+ parser struct body                 :   0.06 ( 12%)   0.04 ( 13%)   0.07 (  6%)    15M ( 17%)
+ parser function body               :   0.02 (  4%)   0.01 (  3%)   0.05 (  4%)  3398k (  4%)
+ parser inl. func. body             :   0.05 ( 10%)   0.02 (  6%)   0.03 (  3%)  4800k (  5%)
+ parser inl. meth. body             :   0.07 ( 14%)   0.03 (  9%)   0.09 (  8%)  9364k ( 10%)
+ template instantiation             :   0.13 ( 26%)   0.05 ( 16%)   0.24 ( 21%)    20M ( 24%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1120  (  0%)
+ tree VRP                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    33k (  0%)
+ tree copy headers                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    41k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    32k (  0%)
+ TOTAL                              :   0.50          0.32          1.12           87M
+
+# Exit code: 0

@@ -1,0 +1,18 @@
+# BHA Trace
+# Source: contrib/libtests/timepng.c
+# Output: contrib/libtests/timepng.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c -o contrib/libtests/timepng.o contrib/libtests/timepng.c
+# Timestamp: 2026-01-05T20:46:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 47%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.02 ( 67%)  1958k ( 51%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    56k (  1%)
+ preprocessing                      :   0.01 (100%)   0.01 (100%)   0.02 ( 67%)   901k ( 24%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1029k ( 27%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    12k (  0%)
+ TOTAL                              :   0.01          0.01          0.03         3834k

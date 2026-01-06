@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: ltm.c
+# Output: ltm.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o ltm.o ltm.c
+# Timestamp: 2026-01-05T20:42:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  1819k ( 36%)
+ phase parsing                      :   0.01 ( 50%)   0.02 (100%)   0.07 ( 70%)  2896k ( 57%)
+ phase opt and generate             :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 20%)   387k (  8%)
+ callgraph functions expansion      :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 20%)   272k (  5%)
+ preprocessing                      :   0.01 ( 50%)   0.01 ( 50%)   0.04 ( 40%)  1650k ( 32%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 50%)   0.01 ( 10%)  1137k ( 22%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  3776  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   336  (  0%)
+ initialize rtl                     :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.02          0.02          0.10         5103k

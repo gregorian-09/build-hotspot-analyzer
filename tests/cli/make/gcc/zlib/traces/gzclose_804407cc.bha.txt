@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: gzclose.c
+# Output: gzclose.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -o gzclose.o gzclose.c
+# Timestamp: 2026-01-05T20:45:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 ( 50%)   0.01 ( 25%)  1819k ( 48%)
+ phase parsing                      :   0.01 ( 50%)   0.01 ( 50%)   0.03 ( 75%)  1883k ( 50%)
+ phase opt and generate             :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    74k (  2%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 50%)   738k ( 20%)
+ lexical analysis                   :   0.01 ( 50%)   0.00 (  0%)   0.01 ( 25%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)  1018k ( 27%)
+ integrated RA                      :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    24k (  1%)
+ TOTAL                              :   0.02          0.02          0.04         3778k

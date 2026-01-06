@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/null.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/null.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/null.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/null.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/null.cpp
+# Timestamp: 2026-01-05T18:12:32+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)  1876k ( 54%)
+ phase parsing                      :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 40%)  1368k ( 40%)
+ phase opt and generate             :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 40%)   194k (  6%)
+ callgraph functions expansion      :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 40%)   102k (  3%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   234k (  7%)
+ parser (global)                    :   0.01 ( 50%)   0.00 (  0%)   0.01 ( 20%)   929k ( 27%)
+ scheduling 2                       :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)  3040  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)  2600  (  0%)
+ TOTAL                              :   0.02          0.00          0.05         3454k
+
+# Exit code: 0

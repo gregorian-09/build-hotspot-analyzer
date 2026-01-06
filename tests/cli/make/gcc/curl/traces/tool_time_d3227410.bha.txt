@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: toolx/tool_time.c
+# Output: toolx/libcurltool_la-tool_time.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c toolx/tool_time.c -fPIC -DPIC -o toolx/libcurltool_la-tool_time.o
+# Timestamp: 2026-01-05T20:44:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.02 ( 67%)   0.08 ( 80%)  4607k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 33%)   0.01 ( 10%)  1935k ( 23%)
+ callgraph ipa passes               :   0.01 ( 33%)   0.01 ( 33%)   0.00 (  0%)   136k (  2%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.01 ( 10%)  1998k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 40%)     0  (  0%)
+ parser (global)                    :   0.01 ( 33%)   0.01 ( 33%)   0.03 ( 30%)  2110k ( 25%)
+ parser struct body                 :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   112k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1274k ( 15%)
+ access analysis                    :   0.01 ( 33%)   0.01 ( 33%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   123k (  1%)
+ TOTAL                              :   0.03          0.03          0.10         8363k

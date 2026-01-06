@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: src/test_hooks.c
+# Output: src/test_hooks.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/test_hooks.o src/test_hooks.c
+# Timestamp: 2026-01-05T20:43:15+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1819k ( 16%)
+ phase parsing                      :   0.04 (100%)   0.04 (100%)   0.07 ( 78%)  9672k ( 84%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)     0  (  0%)
+ preprocessing                      :   0.02 ( 50%)   0.02 ( 50%)   0.01 ( 11%)  5744k ( 50%)
+ lexical analysis                   :   0.02 ( 50%)   0.01 ( 25%)   0.02 ( 22%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 ( 44%)  3703k ( 32%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   105k (  1%)
+ TOTAL                              :   0.04          0.04          0.09           11M

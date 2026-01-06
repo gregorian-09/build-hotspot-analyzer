@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/posix_poll.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/posix_poll.c.o -MF src/CMakeFiles/glfw.dir/posix_poll.c.o.d -o src/CMakeFiles/glfw.dir/posix_poll.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/posix_poll.c
+# Timestamp: 2026-01-05T18:15:45+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1523k (  9%)
+ phase parsing                      :   0.09 ( 90%)   0.09 (100%)   0.22 ( 85%)    14M ( 88%)
+ phase opt and generate             :   0.01 ( 10%)   0.00 (  0%)   0.03 ( 12%)   456k (  3%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph functions expansion      :   0.01 ( 10%)   0.00 (  0%)   0.01 (  4%)   298k (  2%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    88k (  1%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  4000  (  0%)
+ preprocessing                      :   0.01 ( 10%)   0.02 ( 22%)   0.07 ( 27%)  7478k ( 45%)
+ lexical analysis                   :   0.04 ( 40%)   0.01 ( 11%)   0.09 ( 35%)     0  (  0%)
+ parser (global)                    :   0.02 ( 20%)   0.03 ( 33%)   0.04 ( 15%)  5898k ( 35%)
+ parser struct body                 :   0.02 ( 20%)   0.01 ( 11%)   0.02 (  8%)   728k (  4%)
+ parser enumerator list             :   0.00 (  0%)   0.01 ( 11%)   0.00 (  0%)   143k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 11%)   0.00 (  0%)   450k (  3%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  4432  (  0%)
+ integrated RA                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    52k (  0%)
+ TOTAL                              :   0.10          0.09          0.26           16M
+
+# Exit code: 0

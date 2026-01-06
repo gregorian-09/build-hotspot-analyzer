@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: src/hpdata.c
+# Output: src/hpdata.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/hpdata.o src/hpdata.c
+# Timestamp: 2026-01-05T20:43:11+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  4%)
+ phase parsing                      :   0.15 ( 52%)   0.22 ( 92%)   0.38 ( 68%)    25M ( 52%)
+ phase opt and generate             :   0.14 ( 48%)   0.02 (  8%)   0.18 ( 32%)    21M ( 44%)
+ callgraph ipa passes               :   0.03 ( 10%)   0.02 (  8%)   0.05 (  9%)    12M ( 25%)
+ cfg construction                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    79k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.01 (  3%)   0.04 ( 17%)   0.14 ( 25%)    13M ( 28%)
+ lexical analysis                   :   0.10 ( 34%)   0.07 ( 29%)   0.13 ( 23%)     0  (  0%)
+ parser (global)                    :   0.01 (  3%)   0.02 (  8%)   0.03 (  5%)  5696k ( 11%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   151k (  0%)
+ parser inl. func. body             :   0.03 ( 10%)   0.08 ( 33%)   0.08 ( 14%)  5384k ( 11%)
+ integration                        :   0.01 (  3%)   0.01 (  4%)   0.03 (  5%) 10203k ( 20%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   478k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   360k (  1%)
+ tree operand scan                  :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1278k (  3%)
+ dominance computation              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)  3269k (  7%)
+ loop init                          :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    97k (  0%)
+ integrated RA                      :   0.04 ( 14%)   0.00 (  0%)   0.04 (  7%)  3274k (  7%)
+ LRA non-specific                   :   0.02 (  7%)   0.00 (  0%)   0.01 (  2%)    26k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    78k (  0%)
+ shorten branches                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.02 (  7%)   0.00 (  0%)   0.01 (  2%)   130k (  0%)
+ TOTAL                              :   0.29          0.24          0.56           48M

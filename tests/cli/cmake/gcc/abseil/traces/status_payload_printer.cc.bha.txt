@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/status/status_payload_printer.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/status/CMakeFiles/status.dir/status_payload_printer.cc.o -MF absl/status/CMakeFiles/status.dir/status_payload_printer.cc.o.d -o absl/status/CMakeFiles/status.dir/status_payload_printer.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/status/status_payload_printer.cc
+# Timestamp: 2026-01-05T17:54:19+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1882k (  1%)
+ phase parsing                      :   0.80 ( 86%)   0.64 ( 93%)   1.87 ( 89%)   163M ( 88%)
+ phase lang. deferred               :   0.11 ( 12%)   0.05 (  7%)   0.20 ( 10%)    18M ( 10%)
+ phase opt and generate             :   0.02 (  2%)   0.00 (  0%)   0.02 (  1%)  1068k (  1%)
+ |name lookup                       :   0.18 ( 19%)   0.13 ( 19%)   0.43 ( 20%)  5671k (  3%)
+ |overload resolution               :   0.14 ( 15%)   0.05 (  7%)   0.22 ( 10%)    20M ( 11%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   657k (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   161k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   174k (  0%)
+ preprocessing                      :   0.10 ( 11%)   0.16 ( 23%)   0.29 ( 14%)  7295k (  4%)
+ parser (global)                    :   0.12 ( 13%)   0.18 ( 26%)   0.45 ( 21%)    52M ( 28%)
+ parser struct body                 :   0.10 ( 11%)   0.10 ( 14%)   0.20 ( 10%)    30M ( 16%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   413k (  0%)
+ parser function body               :   0.08 (  9%)   0.04 (  6%)   0.14 (  7%)  5661k (  3%)
+ parser inl. func. body             :   0.09 ( 10%)   0.03 (  4%)   0.19 (  9%)    16M (  9%)
+ parser inl. meth. body             :   0.12 ( 13%)   0.03 (  4%)   0.24 ( 11%)    18M ( 10%)
+ template instantiation             :   0.27 ( 29%)   0.14 ( 20%)   0.51 ( 24%)    51M ( 28%)
+ constant expression evaluation     :   0.02 (  2%)   0.00 (  0%)   0.05 (  2%)   961k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ tree operand scan                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1664  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7296  (  0%)
+ TOTAL                              :   0.93          0.69          2.10          185M
+
+# Exit code: 0

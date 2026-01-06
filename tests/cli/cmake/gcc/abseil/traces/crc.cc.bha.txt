@@ -1,0 +1,54 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/crc/internal/crc.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/crc/CMakeFiles/crc_internal.dir/internal/crc.cc.o -MF absl/crc/CMakeFiles/crc_internal.dir/internal/crc.cc.o.d -o absl/crc/CMakeFiles/crc_internal.dir/internal/crc.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/crc/internal/crc.cc
+# Timestamp: 2026-01-05T17:54:00+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.42 ( 67%)   0.32 ( 89%)   1.01 ( 79%)    74M ( 85%)
+ phase lang. deferred               :   0.03 (  5%)   0.00 (  0%)   0.03 (  2%)  3806k (  4%)
+ phase opt and generate             :   0.18 ( 29%)   0.04 ( 11%)   0.22 ( 17%)  7771k (  9%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.13 ( 21%)   0.04 ( 11%)   0.26 ( 20%)  2981k (  3%)
+ |overload resolution               :   0.03 (  5%)   0.03 (  8%)   0.08 (  6%)  4218k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   206k (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2192  (  0%)
+ callgraph functions expansion      :   0.16 ( 25%)   0.04 ( 11%)   0.20 ( 16%)  6537k (  7%)
+ callgraph ipa passes               :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)   780k (  1%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    27k (  0%)
+ cfg cleanup                        :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)    49k (  0%)
+ preprocessing                      :   0.04 (  6%)   0.08 ( 22%)   0.24 ( 19%)  2422k (  3%)
+ parser (global)                    :   0.13 ( 21%)   0.09 ( 25%)   0.21 ( 16%)    27M ( 31%)
+ parser struct body                 :   0.06 ( 10%)   0.03 (  8%)   0.12 (  9%)    13M ( 15%)
+ parser function body               :   0.00 (  0%)   0.01 (  3%)   0.06 (  5%)  2708k (  3%)
+ parser inl. func. body             :   0.03 (  5%)   0.02 (  6%)   0.10 (  8%)  8477k (  9%)
+ parser inl. meth. body             :   0.06 ( 10%)   0.03 (  8%)   0.12 (  9%)  7600k (  8%)
+ template instantiation             :   0.12 ( 19%)   0.05 ( 14%)   0.17 ( 13%)    16M ( 18%)
+ constant expression evaluation     :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)   259k (  0%)
+ early inlining heuristics          :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree VRP                           :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)   120k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ tree SSA incremental               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   109k (  0%)
+ dominator optimization             :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)    77k (  0%)
+ backwards jump threading           :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    11k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    36k (  0%)
+ tree PRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   130k (  0%)
+ tree slp vectorization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   551k (  1%)
+ forward prop                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CSE 2                              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  5328  (  0%)
+ combiner                           :   0.02 (  3%)   0.00 (  0%)   0.03 (  2%)   930k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   906k (  1%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  6096  (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6288  (  0%)
+ peephole 2                         :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  3864  (  0%)
+ scheduling 2                       :   0.03 (  5%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree loop if-conversion            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    64k (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   125k (  0%)
+ TOTAL                              :   0.63          0.36          1.28           87M
+
+# Exit code: 0

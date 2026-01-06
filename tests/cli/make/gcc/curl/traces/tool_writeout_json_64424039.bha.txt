@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: tool_writeout_json.c
+# Output: libcurltool_la-tool_writeout_json.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_writeout_json.c -fPIC -DPIC -o libcurltool_la-tool_writeout_json.o
+# Timestamp: 2026-01-05T20:44:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.04 ( 80%)   0.02 ( 67%)   0.07 ( 64%)  5198k ( 56%)
+ phase opt and generate             :   0.01 ( 20%)   0.01 ( 33%)   0.04 ( 36%)  2330k ( 25%)
+ dump files                         :   0.00 (  0%)   0.01 ( 33%)   0.01 (  9%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)    59k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   185k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   320  (  0%)
+ df scan insns                      :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  1440  (  0%)
+ preprocessing                      :   0.02 ( 40%)   0.00 (  0%)   0.02 ( 18%)  2191k ( 23%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 36%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.01 (  9%)  2289k ( 24%)
+ parser enumerator list             :   0.02 ( 40%)   0.01 ( 33%)   0.00 (  0%)   395k (  4%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1377k ( 15%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   131k (  1%)
+ TOTAL                              :   0.05          0.03          0.11         9349k

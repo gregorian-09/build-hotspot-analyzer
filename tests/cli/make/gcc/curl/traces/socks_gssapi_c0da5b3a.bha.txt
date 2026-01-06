@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: socks_gssapi.c
+# Output: libcurlu_la-socks_gssapi.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c socks_gssapi.c -fPIC -DPIC -o libcurlu_la-socks_gssapi.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.04 ( 80%)   0.09 ( 82%)  4555k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 20%)   0.02 ( 18%)  1887k ( 23%)
+ preprocessing                      :   0.00 (  0%)   0.03 ( 60%)   0.03 ( 27%)  1986k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.03 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 18%)  2106k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)   112k (  1%)
+ parser enumerator list             :   0.02 ( 67%)   0.00 (  0%)   0.00 (  0%)   268k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  9%)    64k (  1%)
+ initialize rtl                     :   0.01 ( 33%)   0.00 (  0%)   0.01 (  9%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   121k (  1%)
+ TOTAL                              :   0.03          0.05          0.11         8262k

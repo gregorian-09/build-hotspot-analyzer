@@ -1,0 +1,62 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/clipboard.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/deps -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -ftime-report -O3 -DNDEBUG -std=gnu99 -MD -MT tests/CMakeFiles/clipboard.dir/clipboard.c.o -MF tests/CMakeFiles/clipboard.dir/clipboard.c.o.d -o tests/CMakeFiles/clipboard.dir/clipboard.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/clipboard.c
+# Timestamp: 2026-01-05T18:15:47+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.03 (  9%)   0.06 ( 55%)   0.18 ( 20%)  5693k ( 23%)
+ phase opt and generate             :   0.30 ( 91%)   0.05 ( 45%)   0.69 ( 78%)    17M ( 70%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1258k (  5%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)  1976  (  0%)
+ callgraph functions expansion      :   0.26 ( 79%)   0.04 ( 36%)   0.56 ( 63%)    12M ( 50%)
+ callgraph ipa passes               :   0.04 ( 12%)   0.01 (  9%)   0.12 ( 13%)  3634k ( 14%)
+ ipa inlining heuristics            :   0.02 (  6%)   0.00 (  0%)   0.05 (  6%)  1291k (  5%)
+ ipa reference                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9920  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ df reaching defs                   :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.02 (  6%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.01 (  9%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  3%)   0.01 (  9%)   0.00 (  0%)   306k (  1%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   551k (  2%)
+ alias stmt walking                 :   0.02 (  6%)   0.00 (  0%)   0.02 (  2%)  2400  (  0%)
+ preprocessing                      :   0.02 (  6%)   0.02 ( 18%)   0.08 (  9%)  1744k (  7%)
+ lexical analysis                   :   0.01 (  3%)   0.01 (  9%)   0.08 (  9%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 18%)   0.03 (  3%)  2842k ( 11%)
+ parser function body               :   0.00 (  0%)   0.01 (  9%)   0.01 (  1%)   827k (  3%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2315k (  9%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   646k (  3%)
+ tree VRP                           :   0.02 (  6%)   0.00 (  0%)   0.01 (  1%)    52k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    60k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   318k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   185k (  1%)
+ tree SSA incremental               :   0.01 (  3%)   0.01 (  9%)   0.00 (  0%)   445k (  2%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   367k (  1%)
+ tree FRE                           :   0.01 (  3%)   0.01 (  9%)   0.00 (  0%)   678k (  3%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    16  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ dominance frontiers                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.02 (  6%)   0.00 (  0%)   0.02 (  2%)  1942k (  8%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   296  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3456  (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    75k (  0%)
+ dead store elim2                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    46k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.04 (  4%)     0  (  0%)
+ CPROP                              :   0.02 (  6%)   0.01 (  9%)   0.03 (  3%)   139k (  1%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  3144  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   310k (  1%)
+ integrated RA                      :   0.03 (  9%)   0.00 (  0%)   0.05 (  6%)  1920k (  8%)
+ LRA create live ranges             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   240  (  0%)
+ reload CSE regs                    :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   192k (  1%)
+ thread pro- & epilogue             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    48k (  0%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.06 (  7%)    93k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   133k (  1%)
+ rest of compilation                :   0.02 (  6%)   0.00 (  0%)   0.10 ( 11%)   272k (  1%)
+ TOTAL                              :   0.33          0.11          0.89           24M
+
+# Exit code: 0

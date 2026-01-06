@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/counter.cc
+# Command: /usr/bin/g++ -DBENCHMARK_HAS_PTHREAD_AFFINITY -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src -ftime-report -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark.dir/counter.cc.o -MF src/CMakeFiles/benchmark.dir/counter.cc.o.d -o src/CMakeFiles/benchmark.dir/counter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/counter.cc
+# Timestamp: 2026-01-05T18:44:11+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1752k (  2%)
+ phase parsing                      :   0.39 ( 71%)   0.32 ( 84%)   1.27 ( 80%)    79M ( 82%)
+ phase lang. deferred               :   0.06 ( 11%)   0.02 (  5%)   0.11 (  7%) 10163k ( 10%)
+ phase opt and generate             :   0.10 ( 18%)   0.04 ( 11%)   0.20 ( 13%)  5800k (  6%)
+ |name lookup                       :   0.15 ( 27%)   0.04 ( 11%)   0.31 ( 20%)  3623k (  4%)
+ |overload resolution               :   0.05 (  9%)   0.02 (  5%)   0.16 ( 10%)  9168k (  9%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    11k (  0%)
+ callgraph functions expansion      :   0.07 ( 13%)   0.01 (  3%)   0.14 (  9%)  2487k (  3%)
+ callgraph ipa passes               :   0.03 (  5%)   0.03 (  8%)   0.06 (  4%)  2148k (  2%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)  5760  (  0%)
+ preprocessing                      :   0.04 (  7%)   0.08 ( 21%)   0.25 ( 16%)  2235k (  2%)
+ parser (global)                    :   0.04 (  7%)   0.10 ( 26%)   0.26 ( 16%)    26M ( 27%)
+ parser struct body                 :   0.03 (  5%)   0.03 (  8%)   0.11 (  7%)    16M ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    47k (  0%)
+ parser function body               :   0.01 (  2%)   0.01 (  3%)   0.06 (  4%)  2740k (  3%)
+ parser inl. func. body             :   0.05 (  9%)   0.01 (  3%)   0.10 (  6%)  3394k (  3%)
+ parser inl. meth. body             :   0.11 ( 20%)   0.04 ( 11%)   0.23 ( 15%)  8767k (  9%)
+ template instantiation             :   0.17 ( 31%)   0.06 ( 16%)   0.31 ( 20%)    29M ( 31%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  3%)   0.05 (  3%)   226k (  0%)
+ integration                        :   0.02 (  4%)   0.01 (  3%)   0.01 (  1%)   774k (  1%)
+ tree VRP                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   162k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    52k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   131k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   369k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   106k (  0%)
+ backwards jump threading           :   0.04 (  7%)   0.00 (  0%)   0.01 (  1%)   200k (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    48  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   272  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   232k (  0%)
+ combiner                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    47k (  0%)
+ load CSE after reload              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1320  (  0%)
+ scheduling 2                       :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    22k (  0%)
+ TOTAL                              :   0.55          0.38          1.58           96M
+
+# Exit code: 0

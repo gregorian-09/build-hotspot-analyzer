@@ -1,0 +1,59 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/stacktrace.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/debugging/CMakeFiles/stacktrace.dir/stacktrace.cc.o -MF absl/debugging/CMakeFiles/stacktrace.dir/stacktrace.cc.o.d -o absl/debugging/CMakeFiles/stacktrace.dir/stacktrace.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/stacktrace.cc
+# Timestamp: 2026-01-05T17:54:02+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1882k (  6%)
+ phase parsing                      :   0.10 ( 40%)   0.11 ( 73%)   0.23 ( 46%)    22M ( 73%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)   845k (  3%)
+ phase opt and generate             :   0.15 ( 60%)   0.03 ( 20%)   0.26 ( 52%)  5845k ( 19%)
+ |name lookup                       :   0.01 (  4%)   0.00 (  0%)   0.06 ( 12%)  1171k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.01 (  7%)   0.02 (  4%)   670k (  2%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1928  (  0%)
+ callgraph functions expansion      :   0.13 ( 52%)   0.02 ( 13%)   0.23 ( 46%)  4325k ( 14%)
+ callgraph ipa passes               :   0.02 (  8%)   0.01 (  7%)   0.02 (  4%)   874k (  3%)
+ ipa SRA                            :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  5304  (  0%)
+ df reaching defs                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)     0  (  0%)
+ alias analysis                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   127k (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  1160  (  0%)
+ preprocessing                      :   0.02 (  8%)   0.04 ( 27%)   0.07 ( 14%)  2182k (  7%)
+ parser (global)                    :   0.02 (  8%)   0.05 ( 33%)   0.03 (  6%)  9602k ( 31%)
+ parser struct body                 :   0.02 (  8%)   0.01 (  7%)   0.02 (  4%)  4165k ( 13%)
+ parser function body               :   0.01 (  4%)   0.00 (  0%)   0.03 (  6%)   625k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  1807k (  6%)
+ parser inl. meth. body             :   0.02 (  8%)   0.00 (  0%)   0.03 (  6%)  1507k (  5%)
+ template instantiation             :   0.00 (  0%)   0.01 (  7%)   0.02 (  4%)  3500k ( 11%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  7%)   0.01 (  2%)    94k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    79k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   250k (  1%)
+ tree CFG cleanup                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   111k (  0%)
+ tree PTA                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ tree SSA incremental               :   0.02 (  8%)   0.00 (  0%)   0.00 (  0%)    77k (  0%)
+ tree operand scan                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   205k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   161k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   169k (  1%)
+ tree reassociation                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  2760  (  0%)
+ tree linearize phis                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    18k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    40  (  0%)
+ tree loop unswitching              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    91k (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    72k (  0%)
+ varconst                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  4760  (  0%)
+ dead code elimination              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    22k (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)   284k (  1%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   432  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   162k (  1%)
+ integrated RA                      :   0.01 (  4%)   0.01 (  7%)   0.02 (  4%)   513k (  2%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   360  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    42k (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    49k (  0%)
+ final                              :   0.01 (  4%)   0.00 (  0%)   0.03 (  6%)   116k (  0%)
+ TOTAL                              :   0.25          0.15          0.50           30M
+
+# Exit code: 0

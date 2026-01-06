@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: imap.c
+# Output: libcurlu_la-imap.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c imap.c -fPIC -DPIC -o libcurlu_la-imap.o
+# Timestamp: 2026-01-05T20:44:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 11%)
+ phase parsing                      :   0.04 ( 44%)   0.06 ( 75%)   0.19 ( 63%)  7170k ( 45%)
+ phase opt and generate             :   0.05 ( 56%)   0.02 ( 25%)   0.11 ( 37%)  6842k ( 43%)
+ dump files                         :   0.01 ( 11%)   0.01 ( 13%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   183k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   111k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   748k (  5%)
+ cfg construction                   :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    42k (  0%)
+ df reg dead/unused notes           :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    82k (  1%)
+ preprocessing                      :   0.01 ( 11%)   0.02 ( 25%)   0.02 (  7%)  2458k ( 16%)
+ lexical analysis                   :   0.01 ( 11%)   0.01 ( 12%)   0.09 ( 30%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 25%)   0.04 ( 13%)  3439k ( 22%)
+ parser struct body                 :   0.01 ( 11%)   0.01 ( 13%)   0.00 (  0%)   376k (  2%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   359k (  2%)
+ parser function body               :   0.01 ( 11%)   0.00 (  0%)   0.01 (  3%)   528k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   582k (  4%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    74k (  0%)
+ expand                             :   0.01 ( 11%)   0.01 ( 12%)   0.02 (  7%)  1073k (  7%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   280  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2769k ( 17%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    14k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 11%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   255k (  2%)
+ TOTAL                              :   0.09          0.08          0.30           15M

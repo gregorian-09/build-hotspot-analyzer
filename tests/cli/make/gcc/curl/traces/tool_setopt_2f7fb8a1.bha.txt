@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: tool_setopt.c
+# Output: libcurltool_la-tool_setopt.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_setopt.c -fPIC -DPIC -o libcurltool_la-tool_setopt.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 12%)
+ phase parsing                      :   0.04 ( 57%)   0.08 ( 80%)   0.13 ( 68%)  7459k ( 51%)
+ phase opt and generate             :   0.03 ( 43%)   0.02 ( 20%)   0.05 ( 26%)  5367k ( 37%)
+ callgraph construction             :   0.01 ( 14%)   0.01 ( 10%)   0.00 (  0%)    79k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    72k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)   322k (  2%)
+ preprocessing                      :   0.03 ( 43%)   0.04 ( 40%)   0.10 ( 53%)  3567k ( 24%)
+ lexical analysis                   :   0.01 ( 14%)   0.02 ( 20%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)  2400k ( 16%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)   382k (  3%)
+ parser function body               :   0.00 (  0%)   0.01 ( 10%)   0.01 (  5%)   915k (  6%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1315k (  9%)
+ out of ssa                         :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  4280  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1660k ( 11%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    28k (  0%)
+ final                              :   0.01 ( 14%)   0.00 (  0%)   0.01 (  5%)   147k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   170k (  1%)
+ TOTAL                              :   0.07          0.10          0.19           14M

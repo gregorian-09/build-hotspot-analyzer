@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo/snappy-c.cc
+# Command: /usr/bin/g++ -DHAVE_CONFIG_H -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/build -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo -ftime-report -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/snappy.dir/snappy-c.cc.o -MF CMakeFiles/snappy.dir/snappy-c.cc.o.d -o CMakeFiles/snappy.dir/snappy-c.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo/snappy-c.cc
+# Timestamp: 2026-01-05T19:47:14+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1744k (  7%)
+ phase parsing                      :   0.11 ( 92%)   0.10 ( 91%)   0.21 ( 84%)    19M ( 82%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  9%)   0.02 (  8%)  2146k (  9%)
+ phase opt and generate             :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)   416k (  2%)
+ |name lookup                       :   0.01 (  8%)   0.02 ( 18%)   0.01 (  4%)  1044k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.02 ( 18%)   0.00 (  0%)  1158k (  5%)
+ callgraph functions expansion      :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)   297k (  1%)
+ preprocessing                      :   0.04 ( 33%)   0.03 ( 27%)   0.02 (  8%)  1599k (  7%)
+ parser (global)                    :   0.02 ( 17%)   0.04 ( 36%)   0.07 ( 28%)  7738k ( 32%)
+ parser struct body                 :   0.04 ( 33%)   0.00 (  0%)   0.05 ( 20%)  3942k ( 16%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  9%)   0.04 ( 16%)  2132k (  9%)
+ parser inl. meth. body             :   0.00 (  0%)   0.00 (  0%)   0.03 ( 12%)  1912k (  8%)
+ template instantiation             :   0.01 (  8%)   0.03 ( 27%)   0.02 (  8%)  4306k ( 18%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   123k (  1%)
+ initialize rtl                     :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.12          0.11          0.25           23M
+
+# Exit code: 0

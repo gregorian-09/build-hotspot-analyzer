@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: src/fxp.c
+# Output: src/fxp.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/fxp.o src/fxp.c
+# Timestamp: 2026-01-05T20:43:10+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.17 (100%)   0.19 ( 95%)   0.37 ( 97%)    25M ( 92%)
+ phase opt and generate             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   530k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ preprocessing                      :   0.05 ( 29%)   0.05 ( 25%)   0.14 ( 37%)    13M ( 50%)
+ lexical analysis                   :   0.05 ( 29%)   0.06 ( 30%)   0.13 ( 34%)     0  (  0%)
+ parser (global)                    :   0.02 ( 12%)   0.03 ( 15%)   0.04 ( 11%)  5683k ( 20%)
+ parser enumerator list             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   151k (  1%)
+ parser inl. func. body             :   0.04 ( 24%)   0.05 ( 25%)   0.06 ( 16%)  5382k ( 19%)
+ access analysis                    :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    72  (  0%)
+ TOTAL                              :   0.17          0.20          0.38           27M

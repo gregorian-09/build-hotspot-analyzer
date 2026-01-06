@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/log_sink.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/log/CMakeFiles/log_sink.dir/log_sink.cc.o -MF absl/log/CMakeFiles/log_sink.dir/log_sink.cc.o.d -o absl/log/CMakeFiles/log_sink.dir/log_sink.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/log_sink.cc
+# Timestamp: 2026-01-05T17:54:13+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.41 ( 87%)   0.35 ( 95%)   1.16 ( 89%)    81M ( 88%)
+ phase lang. deferred               :   0.05 ( 11%)   0.02 (  5%)   0.12 (  9%)  8728k (  9%)
+ phase opt and generate             :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   424k (  0%)
+ |name lookup                       :   0.07 ( 15%)   0.05 ( 14%)   0.36 ( 27%)  3111k (  3%)
+ |overload resolution               :   0.04 (  9%)   0.02 (  5%)   0.06 (  5%)  6194k (  7%)
+ callgraph functions expansion      :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   102k (  0%)
+ preprocessing                      :   0.07 ( 15%)   0.07 ( 19%)   0.27 ( 21%)  6260k (  7%)
+ parser (global)                    :   0.11 ( 23%)   0.10 ( 27%)   0.33 ( 25%)    29M ( 32%)
+ parser struct body                 :   0.03 (  6%)   0.05 ( 14%)   0.15 ( 11%)    14M ( 15%)
+ parser function body               :   0.04 (  9%)   0.03 (  8%)   0.09 (  7%)  3371k (  4%)
+ parser inl. func. body             :   0.03 (  6%)   0.01 (  3%)   0.06 (  5%)  7379k (  8%)
+ parser inl. meth. body             :   0.04 (  9%)   0.02 (  5%)   0.11 (  8%)  6595k (  7%)
+ template instantiation             :   0.14 ( 30%)   0.07 ( 19%)   0.27 ( 21%)    22M ( 24%)
+ constant expression evaluation     :   0.00 (  0%)   0.02 (  5%)   0.00 (  0%)   355k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1888  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.47          0.37          1.31           91M
+
+# Exit code: 0

@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/concurrent_arena.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/memory/concurrent_arena.cc.o -MF CMakeFiles/rocksdb-shared.dir/memory/concurrent_arena.cc.o.d -o CMakeFiles/rocksdb-shared.dir/memory/concurrent_arena.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/concurrent_arena.cc
+# Timestamp: 2026-01-05T19:36:48+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1886k (  1%)
+ phase parsing                      :   1.04 ( 80%)   0.62 ( 91%)   2.66 ( 85%)   161M ( 86%)
+ phase lang. deferred               :   0.15 ( 12%)   0.04 (  6%)   0.29 (  9%)    19M ( 10%)
+ phase opt and generate             :   0.11 (  8%)   0.02 (  3%)   0.17 (  5%)  4612k (  2%)
+ |name lookup                       :   0.24 ( 18%)   0.10 ( 15%)   0.58 ( 19%)  7127k (  4%)
+ |overload resolution               :   0.16 ( 12%)   0.06 (  9%)   0.36 ( 12%)    17M (  9%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)   748k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9544  (  0%)
+ callgraph functions expansion      :   0.07 (  5%)   0.02 (  3%)   0.09 (  3%)  2052k (  1%)
+ callgraph ipa passes               :   0.03 (  2%)   0.00 (  0%)   0.05 (  2%)  1311k (  1%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   384  (  0%)
+ preprocessing                      :   0.12 (  9%)   0.15 ( 22%)   0.51 ( 16%)  6973k (  4%)
+ parser (global)                    :   0.15 ( 12%)   0.16 ( 24%)   0.63 ( 20%)    52M ( 28%)
+ parser struct body                 :   0.15 ( 12%)   0.07 ( 10%)   0.27 (  9%)    27M ( 15%)
+ parser function body               :   0.06 (  5%)   0.03 (  4%)   0.11 (  4%)  4583k (  2%)
+ parser inl. func. body             :   0.12 (  9%)   0.03 (  4%)   0.15 (  5%)  8117k (  4%)
+ parser inl. meth. body             :   0.16 ( 12%)   0.05 (  7%)   0.41 ( 13%)    25M ( 13%)
+ template instantiation             :   0.41 ( 32%)   0.16 ( 24%)   0.80 ( 26%)    54M ( 29%)
+ constant expression evaluation     :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)   635k (  0%)
+ constraint satisfaction            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   641k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   159k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   556k (  0%)
+ tree copy propagation              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   112  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    56k (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)    50k (  0%)
+ tree loop distribution             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  3552  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   896  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   164k (  0%)
+ loop invariant motion              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   672  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    32k (  0%)
+ if-conversion                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  6320  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   267k (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    10k (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1768  (  0%)
+ symout                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    30k (  0%)
+ TOTAL                              :   1.30          0.68          3.12          187M
+
+# Exit code: 0

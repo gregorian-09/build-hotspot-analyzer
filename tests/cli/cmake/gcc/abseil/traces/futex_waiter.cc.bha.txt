@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/futex_waiter.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/internal/futex_waiter.cc.o -MF absl/synchronization/CMakeFiles/synchronization.dir/internal/futex_waiter.cc.o.d -o absl/synchronization/CMakeFiles/synchronization.dir/internal/futex_waiter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/futex_waiter.cc
+# Timestamp: 2026-01-05T17:54:34+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.37 ( 80%)   0.34 ( 94%)   1.10 ( 87%)    73M ( 86%)
+ phase lang. deferred               :   0.07 ( 15%)   0.01 (  3%)   0.10 (  8%)  9112k ( 10%)
+ phase opt and generate             :   0.02 (  4%)   0.01 (  3%)   0.06 (  5%)  1048k (  1%)
+ |name lookup                       :   0.08 ( 17%)   0.05 ( 14%)   0.20 ( 16%)  2589k (  3%)
+ |overload resolution               :   0.07 ( 15%)   0.04 ( 11%)   0.07 (  6%)  5865k (  7%)
+ callgraph construction             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   308k (  0%)
+ callgraph functions expansion      :   0.01 (  2%)   0.01 (  3%)   0.05 (  4%)   436k (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    13k (  0%)
+ preprocessing                      :   0.05 ( 11%)   0.08 ( 22%)   0.24 ( 19%)  6545k (  7%)
+ parser (global)                    :   0.08 ( 17%)   0.16 ( 44%)   0.42 ( 33%)    29M ( 35%)
+ parser struct body                 :   0.03 (  7%)   0.00 (  0%)   0.06 (  5%)    10M ( 12%)
+ parser function body               :   0.02 (  4%)   0.03 (  8%)   0.04 (  3%)  3346k (  4%)
+ parser inl. func. body             :   0.04 (  9%)   0.02 (  6%)   0.10 (  8%)  7532k (  9%)
+ parser inl. meth. body             :   0.06 ( 13%)   0.02 (  6%)   0.08 (  6%)  4748k (  5%)
+ template instantiation             :   0.16 ( 35%)   0.04 ( 11%)   0.23 ( 18%)    20M ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   433k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    57k (  0%)
+ tree conservative DCE              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   280  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7032  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.46          0.36          1.27           85M
+
+# Exit code: 0

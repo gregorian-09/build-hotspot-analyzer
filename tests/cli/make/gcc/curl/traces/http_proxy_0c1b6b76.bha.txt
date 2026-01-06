@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: http_proxy.c
+# Output: libcurlu_la-http_proxy.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c http_proxy.c -fPIC -DPIC -o libcurlu_la-http_proxy.o
+# Timestamp: 2026-01-05T20:44:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 16%)
+ phase parsing                      :   0.03 ( 60%)   0.05 ( 83%)   0.15 ( 79%)  6557k ( 58%)
+ phase opt and generate             :   0.02 ( 40%)   0.01 ( 17%)   0.03 ( 16%)  3026k ( 27%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.03 ( 50%)   0.07 ( 37%)  2393k ( 21%)
+ lexical analysis                   :   0.02 ( 40%)   0.01 ( 17%)   0.03 ( 16%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.05 ( 26%)  3003k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)   342k (  3%)
+ expand                             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   326k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1530k ( 13%)
+ thread pro- & epilogue             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    77k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.05          0.06          0.19           11M

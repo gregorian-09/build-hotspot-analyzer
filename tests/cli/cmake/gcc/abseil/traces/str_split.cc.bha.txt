@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/str_split.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings.dir/str_split.cc.o -MF absl/strings/CMakeFiles/strings.dir/str_split.cc.o.d -o absl/strings/CMakeFiles/strings.dir/str_split.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/str_split.cc
+# Timestamp: 2026-01-05T17:54:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  2%)
+ phase parsing                      :   0.34 ( 79%)   0.37 ( 88%)   0.84 ( 82%)    73M ( 89%)
+ phase lang. deferred               :   0.02 (  5%)   0.02 (  5%)   0.04 (  4%)  4658k (  5%)
+ phase opt and generate             :   0.07 ( 16%)   0.03 (  7%)   0.13 ( 13%)  2907k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.09 ( 21%)   0.09 ( 21%)   0.14 ( 14%)  3016k (  4%)
+ |overload resolution               :   0.04 (  9%)   0.01 (  2%)   0.05 (  5%)  4831k (  6%)
+ callgraph optimization             :   0.02 (  5%)   0.00 (  0%)   0.02 (  2%)  5304  (  0%)
+ callgraph functions expansion      :   0.05 ( 12%)   0.02 (  5%)   0.06 (  6%)  1252k (  1%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  2%)   0.07 (  7%)  1078k (  1%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%) 10008  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.05 ( 12%)   0.09 ( 21%)   0.15 ( 15%)  2361k (  3%)
+ parser (global)                    :   0.06 ( 14%)   0.09 ( 21%)   0.19 ( 19%)    28M ( 34%)
+ parser struct body                 :   0.06 ( 14%)   0.03 (  7%)   0.07 (  7%)    13M ( 17%)
+ parser enumerator list             :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)   114k (  0%)
+ parser function body               :   0.03 (  7%)   0.02 (  5%)   0.07 (  7%)  5040k (  6%)
+ parser inl. func. body             :   0.01 (  2%)   0.03 (  7%)   0.06 (  6%)  3957k (  5%)
+ parser inl. meth. body             :   0.05 ( 12%)   0.06 ( 14%)   0.16 ( 16%)  7140k (  8%)
+ template instantiation             :   0.07 ( 16%)   0.07 ( 17%)   0.17 ( 17%)    17M ( 21%)
+ constant expression evaluation     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   212k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    20k (  0%)
+ tree SSA incremental               :   0.01 (  2%)   0.01 (  2%)   0.01 (  1%)    37k (  0%)
+ tree SRA                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    40k (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.04 (  4%)     0  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ combiner                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ integrated RA                      :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   175k (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   192  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.43          0.42          1.02           82M
+
+# Exit code: 0

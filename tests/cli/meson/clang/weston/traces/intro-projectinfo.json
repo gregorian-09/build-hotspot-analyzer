@@ -1,0 +1,36 @@
+{
+  "version": "14.0.91",
+  "descriptive_name": "weston",
+  "license": [
+    "MIT/Expat"
+  ],
+  "license_files": [],
+  "subproject_dir": "subprojects",
+  "subprojects": [
+    {
+      "name": "edid-decode",
+      "version": "undefined",
+      "descriptive_name": "edid-decode"
+    },
+    {
+      "name": "display-info",
+      "version": "0.2.0",
+      "descriptive_name": "libdisplay-info"
+    },
+    {
+      "name": "wayland-protocols",
+      "version": "1.47",
+      "descriptive_name": "wayland-protocols"
+    },
+    {
+      "name": "aml",
+      "version": "0.3.0",
+      "descriptive_name": "aml"
+    },
+    {
+      "name": "neatvnc",
+      "version": "0.7.0",
+      "descriptive_name": "neatvnc"
+    }
+  ]
+}

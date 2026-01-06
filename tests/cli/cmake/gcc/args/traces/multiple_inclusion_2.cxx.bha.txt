@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo/test/multiple_inclusion_2.cxx
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo -ftime-report -O3 -DNDEBUG -std=gnu++11 -MD -MT CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_2.cxx.o -MF CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_2.cxx.o.d -o CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_2.cxx.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo/test/multiple_inclusion_2.cxx
+# Timestamp: 2026-01-05T17:45:01+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1876k (  2%)
+ phase parsing                      :   0.36 ( 72%)   0.27 ( 77%)   0.97 ( 78%)    64M ( 74%)
+ phase lang. deferred               :   0.14 ( 28%)   0.07 ( 20%)   0.25 ( 20%)    21M ( 24%)
+ phase opt and generate             :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   537k (  1%)
+ |name lookup                       :   0.08 ( 16%)   0.08 ( 23%)   0.26 ( 21%)  3136k (  3%)
+ |overload resolution               :   0.12 ( 24%)   0.05 ( 14%)   0.26 ( 21%)    16M ( 19%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   457k (  1%)
+ ipa inheritance graph              :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  5376  (  0%)
+ preprocessing                      :   0.05 ( 10%)   0.06 ( 17%)   0.11 (  9%)  2008k (  2%)
+ parser (global)                    :   0.04 (  8%)   0.08 ( 23%)   0.30 ( 24%)    16M ( 18%)
+ parser struct body                 :   0.02 (  4%)   0.02 (  6%)   0.10 (  8%)    11M ( 13%)
+ parser function body               :   0.04 (  8%)   0.03 (  9%)   0.08 (  6%)  3478k (  4%)
+ parser inl. func. body             :   0.05 ( 10%)   0.01 (  3%)   0.03 (  2%)  2961k (  3%)
+ parser inl. meth. body             :   0.06 ( 12%)   0.03 (  9%)   0.16 ( 13%)    11M ( 13%)
+ template instantiation             :   0.20 ( 40%)   0.11 ( 31%)   0.39 ( 31%)    37M ( 42%)
+ constant expression evaluation     :   0.02 (  4%)   0.00 (  0%)   0.02 (  2%)   479k (  1%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)   384  (  0%)
+ symout                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.50          0.35          1.24           88M
+
+# Exit code: 0

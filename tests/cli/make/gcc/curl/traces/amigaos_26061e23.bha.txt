@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: amigaos.c
+# Output: libcurlu_la-amigaos.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c amigaos.c -fPIC -DPIC -o libcurlu_la-amigaos.o
+# Timestamp: 2026-01-05T20:44:31+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.03 ( 75%)   0.03 (100%)   0.14 ( 78%)  4551k ( 55%)
+ phase opt and generate             :   0.01 ( 25%)   0.00 (  0%)   0.04 ( 22%)  1887k ( 23%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  6104  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   131k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ preprocessing                      :   0.03 ( 75%)   0.01 ( 33%)   0.03 ( 17%)  1982k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 67%)   0.04 ( 22%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 ( 22%)  2106k ( 26%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)   268k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    73k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ initialize rtl                     :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.04          0.03          0.18         8258k

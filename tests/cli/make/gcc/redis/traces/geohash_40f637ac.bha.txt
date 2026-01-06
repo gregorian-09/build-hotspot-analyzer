@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: geohash.c
+# Output: geohash.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o geohash.o -c geohash.c
+# Timestamp: 2026-01-05T20:43:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)  1828k ( 57%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   670k ( 21%)
+ phase opt and generate             :   0.01 (100%)   0.01 (100%)   0.01 ( 33%)   705k ( 22%)
+ callgraph ipa passes               :   0.01 (100%)   0.01 (100%)   0.01 ( 33%)   410k ( 13%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    27k (  1%)
+ ipa free lang data                 :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)  4816  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   172k (  5%)
+ early inlining heuristics          :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.01          0.01          0.03         3204k

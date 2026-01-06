@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: http1.c
+# Output: libcurlu_la-http1.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c http1.c -fPIC -DPIC -o libcurlu_la-http1.o
+# Timestamp: 2026-01-05T20:44:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.03 ( 75%)   0.06 ( 75%)   0.21 ( 81%)  5884k ( 55%)
+ phase opt and generate             :   0.01 ( 25%)   0.02 ( 25%)   0.03 ( 12%)  2930k ( 28%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    28k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.02 ( 25%)   0.00 (  0%)   504  (  0%)
+ preprocessing                      :   0.02 ( 50%)   0.01 ( 12%)   0.06 ( 23%)  2319k ( 22%)
+ lexical analysis                   :   0.01 ( 25%)   0.03 ( 38%)   0.09 ( 35%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 13%)   0.03 ( 12%)  2726k ( 26%)
+ parser enumerator list             :   0.00 (  0%)   0.01 ( 12%)   0.03 ( 12%)   342k (  3%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    66k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1480k ( 14%)
+ initialize rtl                     :   0.01 ( 25%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ TOTAL                              :   0.04          0.08          0.26           10M

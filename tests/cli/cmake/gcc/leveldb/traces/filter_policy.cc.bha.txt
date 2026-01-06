@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/filter_policy.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/filter_policy.cc.o -MF CMakeFiles/leveldb.dir/util/filter_policy.cc.o.d -o CMakeFiles/leveldb.dir/util/filter_policy.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/filter_policy.cc
+# Timestamp: 2026-01-05T19:49:00+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1744k (  7%)
+ phase parsing                      :   0.07 ( 78%)   0.11 (100%)   0.20 ( 87%)    19M ( 83%)
+ phase lang. deferred               :   0.01 ( 11%)   0.00 (  0%)   0.01 (  4%)  2125k (  9%)
+ phase opt and generate             :   0.01 ( 11%)   0.00 (  0%)   0.01 (  4%)   166k (  1%)
+ |name lookup                       :   0.03 ( 33%)   0.02 ( 18%)   0.02 (  9%)  1035k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.01 (  9%)   0.00 (  0%)  1166k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    34k (  0%)
+ callgraph functions expansion      :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   102k (  0%)
+ cfg cleanup                        :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.02 ( 22%)   0.02 ( 18%)   0.05 ( 22%)  1568k (  7%)
+ parser (global)                    :   0.00 (  0%)   0.04 ( 36%)   0.04 ( 17%)  7896k ( 33%)
+ parser struct body                 :   0.02 ( 22%)   0.02 ( 18%)   0.02 (  9%)  3685k ( 15%)
+ parser function body               :   0.00 (  0%)   0.01 (  9%)   0.01 (  4%)   316k (  1%)
+ parser inl. func. body             :   0.01 ( 11%)   0.01 (  9%)   0.02 (  9%)  2128k (  9%)
+ parser inl. meth. body             :   0.01 ( 11%)   0.00 (  0%)   0.02 (  9%)  1900k (  8%)
+ template instantiation             :   0.01 ( 11%)   0.01 (  9%)   0.05 ( 22%)  4284k ( 18%)
+ constant expression evaluation     :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    68k (  0%)
+ TOTAL                              :   0.09          0.11          0.23           23M
+
+# Exit code: 0

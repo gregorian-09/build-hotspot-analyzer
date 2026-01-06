@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: sha256.c
+# Output: sha256.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o sha256.o -c sha256.c
+# Timestamp: 2026-01-05T20:43:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 48%)
+ phase parsing                      :   0.00 (  0%)   0.02 (100%)   0.03 ( 75%)  1673k ( 44%)
+ phase opt and generate             :   0.01 (100%)   0.00 (  0%)   0.01 ( 25%)   311k (  8%)
+ callgraph construction             :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)    33k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   183k (  5%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.01 ( 25%)   495k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 50%)   0.01 ( 25%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   689k ( 18%)
+ TOTAL                              :   0.01          0.02          0.04         3813k

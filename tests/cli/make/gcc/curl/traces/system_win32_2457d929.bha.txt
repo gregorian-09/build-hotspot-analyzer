@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: system_win32.c
+# Output: libcurlu_la-system_win32.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c system_win32.c -fPIC -DPIC -o libcurlu_la-system_win32.o
+# Timestamp: 2026-01-05T20:44:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 (100%)   0.07 ( 78%)  4552k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 22%)  1887k ( 23%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.03 ( 33%)  1982k ( 24%)
+ lexical analysis                   :   0.02 ( 67%)   0.00 (  0%)   0.03 ( 33%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 67%)   0.01 ( 11%)  2106k ( 26%)
+ tree switch lowering               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ initialize rtl                     :   0.01 ( 33%)   0.00 (  0%)   0.01 ( 11%)    12k (  0%)
+ TOTAL                              :   0.03          0.03          0.09         8259k

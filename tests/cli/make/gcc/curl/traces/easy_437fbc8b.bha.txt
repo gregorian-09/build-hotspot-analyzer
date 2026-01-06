@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: easy.c
+# Output: libcurlu_la-easy.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c easy.c -fPIC -DPIC -o libcurlu_la-easy.o
+# Timestamp: 2026-01-05T20:44:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 14%)
+ phase parsing                      :   0.05 ( 62%)   0.06 ( 75%)   0.24 ( 69%)  7227k ( 55%)
+ phase opt and generate             :   0.03 ( 38%)   0.02 ( 25%)   0.09 ( 26%)  4118k ( 31%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   363k (  3%)
+ df scan insns                      :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)  2736  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ preprocessing                      :   0.02 ( 25%)   0.02 ( 25%)   0.14 ( 40%)  2626k ( 20%)
+ lexical analysis                   :   0.02 ( 25%)   0.03 ( 38%)   0.08 ( 23%)     0  (  0%)
+ parser (global)                    :   0.01 ( 12%)   0.00 (  0%)   0.01 (  3%)  3491k ( 27%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 13%)   0.01 (  3%)   414k (  3%)
+ tree CFG cleanup                   :   0.01 ( 12%)   0.01 ( 13%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  7304  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   416k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 12%)   0.02 (  6%)  2070k ( 16%)
+ LRA non-specific                   :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)  9168  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   180k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   206k (  2%)
+ TOTAL                              :   0.08          0.08          0.35           12M

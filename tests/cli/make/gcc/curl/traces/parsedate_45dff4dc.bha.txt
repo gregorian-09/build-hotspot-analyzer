@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: parsedate.c
+# Output: libcurlu_la-parsedate.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c parsedate.c -fPIC -DPIC -o libcurlu_la-parsedate.o
+# Timestamp: 2026-01-05T20:44:39+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 19%)
+ phase parsing                      :   0.02 ( 40%)   0.04 (100%)   0.12 ( 63%)  4741k ( 50%)
+ phase opt and generate             :   0.03 ( 60%)   0.00 (  0%)   0.06 ( 32%)  2864k ( 30%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   244k (  3%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 25%)   0.03 ( 16%)  1995k ( 21%)
+ lexical analysis                   :   0.01 ( 20%)   0.02 ( 50%)   0.08 ( 42%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.01 (  5%)  2199k ( 23%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   101k (  1%)
+ dominance computation              :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   220k (  2%)
+ integrated RA                      :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)  1554k ( 16%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   125k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ rest of compilation                :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)   148k (  2%)
+ TOTAL                              :   0.05          0.04          0.19         9426k

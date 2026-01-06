@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/djpeg.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -DBMP_SUPPORTED -DGIF_SUPPORTED -DPPM_SUPPORTED -DTARGA_SUPPORTED -MD -MT sharedlib/CMakeFiles/djpeg.dir/__/src/djpeg.c.o -MF sharedlib/CMakeFiles/djpeg.dir/__/src/djpeg.c.o.d -o sharedlib/CMakeFiles/djpeg.dir/__/src/djpeg.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/djpeg.c
+# Timestamp: 2026-01-05T18:14:54+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.00 (  0%)   0.03 ( 60%)   0.04 ( 17%)  2799k ( 29%)
+ phase opt and generate             :   0.13 (100%)   0.02 ( 40%)   0.20 ( 83%)  5166k ( 53%)
+ callgraph functions expansion      :   0.11 ( 85%)   0.02 ( 40%)   0.17 ( 71%)  3956k ( 40%)
+ callgraph ipa passes               :   0.01 (  8%)   0.00 (  0%)   0.03 ( 12%)   721k (  7%)
+ df live regs                       :   0.01 (  8%)   0.00 (  0%)   0.02 (  8%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   176k (  2%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.02 (  8%)   781k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.01 (  4%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1212k ( 12%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   138k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   366k (  4%)
+ tree CFG construction              :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   101k (  1%)
+ dominator optimization             :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)   130k (  1%)
+ backwards jump threading           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  4880  (  0%)
+ tree CCP                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ tree FRE                           :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)    92k (  1%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   216k (  2%)
+ expand                             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   652k (  7%)
+ forward prop                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  3360  (  0%)
+ CSE                                :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  8896  (  0%)
+ integrated RA                      :   0.02 ( 15%)   0.01 ( 20%)   0.03 ( 13%)   590k (  6%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    14k (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   384  (  0%)
+ scheduling 2                       :   0.02 ( 15%)   0.00 (  0%)   0.02 (  8%)    65k (  1%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   312  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)  1128  (  0%)
+ TOTAL                              :   0.13          0.05          0.24         9785k
+
+# Exit code: 0

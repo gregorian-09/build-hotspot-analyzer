@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: telnet.c
+# Output: libcurlu_la-telnet.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c telnet.c -fPIC -DPIC -o libcurlu_la-telnet.o
+# Timestamp: 2026-01-05T20:44:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 13%)
+ phase parsing                      :   0.04 ( 44%)   0.04 ( 80%)   0.10 ( 59%)  7207k ( 50%)
+ phase opt and generate             :   0.05 ( 56%)   0.01 ( 20%)   0.07 ( 41%)  5335k ( 37%)
+ dump files                         :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   110k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   520k (  4%)
+ df scan insns                      :   0.01 ( 11%)   0.00 (  0%)   0.01 (  6%)  2256  (  0%)
+ df reg dead/unused notes           :   0.01 ( 11%)   0.00 (  0%)   0.01 (  6%)    66k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.03 ( 18%)  2581k ( 18%)
+ lexical analysis                   :   0.02 ( 22%)   0.01 ( 20%)   0.05 ( 29%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 20%)   0.02 ( 12%)  3138k ( 22%)
+ parser struct body                 :   0.01 ( 11%)   0.01 ( 20%)   0.00 (  0%)   407k (  3%)
+ parser enumerator list             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   376k (  3%)
+ tree CFG construction              :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   241k (  2%)
+ tree switch lowering               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    60k (  0%)
+ out of ssa                         :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  6952  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2046k ( 14%)
+ LRA non-specific                   :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  8000  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   187k (  1%)
+ TOTAL                              :   0.09          0.05          0.17           14M

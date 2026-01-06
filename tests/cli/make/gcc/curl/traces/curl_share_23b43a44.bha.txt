@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: curl_share.c
+# Output: libcurlu_la-curl_share.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c curl_share.c -fPIC -DPIC -o libcurlu_la-curl_share.o
+# Timestamp: 2026-01-05T20:44:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.03 ( 75%)   0.06 ( 86%)   0.15 ( 75%)  6031k ( 57%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 14%)   0.05 ( 25%)  2765k ( 26%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   276k (  3%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1488  (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.04 ( 57%)   0.04 ( 20%)  2361k ( 22%)
+ lexical analysis                   :   0.01 ( 25%)   0.00 (  0%)   0.04 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 ( 15%)  2853k ( 27%)
+ parser struct body                 :   0.01 ( 25%)   0.01 ( 14%)   0.02 ( 10%)   344k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   343k (  3%)
+ varconst                           :   0.00 (  0%)   0.01 ( 14%)   0.01 (  5%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1403k ( 13%)
+ LRA non-specific                   :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  5560  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   169k (  2%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ TOTAL                              :   0.04          0.07          0.20           10M

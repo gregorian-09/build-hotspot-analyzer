@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: test/example.c
+# Output: example64.o
+# Compiler: gcc
+# Command: gcc -ftime-report -I. -D_FILE_OFFSET_BITS=64 -c -o example64.o test/example.c
+# Timestamp: 2026-01-05T20:45:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)  1819k ( 34%)
+ phase parsing                      :   0.03 ( 60%)   0.02 (100%)   0.04 ( 50%)  2019k ( 38%)
+ phase opt and generate             :   0.02 ( 40%)   0.00 (  0%)   0.03 ( 38%)  1507k ( 28%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 25%)   649k ( 12%)
+ lexical analysis                   :   0.00 (  0%)   0.02 (100%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.02 ( 40%)   0.00 (  0%)   0.01 ( 12%)  1083k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)    42k (  1%)
+ parser function body               :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   169k (  3%)
+ LRA non-specific                   :   0.01 ( 20%)   0.00 (  0%)   0.01 ( 12%)  3168  (  0%)
+ LRA hard reg assignment            :   0.01 ( 20%)   0.00 (  0%)   0.01 ( 12%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 13%)    12k (  0%)
+ TOTAL                              :   0.05          0.02          0.08         5346k

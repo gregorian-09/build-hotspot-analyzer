@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: rax.c
+# Output: rax.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o rax.o -c rax.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 16%)
+ phase parsing                      :   0.03 ( 30%)   0.04 ( 80%)   0.08 ( 50%)  5578k ( 48%)
+ phase opt and generate             :   0.07 ( 70%)   0.01 ( 20%)   0.08 ( 50%)  4285k ( 37%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   936k (  8%)
+ callgraph optimization             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  3272  (  0%)
+ callgraph ipa passes               :   0.06 ( 60%)   0.01 ( 20%)   0.06 ( 37%)  2168k ( 19%)
+ ipa lto gimple out                 :   0.01 ( 10%)   0.00 (  0%)   0.01 (  6%)  5720  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    45k (  0%)
+ preprocessing                      :   0.02 ( 20%)   0.01 ( 20%)   0.02 ( 13%)  1978k ( 17%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.03 ( 19%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1907k ( 16%)
+ parser function body               :   0.01 ( 10%)   0.01 ( 20%)   0.02 ( 12%)   782k (  7%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   244k (  2%)
+ tree gimplify                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   952k (  8%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   251k (  2%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    46k (  0%)
+ tree CCP                           :   0.03 ( 30%)   0.00 (  0%)   0.03 ( 19%)    50k (  0%)
+ tree forward propagate             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  3008  (  0%)
+ TOTAL                              :   0.10          0.05          0.16           11M

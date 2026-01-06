@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/lib/xxhash.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=LZ4_ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/build/cmake/../../lib -ftime-report -O3 -DNDEBUG -fPIC -MD -MT CMakeFiles/lz4_static.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/lib/xxhash.c.o -MF CMakeFiles/lz4_static.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/lib/xxhash.c.o.d -o CMakeFiles/lz4_static.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/lib/xxhash.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/lz4/repo/lib/xxhash.c
+# Timestamp: 2026-01-05T18:44:26+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 14%)
+ phase parsing                      :   0.01 (  6%)   0.01 ( 20%)   0.04 ( 18%)  1880k ( 14%)
+ phase opt and generate             :   0.15 ( 94%)   0.04 ( 80%)   0.18 ( 82%)  9580k ( 72%)
+ dump files                         :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)   352k (  3%)
+ callgraph functions expansion      :   0.13 ( 81%)   0.02 ( 40%)   0.16 ( 73%)  6200k ( 47%)
+ callgraph ipa passes               :   0.01 (  6%)   0.02 ( 40%)   0.02 (  9%)  2924k ( 22%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 20%)   0.01 (  5%)   560k (  4%)
+ lexical analysis                   :   0.01 (  6%)   0.00 (  0%)   0.03 ( 14%)     0  (  0%)
+ integration                        :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  1751k ( 13%)
+ tree gimplify                      :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   293k (  2%)
+ tree VRP                           :   0.01 (  6%)   0.01 ( 20%)   0.01 (  5%)    92k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    81k (  1%)
+ tree copy propagation              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   608  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    29k (  0%)
+ tree operand scan                  :   0.01 (  6%)   0.00 (  0%)   0.01 (  5%)   417k (  3%)
+ dominator optimization             :   0.01 (  6%)   0.00 (  0%)   0.01 (  5%)    77k (  1%)
+ backwards jump threading           :   0.01 (  6%)   0.00 (  0%)   0.01 (  5%)  6216  (  0%)
+ tree reassociation                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   776  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   458k (  3%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    36k (  0%)
+ tree slp vectorization             :   0.04 ( 25%)   0.00 (  0%)   0.03 ( 14%)  1834k ( 14%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)  3088  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   362k (  3%)
+ combiner                           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   352k (  3%)
+ integrated RA                      :   0.01 (  6%)   0.00 (  0%)   0.01 (  5%)   883k (  7%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  3312  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    32k (  0%)
+ rest of compilation                :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    63k (  0%)
+ address taken                      :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.16          0.05          0.22           12M
+
+# Exit code: 0

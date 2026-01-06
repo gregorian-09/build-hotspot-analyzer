@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: curlx/strcopy.c
+# Output: curlx/libcurl_la-strcopy.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c curlx/strcopy.c -fPIC -DPIC -o curlx/libcurl_la-strcopy.o
+# Timestamp: 2026-01-05T20:44:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.03 ( 75%)   0.02 ( 67%)   0.11 ( 85%)  4556k ( 55%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 33%)   0.01 (  8%)  1939k ( 23%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    55k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   136k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    32  (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.01 ( 33%)   0.05 ( 38%)  1978k ( 24%)
+ lexical analysis                   :   0.01 ( 25%)   0.01 ( 33%)   0.04 ( 31%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2109k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   268k (  3%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1275k ( 15%)
+ final                              :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    83k (  1%)
+ TOTAL                              :   0.04          0.03          0.13         8315k

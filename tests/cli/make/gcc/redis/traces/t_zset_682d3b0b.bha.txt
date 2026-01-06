@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: t_zset.c
+# Output: t_zset.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o t_zset.o -c t_zset.c
+# Timestamp: 2026-01-05T20:43:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  6%)
+ phase parsing                      :   0.12 ( 44%)   0.12 ( 71%)   0.26 ( 57%)    19M ( 61%)
+ phase opt and generate             :   0.15 ( 56%)   0.05 ( 29%)   0.20 ( 43%)    10M ( 33%)
+ dump files                         :   0.00 (  0%)   0.01 (  6%)   0.01 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)  2511k (  8%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3560  (  0%)
+ callgraph ipa passes               :   0.13 ( 48%)   0.04 ( 24%)   0.17 ( 37%)  5884k ( 18%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   351k (  1%)
+ ipa function splitting             :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)   414k (  1%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)     0  (  0%)
+ lto stream output                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa lto decl out                   :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   264  (  0%)
+ ipa icf                            :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3256  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    54k (  0%)
+ preprocessing                      :   0.03 ( 11%)   0.01 (  6%)   0.07 ( 15%)  6741k ( 21%)
+ lexical analysis                   :   0.04 ( 15%)   0.07 ( 41%)   0.06 ( 13%)     0  (  0%)
+ parser (global)                    :   0.02 (  7%)   0.03 ( 18%)   0.06 ( 13%)  7265k ( 23%)
+ parser function body               :   0.03 ( 11%)   0.01 (  6%)   0.06 ( 13%)  1359k (  4%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)   337k (  1%)
+ integration                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   566k (  2%)
+ tree gimplify                      :   0.01 (  4%)   0.01 (  6%)   0.00 (  0%)  1850k (  6%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    29k (  0%)
+ tree Early VRP                     :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)   311k (  1%)
+ tree PTA                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   131k (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   589k (  2%)
+ tree SSA incremental               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree CCP                           :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   124k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    19k (  0%)
+ dominance computation              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   136k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2693k (  8%)
+ access analysis                    :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)   704  (  0%)
+ address taken                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.27          0.17          0.46           31M

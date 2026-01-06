@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: src/ecache.c
+# Output: src/ecache.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/ecache.o src/ecache.c
+# Timestamp: 2026-01-05T20:43:08+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.15 (100%)   0.24 ( 96%)   0.41 ( 98%)    25M ( 92%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   390k (  1%)
+ preprocessing                      :   0.04 ( 27%)   0.06 ( 24%)   0.11 ( 26%)    13M ( 51%)
+ lexical analysis                   :   0.05 ( 33%)   0.07 ( 28%)   0.17 ( 40%)     0  (  0%)
+ parser (global)                    :   0.03 ( 20%)   0.04 ( 16%)   0.05 ( 12%)  5682k ( 20%)
+ parser inl. func. body             :   0.03 ( 20%)   0.08 ( 32%)   0.08 ( 19%)  5382k ( 19%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ TOTAL                              :   0.15          0.25          0.42           27M

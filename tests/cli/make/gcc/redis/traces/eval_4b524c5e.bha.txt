@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: eval.c
+# Output: eval.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o eval.o -c eval.c
+# Timestamp: 2026-01-05T20:43:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  7%)
+ phase parsing                      :   0.09 ( 53%)   0.15 ( 94%)   0.25 ( 71%)    18M ( 73%)
+ phase opt and generate             :   0.08 ( 47%)   0.01 (  6%)   0.10 ( 29%)  5444k ( 20%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1815k (  7%)
+ callgraph ipa passes               :   0.08 ( 47%)   0.01 (  6%)   0.09 ( 26%)  2798k ( 11%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   124k (  0%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ ipa lto gimple out                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ ipa free lang data                 :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    95k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    10k (  0%)
+ preprocessing                      :   0.02 ( 12%)   0.06 ( 37%)   0.06 ( 17%)  6917k ( 26%)
+ lexical analysis                   :   0.04 ( 24%)   0.02 ( 12%)   0.11 ( 31%)     0  (  0%)
+ parser (global)                    :   0.01 (  6%)   0.05 ( 31%)   0.04 ( 11%)  7421k ( 28%)
+ parser function body               :   0.01 (  6%)   0.00 (  0%)   0.03 (  9%)   593k (  2%)
+ parser inl. func. body             :   0.01 (  6%)   0.02 ( 12%)   0.01 (  3%)   717k (  3%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   136k (  1%)
+ tree Early VRP                     :   0.01 (  6%)   0.00 (  0%)   0.02 (  6%)   123k (  0%)
+ tree PTA                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    56k (  0%)
+ tree operand scan                  :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   432k (  2%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    11k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   112k (  0%)
+ dominance computation              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ branch prediction                  :   0.02 ( 12%)   0.00 (  0%)   0.00 (  0%)    51k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2950k ( 11%)
+ TOTAL                              :   0.17          0.16          0.35           26M

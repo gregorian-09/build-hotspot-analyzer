@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: rtsp.c
+# Output: libcurlu_la-rtsp.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c rtsp.c -fPIC -DPIC -o libcurlu_la-rtsp.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 14%)
+ phase parsing                      :   0.03 ( 75%)   0.06 ( 75%)   0.15 ( 75%)  6889k ( 54%)
+ phase opt and generate             :   0.01 ( 25%)   0.02 ( 25%)   0.04 ( 20%)  4065k ( 32%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    73k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 13%)   0.01 (  5%)   384k (  3%)
+ preprocessing                      :   0.01 ( 25%)   0.02 ( 25%)   0.05 ( 25%)  2427k ( 19%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.08 ( 40%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.03 ( 38%)   0.02 ( 10%)  3391k ( 27%)
+ parser enumerator list             :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)   349k (  3%)
+ parser function body               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   348k (  3%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  5560  (  0%)
+ expand                             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   553k (  4%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1838k ( 14%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  7688  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)    90k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)  3592  (  0%)
+ TOTAL                              :   0.04          0.08          0.20           12M

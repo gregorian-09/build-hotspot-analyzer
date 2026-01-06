@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: pngpread.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c pngpread.c
+# Timestamp: 2026-01-05T20:46:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.02 ( 50%)   0.02 (100%)   0.05 ( 63%)  4615k ( 50%)
+ phase opt and generate             :   0.02 ( 50%)   0.00 (  0%)   0.03 ( 37%)  2706k ( 30%)
+ cfg cleanup                        :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2584  (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.02 (100%)   0.04 ( 50%)  2415k ( 26%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1827k ( 20%)
+ parser enumerator list             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    75k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)   710k (  8%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)    31k (  0%)
+ rest of compilation                :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    54k (  1%)
+ TOTAL                              :   0.04          0.02          0.08         9141k

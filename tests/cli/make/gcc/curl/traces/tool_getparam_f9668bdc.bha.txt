@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: tool_getparam.c
+# Output: libcurltool_la-tool_getparam.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_getparam.c -fPIC -DPIC -o libcurltool_la-tool_getparam.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1819k ( 11%)
+ phase parsing                      :   0.03 ( 27%)   0.06 ( 75%)   0.10 ( 45%)  6347k ( 38%)
+ phase opt and generate             :   0.08 ( 73%)   0.02 ( 25%)   0.11 ( 50%)  8491k ( 51%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)     0  (  0%)
+ callgraph ipa passes               :   0.01 (  9%)   0.00 (  0%)   0.02 (  9%)   871k (  5%)
+ cfg cleanup                        :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)  5272  (  0%)
+ preprocessing                      :   0.02 ( 18%)   0.01 ( 13%)   0.03 ( 14%)  2240k ( 13%)
+ lexical analysis                   :   0.01 (  9%)   0.02 ( 25%)   0.04 ( 18%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.03 ( 38%)   0.03 ( 14%)  2621k ( 16%)
+ tree SSA rewrite                   :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)   316k (  2%)
+ expand vars                        :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)    92k (  1%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.03 ( 14%)  1619k ( 10%)
+ integrated RA                      :   0.02 ( 18%)   0.00 (  0%)   0.01 (  5%)  2881k ( 17%)
+ LRA non-specific                   :   0.01 (  9%)   0.00 (  0%)   0.02 (  9%)    23k (  0%)
+ LRA virtuals elimination           :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)    90k (  1%)
+ final                              :   0.01 (  9%)   0.01 ( 12%)   0.02 (  9%)   444k (  3%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   341k (  2%)
+ TOTAL                              :   0.11          0.08          0.22           16M

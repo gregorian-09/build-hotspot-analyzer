@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: loadlib.c
+# Output: loadlib.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o loadlib.o loadlib.c
+# Timestamp: 2026-01-05T20:42:49+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 30%)
+ phase parsing                      :   0.02 ( 29%)   0.02 ( 67%)   0.09 ( 36%)  2389k ( 39%)
+ phase opt and generate             :   0.05 ( 71%)   0.01 ( 33%)   0.16 ( 64%)  1925k ( 31%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   312  (  0%)
+ callgraph functions expansion      :   0.05 ( 71%)   0.01 ( 33%)   0.14 ( 56%)  1336k ( 22%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)   375k (  6%)
+ df scan insns                      :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)   672  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)   672k ( 11%)
+ lexical analysis                   :   0.02 ( 29%)   0.00 (  0%)   0.06 ( 24%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1250k ( 20%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 67%)   0.00 (  0%)   176k (  3%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  8704  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  2008  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    13k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    14k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ loop init                          :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)   106k (  2%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   656  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   351k (  6%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  8448  (  0%)
+ thread pro- & epilogue             :   0.02 ( 29%)   0.00 (  0%)   0.00 (  0%)    38k (  1%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  6768  (  0%)
+ initialize rtl                     :   0.01 ( 14%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    41k (  1%)
+ TOTAL                              :   0.07          0.03          0.25         6134k

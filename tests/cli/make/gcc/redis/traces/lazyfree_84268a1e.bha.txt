@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: lazyfree.c
+# Output: lazyfree.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o lazyfree.o -c lazyfree.c
+# Timestamp: 2026-01-05T20:43:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.04 ( 67%)   0.09 ( 90%)   0.15 ( 88%)    12M ( 83%)
+ phase opt and generate             :   0.02 ( 33%)   0.01 ( 10%)   0.02 ( 12%)   741k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   178k (  1%)
+ callgraph ipa passes               :   0.01 ( 17%)   0.01 ( 10%)   0.01 (  6%)   460k (  3%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ lto stream output                  :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    49k (  0%)
+ preprocessing                      :   0.02 ( 33%)   0.02 ( 20%)   0.06 ( 35%)  2864k ( 19%)
+ lexical analysis                   :   0.01 ( 17%)   0.03 ( 30%)   0.06 ( 35%)     0  (  0%)
+ parser (global)                    :   0.01 ( 17%)   0.03 ( 30%)   0.01 (  6%)  5630k ( 37%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)   539k (  4%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 12%)   713k (  5%)
+ loop init                          :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2685k ( 18%)
+ TOTAL                              :   0.06          0.10          0.17           14M

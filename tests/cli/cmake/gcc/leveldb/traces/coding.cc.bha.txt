@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/coding.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/coding.cc.o -MF CMakeFiles/leveldb.dir/util/coding.cc.o.d -o CMakeFiles/leveldb.dir/util/coding.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/coding.cc
+# Timestamp: 2026-01-05T19:49:00+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1744k (  4%)
+ phase parsing                      :   0.16 ( 67%)   0.18 ( 86%)   0.66 ( 74%)    35M ( 83%)
+ phase lang. deferred               :   0.02 (  8%)   0.00 (  0%)   0.08 (  9%)  3152k (  7%)
+ phase opt and generate             :   0.06 ( 25%)   0.03 ( 14%)   0.13 ( 15%)  2595k (  6%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.03 ( 13%)   0.02 ( 10%)   0.12 ( 13%)  1685k (  4%)
+ |overload resolution               :   0.01 (  4%)   0.00 (  0%)   0.06 (  7%)  2327k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   129k (  0%)
+ callgraph functions expansion      :   0.05 ( 21%)   0.02 ( 10%)   0.10 ( 11%)  1834k (  4%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)   483k (  1%)
+ cfg cleanup                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.01 (  4%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.02 (  8%)   0.05 ( 24%)   0.12 ( 13%)  1992k (  5%)
+ parser (global)                    :   0.03 ( 13%)   0.04 ( 19%)   0.21 ( 24%)    13M ( 31%)
+ parser struct body                 :   0.05 ( 21%)   0.04 ( 19%)   0.09 ( 10%)  7188k ( 17%)
+ parser function body               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   471k (  1%)
+ parser inl. func. body             :   0.01 (  4%)   0.02 ( 10%)   0.06 (  7%)  2806k (  6%)
+ parser inl. meth. body             :   0.02 (  8%)   0.01 (  5%)   0.06 (  7%)  5304k ( 12%)
+ template instantiation             :   0.04 ( 17%)   0.02 ( 10%)   0.15 ( 17%)  7473k ( 17%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   179k (  0%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    46k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    98k (  0%)
+ tree VRP                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    52k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   140k (  0%)
+ isolate eroneous paths             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree iv optimization               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   896  (  0%)
+ forward prop                       :   0.01 (  4%)   0.01 (  5%)   0.01 (  1%)  2736  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   904  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9568  (  0%)
+ TOTAL                              :   0.24          0.21          0.89           42M
+
+# Exit code: 0

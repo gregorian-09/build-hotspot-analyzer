@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: linit.c
+# Output: linit.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o linit.o linit.c
+# Timestamp: 2026-01-05T20:42:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 56%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.04 ( 57%)  1281k ( 40%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)   133k (  4%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)   100k (  3%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 (100%)   0.02 ( 29%)   480k ( 15%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)     0  (  0%)
+ parser (global)                    :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)   708k ( 22%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)  1312  (  0%)
+ TOTAL                              :   0.01          0.01          0.07         3235k

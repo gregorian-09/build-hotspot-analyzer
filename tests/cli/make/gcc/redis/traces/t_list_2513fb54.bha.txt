@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: t_list.c
+# Output: t_list.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o t_list.o -c t_list.c
+# Timestamp: 2026-01-05T20:43:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 10%)
+ phase parsing                      :   0.08 ( 57%)   0.09 ( 90%)   0.18 ( 69%)    12M ( 70%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    96  (  0%)
+ phase opt and generate             :   0.06 ( 43%)   0.01 ( 10%)   0.07 ( 27%)  3640k ( 20%)
+ callgraph ipa passes               :   0.05 ( 36%)   0.01 ( 10%)   0.07 ( 27%)  2036k ( 11%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ ipa lto gimple out                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   264  (  0%)
+ ipa SRA                            :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    12k (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    41k (  0%)
+ preprocessing                      :   0.03 ( 21%)   0.01 ( 10%)   0.08 ( 31%)  2841k ( 16%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 20%)   0.03 ( 12%)     0  (  0%)
+ parser (global)                    :   0.02 ( 14%)   0.03 ( 30%)   0.06 ( 23%)  5520k ( 30%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 10%)   0.01 (  4%)   525k (  3%)
+ parser function body               :   0.01 (  7%)   0.01 ( 10%)   0.01 (  4%)   474k (  3%)
+ parser inl. func. body             :   0.02 ( 14%)   0.01 ( 10%)   0.00 (  0%)   702k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   144k (  1%)
+ tree gimplify                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   673k (  4%)
+ tree Early VRP                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    86k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    54k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    11k (  0%)
+ tree modref                        :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    30k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2567k ( 14%)
+ remove unused locals               :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ address taken                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.14          0.10          0.26           17M

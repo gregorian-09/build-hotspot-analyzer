@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/simplekey.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/simplekey.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/simplekey.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/simplekey.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/simplekey.cpp
+# Timestamp: 2026-01-05T18:12:33+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1876k (  3%)
+ phase parsing                      :   0.26 ( 67%)   0.20 ( 77%)   0.81 ( 73%)    50M ( 77%)
+ phase lang. deferred               :   0.03 (  8%)   0.01 (  4%)   0.05 (  5%)  4506k (  7%)
+ phase opt and generate             :   0.10 ( 26%)   0.05 ( 19%)   0.25 ( 23%)  8782k ( 13%)
+ |name lookup                       :   0.10 ( 26%)   0.02 (  8%)   0.25 ( 23%)  2372k (  4%)
+ |overload resolution               :   0.05 ( 13%)   0.01 (  4%)   0.06 (  5%)  3835k (  6%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.01 (  4%)   0.06 (  5%)    16k (  0%)
+ callgraph functions expansion      :   0.06 ( 15%)   0.02 (  8%)   0.11 ( 10%)  2648k (  4%)
+ callgraph ipa passes               :   0.04 ( 10%)   0.02 (  8%)   0.12 ( 11%)  2883k (  4%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.04 ( 10%)   0.07 ( 27%)   0.14 ( 13%)  2017k (  3%)
+ parser (global)                    :   0.05 ( 13%)   0.02 (  8%)   0.28 ( 25%)    14M ( 23%)
+ parser struct body                 :   0.02 (  5%)   0.04 ( 15%)   0.07 (  6%)    11M ( 17%)
+ parser function body               :   0.04 ( 10%)   0.00 (  0%)   0.09 (  8%)  3248k (  5%)
+ parser inl. func. body             :   0.02 (  5%)   0.01 (  4%)   0.07 (  6%)  3253k (  5%)
+ parser inl. meth. body             :   0.03 (  8%)   0.02 (  8%)   0.07 (  6%)  5781k (  9%)
+ template instantiation             :   0.08 ( 21%)   0.04 ( 15%)   0.12 ( 11%)    14M ( 22%)
+ constant expression evaluation     :   0.01 (  3%)   0.01 (  4%)   0.02 (  2%)   100k (  0%)
+ integration                        :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   961k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)   572k (  1%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2316k (  3%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   712  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  0%)
+ tree Early VRP                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   233k (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    80k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   540k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    86k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    33k (  0%)
+ tree aggressive DCE                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   236k (  0%)
+ dominance computation              :   0.03 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   255k (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4224  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   392k (  1%)
+ scheduling 2                       :   0.01 (  3%)   0.01 (  4%)   0.00 (  0%)    17k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    61k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  0%)
+ TOTAL                              :   0.39          0.26          1.11           65M
+
+# Exit code: 0

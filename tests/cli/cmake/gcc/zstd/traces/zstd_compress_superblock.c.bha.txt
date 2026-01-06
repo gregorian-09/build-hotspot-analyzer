@@ -1,0 +1,46 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/zstd_compress_superblock.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_superblock.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_superblock.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_superblock.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/zstd_compress_superblock.c
+# Timestamp: 2026-01-05T17:52:16+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 13%)
+ phase parsing                      :   0.05 ( 26%)   0.05 ( 83%)   0.22 ( 42%)  5806k ( 41%)
+ phase opt and generate             :   0.14 ( 74%)   0.01 ( 17%)   0.29 ( 56%)  6468k ( 46%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.03 (  6%)   566k (  4%)
+ callgraph functions expansion      :   0.13 ( 68%)   0.00 (  0%)   0.26 ( 50%)  4756k ( 34%)
+ callgraph ipa passes               :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)   850k (  6%)
+ cfg cleanup                        :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)    72k (  1%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    96  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    66k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  6%)   228k (  2%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6704  (  0%)
+ preprocessing                      :   0.01 (  5%)   0.02 ( 33%)   0.05 ( 10%)  1045k (  7%)
+ lexical analysis                   :   0.01 (  5%)   0.02 ( 33%)   0.09 ( 17%)     0  (  0%)
+ parser (global)                    :   0.01 (  5%)   0.01 ( 17%)   0.04 (  8%)  2574k ( 18%)
+ parser inl. func. body             :   0.02 ( 11%)   0.00 (  0%)   0.04 (  8%)  1810k ( 13%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)   221k (  2%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   251k (  2%)
+ dominator optimization             :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)   122k (  1%)
+ backwards jump threading           :   0.02 ( 11%)   0.00 (  0%)   0.01 (  2%)   100k (  1%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   123k (  1%)
+ tree RPO VN                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3440  (  0%)
+ tree vectorization                 :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    99k (  1%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    18k (  0%)
+ dead store elim2                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    75k (  1%)
+ branch prediction                  :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ combiner                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   347k (  2%)
+ integrated RA                      :   0.02 ( 11%)   0.00 (  0%)   0.03 (  6%)   564k (  4%)
+ LRA non-specific                   :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    76k (  1%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ load CSE after reload              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  2024  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    31k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    59k (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)    12k (  0%)
+ TOTAL                              :   0.19          0.06          0.52           13M
+
+# Exit code: 0

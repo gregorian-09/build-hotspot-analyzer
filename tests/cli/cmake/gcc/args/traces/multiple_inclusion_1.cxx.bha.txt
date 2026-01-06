@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo/test/multiple_inclusion_1.cxx
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo -ftime-report -O3 -DNDEBUG -std=gnu++11 -MD -MT CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_1.cxx.o -MF CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_1.cxx.o.d -o CMakeFiles/argstest-multiple-inclusion.dir/test/multiple_inclusion_1.cxx.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/args/repo/test/multiple_inclusion_1.cxx
+# Timestamp: 2026-01-05T17:45:01+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1876k (  2%)
+ phase parsing                      :   0.33 ( 66%)   0.26 ( 81%)   0.77 ( 66%)    64M ( 73%)
+ phase lang. deferred               :   0.15 ( 30%)   0.06 ( 19%)   0.37 ( 32%)    21M ( 24%)
+ phase opt and generate             :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)   599k (  1%)
+ |name lookup                       :   0.07 ( 14%)   0.08 ( 25%)   0.23 ( 20%)  3137k (  3%)
+ |overload resolution               :   0.13 ( 26%)   0.09 ( 28%)   0.29 ( 25%)    16M ( 19%)
+ callgraph construction             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   459k (  1%)
+ callgraph functions expansion      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   107k (  0%)
+ alias analysis                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2592  (  0%)
+ preprocessing                      :   0.05 ( 10%)   0.03 (  9%)   0.17 ( 15%)  2008k (  2%)
+ parser (global)                    :   0.05 ( 10%)   0.07 ( 22%)   0.14 ( 12%)    16M ( 18%)
+ parser struct body                 :   0.04 (  8%)   0.02 (  6%)   0.09 (  8%)    11M ( 13%)
+ parser function body               :   0.02 (  4%)   0.02 (  6%)   0.08 (  7%)  3479k (  4%)
+ parser inl. func. body             :   0.01 (  2%)   0.04 ( 13%)   0.05 (  4%)  2961k (  3%)
+ parser inl. meth. body             :   0.08 ( 16%)   0.03 (  9%)   0.11 (  9%)    11M ( 13%)
+ template instantiation             :   0.20 ( 40%)   0.10 ( 31%)   0.44 ( 38%)    37M ( 42%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  3%)   0.05 (  4%)   479k (  1%)
+ varconst                           :   0.03 (  6%)   0.00 (  0%)   0.01 (  1%)   384  (  0%)
+ TOTAL                              :   0.50          0.32          1.16           88M
+
+# Exit code: 0

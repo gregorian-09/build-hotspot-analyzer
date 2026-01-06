@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest/src/gtest_main.cc
+# Command: /usr/bin/g++ -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest/include -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest -ftime-report -O3 -DNDEBUG -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -MD -MT googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -MF googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o.d -o googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/googletest/repo/googletest/src/gtest_main.cc
+# Timestamp: 2026-01-05T17:46:03+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  1%)
+ phase parsing                      :   0.74 ( 80%)   0.45 ( 87%)   1.25 ( 83%)   111M ( 79%)
+ phase lang. deferred               :   0.17 ( 18%)   0.07 ( 13%)   0.25 ( 17%)    27M ( 20%)
+ phase opt and generate             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   679k (  0%)
+ |name lookup                       :   0.22 ( 24%)   0.11 ( 21%)   0.26 ( 17%)  5491k (  4%)
+ |overload resolution               :   0.17 ( 18%)   0.07 ( 13%)   0.16 ( 11%)    17M ( 12%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   551k (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    76k (  0%)
+ preprocessing                      :   0.09 ( 10%)   0.12 ( 23%)   0.22 ( 15%)  3166k (  2%)
+ parser (global)                    :   0.12 ( 13%)   0.12 ( 23%)   0.19 ( 13%)    30M ( 21%)
+ parser struct body                 :   0.10 ( 11%)   0.04 (  8%)   0.18 ( 12%)    21M ( 15%)
+ parser function body               :   0.05 (  5%)   0.02 (  4%)   0.09 (  6%)  5715k (  4%)
+ parser inl. func. body             :   0.03 (  3%)   0.02 (  4%)   0.07 (  5%)  6745k (  5%)
+ parser inl. meth. body             :   0.12 ( 13%)   0.03 (  6%)   0.12 (  8%)    11M (  8%)
+ template instantiation             :   0.39 ( 42%)   0.17 ( 33%)   0.63 ( 42%)    59M ( 42%)
+ symout                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.92          0.52          1.51          142M
+
+# Exit code: 0

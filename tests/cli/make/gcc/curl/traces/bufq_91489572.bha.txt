@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: bufq.c
+# Output: libcurlu_la-bufq.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c bufq.c -fPIC -DPIC -o libcurlu_la-bufq.o
+# Timestamp: 2026-01-05T20:44:31+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1819k ( 17%)
+ phase parsing                      :   0.02 ( 40%)   0.03 ( 60%)   0.14 ( 61%)  4778k ( 44%)
+ phase opt and generate             :   0.03 ( 60%)   0.02 ( 40%)   0.08 ( 35%)  4141k ( 39%)
+ dump files                         :   0.01 ( 20%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    43k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  9%)    96k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 20%)   0.02 (  9%)   365k (  3%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.04 ( 17%)  1988k ( 19%)
+ lexical analysis                   :   0.01 ( 20%)   0.02 ( 40%)   0.07 ( 30%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.01 ( 20%)   0.03 ( 13%)  2186k ( 20%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 20%)   0.01 (  4%)  2216k ( 21%)
+ LRA create live ranges             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   240  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.04 ( 17%)   215k (  2%)
+ TOTAL                              :   0.05          0.05          0.23           10M

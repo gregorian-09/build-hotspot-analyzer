@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: print.c
+# Output: print.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o print.o print.c
+# Timestamp: 2026-01-05T20:42:50+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 25%)
+ phase parsing                      :   0.02 ( 29%)   0.02 ( 50%)   0.09 ( 50%)  3466k ( 48%)
+ phase opt and generate             :   0.05 ( 71%)   0.02 ( 50%)   0.09 ( 50%)  1901k ( 26%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    43k (  1%)
+ callgraph functions expansion      :   0.04 ( 57%)   0.01 ( 25%)   0.08 ( 44%)  1330k ( 19%)
+ callgraph ipa passes               :   0.01 ( 14%)   0.01 ( 25%)   0.01 (  6%)   404k (  6%)
+ ipa icf                            :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ register scan                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  4480  (  0%)
+ preprocessing                      :   0.01 ( 14%)   0.02 ( 50%)   0.04 ( 22%)  1768k ( 25%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 ( 17%)  1270k ( 18%)
+ tree PTA                           :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    19k (  0%)
+ dominator optimization             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    37k (  1%)
+ backwards jump threading           :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   632  (  0%)
+ expand                             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)   169k (  2%)
+ varconst                           :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  5744  (  0%)
+ integrated RA                      :   0.01 ( 14%)   0.00 (  0%)   0.01 (  6%)   170k (  2%)
+ scheduling 2                       :   0.00 (  0%)   0.01 ( 25%)   0.01 (  6%)    14k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ TOTAL                              :   0.07          0.04          0.18         7187k

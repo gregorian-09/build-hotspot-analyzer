@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/internal/fnmatch.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/log/CMakeFiles/log_internal_fnmatch.dir/internal/fnmatch.cc.o -MF absl/log/CMakeFiles/log_internal_fnmatch.dir/internal/fnmatch.cc.o.d -o absl/log/CMakeFiles/log_internal_fnmatch.dir/internal/fnmatch.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/internal/fnmatch.cc
+# Timestamp: 2026-01-05T17:54:14+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k ( 12%)
+ phase parsing                      :   0.07 ( 70%)   0.05 (100%)   0.13 ( 65%)    11M ( 79%)
+ phase opt and generate             :   0.03 ( 30%)   0.00 (  0%)   0.07 ( 35%)  1086k (  7%)
+ |name lookup                       :   0.02 ( 20%)   0.01 ( 20%)   0.03 ( 15%)   758k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    39k (  0%)
+ callgraph functions expansion      :   0.02 ( 20%)   0.00 (  0%)   0.05 ( 25%)   532k (  3%)
+ callgraph ipa passes               :   0.01 ( 10%)   0.00 (  0%)   0.01 (  5%)   384k (  2%)
+ preprocessing                      :   0.01 ( 10%)   0.02 ( 40%)   0.02 ( 10%)   756k (  5%)
+ parser (global)                    :   0.01 ( 10%)   0.01 ( 20%)   0.04 ( 20%)  4383k ( 28%)
+ parser struct body                 :   0.02 ( 20%)   0.00 (  0%)   0.03 ( 15%)  2617k ( 17%)
+ parser function body               :   0.01 ( 10%)   0.00 (  0%)   0.01 (  5%)   141k (  1%)
+ parser inl. func. body             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  1507k ( 10%)
+ parser inl. meth. body             :   0.01 ( 10%)   0.01 ( 20%)   0.00 (  0%)  1149k (  7%)
+ template instantiation             :   0.00 (  0%)   0.01 ( 20%)   0.03 ( 15%)  1899k ( 12%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    93k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)  4208  (  0%)
+ dominance frontiers                :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ LRA non-specific                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  3136  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)    12k (  0%)
+ rest of compilation                :   0.01 ( 10%)   0.00 (  0%)   0.01 (  5%)  6160  (  0%)
+ TOTAL                              :   0.10          0.05          0.20           15M
+
+# Exit code: 0

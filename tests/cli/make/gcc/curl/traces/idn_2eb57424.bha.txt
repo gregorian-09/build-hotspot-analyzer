@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: idn.c
+# Output: libcurlu_la-idn.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c idn.c -fPIC -DPIC -o libcurlu_la-idn.o
+# Timestamp: 2026-01-05T20:44:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 19%)
+ phase parsing                      :   0.02 ( 67%)   0.05 (100%)   0.10 ( 71%)  5796k ( 60%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 21%)  1984k ( 21%)
+ preprocessing                      :   0.01 ( 33%)   0.04 ( 80%)   0.03 ( 21%)  2321k ( 24%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 20%)   0.02 ( 14%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 ( 29%)  2706k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   334k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1299k ( 14%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  5616  (  0%)
+ reg stack                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 33%)   0.00 (  0%)   0.01 (  7%)    12k (  0%)
+ TOTAL                              :   0.03          0.05          0.14         9601k

@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc.o -MF CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc.o.d -o CMakeFiles/rocksdb-shared.dir/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc
+# Timestamp: 2026-01-05T19:41:36+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)  1886k ( 13%)
+ phase parsing                      :   0.05 ( 56%)   0.06 (100%)   0.20 ( 71%)    10M ( 76%)
+ phase opt and generate             :   0.04 ( 44%)   0.00 (  0%)   0.05 ( 18%)  1473k ( 10%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.01 ( 17%)   0.03 ( 11%)   642k (  5%)
+ callgraph functions expansion      :   0.03 ( 33%)   0.00 (  0%)   0.03 ( 11%)  1130k (  8%)
+ callgraph ipa passes               :   0.01 ( 11%)   0.00 (  0%)   0.02 (  7%)   199k (  1%)
+ alias stmt walking                 :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    43k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.03 ( 50%)   0.07 ( 25%)  1784k ( 13%)
+ parser (global)                    :   0.02 ( 22%)   0.02 ( 33%)   0.10 ( 36%)  4787k ( 34%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1247k (  9%)
+ parser inl. func. body             :   0.01 ( 11%)   0.01 ( 17%)   0.02 (  7%)  1587k ( 11%)
+ template instantiation             :   0.02 ( 22%)   0.00 (  0%)   0.01 (  4%)   697k (  5%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    25k (  0%)
+ tree DSE                           :   0.01 ( 11%)   0.00 (  0%)   0.01 (  4%)   288  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    11k (  0%)
+ integrated RA                      :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   325k (  2%)
+ reload CSE regs                    :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  9952  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    30k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ TOTAL                              :   0.09          0.06          0.28           13M
+
+# Exit code: 0

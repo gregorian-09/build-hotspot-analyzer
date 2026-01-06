@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: socketpair.c
+# Output: libcurlu_la-socketpair.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c socketpair.c -fPIC -DPIC -o libcurlu_la-socketpair.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.03 ( 60%)   0.04 ( 80%)   0.13 ( 81%)  5796k ( 61%)
+ phase opt and generate             :   0.02 ( 40%)   0.01 ( 20%)   0.03 ( 19%)  1945k ( 20%)
+ callgraph construction             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  7128  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    55k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   137k (  1%)
+ preprocessing                      :   0.03 ( 60%)   0.03 ( 60%)   0.04 ( 25%)  2317k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.06 ( 38%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2716k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   334k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   343k (  4%)
+ tree CFG cleanup                   :   0.01 ( 20%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1275k ( 13%)
+ initialize rtl                     :   0.01 ( 20%)   0.00 (  0%)   0.01 (  6%)    12k (  0%)
+ TOTAL                              :   0.05          0.05          0.16         9561k

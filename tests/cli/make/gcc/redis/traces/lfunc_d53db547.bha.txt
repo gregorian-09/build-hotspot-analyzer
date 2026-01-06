@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: lfunc.c
+# Output: lfunc.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o lfunc.o lfunc.c
+# Timestamp: 2026-01-05T20:42:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 31%)
+ phase parsing                      :   0.01 ( 20%)   0.01 ( 50%)   0.08 ( 42%)  2705k ( 46%)
+ phase opt and generate             :   0.04 ( 80%)   0.01 ( 50%)   0.11 ( 58%)  1312k ( 22%)
+ dump files                         :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   784  (  0%)
+ callgraph functions expansion      :   0.03 ( 60%)   0.01 ( 50%)   0.09 ( 47%)  1004k ( 17%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.00 (  0%)   0.02 ( 11%)   213k (  4%)
+ df use-def / def-use chains        :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.00 (  0%)   0.02 ( 11%)  1626k ( 28%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 50%)   0.04 ( 21%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   900k ( 15%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    44k (  1%)
+ tree PTA                           :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    20k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    11k (  0%)
+ tree modref                        :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ combiner                           :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)    34k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   248k (  4%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)  1040  (  0%)
+ uninit var analysis                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    32k (  1%)
+ TOTAL                              :   0.05          0.02          0.19         5837k

@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: src/witness.c
+# Output: src/witness.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/witness.o src/witness.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.14 ( 93%)   0.19 ( 95%)   0.34 ( 94%)    25M ( 90%)
+ phase opt and generate             :   0.01 (  7%)   0.01 (  5%)   0.02 (  6%)  1031k (  4%)
+ preprocessing                      :   0.05 ( 33%)   0.06 ( 30%)   0.19 ( 53%)    13M ( 50%)
+ lexical analysis                   :   0.09 ( 60%)   0.10 ( 50%)   0.09 ( 25%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 (  8%)  5690k ( 20%)
+ parser inl. func. body             :   0.00 (  0%)   0.03 ( 15%)   0.02 (  6%)  5382k ( 19%)
+ dominance computation              :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  4736  (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)  3512  (  0%)
+ initialize rtl                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.15          0.20          0.36           27M

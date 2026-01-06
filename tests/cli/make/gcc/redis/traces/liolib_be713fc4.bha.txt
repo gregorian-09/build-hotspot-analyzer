@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: liolib.c
+# Output: liolib.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o liolib.o liolib.c
+# Timestamp: 2026-01-05T20:42:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 23%)
+ phase parsing                      :   0.02 ( 15%)   0.01 ( 25%)   0.09 ( 21%)  2463k ( 31%)
+ phase opt and generate             :   0.11 ( 85%)   0.03 ( 75%)   0.34 ( 79%)  3765k ( 47%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph optimization             :   0.02 ( 15%)   0.01 ( 25%)   0.05 ( 12%)   952  (  0%)
+ callgraph functions expansion      :   0.09 ( 69%)   0.02 ( 50%)   0.26 ( 60%)  2728k ( 34%)
+ callgraph ipa passes               :   0.02 ( 15%)   0.01 ( 25%)   0.07 ( 16%)   680k (  8%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7040  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.01 ( 25%)   0.01 (  2%)  1536  (  0%)
+ df live regs                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df must-initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    56  (  0%)
+ preprocessing                      :   0.02 ( 15%)   0.01 ( 25%)   0.01 (  2%)   683k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 (  9%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1215k ( 15%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  7%)   238k (  3%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1416  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    80k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    54k (  1%)
+ tree PTA                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    52k (  1%)
+ dominator optimization             :   0.01 (  8%)   0.01 ( 25%)   0.00 (  0%)    39k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4416  (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    13k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    75k (  1%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   303k (  4%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   872  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2352  (  0%)
+ loop unrolling                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1000  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.04 (  9%)   144  (  0%)
+ integrated RA                      :   0.01 (  8%)   0.00 (  0%)   0.01 (  2%)   822k ( 10%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3808  (  0%)
+ reload CSE regs                    :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   936  (  0%)
+ if-conversion 2                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    72  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.03 ( 23%)   0.00 (  0%)   0.03 (  7%)    87k (  1%)
+ repair loop structures             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.13          0.04          0.43         8048k

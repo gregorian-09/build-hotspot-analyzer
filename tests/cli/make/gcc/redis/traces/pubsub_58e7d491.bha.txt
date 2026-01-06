@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: pubsub.c
+# Output: pubsub.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o pubsub.o -c pubsub.c
+# Timestamp: 2026-01-05T20:43:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 11%)
+ phase parsing                      :   0.07 ( 64%)   0.08 ( 89%)   0.15 ( 71%)    12M ( 76%)
+ phase opt and generate             :   0.04 ( 36%)   0.01 ( 11%)   0.06 ( 29%)  2119k ( 13%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   439k (  3%)
+ callgraph ipa passes               :   0.04 ( 36%)   0.01 ( 11%)   0.05 ( 24%)  1287k (  8%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.03 ( 14%)     0  (  0%)
+ lto stream output                  :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa modref                         :   0.01 (  9%)   0.01 ( 11%)   0.00 (  0%)    46k (  0%)
+ preprocessing                      :   0.03 ( 27%)   0.01 ( 11%)   0.07 ( 33%)  2858k ( 17%)
+ lexical analysis                   :   0.02 ( 18%)   0.04 ( 44%)   0.05 ( 24%)     0  (  0%)
+ parser (global)                    :   0.01 (  9%)   0.03 ( 33%)   0.02 ( 10%)  5629k ( 34%)
+ parser struct body                 :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)   531k (  3%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   713k (  4%)
+ tree PTA                           :   0.01 (  9%)   0.00 (  0%)   0.01 (  5%)    24k (  0%)
+ tree aggressive DCE                :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)    49k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2659k ( 16%)
+ TOTAL                              :   0.11          0.09          0.21           16M

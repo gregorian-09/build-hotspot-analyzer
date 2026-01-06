@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: src/decay.c
+# Output: src/decay.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/decay.o src/decay.c
+# Timestamp: 2026-01-05T20:43:08+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1819k (  6%)
+ phase parsing                      :   0.13 ( 87%)   0.22 ( 92%)   0.37 ( 90%)    25M ( 88%)
+ phase opt and generate             :   0.02 ( 13%)   0.02 (  8%)   0.03 (  7%)  1807k (  6%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    83k (  0%)
+ preprocessing                      :   0.04 ( 27%)   0.06 ( 25%)   0.13 ( 32%)    13M ( 48%)
+ lexical analysis                   :   0.06 ( 40%)   0.06 ( 25%)   0.11 ( 27%)     0  (  0%)
+ parser (global)                    :   0.01 (  7%)   0.03 ( 13%)   0.03 (  7%)  5702k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   254k (  1%)
+ parser inl. func. body             :   0.02 ( 13%)   0.06 ( 25%)   0.10 ( 24%)  5389k ( 18%)
+ expand                             :   0.01 (  7%)   0.00 (  0%)   0.01 (  2%)   289k (  1%)
+ final                              :   0.01 (  7%)   0.00 (  0%)   0.01 (  2%)    67k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   472  (  0%)
+ TOTAL                              :   0.15          0.24          0.41           28M

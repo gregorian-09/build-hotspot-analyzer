@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/cord_internal.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/cord_internal.dir/internal/cord_internal.cc.o -MF absl/strings/CMakeFiles/cord_internal.dir/internal/cord_internal.cc.o.d -o absl/strings/CMakeFiles/cord_internal.dir/internal/cord_internal.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/cord_internal.cc
+# Timestamp: 2026-01-05T17:54:27+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1882k (  1%)
+ phase parsing                      :   0.89 ( 86%)   0.65 ( 96%)   2.63 ( 87%)   154M ( 88%)
+ phase lang. deferred               :   0.13 ( 12%)   0.02 (  3%)   0.31 ( 10%)    17M ( 10%)
+ phase opt and generate             :   0.02 (  2%)   0.01 (  1%)   0.06 (  2%)  1711k (  1%)
+ |name lookup                       :   0.20 ( 19%)   0.13 ( 19%)   0.82 ( 27%)  5424k (  3%)
+ |overload resolution               :   0.16 ( 15%)   0.05 (  7%)   0.36 ( 12%)    18M ( 10%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   619k (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   252k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)   675k (  0%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7112  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3792  (  0%)
+ preprocessing                      :   0.08 (  8%)   0.18 ( 26%)   0.41 ( 14%)  6996k (  4%)
+ parser (global)                    :   0.16 ( 15%)   0.10 ( 15%)   0.50 ( 17%)    51M ( 30%)
+ parser struct body                 :   0.12 ( 12%)   0.02 (  3%)   0.27 (  9%)    26M ( 15%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   231k (  0%)
+ parser function body               :   0.10 ( 10%)   0.07 ( 10%)   0.21 (  7%)  9814k (  5%)
+ parser inl. func. body             :   0.06 (  6%)   0.02 (  3%)   0.15 (  5%)    13M (  8%)
+ parser inl. meth. body             :   0.12 ( 12%)   0.05 (  7%)   0.33 ( 11%)    14M (  8%)
+ template instantiation             :   0.36 ( 35%)   0.20 ( 29%)   0.97 ( 32%)    47M ( 27%)
+ constant expression evaluation     :   0.02 (  2%)   0.02 (  3%)   0.05 (  2%)   851k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  6432  (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  1%)   0.02 (  1%)  1584  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    47k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   112  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ TOTAL                              :   1.04          0.68          3.01          175M
+
+# Exit code: 0

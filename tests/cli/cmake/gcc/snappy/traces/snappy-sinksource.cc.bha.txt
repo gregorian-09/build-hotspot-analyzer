@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo/snappy-sinksource.cc
+# Command: /usr/bin/g++ -DHAVE_CONFIG_H -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/build -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo -ftime-report -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/snappy.dir/snappy-sinksource.cc.o -MF CMakeFiles/snappy.dir/snappy-sinksource.cc.o.d -o CMakeFiles/snappy.dir/snappy-sinksource.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/repo/snappy-sinksource.cc
+# Timestamp: 2026-01-05T19:47:14+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1744k ( 39%)
+ phase parsing                      :   0.00 (  0%)   0.01 ( 50%)   0.02 ( 50%)  1573k ( 35%)
+ phase opt and generate             :   0.02 (100%)   0.01 ( 50%)   0.02 ( 50%)  1201k ( 27%)
+ callgraph functions expansion      :   0.02 (100%)   0.01 ( 50%)   0.02 ( 50%)   926k ( 20%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.02 ( 50%)    10k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   233k (  5%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   141k (  3%)
+ tree conservative DCE              :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)     0  (  0%)
+ tree DSE                           :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)   768  (  0%)
+ varconst                           :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.02          0.02          0.04         4520k
+
+# Exit code: 0

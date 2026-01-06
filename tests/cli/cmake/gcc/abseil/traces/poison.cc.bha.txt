@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/poison.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/poison.dir/internal/poison.cc.o -MF absl/base/CMakeFiles/poison.dir/internal/poison.cc.o.d -o absl/base/CMakeFiles/poison.dir/internal/poison.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/poison.cc
+# Timestamp: 2026-01-05T17:53:59+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1882k ( 31%)
+ phase parsing                      :   0.01 (100%)   0.02 (100%)   0.07 ( 78%)  4088k ( 67%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)   142k (  2%)
+ |name lookup                       :   0.00 (  0%)   0.01 ( 50%)   0.02 ( 22%)   264k (  4%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    78k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.02 ( 22%)   957k ( 16%)
+ parser (global)                    :   0.01 (100%)   0.01 ( 50%)   0.03 ( 33%)  1808k ( 30%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1103k ( 18%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    43k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  2592  (  0%)
+ TOTAL                              :   0.01          0.02          0.09         6113k
+
+# Exit code: 0

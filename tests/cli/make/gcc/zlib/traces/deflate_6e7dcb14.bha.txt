@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: deflate.c
+# Output: deflate.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -o deflate.o deflate.c
+# Timestamp: 2026-01-05T20:45:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 18%)
+ phase parsing                      :   0.01 ( 17%)   0.02 ( 67%)   0.03 ( 33%)  2637k ( 26%)
+ phase opt and generate             :   0.05 ( 83%)   0.01 ( 33%)   0.06 ( 67%)  5862k ( 57%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    31k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   672k (  7%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.01 ( 11%)   708k (  7%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 22%)     0  (  0%)
+ parser function body               :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   923k (  9%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1492k ( 14%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    16k (  0%)
+ integrated RA                      :   0.02 ( 33%)   0.00 (  0%)   0.02 ( 22%)  1492k ( 14%)
+ LRA non-specific                   :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ shorten branches                   :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 22%)    91k (  1%)
+ TOTAL                              :   0.06          0.03          0.09           10M

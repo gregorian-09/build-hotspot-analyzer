@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/iterator.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/table/iterator.cc.o -MF CMakeFiles/leveldb.dir/table/iterator.cc.o.d -o CMakeFiles/leveldb.dir/table/iterator.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/iterator.cc
+# Timestamp: 2026-01-05T19:48:58+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1744k (  6%)
+ phase parsing                      :   0.16 ( 84%)   0.11 ( 79%)   0.39 ( 85%)    22M ( 81%)
+ phase lang. deferred               :   0.01 (  5%)   0.01 (  7%)   0.02 (  4%)  2175k (  8%)
+ phase opt and generate             :   0.02 ( 11%)   0.02 ( 14%)   0.04 (  9%)  1385k (  5%)
+ |name lookup                       :   0.02 ( 11%)   0.00 (  0%)   0.07 ( 15%)  1180k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  1508k (  5%)
+ dump files                         :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.02 ( 11%)   0.01 (  7%)   0.03 (  7%)   929k (  3%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  7%)   0.01 (  2%)   302k (  1%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    20k (  0%)
+ preprocessing                      :   0.03 ( 16%)   0.04 ( 29%)   0.10 ( 22%)  1691k (  6%)
+ parser (global)                    :   0.04 ( 21%)   0.06 ( 43%)   0.17 ( 37%)  9136k ( 32%)
+ parser struct body                 :   0.03 ( 16%)   0.00 (  0%)   0.03 (  7%)  3947k ( 14%)
+ parser function body               :   0.01 (  5%)   0.00 (  0%)   0.05 ( 11%)   880k (  3%)
+ parser inl. func. body             :   0.01 (  5%)   0.01 (  7%)   0.02 (  4%)  2682k ( 10%)
+ parser inl. meth. body             :   0.03 ( 16%)   0.00 (  0%)   0.02 (  4%)  2151k (  8%)
+ template instantiation             :   0.02 ( 11%)   0.01 (  7%)   0.02 (  4%)  4492k ( 16%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    13k (  0%)
+ dominator optimization             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)   256  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7128  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    26k (  0%)
+ unaccounted optimizations          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ TOTAL                              :   0.19          0.14          0.46           27M
+
+# Exit code: 0

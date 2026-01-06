@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/src/stats.c
+# Command: /usr/bin/gcc -DMI_BUILD_RELEASE -DMI_CMAKE_BUILD_TYPE=release -DMI_MALLOC_OVERRIDE -DMI_STATIC_LIB -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/include -ftime-report -O3 -DNDEBUG -std=gnu11 -fPIC -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden -Wstrict-prototypes -ftls-model=initial-exec -fno-builtin-malloc -MD -MT CMakeFiles/mimalloc-static.dir/src/stats.c.o -MF CMakeFiles/mimalloc-static.dir/src/stats.c.o.d -o CMakeFiles/mimalloc-static.dir/src/stats.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/src/stats.c
+# Timestamp: 2026-01-05T17:45:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1818k ( 12%)
+ phase parsing                      :   0.03 ( 18%)   0.04 ( 40%)   0.11 ( 33%)  5171k ( 35%)
+ phase opt and generate             :   0.14 ( 82%)   0.06 ( 60%)   0.22 ( 67%)  7804k ( 53%)
+ callgraph functions expansion      :   0.12 ( 71%)   0.05 ( 50%)   0.19 ( 58%)  5852k ( 40%)
+ callgraph ipa passes               :   0.02 ( 12%)   0.01 ( 10%)   0.03 (  9%)  1524k ( 10%)
+ ipa function summary               :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    66k (  0%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   203k (  1%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   286k (  2%)
+ ipa function splitting             :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    59k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   197k (  1%)
+ preprocessing                      :   0.01 (  6%)   0.02 ( 20%)   0.06 ( 18%)   961k (  7%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 10%)   0.04 ( 12%)     0  (  0%)
+ parser (global)                    :   0.02 ( 12%)   0.00 (  0%)   0.01 (  3%)  2346k ( 16%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    82k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1492k ( 10%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1302k (  9%)
+ tree VRP                           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   100k (  1%)
+ tree PTA                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    78k (  1%)
+ tree operand scan                  :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)   345k (  2%)
+ dominator optimization             :   0.00 (  0%)   0.02 ( 20%)   0.01 (  3%)   137k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    40k (  0%)
+ tree reassociation                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    48  (  0%)
+ tree conservative DCE              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   928  (  0%)
+ complete unrolling                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    74k (  1%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   661k (  4%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  5360  (  0%)
+ CSE                                :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    41k (  0%)
+ loop init                          :   0.00 (  0%)   0.02 ( 20%)   0.00 (  0%)   230k (  2%)
+ PRE                                :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  8080  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    14k (  0%)
+ integrated RA                      :   0.02 ( 12%)   0.00 (  0%)   0.02 (  6%)   865k (  6%)
+ LRA reload inheritance             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  6576  (  0%)
+ reload CSE regs                    :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    54k (  0%)
+ thread pro- & epilogue             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    58k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.01 ( 10%)   0.01 (  3%)    93k (  1%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.04 ( 12%)   148k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)    82k (  1%)
+ TOTAL                              :   0.17          0.10          0.33           14M
+
+# Exit code: 0

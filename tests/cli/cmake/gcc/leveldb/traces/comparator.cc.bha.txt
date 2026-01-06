@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/comparator.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/comparator.cc.o -MF CMakeFiles/leveldb.dir/util/comparator.cc.o.d -o CMakeFiles/leveldb.dir/util/comparator.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/comparator.cc
+# Timestamp: 2026-01-05T19:49:00+01:00
+# ---
+
+In file included from /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/comparator.cc:14:
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/./util/no_destructor.h: In constructor ‘leveldb::NoDestructor<InstanceType>::NoDestructor(ConstructorArgTypes&& ...)’:
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/./util/no_destructor.h:24:24: error: ‘is_standard_layout_v’ is not a member of ‘std’; did you mean ‘is_standard_layout’?
+   24 |     static_assert(std::is_standard_layout_v<NoDestructor<InstanceType>>);
+      |                        ^~~~~~~~~~~~~~~~~~~~
+      |                        is_standard_layout
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/./util/no_destructor.h:24:70: error: expected primary-expression before ‘>’ token
+   24 |     static_assert(std::is_standard_layout_v<NoDestructor<InstanceType>>);
+      |                                                                      ^~
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/./util/no_destructor.h:24:72: error: expected primary-expression before ‘)’ token
+   24 |     static_assert(std::is_standard_layout_v<NoDestructor<InstanceType>>);
+      |                                                                        ^
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1744k (  4%)
+ phase parsing                      :   0.18 ( 90%)   0.21 ( 95%)   0.41 ( 89%)    36M ( 88%)
+ phase lang. deferred               :   0.02 ( 10%)   0.01 (  5%)   0.03 (  7%)  3155k (  7%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   226k (  1%)
+ |name lookup                       :   0.04 ( 20%)   0.02 (  9%)   0.11 ( 24%)  1786k (  4%)
+ |overload resolution               :   0.02 ( 10%)   0.00 (  0%)   0.04 (  9%)  2015k (  5%)
+ preprocessing                      :   0.04 ( 20%)   0.06 ( 27%)   0.09 ( 20%)  2034k (  5%)
+ parser (global)                    :   0.03 ( 15%)   0.07 ( 32%)   0.10 ( 22%)    14M ( 35%)
+ parser struct body                 :   0.03 ( 15%)   0.02 (  9%)   0.08 ( 17%)  7346k ( 17%)
+ parser function body               :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)   867k (  2%)
+ parser inl. func. body             :   0.04 ( 20%)   0.01 (  5%)   0.06 ( 13%)  2733k (  6%)
+ parser inl. meth. body             :   0.02 ( 10%)   0.01 (  5%)   0.04 (  9%)  5088k ( 12%)
+ template instantiation             :   0.03 ( 15%)   0.05 ( 23%)   0.04 (  9%)  7479k ( 17%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   147k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    62k (  0%)
+ TOTAL                              :   0.20          0.22          0.46           41M
+
+# Exit code: 1

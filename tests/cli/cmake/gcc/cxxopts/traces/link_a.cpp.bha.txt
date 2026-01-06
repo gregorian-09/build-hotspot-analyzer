@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/cxxopts/repo/test/link_a.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/cxxopts/repo/include -ftime-report -Wall -Werror -Wextra -Wshadow -Weffc++ -Wsign-compare -Wshadow -Wwrite-strings -Wpointer-arith -Winit-self -Wconversion -Wno-sign-conversion -Wsuggest-override -O3 -DNDEBUG -std=c++11 -MD -MT test/CMakeFiles/link_test.dir/link_a.cpp.o -MF test/CMakeFiles/link_test.dir/link_a.cpp.o.d -o test/CMakeFiles/link_test.dir/link_a.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/cxxopts/repo/test/link_a.cpp
+# Timestamp: 2026-01-05T17:51:33+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1746k (  1%)
+ phase parsing                      :   0.52 ( 50%)   0.45 ( 69%)   1.11 ( 50%)    96M ( 58%)
+ phase lang. deferred               :   0.48 ( 47%)   0.19 ( 29%)   1.06 ( 48%)    66M ( 40%)
+ phase opt and generate             :   0.03 (  3%)   0.01 (  2%)   0.04 (  2%)  1995k (  1%)
+ |name lookup                       :   0.16 ( 16%)   0.07 ( 11%)   0.39 ( 18%)  6585k (  4%)
+ |overload resolution               :   0.32 ( 31%)   0.15 ( 23%)   0.69 ( 31%)    40M ( 24%)
+ callgraph construction             :   0.02 (  2%)   0.01 (  2%)   0.02 (  1%)  1147k (  1%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   281k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   433k (  0%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    11k (  0%)
+ preprocessing                      :   0.04 (  4%)   0.12 ( 18%)   0.13 (  6%)  2336k (  1%)
+ parser (global)                    :   0.07 (  7%)   0.10 ( 15%)   0.26 ( 12%)    26M ( 16%)
+ parser struct body                 :   0.05 (  5%)   0.06 (  9%)   0.11 (  5%)    15M ( 10%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   117k (  0%)
+ parser function body               :   0.06 (  6%)   0.05 (  8%)   0.10 (  5%)  6770k (  4%)
+ parser inl. func. body             :   0.05 (  5%)   0.03 (  5%)   0.06 (  3%)  5753k (  3%)
+ parser inl. meth. body             :   0.08 (  8%)   0.04 (  6%)   0.12 (  5%)    10M (  7%)
+ template instantiation             :   0.63 ( 61%)   0.22 ( 34%)   1.24 ( 56%)    94M ( 56%)
+ constant expression evaluation     :   0.01 (  1%)   0.02 (  3%)   0.07 (  3%)   905k (  1%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)  6912  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    43k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)     0  (  0%)
+ TOTAL                              :   1.03          0.65          2.22          167M
+
+# Exit code: 0

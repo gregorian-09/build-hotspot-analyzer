@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: tool_operate.c
+# Output: libcurltool_la-tool_operate.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_operate.c -fPIC -DPIC -o libcurltool_la-tool_operate.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 10%)
+ phase parsing                      :   0.06 ( 60%)   0.11 ( 79%)   0.22 ( 73%)  8229k ( 46%)
+ phase opt and generate             :   0.04 ( 40%)   0.03 ( 21%)   0.08 ( 27%)  7785k ( 44%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   691k (  4%)
+ callgraph ipa passes               :   0.01 ( 10%)   0.01 (  7%)   0.01 (  3%)   711k (  4%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2688  (  0%)
+ preprocessing                      :   0.01 ( 10%)   0.02 ( 14%)   0.07 ( 23%)  4082k ( 23%)
+ lexical analysis                   :   0.03 ( 30%)   0.05 ( 36%)   0.07 ( 23%)     0  (  0%)
+ parser (global)                    :   0.01 ( 10%)   0.01 (  7%)   0.01 (  3%)  2446k ( 14%)
+ parser enumerator list             :   0.01 ( 10%)   0.01 (  7%)   0.01 (  3%)   397k (  2%)
+ parser function body               :   0.00 (  0%)   0.02 ( 14%)   0.06 ( 20%)  1091k (  6%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1101k (  6%)
+ tree SSA rewrite                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   210k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)   298k (  2%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1072k (  6%)
+ integrated RA                      :   0.02 ( 20%)   0.01 (  7%)   0.03 ( 10%)  2394k ( 13%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 (  7%)   0.01 (  3%)    12k (  0%)
+ shorten branches                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.10          0.14          0.30           17M

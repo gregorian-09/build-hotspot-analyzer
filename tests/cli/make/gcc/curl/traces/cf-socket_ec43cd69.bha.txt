@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: cf-socket.c
+# Output: libcurlu_la-cf-socket.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c cf-socket.c -fPIC -DPIC -o libcurlu_la-cf-socket.o
+# Timestamp: 2026-01-05T20:44:32+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 11%)
+ phase parsing                      :   0.04 ( 40%)   0.06 ( 86%)   0.19 ( 63%)  7368k ( 45%)
+ phase opt and generate             :   0.06 ( 60%)   0.01 ( 14%)   0.10 ( 33%)  7321k ( 44%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph construction             :   0.01 ( 10%)   0.01 ( 14%)   0.00 (  0%)   667k (  4%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   673k (  4%)
+ df scan insns                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  3216  (  0%)
+ df live regs                       :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.04 ( 57%)   0.05 ( 17%)  2612k ( 16%)
+ lexical analysis                   :   0.03 ( 30%)   0.00 (  0%)   0.08 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 14%)   0.04 ( 13%)  3301k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)   461k (  3%)
+ parser enumerator list             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   358k (  2%)
+ parser function body               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   571k (  3%)
+ tree CFG cleanup                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  1664  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    13k (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    85k (  1%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)  1187k (  7%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ integrated RA                      :   0.02 ( 20%)   0.00 (  0%)   0.00 (  0%)  2622k ( 16%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   277k (  2%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)   275k (  2%)
+ TOTAL                              :   0.10          0.07          0.30           16M

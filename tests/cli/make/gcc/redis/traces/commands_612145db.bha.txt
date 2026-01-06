@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: commands.c
+# Output: commands.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o commands.o -c commands.c
+# Timestamp: 2026-01-05T20:43:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1828k (  7%)
+ phase parsing                      :   0.11 ( 69%)   0.18 ( 95%)   0.30 ( 79%)    22M ( 90%)
+ phase opt and generate             :   0.05 ( 31%)   0.01 (  5%)   0.07 ( 18%)   662k (  3%)
+ callgraph construction             :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)   450k (  2%)
+ callgraph ipa passes               :   0.04 ( 25%)   0.01 (  5%)   0.06 ( 16%)   209k (  1%)
+ lto stream compression             :   0.01 (  6%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   360  (  0%)
+ ipa lto constructors out           :   0.02 ( 12%)   0.00 (  0%)   0.04 ( 11%)   107k (  0%)
+ ipa icf                            :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    64  (  0%)
+ preprocessing                      :   0.02 ( 12%)   0.06 ( 32%)   0.08 ( 21%)  7779k ( 31%)
+ lexical analysis                   :   0.04 ( 25%)   0.03 ( 16%)   0.12 ( 32%)     0  (  0%)
+ parser (global)                    :   0.03 ( 19%)   0.08 ( 42%)   0.08 ( 21%)    10M ( 44%)
+ parser inl. func. body             :   0.02 ( 12%)   0.01 (  5%)   0.01 (  3%)   702k (  3%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2567k ( 10%)
+ TOTAL                              :   0.16          0.19          0.38           24M

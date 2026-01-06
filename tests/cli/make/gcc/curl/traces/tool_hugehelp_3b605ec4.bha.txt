@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: tool_hugehelp.c
+# Output: curl-tool_hugehelp.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DUSE_MANUAL -D_GNU_SOURCE -ftime-report -c -o curl-tool_hugehelp.o tool_hugehelp.c
+# Timestamp: 2026-01-05T20:44:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 10%)
+ phase parsing                      :   0.12 ( 86%)   0.14 ( 88%)   0.28 ( 87%)    13M ( 77%)
+ phase opt and generate             :   0.02 ( 14%)   0.02 ( 12%)   0.03 (  9%)  2167k ( 12%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    59k (  0%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 (  6%)   0.01 (  3%)   163k (  1%)
+ preprocessing                      :   0.01 (  7%)   0.08 ( 50%)   0.07 ( 22%)  2419k ( 14%)
+ lexical analysis                   :   0.05 ( 36%)   0.06 ( 38%)   0.13 ( 41%)     0  (  0%)
+ parser (global)                    :   0.06 ( 43%)   0.00 (  0%)   0.08 ( 25%)    10M ( 60%)
+ inline parameters                  :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ integrated RA                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  1349k (  8%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  6%)   0.02 (  6%)   131k (  1%)
+ TOTAL                              :   0.14          0.16          0.32           17M

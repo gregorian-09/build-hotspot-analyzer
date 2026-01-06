@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/util/read.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -ftime-report -O3 -DNDEBUG -std=gnu++11 -MD -MT util/CMakeFiles/yaml-cpp-read.dir/read.cpp.o -MF util/CMakeFiles/yaml-cpp-read.dir/read.cpp.o.d -o util/CMakeFiles/yaml-cpp-read.dir/read.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/util/read.cpp
+# Timestamp: 2026-01-05T18:12:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1876k (  2%)
+ phase parsing                      :   0.44 ( 70%)   0.45 ( 98%)   1.01 ( 83%)    98M ( 86%)
+ phase lang. deferred               :   0.07 ( 11%)   0.01 (  2%)   0.08 (  7%)  9275k (  8%)
+ phase opt and generate             :   0.12 ( 19%)   0.00 (  0%)   0.12 ( 10%)  5229k (  4%)
+ |name lookup                       :   0.06 ( 10%)   0.06 ( 13%)   0.16 ( 13%)  3810k (  3%)
+ |overload resolution               :   0.04 (  6%)   0.04 (  9%)   0.09 (  7%)    11M ( 10%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.08 ( 13%)   0.00 (  0%)   0.08 (  7%)  2201k (  2%)
+ callgraph ipa passes               :   0.03 (  5%)   0.00 (  0%)   0.03 (  2%)  1992k (  2%)
+ df live&initialized regs           :   0.02 (  3%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ preprocessing                      :   0.04 (  6%)   0.08 ( 17%)   0.20 ( 16%)  6760k (  6%)
+ parser (global)                    :   0.10 ( 16%)   0.21 ( 46%)   0.28 ( 23%)    30M ( 26%)
+ parser struct body                 :   0.05 (  8%)   0.02 (  4%)   0.08 (  7%)    17M ( 15%)
+ parser function body               :   0.06 ( 10%)   0.03 (  7%)   0.08 (  7%)  5592k (  5%)
+ parser inl. func. body             :   0.03 (  5%)   0.01 (  2%)   0.05 (  4%)  6395k (  5%)
+ parser inl. meth. body             :   0.08 ( 13%)   0.04 (  9%)   0.12 ( 10%)    10M (  9%)
+ template instantiation             :   0.15 ( 24%)   0.07 ( 15%)   0.26 ( 21%)    30M ( 27%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   310k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   187k (  0%)
+ integration                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   648k (  1%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   349k (  0%)
+ tree Early VRP                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   139k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    46k (  0%)
+ tree operand scan                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   312k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    49k (  0%)
+ tree PRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    67k (  0%)
+ tree FRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    67k (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ tree conservative DCE              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  3160  (  0%)
+ PHI merge                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4248  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   247k (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   482k (  0%)
+ reload CSE regs                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   216  (  0%)
+ TOTAL                              :   0.63          0.46          1.22          114M
+
+# Exit code: 0

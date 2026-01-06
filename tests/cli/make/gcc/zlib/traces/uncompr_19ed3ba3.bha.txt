@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: uncompr.c
+# Output: uncompr.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -o uncompr.o uncompr.c
+# Timestamp: 2026-01-05T20:45:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 60%)
+ phase parsing                      :   0.00 (  0%)   0.01 (100%)   0.01 ( 50%)   978k ( 32%)
+ phase opt and generate             :   0.01 (100%)   0.00 (  0%)   0.01 ( 50%)   232k (  8%)
+ preprocessing                      :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)   359k ( 12%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)    66k (  2%)
+ expand                             :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)    36k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 50%)    12k (  0%)
+ TOTAL                              :   0.01          0.01          0.02         3031k

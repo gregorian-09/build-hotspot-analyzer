@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: dynhds.c
+# Output: libcurlu_la-dynhds.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c dynhds.c -fPIC -DPIC -o libcurlu_la-dynhds.o
+# Timestamp: 2026-01-05T20:44:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.03 ( 60%)   0.03 ( 60%)   0.11 ( 69%)  4728k ( 48%)
+ phase opt and generate             :   0.02 ( 40%)   0.02 ( 40%)   0.05 ( 31%)  3254k ( 33%)
+ callgraph construction             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    32k (  0%)
+ preprocessing                      :   0.02 ( 40%)   0.02 ( 40%)   0.05 ( 31%)  1992k ( 20%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.03 ( 19%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.01 ( 20%)   0.03 ( 19%)  2179k ( 22%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   160k (  2%)
+ jump                               :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1844k ( 19%)
+ LRA non-specific                   :   0.01 ( 20%)   0.00 (  0%)   0.01 (  6%)  6456  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 ( 12%)   134k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    12k (  0%)
+ TOTAL                              :   0.05          0.05          0.16         9802k

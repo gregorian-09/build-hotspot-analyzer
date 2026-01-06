@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: script.c
+# Output: script.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o script.o -c script.c
+# Timestamp: 2026-01-05T20:43:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 11%)
+ phase parsing                      :   0.08 ( 67%)   0.10 ( 91%)   0.19 ( 76%)    12M ( 80%)
+ phase opt and generate             :   0.04 ( 33%)   0.01 (  9%)   0.06 ( 24%)  1452k (  9%)
+ callgraph optimization             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  1232  (  0%)
+ callgraph ipa passes               :   0.04 ( 33%)   0.01 (  9%)   0.06 ( 24%)   866k (  5%)
+ lto stream compression             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.03 ( 12%)   312  (  0%)
+ ipa free lang data                 :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)    78k (  0%)
+ preprocessing                      :   0.03 ( 25%)   0.04 ( 36%)   0.07 ( 28%)  2880k ( 18%)
+ lexical analysis                   :   0.04 ( 33%)   0.03 ( 27%)   0.05 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.03 ( 27%)   0.04 ( 16%)  5658k ( 35%)
+ parser function body               :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)   197k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   713k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    71k (  0%)
+ tree PTA                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    45k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.01 (  9%)   0.00 (  0%)  4456  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  2659k ( 17%)
+ TOTAL                              :   0.12          0.11          0.25           15M

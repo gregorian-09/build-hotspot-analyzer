@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: inflate.c
+# Output: inflate.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -o inflate.o inflate.c
+# Timestamp: 2026-01-05T20:45:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.01 ( 20%)   0.02 ( 67%)   0.04 ( 40%)  2296k ( 28%)
+ phase opt and generate             :   0.04 ( 80%)   0.01 ( 33%)   0.06 ( 60%)  4179k ( 50%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 20%)   658k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)     0  (  0%)
+ parser function body               :   0.01 ( 20%)   0.01 ( 33%)   0.01 ( 10%)   666k (  8%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   530k (  6%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  8640  (  0%)
+ expand                             :   0.02 ( 40%)   0.01 ( 33%)   0.01 ( 10%)   921k ( 11%)
+ integrated RA                      :   0.01 ( 20%)   0.00 (  0%)   0.01 ( 10%)  1037k ( 13%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)    28k (  0%)
+ final                              :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   155k (  2%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)    60k (  1%)
+ TOTAL                              :   0.05          0.03          0.10         8295k

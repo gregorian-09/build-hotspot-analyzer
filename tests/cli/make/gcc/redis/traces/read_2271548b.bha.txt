@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: read.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -std=c99 -c -O3 -fPIC -ftime-report -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -ftime-report -pedantic read.c
+# Timestamp: 2026-01-05T20:42:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1532k ( 12%)
+ phase parsing                      :   0.02 ( 11%)   0.03 ( 43%)   0.15 ( 26%)  4520k ( 35%)
+ phase opt and generate             :   0.16 ( 89%)   0.04 ( 57%)   0.41 ( 71%)  6767k ( 52%)
+ phase last asm                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    74k (  1%)
+ callgraph functions expansion      :   0.13 ( 72%)   0.03 ( 43%)   0.35 ( 60%)  4998k ( 39%)
+ callgraph ipa passes               :   0.02 ( 11%)   0.00 (  0%)   0.05 (  9%)   909k (  7%)
+ ipa modref                         :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   912  (  0%)
+ df live&initialized regs           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  6%)   0.00 (  0%)   0.05 (  9%)    11k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.01 (  6%)   0.00 (  0%)   0.04 (  7%)  1834k ( 14%)
+ lexical analysis                   :   0.01 (  6%)   0.02 ( 29%)   0.06 ( 10%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  1648k ( 13%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   232k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   302k (  2%)
+ tree gimplify                      :   0.01 (  6%)   0.01 ( 14%)   0.00 (  0%)   326k (  3%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   118k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    21k (  0%)
+ tree VRP                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)    61k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    48k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)   272k (  2%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    13k (  0%)
+ tree PRE                           :   0.01 (  6%)   0.01 ( 14%)   0.00 (  0%)   110k (  1%)
+ tree FRE                           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    34k (  0%)
+ tree backward propagate            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ tree conservative DCE              :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)   632  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  1528  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    14k (  0%)
+ dead store elim1                   :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)    48k (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   175k (  1%)
+ CPROP                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   171k (  1%)
+ CSE 2                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  9368  (  0%)
+ combiner                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)   159k (  1%)
+ integrated RA                      :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)   428k (  3%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    19k (  0%)
+ LRA create live ranges             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  2304  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    75k (  1%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    26k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    31k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   225k (  2%)
+ symout                             :   0.00 (  0%)   0.01 ( 14%)   0.02 (  3%)   812k (  6%)
+ variable tracking                  :   0.01 (  6%)   0.01 ( 14%)   0.00 (  0%)   204k (  2%)
+ var-tracking dataflow              :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  8208  (  0%)
+ var-tracking emit                  :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   131k (  1%)
+ if to switch conversion            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2272  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  4008  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.07 ( 12%)    49k (  0%)
+ TOTAL                              :   0.18          0.07          0.58           12M

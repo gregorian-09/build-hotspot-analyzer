@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: test/minigzip.c
+# Output: minigzip64.o
+# Compiler: gcc
+# Command: gcc -ftime-report -I. -D_FILE_OFFSET_BITS=64 -c -o minigzip64.o test/minigzip.c
+# Timestamp: 2026-01-05T20:45:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 45%)
+ phase parsing                      :   0.01 ( 50%)   0.00 (  0%)   0.01 ( 33%)  1449k ( 36%)
+ phase opt and generate             :   0.01 ( 50%)   0.00 (  0%)   0.02 ( 67%)   792k ( 20%)
+ cfg cleanup                        :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)   240  (  0%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    32k (  1%)
+ parser function body               :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    77k (  2%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    75k (  2%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)    18k (  0%)
+ TOTAL                              :   0.02          0.00          0.03         4062k

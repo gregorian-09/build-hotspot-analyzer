@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/posix_thread.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/posix_thread.c.o -MF src/CMakeFiles/glfw.dir/posix_thread.c.o.d -o src/CMakeFiles/glfw.dir/posix_thread.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/posix_thread.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1523k ( 12%)
+ phase parsing                      :   0.06 ( 86%)   0.08 ( 89%)   0.19 ( 95%)    10M ( 83%)
+ phase opt and generate             :   0.01 ( 14%)   0.01 ( 11%)   0.01 (  5%)   558k (  5%)
+ dump files                         :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.01 ( 14%)   0.01 ( 11%)   0.01 (  5%)   419k (  3%)
+ preprocessing                      :   0.01 ( 14%)   0.03 ( 33%)   0.08 ( 40%)  4070k ( 33%)
+ lexical analysis                   :   0.02 ( 29%)   0.04 ( 44%)   0.07 ( 35%)     0  (  0%)
+ parser (global)                    :   0.02 ( 29%)   0.01 ( 11%)   0.04 ( 20%)  5120k ( 41%)
+ parser inl. func. body             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)   193k (  2%)
+ combiner                           :   0.00 (  0%)   0.01 ( 11%)   0.00 (  0%)  2048  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ TOTAL                              :   0.07          0.09          0.20           12M
+
+# Exit code: 0

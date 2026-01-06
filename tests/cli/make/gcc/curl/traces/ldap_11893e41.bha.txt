@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: ldap.c
+# Output: libcurlu_la-ldap.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c ldap.c -fPIC -DPIC -o libcurlu_la-ldap.o
+# Timestamp: 2026-01-05T20:44:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 ( 75%)   0.12 ( 75%)  4566k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 25%)   0.03 ( 19%)  1887k ( 23%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ trivially dead code                :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1248  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.01 ( 25%)   0.05 ( 31%)  1996k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.05 ( 31%)     0  (  0%)
+ parser (global)                    :   0.01 ( 33%)   0.01 ( 25%)   0.02 ( 12%)  2106k ( 25%)
+ post expand cleanups               :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    15k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   121k (  1%)
+ TOTAL                              :   0.03          0.04          0.16         8273k

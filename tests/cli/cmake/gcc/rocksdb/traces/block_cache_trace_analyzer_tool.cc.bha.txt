@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/block_cache_trace_analyzer.dir/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc.o -MF CMakeFiles/block_cache_trace_analyzer.dir/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc.o.d -o CMakeFiles/block_cache_trace_analyzer.dir/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc
+# Timestamp: 2026-01-05T19:41:40+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 ( 50%)  1886k ( 48%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.01 ( 25%)  1954k ( 50%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   100k (  3%)
+ |name lookup                       :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   167k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)    76k (  2%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)    66k (  2%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   443k ( 11%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1058k ( 27%)
+ parser inl. func. body             :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)   422k ( 11%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)   832  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)    12k (  0%)
+ TOTAL                              :   0.01          0.01          0.04         3941k
+
+# Exit code: 0

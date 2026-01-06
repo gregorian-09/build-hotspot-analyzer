@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/cache_key.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/cache/cache_key.cc.o -MF CMakeFiles/rocksdb-shared.dir/cache/cache_key.cc.o.d -o CMakeFiles/rocksdb-shared.dir/cache/cache_key.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/cache_key.cc
+# Timestamp: 2026-01-05T19:33:10+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.29 ( 75%)   0.75 ( 82%)   3.47 ( 77%)   188M ( 79%)
+ phase lang. deferred               :   0.39 ( 23%)   0.15 ( 16%)   0.86 ( 19%)    44M ( 19%)
+ phase opt and generate             :   0.05 (  3%)   0.02 (  2%)   0.17 (  4%)  2897k (  1%)
+ |name lookup                       :   0.34 ( 20%)   0.14 ( 15%)   1.06 ( 24%)  7300k (  3%)
+ |overload resolution               :   0.35 ( 20%)   0.18 ( 20%)   0.92 ( 20%)    38M ( 16%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)  1176k (  0%)
+ callgraph functions expansion      :   0.03 (  2%)   0.01 (  1%)   0.09 (  2%)  1091k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   459k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.10 (  6%)   0.16 ( 17%)   0.47 ( 10%)  3285k (  1%)
+ parser (global)                    :   0.21 ( 12%)   0.15 ( 16%)   0.60 ( 13%)    49M ( 21%)
+ parser struct body                 :   0.19 ( 11%)   0.09 ( 10%)   0.35 (  8%)    30M ( 13%)
+ parser function body               :   0.07 (  4%)   0.01 (  1%)   0.09 (  2%)  2973k (  1%)
+ parser inl. func. body             :   0.09 (  5%)   0.03 (  3%)   0.23 (  5%)  8899k (  4%)
+ parser inl. meth. body             :   0.20 ( 12%)   0.08 (  9%)   0.58 ( 13%)    32M ( 14%)
+ template instantiation             :   0.74 ( 43%)   0.35 ( 38%)   1.72 ( 38%)    99M ( 42%)
+ constant expression evaluation     :   0.05 (  3%)   0.02 (  2%)   0.16 (  4%)  1623k (  1%)
+ constraint satisfaction            :   0.03 (  2%)   0.01 (  1%)   0.05 (  1%)  3055k (  1%)
+ integration                        :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   155k (  0%)
+ tree eh                            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   296  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ tree PRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    84k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  5720  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2336  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    49k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9256  (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  8232  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.05 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ TOTAL                              :   1.73          0.92          4.51          237M
+
+# Exit code: 0

@@ -1,0 +1,59 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/zstd_compress_sequences.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_sequences.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_sequences.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/zstd_compress_sequences.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/zstd_compress_sequences.c
+# Timestamp: 2026-01-05T17:52:16+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 11%)
+ phase parsing                      :   0.04 ( 17%)   0.05 ( 62%)   0.19 ( 41%)  5777k ( 35%)
+ phase opt and generate             :   0.19 ( 83%)   0.03 ( 38%)   0.27 ( 59%)  8809k ( 54%)
+ callgraph functions expansion      :   0.16 ( 70%)   0.02 ( 25%)   0.24 ( 52%)  6864k ( 42%)
+ callgraph ipa passes               :   0.03 ( 13%)   0.00 (  0%)   0.03 (  7%)  1605k ( 10%)
+ ipa function summary               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    37k (  0%)
+ cfg cleanup                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    54k (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3968  (  0%)
+ preprocessing                      :   0.01 (  4%)   0.01 ( 12%)   0.09 ( 20%)  1050k (  6%)
+ lexical analysis                   :   0.01 (  4%)   0.01 ( 13%)   0.03 (  7%)     0  (  0%)
+ parser (global)                    :   0.01 (  4%)   0.02 ( 25%)   0.06 ( 13%)  2754k ( 17%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)    93k (  1%)
+ parser inl. func. body             :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)  1672k ( 10%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    68k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1129k (  7%)
+ tree CFG construction              :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)    80k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   125k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    73k (  0%)
+ tree PTA                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    65k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   308k (  2%)
+ backwards jump threading           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   321k (  2%)
+ tree forward propagate             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ tree canonical iv                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    37k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1344k (  8%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ CSE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ dead code elimination              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    76k (  0%)
+ loop init                          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   116k (  1%)
+ loop unrolling                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3448  (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4328  (  0%)
+ combiner                           :   0.02 (  9%)   0.00 (  0%)   0.04 (  9%)   965k (  6%)
+ if-conversion                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    72k (  0%)
+ integrated RA                      :   0.01 (  4%)   0.01 ( 12%)   0.00 (  0%)   676k (  4%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    80k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    10k (  0%)
+ peephole 2                         :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)  4536  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    21k (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    20k (  0%)
+ shorten branches                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7560  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 13%)   0.01 (  2%)    20k (  0%)
+ tree loop if-conversion            :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    55k (  0%)
+ address taken                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.23          0.08          0.46           16M
+
+# Exit code: 0

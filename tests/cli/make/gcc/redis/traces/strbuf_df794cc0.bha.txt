@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: strbuf.c
+# Output: strbuf.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o strbuf.o strbuf.c
+# Timestamp: 2026-01-05T20:42:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 38%)
+ phase parsing                      :   0.01 ( 25%)   0.02 ( 67%)   0.06 ( 40%)  1917k ( 40%)
+ phase opt and generate             :   0.03 ( 75%)   0.01 ( 33%)   0.08 ( 53%)  1071k ( 22%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   664  (  0%)
+ callgraph functions expansion      :   0.03 ( 75%)   0.00 (  0%)   0.07 ( 47%)   754k ( 16%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 33%)   0.01 (  7%)   233k (  5%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  2424  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)   575k ( 12%)
+ lexical analysis                   :   0.01 ( 25%)   0.02 ( 67%)   0.03 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1004k ( 21%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    20k (  0%)
+ expand                             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    70k (  1%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    11k (  0%)
+ CSE                                :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2328  (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1992  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  9496  (  0%)
+ initialize rtl                     :   0.01 ( 25%)   0.00 (  0%)   0.01 (  7%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)    19k (  0%)
+ TOTAL                              :   0.04          0.03          0.15         4809k

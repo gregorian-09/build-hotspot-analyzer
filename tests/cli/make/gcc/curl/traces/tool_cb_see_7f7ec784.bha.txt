@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: tool_cb_see.c
+# Output: libcurltool_la-tool_cb_see.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_cb_see.c -fPIC -DPIC -o libcurltool_la-tool_cb_see.o
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.02 ( 50%)   0.04 ( 80%)   0.07 ( 78%)  5116k ( 58%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.01 ( 25%)   0.00 (  0%)   0.02 ( 22%)  1943k ( 22%)
+ preprocessing                      :   0.01 ( 25%)   0.02 ( 40%)   0.01 ( 11%)  2182k ( 25%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 44%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 40%)   0.01 ( 11%)  2275k ( 26%)
+ parser enumerator list             :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   380k (  4%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    78k (  1%)
+ tree switch lowering               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)     0  (  0%)
+ loop init                          :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    54k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)  1275k ( 14%)
+ TOTAL                              :   0.04          0.05          0.09         8880k

@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: smtp.c
+# Output: libcurlu_la-smtp.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c smtp.c -fPIC -DPIC -o libcurlu_la-smtp.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 12%)
+ phase parsing                      :   0.05 ( 56%)   0.07 ( 70%)   0.14 ( 56%)  7132k ( 47%)
+ phase opt and generate             :   0.04 ( 44%)   0.03 ( 30%)   0.11 ( 44%)  6254k ( 41%)
+ dump files                         :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.01 ( 11%)   0.01 ( 10%)   0.01 (  4%)   637k (  4%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1000  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 11%)   0.05 ( 50%)   0.03 ( 12%)  2459k ( 16%)
+ lexical analysis                   :   0.03 ( 33%)   0.02 ( 20%)   0.05 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 ( 16%)  3435k ( 23%)
+ parser struct body                 :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   375k (  2%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   495k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   521k (  3%)
+ tree operand scan                  :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)   253k (  2%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   408  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)  2636k ( 17%)
+ LRA non-specific                   :   0.01 ( 11%)   0.01 ( 10%)   0.00 (  0%)    11k (  0%)
+ LRA reload inheritance             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)   282k (  2%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ access analysis                    :   0.00 (  0%)   0.01 ( 10%)   0.01 (  4%)  1448  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 ( 12%)   255k (  2%)
+ TOTAL                              :   0.09          0.10          0.25           14M

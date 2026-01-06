@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdlhuff.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jdlhuff.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jdlhuff.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jdlhuff.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdlhuff.c
+# Timestamp: 2026-01-05T18:14:52+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 28%)
+ phase parsing                      :   0.01 ( 20%)   0.03 ( 75%)   0.07 ( 47%)  2688k ( 41%)
+ phase opt and generate             :   0.04 ( 80%)   0.01 ( 25%)   0.06 ( 40%)  2065k ( 31%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ callgraph functions expansion      :   0.04 ( 80%)   0.01 ( 25%)   0.06 ( 40%)  1802k ( 27%)
+ alias stmt walking                 :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  8744  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)   781k ( 12%)
+ lexical analysis                   :   0.01 ( 20%)   0.01 ( 25%)   0.03 ( 20%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 50%)   0.01 (  7%)  1324k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   244k (  4%)
+ tree CFG cleanup                   :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  2768  (  0%)
+ dominator optimization             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    44k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  5064  (  0%)
+ predictive commoning               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    11k (  0%)
+ forward prop                       :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  2232  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)   110k (  2%)
+ integrated RA                      :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   211k (  3%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    26k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    14k (  0%)
+ TOTAL                              :   0.05          0.04          0.15         6573k
+
+# Exit code: 0

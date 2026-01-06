@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: vtls/openssl.c
+# Output: vtls/libcurl_la-openssl.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c vtls/openssl.c -fPIC -DPIC -o vtls/libcurl_la-openssl.o
+# Timestamp: 2026-01-05T20:44:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 (100%)   0.04 ( 80%)   0.13 ( 87%)  4657k ( 56%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 20%)   0.02 ( 13%)  1887k ( 23%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)     0  (  0%)
+ preprocessing                      :   0.01 ( 50%)   0.02 ( 40%)   0.06 ( 40%)  2087k ( 25%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 20%)   0.03 ( 20%)  2106k ( 25%)
+ parser function body               :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)    73k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.02          0.05          0.15         8364k

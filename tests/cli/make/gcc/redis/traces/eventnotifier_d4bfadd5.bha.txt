@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: eventnotifier.c
+# Output: eventnotifier.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o eventnotifier.o -c eventnotifier.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 37%)
+ phase parsing                      :   0.03 (100%)   0.02 (100%)   0.06 ( 86%)  2991k ( 60%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)   179k (  4%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)    97k (  2%)
+ lto stream compression             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)     0  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.00 (  0%)   0.02 ( 29%)   849k ( 17%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 50%)   0.01 ( 14%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 50%)   0.01 ( 14%)  1071k ( 21%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)    73k (  1%)
+ parser function body               :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ TOTAL                              :   0.03          0.02          0.07         4998k

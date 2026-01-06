@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: lua_struct.c
+# Output: lua_struct.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o lua_struct.o lua_struct.c
+# Timestamp: 2026-01-05T20:42:49+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 27%)
+ phase parsing                      :   0.01 ( 10%)   0.01 ( 50%)   0.07 ( 24%)  1803k ( 27%)
+ phase opt and generate             :   0.09 ( 90%)   0.01 ( 50%)   0.22 ( 76%)  3098k ( 46%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)     0  (  0%)
+ callgraph functions expansion      :   0.08 ( 80%)   0.00 (  0%)   0.19 ( 66%)  2322k ( 35%)
+ callgraph ipa passes               :   0.01 ( 10%)   0.00 (  0%)   0.03 ( 10%)   429k (  6%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    26k (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  5872  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)     0  (  0%)
+ alias analysis                     :   0.01 ( 10%)   0.00 (  0%)   0.01 (  3%)    86k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.02 (  7%)   573k (  9%)
+ lexical analysis                   :   0.01 ( 10%)   0.00 (  0%)   0.04 ( 14%)     0  (  0%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   100k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)   132k (  2%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    90k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    83k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    86k (  1%)
+ backwards jump threading           :   0.01 ( 10%)   0.00 (  0%)   0.02 (  7%)    24k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    66k (  1%)
+ tree aggressive DCE                :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ tree iv optimization               :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    84k (  1%)
+ tree SSA uncprop                   :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   160  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   102k (  2%)
+ integrated RA                      :   0.02 ( 20%)   0.00 (  0%)   0.01 (  3%)   387k (  6%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ LRA create live ranges             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  1632  (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   632  (  0%)
+ scheduling 2                       :   0.01 ( 10%)   0.00 (  0%)   0.01 (  3%)    21k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)     0  (  0%)
+ rebuild frequencies                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ TOTAL                              :   0.10          0.02          0.29         6722k

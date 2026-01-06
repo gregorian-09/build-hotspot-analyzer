@@ -1,0 +1,53 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/icon.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/deps -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -ftime-report -O3 -DNDEBUG -std=gnu99 -MD -MT tests/CMakeFiles/icon.dir/icon.c.o -MF tests/CMakeFiles/icon.dir/icon.c.o.d -o tests/CMakeFiles/icon.dir/icon.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/icon.c
+# Timestamp: 2026-01-05T18:15:49+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.02 (  6%)   0.04 ( 57%)   0.06 ( 14%)  5694k ( 22%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.33 ( 94%)   0.02 ( 29%)   0.37 ( 84%)    17M ( 70%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1254k (  5%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  2104  (  0%)
+ callgraph functions expansion      :   0.29 ( 83%)   0.02 ( 29%)   0.31 ( 70%)    12M ( 50%)
+ callgraph ipa passes               :   0.04 ( 11%)   0.00 (  0%)   0.05 ( 11%)  3635k ( 14%)
+ ipa inlining heuristics            :   0.02 (  6%)   0.00 (  0%)   0.03 (  7%)  1292k (  5%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)     0  (  0%)
+ df live regs                       :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df use-def / def-use chains        :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   307k (  1%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   557k (  2%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3480  (  0%)
+ preprocessing                      :   0.01 (  3%)   0.03 ( 43%)   0.01 (  2%)  1743k (  7%)
+ lexical analysis                   :   0.01 (  3%)   0.01 ( 14%)   0.02 (  5%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 14%)   0.02 (  5%)  2848k ( 11%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   824k (  3%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    57k (  0%)
+ integration                        :   0.02 (  6%)   0.00 (  0%)   0.01 (  2%)  2308k (  9%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  5%)    61k (  0%)
+ tree copy propagation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5352  (  0%)
+ tree PTA                           :   0.04 ( 11%)   0.00 (  0%)   0.01 (  2%)   317k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   187k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   545k (  2%)
+ backwards jump threading           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    84k (  0%)
+ tree FRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   682k (  3%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    16  (  0%)
+ tree slp vectorization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   720k (  3%)
+ expand                             :   0.02 (  6%)   0.00 (  0%)   0.01 (  2%)  1926k (  8%)
+ CSE                                :   0.02 (  6%)   0.00 (  0%)   0.01 (  2%)  3816  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   140k (  1%)
+ CSE 2                              :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  3360  (  0%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   334k (  1%)
+ integrated RA                      :   0.02 (  6%)   0.00 (  0%)   0.06 ( 14%)  1921k (  8%)
+ reload CSE regs                    :   0.03 (  9%)   0.01 ( 14%)   0.01 (  2%)   194k (  1%)
+ load CSE after reload              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ scheduling 2                       :   0.03 (  9%)   0.00 (  0%)   0.02 (  5%)    94k (  0%)
+ final                              :   0.01 (  3%)   0.01 ( 14%)   0.05 ( 11%)   133k (  1%)
+ TOTAL                              :   0.35          0.07          0.44           24M
+
+# Exit code: 0

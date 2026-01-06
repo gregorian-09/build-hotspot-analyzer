@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/internal/utf8_for_code_point.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/debugging/CMakeFiles/utf8_for_code_point.dir/internal/utf8_for_code_point.cc.o -MF absl/debugging/CMakeFiles/utf8_for_code_point.dir/internal/utf8_for_code_point.cc.o.d -o absl/debugging/CMakeFiles/utf8_for_code_point.dir/internal/utf8_for_code_point.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/internal/utf8_for_code_point.cc
+# Timestamp: 2026-01-05T17:54:05+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k ( 55%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 50%)  1212k ( 35%)
+ phase opt and generate             :   0.01 (100%)   0.00 (  0%)   0.01 ( 25%)   357k ( 10%)
+ callgraph functions expansion      :   0.01 (100%)   0.00 (  0%)   0.01 ( 25%)   283k (  8%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   284k (  8%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   101k (  3%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 ( 25%)   336  (  0%)
+ dominator optimization             :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)  8016  (  0%)
+ TOTAL                              :   0.01          0.00          0.04         3452k
+
+# Exit code: 0

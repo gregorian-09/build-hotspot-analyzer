@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/internal/elf_mem_image.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/debugging/CMakeFiles/debugging_internal.dir/internal/elf_mem_image.cc.o -MF absl/debugging/CMakeFiles/debugging_internal.dir/internal/elf_mem_image.cc.o.d -o absl/debugging/CMakeFiles/debugging_internal.dir/internal/elf_mem_image.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/debugging/internal/elf_mem_image.cc
+# Timestamp: 2026-01-05T17:54:04+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  3%)
+ phase parsing                      :   0.20 ( 59%)   0.21 ( 88%)   0.45 ( 67%)    44M ( 81%)
+ phase lang. deferred               :   0.03 (  9%)   0.02 (  8%)   0.05 (  7%)  3773k (  7%)
+ phase opt and generate             :   0.11 ( 32%)   0.01 (  4%)   0.16 ( 24%)  4790k (  9%)
+ |name lookup                       :   0.05 ( 15%)   0.05 ( 21%)   0.08 ( 12%)  2016k (  4%)
+ |overload resolution               :   0.01 (  3%)   0.01 (  4%)   0.05 (  7%)  2692k (  5%)
+ dump files                         :   0.01 (  3%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.09 ( 26%)   0.01 (  4%)   0.13 ( 19%)  3712k (  7%)
+ callgraph ipa passes               :   0.02 (  6%)   0.00 (  0%)   0.03 (  4%)   683k (  1%)
+ ipa function summary               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    43k (  0%)
+ trivially dead code                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.03 (  9%)   0.04 ( 17%)   0.11 ( 16%)  2592k (  5%)
+ parser (global)                    :   0.05 ( 15%)   0.07 ( 29%)   0.12 ( 18%)    15M ( 28%)
+ parser struct body                 :   0.03 (  9%)   0.04 ( 17%)   0.05 (  7%)  9540k ( 17%)
+ parser function body               :   0.01 (  3%)   0.01 (  4%)   0.00 (  0%)  1432k (  3%)
+ parser inl. func. body             :   0.00 (  0%)   0.03 ( 12%)   0.03 (  4%)  4359k (  8%)
+ parser inl. meth. body             :   0.03 (  9%)   0.01 (  4%)   0.04 (  6%)  3842k (  7%)
+ template instantiation             :   0.07 ( 21%)   0.03 ( 12%)   0.14 ( 21%)    11M ( 21%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   133k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    47k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7584  (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    82k (  0%)
+ tree CCP                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)    13k (  0%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   126k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    35k (  0%)
+ tree slp vectorization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   420k (  1%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    56k (  0%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3792  (  0%)
+ post expand cleanups               :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4968  (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    12k (  0%)
+ loop fini                          :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   624  (  0%)
+ peephole 2                         :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  9512  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    93k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    66k (  0%)
+ TOTAL                              :   0.34          0.24          0.67           54M
+
+# Exit code: 0

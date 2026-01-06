@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: pngerror.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c pngerror.c
+# Timestamp: 2026-01-05T20:46:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 23%)
+ phase parsing                      :   0.02 ( 40%)   0.04 (100%)   0.07 ( 70%)  4532k ( 56%)
+ phase opt and generate             :   0.03 ( 60%)   0.00 (  0%)   0.03 ( 30%)  1717k ( 21%)
+ callgraph construction             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.00 (  0%)   0.01 ( 10%)   180k (  2%)
+ df live regs                       :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 25%)   0.03 ( 30%)  2397k ( 30%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 20%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.02 ( 50%)   0.01 ( 10%)  1848k ( 23%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   127k (  2%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   269k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)   696k (  9%)
+ LRA non-specific                   :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  7568  (  0%)
+ TOTAL                              :   0.05          0.04          0.10         8070k

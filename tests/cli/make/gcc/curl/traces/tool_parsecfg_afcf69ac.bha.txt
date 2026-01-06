@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: tool_parsecfg.c
+# Output: libcurltool_la-tool_parsecfg.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_parsecfg.c -fPIC -DPIC -o libcurltool_la-tool_parsecfg.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 19%)
+ phase parsing                      :   0.02 ( 50%)   0.04 ( 67%)   0.10 ( 67%)  5185k ( 54%)
+ phase opt and generate             :   0.02 ( 50%)   0.02 ( 33%)   0.03 ( 20%)  2537k ( 27%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)    29k (  0%)
+ callgraph ipa passes               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   227k (  2%)
+ preprocessing                      :   0.01 ( 25%)   0.01 ( 17%)   0.02 ( 13%)  2185k ( 23%)
+ lexical analysis                   :   0.01 ( 25%)   0.00 (  0%)   0.06 ( 40%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.03 ( 50%)   0.01 (  7%)  2281k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   182k (  2%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    93k (  1%)
+ loop init                          :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    71k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1381k ( 14%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    70k (  1%)
+ shorten branches                   :   0.01 ( 25%)   0.01 ( 17%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.04          0.06          0.15         9542k

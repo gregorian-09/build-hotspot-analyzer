@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/iterator.cc
+# Output: CMakeFiles/leveldb.dir/table/iterator.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/table/iterator.cc.o -MF CMakeFiles/leveldb.dir/table/iterator.cc.o.d -o CMakeFiles/leveldb.dir/table/iterator.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/iterator.cc
+# Timestamp: 2026-01-05T20:10:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1880k (  4%)
+ phase parsing                      :   0.18 ( 75%)   0.17 ( 89%)   2.02 ( 86%)    35M ( 85%)
+ phase lang. deferred               :   0.02 (  8%)   0.00 (  0%)   0.14 (  6%)  3121k (  7%)
+ phase opt and generate             :   0.04 ( 17%)   0.02 ( 11%)   0.16 (  7%)  1412k (  3%)
+ |name lookup                       :   0.05 ( 21%)   0.02 ( 11%)   0.52 ( 22%)  1586k (  4%)
+ |overload resolution               :   0.01 (  4%)   0.01 (  5%)   0.09 (  4%)  1997k (  5%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  4%)   0.00 (  0%)   0.01 (  0%)    90k (  0%)
+ callgraph functions expansion      :   0.03 ( 12%)   0.01 (  5%)   0.12 (  5%)   930k (  2%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  5%)   0.03 (  1%)   302k (  1%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8008  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    40  (  0%)
+ preprocessing                      :   0.03 ( 12%)   0.05 ( 26%)   0.30 ( 13%)  1762k (  4%)
+ parser (global)                    :   0.01 (  4%)   0.05 ( 26%)   0.82 ( 35%)    14M ( 35%)
+ parser struct body                 :   0.00 (  0%)   0.02 ( 11%)   0.23 ( 10%)  6785k ( 16%)
+ parser function body               :   0.01 (  4%)   0.01 (  5%)   0.09 (  4%)   866k (  2%)
+ parser inl. func. body             :   0.03 ( 13%)   0.02 ( 11%)   0.18 (  8%)  3964k (  9%)
+ parser inl. meth. body             :   0.04 ( 17%)   0.02 ( 11%)   0.15 (  6%)  2522k (  6%)
+ template instantiation             :   0.07 ( 29%)   0.00 (  0%)   0.34 ( 15%)  8210k ( 19%)
+ constant expression evaluation     :   0.01 (  4%)   0.00 (  0%)   0.05 (  2%)   165k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   416  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    19k (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1672  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ integrated RA                      :   0.01 (  4%)   0.01 (  5%)   0.01 (  0%)   319k (  1%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  8544  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   992  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)    26k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    35k (  0%)
+ TOTAL                              :   0.24          0.19          2.34           41M

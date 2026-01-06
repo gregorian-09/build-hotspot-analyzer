@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: childinfo.c
+# Output: childinfo.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o childinfo.o -c childinfo.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.04 ( 80%)   0.08 ( 89%)   0.14 ( 88%)    12M ( 84%)
+ phase opt and generate             :   0.01 ( 20%)   0.01 ( 11%)   0.02 ( 12%)   469k (  3%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.01 ( 11%)   0.02 ( 12%)   279k (  2%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   776  (  0%)
+ ipa free lang data                 :   0.01 ( 20%)   0.01 ( 11%)   0.01 (  6%)    82k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 11%)   0.04 ( 25%)  2819k ( 19%)
+ lexical analysis                   :   0.01 ( 20%)   0.03 ( 33%)   0.05 ( 31%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 22%)   0.03 ( 19%)  5455k ( 37%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 11%)   0.00 (  0%)   526k (  4%)
+ parser enumerator list             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   167k (  1%)
+ parser inl. func. body             :   0.02 ( 40%)   0.01 ( 11%)   0.01 (  6%)   702k (  5%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2636k ( 18%)
+ TOTAL                              :   0.05          0.09          0.16           14M

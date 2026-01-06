@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/hash.cc
+# Output: CMakeFiles/leveldb.dir/util/hash.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/hash.cc.o -MF CMakeFiles/leveldb.dir/util/hash.cc.o.d -o CMakeFiles/leveldb.dir/util/hash.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/hash.cc
+# Timestamp: 2026-01-05T20:10:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)  1880k (  4%)
+ phase parsing                      :   0.26 ( 87%)   0.18 ( 90%)   1.87 ( 89%)    41M ( 86%)
+ phase lang. deferred               :   0.03 ( 10%)   0.01 (  5%)   0.15 (  7%)  4357k (  9%)
+ phase opt and generate             :   0.01 (  3%)   0.01 (  5%)   0.04 (  2%)   475k (  1%)
+ |name lookup                       :   0.06 ( 20%)   0.02 ( 10%)   0.52 ( 25%)  2061k (  4%)
+ |overload resolution               :   0.03 ( 10%)   0.02 ( 10%)   0.11 (  5%)  2845k (  6%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   218k (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   191k (  0%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  5%)   0.00 (  0%)    45k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.04 ( 13%)   0.06 ( 30%)   0.37 ( 18%)  2053k (  4%)
+ parser (global)                    :   0.04 ( 13%)   0.03 ( 15%)   0.52 ( 25%)    14M ( 30%)
+ parser struct body                 :   0.02 (  7%)   0.02 ( 10%)   0.26 ( 12%)  9247k ( 19%)
+ parser function body               :   0.01 (  3%)   0.00 (  0%)   0.04 (  2%)   615k (  1%)
+ parser inl. func. body             :   0.03 ( 10%)   0.01 (  5%)   0.18 (  9%)  3286k (  7%)
+ parser inl. meth. body             :   0.05 ( 17%)   0.01 (  5%)   0.15 (  7%)  4967k ( 10%)
+ template instantiation             :   0.10 ( 33%)   0.05 ( 25%)   0.40 ( 19%)    11M ( 24%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  5%)   0.05 (  2%)   236k (  0%)
+ tree Early VRP                     :   0.01 (  3%)   0.01 (  5%)   0.00 (  0%)  3320  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6040  (  0%)
+ TOTAL                              :   0.30          0.20          2.10           48M

@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: src/san_bump.c
+# Output: src/san_bump.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/san_bump.o src/san_bump.c
+# Timestamp: 2026-01-05T20:43:10+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.17 ( 85%)   0.24 ( 96%)   0.42 ( 91%)    25M ( 87%)
+ phase opt and generate             :   0.03 ( 15%)   0.01 (  4%)   0.04 (  9%)  2153k (  7%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.02 (  4%)     0  (  0%)
+ callgraph construction             :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    79k (  0%)
+ callgraph ipa passes               :   0.01 (  5%)   0.01 (  4%)   0.01 (  2%)   545k (  2%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df scan insns                      :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   864  (  0%)
+ preprocessing                      :   0.06 ( 30%)   0.07 ( 28%)   0.15 ( 33%)    13M ( 48%)
+ lexical analysis                   :   0.05 ( 25%)   0.09 ( 36%)   0.12 ( 26%)     0  (  0%)
+ parser (global)                    :   0.03 ( 15%)   0.02 (  8%)   0.04 (  9%)  5683k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   254k (  1%)
+ parser inl. func. body             :   0.03 ( 15%)   0.06 ( 24%)   0.10 ( 22%)  5382k ( 18%)
+ shorten branches                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.20          0.25          0.46           28M

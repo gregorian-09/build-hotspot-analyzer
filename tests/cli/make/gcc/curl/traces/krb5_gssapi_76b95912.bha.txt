@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: vauth/krb5_gssapi.c
+# Output: vauth/libcurl_la-krb5_gssapi.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c vauth/krb5_gssapi.c -fPIC -DPIC -o vauth/libcurl_la-krb5_gssapi.o
+# Timestamp: 2026-01-05T20:44:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 13%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 (100%)   0.05 ( 62%)  4552k ( 55%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 25%)  1887k ( 23%)
+ phase finalize                     :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 13%)  1983k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 67%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.02 ( 67%)   0.01 ( 33%)   0.03 ( 37%)  2106k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)   112k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)  1248  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)    12k (  0%)
+ TOTAL                              :   0.03          0.03          0.08         8259k

@@ -1,0 +1,46 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/reporters/catch_reporter_automake.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_automake.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_automake.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_automake.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/reporters/catch_reporter_automake.cpp
+# Timestamp: 2026-01-05T18:11:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  3%)
+ phase parsing                      :   0.32 ( 80%)   0.21 ( 81%)   1.09 ( 80%)    52M ( 84%)
+ phase lang. deferred               :   0.02 (  5%)   0.02 (  8%)   0.07 (  5%)  4498k (  7%)
+ phase opt and generate             :   0.06 ( 15%)   0.03 ( 12%)   0.20 ( 15%)  4295k (  7%)
+ |name lookup                       :   0.04 ( 10%)   0.03 ( 12%)   0.29 ( 21%)  2498k (  4%)
+ |overload resolution               :   0.02 (  5%)   0.03 ( 12%)   0.09 (  7%)  3599k (  6%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.03 (  2%)  8360  (  0%)
+ callgraph functions expansion      :   0.04 ( 10%)   0.02 (  8%)   0.11 (  8%)  2100k (  3%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  4%)   0.07 (  5%)  1427k (  2%)
+ ipa reference                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    70k (  0%)
+ preprocessing                      :   0.06 ( 15%)   0.05 ( 19%)   0.19 ( 14%)  2186k (  3%)
+ parser (global)                    :   0.04 ( 10%)   0.06 ( 23%)   0.29 ( 21%)    16M ( 26%)
+ parser struct body                 :   0.06 ( 15%)   0.02 (  8%)   0.24 ( 18%)    11M ( 19%)
+ parser function body               :   0.04 ( 10%)   0.01 (  4%)   0.03 (  2%)  1534k (  2%)
+ parser inl. func. body             :   0.02 (  5%)   0.01 (  4%)   0.04 (  3%)  3231k (  5%)
+ parser inl. meth. body             :   0.04 ( 10%)   0.02 (  8%)   0.11 (  8%)  6027k (  9%)
+ template instantiation             :   0.08 ( 20%)   0.06 ( 23%)   0.22 ( 16%)    15M ( 25%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   188k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   140k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    36k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   245k (  0%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    71k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ integrated RA                      :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   555k (  1%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ load CSE after reload              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1848  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    58k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)    55k (  0%)
+ address taken                      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.40          0.26          1.37           63M
+
+# Exit code: 0

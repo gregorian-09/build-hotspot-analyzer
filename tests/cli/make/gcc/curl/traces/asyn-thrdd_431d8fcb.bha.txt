@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: asyn-thrdd.c
+# Output: libcurlu_la-asyn-thrdd.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c asyn-thrdd.c -fPIC -DPIC -o libcurlu_la-asyn-thrdd.o
+# Timestamp: 2026-01-05T20:44:32+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 16%)
+ phase parsing                      :   0.03 ( 60%)   0.06 ( 86%)   0.15 ( 71%)  6570k ( 56%)
+ phase opt and generate             :   0.02 ( 40%)   0.01 ( 14%)   0.06 ( 29%)  3338k ( 28%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.01 ( 14%)   0.03 ( 14%)  2396k ( 20%)
+ lexical analysis                   :   0.02 ( 40%)   0.04 ( 57%)   0.09 ( 43%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)  2993k ( 26%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   344k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 14%)   0.01 (  5%)  1700k ( 15%)
+ shorten branches                   :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 ( 20%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 ( 14%)   173k (  1%)
+ TOTAL                              :   0.05          0.07          0.21           11M

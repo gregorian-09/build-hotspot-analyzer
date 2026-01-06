@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: src/background_thread.c
+# Output: src/background_thread.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/background_thread.o src/background_thread.c
+# Timestamp: 2026-01-05T20:43:06+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  5%)
+ phase parsing                      :   0.18 ( 69%)   0.23 ( 96%)   0.43 ( 83%)    25M ( 73%)
+ phase opt and generate             :   0.08 ( 31%)   0.01 (  4%)   0.08 ( 15%)  7683k ( 22%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  4%)   0.01 (  2%)  2624k (  7%)
+ df scan insns                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  2328  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.08 ( 31%)   0.06 ( 25%)   0.18 ( 35%)    13M ( 40%)
+ lexical analysis                   :   0.02 (  8%)   0.10 ( 42%)   0.14 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 (  8%)   0.02 (  4%)  5730k ( 16%)
+ parser struct body                 :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   259k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   237k (  1%)
+ parser inl. func. body             :   0.04 ( 15%)   0.05 ( 21%)   0.06 ( 12%)  5398k ( 15%)
+ integration                        :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)  1605k (  5%)
+ tree gimplify                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   621k (  2%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   143k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ expand vars                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   175k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1286k (  4%)
+ varconst                           :   0.02 (  8%)   0.00 (  0%)   0.00 (  0%)  4512  (  0%)
+ loop init                          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    93k (  0%)
+ integrated RA                      :   0.02 (  8%)   0.00 (  0%)   0.02 (  4%)  1642k (  5%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    77k (  0%)
+ final                              :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   281k (  1%)
+ symout                             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.26          0.24          0.52           34M

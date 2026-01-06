@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/reporters/catch_reporter_common_base.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_common_base.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_common_base.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/reporters/catch_reporter_common_base.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/reporters/catch_reporter_common_base.cpp
+# Timestamp: 2026-01-05T18:11:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  3%)
+ phase parsing                      :   0.24 ( 69%)   0.19 ( 86%)   0.48 ( 77%)    47M ( 82%)
+ phase lang. deferred               :   0.03 (  9%)   0.01 (  5%)   0.03 (  5%)  4534k (  8%)
+ phase opt and generate             :   0.08 ( 23%)   0.02 (  9%)   0.11 ( 18%)  4605k (  8%)
+ |name lookup                       :   0.04 ( 11%)   0.02 (  9%)   0.09 ( 15%)  3919k (  7%)
+ |overload resolution               :   0.03 (  9%)   0.00 (  0%)   0.02 (  3%)  2852k (  5%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   313k (  1%)
+ callgraph functions expansion      :   0.06 ( 17%)   0.01 (  5%)   0.08 ( 13%)  2517k (  4%)
+ callgraph ipa passes               :   0.02 (  6%)   0.01 (  5%)   0.02 (  3%)  1377k (  2%)
+ ipa pure const                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5736  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5808  (  0%)
+ preprocessing                      :   0.02 (  6%)   0.08 ( 36%)   0.07 ( 11%)  1989k (  3%)
+ parser (global)                    :   0.05 ( 14%)   0.03 ( 14%)   0.13 ( 21%)    15M ( 27%)
+ parser struct body                 :   0.04 ( 11%)   0.01 (  5%)   0.10 ( 16%)    10M ( 17%)
+ parser function body               :   0.00 (  0%)   0.01 (  5%)   0.02 (  3%)   911k (  2%)
+ parser inl. func. body             :   0.01 (  3%)   0.01 (  5%)   0.01 (  2%)  2757k (  5%)
+ parser inl. meth. body             :   0.05 ( 14%)   0.01 (  5%)   0.05 (  8%)  4930k (  8%)
+ template instantiation             :   0.09 ( 26%)   0.05 ( 23%)   0.13 ( 21%)    15M ( 27%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   172k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   785k (  1%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1480  (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    54k (  0%)
+ backwards jump threading           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5552  (  0%)
+ tree linearize phis                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  9648  (  0%)
+ tree DSE                           :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)  9224  (  0%)
+ combiner                           :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    35k (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   284k (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    16k (  0%)
+ machine dep reorg                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1872  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.35          0.22          0.62           58M
+
+# Exit code: 0

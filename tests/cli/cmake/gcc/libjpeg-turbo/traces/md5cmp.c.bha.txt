@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/md5/md5cmp.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -MD -MT src/md5/CMakeFiles/md5cmp.dir/md5cmp.c.o -MF src/md5/CMakeFiles/md5cmp.dir/md5cmp.c.o.d -o src/md5/CMakeFiles/md5cmp.dir/md5cmp.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/md5/md5cmp.c
+# Timestamp: 2026-01-05T18:14:55+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 53%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.04 ( 80%)  1382k ( 40%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   247k (  7%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   119k (  3%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)    48  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 40%)   468k ( 14%)
+ lexical analysis                   :   0.00 (  0%)   0.01 (100%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.01 (100%)   0.00 (  0%)   0.02 ( 40%)   734k ( 21%)
+ TOTAL                              :   0.01          0.01          0.05         3450k
+
+# Exit code: 0

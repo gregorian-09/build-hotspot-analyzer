@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: src/safety_check.c
+# Output: src/safety_check.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/safety_check.o src/safety_check.c
+# Timestamp: 2026-01-05T20:43:14+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.19 ( 95%)   0.24 (100%)   0.45 ( 98%)    25M ( 92%)
+ phase opt and generate             :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)   341k (  1%)
+ preprocessing                      :   0.05 ( 25%)   0.06 ( 25%)   0.16 ( 35%)    13M ( 51%)
+ lexical analysis                   :   0.07 ( 35%)   0.08 ( 33%)   0.14 ( 30%)     0  (  0%)
+ parser (global)                    :   0.03 ( 15%)   0.02 (  8%)   0.04 (  9%)  5681k ( 20%)
+ parser struct body                 :   0.01 (  5%)   0.01 (  4%)   0.00 (  0%)   254k (  1%)
+ parser inl. func. body             :   0.03 ( 15%)   0.07 ( 29%)   0.11 ( 24%)  5382k ( 19%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.20          0.24          0.46           27M

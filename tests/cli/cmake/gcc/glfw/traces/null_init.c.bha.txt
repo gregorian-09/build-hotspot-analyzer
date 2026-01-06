@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/null_init.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/null_init.c.o -MF src/CMakeFiles/glfw.dir/null_init.c.o.d -o src/CMakeFiles/glfw.dir/null_init.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/null_init.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1523k ( 12%)
+ phase parsing                      :   0.06 ( 75%)   0.07 (100%)   0.16 ( 84%)    10M ( 82%)
+ phase opt and generate             :   0.02 ( 25%)   0.00 (  0%)   0.02 ( 11%)   822k (  6%)
+ callgraph functions expansion      :   0.02 ( 25%)   0.00 (  0%)   0.01 (  5%)   579k (  4%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   179k (  1%)
+ preprocessing                      :   0.03 ( 38%)   0.02 ( 29%)   0.08 ( 42%)  4152k ( 32%)
+ lexical analysis                   :   0.01 ( 13%)   0.02 ( 29%)   0.04 ( 21%)     0  (  0%)
+ parser (global)                    :   0.01 ( 12%)   0.03 ( 43%)   0.04 ( 21%)  5341k ( 41%)
+ parser inl. func. body             :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)   231k (  2%)
+ tree CCP                           :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)  1056  (  0%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    65k (  1%)
+ CPROP                              :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)  3744  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ TOTAL                              :   0.08          0.07          0.19           12M
+
+# Exit code: 0

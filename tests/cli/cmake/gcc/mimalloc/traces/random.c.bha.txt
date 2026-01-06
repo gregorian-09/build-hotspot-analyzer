@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/src/random.c
+# Command: /usr/bin/gcc -DMI_BUILD_RELEASE -DMI_CMAKE_BUILD_TYPE=release -DMI_MALLOC_OVERRIDE -DMI_STATIC_LIB -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/include -ftime-report -O3 -DNDEBUG -std=gnu11 -fPIC -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden -Wstrict-prototypes -ftls-model=initial-exec -fno-builtin-malloc -MD -MT CMakeFiles/mimalloc-static.dir/src/random.c.o -MF CMakeFiles/mimalloc-static.dir/src/random.c.o.d -o CMakeFiles/mimalloc-static.dir/src/random.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/src/random.c
+# Timestamp: 2026-01-05T17:45:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  1818k ( 17%)
+ phase parsing                      :   0.03 ( 33%)   0.05 ( 71%)   0.10 ( 48%)  4903k ( 46%)
+ phase opt and generate             :   0.06 ( 67%)   0.02 ( 29%)   0.09 ( 43%)  3914k ( 37%)
+ phase last asm                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   200  (  0%)
+ callgraph functions expansion      :   0.06 ( 67%)   0.02 ( 29%)   0.09 ( 43%)  3408k ( 32%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    27k (  0%)
+ preprocessing                      :   0.02 ( 22%)   0.00 (  0%)   0.03 ( 14%)   934k (  9%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 29%)   0.02 ( 10%)     0  (  0%)
+ parser (global)                    :   0.01 ( 11%)   0.01 ( 14%)   0.03 ( 14%)  2306k ( 22%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 29%)   0.02 ( 10%)  1505k ( 14%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   165k (  2%)
+ isolate eroneous paths             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)    48k (  0%)
+ complete unrolling                 :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    79k (  1%)
+ tree slp vectorization             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  1085k ( 10%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 ( 10%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   100k (  1%)
+ CSE 2                              :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ combiner                           :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   156k (  1%)
+ LRA create live ranges             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  4200  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    29k (  0%)
+ scheduling 2                       :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ TOTAL                              :   0.09          0.07          0.21           10M
+
+# Exit code: 0

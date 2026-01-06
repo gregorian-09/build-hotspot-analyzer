@@ -1,0 +1,1255 @@
+{
+  "targets": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/libdisplay-info.so.0.2.0": {
+      "destination": "{libdir_shared}/libdisplay-info.so.0.2.0",
+      "tag": "runtime",
+      "subproject": "display-info",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/display-info/di-edid-decode/di-edid-decode": {
+      "destination": "{bindir}/di-edid-decode",
+      "tag": "runtime",
+      "subproject": "display-info",
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/.."
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/edid-decode/edid-decode": {
+      "destination": "{bindir}/edid-decode",
+      "tag": "runtime",
+      "subproject": "edid-decode",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/linux-dmabuf-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/linux-dmabuf-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/presentation-time-enum.h": {
+      "destination": "{includedir}/wayland-protocols/presentation-time-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/tablet-v2-enum.h": {
+      "destination": "{includedir}/wayland-protocols/tablet-v2-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/viewporter-enum.h": {
+      "destination": "{includedir}/wayland-protocols/viewporter-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-shell-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-shell-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/alpha-modifier-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/alpha-modifier-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/color-management-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/color-management-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/color-representation-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/color-representation-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/commit-timing-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/commit-timing-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/content-type-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/content-type-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/cursor-shape-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/cursor-shape-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/drm-lease-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/drm-lease-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-background-effect-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-background-effect-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-data-control-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-data-control-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-foreign-toplevel-list-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-foreign-toplevel-list-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-idle-notify-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-idle-notify-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-image-capture-source-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-image-capture-source-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-image-copy-capture-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-image-copy-capture-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-session-lock-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-session-lock-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-transient-seat-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-transient-seat-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/ext-workspace-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/ext-workspace-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/fifo-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/fifo-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/fractional-scale-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/fractional-scale-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/linux-drm-syncobj-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/linux-drm-syncobj-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/pointer-warp-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/pointer-warp-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/security-context-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/security-context-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/single-pixel-buffer-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/single-pixel-buffer-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/tearing-control-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/tearing-control-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-activation-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-activation-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-dialog-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-dialog-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-system-bell-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-system-bell-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-toplevel-drag-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-toplevel-drag-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-toplevel-icon-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-toplevel-icon-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-toplevel-tag-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-toplevel-tag-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xwayland-shell-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xwayland-shell-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/fullscreen-shell-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/fullscreen-shell-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/idle-inhibit-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/idle-inhibit-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/input-method-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/input-method-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/input-timestamps-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/input-timestamps-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/keyboard-shortcuts-inhibit-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/keyboard-shortcuts-inhibit-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/linux-dmabuf-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/linux-dmabuf-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/linux-explicit-synchronization-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/linux-explicit-synchronization-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/pointer-constraints-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/pointer-constraints-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/pointer-gestures-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/pointer-gestures-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/primary-selection-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/primary-selection-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/relative-pointer-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/relative-pointer-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/tablet-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/tablet-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/tablet-unstable-v2-enum.h": {
+      "destination": "{includedir}/wayland-protocols/tablet-unstable-v2-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/text-input-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/text-input-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/text-input-unstable-v3-enum.h": {
+      "destination": "{includedir}/wayland-protocols/text-input-unstable-v3-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-decoration-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-decoration-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-foreign-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-foreign-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-foreign-unstable-v2-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-foreign-unstable-v2-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-output-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-output-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-shell-unstable-v5-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-shell-unstable-v5-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xdg-shell-unstable-v6-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xdg-shell-unstable-v6-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xwayland-keyboard-grab-unstable-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xwayland-keyboard-grab-unstable-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xx-input-method-v2-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xx-input-method-v2-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xx-session-management-v1-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xx-session-management-v1-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/include/wayland-protocols/xx-text-input-v3-enum.h": {
+      "destination": "{includedir}/wayland-protocols/xx-text-input-v3-enum.h",
+      "tag": "devel",
+      "subproject": "wayland-protocols",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/libweston/libweston-15.so.0.0.0": {
+      "destination": "{libdir_shared}/libweston-15.so.0.0.0",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/libweston/color-lcms/color-lcms.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/libweston-15/color-lcms.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/..",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/libweston/backend-drm/drm-backend.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/libweston-15/drm-backend.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/..",
+        "$ORIGIN/../../subprojects/display-info",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/libweston/backend-headless/headless-backend.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/libweston-15/headless-backend.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/..",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/aml/libaml.so.0.0.0": {
+      "destination": "{libdir_shared}/libaml.so.0.0.0",
+      "tag": "runtime",
+      "subproject": "aml",
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/neatvnc/libneatvnc.so.0.0.0": {
+      "destination": "{libdir_shared}/libneatvnc.so.0.0.0",
+      "tag": "runtime",
+      "subproject": "neatvnc",
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/../aml"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/libweston/backend-vnc/vnc-backend.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/libweston-15/vnc-backend.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/..",
+        "$ORIGIN/../../subprojects/aml",
+        "$ORIGIN/../../subprojects/neatvnc",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/frontend/libexec_weston.so.0.0.0": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/weston/libexec_weston.so.0.0.0",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/../libweston",
+        "$ORIGIN/../subprojects/display-info",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/frontend/weston": {
+      "destination": "{bindir}/weston",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": "/usr/local/lib/x86_64-linux-gnu/weston",
+      "build_rpaths": [
+        "$ORIGIN/",
+        "$ORIGIN/../libweston",
+        "$ORIGIN/../subprojects/display-info",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/frontend/systemd-notify.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/weston/systemd-notify.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/../libweston",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/kiosk-shell/kiosk-shell.so": {
+      "destination": "{prefix}/lib/x86_64-linux-gnu/weston/kiosk-shell.so",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": "$ORIGIN",
+      "build_rpaths": [
+        "$ORIGIN/../frontend",
+        "$ORIGIN/../libweston",
+        "$ORIGIN/../subprojects/display-info",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/clients/weston-calibrator": {
+      "destination": "{bindir}/weston-calibrator",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/clients/weston-debug": {
+      "destination": "{bindir}/weston-debug",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/clients/weston-terminal": {
+      "destination": "{bindir}/weston-terminal",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/clients/weston-touch-calibrator": {
+      "destination": "{bindir}/weston-touch-calibrator",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/clients/weston-screenshooter": {
+      "destination": "{bindir}/weston-screenshooter",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": [
+        "$ORIGIN/../libweston",
+        "/usr/local/lib/x86_64-linux-gnu"
+      ]
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/wcap/wcap-decode": {
+      "destination": "{bindir}/wcap-decode",
+      "tag": "runtime",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": []
+    }
+  },
+  "data": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/libdisplay-info.pc": {
+      "destination": "{libdir}/pkgconfig/libdisplay-info.pc",
+      "tag": "devel",
+      "subproject": "display-info"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/linux-dmabuf/linux-dmabuf-v1.xml": {
+      "destination": "share/wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/presentation-time/presentation-time.xml": {
+      "destination": "share/wayland-protocols/stable/presentation-time/presentation-time.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/tablet/tablet-v2.xml": {
+      "destination": "share/wayland-protocols/stable/tablet/tablet-v2.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/viewporter/viewporter.xml": {
+      "destination": "share/wayland-protocols/stable/viewporter/viewporter.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/stable/xdg-shell/xdg-shell.xml": {
+      "destination": "share/wayland-protocols/stable/xdg-shell/xdg-shell.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/alpha-modifier/alpha-modifier-v1.xml": {
+      "destination": "share/wayland-protocols/staging/alpha-modifier/alpha-modifier-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/color-management/color-management-v1.xml": {
+      "destination": "share/wayland-protocols/staging/color-management/color-management-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/color-representation/color-representation-v1.xml": {
+      "destination": "share/wayland-protocols/staging/color-representation/color-representation-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/commit-timing/commit-timing-v1.xml": {
+      "destination": "share/wayland-protocols/staging/commit-timing/commit-timing-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/content-type/content-type-v1.xml": {
+      "destination": "share/wayland-protocols/staging/content-type/content-type-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/cursor-shape/cursor-shape-v1.xml": {
+      "destination": "share/wayland-protocols/staging/cursor-shape/cursor-shape-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/drm-lease/drm-lease-v1.xml": {
+      "destination": "share/wayland-protocols/staging/drm-lease/drm-lease-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-background-effect/ext-background-effect-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-background-effect/ext-background-effect-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-data-control/ext-data-control-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-data-control/ext-data-control-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-idle-notify/ext-idle-notify-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-idle-notify/ext-idle-notify-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-image-capture-source/ext-image-capture-source-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-image-capture-source/ext-image-capture-source-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-session-lock/ext-session-lock-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-session-lock/ext-session-lock-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-transient-seat/ext-transient-seat-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-transient-seat/ext-transient-seat-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/ext-workspace/ext-workspace-v1.xml": {
+      "destination": "share/wayland-protocols/staging/ext-workspace/ext-workspace-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/fifo/fifo-v1.xml": {
+      "destination": "share/wayland-protocols/staging/fifo/fifo-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/fractional-scale/fractional-scale-v1.xml": {
+      "destination": "share/wayland-protocols/staging/fractional-scale/fractional-scale-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml": {
+      "destination": "share/wayland-protocols/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/pointer-warp/pointer-warp-v1.xml": {
+      "destination": "share/wayland-protocols/staging/pointer-warp/pointer-warp-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/security-context/security-context-v1.xml": {
+      "destination": "share/wayland-protocols/staging/security-context/security-context-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/single-pixel-buffer/single-pixel-buffer-v1.xml": {
+      "destination": "share/wayland-protocols/staging/single-pixel-buffer/single-pixel-buffer-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/tearing-control/tearing-control-v1.xml": {
+      "destination": "share/wayland-protocols/staging/tearing-control/tearing-control-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-activation/xdg-activation-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-dialog/xdg-dialog-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-dialog/xdg-dialog-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-system-bell/xdg-system-bell-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-system-bell/xdg-system-bell-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/staging/xwayland-shell/xwayland-shell-v1.xml": {
+      "destination": "share/wayland-protocols/staging/xwayland-shell/xwayland-shell-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/input-method/input-method-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/input-timestamps/input-timestamps-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/primary-selection/primary-selection-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/primary-selection/primary-selection-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/relative-pointer/relative-pointer-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/tablet/tablet-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/tablet/tablet-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/tablet/tablet-unstable-v2.xml": {
+      "destination": "share/wayland-protocols/unstable/tablet/tablet-unstable-v2.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/text-input/text-input-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/text-input/text-input-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/text-input/text-input-unstable-v3.xml": {
+      "destination": "share/wayland-protocols/unstable/text-input/text-input-unstable-v3.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-output/xdg-output-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-shell/xdg-shell-unstable-v5.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xdg-shell/xdg-shell-unstable-v6.xml": {
+      "destination": "share/wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/wayland-protocols-1.47/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml": {
+      "destination": "share/wayland-protocols/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/protocol/weston-content-protection.xml": {
+      "destination": "{prefix}/share/libweston-15/protocols/weston-content-protection.xml",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/protocol/weston-debug.xml": {
+      "destination": "{prefix}/share/libweston-15/protocols/weston-debug.xml",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/protocol/weston-direct-display.xml": {
+      "destination": "{prefix}/share/libweston-15/protocols/weston-direct-display.xml",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/protocol/weston-output-capture.xml": {
+      "destination": "{prefix}/share/libweston-15/protocols/weston-output-capture.xml",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/libweston-15.pc": {
+      "destination": "{libdir}/pkgconfig/libweston-15.pc",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/libweston-15-protocols.pc": {
+      "destination": "/usr/local/share/pkgconfig/libweston-15-protocols.pc",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/aml.pc": {
+      "destination": "{libdir}/pkgconfig/aml.pc",
+      "tag": "devel",
+      "subproject": "aml"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/neatvnc.pc": {
+      "destination": "{libdir}/pkgconfig/neatvnc.pc",
+      "tag": "devel",
+      "subproject": "neatvnc"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-private/weston.pc": {
+      "destination": "{libdir}/pkgconfig/weston.pc",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/frontend/weston.desktop": {
+      "destination": "{prefix}/share/wayland-sessions/weston.desktop",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/background.png": {
+      "destination": "{prefix}/share/weston/background.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/border.png": {
+      "destination": "{prefix}/share/weston/border.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/fullscreen.png": {
+      "destination": "{prefix}/share/weston/fullscreen.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/home.png": {
+      "destination": "{prefix}/share/weston/home.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_editor.png": {
+      "destination": "{prefix}/share/weston/icon_editor.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_flower.png": {
+      "destination": "{prefix}/share/weston/icon_flower.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_clickdot.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_clickdot.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_flower.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_flower.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_simple-egl.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_simple-egl.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_simple-egl-vertical.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_simple-egl-vertical.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_simple-shm.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_simple-shm.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_ivi_smoke.png": {
+      "destination": "{prefix}/share/weston/icon_ivi_smoke.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_terminal.png": {
+      "destination": "{prefix}/share/weston/icon_terminal.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/icon_window.png": {
+      "destination": "{prefix}/share/weston/icon_window.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/panel.png": {
+      "destination": "{prefix}/share/weston/panel.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/pattern.png": {
+      "destination": "{prefix}/share/weston/pattern.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/random.png": {
+      "destination": "{prefix}/share/weston/random.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/sidebyside.png": {
+      "destination": "{prefix}/share/weston/sidebyside.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/sign_close.png": {
+      "destination": "{prefix}/share/weston/sign_close.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/sign_maximize.png": {
+      "destination": "{prefix}/share/weston/sign_maximize.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/sign_minimize.png": {
+      "destination": "{prefix}/share/weston/sign_minimize.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/terminal.png": {
+      "destination": "{prefix}/share/weston/terminal.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/tiling.png": {
+      "destination": "{prefix}/share/weston/tiling.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/wayland.png": {
+      "destination": "{prefix}/share/weston/wayland.png",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/data/wayland.svg": {
+      "destination": "{prefix}/share/weston/wayland.svg",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/pam/weston-remote-access": {
+      "destination": "{prefix}/etc/pam.d/weston-remote-access",
+      "tag": null,
+      "subproject": null
+    }
+  },
+  "configure": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/subprojects/wayland-protocols-1.47/wayland-protocols.pc": {
+      "destination": "{datadir}/pkgconfig/wayland-protocols.pc",
+      "tag": null,
+      "subproject": "wayland-protocols"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston.1": {
+      "destination": "{prefix}/share/man/man1/weston.1",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston-bindings.7": {
+      "destination": "{prefix}/share/man/man7/weston-bindings.7",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston-debug.1": {
+      "destination": "{prefix}/share/man/man1/weston-debug.1",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston.ini.5": {
+      "destination": "{prefix}/share/man/man5/weston.ini.5",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston-drm.7": {
+      "destination": "{prefix}/share/man/man7/weston-drm.7",
+      "tag": null,
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/man/weston-vnc.7": {
+      "destination": "{prefix}/share/man/man7/weston-vnc.7",
+      "tag": null,
+      "subproject": null
+    }
+  },
+  "man": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/edid-decode/edid-decode.1": {
+      "destination": "{mandir}/man1/edid-decode.1",
+      "tag": "man",
+      "subproject": "edid-decode"
+    }
+  },
+  "headers": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/colorimetry.h": {
+      "destination": "{includedir}/libweston-15/libweston/colorimetry.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/config-parser.h": {
+      "destination": "{includedir}/libweston-15/libweston/config-parser.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/libweston.h": {
+      "destination": "{includedir}/libweston-15/libweston/libweston.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/linalg.h": {
+      "destination": "{includedir}/libweston-15/libweston/linalg.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/linalg-3.h": {
+      "destination": "{includedir}/libweston-15/libweston/linalg-3.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/linalg-4.h": {
+      "destination": "{includedir}/libweston-15/libweston/linalg-4.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/linalg-types.h": {
+      "destination": "{includedir}/libweston-15/libweston/linalg-types.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/desktop.h": {
+      "destination": "{includedir}/libweston-15/libweston/desktop.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/matrix.h": {
+      "destination": "{includedir}/libweston-15/libweston/matrix.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/plugin-registry.h": {
+      "destination": "{includedir}/libweston-15/libweston/plugin-registry.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/windowed-output-api.h": {
+      "destination": "{includedir}/libweston-15/libweston/windowed-output-api.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/weston-log.h": {
+      "destination": "{includedir}/libweston-15/libweston/weston-log.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/zalloc.h": {
+      "destination": "{includedir}/libweston-15/libweston/zalloc.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/remoting-plugin.h": {
+      "destination": "{includedir}/libweston-15/libweston/remoting-plugin.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/pipewire-plugin.h": {
+      "destination": "{includedir}/libweston-15/libweston/pipewire-plugin.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/shell-utils.h": {
+      "destination": "{includedir}/libweston-15/libweston/shell-utils.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/include/libweston/version.h": {
+      "destination": "{includedir}/libweston-15/libweston/version.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/backend-drm.h": {
+      "destination": "{includedir}/libweston-15/libweston/backend-drm.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/backend-headless.h": {
+      "destination": "{includedir}/libweston-15/libweston/backend-headless.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/aml/include/aml.h": {
+      "destination": "{includedir}/aml.h",
+      "tag": "devel",
+      "subproject": "aml"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/neatvnc/include/neatvnc.h": {
+      "destination": "{includedir}/neatvnc.h",
+      "tag": "devel",
+      "subproject": "neatvnc"
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/include/libweston/backend-vnc.h": {
+      "destination": "{includedir}/libweston-15/libweston/backend-vnc.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/frontend/weston.h": {
+      "destination": "{includedir}/weston/weston.h",
+      "tag": "devel",
+      "subproject": null
+    }
+  },
+  "install_subdirs": {
+    "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/repo/subprojects/display-info/include/libdisplay-info": {
+      "destination": "{includedir}/libdisplay-info",
+      "tag": "devel",
+      "subproject": "display-info",
+      "exclude_dirs": [],
+      "exclude_files": []
+    }
+  }
+}

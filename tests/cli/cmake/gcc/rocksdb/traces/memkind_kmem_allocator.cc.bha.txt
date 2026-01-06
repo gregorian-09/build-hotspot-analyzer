@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/memkind_kmem_allocator.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/memory/memkind_kmem_allocator.cc.o -MF CMakeFiles/rocksdb-shared.dir/memory/memkind_kmem_allocator.cc.o.d -o CMakeFiles/rocksdb-shared.dir/memory/memkind_kmem_allocator.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/memory/memkind_kmem_allocator.cc
+# Timestamp: 2026-01-05T19:36:50+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  1886k (  2%)
+ phase parsing                      :   0.52 ( 84%)   0.40 ( 93%)   2.04 ( 85%)    87M ( 87%)
+ phase lang. deferred               :   0.04 (  6%)   0.02 (  5%)   0.14 (  6%)  7319k (  7%)
+ phase opt and generate             :   0.06 ( 10%)   0.01 (  2%)   0.20 (  8%)  3640k (  4%)
+ |name lookup                       :   0.11 ( 18%)   0.07 ( 16%)   0.46 ( 19%)  3492k (  3%)
+ |overload resolution               :   0.07 ( 11%)   0.05 ( 12%)   0.20 (  8%)  7775k (  8%)
+ dump files                         :   0.02 (  3%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   384k (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.01 (  2%)   0.01 (  0%)  7536  (  0%)
+ callgraph functions expansion      :   0.04 (  6%)   0.00 (  0%)   0.11 (  5%)  1391k (  1%)
+ callgraph ipa passes               :   0.02 (  3%)   0.01 (  2%)   0.06 (  2%)  1380k (  1%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2808  (  0%)
+ preprocessing                      :   0.02 (  3%)   0.10 ( 23%)   0.31 ( 13%)  2551k (  2%)
+ parser (global)                    :   0.13 ( 21%)   0.10 ( 23%)   0.45 ( 19%)    27M ( 27%)
+ parser struct body                 :   0.11 ( 18%)   0.02 (  5%)   0.27 ( 11%)    16M ( 17%)
+ parser function body               :   0.02 (  3%)   0.01 (  2%)   0.07 (  3%)  1216k (  1%)
+ parser inl. func. body             :   0.04 (  6%)   0.03 (  7%)   0.15 (  6%)  7466k (  7%)
+ parser inl. meth. body             :   0.06 ( 10%)   0.08 ( 19%)   0.30 ( 12%)    11M ( 12%)
+ template instantiation             :   0.16 ( 26%)   0.08 ( 19%)   0.56 ( 23%)    26M ( 27%)
+ constant expression evaluation     :   0.01 (  2%)   0.00 (  0%)   0.04 (  2%)   294k (  0%)
+ constraint satisfaction            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   430k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   445k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    31k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   122k (  0%)
+ dominator optimization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ tree FRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    53k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   156k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    16k (  0%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1208  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    41k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    35k (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   0.62          0.43          2.41          100M
+
+# Exit code: 0

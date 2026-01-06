@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: kvstore.c
+# Output: kvstore.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o kvstore.o -c kvstore.c
+# Timestamp: 2026-01-05T20:43:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 21%)
+ phase parsing                      :   0.03 ( 43%)   0.04 ( 80%)   0.07 ( 54%)  4600k ( 52%)
+ phase opt and generate             :   0.04 ( 57%)   0.01 ( 20%)   0.06 ( 46%)  2421k ( 27%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   403k (  5%)
+ callgraph ipa passes               :   0.04 ( 57%)   0.01 ( 20%)   0.05 ( 38%)  1530k ( 17%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   105k (  1%)
+ ipa lto gimple out                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  8280  (  0%)
+ preprocessing                      :   0.01 ( 14%)   0.03 ( 60%)   0.03 ( 23%)   999k ( 11%)
+ lexical analysis                   :   0.01 ( 14%)   0.01 ( 20%)   0.03 ( 23%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  1969k ( 22%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   120k (  1%)
+ early inlining heuristics          :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ tree PTA                           :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    30k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   125k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    27k (  0%)
+ tree DSE                           :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)  3328  (  0%)
+ loop init                          :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    74k (  1%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    22k (  0%)
+ access analysis                    :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  1048  (  0%)
+ TOTAL                              :   0.07          0.05          0.13         8849k

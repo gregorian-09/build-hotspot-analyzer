@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: sort.c
+# Output: sort.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o sort.o -c sort.c
+# Timestamp: 2026-01-05T20:43:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1828k (  8%)
+ phase parsing                      :   0.09 ( 75%)   0.11 ( 92%)   0.20 ( 77%)    17M ( 84%)
+ phase opt and generate             :   0.03 ( 25%)   0.01 (  8%)   0.05 ( 19%)  1576k (  7%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   295k (  1%)
+ callgraph ipa passes               :   0.03 ( 25%)   0.01 (  8%)   0.04 ( 15%)   875k (  4%)
+ ipa free lang data                 :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)    89k (  0%)
+ ipa modref                         :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)  6744  (  0%)
+ preprocessing                      :   0.04 ( 33%)   0.07 ( 58%)   0.07 ( 27%)  6693k ( 31%)
+ lexical analysis                   :   0.03 ( 25%)   0.01 (  8%)   0.06 ( 23%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 17%)   0.07 ( 27%)  7178k ( 33%)
+ parser inl. func. body             :   0.02 ( 17%)   0.01 (  8%)   0.00 (  0%)   713k (  3%)
+ tree PTA                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  9792  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    53k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2647k ( 12%)
+ TOTAL                              :   0.12          0.12          0.26           21M

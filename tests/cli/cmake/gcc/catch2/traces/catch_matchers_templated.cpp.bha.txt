@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/matchers/catch_matchers_templated.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/matchers/catch_matchers_templated.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/matchers/catch_matchers_templated.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/matchers/catch_matchers_templated.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/matchers/catch_matchers_templated.cpp
+# Timestamp: 2026-01-05T18:11:52+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  3%)
+ phase parsing                      :   0.27 ( 90%)   0.26 ( 96%)   0.90 ( 94%)    51M ( 86%)
+ phase lang. deferred               :   0.01 (  3%)   0.01 (  4%)   0.02 (  2%)  3594k (  6%)
+ phase opt and generate             :   0.02 (  7%)   0.00 (  0%)   0.03 (  3%)  3300k (  5%)
+ |name lookup                       :   0.06 ( 20%)   0.03 ( 11%)   0.20 ( 21%)  2446k (  4%)
+ |overload resolution               :   0.00 (  0%)   0.00 (  0%)   0.06 (  6%)  3026k (  5%)
+ callgraph functions expansion      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   387k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   450k (  1%)
+ preprocessing                      :   0.02 (  7%)   0.09 ( 33%)   0.13 ( 14%)  2395k (  4%)
+ parser (global)                    :   0.11 ( 37%)   0.07 ( 26%)   0.36 ( 38%)    16M ( 28%)
+ parser struct body                 :   0.05 ( 17%)   0.02 (  7%)   0.04 (  4%)    12M ( 20%)
+ parser function body               :   0.01 (  3%)   0.02 (  7%)   0.02 (  2%)  1821k (  3%)
+ parser inl. func. body             :   0.03 ( 10%)   0.04 ( 15%)   0.08 (  8%)  3728k (  6%)
+ parser inl. meth. body             :   0.03 ( 10%)   0.00 (  0%)   0.12 ( 13%)  5249k (  9%)
+ template instantiation             :   0.03 ( 10%)   0.03 ( 11%)   0.17 ( 18%)    12M ( 21%)
+ integration                        :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    87k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2099k (  3%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  8096  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%) 10192  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.30          0.27          0.96           60M
+
+# Exit code: 0

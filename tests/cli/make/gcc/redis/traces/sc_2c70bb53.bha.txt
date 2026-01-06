@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: src/sc.c
+# Output: src/sc.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/sc.o src/sc.c
+# Timestamp: 2026-01-05T20:43:14+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1819k ( 14%)
+ phase parsing                      :   0.04 (100%)   0.06 ( 86%)   0.10 ( 77%)    10M ( 78%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 14%)   0.02 ( 15%)  1079k (  8%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    33k (  0%)
+ preprocessing                      :   0.02 ( 50%)   0.00 (  0%)   0.05 ( 38%)  6043k ( 46%)
+ lexical analysis                   :   0.00 (  0%)   0.03 ( 43%)   0.04 ( 31%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.03 ( 43%)   0.01 (  8%)  3815k ( 29%)
+ parser function body               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    92k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   377k (  3%)
+ reload                             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   288  (  0%)
+ TOTAL                              :   0.04          0.07          0.13           12M

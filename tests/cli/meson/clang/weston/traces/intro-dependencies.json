@@ -1,0 +1,517 @@
+[
+  {
+    "name": "wayland-server",
+    "type": "pkgconfig",
+    "version": "1.23.0",
+    "compile_args": [
+      "-I/usr/local/include"
+    ],
+    "link_args": [
+      "/usr/local/lib/x86_64-linux-gnu/libwayland-server.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_wayland_server"
+    ]
+  },
+  {
+    "name": "wayland-client",
+    "type": "pkgconfig",
+    "version": "1.23.0",
+    "compile_args": [
+      "-I/usr/local/include"
+    ],
+    "link_args": [
+      "/usr/local/lib/x86_64-linux-gnu/libwayland-client.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_wayland_client"
+    ]
+  },
+  {
+    "name": "pixman-1",
+    "type": "pkgconfig",
+    "version": "0.42.2",
+    "compile_args": [
+      "-I/usr/include/pixman-1"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libpixman-1.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_pixman"
+    ]
+  },
+  {
+    "name": "xkbcommon",
+    "type": "pkgconfig",
+    "version": "1.6.0",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libxkbcommon.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_xkbcommon",
+      "d"
+    ]
+  },
+  {
+    "name": "libinput",
+    "type": "pkgconfig",
+    "version": "1.25.0",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libinput.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libinput"
+    ]
+  },
+  {
+    "name": "libevdev",
+    "type": "pkgconfig",
+    "version": "1.13.1",
+    "compile_args": [
+      "-I/usr/include/libevdev-1.0/"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libevdev.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libevdev"
+    ]
+  },
+  {
+    "name": "libdrm",
+    "type": "pkgconfig",
+    "version": "2.4.122",
+    "compile_args": [
+      "-I/usr/include/libdrm"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libdrm.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libdrm",
+      "dep_libdrm_headers"
+    ]
+  },
+  {
+    "name": "threads",
+    "type": "system",
+    "version": "unknown",
+    "compile_args": [
+      "-pthread"
+    ],
+    "link_args": [
+      "-pthread"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_threads"
+    ]
+  },
+  {
+    "name": "lcms2",
+    "type": "pkgconfig",
+    "version": "2.14",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/liblcms2.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_lcms2"
+    ]
+  },
+  {
+    "name": "hwdata",
+    "type": "pkgconfig",
+    "version": "0.379",
+    "compile_args": [],
+    "link_args": [],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  },
+  {
+    "name": "wayland-scanner",
+    "type": "pkgconfig",
+    "version": "1.23.0",
+    "compile_args": [
+      "-I/usr/local/include"
+    ],
+    "link_args": [],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_scanner"
+    ]
+  },
+  {
+    "name": "xcb",
+    "type": "pkgconfig",
+    "version": "1.15",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libxcb.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "xcb_dep"
+    ]
+  },
+  {
+    "name": "cairo",
+    "type": "pkgconfig",
+    "version": "1.18.0",
+    "compile_args": [
+      "-I/usr/include/cairo",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/pixman-1"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libcairo.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "wcap_dep_cairo"
+    ]
+  },
+  {
+    "name": "libpng",
+    "type": "pkgconfig",
+    "version": "1.6.43",
+    "compile_args": [
+      "-I/usr/include/libpng16"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libpng16.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  },
+  {
+    "name": "pango",
+    "type": "pkgconfig",
+    "version": "1.52.1",
+    "compile_args": [
+      "-I/usr/include/pango-1.0",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I/usr/include/harfbuzz",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-pthread",
+      "-I/usr/include/libmount",
+      "-I/usr/include/blkid",
+      "-I/usr/include/fribidi",
+      "-I/usr/include/cairo",
+      "-I/usr/include/pixman-1"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libpango-1.0.so",
+      "/usr/lib/x86_64-linux-gnu/libgobject-2.0.so",
+      "/usr/lib/x86_64-linux-gnu/libglib-2.0.so",
+      "/usr/lib/x86_64-linux-gnu/libharfbuzz.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_pango"
+    ]
+  },
+  {
+    "name": "pangocairo",
+    "type": "pkgconfig",
+    "version": "1.52.1",
+    "compile_args": [
+      "-I/usr/include/pango-1.0",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+      "-I/usr/include/harfbuzz",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/libmount",
+      "-I/usr/include/blkid",
+      "-I/usr/include/fribidi",
+      "-I/usr/include/cairo",
+      "-I/usr/include/pixman-1",
+      "-pthread"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so",
+      "/usr/lib/x86_64-linux-gnu/libpango-1.0.so",
+      "/usr/lib/x86_64-linux-gnu/libgobject-2.0.so",
+      "/usr/lib/x86_64-linux-gnu/libglib-2.0.so",
+      "/usr/lib/x86_64-linux-gnu/libharfbuzz.so",
+      "/usr/lib/x86_64-linux-gnu/libcairo.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_pangocairo"
+    ]
+  },
+  {
+    "name": "fontconfig",
+    "type": "pkgconfig",
+    "version": "2.15.0",
+    "compile_args": [
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libfontconfig.so",
+      "/usr/lib/x86_64-linux-gnu/libfreetype.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_fontconfig"
+    ]
+  },
+  {
+    "name": "glib-2.0",
+    "type": "pkgconfig",
+    "version": "2.80.0",
+    "compile_args": [
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libglib-2.0.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_glib"
+    ]
+  },
+  {
+    "name": "libjpeg",
+    "type": "pkgconfig",
+    "version": "2.1.5",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libjpeg.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libjpeg"
+    ]
+  },
+  {
+    "name": "libwebp",
+    "type": "pkgconfig",
+    "version": "1.3.2",
+    "compile_args": [
+      "-I/usr/include/webp"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libwebp.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_webp"
+    ]
+  },
+  {
+    "name": "gbm",
+    "type": "pkgconfig",
+    "version": "25.0.7-0ubuntu0.24.04.2",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libgbm.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_gbm"
+    ]
+  },
+  {
+    "name": "pam",
+    "type": "pkgconfig",
+    "version": "1.5.3",
+    "compile_args": [
+      "-I/usr/include/security"
+    ],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libpam.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_pam"
+    ]
+  },
+  {
+    "name": "libseat",
+    "type": "pkgconfig",
+    "version": "0.8.0",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libseat.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libseat"
+    ]
+  },
+  {
+    "name": "libudev",
+    "type": "pkgconfig",
+    "version": "255",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libudev.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  },
+  {
+    "name": "zlib",
+    "type": "pkgconfig",
+    "version": "1.3",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libz.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  },
+  {
+    "name": "libsystemd",
+    "type": "pkgconfig",
+    "version": "255",
+    "compile_args": [],
+    "link_args": [
+      "/usr/lib/x86_64-linux-gnu/libsystemd.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": [
+      "dep_libsystemd"
+    ]
+  },
+  {
+    "name": "wayland-cursor",
+    "type": "pkgconfig",
+    "version": "1.23.0",
+    "compile_args": [
+      "-I/usr/local/include"
+    ],
+    "link_args": [
+      "/usr/local/lib/x86_64-linux-gnu/libwayland-cursor.so"
+    ],
+    "include_directories": [],
+    "sources": [],
+    "extra_files": [],
+    "dependencies": [],
+    "depends": [],
+    "meson_variables": []
+  }
+]

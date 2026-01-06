@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: loslib.c
+# Output: loslib.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o loslib.o loslib.c
+# Timestamp: 2026-01-05T20:42:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 36%)
+ phase parsing                      :   0.02 ( 67%)   0.03 ( 75%)   0.12 ( 80%)  3071k ( 61%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 25%)   0.02 ( 13%)   146k (  3%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   104  (  0%)
+ callgraph functions expansion      :   0.01 ( 33%)   0.01 ( 25%)   0.01 (  7%)   117k (  2%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    20k (  0%)
+ register information               :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.02 ( 50%)   0.03 ( 20%)   899k ( 18%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 25%)   0.05 ( 33%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1596k ( 32%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    46k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    66k (  1%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  2144  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  5152  (  0%)
+ TOTAL                              :   0.03          0.04          0.15         5038k

@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/pthread_waiter.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/internal/pthread_waiter.cc.o -MF absl/synchronization/CMakeFiles/synchronization.dir/internal/pthread_waiter.cc.o.d -o absl/synchronization/CMakeFiles/synchronization.dir/internal/pthread_waiter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/pthread_waiter.cc
+# Timestamp: 2026-01-05T17:54:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1882k (  2%)
+ phase parsing                      :   0.42 ( 81%)   0.32 ( 89%)   1.43 ( 83%)    73M ( 86%)
+ phase lang. deferred               :   0.05 ( 10%)   0.02 (  6%)   0.14 (  8%)  9208k ( 10%)
+ phase opt and generate             :   0.05 ( 10%)   0.02 (  6%)   0.14 (  8%)  1294k (  1%)
+ |name lookup                       :   0.08 ( 15%)   0.03 (  8%)   0.35 ( 20%)  2716k (  3%)
+ |overload resolution               :   0.03 (  6%)   0.02 (  6%)   0.12 (  7%)  5825k (  7%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   760  (  0%)
+ callgraph functions expansion      :   0.04 (  8%)   0.01 (  3%)   0.12 (  7%)   740k (  1%)
+ callgraph ipa passes               :   0.01 (  2%)   0.01 (  3%)   0.02 (  1%)   169k (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    14k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   208  (  0%)
+ preprocessing                      :   0.09 ( 17%)   0.11 ( 31%)   0.21 ( 12%)  6391k (  7%)
+ parser (global)                    :   0.10 ( 19%)   0.05 ( 14%)   0.55 ( 32%)    30M ( 36%)
+ parser struct body                 :   0.02 (  4%)   0.02 (  6%)   0.09 (  5%)    10M ( 12%)
+ parser function body               :   0.05 ( 10%)   0.04 ( 11%)   0.09 (  5%)  2884k (  3%)
+ parser inl. func. body             :   0.04 (  8%)   0.06 ( 17%)   0.14 (  8%)  7155k (  8%)
+ parser inl. meth. body             :   0.06 ( 12%)   0.01 (  3%)   0.13 (  8%)  4753k (  5%)
+ template instantiation             :   0.08 ( 15%)   0.05 ( 14%)   0.32 ( 18%)    20M ( 23%)
+ constant expression evaluation     :   0.02 (  4%)   0.00 (  0%)   0.04 (  2%)   439k (  1%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    19k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8216  (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   656  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   688  (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   384  (  0%)
+ CSE                                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2792  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   256  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   182k (  0%)
+ reorder blocks                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  6160  (  0%)
+ final                              :   0.01 (  2%)   0.01 (  3%)   0.04 (  2%)    34k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    27k (  0%)
+ TOTAL                              :   0.52          0.36          1.73           85M
+
+# Exit code: 0

@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/dictBuilder/fastcover.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/dictBuilder/fastcover.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/dictBuilder/fastcover.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/dictBuilder/fastcover.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/dictBuilder/fastcover.c
+# Timestamp: 2026-01-05T17:52:21+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1819k ( 12%)
+ phase parsing                      :   0.05 ( 24%)   0.08 ( 67%)   0.29 ( 41%)  7717k ( 53%)
+ phase opt and generate             :   0.16 ( 76%)   0.04 ( 33%)   0.39 ( 56%)  5142k ( 35%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   109k (  1%)
+ callgraph functions expansion      :   0.14 ( 67%)   0.03 ( 25%)   0.34 ( 49%)  3833k ( 26%)
+ callgraph ipa passes               :   0.01 (  5%)   0.01 (  8%)   0.04 (  6%)   924k (  6%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df reaching defs                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    70k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   192k (  1%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    19k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.03 ( 14%)   0.01 (  8%)   0.11 ( 16%)  1799k ( 12%)
+ lexical analysis                   :   0.00 (  0%)   0.04 ( 33%)   0.11 ( 16%)     0  (  0%)
+ parser (global)                    :   0.01 (  5%)   0.02 ( 17%)   0.05 (  7%)  3348k ( 23%)
+ parser inl. func. body             :   0.01 (  5%)   0.01 (  8%)   0.02 (  3%)  1648k ( 11%)
+ integration                        :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   249k (  2%)
+ tree CFG construction              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    90k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3784  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    75k (  1%)
+ tree SSA incremental               :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    51k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.05 (  7%)   221k (  2%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  8%)   0.01 (  1%)    93k (  1%)
+ backwards jump threading           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ tree CCP                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    62k (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    44k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    59k (  0%)
+ tree loop invariant motion         :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)  1704  (  0%)
+ complete unrolling                 :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    57k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  2184  (  0%)
+ CSE                                :   0.01 (  5%)   0.00 (  0%)   0.02 (  3%)  6680  (  0%)
+ dead code elimination              :   0.01 (  5%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    64k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    21k (  0%)
+ combiner                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   122k (  1%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.04 (  6%)   463k (  3%)
+ LRA create live ranges             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    74k (  1%)
+ scheduling 2                       :   0.02 ( 10%)   0.01 (  8%)   0.01 (  1%)    37k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   312  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   912  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.04 (  6%)    29k (  0%)
+ TOTAL                              :   0.21          0.12          0.70           14M
+
+# Exit code: 0

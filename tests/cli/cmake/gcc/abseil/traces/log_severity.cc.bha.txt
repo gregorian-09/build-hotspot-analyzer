@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/log_severity.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/log_severity.dir/log_severity.cc.o -MF absl/base/CMakeFiles/log_severity.dir/log_severity.cc.o.d -o absl/base/CMakeFiles/log_severity.dir/log_severity.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/log_severity.cc
+# Timestamp: 2026-01-05T17:53:57+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  4%)
+ phase parsing                      :   0.23 ( 85%)   0.18 ( 95%)   0.75 ( 86%)    39M ( 87%)
+ phase lang. deferred               :   0.03 ( 11%)   0.00 (  0%)   0.07 (  8%)  3270k (  7%)
+ phase opt and generate             :   0.01 (  4%)   0.01 (  5%)   0.04 (  5%)   696k (  2%)
+ |name lookup                       :   0.06 ( 22%)   0.03 ( 16%)   0.22 ( 25%)  1728k (  4%)
+ |overload resolution               :   0.05 ( 19%)   0.00 (  0%)   0.10 ( 11%)  2621k (  6%)
+ callgraph functions expansion      :   0.01 (  4%)   0.01 (  5%)   0.04 (  5%)   336k (  1%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)  4464  (  0%)
+ preprocessing                      :   0.03 ( 11%)   0.07 ( 37%)   0.15 ( 17%)  1968k (  4%)
+ parser (global)                    :   0.04 ( 15%)   0.05 ( 26%)   0.20 ( 23%)    15M ( 34%)
+ parser struct body                 :   0.03 ( 11%)   0.02 ( 11%)   0.12 ( 14%)  8518k ( 18%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   110k (  0%)
+ parser function body               :   0.01 (  4%)   0.01 (  5%)   0.04 (  5%)  1025k (  2%)
+ parser inl. func. body             :   0.07 ( 26%)   0.00 (  0%)   0.06 (  7%)  2967k (  6%)
+ parser inl. meth. body             :   0.00 (  0%)   0.00 (  0%)   0.07 (  8%)  3294k (  7%)
+ template instantiation             :   0.07 ( 26%)   0.03 ( 16%)   0.16 ( 18%)  9857k ( 21%)
+ constant expression evaluation     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   173k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4504  (  0%)
+ CSE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    72  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)  8280  (  0%)
+ TOTAL                              :   0.27          0.19          0.87           45M
+
+# Exit code: 0

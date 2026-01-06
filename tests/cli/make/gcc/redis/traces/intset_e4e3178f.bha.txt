@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: intset.c
+# Output: intset.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o intset.o -c intset.c
+# Timestamp: 2026-01-05T20:43:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 31%)
+ phase parsing                      :   0.02 ( 50%)   0.03 ( 75%)   0.07 ( 78%)  3091k ( 52%)
+ phase opt and generate             :   0.02 ( 50%)   0.01 ( 25%)   0.02 ( 22%)  1070k ( 18%)
+ callgraph optimization             :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  1112  (  0%)
+ callgraph ipa passes               :   0.02 ( 50%)   0.01 ( 25%)   0.02 ( 22%)   778k ( 13%)
+ ipa lto gimple out                 :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2040  (  0%)
+ ipa free lang data                 :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ preprocessing                      :   0.01 ( 25%)   0.02 ( 50%)   0.04 ( 44%)   778k ( 13%)
+ lexical analysis                   :   0.01 ( 25%)   0.00 (  0%)   0.02 ( 22%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.01 ( 11%)  1233k ( 21%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)   226k (  4%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 ( 11%)    25k (  0%)
+ TOTAL                              :   0.04          0.04          0.09         5991k

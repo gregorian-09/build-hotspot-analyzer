@@ -1,0 +1,17 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen_round_keys.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o -MF absl/random/CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o.d -o absl/random/CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen_round_keys.cc
+# Timestamp: 2026-01-05T17:54:17+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 ( 40%)  1882k ( 56%)
+ phase parsing                      :   0.01 (100%)   0.00 (  0%)   0.03 ( 60%)  1454k ( 44%)
+ |name lookup                       :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   136k (  4%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 20%)   253k (  8%)
+ parser (global)                    :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)  1073k ( 32%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 40%)  4904  (  0%)
+ TOTAL                              :   0.01          0.00          0.05         3342k
+
+# Exit code: 0

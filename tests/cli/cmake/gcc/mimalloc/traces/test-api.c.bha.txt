@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/test/test-api.c
+# Command: /usr/bin/gcc -DMI_BUILD_RELEASE -DMI_CMAKE_BUILD_TYPE=release -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/include -ftime-report -O3 -DNDEBUG -std=gnu11 -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden -Wstrict-prototypes -ftls-model=initial-exec -fno-builtin-malloc -MD -MT CMakeFiles/mimalloc-test-api.dir/test/test-api.c.o -MF CMakeFiles/mimalloc-test-api.dir/test/test-api.c.o.d -o CMakeFiles/mimalloc-test-api.dir/test/test-api.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/mimalloc/repo/test/test-api.c
+# Timestamp: 2026-01-05T17:45:45+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1818k ( 17%)
+ phase parsing                      :   0.04 ( 33%)   0.04 ( 57%)   0.20 ( 56%)  4880k ( 44%)
+ phase opt and generate             :   0.08 ( 67%)   0.03 ( 43%)   0.15 ( 42%)  4315k ( 39%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   776  (  0%)
+ callgraph functions expansion      :   0.07 ( 58%)   0.02 ( 29%)   0.12 ( 33%)  3093k ( 28%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 14%)   0.03 (  8%)   838k (  8%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.02 ( 17%)   0.00 (  0%)   0.02 (  6%)  9208  (  0%)
+ preprocessing                      :   0.01 (  8%)   0.02 ( 29%)   0.05 ( 14%)   952k (  9%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 14%)   0.09 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 (  8%)   0.00 (  0%)   0.05 ( 14%)  2294k ( 21%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    88k (  1%)
+ parser inl. func. body             :   0.02 ( 17%)   0.01 ( 14%)   0.00 (  0%)   977k (  9%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   496k (  5%)
+ tree CFG construction              :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    78k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  5656  (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   119k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)    69k (  1%)
+ tree CCP                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 ( 14%)   0.01 (  3%)    79k (  1%)
+ dead store elim1                   :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)  8856  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)     0  (  0%)
+ LRA non-specific                   :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%) 10192  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   240  (  0%)
+ scheduling 2                       :   0.01 (  8%)   0.00 (  0%)   0.02 (  6%)    57k (  1%)
+ rest of compilation                :   0.01 (  8%)   0.00 (  0%)   0.02 (  6%)    31k (  0%)
+ TOTAL                              :   0.12          0.07          0.36           10M
+
+# Exit code: 0

@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: syncio.c
+# Output: syncio.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o syncio.o -c syncio.c
+# Timestamp: 2026-01-05T20:43:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1828k ( 13%)
+ phase parsing                      :   0.07 ( 88%)   0.08 (100%)   0.16 ( 89%)    11M ( 85%)
+ phase opt and generate             :   0.01 ( 12%)   0.00 (  0%)   0.01 (  6%)   373k (  3%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.00 (  0%)   0.01 (  6%)   200k (  1%)
+ ipa lto gimple out                 :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)   424  (  0%)
+ preprocessing                      :   0.02 ( 25%)   0.03 ( 38%)   0.03 ( 17%)  2816k ( 19%)
+ lexical analysis                   :   0.03 ( 38%)   0.03 ( 38%)   0.07 ( 39%)     0  (  0%)
+ parser (global)                    :   0.02 ( 25%)   0.01 ( 12%)   0.05 ( 28%)  5451k ( 38%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 12%)   0.01 (  6%)   525k (  4%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  9824  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2567k ( 18%)
+ TOTAL                              :   0.08          0.08          0.18           14M

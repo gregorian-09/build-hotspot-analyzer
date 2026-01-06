@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: curlinfo.c
+# Output: curlinfo.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -D_GNU_SOURCE -ftime-report -c -o curlinfo.o curlinfo.c
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1819k ( 20%)
+ phase parsing                      :   0.03 (100%)   0.04 (100%)   0.09 ( 69%)  5340k ( 59%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.03 ( 23%)  1948k ( 21%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    15k (  0%)
+ preprocessing                      :   0.02 ( 67%)   0.00 (  0%)   0.04 ( 31%)  2200k ( 24%)
+ lexical analysis                   :   0.01 ( 33%)   0.02 ( 50%)   0.03 ( 23%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 15%)  2565k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   165k (  2%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1275k ( 14%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ TOTAL                              :   0.03          0.04          0.13         9108k

@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: crc16.c
+# Output: crc16.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o crc16.o -c crc16.c
+# Timestamp: 2026-01-05T20:43:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 13%)
+ phase parsing                      :   0.05 (100%)   0.07 (100%)   0.14 (100%)    11M ( 86%)
+ preprocessing                      :   0.01 ( 20%)   0.02 ( 29%)   0.04 ( 29%)  2822k ( 20%)
+ lexical analysis                   :   0.02 ( 40%)   0.04 ( 57%)   0.03 ( 21%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 14%)   0.06 ( 43%)  5477k ( 39%)
+ parser struct body                 :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   525k (  4%)
+ parser inl. func. body             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   702k (  5%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  2567k ( 18%)
+ TOTAL                              :   0.05          0.07          0.14           13M

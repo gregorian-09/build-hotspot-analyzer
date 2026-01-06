@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jidctred-8.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-8.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-8.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-8.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jidctred-8.c
+# Timestamp: 2026-01-05T18:14:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 29%)
+ phase parsing                      :   0.02 ( 33%)   0.02 (100%)   0.10 ( 56%)  2699k ( 43%)
+ phase opt and generate             :   0.04 ( 67%)   0.00 (  0%)   0.08 ( 44%)  1712k ( 27%)
+ callgraph functions expansion      :   0.04 ( 67%)   0.00 (  0%)   0.08 ( 44%)  1402k ( 23%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    18k (  0%)
+ preprocessing                      :   0.01 ( 17%)   0.01 ( 50%)   0.03 ( 17%)   789k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.06 ( 33%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1342k ( 22%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   231k (  4%)
+ parser function body               :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    53k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)   245k (  4%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)  6424  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    18k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    16k (  0%)
+ tree DSE                           :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   776  (  0%)
+ combiner                           :   0.01 ( 17%)   0.00 (  0%)   0.01 (  6%)   281k (  5%)
+ integrated RA                      :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   237k (  4%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1968  (  0%)
+ initialize rtl                     :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    11k (  0%)
+ TOTAL                              :   0.06          0.02          0.18         6231k
+
+# Exit code: 0

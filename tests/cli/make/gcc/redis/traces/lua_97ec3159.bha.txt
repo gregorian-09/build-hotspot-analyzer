@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: lua.c
+# Output: lua.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o lua.o lua.c
+# Timestamp: 2026-01-05T20:42:50+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 25%)
+ phase parsing                      :   0.01 ( 10%)   0.03 ( 75%)   0.10 ( 29%)  2542k ( 35%)
+ phase opt and generate             :   0.09 ( 90%)   0.01 ( 25%)   0.23 ( 68%)  2847k ( 39%)
+ callgraph functions expansion      :   0.07 ( 70%)   0.01 ( 25%)   0.19 ( 56%)  2048k ( 28%)
+ callgraph ipa passes               :   0.01 ( 10%)   0.00 (  0%)   0.03 (  9%)   509k (  7%)
+ ipa cp                             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ df live&initialized regs           :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df use-def / def-use chains        :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    39k (  1%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1288  (  0%)
+ preprocessing                      :   0.01 ( 10%)   0.01 ( 25%)   0.03 (  9%)   785k ( 11%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.04 ( 12%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)  1234k ( 17%)
+ parser function body               :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   249k (  3%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   174k (  2%)
+ tree gimplify                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   159k (  2%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    71k (  1%)
+ dominator optimization             :   0.02 ( 20%)   0.00 (  0%)   0.01 (  3%)    51k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)    10k (  0%)
+ tree strlen optimization           :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    11k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   229k (  3%)
+ forward prop                       :   0.01 ( 10%)   0.00 (  0%)   0.01 (  3%)  1200  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    18k (  0%)
+ CPROP                              :   0.01 ( 10%)   0.00 (  0%)   0.02 (  6%)    56k (  1%)
+ CSE 2                              :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  2808  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   316k (  4%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1680  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.06 ( 18%)    30k (  0%)
+ rebuild frequencies                :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ TOTAL                              :   0.10          0.04          0.34         7209k

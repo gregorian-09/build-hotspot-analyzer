@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: vauth/ntlm_sspi.c
+# Output: vauth/libcurl_la-ntlm_sspi.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c vauth/ntlm_sspi.c -fPIC -DPIC -o vauth/libcurl_la-ntlm_sspi.o
+# Timestamp: 2026-01-05T20:44:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.03 ( 75%)   0.10 ( 77%)  4555k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 25%)   0.03 ( 23%)  1887k ( 23%)
+ dump files                         :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 23%)  1985k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 50%)   0.02 ( 15%)     0  (  0%)
+ parser (global)                    :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 23%)  2106k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.01 ( 25%)   0.01 (  8%)   268k (  3%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    15k (  0%)
+ integrated RA                      :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   121k (  1%)
+ TOTAL                              :   0.03          0.04          0.13         8262k

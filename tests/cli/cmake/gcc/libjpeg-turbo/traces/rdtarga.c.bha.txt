@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/rdtarga.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -DBMP_SUPPORTED -DGIF_SUPPORTED -DPPM_SUPPORTED -DTARGA_SUPPORTED -MD -MT sharedlib/CMakeFiles/cjpeg.dir/__/src/rdtarga.c.o -MF sharedlib/CMakeFiles/cjpeg.dir/__/src/rdtarga.c.o.d -o sharedlib/CMakeFiles/cjpeg.dir/__/src/rdtarga.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/rdtarga.c
+# Timestamp: 2026-01-05T18:14:54+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 26%)
+ phase parsing                      :   0.01 ( 12%)   0.01 ( 33%)   0.04 ( 33%)  2539k ( 36%)
+ phase opt and generate             :   0.07 ( 88%)   0.02 ( 67%)   0.08 ( 67%)  2640k ( 38%)
+ callgraph functions expansion      :   0.06 ( 75%)   0.01 ( 33%)   0.07 ( 58%)  2014k ( 29%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.01 ( 33%)   0.01 (  8%)   422k (  6%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   736k ( 11%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1142k ( 16%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   227k (  3%)
+ parser inl. func. body             :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)   245k (  4%)
+ tree PTA                           :   0.00 (  0%)   0.01 ( 33%)   0.01 (  8%)    25k (  0%)
+ tree operand scan                  :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)   137k (  2%)
+ tree PRE                           :   0.01 ( 13%)   0.00 (  0%)   0.01 (  8%)    75k (  1%)
+ tree strlen optimization           :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   184k (  3%)
+ combiner                           :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    62k (  1%)
+ LRA hard reg assignment            :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.01 ( 13%)   0.00 (  0%)   0.03 ( 25%)    53k (  1%)
+ initialize rtl                     :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 ( 12%)   0.00 (  0%)   0.01 (  8%)    38k (  1%)
+ TOTAL                              :   0.08          0.03          0.12         6999k
+
+# Exit code: 0

@@ -1,0 +1,57 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdmerge-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdmerge-12.c
+# Timestamp: 2026-01-05T18:14:52+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.02 (  7%)   0.03 ( 38%)   0.09 ( 16%)  3434k ( 14%)
+ phase opt and generate             :   0.27 ( 93%)   0.05 ( 62%)   0.46 ( 84%)    19M ( 79%)
+ callgraph functions expansion      :   0.21 ( 72%)   0.02 ( 25%)   0.33 ( 60%)    13M ( 56%)
+ callgraph ipa passes               :   0.06 ( 21%)   0.02 ( 25%)   0.13 ( 24%)  3835k ( 15%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    60k (  0%)
+ trivially dead code                :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   480  (  0%)
+ df live regs                       :   0.02 (  7%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias analysis                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   539k (  2%)
+ alias stmt walking                 :   0.01 (  3%)   0.00 (  0%)   0.04 (  7%)    33k (  0%)
+ register scan                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1984  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 12%)   0.04 (  7%)   833k (  3%)
+ lexical analysis                   :   0.02 (  7%)   0.01 ( 12%)   0.01 (  2%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1356k (  5%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 12%)   0.03 (  5%)   663k (  3%)
+ integration                        :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1208k (  5%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)  1187k (  5%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  4%)   515k (  2%)
+ tree Early VRP                     :   0.01 (  3%)   0.02 ( 25%)   0.05 (  9%)   523k (  2%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  4%)   177k (  1%)
+ tree operand scan                  :   0.02 (  7%)   0.00 (  0%)   0.01 (  2%)   882k (  4%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.02 (  4%)   560k (  2%)
+ tree CCP                           :   0.02 (  7%)   0.00 (  0%)   0.02 (  4%)   273k (  1%)
+ tree FRE                           :   0.01 (  3%)   0.00 (  0%)   0.03 (  5%)   170k (  1%)
+ tree forward propagate             :   0.01 (  3%)   0.01 ( 13%)   0.00 (  0%)    84k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ tree vectorization                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1322k (  5%)
+ tree slp vectorization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  4217k ( 17%)
+ tree loop distribution             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    81k (  0%)
+ CSE                                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  7912  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   233k (  1%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   128k (  1%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  1427k (  6%)
+ integrated RA                      :   0.02 (  7%)   0.00 (  0%)   0.03 (  5%)  1193k (  5%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    70k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   189k (  1%)
+ load CSE after reload              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2288  (  0%)
+ scheduling 2                       :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)    47k (  0%)
+ reorder blocks                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)    64k (  0%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    18k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 12%)   0.01 (  2%)   114k (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    48  (  0%)
+ TOTAL                              :   0.29          0.08          0.55           24M
+
+# Exit code: 0

@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: cf-https-connect.c
+# Output: libcurlu_la-cf-https-connect.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c cf-https-connect.c -fPIC -DPIC -o libcurlu_la-cf-https-connect.o
+# Timestamp: 2026-01-05T20:44:32+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 14%)
+ phase parsing                      :   0.03 ( 60%)   0.07 ( 88%)   0.22 ( 79%)  6704k ( 52%)
+ phase opt and generate             :   0.02 ( 40%)   0.01 ( 12%)   0.04 ( 14%)  4483k ( 34%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ trivially dead code                :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.02 ( 40%)   0.02 ( 25%)   0.07 ( 25%)  2412k ( 19%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 13%)   0.08 ( 29%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.03 ( 38%)   0.03 ( 11%)  3009k ( 23%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   348k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   346k (  3%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  6400  (  0%)
+ expand                             :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   635k (  5%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)   152  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2033k ( 16%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   190k (  1%)
+ symout                             :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 12%)   0.01 (  4%)   200k (  2%)
+ TOTAL                              :   0.05          0.08          0.28           12M

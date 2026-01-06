@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/null_joystick.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/null_joystick.c.o -MF src/CMakeFiles/glfw.dir/null_joystick.c.o.d -o src/CMakeFiles/glfw.dir/null_joystick.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/null_joystick.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1523k ( 13%)
+ phase parsing                      :   0.05 (100%)   0.08 (100%)   0.22 ( 92%) 10021k ( 85%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   287k (  2%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   234k (  2%)
+ preprocessing                      :   0.03 ( 60%)   0.04 ( 50%)   0.05 ( 21%)  4032k ( 34%)
+ lexical analysis                   :   0.02 ( 40%)   0.03 ( 38%)   0.11 ( 46%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 13%)   0.05 ( 21%)  4955k ( 42%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   722k (  6%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   120k (  1%)
+ TOTAL                              :   0.05          0.08          0.24           11M
+
+# Exit code: 0

@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: ltablib.c
+# Output: ltablib.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o ltablib.o ltablib.c
+# Timestamp: 2026-01-05T20:42:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 37%)
+ phase parsing                      :   0.00 (  0%)   0.01 ( 50%)   0.05 ( 28%)  1432k ( 29%)
+ phase opt and generate             :   0.05 (100%)   0.01 ( 50%)   0.13 ( 72%)  1628k ( 33%)
+ callgraph functions expansion      :   0.04 ( 80%)   0.00 (  0%)   0.12 ( 67%)  1180k ( 24%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.01 ( 50%)   0.01 (  6%)   305k (  6%)
+ df live&initialized regs           :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.01 (  6%)   489k ( 10%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 22%)     0  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    40k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    23k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    23k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    20k (  0%)
+ dominance computation              :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   138k (  3%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   984  (  0%)
+ integrated RA                      :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   321k (  7%)
+ reload CSE regs                    :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  7184  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   312  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.03 ( 17%)    52k (  1%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    40k (  1%)
+ rebuild frequencies                :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.05          0.02          0.18         4881k

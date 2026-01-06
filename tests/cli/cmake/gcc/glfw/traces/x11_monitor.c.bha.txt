@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/x11_monitor.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/x11_monitor.c.o -MF src/CMakeFiles/glfw.dir/x11_monitor.c.o.d -o src/CMakeFiles/glfw.dir/x11_monitor.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/x11_monitor.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1523k (  9%)
+ phase parsing                      :   0.07 ( 39%)   0.09 ( 75%)   0.34 ( 54%)    10M ( 64%)
+ phase opt and generate             :   0.11 ( 61%)   0.03 ( 25%)   0.28 ( 44%)  4477k ( 27%)
+ callgraph functions expansion      :   0.10 ( 56%)   0.03 ( 25%)   0.25 ( 40%)  3487k ( 21%)
+ callgraph ipa passes               :   0.01 (  6%)   0.00 (  0%)   0.03 (  5%)   649k (  4%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.04 ( 22%)   0.03 ( 25%)   0.16 ( 25%)  4182k ( 25%)
+ lexical analysis                   :   0.01 (  6%)   0.03 ( 25%)   0.12 ( 19%)     0  (  0%)
+ parser (global)                    :   0.01 (  6%)   0.01 (  8%)   0.01 (  2%)  5359k ( 32%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   725k (  4%)
+ parser enumerator list             :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)   135k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  8%)   0.02 (  3%)   184k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)   232k (  1%)
+ tree CFG cleanup                   :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  1264  (  0%)
+ tree VRP                           :   0.02 ( 11%)   0.00 (  0%)   0.00 (  0%)    68k (  0%)
+ tree PTA                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)    29k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    64k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   159k (  1%)
+ backwards jump threading           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%) 10000  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    30k (  0%)
+ tree iv optimization               :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    66k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2608  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4256  (  0%)
+ PRE                                :   0.00 (  0%)   0.01 (  8%)   0.02 (  3%)  9392  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  8%)   0.02 (  3%)   626k (  4%)
+ LRA create live ranges             :   0.00 (  0%)   0.01 (  8%)   0.01 (  2%)  2856  (  0%)
+ reload CSE regs                    :   0.03 ( 17%)   0.00 (  0%)   0.00 (  0%)    45k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)    38k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)     0  (  0%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   576  (  0%)
+ initialize rtl                     :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.01 (  6%)   0.00 (  0%)   0.04 (  6%)    49k (  0%)
+ TOTAL                              :   0.18          0.12          0.63           16M
+
+# Exit code: 0

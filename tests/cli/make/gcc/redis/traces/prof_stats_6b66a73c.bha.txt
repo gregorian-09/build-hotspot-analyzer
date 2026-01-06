@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: src/prof_stats.c
+# Output: src/prof_stats.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/prof_stats.o src/prof_stats.c
+# Timestamp: 2026-01-05T20:43:14+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  6%)
+ phase parsing                      :   0.18 ( 90%)   0.26 ( 96%)   0.46 ( 92%)    25M ( 87%)
+ phase opt and generate             :   0.02 ( 10%)   0.01 (  4%)   0.04 (  8%)  1865k (  6%)
+ preprocessing                      :   0.05 ( 25%)   0.08 ( 30%)   0.14 ( 28%)    13M ( 48%)
+ lexical analysis                   :   0.06 ( 30%)   0.10 ( 37%)   0.16 ( 32%)     0  (  0%)
+ parser (global)                    :   0.03 ( 15%)   0.02 (  7%)   0.05 ( 10%)  5693k ( 19%)
+ parser struct body                 :   0.01 (  5%)   0.01 (  4%)   0.01 (  2%)   254k (  1%)
+ parser inl. func. body             :   0.03 ( 15%)   0.05 ( 19%)   0.10 ( 20%)  5382k ( 18%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)   498k (  2%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1032  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.01 (  4%)   0.02 (  4%)    12k (  0%)
+ TOTAL                              :   0.20          0.27          0.50           28M

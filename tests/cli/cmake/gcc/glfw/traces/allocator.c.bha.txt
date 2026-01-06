@@ -1,0 +1,59 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/allocator.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/deps -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -ftime-report -O3 -DNDEBUG -std=gnu99 -MD -MT tests/CMakeFiles/allocator.dir/allocator.c.o -MF tests/CMakeFiles/allocator.dir/allocator.c.o.d -o tests/CMakeFiles/allocator.dir/allocator.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/tests/allocator.c
+# Timestamp: 2026-01-05T18:15:47+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.04 ( 12%)   0.06 ( 46%)   0.21 ( 32%)  5696k ( 22%)
+ phase opt and generate             :   0.29 ( 88%)   0.07 ( 54%)   0.44 ( 68%)    17M ( 70%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1254k (  5%)
+ callgraph functions expansion      :   0.25 ( 76%)   0.06 ( 46%)   0.35 ( 54%)    12M ( 50%)
+ callgraph ipa passes               :   0.04 ( 12%)   0.01 (  8%)   0.08 ( 12%)  3639k ( 14%)
+ ipa dead code removal              :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ ipa cp                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   806k (  3%)
+ ipa inlining heuristics            :   0.01 (  3%)   0.01 (  8%)   0.00 (  0%)  1291k (  5%)
+ ipa reference                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ ipa SRA                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3600  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  9672  (  0%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   960  (  0%)
+ df reaching defs                   :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 (  8%)   0.02 (  3%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df use-def / def-use chains        :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   307k (  1%)
+ alias analysis                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   558k (  2%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  2560  (  0%)
+ preprocessing                      :   0.03 (  9%)   0.01 (  8%)   0.03 (  5%)  1746k (  7%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 15%)   0.11 ( 17%)     0  (  0%)
+ parser (global)                    :   0.01 (  3%)   0.02 ( 15%)   0.03 (  5%)  2837k ( 11%)
+ parser function body               :   0.00 (  0%)   0.01 (  8%)   0.02 (  3%)   833k (  3%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  2303k (  9%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   657k (  3%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    63k (  0%)
+ tree PTA                           :   0.04 ( 12%)   0.00 (  0%)   0.01 (  2%)   317k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   445k (  2%)
+ tree operand scan                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   789k (  3%)
+ tree forward propagate             :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  3800  (  0%)
+ tree aggressive DCE                :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)    60k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1949k (  8%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    96k (  0%)
+ CSE                                :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)  4032  (  0%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dead store elim2                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    48k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ CPROP                              :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   139k (  1%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   315k (  1%)
+ integrated RA                      :   0.02 (  6%)   0.02 ( 15%)   0.05 (  8%)  1971k (  8%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    39k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)   195k (  1%)
+ scheduling 2                       :   0.02 (  6%)   0.02 ( 15%)   0.01 (  2%)    95k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ final                              :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)   132k (  1%)
+ rest of compilation                :   0.03 (  9%)   0.01 (  8%)   0.04 (  6%)   277k (  1%)
+ TOTAL                              :   0.33          0.13          0.65           24M
+
+# Exit code: 0

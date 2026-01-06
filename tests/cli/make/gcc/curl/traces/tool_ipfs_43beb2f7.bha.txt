@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: tool_ipfs.c
+# Output: libcurltool_la-tool_ipfs.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_ipfs.c -fPIC -DPIC -o libcurltool_la-tool_ipfs.o
+# Timestamp: 2026-01-05T20:44:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.03 ( 75%)   0.05 ( 83%)   0.10 ( 83%)  5153k ( 55%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 17%)   0.02 ( 17%)  2365k ( 25%)
+ dump files                         :   0.01 ( 25%)   0.01 ( 17%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   206k (  2%)
+ preprocessing                      :   0.02 ( 50%)   0.01 ( 17%)   0.02 ( 17%)  2182k ( 23%)
+ lexical analysis                   :   0.00 (  0%)   0.04 ( 67%)   0.07 ( 58%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  2271k ( 24%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   380k (  4%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1353k ( 14%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   129k (  1%)
+ TOTAL                              :   0.04          0.06          0.12         9338k

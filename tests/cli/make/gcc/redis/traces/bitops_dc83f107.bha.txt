@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: bitops.c
+# Output: bitops.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o bitops.o -c bitops.c
+# Timestamp: 2026-01-05T20:43:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k (  4%)
+ phase parsing                      :   0.45 ( 85%)   0.39 ( 98%)   0.85 ( 89%)    44M ( 89%)
+ phase opt and generate             :   0.08 ( 15%)   0.01 (  3%)   0.10 ( 11%)  3781k (  7%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)   511k (  1%)
+ callgraph ipa passes               :   0.07 ( 13%)   0.00 (  0%)   0.07 (  7%)  2236k (  4%)
+ ipa lto gimple out                 :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  5400  (  0%)
+ ipa icf                            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1240  (  0%)
+ ipa free lang data                 :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)    77k (  0%)
+ preprocessing                      :   0.13 ( 25%)   0.09 ( 22%)   0.11 ( 12%)  3992k (  8%)
+ lexical analysis                   :   0.11 ( 21%)   0.12 ( 30%)   0.27 ( 28%)     0  (  0%)
+ parser (global)                    :   0.12 ( 23%)   0.13 ( 33%)   0.35 ( 37%)    18M ( 37%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   532k (  1%)
+ parser enumerator list             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   237k (  0%)
+ parser function body               :   0.02 (  4%)   0.01 (  3%)   0.03 (  3%)   527k (  1%)
+ parser inl. func. body             :   0.06 ( 11%)   0.03 (  8%)   0.08 (  8%)    17M ( 35%)
+ inline parameters                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    88k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   806k (  2%)
+ tree CFG construction              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   237k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   219k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    37k (  0%)
+ tree FRE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    76k (  0%)
+ tree aggressive DCE                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    73k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2896k (  6%)
+ TOTAL                              :   0.53          0.40          0.95           49M

@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: escape.c
+# Output: libcurlu_la-escape.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c escape.c -fPIC -DPIC -o libcurlu_la-escape.o
+# Timestamp: 2026-01-05T20:44:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 17%)
+ phase parsing                      :   0.05 ( 71%)   0.04 ( 80%)   0.19 ( 79%)  5875k ( 56%)
+ phase opt and generate             :   0.02 ( 29%)   0.01 ( 20%)   0.04 ( 17%)  2769k ( 26%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    63k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   195k (  2%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ preprocessing                      :   0.03 ( 43%)   0.02 ( 40%)   0.06 ( 25%)  2326k ( 22%)
+ lexical analysis                   :   0.01 ( 14%)   0.01 ( 20%)   0.08 ( 33%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.01 ( 20%)   0.03 ( 13%)  2738k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)   334k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   117k (  1%)
+ integrated RA                      :   0.01 ( 14%)   0.01 ( 20%)   0.01 (  4%)  1474k ( 14%)
+ LRA non-specific                   :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  4992  (  0%)
+ TOTAL                              :   0.07          0.05          0.24           10M

@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/db/table_cache.cc
+# Output: CMakeFiles/leveldb.dir/db/table_cache.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/db/table_cache.cc.o -MF CMakeFiles/leveldb.dir/db/table_cache.cc.o.d -o CMakeFiles/leveldb.dir/db/table_cache.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/db/table_cache.cc
+# Timestamp: 2026-01-05T20:10:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1880k (  3%)
+ phase parsing                      :   0.32 ( 78%)   0.24 ( 92%)   1.17 ( 84%)    48M ( 84%)
+ phase lang. deferred               :   0.03 (  7%)   0.01 (  4%)   0.08 (  6%)  4336k (  7%)
+ phase opt and generate             :   0.06 ( 15%)   0.01 (  4%)   0.12 (  9%)  2985k (  5%)
+ |name lookup                       :   0.08 ( 20%)   0.02 (  8%)   0.32 ( 23%)  2399k (  4%)
+ |overload resolution               :   0.03 (  7%)   0.00 (  0%)   0.05 (  4%)  3107k (  5%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   296k (  1%)
+ callgraph functions expansion      :   0.05 ( 12%)   0.01 (  4%)   0.09 (  6%)  1676k (  3%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   783k (  1%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    81k (  0%)
+ preprocessing                      :   0.03 (  7%)   0.07 ( 27%)   0.22 ( 16%)  2153k (  4%)
+ parser (global)                    :   0.07 ( 17%)   0.04 ( 15%)   0.29 ( 21%)    18M ( 32%)
+ parser struct body                 :   0.05 ( 12%)   0.06 ( 23%)   0.18 ( 13%) 10190k ( 17%)
+ parser function body               :   0.00 (  0%)   0.01 (  4%)   0.06 (  4%)  1245k (  2%)
+ parser inl. func. body             :   0.04 ( 10%)   0.02 (  8%)   0.08 (  6%)  3719k (  6%)
+ parser inl. meth. body             :   0.08 ( 20%)   0.03 ( 12%)   0.14 ( 10%)  5117k (  9%)
+ template instantiation             :   0.07 ( 17%)   0.02 (  8%)   0.26 ( 19%)    12M ( 21%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   182k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    84k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   160  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  4200  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    46k (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1280  (  0%)
+ CSE                                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  9624  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   338k (  1%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5264  (  0%)
+ hard reg cprop                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   264  (  0%)
+ scheduling 2                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ reorder blocks                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  6784  (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ TOTAL                              :   0.41          0.26          1.39           57M

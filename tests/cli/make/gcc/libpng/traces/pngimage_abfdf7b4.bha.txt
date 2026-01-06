@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: contrib/libtests/pngimage.c
+# Output: contrib/libtests/pngimage.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I. -ftime-report -c -o contrib/libtests/pngimage.o contrib/libtests/pngimage.c
+# Timestamp: 2026-01-05T20:46:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  1819k ( 23%)
+ phase parsing                      :   0.01 ( 20%)   0.03 (100%)   0.04 ( 40%)  2954k ( 37%)
+ phase opt and generate             :   0.04 ( 80%)   0.00 (  0%)   0.05 ( 50%)  3296k ( 41%)
+ callgraph ipa passes               :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   386k (  5%)
+ df scan insns                      :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  1680  (  0%)
+ preprocessing                      :   0.01 ( 20%)   0.02 ( 67%)   0.02 ( 20%)  1051k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.01 ( 10%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  1390k ( 17%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  2552  (  0%)
+ loop init                          :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    63k (  1%)
+ integrated RA                      :   0.01 ( 20%)   0.00 (  0%)   0.01 ( 10%)  1057k ( 13%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)    49k (  1%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 ( 20%)   143k (  2%)
+ rest of compilation                :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    91k (  1%)
+ TOTAL                              :   0.05          0.03          0.10         8070k

@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/zstdcli_trace.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/common -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/compress -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/dictBuilder -ftime-report -O3 -DNDEBUG -MD -MT build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstdcli_trace.c.o -MF build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstdcli_trace.c.o.d -o build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/zstdcli_trace.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/zstdcli_trace.c
+# Timestamp: 2026-01-05T17:52:23+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 21%)
+ phase parsing                      :   0.03 ( 50%)   0.07 ( 88%)   0.17 ( 81%)  6178k ( 70%)
+ phase opt and generate             :   0.03 ( 50%)   0.01 ( 12%)   0.04 ( 19%)   786k (  9%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ callgraph functions expansion      :   0.02 ( 33%)   0.01 ( 12%)   0.04 ( 19%)   597k (  7%)
+ callgraph ipa passes               :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   129k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 12%)   0.04 ( 19%)  1663k ( 19%)
+ lexical analysis                   :   0.01 ( 17%)   0.01 ( 13%)   0.07 ( 33%)     0  (  0%)
+ parser (global)                    :   0.01 ( 17%)   0.04 ( 50%)   0.05 ( 24%)  3015k ( 34%)
+ parser inl. func. body             :   0.01 ( 17%)   0.01 ( 12%)   0.01 (  5%)  1281k ( 15%)
+ tree aggressive DCE                :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree modref                        :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)  5264  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  5616  (  0%)
+ CSE 2                              :   0.01 ( 17%)   0.00 (  0%)   0.01 (  5%)   760  (  0%)
+ integrated RA                      :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)   175k (  2%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    12k (  0%)
+ TOTAL                              :   0.06          0.08          0.21         8785k
+
+# Exit code: 0

@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: fpconv.c
+# Output: fpconv.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o fpconv.o fpconv.c
+# Timestamp: 2026-01-05T20:42:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 41%)
+ phase parsing                      :   0.01 ( 33%)   0.03 ( 75%)   0.08 ( 53%)  1842k ( 41%)
+ phase opt and generate             :   0.02 ( 67%)   0.01 ( 25%)   0.06 ( 40%)   781k ( 18%)
+ callgraph functions expansion      :   0.02 ( 67%)   0.00 (  0%)   0.05 ( 33%)   547k ( 12%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 25%)   0.01 (  7%)   152k (  3%)
+ df live regs                       :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.02 ( 50%)   0.03 ( 20%)   557k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)   969k ( 22%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 25%)   0.01 (  7%)   245k (  6%)
+ integration                        :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)    35k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    12k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  6856  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  3192  (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  3176  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  6208  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 13%)    13k (  0%)
+ TOTAL                              :   0.03          0.04          0.15         4443k

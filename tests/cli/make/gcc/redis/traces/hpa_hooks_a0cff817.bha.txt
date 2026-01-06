@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: src/hpa_hooks.c
+# Output: src/hpa_hooks.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/hpa_hooks.o src/hpa_hooks.c
+# Timestamp: 2026-01-05T20:43:11+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  7%)
+ phase parsing                      :   0.17 ( 94%)   0.26 (100%)   0.45 ( 98%)    25M ( 92%)
+ phase opt and generate             :   0.01 (  6%)   0.00 (  0%)   0.01 (  2%)   495k (  2%)
+ preprocessing                      :   0.03 ( 17%)   0.09 ( 35%)   0.19 ( 41%)    13M ( 51%)
+ lexical analysis                   :   0.07 ( 39%)   0.08 ( 31%)   0.11 ( 24%)     0  (  0%)
+ parser (global)                    :   0.01 (  6%)   0.01 (  4%)   0.02 (  4%)  5692k ( 20%)
+ parser inl. func. body             :   0.06 ( 33%)   0.08 ( 31%)   0.13 ( 28%)  5382k ( 19%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   219k (  1%)
+ final                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ TOTAL                              :   0.18          0.26          0.46           27M

@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/egl_context.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/egl_context.c.o -MF src/CMakeFiles/glfw.dir/egl_context.c.o.d -o src/CMakeFiles/glfw.dir/egl_context.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/egl_context.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1523k (  9%)
+ phase parsing                      :   0.06 ( 33%)   0.10 ( 83%)   0.33 ( 62%)    10M ( 63%)
+ phase opt and generate             :   0.12 ( 67%)   0.02 ( 17%)   0.18 ( 34%)  4978k ( 29%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3752  (  0%)
+ callgraph functions expansion      :   0.10 ( 56%)   0.02 ( 17%)   0.16 ( 30%)  3423k ( 20%)
+ callgraph ipa passes               :   0.02 ( 11%)   0.00 (  0%)   0.02 (  4%)   651k (  4%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df must-initialized regs           :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   149k (  1%)
+ alias stmt walking                 :   0.02 ( 11%)   0.00 (  0%)   0.01 (  2%)   125k (  1%)
+ preprocessing                      :   0.00 (  0%)   0.05 ( 42%)   0.05 (  9%)  4176k ( 24%)
+ lexical analysis                   :   0.03 ( 17%)   0.04 ( 33%)   0.16 ( 30%)     0  (  0%)
+ parser (global)                    :   0.02 ( 11%)   0.01 (  8%)   0.08 ( 15%)  5355k ( 31%)
+ parser struct body                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   725k (  4%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   226k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  6%)   231k (  1%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    42k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    33k (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   109k (  1%)
+ tree reassociation                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    72  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    89k (  1%)
+ tree slp vectorization             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)   348k (  2%)
+ tree iv optimization               :   0.01 (  6%)   0.01 (  8%)   0.01 (  2%)    16k (  0%)
+ tree SSA uncprop                   :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    64  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   510k (  3%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    21k (  0%)
+ dead store elim2                   :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    55k (  0%)
+ CPROP                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    66k (  0%)
+ CSE 2                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ branch prediction                  :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  6344  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   110k (  1%)
+ integrated RA                      :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   587k (  3%)
+ scheduling 2                       :   0.01 (  6%)   0.00 (  0%)   0.03 (  6%)    47k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    49k (  0%)
+ TOTAL                              :   0.18          0.12          0.53           16M
+
+# Exit code: 0

@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/glx_context.c
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/build/src -ftime-report -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/glx_context.c.o -MF src/CMakeFiles/glfw.dir/glx_context.c.o.d -o src/CMakeFiles/glfw.dir/glx_context.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/glfw/repo/src/glx_context.c
+# Timestamp: 2026-01-05T18:15:44+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1523k (  9%)
+ phase parsing                      :   0.04 ( 29%)   0.10 ( 83%)   0.22 ( 56%)    10M ( 65%)
+ phase opt and generate             :   0.10 ( 71%)   0.02 ( 17%)   0.16 ( 41%)  4295k ( 26%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.09 ( 64%)   0.01 (  8%)   0.14 ( 36%)  3346k ( 20%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 (  8%)   0.02 (  5%)   637k (  4%)
+ df reaching defs                   :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.03 ( 21%)   0.04 ( 33%)   0.10 ( 26%)  4167k ( 25%)
+ lexical analysis                   :   0.00 (  0%)   0.04 ( 33%)   0.06 ( 15%)     0  (  0%)
+ parser (global)                    :   0.01 (  7%)   0.01 (  8%)   0.04 ( 10%)  5355k ( 32%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   135k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)   231k (  1%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   663k (  4%)
+ tree Early VRP                     :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    80k (  0%)
+ tree CCP                           :   0.01 (  7%)   0.00 (  0%)   0.02 (  5%)  8920  (  0%)
+ tree PRE                           :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   113k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    81k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   264k (  2%)
+ tree modref                        :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 (  8%)   0.02 (  5%)     0  (  0%)
+ expand                             :   0.02 ( 14%)   0.00 (  0%)   0.01 (  3%)   427k (  3%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2224  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    44k (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    90k (  1%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    46k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    25k (  0%)
+ final                              :   0.01 (  7%)   0.00 (  0%)   0.01 (  3%)    80k (  0%)
+ rest of compilation                :   0.02 ( 14%)   0.00 (  0%)   0.01 (  3%)    40k (  0%)
+ TOTAL                              :   0.14          0.12          0.39           16M
+
+# Exit code: 0

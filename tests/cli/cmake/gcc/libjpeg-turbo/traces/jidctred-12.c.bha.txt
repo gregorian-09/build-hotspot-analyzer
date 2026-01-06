@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jidctred-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jidctred-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jidctred-12.c
+# Timestamp: 2026-01-05T18:14:53+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 29%)
+ phase parsing                      :   0.01 ( 20%)   0.03 (100%)   0.05 ( 42%)  2696k ( 43%)
+ phase opt and generate             :   0.04 ( 80%)   0.00 (  0%)   0.05 ( 42%)  1726k ( 28%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ callgraph functions expansion      :   0.04 ( 80%)   0.00 (  0%)   0.04 ( 33%)  1411k ( 23%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   185k (  3%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 33%)   0.03 ( 25%)   785k ( 13%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.01 ( 20%)   0.00 (  0%)   0.02 ( 17%)  1342k ( 22%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   245k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  6640  (  0%)
+ complete unrolling                 :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    51k (  1%)
+ tree loop distribution             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    11k (  0%)
+ branch prediction                  :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  3576  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   283k (  5%)
+ machine dep reorg                  :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)   312  (  0%)
+ store merging                      :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)    32  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.05          0.03          0.12         6242k
+
+# Exit code: 0

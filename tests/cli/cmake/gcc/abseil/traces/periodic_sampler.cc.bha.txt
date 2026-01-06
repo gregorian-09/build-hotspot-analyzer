@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/profiling/internal/periodic_sampler.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/profiling/CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o -MF absl/profiling/CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o.d -o absl/profiling/CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/profiling/internal/periodic_sampler.cc
+# Timestamp: 2026-01-05T17:54:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1882k ( 18%)
+ phase parsing                      :   0.04 ( 80%)   0.03 (100%)   0.10 ( 83%)  8048k ( 77%)
+ phase opt and generate             :   0.01 ( 20%)   0.00 (  0%)   0.01 (  8%)   276k (  3%)
+ |name lookup                       :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   589k (  6%)
+ callgraph functions expansion      :   0.01 ( 20%)   0.00 (  0%)   0.01 (  8%)   195k (  2%)
+ preprocessing                      :   0.01 ( 20%)   0.00 (  0%)   0.01 (  8%)   568k (  5%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.06 ( 50%)  1913k ( 18%)
+ parser struct body                 :   0.01 ( 20%)   0.00 (  0%)   0.00 (  0%)  2459k ( 23%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 33%)   0.01 (  8%)   222k (  2%)
+ parser inl. meth. body             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   677k (  6%)
+ template instantiation             :   0.02 ( 40%)   0.01 ( 33%)   0.00 (  0%)  2454k ( 23%)
+ initialize rtl                     :   0.01 ( 20%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.05          0.03          0.12           10M
+
+# Exit code: 0

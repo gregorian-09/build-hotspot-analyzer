@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/md5/md5hl.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -MD -MT src/md5/CMakeFiles/md5sum.dir/md5hl.c.o -MF src/md5/CMakeFiles/md5sum.dir/md5hl.c.o.d -o src/md5/CMakeFiles/md5sum.dir/md5hl.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/md5/md5hl.c
+# Timestamp: 2026-01-05T18:14:55+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 32%)
+ phase parsing                      :   0.01 ( 33%)   0.03 ( 75%)   0.09 ( 75%)  2517k ( 44%)
+ phase opt and generate             :   0.02 ( 67%)   0.01 ( 25%)   0.03 ( 25%)  1418k ( 25%)
+ callgraph functions expansion      :   0.02 ( 67%)   0.01 ( 25%)   0.03 ( 25%)  1193k ( 21%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)   802k ( 14%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 25%)   0.05 ( 42%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 17%)  1318k ( 23%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    38k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   265k (  5%)
+ tree CFG cleanup                   :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  3200  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)  6800  (  0%)
+ dead store elim2                   :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   313k (  5%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  2400  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.03          0.04          0.12         5755k
+
+# Exit code: 0
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 32%)
+ phase parsing                      :   0.03 ( 75%)   0.01 ( 33%)   0.05 ( 62%)  2517k ( 44%)
+ phase opt and generate             :   0.01 ( 25%)   0.02 ( 67%)   0.03 ( 38%)  1418k ( 25%)
+ callgraph functions expansion      :   0.01 ( 25%)   0.02 ( 67%)   0.03 ( 38%)  1193k ( 21%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.03 ( 38%)   802k ( 14%)
+ lexical analysis                   :   0.02 ( 50%)   0.01 ( 33%)   0.02 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  1318k ( 23%)
+ complete unrolling                 :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    51k (  1%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 25%)   313k (  5%)
+ scheduling 2                       :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)  8384  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)  7184  (  0%)
+ TOTAL                              :   0.04          0.03          0.08         5755k
+
+# Exit code: 0

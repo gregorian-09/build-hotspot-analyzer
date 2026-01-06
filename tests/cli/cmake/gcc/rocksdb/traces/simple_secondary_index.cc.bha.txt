@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/secondary_index/simple_secondary_index.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/utilities/secondary_index/simple_secondary_index.cc.o -MF CMakeFiles/rocksdb-shared.dir/utilities/secondary_index/simple_secondary_index.cc.o.d -o CMakeFiles/rocksdb-shared.dir/utilities/secondary_index/simple_secondary_index.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/utilities/secondary_index/simple_secondary_index.cc
+# Timestamp: 2026-01-05T19:40:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)  1886k (  1%)
+ phase parsing                      :   1.06 ( 69%)   0.77 ( 81%)   2.37 ( 71%)   191M ( 78%)
+ phase lang. deferred               :   0.37 ( 24%)   0.15 ( 16%)   0.78 ( 23%)    47M ( 19%)
+ phase opt and generate             :   0.10 (  6%)   0.03 (  3%)   0.14 (  4%)  6190k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.25 ( 16%)   0.18 ( 19%)   0.61 ( 18%)  7425k (  3%)
+ |overload resolution               :   0.39 ( 25%)   0.14 ( 15%)   0.75 ( 22%)    40M ( 16%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)  1366k (  1%)
+ callgraph functions expansion      :   0.06 (  4%)   0.01 (  1%)   0.07 (  2%)  2291k (  1%)
+ callgraph ipa passes               :   0.02 (  1%)   0.02 (  2%)   0.05 (  1%)  1925k (  1%)
+ ipa inheritance graph              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  8136  (  0%)
+ preprocessing                      :   0.03 (  2%)   0.19 ( 20%)   0.26 (  8%)  3281k (  1%)
+ parser (global)                    :   0.21 ( 14%)   0.14 ( 15%)   0.44 ( 13%)    50M ( 21%)
+ parser struct body                 :   0.19 ( 12%)   0.08 (  8%)   0.15 (  4%)    31M ( 13%)
+ parser function body               :   0.03 (  2%)   0.03 (  3%)   0.11 (  3%)  2961k (  1%)
+ parser inl. func. body             :   0.05 (  3%)   0.03 (  3%)   0.18 (  5%)    12M (  5%)
+ parser inl. meth. body             :   0.16 ( 10%)   0.12 ( 13%)   0.41 ( 12%)    28M ( 11%)
+ template instantiation             :   0.69 ( 45%)   0.32 ( 34%)   1.43 ( 43%)   104M ( 42%)
+ constant expression evaluation     :   0.03 (  2%)   0.01 (  1%)   0.08 (  2%)  1713k (  1%)
+ constraint satisfaction            :   0.02 (  1%)   0.00 (  0%)   0.08 (  2%)  3330k (  1%)
+ integration                        :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)   710k (  0%)
+ tree VRP                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    49k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   161k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    69k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    54k (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    16k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)  9136  (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  5464  (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   485k (  0%)
+ symout                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.03 (  2%)   0.00 (  0%)   0.02 (  1%)    51k (  0%)
+ TOTAL                              :   1.54          0.95          3.34          246M
+
+# Exit code: 0

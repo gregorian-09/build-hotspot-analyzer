@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_internal_randen.dir/internal/randen.cc.o -MF absl/random/CMakeFiles/random_internal_randen.dir/internal/randen.cc.o.d -o absl/random/CMakeFiles/random_internal_randen.dir/internal/randen.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/randen.cc
+# Timestamp: 2026-01-05T17:54:17+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  4%)
+ phase parsing                      :   0.25 ( 89%)   0.22 ( 96%)   0.94 ( 91%)    42M ( 88%)
+ phase lang. deferred               :   0.02 (  7%)   0.00 (  0%)   0.06 (  6%)  3767k (  8%)
+ phase opt and generate             :   0.01 (  4%)   0.01 (  4%)   0.01 (  1%)   351k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ |name lookup                       :   0.02 (  7%)   0.03 ( 13%)   0.28 ( 27%)  1918k (  4%)
+ |overload resolution               :   0.03 ( 11%)   0.00 (  0%)   0.10 ( 10%)  2526k (  5%)
+ callgraph functions expansion      :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   151k (  0%)
+ preprocessing                      :   0.04 ( 14%)   0.05 ( 22%)   0.17 ( 17%)  2059k (  4%)
+ parser (global)                    :   0.04 ( 14%)   0.04 ( 17%)   0.23 ( 22%)    14M ( 30%)
+ parser struct body                 :   0.06 ( 21%)   0.04 ( 17%)   0.09 (  9%)  9330k ( 19%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   109k (  0%)
+ parser function body               :   0.01 (  4%)   0.01 (  4%)   0.03 (  3%)  1012k (  2%)
+ parser inl. func. body             :   0.02 (  7%)   0.01 (  4%)   0.07 (  7%)  3361k (  7%)
+ parser inl. meth. body             :   0.00 (  0%)   0.02 (  9%)   0.08 (  8%)  4876k ( 10%)
+ template instantiation             :   0.08 ( 29%)   0.04 ( 17%)   0.28 ( 27%)    11M ( 24%)
+ constant expression evaluation     :   0.02 (  7%)   0.01 (  4%)   0.02 (  2%)   108k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    15k (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    80  (  0%)
+ CPROP                              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  4352  (  0%)
+ TOTAL                              :   0.28          0.23          1.03           48M
+
+# Exit code: 0

@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/options/offpeak_time_info.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/options/offpeak_time_info.cc.o -MF CMakeFiles/rocksdb-shared.dir/options/offpeak_time_info.cc.o.d -o CMakeFiles/rocksdb-shared.dir/options/offpeak_time_info.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/options/offpeak_time_info.cc
+# Timestamp: 2026-01-05T19:37:19+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   0.91 ( 78%)   0.55 ( 82%)   2.76 ( 78%)   121M ( 79%)
+ phase lang. deferred               :   0.23 ( 20%)   0.10 ( 15%)   0.69 ( 19%)    28M ( 19%)
+ phase opt and generate             :   0.03 (  3%)   0.02 (  3%)   0.10 (  3%)  2396k (  2%)
+ |name lookup                       :   0.24 ( 21%)   0.16 ( 24%)   0.82 ( 23%)  5161k (  3%)
+ |overload resolution               :   0.23 ( 20%)   0.08 ( 12%)   0.58 ( 16%)    24M ( 16%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   739k (  0%)
+ callgraph functions expansion      :   0.01 (  1%)   0.01 (  1%)   0.06 (  2%)   762k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)   627k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ preprocessing                      :   0.09 (  8%)   0.14 ( 21%)   0.38 ( 11%)  2974k (  2%)
+ parser (global)                    :   0.13 ( 11%)   0.12 ( 18%)   0.68 ( 19%)    32M ( 21%)
+ parser struct body                 :   0.12 ( 10%)   0.07 ( 10%)   0.39 ( 11%)    23M ( 15%)
+ parser function body               :   0.02 (  2%)   0.03 (  4%)   0.07 (  2%)  2535k (  2%)
+ parser inl. func. body             :   0.11 (  9%)   0.04 (  6%)   0.19 (  5%)  8917k (  6%)
+ parser inl. meth. body             :   0.14 ( 12%)   0.02 (  3%)   0.34 ( 10%)    17M ( 11%)
+ template instantiation             :   0.45 ( 38%)   0.19 ( 28%)   1.09 ( 31%)    58M ( 38%)
+ constant expression evaluation     :   0.05 (  4%)   0.03 (  4%)   0.15 (  4%)  1302k (  1%)
+ constraint normalization           :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   519k (  0%)
+ constraint satisfaction            :   0.02 (  2%)   0.01 (  1%)   0.08 (  2%)  2720k (  2%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    86k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   147k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   117k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    20k (  0%)
+ tree phiprop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  6760  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.04 (  1%)  4312  (  0%)
+ loop fini                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    16k (  0%)
+ TOTAL                              :   1.17          0.67          3.56          154M
+
+# Exit code: 0

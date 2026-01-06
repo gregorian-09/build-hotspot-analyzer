@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdarith.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/jdarith.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/jdarith.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/jdarith.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/jdarith.c
+# Timestamp: 2026-01-05T18:14:54+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.01 (  8%)   0.02 ( 50%)   0.05 ( 26%)  2754k ( 31%)
+ phase opt and generate             :   0.12 ( 92%)   0.02 ( 50%)   0.14 ( 74%)  4393k ( 49%)
+ callgraph functions expansion      :   0.11 ( 85%)   0.01 ( 25%)   0.12 ( 63%)  3214k ( 36%)
+ callgraph ipa passes               :   0.01 (  8%)   0.01 ( 25%)   0.02 ( 11%)   565k (  6%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    28k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   744k (  8%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 11%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 11%)  1313k ( 15%)
+ parser struct body                 :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   235k (  3%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    67k (  1%)
+ tree Early VRP                     :   0.01 (  8%)   0.01 ( 25%)   0.00 (  0%)    35k (  0%)
+ dominator optimization             :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)   112k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    13k (  0%)
+ isolate eroneous paths             :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    10k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    29k (  0%)
+ tree conservative DCE              :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   888  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)    35k (  0%)
+ tree slp vectorization             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   226k (  3%)
+ loop unrolling                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  3336  (  0%)
+ CSE 2                              :   0.01 (  8%)   0.00 (  0%)   0.02 ( 11%)  6992  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 11%)   251k (  3%)
+ integrated RA                      :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)   388k (  4%)
+ LRA non-specific                   :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)     0  (  0%)
+ rest of compilation                :   0.02 ( 15%)   0.00 (  0%)   0.00 (  0%)    44k (  0%)
+ TOTAL                              :   0.13          0.04          0.19         8968k
+
+# Exit code: 0

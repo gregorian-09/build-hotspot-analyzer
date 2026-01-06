@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/error_private.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/error_private.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/error_private.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/common/error_private.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/common/error_private.c
+# Timestamp: 2026-01-05T17:52:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 35%)
+ phase parsing                      :   0.03 (100%)   0.02 ( 67%)   0.11 ( 79%)  3153k ( 61%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 14%)   195k (  4%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  2520  (  0%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   135k (  3%)
+ preprocessing                      :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 21%)   604k ( 12%)
+ lexical analysis                   :   0.01 ( 33%)   0.01 ( 33%)   0.07 ( 50%)     0  (  0%)
+ parser (global)                    :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  1585k ( 31%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 33%)   0.01 (  7%)   886k ( 17%)
+ tree CFG construction              :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)    13k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  2024  (  0%)
+ TOTAL                              :   0.03          0.03          0.14         5168k
+
+# Exit code: 0

@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: curlx/base64.c
+# Output: curlx/libcurl_la-base64.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DCURL_HIDDEN_SYMBOLS -D_GNU_SOURCE -fvisibility=hidden -ftime-report -c curlx/base64.c -fPIC -DPIC -o curlx/libcurl_la-base64.o
+# Timestamp: 2026-01-05T20:44:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  1819k ( 21%)
+ phase parsing                      :   0.03 ( 75%)   0.03 (100%)   0.13 ( 81%)  4619k ( 52%)
+ phase opt and generate             :   0.01 ( 25%)   0.00 (  0%)   0.02 ( 13%)  2386k ( 27%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   192k (  2%)
+ preprocessing                      :   0.01 ( 25%)   0.01 ( 33%)   0.05 ( 31%)  1980k ( 22%)
+ lexical analysis                   :   0.02 ( 50%)   0.00 (  0%)   0.04 ( 25%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 67%)   0.04 ( 25%)  2128k ( 24%)
+ tree gimplify                      :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   110k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   134k (  2%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1404k ( 16%)
+ TOTAL                              :   0.04          0.03          0.16         8826k

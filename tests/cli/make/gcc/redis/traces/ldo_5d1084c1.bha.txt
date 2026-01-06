@@ -1,0 +1,53 @@
+# BHA Trace
+# Source: ldo.c
+# Output: ldo.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o ldo.o ldo.c
+# Timestamp: 2026-01-05T20:42:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1819k ( 18%)
+ phase parsing                      :   0.01 (  7%)   0.03 ( 60%)   0.13 ( 28%)  3913k ( 38%)
+ phase opt and generate             :   0.13 ( 93%)   0.02 ( 40%)   0.33 ( 70%)  4483k ( 44%)
+ dump files                         :   0.01 (  7%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph functions expansion      :   0.11 ( 79%)   0.01 ( 20%)   0.29 ( 62%)  3534k ( 35%)
+ callgraph ipa passes               :   0.01 (  7%)   0.01 ( 20%)   0.04 (  9%)   630k (  6%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    48k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    26k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  1886k ( 18%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.09 ( 19%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 (  9%)  1518k ( 15%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    72k (  1%)
+ integration                        :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   381k (  4%)
+ tree gimplify                      :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   215k (  2%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)    36k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   191k (  2%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    95k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.01 ( 20%)   0.01 (  2%)    11k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   104k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    28k (  0%)
+ tree forward propagate             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree aggressive DCE                :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)    52k (  1%)
+ tree slp vectorization             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)   385k (  4%)
+ dominance computation              :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.01 (  7%)   0.00 (  0%)   0.01 (  2%)   321k (  3%)
+ varconst                           :   0.00 (  0%)   0.02 ( 40%)   0.00 (  0%)     0  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2784  (  0%)
+ CSE                                :   0.01 (  7%)   0.00 (  0%)   0.02 (  4%)    11k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   144  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   127k (  1%)
+ integrated RA                      :   0.02 ( 14%)   0.00 (  0%)   0.01 (  2%)   541k (  5%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    26k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5768  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    51k (  1%)
+ peephole 2                         :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)  4552  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   792  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    92k (  1%)
+ rest of compilation                :   0.01 (  7%)   0.00 (  0%)   0.05 ( 11%)    55k (  1%)
+ TOTAL                              :   0.14          0.05          0.47        10216k

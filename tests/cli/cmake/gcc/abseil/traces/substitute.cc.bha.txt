@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/substitute.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings.dir/substitute.cc.o -MF absl/strings/CMakeFiles/strings.dir/substitute.cc.o.d -o absl/strings/CMakeFiles/strings.dir/substitute.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/substitute.cc
+# Timestamp: 2026-01-05T17:54:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  2%)
+ phase parsing                      :   0.57 ( 80%)   0.45 ( 94%)   2.07 ( 86%)    97M ( 86%)
+ phase lang. deferred               :   0.07 ( 10%)   0.02 (  4%)   0.18 (  7%)    11M ( 10%)
+ phase opt and generate             :   0.07 ( 10%)   0.01 (  2%)   0.16 (  7%)  3335k (  3%)
+ |name lookup                       :   0.17 ( 24%)   0.06 ( 12%)   0.54 ( 22%)  3728k (  3%)
+ |overload resolution               :   0.09 ( 13%)   0.02 (  4%)   0.30 ( 12%)    12M ( 11%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   527k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  7000  (  0%)
+ callgraph functions expansion      :   0.03 (  4%)   0.01 (  2%)   0.09 (  4%)  1105k (  1%)
+ callgraph ipa passes               :   0.03 (  4%)   0.00 (  0%)   0.06 (  2%)  1286k (  1%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1608  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ preprocessing                      :   0.07 ( 10%)   0.16 ( 33%)   0.39 ( 16%)  6378k (  5%)
+ parser (global)                    :   0.10 ( 14%)   0.07 ( 15%)   0.48 ( 20%)    30M ( 27%)
+ parser struct body                 :   0.07 ( 10%)   0.03 (  6%)   0.24 ( 10%)    19M ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   252k (  0%)
+ parser function body               :   0.04 (  6%)   0.07 ( 15%)   0.12 (  5%)  3913k (  3%)
+ parser inl. func. body             :   0.06 (  8%)   0.03 (  6%)   0.14 (  6%)    11M ( 10%)
+ parser inl. meth. body             :   0.08 ( 11%)   0.05 ( 10%)   0.25 ( 10%)  9258k (  8%)
+ template instantiation             :   0.22 ( 31%)   0.06 ( 12%)   0.48 ( 20%)    26M ( 24%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.09 (  4%)   458k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   382k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)    23k (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   824  (  0%)
+ backwards jump threading           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    44k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ tree strlen optimization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5904  (  0%)
+ tree modref                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    36k (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   128  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ combiner                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    32k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   158k (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9888  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2952  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ TOTAL                              :   0.71          0.48          2.41          114M
+
+# Exit code: 0

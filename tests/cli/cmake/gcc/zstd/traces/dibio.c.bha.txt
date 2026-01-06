@@ -1,0 +1,58 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/dibio.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/common -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/compress -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/dictBuilder -ftime-report -O3 -DNDEBUG -MD -MT build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibio.c.o -MF build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibio.c.o.d -o build/cmake/programs/CMakeFiles/zstd.dir/__/__/__/programs/dibio.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/dibio.c
+# Timestamp: 2026-01-05T17:52:22+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 20%)
+ phase parsing                      :   0.04 ( 31%)   0.04 ( 67%)   0.22 ( 34%)  4591k ( 50%)
+ phase opt and generate             :   0.09 ( 69%)   0.02 ( 33%)   0.43 ( 66%)  2855k ( 31%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1400  (  0%)
+ callgraph functions expansion      :   0.08 ( 62%)   0.02 ( 33%)   0.36 ( 55%)  2084k ( 22%)
+ callgraph ipa passes               :   0.01 (  8%)   0.00 (  0%)   0.06 (  9%)   516k (  6%)
+ cfg cleanup                        :   0.01 (  8%)   0.00 (  0%)   0.02 (  3%)    22k (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 ( 17%)   0.02 (  3%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    39k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    97k (  1%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  2696  (  0%)
+ preprocessing                      :   0.01 (  8%)   0.01 ( 17%)   0.09 ( 14%)   923k ( 10%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 17%)   0.06 (  9%)     0  (  0%)
+ parser (global)                    :   0.02 ( 15%)   0.01 ( 17%)   0.03 (  5%)  2228k ( 24%)
+ parser function body               :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   142k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 17%)   0.04 (  6%)  1164k ( 13%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  8840  (  0%)
+ tree Early VRP                     :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    19k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    27k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   116k (  1%)
+ dominator optimization             :   0.01 (  8%)   0.00 (  0%)   0.02 (  3%)    57k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    57k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)    13k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    60k (  1%)
+ tree code sinking                  :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ tree conservative DCE              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   144  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   256k (  3%)
+ dominance computation              :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   240k (  3%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1024  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  1840  (  0%)
+ loop invariant motion              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   336  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   680  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    54k (  1%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    42k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   241k (  3%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  4808  (  0%)
+ LRA create live ranges             :   0.01 (  8%)   0.00 (  0%)   0.02 (  3%)  6480  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    37k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    21k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   104  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ address taken                      :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.13          0.06          0.65         9267k
+
+# Exit code: 0

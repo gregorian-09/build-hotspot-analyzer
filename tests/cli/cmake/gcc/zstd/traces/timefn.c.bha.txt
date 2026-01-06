@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/timefn.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -DZSTD_NOBENCH -DZSTD_NODICT -DZSTD_NOTRACE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../programs -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/common -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/compress -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/../../lib/dictBuilder -ftime-report -O3 -DNDEBUG -MD -MT build/cmake/programs/CMakeFiles/zstd-frugal.dir/__/__/__/programs/timefn.c.o -MF build/cmake/programs/CMakeFiles/zstd-frugal.dir/__/__/__/programs/timefn.c.o.d -o build/cmake/programs/CMakeFiles/zstd-frugal.dir/__/__/__/programs/timefn.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/programs/timefn.c
+# Timestamp: 2026-01-05T17:52:24+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 36%)
+ phase parsing                      :   0.01 ( 25%)   0.02 ( 67%)   0.09 ( 53%)  2472k ( 49%)
+ phase opt and generate             :   0.02 ( 50%)   0.01 ( 33%)   0.08 ( 47%)   702k ( 14%)
+ phase finalize                     :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.02 ( 50%)   0.01 ( 33%)   0.08 ( 47%)   558k ( 11%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   808  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)     0  (  0%)
+ df use-def / def-use chains        :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.05 ( 29%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.03 ( 18%)  1305k ( 26%)
+ parser inl. func. body             :   0.01 ( 25%)   0.01 ( 33%)   0.01 (  6%)   280k (  6%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    40k (  1%)
+ dominance computation              :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ loop analysis                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    42k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   174k (  3%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    16k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    18k (  0%)
+ TOTAL                              :   0.04          0.03          0.17         4995k
+
+# Exit code: 0

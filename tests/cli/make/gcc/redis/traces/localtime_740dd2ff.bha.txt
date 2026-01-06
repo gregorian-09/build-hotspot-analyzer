@@ -1,0 +1,15 @@
+# BHA Trace
+# Source: localtime.c
+# Output: localtime.o
+# Compiler: gcc
+# Command: gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -ftime-report -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DHAVE_LIBSYSTEMD -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o localtime.o -c localtime.c
+# Timestamp: 2026-01-05T20:43:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1828k ( 73%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.01 (100%)   508k ( 20%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 (100%)   160k (  6%)
+ TOTAL                              :   0.00          0.00          0.01         2490k

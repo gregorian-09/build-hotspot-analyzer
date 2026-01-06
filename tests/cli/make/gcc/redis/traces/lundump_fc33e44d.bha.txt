@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: lundump.c
+# Output: lundump.o
+# Compiler: gcc
+# Command: gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -ftime-report -O2 -c -o lundump.o lundump.c
+# Timestamp: 2026-01-05T20:42:47+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 25%)
+ phase parsing                      :   0.02 ( 25%)   0.01 ( 50%)   0.08 ( 32%)  3046k ( 43%)
+ phase opt and generate             :   0.06 ( 75%)   0.01 ( 50%)   0.17 ( 68%)  2286k ( 32%)
+ dump files                         :   0.01 ( 13%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph functions expansion      :   0.05 ( 62%)   0.01 ( 50%)   0.15 ( 60%)  1585k ( 22%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.00 (  0%)   0.02 (  8%)   413k (  6%)
+ cfg construction                   :   0.01 ( 12%)   0.00 (  0%)   0.02 (  8%)  8992  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 ( 50%)   0.01 (  4%)  7408  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.03 ( 12%)  1694k ( 24%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 16%)     0  (  0%)
+ parser (global)                    :   0.02 ( 25%)   0.00 (  0%)   0.00 (  0%)  1179k ( 16%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    91k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    20k (  0%)
+ dominator optimization             :   0.01 ( 13%)   0.00 (  0%)   0.02 (  8%)    51k (  1%)
+ tree CCP                           :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)  6776  (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   190k (  3%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    28k (  0%)
+ branch prediction                  :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ integrated RA                      :   0.01 ( 12%)   0.00 (  0%)   0.01 (  4%)   227k (  3%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    14k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    18k (  0%)
+ TOTAL                              :   0.08          0.02          0.25         7153k

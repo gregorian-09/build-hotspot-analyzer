@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/tools/ldb.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT tools/CMakeFiles/ldb.dir/ldb.cc.o -MF tools/CMakeFiles/ldb.dir/ldb.cc.o.d -o tools/CMakeFiles/ldb.dir/ldb.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/tools/ldb.cc
+# Timestamp: 2026-01-05T19:41:40+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.26 ( 69%)   0.85 ( 83%)   3.59 ( 71%)   206M ( 76%)
+ phase lang. deferred               :   0.43 ( 23%)   0.13 ( 13%)   1.12 ( 22%)    54M ( 20%)
+ phase opt and generate             :   0.14 (  8%)   0.04 (  4%)   0.37 (  7%)  7970k (  3%)
+ |name lookup                       :   0.30 ( 16%)   0.21 ( 21%)   1.04 ( 20%)  8067k (  3%)
+ |overload resolution               :   0.45 ( 25%)   0.13 ( 13%)   0.95 ( 19%)    46M ( 17%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  1%)   0.01 (  1%)   0.06 (  1%)  1512k (  1%)
+ callgraph optimization             :   0.02 (  1%)   0.01 (  1%)   0.02 (  0%)    22k (  0%)
+ callgraph functions expansion      :   0.07 (  4%)   0.01 (  1%)   0.19 (  4%)  2222k (  1%)
+ callgraph ipa passes               :   0.05 (  3%)   0.02 (  2%)   0.11 (  2%)  3232k (  1%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    15k (  0%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    23k (  0%)
+ ipa free lang data                 :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  3592  (  0%)
+ preprocessing                      :   0.06 (  3%)   0.15 ( 15%)   0.51 ( 10%)  3305k (  1%)
+ parser (global)                    :   0.18 ( 10%)   0.18 ( 18%)   0.63 ( 12%)    52M ( 19%)
+ parser struct body                 :   0.17 (  9%)   0.08 (  8%)   0.38 (  7%)    33M ( 12%)
+ parser function body               :   0.03 (  2%)   0.02 (  2%)   0.11 (  2%)  2915k (  1%)
+ parser inl. func. body             :   0.10 (  5%)   0.03 (  3%)   0.20 (  4%)  9459k (  3%)
+ parser inl. meth. body             :   0.31 ( 17%)   0.10 ( 10%)   0.54 ( 11%)    27M ( 10%)
+ template instantiation             :   0.79 ( 43%)   0.39 ( 38%)   2.07 ( 41%)   126M ( 47%)
+ constant expression evaluation     :   0.02 (  1%)   0.02 (  2%)   0.07 (  1%)  1847k (  1%)
+ constraint normalization           :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   521k (  0%)
+ constraint satisfaction            :   0.02 (  1%)   0.00 (  0%)   0.08 (  2%)  3097k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   402k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1200k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   556k (  0%)
+ tree Early VRP                     :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)   291k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    91k (  0%)
+ dominator optimization             :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)    56k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%) 10024  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    59k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8464  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    21k (  0%)
+ expand vars                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   236k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.07 (  1%)  5464  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    26k (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6888  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    44k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    34k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   291k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   528  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   832  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ TOTAL                              :   1.83          1.02          5.09          270M
+
+# Exit code: 0

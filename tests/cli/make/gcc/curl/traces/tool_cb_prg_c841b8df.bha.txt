@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: tool_cb_prg.c
+# Output: libcurltool_la-tool_cb_prg.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_cb_prg.c -fPIC -DPIC -o libcurltool_la-tool_cb_prg.o
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 19%)
+ phase parsing                      :   0.02 ( 67%)   0.04 ( 80%)   0.07 ( 70%)  5179k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.01 ( 20%)   0.02 ( 20%)  2405k ( 26%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)     0  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.01 ( 20%)   0.06 ( 60%)  2188k ( 23%)
+ lexical analysis                   :   0.01 ( 33%)   0.03 ( 60%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)  2288k ( 24%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1403k ( 15%)
+ symout                             :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 ( 20%)   0.01 ( 10%)   142k (  2%)
+ TOTAL                              :   0.03          0.05          0.10         9404k

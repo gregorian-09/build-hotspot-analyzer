@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: md4.c
+# Output: libcurlu_la-md4.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c md4.c -fPIC -DPIC -o libcurlu_la-md4.o
+# Timestamp: 2026-01-05T20:44:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 22%)
+ phase parsing                      :   0.02 ( 67%)   0.04 (100%)   0.12 ( 75%)  4553k ( 55%)
+ phase opt and generate             :   0.01 ( 33%)   0.00 (  0%)   0.03 ( 19%)  1887k ( 23%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  6104  (  0%)
+ preprocessing                      :   0.01 ( 33%)   0.02 ( 50%)   0.07 ( 44%)  1983k ( 24%)
+ lexical analysis                   :   0.01 ( 33%)   0.02 ( 50%)   0.03 ( 19%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  2106k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   112k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)     0  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)  5408  (  0%)
+ rest of compilation                :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)   121k (  1%)
+ TOTAL                              :   0.03          0.04          0.16         8260k

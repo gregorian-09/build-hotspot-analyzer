@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/tjcomp.c
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -MD -MT CMakeFiles/tjcomp.dir/src/tjcomp.c.o -MF CMakeFiles/tjcomp.dir/src/tjcomp.c.o.d -o CMakeFiles/tjcomp.dir/src/tjcomp.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/tjcomp.c
+# Timestamp: 2026-01-05T18:14:39+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 27%)
+ phase parsing                      :   0.02 ( 29%)   0.02 ( 50%)   0.08 ( 33%)  2438k ( 37%)
+ phase opt and generate             :   0.05 ( 71%)   0.02 ( 50%)   0.16 ( 67%)  2365k ( 36%)
+ callgraph functions expansion      :   0.05 ( 71%)   0.01 ( 25%)   0.13 ( 54%)  1374k ( 21%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 25%)   0.03 ( 13%)   581k (  9%)
+ df live regs                       :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ preprocessing                      :   0.01 ( 14%)   0.00 (  0%)   0.01 (  4%)   682k ( 10%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 25%)   0.06 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  1151k ( 17%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 ( 25%)   0.01 (  4%)   235k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    14k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)   552  (  0%)
+ tree PTA                           :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    40k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  2480  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    40k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  8%)    31k (  0%)
+ CSE                                :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  3280  (  0%)
+ integrated RA                      :   0.01 ( 14%)   0.00 (  0%)   0.02 (  8%)   170k (  3%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   152  (  0%)
+ scheduling 2                       :   0.01 ( 14%)   0.00 (  0%)   0.01 (  4%)    59k (  1%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.03 ( 13%)    44k (  1%)
+ initialize rtl                     :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    21k (  0%)
+ TOTAL                              :   0.07          0.04          0.24         6624k
+
+# Exit code: 0

@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/tag.cpp
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src -ftime-report -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/tag.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/tag.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/tag.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/yaml-cpp/repo/src/tag.cpp
+# Timestamp: 2026-01-05T18:12:35+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1876k (  4%)
+ phase parsing                      :   0.19 ( 76%)   0.17 ( 85%)   0.65 ( 87%)    40M ( 84%)
+ phase lang. deferred               :   0.01 (  4%)   0.01 (  5%)   0.03 (  4%)  2784k (  6%)
+ phase opt and generate             :   0.05 ( 20%)   0.02 ( 10%)   0.07 (  9%)  3007k (  6%)
+ |name lookup                       :   0.02 (  8%)   0.02 ( 10%)   0.12 ( 16%)  1806k (  4%)
+ |overload resolution               :   0.04 ( 16%)   0.01 (  5%)   0.04 (  5%)  2630k (  5%)
+ callgraph construction             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   170k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  5%)   0.02 (  3%)  5000  (  0%)
+ callgraph functions expansion      :   0.03 ( 12%)   0.01 (  5%)   0.05 (  7%)  1377k (  3%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  5%)   0.02 (  3%)  1121k (  2%)
+ ipa function splitting             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ df live regs                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.04 ( 16%)   0.03 ( 15%)   0.18 ( 24%)  1904k (  4%)
+ parser (global)                    :   0.01 (  4%)   0.10 ( 50%)   0.18 ( 24%)    13M ( 29%)
+ parser struct body                 :   0.06 ( 24%)   0.01 (  5%)   0.14 ( 19%)  9390k ( 19%)
+ parser function body               :   0.01 (  4%)   0.01 (  5%)   0.05 (  7%)  1530k (  3%)
+ parser inl. func. body             :   0.02 (  8%)   0.00 (  0%)   0.03 (  4%)  2550k (  5%)
+ parser inl. meth. body             :   0.01 (  4%)   0.00 (  0%)   0.04 (  5%)  4811k ( 10%)
+ template instantiation             :   0.05 ( 20%)   0.03 ( 15%)   0.06 (  8%)  8862k ( 18%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   515k (  1%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    26k (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7880  (  0%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)  5120  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    38k (  0%)
+ TOTAL                              :   0.25          0.20          0.75           47M
+
+# Exit code: 0

@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: tool_cb_soc.c
+# Output: libcurltool_la-tool_cb_soc.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I../lib -I. -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c tool_cb_soc.c -fPIC -DPIC -o libcurltool_la-tool_cb_soc.o
+# Timestamp: 2026-01-05T20:44:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 21%)
+ phase parsing                      :   0.02 (100%)   0.03 ( 75%)   0.07 ( 88%)  4870k ( 56%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 25%)   0.01 ( 12%)  1940k ( 22%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 25%)   0.02 ( 25%)  2104k ( 24%)
+ lexical analysis                   :   0.01 ( 50%)   0.01 ( 25%)   0.02 ( 25%)     0  (  0%)
+ parser (global)                    :   0.01 ( 50%)   0.01 ( 25%)   0.03 ( 38%)  2242k ( 26%)
+ tree CFG construction              :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    50k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1275k ( 15%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)    12k (  0%)
+ TOTAL                              :   0.02          0.04          0.08         8630k

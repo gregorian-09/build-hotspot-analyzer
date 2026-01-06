@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/distribution_test_util.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_internal_distribution_test_util.dir/internal/distribution_test_util.cc.o -MF absl/random/CMakeFiles/random_internal_distribution_test_util.dir/internal/distribution_test_util.cc.o.d -o absl/random/CMakeFiles/random_internal_distribution_test_util.dir/internal/distribution_test_util.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/random/internal/distribution_test_util.cc
+# Timestamp: 2026-01-05T17:54:19+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.53 ( 75%)   0.44 ( 86%)   1.29 ( 83%)   100M ( 85%)
+ phase lang. deferred               :   0.07 ( 10%)   0.04 (  8%)   0.12 (  8%)    11M ( 10%)
+ phase opt and generate             :   0.11 ( 15%)   0.03 (  6%)   0.14 (  9%)  4400k (  4%)
+ |name lookup                       :   0.10 ( 14%)   0.07 ( 14%)   0.25 ( 16%)  3791k (  3%)
+ |overload resolution               :   0.07 ( 10%)   0.03 (  6%)   0.08 (  5%)    12M ( 11%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   558k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  6176  (  0%)
+ callgraph functions expansion      :   0.09 ( 13%)   0.02 (  4%)   0.11 (  7%)  2394k (  2%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  2%)   0.03 (  2%)  1062k (  1%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   144k (  0%)
+ preprocessing                      :   0.07 ( 10%)   0.10 ( 20%)   0.30 ( 19%)  6485k (  5%)
+ parser (global)                    :   0.16 ( 23%)   0.13 ( 25%)   0.40 ( 26%)    31M ( 27%)
+ parser struct body                 :   0.08 ( 11%)   0.05 ( 10%)   0.09 (  6%)    16M ( 14%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   155k (  0%)
+ parser function body               :   0.04 (  6%)   0.03 (  6%)   0.12 (  8%)  7529k (  6%)
+ parser inl. func. body             :   0.03 (  4%)   0.03 (  6%)   0.10 (  6%)    11M (  9%)
+ parser inl. meth. body             :   0.04 (  6%)   0.04 (  8%)   0.10 (  6%)  9134k (  8%)
+ template instantiation             :   0.15 ( 21%)   0.09 ( 18%)   0.26 ( 17%)    29M ( 25%)
+ constant expression evaluation     :   0.02 (  3%)   0.00 (  0%)   0.04 (  3%)   691k (  1%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    42k (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   640  (  0%)
+ tree SSA incremental               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    34k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   212k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    42k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  6864  (  0%)
+ tree PRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    53k (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   128  (  0%)
+ forward prop                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2232  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   155k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    51k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.05 (  3%)   583k (  0%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    55k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7776  (  0%)
+ load CSE after reload              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   664  (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    46k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   0.71          0.51          1.56          118M
+
+# Exit code: 0

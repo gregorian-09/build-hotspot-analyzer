@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/cache.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/cache.cc.o -MF CMakeFiles/leveldb.dir/util/cache.cc.o.d -o CMakeFiles/leveldb.dir/util/cache.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/cache.cc
+# Timestamp: 2026-01-05T19:49:00+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1744k (  4%)
+ phase parsing                      :   0.16 ( 48%)   0.16 ( 89%)   0.43 ( 67%)    35M ( 79%)
+ phase lang. deferred               :   0.02 (  6%)   0.01 (  6%)   0.03 (  5%)  3132k (  7%)
+ phase opt and generate             :   0.15 ( 45%)   0.01 (  6%)   0.17 ( 27%)  4859k ( 11%)
+ |name lookup                       :   0.05 ( 15%)   0.04 ( 22%)   0.12 ( 19%)  1724k (  4%)
+ |overload resolution               :   0.02 (  6%)   0.01 (  6%)   0.04 (  6%)  2246k (  5%)
+ callgraph functions expansion      :   0.12 ( 36%)   0.00 (  0%)   0.13 ( 20%)  3407k (  7%)
+ callgraph ipa passes               :   0.02 (  6%)   0.01 (  6%)   0.04 (  6%)  1004k (  2%)
+ ipa cp                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ ipa pure const                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  4904  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ preprocessing                      :   0.02 (  6%)   0.05 ( 28%)   0.12 ( 19%)  1999k (  4%)
+ parser (global)                    :   0.07 ( 21%)   0.06 ( 33%)   0.09 ( 14%)    13M ( 29%)
+ parser struct body                 :   0.02 (  6%)   0.01 (  6%)   0.06 (  9%)  7332k ( 16%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   527k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)  2712k (  6%)
+ parser inl. meth. body             :   0.03 (  9%)   0.04 ( 22%)   0.04 (  6%)  5547k ( 12%)
+ template instantiation             :   0.03 (  9%)   0.01 (  6%)   0.10 ( 16%)  7453k ( 16%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   179k (  0%)
+ integration                        :   0.00 (  0%)   0.01 (  6%)   0.01 (  2%)   473k (  1%)
+ tree gimplify                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   181k (  0%)
+ tree tail merge                    :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree PTA                           :   0.02 (  6%)   0.00 (  0%)   0.03 (  5%)    41k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    62k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    43k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    86k (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6160  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6728  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    46k (  0%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   135k (  0%)
+ integrated RA                      :   0.02 (  6%)   0.00 (  0%)   0.01 (  2%)   523k (  1%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ reload CSE regs                    :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    44k (  0%)
+ hard reg cprop                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   552  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    28k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    72k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    54k (  0%)
+ TOTAL                              :   0.33          0.18          0.64           44M
+
+# Exit code: 0

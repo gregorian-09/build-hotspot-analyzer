@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: llist.c
+# Output: libcurlu_la-llist.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c llist.c -fPIC -DPIC -o libcurlu_la-llist.o
+# Timestamp: 2026-01-05T20:44:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1819k ( 20%)
+ phase parsing                      :   0.02 ( 50%)   0.03 ( 75%)   0.08 ( 62%)  4622k ( 51%)
+ phase opt and generate             :   0.02 ( 50%)   0.01 ( 25%)   0.03 ( 23%)  2553k ( 28%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 25%)   0.01 (  8%)  1983k ( 22%)
+ lexical analysis                   :   0.02 ( 50%)   0.01 ( 25%)   0.04 ( 31%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 ( 15%)  2130k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)   114k (  1%)
+ out of ssa                         :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  1888  (  0%)
+ varconst                           :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 ( 25%)   0.01 ( 25%)   0.00 (  0%)  1592k ( 18%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)  1584  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  8%)    12k (  0%)
+ TOTAL                              :   0.04          0.04          0.13         8996k

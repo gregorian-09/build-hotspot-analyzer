@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: src/pac.c
+# Output: src/pac.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/pac.o src/pac.c
+# Timestamp: 2026-01-05T20:43:13+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  5%)
+ phase parsing                      :   0.13 ( 62%)   0.22 ( 96%)   0.37 ( 79%)    25M ( 77%)
+ phase opt and generate             :   0.08 ( 38%)   0.01 (  4%)   0.10 ( 21%)  5876k ( 18%)
+ callgraph ipa passes               :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)  1241k (  4%)
+ trivially dead code                :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  3168  (  0%)
+ preprocessing                      :   0.02 ( 10%)   0.04 ( 17%)   0.12 ( 26%)    13M ( 42%)
+ lexical analysis                   :   0.03 ( 14%)   0.08 ( 35%)   0.15 ( 32%)     0  (  0%)
+ parser (global)                    :   0.03 ( 14%)   0.03 ( 13%)   0.03 (  6%)  5726k ( 17%)
+ parser inl. func. body             :   0.05 ( 24%)   0.07 ( 30%)   0.07 ( 15%)  5390k ( 16%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   443k (  1%)
+ tree CFG cleanup                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   127k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)     0  (  0%)
+ expand                             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   998k (  3%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)  1916k (  6%)
+ LRA non-specific                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ final                              :   0.01 (  5%)   0.00 (  0%)   0.04 (  9%)   232k (  1%)
+ rest of compilation                :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)   163k (  0%)
+ TOTAL                              :   0.21          0.23          0.47           32M

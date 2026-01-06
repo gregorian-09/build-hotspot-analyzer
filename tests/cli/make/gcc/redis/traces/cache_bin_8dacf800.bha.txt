@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: src/cache_bin.c
+# Output: src/cache_bin.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/cache_bin.o src/cache_bin.c
+# Timestamp: 2026-01-05T20:43:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1819k (  6%)
+ phase parsing                      :   0.16 ( 89%)   0.20 (100%)   0.36 ( 90%)    25M ( 90%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    96  (  0%)
+ phase opt and generate             :   0.02 ( 11%)   0.00 (  0%)   0.02 (  5%)   991k (  3%)
+ preprocessing                      :   0.03 ( 17%)   0.06 ( 30%)   0.12 ( 30%)    13M ( 50%)
+ lexical analysis                   :   0.09 ( 50%)   0.05 ( 25%)   0.14 ( 35%)     0  (  0%)
+ parser (global)                    :   0.01 (  6%)   0.01 (  5%)   0.03 (  7%)  5685k ( 20%)
+ parser struct body                 :   0.01 (  6%)   0.02 ( 10%)   0.01 (  2%)   254k (  1%)
+ parser inl. func. body             :   0.02 ( 11%)   0.06 ( 30%)   0.07 ( 18%)  5382k ( 19%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    22k (  0%)
+ final                              :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ initialize rtl                     :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    34k (  0%)
+ TOTAL                              :   0.18          0.20          0.40           27M

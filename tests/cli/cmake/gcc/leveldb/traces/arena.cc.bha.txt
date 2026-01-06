@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/arena.cc
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/leveldb.dir/util/arena.cc.o -MF CMakeFiles/leveldb.dir/util/arena.cc.o.d -o CMakeFiles/leveldb.dir/util/arena.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/util/arena.cc
+# Timestamp: 2026-01-05T19:48:59+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1744k (  7%)
+ phase parsing                      :   0.08 ( 67%)   0.08 ( 89%)   0.30 ( 79%)    18M ( 80%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1185k (  5%)
+ phase opt and generate             :   0.04 ( 33%)   0.01 ( 11%)   0.06 ( 16%)  1899k (  8%)
+ |name lookup                       :   0.02 ( 17%)   0.01 ( 11%)   0.07 ( 18%)  1032k (  4%)
+ callgraph construction             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    74k (  0%)
+ callgraph functions expansion      :   0.03 ( 25%)   0.00 (  0%)   0.04 ( 11%)   897k (  4%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   698k (  3%)
+ ipa inheritance graph              :   0.00 (  0%)   0.01 ( 11%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.03 ( 33%)   0.05 ( 13%)   637k (  3%)
+ parser (global)                    :   0.03 ( 25%)   0.01 ( 11%)   0.10 ( 26%)  6107k ( 26%)
+ parser struct body                 :   0.01 (  8%)   0.02 ( 22%)   0.03 (  8%)  4839k ( 21%)
+ parser function body               :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   938k (  4%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  8%)   824k (  3%)
+ parser inl. meth. body             :   0.02 ( 17%)   0.01 ( 11%)   0.04 ( 11%)  2056k (  9%)
+ template instantiation             :   0.01 (  8%)   0.01 ( 11%)   0.06 ( 16%)  4510k ( 19%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    70k (  0%)
+ tree PTA                           :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    41k (  0%)
+ PRE                                :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)   304  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)    16k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   153k (  1%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  3376  (  0%)
+ TOTAL                              :   0.12          0.09          0.38           23M
+
+# Exit code: 0

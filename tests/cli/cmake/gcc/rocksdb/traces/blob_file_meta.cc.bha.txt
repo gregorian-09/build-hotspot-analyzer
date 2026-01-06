@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/blob/blob_file_meta.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/db/blob/blob_file_meta.cc.o -MF CMakeFiles/rocksdb-shared.dir/db/blob/blob_file_meta.cc.o.d -o CMakeFiles/rocksdb-shared.dir/db/blob/blob_file_meta.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/db/blob/blob_file_meta.cc
+# Timestamp: 2026-01-05T19:33:31+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  1886k (  1%)
+ phase parsing                      :   1.34 ( 70%)   0.90 ( 84%)   3.45 ( 71%)   187M ( 78%)
+ phase lang. deferred               :   0.46 ( 24%)   0.14 ( 13%)   1.10 ( 23%)    45M ( 19%)
+ phase opt and generate             :   0.11 (  6%)   0.03 (  3%)   0.28 (  6%)  5875k (  2%)
+ |name lookup                       :   0.36 ( 19%)   0.17 ( 16%)   1.10 ( 23%)  7415k (  3%)
+ |overload resolution               :   0.42 ( 22%)   0.18 ( 17%)   1.05 ( 22%)    39M ( 16%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)  1301k (  1%)
+ callgraph optimization             :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)    10k (  0%)
+ callgraph functions expansion      :   0.06 (  3%)   0.02 (  2%)   0.15 (  3%)  1911k (  1%)
+ callgraph ipa passes               :   0.03 (  2%)   0.01 (  1%)   0.10 (  2%)  2058k (  1%)
+ ipa dead code removal              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ ipa inheritance graph              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   111k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.11 (  6%)   0.20 ( 19%)   0.43 (  9%)  3251k (  1%)
+ parser (global)                    :   0.12 (  6%)   0.26 ( 24%)   0.44 (  9%)    52M ( 22%)
+ parser struct body                 :   0.20 ( 10%)   0.10 (  9%)   0.47 ( 10%)    29M ( 12%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   362k (  0%)
+ parser function body               :   0.06 (  3%)   0.02 (  2%)   0.14 (  3%)  3141k (  1%)
+ parser inl. func. body             :   0.10 (  5%)   0.03 (  3%)   0.18 (  4%)  8772k (  4%)
+ parser inl. meth. body             :   0.19 ( 10%)   0.08 (  7%)   0.61 ( 13%)    26M ( 11%)
+ template instantiation             :   0.91 ( 48%)   0.34 ( 32%)   2.02 ( 42%)   103M ( 43%)
+ constant expression evaluation     :   0.05 (  3%)   0.01 (  1%)   0.10 (  2%)  1668k (  1%)
+ constraint normalization           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   524k (  0%)
+ constraint satisfaction            :   0.03 (  2%)   0.00 (  0%)   0.06 (  1%)  3330k (  1%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   208k (  0%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  1010k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  1448  (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    45k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    99k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    67k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    51k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    26k (  0%)
+ tree PRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    39k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   142k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.05 (  1%)  1152  (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   131k (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8000  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   222k (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ LRA rematerialization              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.04 (  1%)     0  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ TOTAL                              :   1.91          1.07          4.86          240M
+
+# Exit code: 0

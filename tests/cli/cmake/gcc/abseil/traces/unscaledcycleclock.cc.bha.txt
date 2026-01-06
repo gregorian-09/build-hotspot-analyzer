@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/unscaledcycleclock.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/base.dir/internal/unscaledcycleclock.cc.o -MF absl/base/CMakeFiles/base.dir/internal/unscaledcycleclock.cc.o.d -o absl/base/CMakeFiles/base.dir/internal/unscaledcycleclock.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/base/internal/unscaledcycleclock.cc
+# Timestamp: 2026-01-05T17:53:58+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)  1882k ( 30%)
+ phase parsing                      :   0.02 (100%)   0.02 (100%)   0.04 ( 57%)  4292k ( 69%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)   483k (  8%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.03 ( 43%)   443k (  7%)
+ parser (global)                    :   0.01 ( 50%)   0.01 ( 50%)   0.01 ( 14%)  1625k ( 26%)
+ parser struct body                 :   0.01 ( 50%)   0.00 (  0%)   0.00 (  0%)  1313k ( 21%)
+ template instantiation             :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)   701k ( 11%)
+ TOTAL                              :   0.02          0.02          0.07         6253k
+
+# Exit code: 0

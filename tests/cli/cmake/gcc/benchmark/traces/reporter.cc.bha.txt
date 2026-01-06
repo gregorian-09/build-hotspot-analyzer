@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/reporter.cc
+# Command: /usr/bin/g++ -DBENCHMARK_HAS_PTHREAD_AFFINITY -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src -ftime-report -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark.dir/reporter.cc.o -MF src/CMakeFiles/benchmark.dir/reporter.cc.o.d -o src/CMakeFiles/benchmark.dir/reporter.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/benchmark/repo/src/reporter.cc
+# Timestamp: 2026-01-05T18:44:13+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1752k (  1%)
+ phase parsing                      :   0.54 ( 79%)   0.48 ( 91%)   1.71 ( 88%)   100M ( 84%)
+ phase lang. deferred               :   0.08 ( 12%)   0.04 (  8%)   0.12 (  6%)    13M ( 11%)
+ phase opt and generate             :   0.06 (  9%)   0.01 (  2%)   0.11 (  6%)  3443k (  3%)
+ |name lookup                       :   0.09 ( 13%)   0.05 (  9%)   0.44 ( 23%)  4538k (  4%)
+ |overload resolution               :   0.11 ( 16%)   0.06 ( 11%)   0.20 ( 10%)    11M ( 10%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   457k (  0%)
+ callgraph functions expansion      :   0.03 (  4%)   0.01 (  2%)   0.07 (  4%)  1305k (  1%)
+ callgraph ipa passes               :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)  1265k (  1%)
+ ipa inlining heuristics            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    82k (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ preprocessing                      :   0.09 ( 13%)   0.13 ( 25%)   0.19 ( 10%)  6297k (  5%)
+ parser (global)                    :   0.05 (  7%)   0.12 ( 23%)   0.40 ( 21%)    31M ( 27%)
+ parser struct body                 :   0.13 ( 19%)   0.01 (  2%)   0.15 (  8%)    16M ( 14%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   160k (  0%)
+ parser function body               :   0.06 (  9%)   0.05 (  9%)   0.15 (  8%)  4218k (  3%)
+ parser inl. func. body             :   0.04 (  6%)   0.03 (  6%)   0.10 (  5%)  5226k (  4%)
+ parser inl. meth. body             :   0.05 (  7%)   0.06 ( 11%)   0.26 ( 13%) 10202k (  8%)
+ template instantiation             :   0.19 ( 28%)   0.11 ( 21%)   0.51 ( 26%)    38M ( 33%)
+ constant expression evaluation     :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   334k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   134k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16k (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9624  (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3592  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   111k (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   140k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  2%)   0.01 (  1%)   384  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   147k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   307k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ variable output                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2648  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ TOTAL                              :   0.68          0.53          1.95          118M
+
+# Exit code: 0

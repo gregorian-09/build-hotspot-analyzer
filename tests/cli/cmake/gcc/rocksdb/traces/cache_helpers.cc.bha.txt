@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/cache_helpers.cc
+# Command: /usr/bin/g++ -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -Drocksdb_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/include -ftime-report -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -fPIC -MD -MT CMakeFiles/rocksdb-shared.dir/cache/cache_helpers.cc.o -MF CMakeFiles/rocksdb-shared.dir/cache/cache_helpers.cc.o.d -o CMakeFiles/rocksdb-shared.dir/cache/cache_helpers.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/rocksdb/repo/cache/cache_helpers.cc
+# Timestamp: 2026-01-05T19:33:11+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1886k (  1%)
+ phase parsing                      :   1.19 ( 75%)   0.68 ( 82%)   3.26 ( 77%)   183M ( 79%)
+ phase lang. deferred               :   0.34 ( 22%)   0.13 ( 16%)   0.89 ( 21%)    44M ( 19%)
+ phase opt and generate             :   0.05 (  3%)   0.02 (  2%)   0.08 (  2%)  2863k (  1%)
+ |name lookup                       :   0.41 ( 26%)   0.10 ( 12%)   1.26 ( 30%)  7046k (  3%)
+ |overload resolution               :   0.35 ( 22%)   0.10 ( 12%)   0.99 ( 23%)    37M ( 16%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  1%)   0.01 (  1%)   0.01 (  0%)  1164k (  0%)
+ callgraph functions expansion      :   0.03 (  2%)   0.01 (  1%)   0.05 (  1%)  1033k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   513k (  0%)
+ preprocessing                      :   0.07 (  4%)   0.17 ( 20%)   0.28 (  7%)  3255k (  1%)
+ parser (global)                    :   0.17 ( 11%)   0.14 ( 17%)   0.56 ( 13%)    54M ( 23%)
+ parser struct body                 :   0.09 (  6%)   0.08 ( 10%)   0.37 (  9%)    30M ( 13%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   426k (  0%)
+ parser function body               :   0.04 (  3%)   0.01 (  1%)   0.06 (  1%)  2952k (  1%)
+ parser inl. func. body             :   0.07 (  4%)   0.02 (  2%)   0.20 (  5%)  7978k (  3%)
+ parser inl. meth. body             :   0.27 ( 17%)   0.08 ( 10%)   0.54 ( 13%)    26M ( 11%)
+ template instantiation             :   0.75 ( 47%)   0.28 ( 34%)   1.90 ( 45%)    98M ( 42%)
+ constant expression evaluation     :   0.04 (  3%)   0.01 (  1%)   0.10 (  2%)  1628k (  1%)
+ constraint normalization           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   519k (  0%)
+ constraint satisfaction            :   0.02 (  1%)   0.02 (  2%)   0.03 (  1%)  2981k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    82k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    18k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    16k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   126k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.06 (  1%)  5136  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    16k (  0%)
+ combiner                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   180k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    17k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ TOTAL                              :   1.58          0.83          4.24          232M
+
+# Exit code: 0

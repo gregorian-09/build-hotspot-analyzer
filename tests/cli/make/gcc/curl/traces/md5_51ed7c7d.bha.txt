@@ -1,0 +1,24 @@
+# BHA Trace
+# Source: md5.c
+# Output: libcurlu_la-md5.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c md5.c -fPIC -DPIC -o libcurlu_la-md5.o
+# Timestamp: 2026-01-05T20:44:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 18%)
+ phase parsing                      :   0.03 ( 75%)   0.04 ( 80%)   0.11 ( 73%)  5091k ( 50%)
+ phase opt and generate             :   0.01 ( 25%)   0.01 ( 20%)   0.03 ( 20%)  3335k ( 33%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   290k (  3%)
+ preprocessing                      :   0.03 ( 75%)   0.03 ( 60%)   0.07 ( 47%)  2102k ( 21%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.04 ( 27%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  2137k ( 21%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    54k (  1%)
+ expand                             :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)   390k (  4%)
+ post expand cleanups               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1680k ( 16%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   143k (  1%)
+ TOTAL                              :   0.04          0.05          0.15           10M

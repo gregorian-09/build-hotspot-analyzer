@@ -1,0 +1,18 @@
+# BHA Trace
+# Source: alloc.c
+# Output: 
+# Compiler: gcc
+# Command: gcc -std=c99 -c -O3 -fPIC -ftime-report -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -ftime-report -pedantic alloc.c
+# Timestamp: 2026-01-05T20:42:43+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1532k ( 51%)
+ phase parsing                      :   0.01 (100%)   0.01 (100%)   0.07 ( 88%)  1226k ( 41%)
+ phase last asm                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)  2984  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 (100%)   0.02 ( 25%)   427k ( 14%)
+ lexical analysis                   :   0.01 (100%)   0.00 (  0%)   0.05 ( 63%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 ( 12%)   194k (  6%)
+ TOTAL                              :   0.01          0.01          0.08         2991k

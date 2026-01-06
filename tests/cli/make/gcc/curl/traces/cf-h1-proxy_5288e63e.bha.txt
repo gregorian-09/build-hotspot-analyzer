@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: cf-h1-proxy.c
+# Output: libcurlu_la-cf-h1-proxy.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c cf-h1-proxy.c -fPIC -DPIC -o libcurlu_la-cf-h1-proxy.o
+# Timestamp: 2026-01-05T20:44:32+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  1819k ( 14%)
+ phase parsing                      :   0.04 ( 57%)   0.05 ( 83%)   0.19 ( 68%)  6890k ( 53%)
+ phase opt and generate             :   0.03 ( 43%)   0.01 ( 17%)   0.08 ( 29%)  4310k ( 33%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    86k (  1%)
+ callgraph ipa passes               :   0.01 ( 14%)   0.00 (  0%)   0.01 (  4%)   430k (  3%)
+ preprocessing                      :   0.01 ( 14%)   0.04 ( 67%)   0.04 ( 14%)  2445k ( 19%)
+ lexical analysis                   :   0.02 ( 29%)   0.00 (  0%)   0.11 ( 39%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.00 (  0%)   0.02 (  7%)  3362k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)   366k (  3%)
+ inline parameters                  :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.01 ( 17%)   0.00 (  0%)   189k (  1%)
+ integrated RA                      :   0.02 ( 29%)   0.00 (  0%)   0.01 (  4%)  1862k ( 14%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.04 ( 14%)   178k (  1%)
+ TOTAL                              :   0.07          0.06          0.28           12M

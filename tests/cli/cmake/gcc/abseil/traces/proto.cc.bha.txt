@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/internal/proto.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/log/CMakeFiles/log_internal_proto.dir/internal/proto.cc.o -MF absl/log/CMakeFiles/log_internal_proto.dir/internal/proto.cc.o.d -o absl/log/CMakeFiles/log_internal_proto.dir/internal/proto.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/log/internal/proto.cc
+# Timestamp: 2026-01-05T17:54:10+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  2%)
+ phase parsing                      :   0.33 ( 75%)   0.31 ( 91%)   1.09 ( 88%)    67M ( 87%)
+ phase lang. deferred               :   0.02 (  5%)   0.01 (  3%)   0.03 (  2%)  3544k (  4%)
+ phase opt and generate             :   0.09 ( 20%)   0.02 (  6%)   0.11 (  9%)  4573k (  6%)
+ |name lookup                       :   0.09 ( 20%)   0.05 ( 15%)   0.31 ( 25%)  2918k (  4%)
+ |overload resolution               :   0.01 (  2%)   0.03 (  9%)   0.07 (  6%)  3875k (  5%)
+ callgraph functions expansion      :   0.08 ( 18%)   0.01 (  3%)   0.08 (  6%)  2887k (  4%)
+ callgraph ipa passes               :   0.01 (  2%)   0.01 (  3%)   0.03 (  2%)  1070k (  1%)
+ ipa icf                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.04 (  9%)   0.07 ( 21%)   0.19 ( 15%)  2382k (  3%)
+ parser (global)                    :   0.07 ( 16%)   0.09 ( 26%)   0.37 ( 30%)    28M ( 37%)
+ parser struct body                 :   0.09 ( 20%)   0.02 (  6%)   0.15 ( 12%)    14M ( 18%)
+ parser enumerator list             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    59k (  0%)
+ parser function body               :   0.00 (  0%)   0.02 (  6%)   0.04 (  3%)  1861k (  2%)
+ parser inl. func. body             :   0.05 ( 11%)   0.02 (  6%)   0.08 (  6%)  3739k (  5%)
+ parser inl. meth. body             :   0.05 ( 11%)   0.05 ( 15%)   0.11 (  9%)  6665k (  8%)
+ template instantiation             :   0.04 (  9%)   0.04 ( 12%)   0.18 ( 15%)    13M ( 18%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   326k (  0%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)    10k (  0%)
+ tree VRP                           :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   126k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    59k (  0%)
+ tree CCP                           :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    16k (  0%)
+ tree PRE                           :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)    97k (  0%)
+ tree forward propagate             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   392k (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   332k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   357k (  0%)
+ reload CSE regs                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ peephole 2                         :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  7352  (  0%)
+ hard reg cprop                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   168  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    50k (  0%)
+ access analysis                    :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  4544  (  0%)
+ TOTAL                              :   0.44          0.34          1.24           77M
+
+# Exit code: 0

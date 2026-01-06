@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/cordz_handle.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/cordz_handle.dir/internal/cordz_handle.cc.o -MF absl/strings/CMakeFiles/cordz_handle.dir/internal/cordz_handle.cc.o.d -o absl/strings/CMakeFiles/cordz_handle.dir/internal/cordz_handle.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/strings/internal/cordz_handle.cc
+# Timestamp: 2026-01-05T17:54:30+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1882k (  2%)
+ phase parsing                      :   0.46 ( 73%)   0.36 ( 86%)   1.02 ( 74%)    87M ( 84%)
+ phase lang. deferred               :   0.05 (  8%)   0.04 ( 10%)   0.17 ( 12%)    10M ( 10%)
+ phase opt and generate             :   0.12 ( 19%)   0.02 (  5%)   0.17 ( 12%)  4603k (  4%)
+ |name lookup                       :   0.11 ( 17%)   0.08 ( 19%)   0.23 ( 17%)  3374k (  3%)
+ |overload resolution               :   0.06 ( 10%)   0.04 ( 10%)   0.12 (  9%)  7333k (  7%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   438k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ callgraph functions expansion      :   0.09 ( 14%)   0.01 (  2%)   0.11 (  8%)  1986k (  2%)
+ callgraph ipa passes               :   0.02 (  3%)   0.01 (  2%)   0.04 (  3%)  1595k (  1%)
+ cfg cleanup                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    60k (  0%)
+ rebuild jump labels                :   0.01 (  2%)   0.01 (  2%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.09 ( 14%)   0.14 ( 33%)   0.24 ( 17%)  6544k (  6%)
+ parser (global)                    :   0.08 ( 13%)   0.06 ( 14%)   0.15 ( 11%)    30M ( 29%)
+ parser struct body                 :   0.08 ( 13%)   0.04 ( 10%)   0.14 ( 10%)    17M ( 17%)
+ parser function body               :   0.06 ( 10%)   0.05 ( 12%)   0.10 (  7%)  3700k (  3%)
+ parser inl. func. body             :   0.01 (  2%)   0.01 (  2%)   0.09 (  7%)  6561k (  6%)
+ parser inl. meth. body             :   0.04 (  6%)   0.00 (  0%)   0.05 (  4%)  7212k (  7%)
+ template instantiation             :   0.13 ( 21%)   0.09 ( 21%)   0.37 ( 27%)    26M ( 25%)
+ constant expression evaluation     :   0.02 (  3%)   0.01 (  2%)   0.05 (  4%)   408k (  0%)
+ integration                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   467k (  0%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   358k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   139k (  0%)
+ tree copy propagation              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   592  (  0%)
+ tree SSA incremental               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    44k (  0%)
+ backwards jump threading           :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    71k (  0%)
+ tree SRA                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree CCP                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    57k (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    19k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   327k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  0%)
+ TOTAL                              :   0.63          0.42          1.38          104M
+
+# Exit code: 0

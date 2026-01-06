@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/block_builder.cc
+# Output: CMakeFiles/leveldb.dir/table/block_builder.cc.o
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/include -ftime-report -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/table/block_builder.cc.o -MF CMakeFiles/leveldb.dir/table/block_builder.cc.o.d -o CMakeFiles/leveldb.dir/table/block_builder.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/repo/table/block_builder.cc
+# Timestamp: 2026-01-05T20:10:39+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1880k (  3%)
+ phase parsing                      :   0.30 ( 75%)   0.23 ( 88%)   2.02 ( 68%)    47M ( 84%)
+ phase lang. deferred               :   0.03 (  8%)   0.01 (  4%)   0.37 ( 13%)  5051k (  9%)
+ phase opt and generate             :   0.07 ( 18%)   0.02 (  8%)   0.56 ( 19%)  2569k (  4%)
+ |name lookup                       :   0.05 ( 13%)   0.04 ( 15%)   0.69 ( 23%)  2380k (  4%)
+ |overload resolution               :   0.05 ( 13%)   0.01 (  4%)   0.23 (  8%)  3227k (  6%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.06 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   304k (  1%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.03 (  1%)  7120  (  0%)
+ callgraph functions expansion      :   0.04 ( 10%)   0.01 (  4%)   0.25 (  8%)   921k (  2%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  4%)   0.24 (  8%)  1018k (  2%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    48k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.04 ( 10%)   0.08 ( 31%)   0.22 (  7%)  2135k (  4%)
+ parser (global)                    :   0.06 ( 15%)   0.07 ( 27%)   0.47 ( 16%)    16M ( 29%)
+ parser struct body                 :   0.02 (  5%)   0.01 (  4%)   0.30 ( 10%) 10081k ( 17%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.10 (  3%)  1767k (  3%)
+ parser inl. func. body             :   0.05 ( 13%)   0.01 (  4%)   0.09 (  3%)  4458k (  8%)
+ parser inl. meth. body             :   0.05 ( 13%)   0.03 ( 12%)   0.32 ( 11%)  4837k (  8%)
+ template instantiation             :   0.10 ( 25%)   0.04 ( 15%)   0.75 ( 25%)    13M ( 23%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.10 (  3%)   181k (  0%)
+ tree gimplify                      :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)   207k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    94k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    25k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.04 (  1%)   172k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    37k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    10k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    21k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9040  (  0%)
+ tree DSE                           :   0.01 (  3%)   0.00 (  0%)   0.07 (  2%)  4192  (  0%)
+ tree iv optimization               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  7080  (  0%)
+ tree copy headers                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2520  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)    81k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  4376  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    13k (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)   176k (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    80  (  0%)
+ peephole 2                         :   0.01 (  3%)   0.00 (  0%)   0.03 (  1%)  2048  (  0%)
+ machine dep reorg                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   624  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    25k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   0.40          0.26          2.96           56M

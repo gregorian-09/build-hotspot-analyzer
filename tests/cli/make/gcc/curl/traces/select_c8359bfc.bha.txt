@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: select.c
+# Output: libcurlu_la-select.o
+# Compiler: gcc
+# Command: gcc -DHAVE_CONFIG_H -I../include -I../lib -I. -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -ftime-report -c select.c -fPIC -DPIC -o libcurlu_la-select.o
+# Timestamp: 2026-01-05T20:44:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 15%)
+ phase parsing                      :   0.04 ( 57%)   0.06 ( 86%)   0.20 ( 67%)  6341k ( 54%)
+ phase opt and generate             :   0.03 ( 43%)   0.01 ( 14%)   0.10 ( 33%)  3690k ( 31%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph ipa passes               :   0.01 ( 14%)   0.00 (  0%)   0.01 (  3%)   335k (  3%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.01 ( 14%)   0.01 (  3%)    27k (  0%)
+ preprocessing                      :   0.00 (  0%)   0.02 ( 29%)   0.04 ( 13%)  2360k ( 20%)
+ lexical analysis                   :   0.01 ( 14%)   0.02 ( 29%)   0.14 ( 47%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.02 ( 29%)   0.01 (  3%)  2803k ( 24%)
+ parser struct body                 :   0.02 ( 29%)   0.00 (  0%)   0.00 (  0%)   337k (  3%)
+ parser enumerator list             :   0.01 ( 14%)   0.00 (  0%)   0.01 (  3%)   342k (  3%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   688  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    74k (  1%)
+ post expand cleanups               :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    29k (  0%)
+ loop fini                          :   0.01 ( 14%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1854k ( 16%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    25k (  0%)
+ LRA create live ranges             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)   288  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   158k (  1%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  7%)   180k (  2%)
+ TOTAL                              :   0.07          0.07          0.30           11M

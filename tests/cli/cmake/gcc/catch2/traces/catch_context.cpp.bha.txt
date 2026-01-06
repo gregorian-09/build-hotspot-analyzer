@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/internal/catch_context.cpp
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/.. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/build/generated-includes -ftime-report -O3 -DNDEBUG -ffile-prefix-map=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/internal/catch_context.cpp.o -MF src/CMakeFiles/Catch2.dir/catch2/internal/catch_context.cpp.o.d -o src/CMakeFiles/Catch2.dir/catch2/internal/catch_context.cpp.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/catch2/repo/src/catch2/internal/catch_context.cpp
+# Timestamp: 2026-01-05T18:11:43+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k ( 58%)
+ phase parsing                      :   0.01 (100%)   0.00 (  0%)   0.01 ( 33%)  1182k ( 36%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 67%)   190k (  6%)
+ |name lookup                       :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)   148k (  5%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 67%)   137k (  4%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   265k (  8%)
+ parser (global)                    :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)   698k ( 21%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.02 ( 67%)     0  (  0%)
+ TOTAL                              :   0.01          0.00          0.03         3255k
+
+# Exit code: 0

@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/flags/commandlineflag.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/flags/CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o -MF absl/flags/CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o.d -o absl/flags/CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/flags/commandlineflag.cc
+# Timestamp: 2026-01-05T17:54:05+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1882k (  3%)
+ phase parsing                      :   0.29 ( 91%)   0.26 (100%)   0.91 ( 96%)    52M ( 90%)
+ phase lang. deferred               :   0.02 (  6%)   0.00 (  0%)   0.02 (  2%)  3647k (  6%)
+ phase opt and generate             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   354k (  1%)
+ |name lookup                       :   0.06 ( 19%)   0.08 ( 31%)   0.21 ( 22%)  2587k (  4%)
+ |overload resolution               :   0.02 (  6%)   0.00 (  0%)   0.04 (  4%)  3374k (  6%)
+ callgraph functions expansion      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   163k (  0%)
+ preprocessing                      :   0.05 ( 16%)   0.05 ( 19%)   0.14 ( 15%)  2102k (  4%)
+ parser (global)                    :   0.05 ( 16%)   0.09 ( 35%)   0.30 ( 32%)    17M ( 31%)
+ parser struct body                 :   0.05 ( 16%)   0.03 ( 12%)   0.14 ( 15%)    11M ( 19%)
+ parser function body               :   0.01 (  3%)   0.02 (  8%)   0.01 (  1%)  1528k (  3%)
+ parser inl. func. body             :   0.03 (  9%)   0.01 (  4%)   0.08 (  8%)  3563k (  6%)
+ parser inl. meth. body             :   0.03 (  9%)   0.01 (  4%)   0.12 ( 13%)  6740k ( 11%)
+ template instantiation             :   0.09 ( 28%)   0.05 ( 19%)   0.14 ( 15%)    12M ( 22%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1600  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.32          0.26          0.95           57M
+
+# Exit code: 0

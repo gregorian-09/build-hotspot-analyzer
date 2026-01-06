@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jcprepct-12.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jcprepct-12.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jcprepct-12.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jcprepct-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jcprepct-12.c
+# Timestamp: 2026-01-05T18:14:50+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k ( 27%)
+ phase parsing                      :   0.02 ( 25%)   0.02 (100%)   0.10 ( 48%)  2645k ( 39%)
+ phase opt and generate             :   0.06 ( 75%)   0.00 (  0%)   0.11 ( 52%)  2365k ( 35%)
+ callgraph functions expansion      :   0.05 ( 62%)   0.00 (  0%)   0.09 ( 43%)  1907k ( 28%)
+ callgraph ipa passes               :   0.01 ( 12%)   0.00 (  0%)   0.02 ( 10%)   315k (  5%)
+ ipa cp                             :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  3104  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.01 ( 50%)   0.02 ( 10%)   749k ( 11%)
+ lexical analysis                   :   0.01 ( 12%)   0.01 ( 50%)   0.05 ( 24%)     0  (  0%)
+ parser (global)                    :   0.01 ( 12%)   0.00 (  0%)   0.03 ( 14%)  1312k ( 19%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    48k (  1%)
+ tree copy propagation              :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)   560  (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    91k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)  5760  (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   224  (  0%)
+ tree PRE                           :   0.01 ( 13%)   0.00 (  0%)   0.00 (  0%)    70k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    21k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   114k (  2%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    28k (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)   472  (  0%)
+ combiner                           :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)    53k (  1%)
+ integrated RA                      :   0.01 ( 13%)   0.00 (  0%)   0.01 (  5%)   259k (  4%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  5%)    31k (  0%)
+ remove unused locals               :   0.01 ( 12%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.08          0.02          0.21         6831k
+
+# Exit code: 0

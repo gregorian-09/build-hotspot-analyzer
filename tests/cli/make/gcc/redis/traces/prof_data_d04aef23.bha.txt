@@ -1,0 +1,56 @@
+# BHA Trace
+# Source: src/prof_data.c
+# Output: src/prof_data.o
+# Compiler: gcc
+# Command: gcc -ftime-report -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/prof_data.o src/prof_data.c
+# Timestamp: 2026-01-05T20:43:14+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  2%)
+ phase parsing                      :   0.19 ( 26%)   0.28 ( 78%)   0.49 ( 44%)    27M ( 31%)
+ phase opt and generate             :   0.53 ( 74%)   0.08 ( 22%)   0.62 ( 56%)    60M ( 67%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  3480k (  4%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   280k (  0%)
+ callgraph ipa passes               :   0.09 ( 12%)   0.03 (  8%)   0.11 ( 10%)    24M ( 27%)
+ cfg cleanup                        :   0.03 (  4%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df scan insns                      :   0.03 (  4%)   0.01 (  3%)   0.05 (  5%)  8040  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1045k (  1%)
+ alias analysis                     :   0.01 (  1%)   0.00 (  0%)   0.03 (  3%)   385k (  0%)
+ preprocessing                      :   0.05 (  7%)   0.09 ( 25%)   0.19 ( 17%)    14M ( 16%)
+ lexical analysis                   :   0.06 (  8%)   0.11 ( 31%)   0.15 ( 14%)     0  (  0%)
+ parser (global)                    :   0.04 (  6%)   0.02 (  6%)   0.05 (  5%)  5899k (  6%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   257k (  0%)
+ parser function body               :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)  1228k (  1%)
+ parser inl. func. body             :   0.04 (  6%)   0.04 ( 11%)   0.08 (  7%)  5487k (  6%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   188k (  0%)
+ integration                        :   0.06 (  8%)   0.02 (  6%)   0.07 (  6%)    18M ( 21%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.02 (  2%)  2753k (  3%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.00 (  0%)   0.02 (  2%)   616  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   548k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   559k (  1%)
+ tree operand scan                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  2754k (  3%)
+ dominance frontiers                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    52k (  0%)
+ expand vars                        :   0.01 (  1%)   0.00 (  0%)   0.02 (  2%)  1961k (  2%)
+ expand                             :   0.04 (  6%)   0.00 (  0%)   0.04 (  4%)    11M ( 13%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   161k (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   299k (  0%)
+ integrated RA                      :   0.09 ( 13%)   0.01 (  3%)   0.09 (  8%)    10M ( 12%)
+ LRA non-specific                   :   0.03 (  4%)   0.00 (  0%)   0.02 (  2%)    71k (  0%)
+ LRA virtuals elimination           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1181k (  1%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ LRA create live ranges             :   0.01 (  1%)   0.00 (  0%)   0.03 (  3%)    11k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ reload                             :   0.01 (  1%)   0.01 (  3%)   0.00 (  0%)  4032  (  0%)
+ thread pro- & epilogue             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   268k (  0%)
+ machine dep reorg                  :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ shorten branches                   :   0.04 (  6%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ final                              :   0.03 (  4%)   0.01 (  3%)   0.08 (  7%)  1912k (  2%)
+ access analysis                    :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2752  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  3%)   0.01 (  1%)   509k (  1%)
+ TOTAL                              :   0.72          0.36          1.11           89M

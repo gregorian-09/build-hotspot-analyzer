@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/fmt/repo/test/gtest-extra.cc
+# Command: /usr/bin/g++ -DGTEST_HAS_STD_WSTRING=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/fmt/repo/include -isystem /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/fmt/repo/test/gtest/. -ftime-report -O3 -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT test/CMakeFiles/posix-mock-test.dir/gtest-extra.cc.o -MF test/CMakeFiles/posix-mock-test.dir/gtest-extra.cc.o.d -o test/CMakeFiles/posix-mock-test.dir/gtest-extra.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/fmt/repo/test/gtest-extra.cc
+# Timestamp: 2026-01-05T17:48:21+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1882k (  1%)
+ phase parsing                      :   0.95 ( 76%)   0.64 ( 86%)   3.74 ( 80%)   161M ( 80%)
+ phase lang. deferred               :   0.24 ( 19%)   0.10 ( 14%)   0.78 ( 17%)    35M ( 18%)
+ phase opt and generate             :   0.06 (  5%)   0.00 (  0%)   0.17 (  4%)  2307k (  1%)
+ |name lookup                       :   0.35 ( 28%)   0.13 ( 18%)   0.98 ( 21%)  6028k (  3%)
+ |overload resolution               :   0.20 ( 16%)   0.12 ( 16%)   0.65 ( 14%)    24M ( 12%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)   721k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  5200  (  0%)
+ callgraph functions expansion      :   0.03 (  2%)   0.00 (  0%)   0.08 (  2%)   661k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.06 (  1%)   679k (  0%)
+ ipa devirtualization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ rebuild jump labels                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.12 ( 10%)   0.16 ( 22%)   0.55 ( 12%)  7708k (  4%)
+ parser (global)                    :   0.11 (  9%)   0.15 ( 20%)   0.83 ( 18%)    50M ( 25%)
+ parser struct body                 :   0.08 (  6%)   0.05 (  7%)   0.39 (  8%)    25M ( 13%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   267k (  0%)
+ parser function body               :   0.05 (  4%)   0.04 (  5%)   0.24 (  5%)  7607k (  4%)
+ parser inl. func. body             :   0.11 (  9%)   0.03 (  4%)   0.30 (  6%)  8567k (  4%)
+ parser inl. meth. body             :   0.24 ( 19%)   0.05 (  7%)   0.41 (  9%)    21M ( 11%)
+ template instantiation             :   0.45 ( 36%)   0.23 ( 31%)   1.61 ( 34%)    74M ( 37%)
+ constant expression evaluation     :   0.03 (  2%)   0.02 (  3%)   0.11 (  2%)   757k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9824  (  0%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    29k (  0%)
+ tree loop unswitching              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    32  (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    75k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)  1152  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   704  (  0%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1560  (  0%)
+ if-conversion 2                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    64  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.04 (  1%)     0  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ TOTAL                              :   1.25          0.74          4.69          201M
+
+# Exit code: 0

@@ -1,0 +1,62 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdmerge-8.c
+# Command: /usr/bin/gcc -Djpeg_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -O3 -DNDEBUG -fPIC -MD -MT sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-8.c.o -MF sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-8.c.o.d -o sharedlib/CMakeFiles/jpeg.dir/__/src/wrapper/jdmerge-8.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/repo/src/wrapper/jdmerge-8.c
+# Timestamp: 2026-01-05T18:14:52+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1819k (  8%)
+ phase parsing                      :   0.03 ( 12%)   0.02 ( 25%)   0.13 ( 24%)  3421k ( 15%)
+ phase opt and generate             :   0.23 ( 88%)   0.06 ( 75%)   0.42 ( 76%)    17M ( 77%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   542k (  2%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)  1000  (  0%)
+ callgraph functions expansion      :   0.18 ( 69%)   0.03 ( 38%)   0.25 ( 45%)    12M ( 55%)
+ callgraph ipa passes               :   0.05 ( 19%)   0.02 ( 25%)   0.16 ( 29%)  3335k ( 15%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    58k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ alias analysis                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   489k (  2%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.03 (  5%)    34k (  0%)
+ preprocessing                      :   0.02 (  8%)   0.00 (  0%)   0.05 (  9%)   834k (  4%)
+ lexical analysis                   :   0.01 (  4%)   0.02 ( 25%)   0.05 (  9%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  1356k (  6%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   650k (  3%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1091k (  5%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)  1116k (  5%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    33k (  0%)
+ tree VRP                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   240k (  1%)
+ tree Early VRP                     :   0.02 (  8%)   0.02 ( 25%)   0.02 (  4%)   281k (  1%)
+ tree PTA                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   177k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   204k (  1%)
+ tree operand scan                  :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)   866k (  4%)
+ dominator optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   232k (  1%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    71k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   318k (  1%)
+ tree FRE                           :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)   107k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)    53k (  0%)
+ tree canonical iv                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    44k (  0%)
+ tree loop unswitching              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    67k (  0%)
+ tree vectorization                 :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1053k (  5%)
+ tree slp vectorization             :   0.02 (  8%)   0.00 (  0%)   0.02 (  4%)  4088k ( 18%)
+ tree loop distribution             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    81k (  0%)
+ tree iv optimization               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   482k (  2%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  8392  (  0%)
+ dead store elim2                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   155k (  1%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   233k (  1%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  2048  (  0%)
+ PRE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   160  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)  4712  (  0%)
+ branch prediction                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   140k (  1%)
+ combiner                           :   0.02 (  8%)   0.01 ( 13%)   0.02 (  4%)  1445k (  6%)
+ integrated RA                      :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)  1194k (  5%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   104k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   177k (  1%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%) 10048  (  0%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)    47k (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)    73k (  0%)
+ TOTAL                              :   0.26          0.08          0.55           22M
+
+# Exit code: 0

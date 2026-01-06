@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/waiter_base.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/internal/waiter_base.cc.o -MF absl/synchronization/CMakeFiles/synchronization.dir/internal/waiter_base.cc.o.d -o absl/synchronization/CMakeFiles/synchronization.dir/internal/waiter_base.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/synchronization/internal/waiter_base.cc
+# Timestamp: 2026-01-05T17:54:36+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  1882k (  2%)
+ phase parsing                      :   0.38 ( 86%)   0.31 ( 91%)   1.13 ( 90%)    73M ( 87%)
+ phase lang. deferred               :   0.06 ( 14%)   0.03 (  9%)   0.09 (  7%)  9109k ( 11%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   484k (  1%)
+ |name lookup                       :   0.06 ( 14%)   0.03 (  9%)   0.22 ( 17%)  2603k (  3%)
+ |overload resolution               :   0.08 ( 18%)   0.02 (  6%)   0.07 (  6%)  5841k (  7%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    75k (  0%)
+ preprocessing                      :   0.06 ( 14%)   0.09 ( 26%)   0.24 ( 19%)  6379k (  7%)
+ parser (global)                    :   0.11 ( 25%)   0.08 ( 24%)   0.35 ( 28%)    29M ( 35%)
+ parser struct body                 :   0.06 ( 14%)   0.03 (  9%)   0.10 (  8%)    10M ( 13%)
+ parser enumerator list             :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   167k (  0%)
+ parser function body               :   0.02 (  5%)   0.02 (  6%)   0.07 (  6%)  2815k (  3%)
+ parser inl. func. body             :   0.05 ( 11%)   0.01 (  3%)   0.12 ( 10%)  7604k (  9%)
+ parser inl. meth. body             :   0.02 (  5%)   0.02 (  6%)   0.09 (  7%)  4754k (  5%)
+ template instantiation             :   0.10 ( 23%)   0.09 ( 26%)   0.21 ( 17%)    19M ( 24%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   401k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   384  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1288  (  0%)
+ TOTAL                              :   0.44          0.34          1.26           84M
+
+# Exit code: 0

@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/fse_compress.c
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/build/cmake/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/build/cmake/lib -ftime-report -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/fse_compress.c.o -MF build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/fse_compress.c.o.d -o build/cmake/lib/CMakeFiles/libzstd_static.dir/__/__/__/lib/compress/fse_compress.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/repo/lib/compress/fse_compress.c
+# Timestamp: 2026-01-05T17:52:15+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1819k ( 14%)
+ phase parsing                      :   0.02 ( 11%)   0.04 ( 50%)   0.09 ( 29%)  4031k ( 31%)
+ phase opt and generate             :   0.16 ( 89%)   0.04 ( 50%)   0.20 ( 65%)  7213k ( 55%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.01 (  6%)   0.01 ( 13%)   0.00 (  0%)  1432  (  0%)
+ callgraph functions expansion      :   0.13 ( 72%)   0.03 ( 38%)   0.16 ( 52%)  5740k ( 44%)
+ callgraph ipa passes               :   0.03 ( 17%)   0.01 ( 13%)   0.04 ( 13%)  1027k (  8%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)     0  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)  2256  (  0%)
+ preprocessing                      :   0.01 (  6%)   0.01 ( 13%)   0.02 (  6%)   686k (  5%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.04 ( 13%)     0  (  0%)
+ parser (global)                    :   0.01 (  6%)   0.03 ( 38%)   0.02 (  6%)  1929k ( 15%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  1214k (  9%)
+ inline parameters                  :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    69k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  8392  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)   152k (  1%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.02 (  6%)    53k (  0%)
+ dominator optimization             :   0.02 ( 11%)   0.00 (  0%)   0.00 (  0%)   113k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    27k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.01 ( 12%)   0.01 (  3%)    26k (  0%)
+ tree canonical iv                  :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)    25k (  0%)
+ tree vectorization                 :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   391k (  3%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   989k (  8%)
+ tree iv optimization               :   0.01 (  6%)   0.01 ( 13%)   0.00 (  0%)   144k (  1%)
+ expand                             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   286k (  2%)
+ forward prop                       :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  9824  (  0%)
+ CSE                                :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)  5016  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   324k (  2%)
+ combiner                           :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)   386k (  3%)
+ integrated RA                      :   0.01 (  6%)   0.00 (  0%)   0.01 (  3%)   690k (  5%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.01 ( 12%)   0.01 (  3%)  6480  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ reload CSE regs                    :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    62k (  0%)
+ thread pro- & epilogue             :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ hard reg cprop                     :   0.01 (  6%)   0.00 (  0%)   0.00 (  0%)   720  (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  2880  (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ TOTAL                              :   0.18          0.08          0.31           12M
+
+# Exit code: 0

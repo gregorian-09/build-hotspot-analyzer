@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/time/internal/cctz/src/zone_info_source.cc
+# Command: /usr/bin/g++ -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo -ftime-report -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o -MF absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o.d -o absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/abseil/repo/absl/time/internal/cctz/src/zone_info_source.cc
+# Timestamp: 2026-01-05T17:54:41+01:00
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1882k (  3%)
+ phase parsing                      :   0.28 ( 90%)   0.25 ( 96%)   0.57 ( 92%)    51M ( 89%)
+ phase lang. deferred               :   0.02 (  6%)   0.01 (  4%)   0.03 (  5%)  3796k (  6%)
+ phase opt and generate             :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   599k (  1%)
+ |name lookup                       :   0.06 ( 19%)   0.03 ( 12%)   0.14 ( 23%)  2515k (  4%)
+ |overload resolution               :   0.02 (  6%)   0.00 (  0%)   0.06 ( 10%)  3602k (  6%)
+ callgraph functions expansion      :   0.01 (  3%)   0.00 (  0%)   0.01 (  2%)   216k (  0%)
+ preprocessing                      :   0.05 ( 16%)   0.08 ( 31%)   0.11 ( 18%)  2067k (  3%)
+ parser (global)                    :   0.04 ( 13%)   0.06 ( 23%)   0.17 ( 27%)    18M ( 31%)
+ parser struct body                 :   0.04 ( 13%)   0.02 (  8%)   0.08 ( 13%)    10M ( 19%)
+ parser function body               :   0.02 (  6%)   0.02 (  8%)   0.06 ( 10%)  2118k (  4%)
+ parser inl. func. body             :   0.04 ( 13%)   0.01 (  4%)   0.05 (  8%)  2937k (  5%)
+ parser inl. meth. body             :   0.05 ( 16%)   0.04 ( 15%)   0.04 (  6%)  5419k (  9%)
+ template instantiation             :   0.05 ( 16%)   0.03 ( 12%)   0.09 ( 15%)    14M ( 25%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    84k (  0%)
+ tree code sinking                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.31          0.26          0.62           58M
+
+# Exit code: 0
