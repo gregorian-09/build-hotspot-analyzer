@@ -212,6 +212,41 @@ namespace bha::parsers {
         const std::vector<fs::path>& paths
     );
 
+    /**
+     * Returns all file extensions supported by registered parsers.
+     *
+     * This includes extensions for all compiler trace formats:
+     * - Clang: .json (-ftime-trace)
+     * - GCC: .txt, .log, .report (-ftime-report)
+     * - MSVC: .txt, .log, .btlog (/Bt+ /d1reportTime)
+     *
+     * @return Set of supported extensions (e.g., {".json", ".txt", ".log"}).
+     */
+    [[nodiscard]] std::vector<std::string> get_supported_trace_extensions();
+
+    /**
+     * Checks if a file extension is a supported trace format.
+     *
+     * @param ext The file extension (with or without leading dot).
+     * @return True if the extension is supported.
+     */
+    [[nodiscard]] bool is_supported_trace_extension(std::string_view ext);
+
+    /**
+     * Collects all trace files from a path (file or directory).
+     *
+     * If path is a file, returns it directly (if supported extension).
+     * If path is a directory, recursively finds all supported trace files.
+     *
+     * @param path File or directory path.
+     * @param recursive Whether to search subdirectories (default: true).
+     * @return List of trace file paths.
+     */
+    [[nodiscard]] std::vector<fs::path> collect_trace_files(
+        const fs::path& path,
+        bool recursive = true
+    );
+
 }  // namespace bha::parsers
 
 #endif //BUILDTIMEHOTSPOTANALYZER_PARSER_HPP
