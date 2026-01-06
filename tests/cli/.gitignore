@@ -1,19 +1,19 @@
 # Exclude test errors and result generated from automated testing
-tests/cli/*.log
+*.log
 
 # Exclude summary output of automated testing results
 summary.txt
 
 # Repository cache
-tests/cli/repos/
+repos/
 
 # BHA Test Build Artifacts (temporary exclusion)
-tests/cli/cmake/*/*/build/
-tests/cli/cmake/*/*/repo/
-tests/cli/cmake/*/*/output/
-tests/cli/make/*/*/build/
-tests/cli/make/*/*/repo/
-tests/cli/make/*/*/output/
-tests/cli/meson/*/*/build/
-tests/cli/meson/*/*/repo/
-tests/cli/meson/*/*/output/
+cmake/*/*/build/
+cmake/*/*/repo/
+cmake/*/*/output/
+make/*/*/build/
+make/*/*/repo/
+make/*/*/output/
+meson/*/*/build/
+meson/*/*/repo/
+meson/*/*/output/
