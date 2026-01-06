@@ -70,6 +70,7 @@ else()
                 -Wduplicated-branches
                 -Wlogical-op
                 -Wuseless-cast
+                -Wno-null-dereference # Disable false positive from system headers (GCC bug with streambuf)
         )
     endif()
 endif()
@@ -202,6 +203,7 @@ if(BHA_BUILD_CLI)
             cli/formatter.cpp
             cli/progress.cpp
             cli/main.cpp
+            cli/commands/record_cmd.cpp
     )
 
     target_link_libraries(bha
