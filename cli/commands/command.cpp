@@ -213,12 +213,19 @@ namespace bha::cli
             }
         }
 
+        bool options_ended = false;  // Set to true after seeing "--"
+
         for (std::size_t i = 0; i < args.size(); ++i) {
             const std::string& arg = args[i];
 
             if (arg.empty()) continue;
 
-            if (arg[0] == '-') {
+            if (arg == "--" && !options_ended) {
+                options_ended = true;
+                continue;
+            }
+
+            if (arg[0] == '-' && !options_ended) {
                 if (arg.size() > 1 && arg[1] == '-') {
                     // Long option
                     std::string name = arg.substr(2);

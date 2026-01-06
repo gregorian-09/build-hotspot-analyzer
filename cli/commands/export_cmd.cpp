@@ -113,17 +113,8 @@ namespace bha::cli
                     return 1;
                 }
 
-                if (fs::is_directory(path)) {
-                    for (const auto& entry : fs::recursive_directory_iterator(path)) {
-                        if (entry.is_regular_file()) {
-                            if (auto ext = entry.path().extension().string(); ext == ".json") {
-                                trace_files.push_back(entry.path());
-                            }
-                        }
-                    }
-                } else {
-                    trace_files.push_back(path);
-                }
+                auto files = parsers::collect_trace_files(path);
+                trace_files.insert(trace_files.end(), files.begin(), files.end());
             }
 
             if (trace_files.empty()) {
@@ -268,27 +259,27 @@ namespace bha::cli
 
             // Build export command args
             std::vector<std::string> export_args;
-            export_args.push_back("--format");
-            export_args.push_back("html");
-            export_args.push_back("--include-suggestions");
+            export_args.emplace_back("--format");
+            export_args.emplace_back("html");
+            export_args.emplace_back("--include-suggestions");
 
-            export_args.push_back("-o");
+            export_args.emplace_back("-o");
             export_args.push_back(parsed_args.get_or("output", "bha-report.html"));
 
             if (parsed_args.get_flag("dark-mode")) {
-                export_args.push_back("--dark-mode");
+                export_args.emplace_back("--dark-mode");
             }
 
             if (const auto title = parsed_args.get("title")) {
-                export_args.push_back("--title");
+                export_args.emplace_back("--title");
                 export_args.push_back(*title);
             }
 
             if (parsed_args.get_flag("verbose")) {
-                export_args.push_back("--verbose");
+                export_args.emplace_back("--verbose");
             }
             if (parsed_args.get_flag("quiet")) {
-                export_args.push_back("--quiet");
+                export_args.emplace_back("--quiet");
             }
 
             for (const auto& pos : parsed_args.positional()) {

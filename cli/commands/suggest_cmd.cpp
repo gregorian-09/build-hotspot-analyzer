@@ -102,17 +102,8 @@ namespace bha::cli
                     return 1;
                 }
 
-                if (fs::is_directory(path)) {
-                    for (const auto& entry : fs::recursive_directory_iterator(path)) {
-                        if (entry.is_regular_file()) {
-                            if (auto ext = entry.path().extension().string(); ext == ".json") {
-                                trace_files.push_back(entry.path());
-                            }
-                        }
-                    }
-                } else {
-                    trace_files.push_back(path);
-                }
+                auto files = parsers::collect_trace_files(path);
+                trace_files.insert(trace_files.end(), files.begin(), files.end());
             }
 
             if (trace_files.empty()) {
