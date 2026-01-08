@@ -135,7 +135,15 @@ namespace bha::cli
                     auto now = std::chrono::system_clock::now();
                     auto time = std::chrono::system_clock::to_time_t(now);
                     char buf[32];
+
+                #ifdef _WIN32
+                    std::tm time_info{};
+                    localtime_s(&time_info, &time);
+                    std::strftime(buf, sizeof(buf), "_%Y%m%d_%H%M%S", &time_info);
+                #else
                     std::strftime(buf, sizeof(buf), "_%Y%m%d_%H%M%S", std::localtime(&time));
+                #endif
+
                     filename += buf;
                 }
                 filename += ".txt";
@@ -195,12 +203,12 @@ namespace bha::cli
         }
 
     private:
-        int execute_and_capture(const std::string& command, std::string& output) {
+        static int execute_and_capture(const std::string& command, std::string& output) {
 #ifdef _WIN32
             SECURITY_ATTRIBUTES sa;
             sa.nLength = sizeof(SECURITY_ATTRIBUTES);
             sa.bInheritHandle = TRUE;
-            sa.lpSecurityDescriptor = NULL;
+            sa.lpSecurityDescriptor = nullptr;
 
             HANDLE stdout_read, stdout_write;
             HANDLE stderr_read, stderr_write;
@@ -219,10 +227,10 @@ namespace bha::cli
             si.hStdError = stderr_write;
             si.dwFlags |= STARTF_USESTDHANDLES;
 
-            PROCESS_INFORMATION pi = {0};
+            PROCESS_INFORMATION pi = {nullptr};
 
             std::string cmd_copy = command;
-            if (!CreateProcessA(NULL, &cmd_copy[0], NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+            if (!CreateProcessA(nullptr, &cmd_copy[0], nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi)) {
                 return -1;
             }
 
@@ -230,13 +238,13 @@ namespace bha::cli
             CloseHandle(stderr_write);
 
             // Read output
-            std::array<char, 4096> buffer;
+            std::array<char, 4096> buffer{};
             DWORD bytes_read;
 
-            while (ReadFile(stdout_read, buffer.data(), buffer.size(), &bytes_read, NULL) && bytes_read > 0) {
+            while (ReadFile(stdout_read, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr) && bytes_read > 0) {
                 output.append(buffer.data(), bytes_read);
             }
-            while (ReadFile(stderr_read, buffer.data(), buffer.size(), &bytes_read, NULL) && bytes_read > 0) {
+            while (ReadFile(stderr_read, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr) && bytes_read > 0) {
                 output.append(buffer.data(), bytes_read);
             }
 
