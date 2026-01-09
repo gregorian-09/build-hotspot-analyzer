@@ -10,12 +10,13 @@
  * @brief Convenience header for registering all suggesters.
  */
 
-#include "bha/suggestions/pch_suggester.hpp"
-#include "bha/suggestions/forward_decl_suggester.hpp"
-#include "bha/suggestions/include_suggester.hpp"
-#include "bha/suggestions/template_suggester.hpp"
-#include "bha/suggestions/header_split_suggester.hpp"
-#include "bha/suggestions/pimpl_suggester.hpp"
+#include "unity_build_suggester.hpp"
+#include "pch_suggester.hpp"
+#include "forward_decl_suggester.hpp"
+#include "include_suggester.hpp"
+#include "template_suggester.hpp"
+#include "header_split_suggester.hpp"
+#include "pimpl_suggester.hpp"
 
 namespace bha::suggestions {
 
@@ -25,6 +26,7 @@ namespace bha::suggestions {
         register_include_suggester();
         register_template_suggester();
         register_header_split_suggester();
+        register_unity_build_suggester();
         register_pimpl_pattern_suggester();
     }
 
