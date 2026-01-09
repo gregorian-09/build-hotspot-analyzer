@@ -4,6 +4,7 @@
 *.dylib
 *.pdb
 *.ilk
+*.dll
 
 # Python cache
 __pycache__/
