@@ -25,7 +25,7 @@ namespace bha::exporters
             std::ostringstream ss;
 
 #ifdef _WIN32
-            std::tm time_info;
+            std::tm time_info{};
             gmtime_s(&time_info, &time_t_val);
             ss << std::put_time(&time_info, "%Y-%m-%dT%H:%M:%SZ");
 #else
@@ -387,6 +387,7 @@ namespace bha::exporters
         const ExportOptions& options,
         ExportProgressCallback /* progress */
     ) const {
+        // Generate embedded JSON data for JavaScript
         ExportOptions json_opts = options;
         json_opts.pretty_print = false;
 
@@ -512,12 +513,75 @@ namespace bha::exporters
             overflow-x: auto;
             margin-top: 10px;
         }
-        #graph-container {
+        #graph-container, #flame-container, #include-tree-container {
             width: 100%;
-            height: 500px;
+            min-height: 400px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
+            overflow: auto;
+        }
+        .flame-row {
+            display: flex;
+            height: 24px;
+            margin-bottom: 1px;
+        }
+        .flame-block {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            font-size: 11px;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: filter 0.1s;
+        }
+        .flame-block:hover {
+            filter: brightness(1.2);
+        }
+        .tree-node {
+            padding: 4px 8px;
+            margin: 2px 0;
+            cursor: pointer;
+        }
+        .tree-node:hover {
+            background: rgba(13, 110, 253, 0.1);
+        }
+        .tree-children {
+            margin-left: 20px;
+            border-left: 1px dashed var(--border-color);
+            padding-left: 10px;
+        }
+        .tree-toggle {
+            display: inline-block;
+            width: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .dep-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .dep-stat {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .dep-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .dep-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
         }
         .controls { margin-bottom: 20px; }
         input[type="text"] {
@@ -567,7 +631,7 @@ namespace bha::exporters
                 <h3>Avg File Time</h3>
                 <div class="value">)HTML" << std::fixed << std::setprecision(1)
                          << duration_to_ms(analysis.performance.avg_file_time) << R"HTML(</div>
-                <div class="unit">seconds</div>
+                <div class="unit">ms</div>
             </div>
             <div class="summary-card">
                 <h3>Suggestions</h3>
@@ -578,6 +642,7 @@ namespace bha::exporters
         <!-- Tabs -->
         <div class="tabs">
             <div class="tab active" onclick="showTab('files')">Files</div>
+            <div class="tab" onclick="showTab('flamegraph')">Flame Graph</div>
             <div class="tab" onclick="showTab('suggestions')">Suggestions</div>
             <div class="tab" onclick="showTab('dependencies')">Dependencies</div>
         </div>
@@ -629,6 +694,18 @@ namespace bha::exporters
         stream << R"HTML(
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Flame Graph Tab -->
+        <div id="flamegraph" class="tab-content">
+            <div class="section">
+                <h2>Build Time Flame Graph</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Visualization of compilation time distribution. Wider blocks = more time spent.
+                    Hover for details, click to zoom.
+                </p>
+                <div id="flame-container"></div>
             </div>
         </div>
 
@@ -692,28 +769,61 @@ namespace bha::exporters
         <!-- Dependencies Tab -->
         <div id="dependencies" class="tab-content">
             <div class="section">
-                <h2>Dependency Graph</h2>
-                <div id="graph-container"></div>
-                <p style="margin-top: 10px; color: var(--text-secondary); font-size: 0.875rem;">
-                    Circular dependencies: )HTML" << analysis.dependencies.circular_dependencies.size() << R"HTML( |
-                    Unique headers: )HTML" << analysis.dependencies.unique_headers << R"HTML( |
-                    Max depth: )HTML" << analysis.dependencies.max_include_depth << R"HTML(
+                <h2>Include Dependencies</h2>
+
+                <!-- Stats cards -->
+                <div class="dep-stats">
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">)HTML" << analysis.dependencies.total_includes << R"HTML(</div>
+                        <div class="dep-stat-label">Total Includes</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">)HTML" << analysis.dependencies.unique_headers << R"HTML(</div>
+                        <div class="dep-stat-label">Unique Headers</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">)HTML" << analysis.dependencies.max_include_depth << R"HTML(</div>
+                        <div class="dep-stat-label">Max Depth</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" style="color: )HTML" << (analysis.dependencies.circular_dependencies.empty() ? "var(--success-color)" : "var(--danger-color)") << R"HTML(">)HTML" << analysis.dependencies.circular_dependencies.size() << R"HTML(</div>
+                        <div class="dep-stat-label">Circular Deps</div>
+                    </div>
+                </div>
+
+                <!-- Include Tree -->
+                <h3 style="margin: 20px 0 10px;">Include Tree</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.875rem;">
+                    Click to expand/collapse. Sorted by impact (inclusion count × parse time).
                 </p>
+                <div id="include-tree-container"></div>
+
+                <!-- Dependency Graph -->
+                <h3 style="margin: 30px 0 10px;">File Dependencies</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.875rem;">
+                    Files sorted by number of includes.
+                </p>
+                <div id="graph-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Tab switching
         function showTab(tabId) {
             document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
             document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
             var selector = '.tab[onclick="showTab(\'' + tabId + '\')"]';
             document.querySelector(selector).classList.add('active');
             document.getElementById(tabId).classList.add('active');
+
+            // Render visualizations on tab switch
+            if (tabId === 'flamegraph') renderFlameGraph();
+            if (tabId === 'dependencies') {
+                renderIncludeTree();
+                renderDependencyGraph();
+            }
         }
 
-        // File search
         function filterFiles() {
             var query = document.getElementById('file-search').value.toLowerCase();
             var rows = document.querySelectorAll('#files-table tbody tr');
@@ -726,24 +836,134 @@ namespace bha::exporters
         // Embedded analysis data
         var analysisData = )HTML" << json_result.value() << R"HTML(;
 
-        // Simple dependency visualization (without D3.js for offline support)
-        function renderDependencyGraph() {
-            var container = document.getElementById('graph-container');
-            if (!analysisData.dependencies || !analysisData.dependencies.graph) {
-                container.innerHTML = '<p style="padding: 20px; text-align: center;">No dependency data available</p>';
+        // Color palette for flame graph
+        var flameColors = [
+            '#e74c3c', '#e67e22', '#f39c12', '#27ae60', '#3498db',
+            '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4', '#ff5722'
+        ];
+
+        function getFlameColor(index) {
+            return flameColors[index % flameColors.length];
+        }
+
+        function formatTime(ms) {
+            if (ms < 1000) return ms.toFixed(1) + ' ms';
+            return (ms / 1000).toFixed(2) + ' s';
+        }
+
+        function getFilename(path) {
+            return path.split('/').pop().split('\\').pop();
+        }
+
+        function renderFlameGraph() {
+            var container = document.getElementById('flame-container');
+            if (!analysisData.files || analysisData.files.length === 0) {
+                container.innerHTML = '<p style="padding: 40px; text-align: center; color: var(--text-secondary);">No file data available for flame graph</p>';
                 return;
             }
 
-            var deps = analysisData.dependencies.graph.slice(0, 50);
-            var html = '<div style="padding: 20px; overflow: auto; height: 100%;">';
-            html += '<p style="margin-bottom: 15px; color: var(--text-secondary);">Showing top 50 files by dependencies</p>';
+            var files = analysisData.files.slice().sort(function(a, b) {
+                return b.total_time_ms - a.total_time_ms;
+            });
 
-            deps.forEach(function(entry) {
-                var filename = entry.file.split('/').pop();
-                var count = entry.includes.length;
-                html += '<div style="margin-bottom: 10px; padding: 10px; background: var(--bg-primary); border-radius: 4px;">';
+            var totalTime = files.reduce(function(sum, f) { return sum + f.total_time_ms; }, 0);
+            if (totalTime === 0) {
+                container.innerHTML = '<p style="padding: 40px; text-align: center; color: var(--text-secondary);">No timing data available</p>';
+                return;
+            }
+
+            var html = '<div style="padding: 15px;">';
+
+            // Build flame graph rows
+            files.slice(0, 100).forEach(function(file, index) {
+                var widthPct = (file.total_time_ms / totalTime * 100);
+                if (widthPct < 0.5) return; // Skip tiny files
+
+                var filename = getFilename(file.path);
+                var color = getFlameColor(index);
+
+                // Main row for total time
+                html += '<div class="flame-row">';
+                html += '<div class="flame-block" style="width: ' + widthPct + '%; background: ' + color + ';" ';
+                html += 'title="' + file.path + '&#10;Total: ' + formatTime(file.total_time_ms) + '&#10;' +
+                        'Frontend: ' + formatTime(file.frontend_time_ms) + '&#10;' +
+                        'Backend: ' + formatTime(file.backend_time_ms) + '">';
+                html += filename + ' (' + formatTime(file.total_time_ms) + ')';
+                html += '</div></div>';
+
+                // Sub-row for frontend/backend breakdown
+                if (file.frontend_time_ms > 0 || file.backend_time_ms > 0) {
+                    var fePct = (file.frontend_time_ms / totalTime * 100);
+                    var bePct = (file.backend_time_ms / totalTime * 100);
+                    html += '<div class="flame-row" style="height: 16px; margin-left: 10px;">';
+                    if (fePct > 0.3) {
+                        html += '<div class="flame-block" style="width: ' + fePct + '%; background: #3498db; opacity: 0.8;" ';
+                        html += 'title="Frontend: ' + formatTime(file.frontend_time_ms) + '">';
+                        html += 'FE</div>';
+                    }
+                    if (bePct > 0.3) {
+                        html += '<div class="flame-block" style="width: ' + bePct + '%; background: #e74c3c; opacity: 0.8; margin-left: 2px;" ';
+                        html += 'title="Backend: ' + formatTime(file.backend_time_ms) + '">';
+                        html += 'BE</div>';
+                    }
+                    html += '</div>';
+                }
+            });
+
+            html += '</div>';
+
+            // Legend
+            html += '<div style="padding: 15px; border-top: 1px solid var(--border-color); margin-top: 10px;">';
+            html += '<span style="margin-right: 20px;"><span style="display: inline-block; width: 12px; height: 12px; background: #3498db; border-radius: 2px;"></span> Frontend (parsing, templates)</span>';
+            html += '<span><span style="display: inline-block; width: 12px; height: 12px; background: #e74c3c; border-radius: 2px;"></span> Backend (optimization, codegen)</span>';
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function renderIncludeTree() {
+            var container = document.getElementById('include-tree-container');
+            if (!analysisData.dependencies || !analysisData.dependencies.headers) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--text-secondary);">No dependency data available</p>';
+                return;
+            }
+
+            var headers = analysisData.dependencies.headers.slice(0, 50);
+            if (headers.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--text-secondary);">No headers found</p>';
+                return;
+            }
+
+            var html = '<div style="padding: 15px; font-family: monospace; font-size: 13px;">';
+
+            headers.forEach(function(header, index) {
+                var filename = getFilename(header.path);
+                var nodeId = 'tree-node-' + index;
+
+                html += '<div class="tree-node" onclick="toggleTreeNode(\'' + nodeId + '\')">';
+                html += '<span class="tree-toggle" id="toggle-' + nodeId + '">▶</span> ';
                 html += '<strong>' + filename + '</strong>';
-                html += '<span style="color: var(--text-secondary);"> includes ' + count + ' file(s)</span>';
+                html += '<span style="color: var(--text-secondary); margin-left: 10px;">';
+                html += header.inclusion_count + ' inclusions, ' + formatTime(header.parse_time_ms) + ' parse time';
+                html += '</span>';
+                html += '</div>';
+
+                // Children (included_by files)
+                html += '<div class="tree-children" id="' + nodeId + '" style="display: none;">';
+                if (header.included_by && header.included_by.length > 0) {
+                    header.included_by.slice(0, 20).forEach(function(inc) {
+                        html += '<div style="padding: 2px 0; color: var(--text-secondary);">';
+                        html += '↳ ' + getFilename(inc);
+                        html += '</div>';
+                    });
+                    if (header.included_by.length > 20) {
+                        html += '<div style="padding: 2px 0; color: var(--text-secondary); font-style: italic;">';
+                        html += '... and ' + (header.included_by.length - 20) + ' more files';
+                        html += '</div>';
+                    }
+                } else {
+                    html += '<div style="padding: 2px 0; color: var(--text-secondary); font-style: italic;">No includers data</div>';
+                }
                 html += '</div>';
             });
 
@@ -751,7 +971,58 @@ namespace bha::exporters
             container.innerHTML = html;
         }
 
-        // Initialize
+        function toggleTreeNode(nodeId) {
+            var node = document.getElementById(nodeId);
+            var toggle = document.getElementById('toggle-' + nodeId);
+            if (node.style.display === 'none') {
+                node.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                node.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+
+        function renderDependencyGraph() {
+            var container = document.getElementById('graph-container');
+            if (!analysisData.dependencies || !analysisData.dependencies.graph) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--text-secondary);">No dependency graph data available</p>';
+                return;
+            }
+
+            var deps = analysisData.dependencies.graph.slice(0, 50);
+            if (deps.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--text-secondary);">No dependency data</p>';
+                return;
+            }
+
+            var maxIncludes = Math.max.apply(null, deps.map(function(d) { return d.includes.length; }));
+
+            var html = '<div style="padding: 15px;">';
+
+            deps.forEach(function(entry, index) {
+                var filename = getFilename(entry.file);
+                var count = entry.includes.length;
+                var barWidth = (count / maxIncludes * 100);
+                var color = count > 20 ? 'var(--danger-color)' : count > 10 ? 'var(--warning-color)' : 'var(--success-color)';
+
+                html += '<div style="margin-bottom: 8px; display: flex; align-items: center;">';
+                html += '<div style="width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="' + entry.file + '">';
+                html += filename;
+                html += '</div>';
+                html += '<div style="flex: 1; margin: 0 10px;">';
+                html += '<div style="height: 20px; background: ' + color + '; width: ' + barWidth + '%; border-radius: 3px; transition: width 0.3s;"></div>';
+                html += '</div>';
+                html += '<div style="width: 80px; text-align: right; color: var(--text-secondary);">';
+                html += count + ' headers';
+                html += '</div>';
+                html += '</div>';
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
         renderDependencyGraph();
     </script>
 </body>
