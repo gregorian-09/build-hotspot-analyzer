@@ -29,6 +29,8 @@
 #include <chrono>
 #include <filesystem>
 
+#include "heuristics/config.hpp"
+
 namespace bha {
 
     namespace fs = std::filesystem;
@@ -491,6 +493,7 @@ namespace bha {
         double min_confidence = 0.5;
         bool include_unsafe = false;
         std::vector<SuggestionType> enabled_types;
+        heuristics::HeuristicsConfig heuristics = heuristics::HeuristicsConfig::defaults();
     };
 
     /**

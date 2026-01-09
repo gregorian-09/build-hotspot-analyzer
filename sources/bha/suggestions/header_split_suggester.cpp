@@ -97,7 +97,7 @@ namespace bha::suggestions
          * - Medium: Moderate impact headers
          * - Low: Minor improvements possible
          */
-        Priority calculate_priority(Duration parse_time, std::size_t includer_count) {
+        Priority calculate_priority(const Duration parse_time, const std::size_t includer_count) {
             const auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 parse_time).count();
 
@@ -182,20 +182,26 @@ namespace bha::suggestions
             const std::size_t includer_count,
             const SplitPattern pattern
         ) {
-            double reduction_factor = 0.3;
+            // Base forward-declaration-only ratio: 30% of includers typically only need fwd decls
+            constexpr double fwd_only_ratio = 0.30;
+            double reduction_factor = fwd_only_ratio;
             switch (pattern) {
-            case SplitPattern::ForwardDecl:
-                reduction_factor = 0.45;
-                break;
-            case SplitPattern::TypesAndFwd:
-                reduction_factor = 0.40;
-                break;
-            case SplitPattern::FunctionalGroups:
-                reduction_factor = 0.35;
-                break;
-            case SplitPattern::PublicPrivate:
-                reduction_factor = 0.30;
-                break;
+                case SplitPattern::ForwardDecl:
+                    // 30-40% of includers might only need forward decls
+                    reduction_factor = fwd_only_ratio;
+                    break;
+                case SplitPattern::TypesAndFwd:
+                    // Types+fwd gives more options
+                    reduction_factor = 0.25;
+                    break;
+                case SplitPattern::FunctionalGroups:
+                    // Groups allow targeted includes
+                    reduction_factor = 0.20;
+                    break;
+                case SplitPattern::PublicPrivate:
+                    // Public/private split helps internal vs external
+                    reduction_factor = 0.15;
+                    break;
             }
 
             const auto parse_ns = parse_time.count();
@@ -291,7 +297,7 @@ namespace bha::suggestions
 
         const auto& deps = context.analysis.dependencies;
 
-        // Thresholds for considering a split
+        // Thresholds for considering a split (based on ClangBuildAnalyzer patterns)
         constexpr auto min_parse_time = std::chrono::milliseconds(200);
 
         std::size_t analyzed = 0;
@@ -315,6 +321,7 @@ namespace bha::suggestions
                 continue;
             }
 
+            // Check if already split
             std::string filename = header.path.filename().string();
             std::string lower_filename;
             lower_filename.reserve(filename.size());
@@ -333,6 +340,7 @@ namespace bha::suggestions
                 ++skipped;
                 continue;
             }
+
             SplitPattern pattern = determine_split_pattern(header.path, header.including_files);
 
             double confidence = calculate_confidence(
@@ -471,7 +479,6 @@ namespace bha::suggestions
         result.items_analyzed = analyzed;
         result.items_skipped = skipped;
 
-        // Sort by estimated savings (descending)
         std::ranges::sort(result.suggestions,
                           [](const Suggestion& a, const Suggestion& b) {
                               return a.estimated_savings > b.estimated_savings;

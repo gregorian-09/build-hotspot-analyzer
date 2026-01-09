@@ -46,7 +46,7 @@ namespace bha::suggestions {
      * Result of suggestion generation.
      */
     struct SuggestionResult {
-        std::vector<Suggestion> suggestions;
+        std::vector<Suggestion> suggestions{};
         Duration generation_time = Duration::zero();
         std::size_t items_analyzed = 0;
         std::size_t items_skipped = 0;

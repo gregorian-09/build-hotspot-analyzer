@@ -8,6 +8,8 @@
 #include <sstream>
 #include <unordered_set>
 
+#include "bha/heuristics/config.hpp"
+
 namespace bha::suggestions
 {
     namespace {
@@ -38,24 +40,71 @@ namespace bha::suggestions
             return result;
         }
 
-        std::string generate_forward_decl(const fs::path& header) {
-            const std::string class_name = extract_class_name(header);
-            return "class " + class_name + ";";
-        }
+        Priority calculate_priority(const Duration parse_time, const std::size_t includer_count,
+                                    const heuristics::ForwardDeclConfig& config
+        ) {
+            const auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(parse_time);
 
-        Priority calculate_priority(const Duration parse_time, const std::size_t includer_count) {
-            const auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(parse_time).count();
-
-            if (parse_ms > 500 && includer_count >= 10) {
+            if (parse_ms > std::chrono::milliseconds(500) && includer_count >= 10) {
                 return Priority::Critical;
             }
-            if (parse_ms > 200 && includer_count >= 5) {
+            if (parse_ms > std::chrono::milliseconds(200) && includer_count >= 5) {
                 return Priority::High;
             }
-            if (parse_ms > 50) {
+            if (parse_ms > config.min_parse_time) {
                 return Priority::Medium;
             }
             return Priority::Low;
+        }
+
+        /**
+         * Generates the "before" code showing current include pattern.
+         */
+        std::string generate_before_code(
+            const fs::path& header_path,
+            const fs::path& includer_path
+        ) {
+            std::ostringstream oss;
+            oss << "// " << includer_path.filename().string() << "\n";
+            oss << "#pragma once\n\n";
+            oss << "#include \"" << header_path.filename().string() << "\"  // Full include\n";
+            oss << "#include <string>\n\n";
+            oss << "class Consumer {\n";
+            oss << "    " << extract_class_name(header_path) << "* ptr;  // Only pointer used\n";
+            oss << "    void process(" << extract_class_name(header_path) << "& ref);  // Only reference\n";
+            oss << "};";
+            return oss.str();
+        }
+
+        /**
+         * Generates the "after" code showing forward declaration pattern.
+         */
+        std::string generate_after_code(
+            const fs::path& header_path,
+            const fs::path& includer_path
+        ) {
+            const std::string class_name = extract_class_name(header_path);
+
+            std::ostringstream oss;
+            oss << "// " << includer_path.filename().string() << " (header)\n";
+            oss << "#pragma once\n\n";
+            oss << "// Forward declaration instead of full include\n";
+            oss << "class " << class_name << ";\n\n";
+            oss << "#include <string>\n\n";
+            oss << "class Consumer {\n";
+            oss << "    " << class_name << "* ptr;  // OK: pointer to incomplete type\n";
+            oss << "    void process(" << class_name << "& ref);  // OK: reference to incomplete\n";
+            oss << "};\n\n";
+
+            const std::string cpp_name = includer_path.stem().string() + ".cpp";
+            oss << "// " << cpp_name << " (implementation)\n";
+            oss << "#include \"" << includer_path.filename().string() << "\"\n";
+            oss << "#include \"" << header_path.filename().string() << "\"  // Full include here\n\n";
+            oss << "void Consumer::process(" << class_name << "& ref) {\n";
+            oss << "    // Implementation uses full type\n";
+            oss << "}";
+
+            return oss.str();
         }
 
     }  // namespace
@@ -67,12 +116,11 @@ namespace bha::suggestions
         auto start_time = std::chrono::steady_clock::now();
 
         const auto& deps = context.analysis.dependencies;
+        const auto& config = context.options.heuristics.forward_decl;
 
         std::unordered_set<std::string> processed;
         std::size_t analyzed = 0;
         std::size_t skipped = 0;
-
-        constexpr auto min_parse_time = std::chrono::milliseconds(20);
 
         for (const auto& header : deps.headers) {
             ++analyzed;
@@ -82,7 +130,7 @@ namespace bha::suggestions
                 continue;
             }
 
-            if (header.total_parse_time < min_parse_time) {
+            if (header.total_parse_time < config.min_parse_time) {
                 ++skipped;
                 continue;
             }
@@ -100,34 +148,44 @@ namespace bha::suggestions
             processed.insert(header_key);
 
             for (const auto& includer : header.included_by) {
-                if (!is_header_file(fs::path(includer))) {
+                const fs::path& includer_path(includer);
+                if (!is_header_file(includer_path)) {
                     continue;
                 }
 
                 Suggestion suggestion;
                 suggestion.id = "fwd-" + header.path.filename().string() +
-                                "-in-" + fs::path(includer).filename().string();
+                                "-in-" + includer_path.filename().string();
                 suggestion.type = SuggestionType::ForwardDeclaration;
-                suggestion.priority = calculate_priority(header.total_parse_time,
-                                                          header.inclusion_count);
-                suggestion.confidence = 0.6;
+                suggestion.priority = calculate_priority(
+                    header.total_parse_time,
+                    header.inclusion_count,
+                    config
+                );
+                suggestion.confidence = 0.65;
 
                 std::ostringstream title;
-                title << "Use forward declaration for "
+                title << "Use forward declaration for '"
                       << header.path.filename().string()
-                      << " in " << fs::path(includer).filename().string();
+                      << "' in " << includer_path.filename().string();
                 suggestion.title = title.str();
 
+                auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    header.total_parse_time).count();
+
                 std::ostringstream desc;
-                desc << "Consider replacing #include \""
-                     << header.path.string() << "\" with a forward declaration "
-                     << "in header file " << includer << ". This reduces compilation "
-                     << "dependencies when only pointers/references are used.";
+                desc << "Header '" << header.path.filename().string()
+                     << "' takes " << parse_ms << "ms to parse and is included in "
+                     << includer_path.filename().string() << ". If only pointers or "
+                     << "references to types from this header are used, replace the "
+                     << "#include with a forward declaration to reduce compilation dependencies.";
                 suggestion.description = desc.str();
 
-                suggestion.rationale = "Forward declarations break include chains, "
-                    "reducing recompilation when headers change. Use when types are "
-                    "only used by pointer/reference, not by value.";
+                suggestion.rationale =
+                    "Forward declarations break include chains, reducing recompilation when "
+                    "headers change. The compiler only needs the full type definition when "
+                    "it needs to know the size or layout of a type (value members, inheritance, "
+                    "calling methods). Pointers and references work with incomplete types.";
 
                 Duration savings_per_file = header.total_parse_time / header.inclusion_count;
                 suggestion.estimated_savings = savings_per_file;
@@ -138,36 +196,42 @@ namespace bha::suggestions
                         static_cast<double>(context.trace.total_time.count());
                 }
 
-                suggestion.target_file.path = fs::path(includer);
+                suggestion.target_file.path = includer_path;
                 suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.note = "Replace include with forward declaration";
+                suggestion.target_file.note = "Replace #include with forward declaration";
 
-                suggestion.before_code.file = fs::path(includer);
-                suggestion.before_code.code = "#include \"" + header.path.string() + "\"";
+                // Generate detailed before/after code examples
+                suggestion.before_code.file = includer_path;
+                suggestion.before_code.code = generate_before_code(header.path, includer_path);
 
-                std::string fwd_decl = generate_forward_decl(header.path);
-                suggestion.after_code.file = fs::path(includer);
-                suggestion.after_code.code = fwd_decl;
+                suggestion.after_code.file = includer_path;
+                suggestion.after_code.code = generate_after_code(header.path, includer_path);
 
                 suggestion.implementation_steps = {
-                    "Replace #include with forward declaration",
-                    "Move #include to .cpp file if needed",
-                    "Use pointers/references instead of values",
-                    "Verify compilation succeeds"
+                    "1. Check if the header is only used for pointers/references",
+                    "2. Replace #include with: class " + extract_class_name(header.path) + ";",
+                    "3. Move the #include to the corresponding .cpp file",
+                    "4. If there are build errors, restore the #include in the header",
+                    "5. Repeat for other headers that can use forward declarations"
                 };
 
                 suggestion.impact.total_files_affected = 1;
                 suggestion.impact.cumulative_savings = savings_per_file;
 
                 suggestion.caveats = {
-                    "Only works when type is used by pointer/reference",
-                    "May require moving implementation to .cpp",
-                    "Cannot use with inline functions needing full type",
-                    "Cannot use with inheritance or member values"
+                    "Only works when type is used by pointer or reference, not by value",
+                    "Cannot forward-declare if you need sizeof(), inheritance, or member access",
+                    "Template classes may require full definition for certain uses",
+                    "May require moving some code from header to .cpp file"
                 };
 
-                suggestion.verification = "Compile the modified header to verify correctness";
-                suggestion.is_safe = false;
+                suggestion.documentation_link =
+                    "https://google.github.io/styleguide/cppguide.html#Forward_Declarations";
+
+                suggestion.verification =
+                    "Compile the project after making changes. If compilation fails, "
+                    "the type is used in a way that requires the full definition.";
+                suggestion.is_safe = false;  // Requires manual verification
 
                 result.suggestions.push_back(std::move(suggestion));
             }

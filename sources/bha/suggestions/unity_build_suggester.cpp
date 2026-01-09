@@ -98,11 +98,11 @@ namespace bha::suggestions
                 distances_[j * n_ + i] = distance;
             }
 
-            double get(const std::size_t i, const std::size_t j) const {
+            [[nodiscard]] double get(const std::size_t i, const std::size_t j) const {
                 return distances_[i * n_ + j];
             }
 
-            std::size_t size() const { return n_; }
+            [[nodiscard]] std::size_t size() const { return n_; }
 
         private:
             std::size_t n_;
@@ -491,34 +491,39 @@ namespace bha::suggestions
          * Estimates savings from unity building based on research.
          *
          * Model based on measurements from Chromium and UE4:
-         * - Header parsing: 40-60% of compile time
+         * - Header parsing: 30-60% of compile time [1][2]
          * - Template instantiation: 10-20% of compile time
          * - Shared savings: (1 - 1/N) * shared_ratio
          *
-         * Additional factors:
-         * - Common include count (more = higher savings)
-         * - Preprocessed size ratio (larger = higher savings)
+         * Research sources:
+         * [1] Microsoft C++ Build Insights
+         * [2] Aras Pranckevičius compile time investigation
+         * [3] JetBrains Unity Build Study (18-54% reduction)
+         * [5] Chromium Jumbo Builds (50 files per unit)
          */
-        Duration estimate_unity_savings(const UnityGroup& group) {
+        Duration estimate_unity_savings(
+            const UnityGroup& group,
+            const heuristics::UnityBuildConfig& config
+        ) {
             if (group.files.size() < 2) {
                 return Duration::zero();
             }
 
             const auto total_ns = group.total_compile_time.count();
-            const double n = static_cast<double>(group.files.size());
+            const auto n = static_cast<double>(group.files.size());
 
             // Base shared ratio from header parsing
             // Research: headers are 40-60% of compile time
-            double header_ratio = 0.50;
+            double header_ratio = config.header_parsing_ratio;
 
             // Adjust based on common include count
             // More shared includes = higher savings
             if (group.total_includes > 30) {
-                header_ratio = 0.60;
+                header_ratio = std::min(0.60, header_ratio + 0.15);
             } else if (group.total_includes > 15) {
-                header_ratio = 0.55;
+                header_ratio = std::min(0.55, header_ratio + 0.10);
             } else if (group.total_includes < 5) {
-                header_ratio = 0.40;
+                header_ratio = std::max(0.30, header_ratio - 0.10);
             }
 
             // Template instantiation sharing (~10% additional)
@@ -537,6 +542,12 @@ namespace bha::suggestions
             return Duration(static_cast<Duration::rep>(
                 static_cast<double>(total_ns) * savings_ratio
             ));
+        }
+
+        /// Overload using default config for sorting/comparison
+        Duration estimate_unity_savings(const UnityGroup& group) {
+            static const auto default_config = heuristics::HeuristicsConfig::defaults().unity_build;
+            return estimate_unity_savings(group, default_config);
         }
 
         /**
