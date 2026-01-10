@@ -24,7 +24,7 @@ namespace bha::cli
         /**
          * Formats a timestamp for display.
          */
-        static std::string format_time(const Timestamp ts) {
+        std::string format_time(const Timestamp ts) {
             const auto time_t_val = std::chrono::system_clock::to_time_t(ts);
             std::ostringstream ss;
 
