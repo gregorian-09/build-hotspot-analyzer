@@ -23,7 +23,7 @@ namespace bha::cli
     /**
      * Suggest command - generates optimization suggestions.
      */
-    class SuggestCommand : public Command {
+    class SuggestCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "suggest";
@@ -119,6 +119,7 @@ namespace bha::cli
 
                 for (const auto& file : trace_files) {
                     if (auto result = parsers::parse_trace_file(file); result.is_ok()) {
+                        build_trace.total_time += result.value().metrics.total_time;
                         build_trace.units.push_back(std::move(result.value()));
                     }
                     progress.tick();

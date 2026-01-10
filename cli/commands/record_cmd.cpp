@@ -41,7 +41,7 @@ namespace bha::cli
      *   bha record -o traces/ -- make -j4
      *   bha record --compiler gcc -o build/traces -- cmake --build .
      */
-    class RecordCommand : public Command {
+    class RecordCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "record";

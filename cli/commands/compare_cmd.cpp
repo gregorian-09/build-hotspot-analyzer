@@ -117,7 +117,7 @@ namespace bha::cli
     /**
      * Compare command - compares two build snapshots.
      */
-    class CompareCommand : public Command {
+    class CompareCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "compare";

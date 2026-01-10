@@ -21,7 +21,7 @@ namespace bha::cli
     /**
      * Analyze command - analyzes build trace files.
      */
-    class AnalyzeCommand : public Command {
+    class AnalyzeCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "analyze";

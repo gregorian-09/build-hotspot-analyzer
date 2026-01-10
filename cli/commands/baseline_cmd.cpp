@@ -18,7 +18,7 @@ namespace bha::cli
     /**
      * Baseline command - manages the baseline snapshot for comparison.
      */
-    class BaselineCommand : public Command {
+    class BaselineCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "baseline";

@@ -22,7 +22,7 @@ namespace bha::cli
     /**
      * Export command - exports analysis results to various formats.
      */
-    class ExportCommand : public Command {
+    class ExportCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "export";
@@ -130,6 +130,7 @@ namespace bha::cli
 
                 for (const auto& file : trace_files) {
                     if (auto result = parsers::parse_trace_file(file); result.is_ok()) {
+                        build_trace.total_time += result.value().metrics.total_time;
                         build_trace.units.push_back(std::move(result.value()));
                     }
                     progress.tick();

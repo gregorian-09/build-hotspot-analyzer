@@ -83,7 +83,7 @@ namespace bha::cli
     /**
      * Snapshot command - manages build snapshots for comparison.
      */
-    class SnapshotCommand : public Command {
+    class SnapshotCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "snapshot";
@@ -191,7 +191,7 @@ namespace bha::cli
         }
 
     private:
-        int list_snapshots(const storage::SnapshotStore& store) const
+        [[nodiscard]] int list_snapshots(const storage::SnapshotStore& store) const
         {
             auto result = store.list();
             if (result.is_err()) {
@@ -213,11 +213,11 @@ namespace bha::cli
                 for (std::size_t i = 0; i < snapshots.size(); ++i) {
                     const auto& s = snapshots[i];
                     std::cout << "  {\n";
-                    std::cout << "    \"name\": \"" << s.name << "\",\n";
-                    std::cout << "    \"description\": \"" << s.description << "\",\n";
-                    std::cout << "    \"created_at\": \"" << format_time(s.created_at) << "\",\n";
-                    std::cout << "    \"git_commit\": \"" << s.git_commit << "\",\n";
-                    std::cout << "    \"git_branch\": \"" << s.git_branch << "\",\n";
+                    std::cout << R"(    "name": ")" << s.name << "\",\n";
+                    std::cout << R"(    "description": ")" << s.description << "\",\n";
+                    std::cout << R"(    "created_at": ")" << format_time(s.created_at) << "\",\n";
+                    std::cout << R"(    "git_commit": ")" << s.git_commit << "\",\n";
+                    std::cout << R"(    "git_branch": ")" << s.git_branch << "\",\n";
                     std::cout << "    \"file_count\": " << s.file_count << ",\n";
                     std::cout << "    \"total_build_time_ms\": "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(s.total_build_time).count() << ",\n";
@@ -297,6 +297,7 @@ namespace bha::cli
 
             BuildTrace trace;
             trace.timestamp = std::chrono::system_clock::now();
+            trace.total_time = parse_result.value().metrics.total_time;
             trace.units.push_back(std::move(parse_result.value()));
 
             Spinner spinner2("Analyzing build");
@@ -339,7 +340,7 @@ namespace bha::cli
             return 0;
         }
 
-        int show_snapshot(const storage::SnapshotStore& store, const std::string& snap_name) const
+        [[nodiscard]] int show_snapshot(const storage::SnapshotStore& store, const std::string& snap_name) const
         {
             auto result = store.load(snap_name);
             if (result.is_err()) {
@@ -353,11 +354,11 @@ namespace bha::cli
 
             if (is_json()) {
                 std::cout << "{\n";
-                std::cout << "  \"name\": \"" << meta.name << "\",\n";
-                std::cout << "  \"description\": \"" << meta.description << "\",\n";
-                std::cout << "  \"created_at\": \"" << format_time(meta.created_at) << "\",\n";
-                std::cout << "  \"git_commit\": \"" << meta.git_commit << "\",\n";
-                std::cout << "  \"git_branch\": \"" << meta.git_branch << "\",\n";
+                std::cout << R"(  "name": ")" << meta.name << "\",\n";
+                std::cout << R"(  "description": ")" << meta.description << "\",\n";
+                std::cout << R"(  "created_at": ")" << format_time(meta.created_at) << "\",\n";
+                std::cout << R"(  "git_commit": ")" << meta.git_commit << "\",\n";
+                std::cout << R"(  "git_branch": ")" << meta.git_branch << "\",\n";
                 std::cout << "  \"file_count\": " << meta.file_count << ",\n";
                 std::cout << "  \"total_build_time_ms\": "
                           << std::chrono::duration_cast<std::chrono::milliseconds>(meta.total_build_time).count() << ",\n";
@@ -414,7 +415,7 @@ namespace bha::cli
             return 0;
         }
 
-        int delete_snapshot(const storage::SnapshotStore& store, const std::string& snap_name) const
+        [[nodiscard]] int delete_snapshot(const storage::SnapshotStore& store, const std::string& snap_name) const
         {
             if (!store.exists(snap_name)) {
                 print_error("Snapshot not found: " + snap_name);
