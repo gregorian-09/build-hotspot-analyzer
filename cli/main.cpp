@@ -33,6 +33,9 @@ namespace
             std::cout << "bha - Build Hotspot Analyzer\n";
         }
         std::cout << "\n";
+        std::cout << "A cross-platform C++ build time analyzer with actionable optimization\n";
+        std::cout << "suggestions. Supports GCC, Clang, MSVC, Intel, and NVCC compilers.\n";
+        std::cout << "\n";
         std::cout << "Usage: bha <command> [options]\n";
         std::cout << "\n";
 
@@ -63,9 +66,9 @@ namespace
 
         std::cout << "\n";
         if (colors::enabled()) {
-            std::cout << colors::BOLD << "Options:" << colors::RESET << "\n";
+            std::cout << colors::BOLD << "Global Options:" << colors::RESET << "\n";
         } else {
-            std::cout << "Options:\n";
+            std::cout << "Global Options:\n";
         }
         std::cout << "  -h, --help      Show help for a command\n";
         std::cout << "  -v, --verbose   Enable verbose output\n";
@@ -81,10 +84,25 @@ namespace
         } else {
             std::cout << "Examples:\n";
         }
-        std::cout << "  bha analyze build/*.json         Analyze trace files\n";
-        std::cout << "  bha suggest --min-priority high  Get high-priority suggestions\n";
-        std::cout << "  bha report -o report.html        Generate HTML report\n";
-        std::cout << "  bha export --format csv -o data  Export to CSV\n";
+        std::cout << "  bha analyze build/*.json              Analyze Clang time-trace files\n";
+        std::cout << "  bha suggest --detailed traces/        Get suggestions with code examples\n";
+        std::cout << "  bha suggest --pch-min-includes 5      Custom PCH detection threshold\n";
+        std::cout << "  bha export --format html -o report    Generate interactive HTML report\n";
+        std::cout << "  bha snapshot save baseline            Save analysis for comparison\n";
+        std::cout << "  bha compare baseline current          Compare two snapshots\n";
+
+        std::cout << "\n";
+        if (colors::enabled()) {
+            std::cout << colors::BOLD << "Key Features:" << colors::RESET << "\n";
+        } else {
+            std::cout << "Key Features:\n";
+        }
+        std::cout << "  - Multi-compiler: GCC, Clang, MSVC, Intel ICC, NVIDIA NVCC\n";
+        std::cout << "  - Actionable suggestions with before/after code examples\n";
+        std::cout << "  - Configurable heuristics (--pch-*, --template-*, --unity-*, etc.)\n";
+        std::cout << "  - HTML reports with flame graphs, include trees, dependency graphs\n";
+        std::cout << "  - Snapshot comparison to track build time improvements\n";
+        std::cout << "  - CMake integration for automatic trace capture\n";
         std::cout << "\n";
     }
 }  // namespace
