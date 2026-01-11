@@ -203,7 +203,7 @@ namespace bha::cli
         }
 
     private:
-        static int execute_and_capture(const std::string& command, std::string& output) {
+        int execute_and_capture(const std::string& command, std::string& output) const {
 #ifdef _WIN32
             SECURITY_ATTRIBUTES sa;
             sa.nLength = sizeof(SECURITY_ATTRIBUTES);
