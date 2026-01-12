@@ -183,22 +183,11 @@ namespace bha::analyzers
         const BuildTrace& trace,
         const AnalysisOptions& options
     ) const {
-        auto pch_result = analyze_pch(trace, options);
-        if (!pch_result.is_ok()) {
+        if (auto pch_result = analyze_pch(trace, options); !pch_result.is_ok()) {
             return Result<AnalysisResult, Error>::failure(pch_result.error());
         }
 
         AnalysisResult result;
-        for (const auto& candidate : pch_result.value().candidates) {
-            DependencyAnalysisResult::HeaderInfo header_info;
-            header_info.path = candidate.header;
-            header_info.total_parse_time = candidate.total_parse_time;
-            header_info.inclusion_count = candidate.inclusion_count;
-            header_info.including_files = candidate.including_files;
-            header_info.impact_score = candidate.pch_score;
-            result.dependencies.headers.push_back(std::move(header_info));
-        }
-
         return Result<AnalysisResult, Error>::success(std::move(result));
     }
 
