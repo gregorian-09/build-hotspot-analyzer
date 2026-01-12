@@ -250,13 +250,14 @@ namespace bha::exporters
             deps["circular_dependencies_count"] = analysis.dependencies.circular_dependencies.size();
 
             json headers_array = json::array();
-            for (const auto& header : analysis.dependencies.headers) {
+            for (const auto& [path, total_parse_time, inclusion_count, including_files, included_by, impact_score] : analysis.dependencies.headers) {
                 json h;
-                h["path"] = header.path.string();
-                h["inclusion_count"] = header.inclusion_count;
-                h["including_files"] = header.including_files;
-                h["parse_time_ms"] = duration_to_ms(header.total_parse_time);
-                h["impact_score"] = header.impact_score;
+                h["path"] = path.string();
+                h["inclusion_count"] = inclusion_count;
+                h["including_files"] = including_files;
+                h["parse_time_ms"] = duration_to_ms(total_parse_time);
+                h["impact_score"] = impact_score;
+                h["included_by"] = included_by;
                 headers_array.push_back(h);
             }
             deps["headers"] = headers_array;
