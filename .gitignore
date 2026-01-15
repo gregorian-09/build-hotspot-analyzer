@@ -12,3 +12,6 @@ bha.db
 
 __pycache__/
 *.py[cod]
+
+# Exclude null files
+nul
