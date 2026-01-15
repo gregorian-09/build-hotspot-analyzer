@@ -130,6 +130,13 @@ endif()
 
 
 # =============================================================================
+# Resources (HTML templates, CSS, JS, vendor libraries)
+# =============================================================================
+
+# Must be added before bha_lib to ensure headers are generated first
+add_subdirectory(resources)
+
+# =============================================================================
 # Main Library
 # =============================================================================
 
@@ -181,6 +188,11 @@ target_sources(bha_lib PRIVATE
         sources/bha/storage/storage.cpp
 )
 
+target_include_directories(bha_lib
+        PRIVATE
+            ${CMAKE_BINARY_DIR}/generated/resources
+)
+
 target_link_libraries(bha_lib
         PUBLIC
             bha::core
@@ -190,6 +202,9 @@ target_link_libraries(bha_lib
             $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
             $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
+
+# Ensure resources are generated before compiling bha_lib
+add_dependencies(bha_lib generate_resources)
 
 if(BHA_BUILD_CLI)
     add_executable(bha
