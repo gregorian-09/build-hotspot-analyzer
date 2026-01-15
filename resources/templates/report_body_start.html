@@ -1,0 +1,31 @@
+<body class="{{THEME_CLASS}}">
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-chart-line"></i> {{TITLE}}</h1>
+            <p style="color: var(--text-secondary); margin-top: 5px;">
+                <i class="far fa-clock"></i> Generated on {{TIMESTAMP}}
+            </p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3><i class="fas fa-file-code"></i> Total Files</h3>
+                <div class="value">{{TOTAL_FILES}}</div>
+            </div>
+            <div class="summary-card">
+                <h3><i class="fas fa-stopwatch"></i> Total Build Time</h3>
+                <div class="value">{{TOTAL_BUILD_TIME}}</div>
+                <div class="unit">seconds</div>
+            </div>
+            <div class="summary-card">
+                <h3><i class="fas fa-tachometer-alt"></i> Avg File Time</h3>
+                <div class="value">{{AVG_FILE_TIME}}</div>
+                <div class="unit">ms</div>
+            </div>
+            <div class="summary-card">
+                <h3><i class="fas fa-lightbulb"></i> Suggestions</h3>
+                <div class="value">{{TOTAL_SUGGESTIONS}}</div>
+            </div>
+        </div>

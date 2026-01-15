@@ -1,0 +1,218 @@
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('files')">
+                <i class="fas fa-list"></i> Files
+            </div>
+            <div class="tab" onclick="showTab('include-tree')">
+                <i class="fas fa-sitemap"></i> Include Tree
+            </div>
+            <div class="tab" onclick="showTab('timeline')">
+                <i class="fas fa-stream"></i> Timeline
+            </div>
+            <div class="tab" onclick="showTab('treemap')">
+                <i class="fas fa-th"></i> Treemap
+            </div>
+            <div class="tab" onclick="showTab('templates')">
+                <i class="fas fa-code"></i> Templates
+            </div>
+            <div class="tab" onclick="showTab('suggestions')">
+                <i class="fas fa-magic"></i> Suggestions
+            </div>
+            <div class="tab" onclick="showTab('dependencies')">
+                <i class="fas fa-project-diagram"></i> Dependencies
+            </div>
+        </div>
+
+        <div id="files" class="tab-content active">
+            <div class="section">
+                <h2><i class="fas fa-folder-open"></i> File Analysis</h2>
+                <div class="controls">
+                    <input type="text" id="file-search" placeholder="🔍 Search files..." onkeyup="filterFiles()">
+                    <select id="files-sort" onchange="sortFiles()">
+                        <option value="time-desc">Time (High to Low)</option>
+                        <option value="time-asc">Time (Low to High)</option>
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="lines-desc">Lines (High to Low)</option>
+                    </select>
+                    <input type="number" id="files-limit" value="100" min="10" max="10000"
+                           placeholder="Show top N" style="max-width: 150px;">
+                    <button class="btn btn-small" onclick="applyFileLimit()">Apply</button>
+                </div>
+                <div class="info-badge" style="margin-bottom: 16px;">
+                    <i class="fas fa-info-circle"></i>
+                    Showing <strong id="files-shown">0</strong> of <strong id="files-total">0</strong> files
+                </div>
+                <div style="max-height: 600px; overflow-y: auto;">
+                    <table id="files-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Total Time</th>
+                                <th>Frontend</th>
+                                <th>Backend</th>
+                                <th>Lines</th>
+                                <th style="width: 200px;">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{FILE_TABLE_ROWS}}</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="include-tree" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-sitemap"></i> Include Dependency Tree</h2>
+                <div class="controls">
+                    <input type="number" id="tree-depth" value="3" min="1" max="10"
+                           placeholder="Max depth" style="max-width: 150px;">
+                    <input type="number" id="tree-limit" value="50" min="10" max="500"
+                           placeholder="Max nodes" style="max-width: 150px;">
+                    <button class="btn btn-small" onclick="renderIncludeTree()">Refresh</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Click nodes to expand/collapse. Limited to top nodes by impact to prevent overload.
+                    <span style="color: var(--success-color);">●</span> Source files,
+                    <span style="color: var(--warning-color);">●</span> Header files
+                </p>
+                <div id="include-tree-container">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="resetIncludeTree()" title="Reset View">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                    </div>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="timeline" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-stream"></i> Compilation Timeline</h2>
+                <div class="controls">
+                    <input type="number" id="timeline-limit" value="100" min="10" max="1000"
+                           placeholder="Max files" style="max-width: 150px;">
+                    <select id="timeline-sort">
+                        <option value="time">Sort by Time</option>
+                        <option value="name">Sort by Name</option>
+                    </select>
+                    <button class="btn btn-small" onclick="renderTimeline()">Refresh</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Shows top N slowest files. Bar length = compile time. Hover for details.
+                </p>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--accent-color);"></div>
+                        <span>Frontend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--warning-color);"></div>
+                        <span>Backend</span>
+                    </div>
+                </div>
+                <div id="timeline-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="treemap" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-th"></i> File Size vs Compile Time</h2>
+                <div class="controls">
+                    <input type="number" id="treemap-limit" value="100" min="10" max="500"
+                           placeholder="Max files" style="max-width: 150px;">
+                    <select id="treemap-metric">
+                        <option value="lines">Size by Lines</option>
+                        <option value="time">Size by Time</option>
+                    </select>
+                    <button class="btn btn-small" onclick="renderTreemap()">Refresh</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Rectangle size = lines/time (configurable). Color intensity = compile time.
+                    Limited to top N files for readability.
+                </p>
+                <div id="treemap-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="templates" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-code"></i> Template Instantiation Analysis</h2>
+                <div class="controls">
+                    <input type="number" id="template-limit" value="50" min="5" max="200"
+                           placeholder="Max templates" style="max-width: 150px;">
+                    <button class="btn btn-small" onclick="renderTemplates()">Refresh</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Click segments to see details. Shows top N most expensive templates.
+                </p>
+                <div id="template-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="suggestions" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-magic"></i> Optimization Suggestions</h2>
+                {{SUGGESTION_CARDS}}
+            </div>
+        </div>
+
+        <div id="dependencies" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-project-diagram"></i> Dependency Analysis</h2>
+
+                <div class="dep-stats">
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">{{TOTAL_INCLUDES}}</div>
+                        <div class="dep-stat-label">Total Includes</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">{{UNIQUE_HEADERS}}</div>
+                        <div class="dep-stat-label">Unique Headers</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value">{{MAX_INCLUDE_DEPTH}}</div>
+                        <div class="dep-stat-label">Max Depth</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" style="color: {{CIRCULAR_DEPS_COLOR}}">{{CIRCULAR_DEPS_COUNT}}</div>
+                        <div class="dep-stat-label">Circular Deps</div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 16px; color: var(--text-primary);">
+                    <i class="fas fa-network-wired"></i> Dependency Graph
+                </h3>
+                <div class="controls">
+                    <input type="number" id="dep-limit" value="50" min="10" max="200"
+                           placeholder="Max nodes" style="max-width: 150px;">
+                    <button class="btn btn-small" onclick="renderDependencyGraph()">Refresh</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    Drag nodes to rearrange. Scroll to zoom. Limited to most connected nodes.
+                    Blue = headers, Green = source files.
+                </p>
+                <div id="dependency-graph-container">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="resetZoom()" title="Reset View">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                    </div>
+                    <svg id="dependency-graph"></svg>
+                </div>
+            </div>
+        </div>
+    </div>
