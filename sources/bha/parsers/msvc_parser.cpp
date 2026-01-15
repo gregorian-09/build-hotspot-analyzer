@@ -2,6 +2,25 @@
 // Created by gregorian-rayne on 12/28/25.
 //
 
+/**
+ * MSVC Build Time Parser (/Bt+ flag)
+ *
+ * ACTUAL OUTPUT FORMAT:
+ *   time(C:\\path\\to\\source.cpp)=X.XXXs
+ *   time(C:\\path\\to\\c1xx.dll)=X.XXXs < timestamp1 - timestamp2 > BB [source.cpp]
+ *   time(C:\\path\\to\\c2.dll)=X.XXXs < timestamp3 - timestamp4 > BB [source.cpp]
+ *
+ * WHERE:
+ *   c1xx.dll = Frontend compiler (parsing, semantic analysis, templates)
+ *   c2.dll   = Backend compiler (optimization, code generation)
+ *   Timestamps in angle brackets are compilation start/end times (not durations)
+ *   The /Bt+ flag shows time spent in the front end and back end of the MSVC compiler. :contentReference[oaicite:0]{index=0}
+ *
+ * REFERENCES:
+ *   - http://coding-scars.com/investigating-cpp-compile-times-3/ :contentReference[oaicite:1]{index=1}
+ *   - https://aras-p.info/blog/2019/01/21/Another-cool-MSVC-flag-d1reportTime/ (discusses related MSVC timing flags) :contentReference[oaicite:2]{index=2}
+ */
+
 #include "bha/parsers/msvc_parser.hpp"
 #include "bha/utils/file_utils.hpp"
 #include "bha/utils/string_utils.hpp"
@@ -34,8 +53,6 @@ namespace bha::parsers {
         struct MSVCTimeLine {
             std::string target;
             Duration total_time = Duration::zero();
-            Duration frontend_time = Duration::zero();
-            Duration template_time = Duration::zero();
         };
 
         std::optional<MSVCTimeLine> parse_msvc_line(const std::string_view line) {
@@ -65,37 +82,6 @@ namespace bha::parsers {
             }
 
             result.total_time = parse_msvc_time(trimmed.substr(time_start, time_end - time_start));
-
-            if (const auto detail_start = trimmed.find('<'); detail_start != std::string_view::npos) {
-                if (const auto detail_end = trimmed.find('>'); detail_end != std::string_view::npos) {
-                    const auto details = trimmed.substr(detail_start + 1, detail_end - detail_start - 1);
-
-                    const std::regex time_regex(R"((\d+\.?\d*)\s*s\s*\(([^)]+)\))");
-                    const std::string details_str(details);
-                    std::smatch match;
-
-                    auto it = details_str.cbegin();
-                    while (std::regex_search(it, details_str.cend(), match, time_regex)) {
-                        double val = 0.0;
-                        std::string num = match[1].str();
-                        std::from_chars(num.data(), num.data() + num.size(), val);
-                        const auto dur = std::chrono::duration_cast<Duration>(
-                            std::chrono::duration<double>(val));
-
-                        std::string label = match[2].str();
-                        auto lower_label = string_utils::to_lower(label);
-
-                        if (string_utils::contains(lower_label, "frontend")) {
-                            result.frontend_time = dur;
-                        }
-                        else if (string_utils::contains(lower_label, "template")) {
-                            result.template_time = dur;
-                        }
-
-                        it = match.suffix().first;
-                    }
-                }
-            }
 
             return result;
         }
@@ -154,20 +140,25 @@ namespace bha::parsers {
 
             if (string_utils::contains(lower_target, "c1xx")) {
                 unit.metrics.frontend_time = timing->total_time;
-                unit.metrics.breakdown.template_instantiation = timing->template_time;
 
-                auto other_frontend = timing->total_time - timing->template_time;
-                unit.metrics.breakdown.parsing = other_frontend / 2;
-                unit.metrics.breakdown.semantic_analysis = other_frontend / 2;
+                // Heuristic breakdown: Frontend includes parsing, semantic analysis, and templates
+                // Estimate 40% parsing, 30% semantic analysis, 30% template instantiation
+                unit.metrics.breakdown.parsing = std::chrono::duration_cast<Duration>(timing->total_time * 0.4);
+                unit.metrics.breakdown.semantic_analysis = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
+                unit.metrics.breakdown.template_instantiation = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
             }
             else if (string_utils::contains(lower_target, "c2")) {
                 unit.metrics.backend_time = timing->total_time;
-                unit.metrics.breakdown.code_generation = timing->total_time / 2;
-                unit.metrics.breakdown.optimization = timing->total_time / 2;
+
+                // Heuristic breakdown: Backend includes optimization and code generation
+                // Estimate 50% optimization, 50% code generation
+                unit.metrics.breakdown.optimization = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
+                unit.metrics.breakdown.code_generation = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
             }
             else if (string_utils::ends_with(lower_target, ".cpp") ||
                      string_utils::ends_with(lower_target, ".cxx") ||
-                     string_utils::ends_with(lower_target, ".cc")) {
+                     string_utils::ends_with(lower_target, ".cc") ||
+                     string_utils::ends_with(lower_target, ".c")) {
                 unit.source_file = timing->target;
                 unit.metrics.path = timing->target;
                 unit.metrics.total_time = timing->total_time;

@@ -33,8 +33,8 @@ namespace bha::parsers
     TEST_F(MSVCParserTest, CanParseContent_Valid) {
         const std::string content = R"(
 time(C:\project\src\main.cpp)=1.234s
-time(c1xx.dll)=0.850s < 0.750s (Frontend), 0.100s (Template instantiation) >
-time(c2.dll)=0.384s
+time(C:\path\to\c1xx.dll)=0.850s < 1617765075910 - 1617766036302 > BB [main.cpp]
+time(C:\path\to\c2.dll)=0.384s < 1617766053824 - 1617766211553 > BB [main.cpp]
 )";
         EXPECT_TRUE(parser_->can_parse_content(content));
     }
@@ -59,5 +59,12 @@ time(c2.dll)=0.800s
         EXPECT_GT(unit.metrics.total_time.count(), 0);
         EXPECT_GT(unit.metrics.frontend_time.count(), 0);
         EXPECT_GT(unit.metrics.backend_time.count(), 0);
+
+        // Verify heuristic breakdown is calculated
+        EXPECT_GT(unit.metrics.breakdown.parsing.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.semantic_analysis.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.template_instantiation.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.optimization.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.code_generation.count(), 0);
     }
 }

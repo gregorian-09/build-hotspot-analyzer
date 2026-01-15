@@ -48,8 +48,9 @@ phase lang. deferred                  :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%
         const std::string content = R"(
 Time variable                                   usr           sys          wall
 phase parsing                         :   0.50 ( 25%)   0.10 (  5%)   0.60 ( 30%)
-phase template instantiation          :   0.30 ( 15%)   0.05 (  2%)   0.35 ( 17%)
-phase code generation                 :   0.40 ( 20%)   0.08 (  4%)   0.48 ( 24%)
+phase lang. deferred                  :   0.30 ( 15%)   0.05 (  2%)   0.35 ( 17%)
+phase opt and generate                :   0.40 ( 20%)   0.08 (  4%)   0.48 ( 24%)
+phase last asm                        :   0.10 (  5%)   0.02 (  1%)   0.12 (  6%)
 )";
 
         auto result = parser_->parse_content(content, "/src/test.cpp");
@@ -60,5 +61,8 @@ phase code generation                 :   0.40 ( 20%)   0.08 (  4%)   0.48 ( 24%
         EXPECT_EQ(unit.source_file, fs::path("/src/test.cpp"));
         EXPECT_GT(unit.metrics.total_time.count(), 0);
         EXPECT_GT(unit.metrics.breakdown.parsing.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.semantic_analysis.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.optimization.count(), 0);
+        EXPECT_GT(unit.metrics.breakdown.code_generation.count(), 0);
     }
 }
