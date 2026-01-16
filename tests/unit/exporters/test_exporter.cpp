@@ -38,8 +38,6 @@ namespace bha::exporters::test
         file1.rank = 1;
         file1.include_count = 15;
         file1.template_count = 5;
-        file1.lines_of_code = 500;
-        file1.time_per_loc = 10.0;
         result.files.push_back(file1);
 
         analyzers::FileAnalysisResult file2;
@@ -51,8 +49,6 @@ namespace bha::exporters::test
         file2.rank = 2;
         file2.include_count = 8;
         file2.template_count = 2;
-        file2.lines_of_code = 300;
-        file2.time_per_loc = 10.0;
         result.files.push_back(file2);
 
         result.dependencies.total_includes = 100;
