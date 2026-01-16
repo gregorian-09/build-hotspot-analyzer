@@ -21,6 +21,7 @@ namespace bha::analyzers
             result.frontend_time = unit.metrics.frontend_time;
             result.backend_time = unit.metrics.backend_time;
             result.breakdown = unit.metrics.breakdown;
+            result.memory = unit.metrics.memory;
 
             if (total_time.count() > 0) {
                 result.time_percent = 100.0 * static_cast<double>(unit.metrics.total_time.count()) /
@@ -29,12 +30,6 @@ namespace bha::analyzers
 
             result.include_count = unit.includes.size();
             result.template_count = unit.templates.size();
-            result.lines_of_code = unit.metrics.lines_of_code;
-
-            if (unit.metrics.lines_of_code > 0) {
-                result.time_per_loc = static_cast<double>(unit.metrics.total_time.count()) /
-                                      static_cast<double>(unit.metrics.lines_of_code);
-            }
 
             return result;
         }

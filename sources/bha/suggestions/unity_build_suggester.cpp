@@ -52,8 +52,6 @@ namespace bha::suggestions
         struct FileMetadata {
             fs::path path;
             Duration compile_time = Duration::zero();
-            std::size_t line_count = 0;
-            std::size_t preprocessed_size = 0;
 
             // Symbol information for conflict detection
             std::unordered_set<std::string> static_symbols;
@@ -458,8 +456,6 @@ namespace bha::suggestions
                 FileMetadata meta;
                 meta.path = file.file;
                 meta.compile_time = file.compile_time;
-                meta.line_count = file.lines_of_code;
-                meta.preprocessed_size = file.lines_of_code;  // Approximation
 
                 std::string file_key = file.file.string();
 
@@ -475,9 +471,8 @@ namespace bha::suggestions
                     meta.anon_namespace_symbols = file_anon_symbols[file_key];
                 }
 
-                // Memory estimate: use lines of code as proxy
-                // Research shows ~10x expansion from source to memory
-                meta.memory_estimate = meta.line_count * 10;
+                // Note: Memory estimation not currently implemented
+                // Would require line count data from compiler trace
 
                 meta.include_depth = file.include_count;  // Use include_count as proxy
 

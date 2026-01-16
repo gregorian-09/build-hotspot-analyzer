@@ -120,8 +120,6 @@ namespace bha::storage
             j["rank"] = file.rank;
             j["include_count"] = file.include_count;
             j["template_count"] = file.template_count;
-            j["lines_of_code"] = file.lines_of_code;
-            j["time_per_loc"] = file.time_per_loc;
             return j;
         }
 
@@ -138,8 +136,6 @@ namespace bha::storage
             file.rank = j.value("rank", std::size_t{0});
             file.include_count = j.value("include_count", std::size_t{0});
             file.template_count = j.value("template_count", std::size_t{0});
-            file.lines_of_code = j.value("lines_of_code", std::size_t{0});
-            file.time_per_loc = j.value("time_per_loc", 0.0);
             return file;
         }
 
@@ -671,7 +667,7 @@ namespace bha::storage
         // Find regressions, improvements, new files, removed files
         for (const auto& [path, old_file] : old_files) {
             if (auto it = new_files.find(path); it == new_files.end()) {
-                result.removed_files.push_back(path);
+                result.removed_files.emplace_back(path);
             } else {
                 const auto* new_file = it->second;
                 auto delta = new_file->compile_time - old_file->compile_time;
@@ -700,7 +696,7 @@ namespace bha::storage
 
         for (const auto& path : new_files | std::views::keys) {
             if (!old_files.contains(path)) {
-                result.new_files.push_back(path);
+                result.new_files.emplace_back(path);
             }
         }
 
