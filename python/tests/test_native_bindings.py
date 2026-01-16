@@ -116,6 +116,33 @@ class TestNativeBindings(unittest.TestCase):
         """Native export_to_string function exists."""
         self.assertTrue(hasattr(self._native, 'export_to_string'))
 
+    def test_native_memory_metrics(self):
+        """Native MemoryMetrics type works correctly."""
+        if hasattr(self._native, 'MemoryMetrics'):
+            metrics = self._native.MemoryMetrics()
+            self.assertIsNotNone(metrics)
+            self.assertTrue(hasattr(metrics, 'peak_memory_bytes'))
+            self.assertTrue(hasattr(metrics, 'frontend_peak_bytes'))
+            self.assertTrue(hasattr(metrics, 'backend_peak_bytes'))
+            self.assertTrue(hasattr(metrics, 'max_stack_bytes'))
+            self.assertTrue(hasattr(metrics, 'has_data'))
+
+            metrics.peak_memory_bytes = 1024
+            self.assertEqual(metrics.peak_memory_bytes, 1024)
+            self.assertTrue(metrics.has_data())
+
+            metrics2 = self._native.MemoryMetrics()
+            self.assertFalse(metrics2.has_data())
+
+    def test_native_file_metrics_with_memory(self):
+        """Native FileMetrics includes memory field."""
+        if hasattr(self._native, 'FileMetrics'):
+            metrics = self._native.FileMetrics()
+            if hasattr(metrics, 'memory'):
+                self.assertIsNotNone(metrics.memory)
+                if hasattr(self._native, 'MemoryMetrics'):
+                    self.assertIsInstance(metrics.memory, self._native.MemoryMetrics)
+
 class TestNativeIntegration(unittest.TestCase):
     """Integration tests requiring native module."""
 

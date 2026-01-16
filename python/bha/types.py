@@ -86,6 +86,25 @@ class Duration:
         return Duration(self._ns - other._ns)
 
 
+@dataclass
+class MemoryMetrics:
+    """Memory usage metrics."""
+    peak_memory_bytes: int = 0
+    frontend_peak_bytes: int = 0
+    backend_peak_bytes: int = 0
+    max_stack_bytes: int = 0
+    parsing_bytes: int = 0
+    semantic_bytes: int = 0
+    codegen_bytes: int = 0
+    ggc_memory: int = 0
+
+    def has_data(self) -> bool:
+        return (self.peak_memory_bytes > 0 or
+                self.frontend_peak_bytes > 0 or
+                self.backend_peak_bytes > 0 or
+                self.max_stack_bytes > 0)
+
+
 class CompilerType(Enum):
     """Supported compiler types."""
     UNKNOWN = 0
@@ -255,7 +274,6 @@ class FileMetrics:
     compile_time_ms: float = 0.0
     include_count: int = 0
     template_instantiation_count: int = 0
-    lines_of_code: int = 0
     include_depth: int = 0
     is_header: bool = False
     includers: List[str] = field(default_factory=list)
@@ -266,7 +284,6 @@ class FileMetrics:
             'compile_time_ms': self.compile_time_ms,
             'include_count': self.include_count,
             'template_instantiation_count': self.template_instantiation_count,
-            'lines_of_code': self.lines_of_code,
             'include_depth': self.include_depth,
             'is_header': self.is_header,
             'includers': self.includers,

@@ -163,6 +163,18 @@ PYBIND11_MODULE(_bha_native, m) {
             [](bha::TimeBreakdown& t, const double ms) { t.optimization = ms_to_duration(ms); })
         .def("total_ms", [](const bha::TimeBreakdown& t) { return duration_to_ms(t.total()); });
 
+    py::class_<bha::MemoryMetrics>(m, "MemoryMetrics", "Memory usage metrics")
+        .def(py::init<>())
+        .def_readwrite("peak_memory_bytes", &bha::MemoryMetrics::peak_memory_bytes)
+        .def_readwrite("frontend_peak_bytes", &bha::MemoryMetrics::frontend_peak_bytes)
+        .def_readwrite("backend_peak_bytes", &bha::MemoryMetrics::backend_peak_bytes)
+        .def_readwrite("max_stack_bytes", &bha::MemoryMetrics::max_stack_bytes)
+        .def_readwrite("parsing_bytes", &bha::MemoryMetrics::parsing_bytes)
+        .def_readwrite("semantic_bytes", &bha::MemoryMetrics::semantic_bytes)
+        .def_readwrite("codegen_bytes", &bha::MemoryMetrics::codegen_bytes)
+        .def_readwrite("ggc_memory", &bha::MemoryMetrics::ggc_memory)
+        .def("has_data", &bha::MemoryMetrics::has_data);
+
     py::class_<bha::FileMetrics>(m, "FileMetrics", "Metrics for a single source file")
         .def(py::init<>())
         .def_readwrite("path", &bha::FileMetrics::path)
@@ -176,7 +188,7 @@ PYBIND11_MODULE(_bha_native, m) {
             [](const bha::FileMetrics& f) { return duration_to_ms(f.backend_time); },
             [](bha::FileMetrics& f, const double ms) { f.backend_time = ms_to_duration(ms); })
         .def_readwrite("breakdown", &bha::FileMetrics::breakdown)
-        .def_readwrite("lines_of_code", &bha::FileMetrics::lines_of_code)
+        .def_readwrite("memory", &bha::FileMetrics::memory)
         .def_readwrite("preprocessed_lines", &bha::FileMetrics::preprocessed_lines)
         .def_readwrite("expansion_ratio", &bha::FileMetrics::expansion_ratio)
         .def_readwrite("direct_includes", &bha::FileMetrics::direct_includes)
@@ -360,9 +372,7 @@ PYBIND11_MODULE(_bha_native, m) {
         .def_readwrite("time_percent", &bha::analyzers::FileAnalysisResult::time_percent)
         .def_readwrite("rank", &bha::analyzers::FileAnalysisResult::rank)
         .def_readwrite("include_count", &bha::analyzers::FileAnalysisResult::include_count)
-        .def_readwrite("template_count", &bha::analyzers::FileAnalysisResult::template_count)
-        .def_readwrite("lines_of_code", &bha::analyzers::FileAnalysisResult::lines_of_code)
-        .def_readwrite("time_per_loc", &bha::analyzers::FileAnalysisResult::time_per_loc);
+        .def_readwrite("template_count", &bha::analyzers::FileAnalysisResult::template_count);
 
     py::class_<bha::analyzers::DependencyAnalysisResult::HeaderInfo>(m, "HeaderInfo", "Header analysis info")
         .def(py::init<>())
