@@ -166,6 +166,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/parser_registry.cpp
         sources/bha/parsers/msvc_parser.cpp
         sources/bha/parsers/intel_parser.cpp
+        sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/build_systems/adapter.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
@@ -210,6 +211,7 @@ if(BHA_BUILD_CLI)
     add_executable(bha
             cli/commands/analyze_cmd.cpp
             cli/commands/baseline_cmd.cpp
+            cli/commands/build_cmd.cpp
             cli/commands/command.cpp
             cli/commands/compare_cmd.cpp
             cli/commands/export_cmd.cpp
