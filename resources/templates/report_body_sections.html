@@ -31,7 +31,6 @@
                         <option value="time-desc">Time (High to Low)</option>
                         <option value="time-asc">Time (Low to High)</option>
                         <option value="name-asc">Name (A-Z)</option>
-                        <option value="lines-desc">Lines (High to Low)</option>
                     </select>
                     <input type="number" id="files-limit" value="100" min="10" max="10000"
                            placeholder="Show top N" style="max-width: 150px;">
@@ -49,7 +48,6 @@
                                 <th>Total Time</th>
                                 <th>Frontend</th>
                                 <th>Backend</th>
-                                <th>Lines</th>
                                 <th style="width: 200px;">Distribution</th>
                             </tr>
                         </thead>
@@ -122,18 +120,14 @@
 
         <div id="treemap" class="tab-content">
             <div class="section">
-                <h2><i class="fas fa-th"></i> File Size vs Compile Time</h2>
+                <h2><i class="fas fa-th"></i> Compile Time Treemap</h2>
                 <div class="controls">
                     <input type="number" id="treemap-limit" value="100" min="10" max="500"
                            placeholder="Max files" style="max-width: 150px;">
-                    <select id="treemap-metric">
-                        <option value="lines">Size by Lines</option>
-                        <option value="time">Size by Time</option>
-                    </select>
                     <button class="btn btn-small" onclick="renderTreemap()">Refresh</button>
                 </div>
                 <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    Rectangle size = lines/time (configurable). Color intensity = compile time.
+                    Rectangle size = compile time. Color intensity = compile time.
                     Limited to top N files for readability.
                 </p>
                 <div id="treemap-container">

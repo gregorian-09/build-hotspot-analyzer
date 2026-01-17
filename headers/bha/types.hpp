@@ -162,6 +162,23 @@ namespace bha {
         }
     };
 
+    struct MemoryMetrics {
+        std::size_t peak_memory_bytes = 0;
+        std::size_t frontend_peak_bytes = 0;
+        std::size_t backend_peak_bytes = 0;
+        std::size_t max_stack_bytes = 0;
+
+        std::size_t parsing_bytes = 0;
+        std::size_t semantic_bytes = 0;
+        std::size_t codegen_bytes = 0;
+        std::size_t ggc_memory = 0;
+
+        [[nodiscard]] bool has_data() const noexcept {
+            return peak_memory_bytes > 0 || frontend_peak_bytes > 0 ||
+                   backend_peak_bytes > 0 || max_stack_bytes > 0;
+        }
+    };
+
     /**
      * Metrics for a single source file.
      */
@@ -171,8 +188,8 @@ namespace bha {
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
         TimeBreakdown breakdown;
+        MemoryMetrics memory;
 
-        std::size_t lines_of_code = 0;
         std::size_t preprocessed_lines = 0;
         double expansion_ratio = 0.0;
 

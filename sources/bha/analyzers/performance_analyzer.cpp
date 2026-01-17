@@ -16,7 +16,7 @@ namespace bha::analyzers
 {
     namespace {
 
-        Duration calculate_percentile(std::vector<Duration>& times, double percentile) {
+        Duration calculate_percentile(std::vector<Duration>& times, const double percentile) {
             if (times.empty()) {
                 return Duration::zero();
             }
@@ -234,6 +234,33 @@ namespace bha::analyzers
             result.performance.median_file_time = calculate_percentile(compile_times, 50.0);
             result.performance.p90_file_time = calculate_percentile(compile_times, 90.0);
             result.performance.p99_file_time = calculate_percentile(compile_times, 99.0);
+        }
+
+        std::size_t files_with_memory = 0;
+        for (const auto& file : result.files) {
+            if (file.memory.has_data()) {
+                result.performance.total_memory.peak_memory_bytes += file.memory.peak_memory_bytes;
+                result.performance.total_memory.frontend_peak_bytes += file.memory.frontend_peak_bytes;
+                result.performance.total_memory.backend_peak_bytes += file.memory.backend_peak_bytes;
+                result.performance.total_memory.max_stack_bytes += file.memory.max_stack_bytes;
+
+                if (file.memory.peak_memory_bytes > result.performance.peak_memory.peak_memory_bytes) {
+                    result.performance.peak_memory = file.memory;
+                }
+
+                ++files_with_memory;
+            }
+        }
+
+        if (files_with_memory > 0) {
+            result.performance.average_memory.peak_memory_bytes =
+                result.performance.total_memory.peak_memory_bytes / files_with_memory;
+            result.performance.average_memory.frontend_peak_bytes =
+                result.performance.total_memory.frontend_peak_bytes / files_with_memory;
+            result.performance.average_memory.backend_peak_bytes =
+                result.performance.total_memory.backend_peak_bytes / files_with_memory;
+            result.performance.average_memory.max_stack_bytes =
+                result.performance.total_memory.max_stack_bytes / files_with_memory;
         }
 
         std::ranges::sort(result.files,

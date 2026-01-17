@@ -55,8 +55,6 @@
                         return parseFloat(a.dataset.time) - parseFloat(b.dataset.time);
                     case 'name-asc':
                         return a.dataset.name.localeCompare(b.dataset.name);
-                    case 'lines-desc':
-                        return parseInt(b.dataset.lines) - parseInt(a.dataset.lines);
                     default:
                         return 0;
                 }
@@ -391,7 +389,6 @@
             }
 
             const limit = parseInt(document.getElementById('treemap-limit').value) || 100;
-            const metric = document.getElementById('treemap-metric').value;
 
             const width = container.node().getBoundingClientRect().width;
             const height = 600;
@@ -411,9 +408,8 @@
                 children: files.map(f => ({
                     name: f.path.split('/').pop().split('\\\\').pop(),
                     fullPath: f.path,
-                    value: metric === 'lines' ? (f.lines_of_code || 1) : f.total_time_ms,
-                    time: f.total_time_ms,
-                    lines: f.lines_of_code
+                    value: f.total_time_ms,
+                    time: f.total_time_ms
                 }))
             };
 

@@ -92,7 +92,7 @@ namespace bha::build_systems
             full_command += " 2>&1";
 
             if (FILE* pipe = popen(full_command.c_str(), "r")) {
-                std::array<char, 4096> buffer;
+                std::array<char, 4096> buffer{};
                 while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
                     output += buffer.data();
                 }
@@ -133,6 +133,26 @@ namespace bha::build_systems
             }
 
             return traces;
+        }
+
+        std::vector<fs::path> find_memory_files(const fs::path& dir) {
+            std::vector<fs::path> memory_files;
+
+            if (!fs::exists(dir)) {
+                return memory_files;
+            }
+
+            for (const auto& entry : fs::recursive_directory_iterator(dir)) {
+                if (!entry.is_regular_file()) continue;
+
+                std::string ext = entry.path().extension().string();
+
+                if (ext == ".su" || ext == ".map") {
+                    memory_files.push_back(entry.path());
+                }
+            }
+
+            return memory_files;
         }
 
         /**
@@ -195,13 +215,13 @@ namespace bha::build_systems
 
     class CMakeAdapter : public IBuildSystemAdapter {
     public:
-        std::string name() const override { return "CMake"; }
+        [[nodiscard]] std::string name() const override { return "CMake"; }
 
-        std::string description() const override {
+        [[nodiscard]] std::string description() const override {
             return "CMake build system adapter";
         }
 
-        double detect(const fs::path& project_path) const override {
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
             if (fs::exists(project_path / "CMakeLists.txt")) {
                 return 0.9;
             }
@@ -226,10 +246,17 @@ namespace bha::build_systems
             cmd << " -DCMAKE_BUILD_TYPE=" << options.build_type;
             cmd << " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON";
 
-            // Add tracing flags for Clang
-            if (options.enable_tracing) {
-                cmd << " -DCMAKE_CXX_FLAGS=\"-ftime-trace\"";
-                cmd << " -DCMAKE_C_FLAGS=\"-ftime-trace\"";
+            if (options.enable_tracing || options.enable_memory_profiling) {
+                std::string flags;
+                if (options.enable_tracing) {
+                    flags += "-ftime-trace";
+                }
+                if (options.enable_memory_profiling) {
+                    if (!flags.empty()) flags += " ";
+                    flags += "-fmem-report -fstack-usage";
+                }
+                cmd << " -DCMAKE_CXX_FLAGS=\"" << flags << "\"";
+                cmd << " -DCMAKE_C_FLAGS=\"" << flags << "\"";
             }
 
             if (!options.compiler.empty()) {
@@ -293,6 +320,9 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(build_dir);
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(build_dir);
+            }
 
             auto end = std::chrono::steady_clock::now();
             result.build_time = std::chrono::duration_cast<Duration>(end - start);
@@ -353,13 +383,13 @@ namespace bha::build_systems
 
     class NinjaAdapter : public IBuildSystemAdapter {
     public:
-        std::string name() const override { return "Ninja"; }
+        [[nodiscard]] std::string name() const override { return "Ninja"; }
 
-        std::string description() const override {
+        [[nodiscard]] std::string description() const override {
             return "Ninja build system adapter";
         }
 
-        double detect(const fs::path& project_path) const override {
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
             if (fs::exists(project_path / "build.ninja")) {
                 return 0.95;
             }
@@ -392,8 +422,16 @@ namespace bha::build_systems
                 cmd << " -B \"" << build_dir.string() << "\"";
                 cmd << " -DCMAKE_BUILD_TYPE=" << options.build_type;
 
-                if (options.enable_tracing) {
-                    cmd << " -DCMAKE_CXX_FLAGS=\"-ftime-trace\"";
+                if (options.enable_tracing || options.enable_memory_profiling) {
+                    std::string flags;
+                    if (options.enable_tracing) {
+                        flags += "-ftime-trace";
+                    }
+                    if (options.enable_memory_profiling) {
+                        if (!flags.empty()) flags += " ";
+                        flags += "-fmem-report -fstack-usage";
+                    }
+                    cmd << " -DCMAKE_CXX_FLAGS=\"" << flags << "\"";
                 }
 
                 if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
@@ -454,6 +492,9 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(build_dir);
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(build_dir);
+            }
 
             auto end = std::chrono::steady_clock::now();
             result.build_time = std::chrono::duration_cast<Duration>(end - start);
@@ -516,13 +557,13 @@ namespace bha::build_systems
 
     class MakeAdapter : public IBuildSystemAdapter {
     public:
-        std::string name() const override { return "Make"; }
+        [[nodiscard]] std::string name() const override { return "Make"; }
 
-        std::string description() const override {
+        [[nodiscard]] std::string description() const override {
             return "GNU Make build system adapter";
         }
 
-        double detect(const fs::path& project_path) const override {
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
             if (fs::exists(project_path / "Makefile")) {
                 return 0.7;
             }
@@ -543,9 +584,17 @@ namespace bha::build_systems
                 std::ostringstream cmd;
                 cmd << "./configure";
 
-                if (options.enable_tracing) {
-                    cmd << " CXXFLAGS=\"-ftime-trace\"";
-                    cmd << " CFLAGS=\"-ftime-trace\"";
+                if (options.enable_tracing || options.enable_memory_profiling) {
+                    std::string flags;
+                    if (options.enable_tracing) {
+                        flags += "-ftime-trace";
+                    }
+                    if (options.enable_memory_profiling) {
+                        if (!flags.empty()) flags += " ";
+                        flags += "-fmem-report -fstack-usage";
+                    }
+                    cmd << " CXXFLAGS=\"" << flags << "\"";
+                    cmd << " CFLAGS=\"" << flags << "\"";
                 }
 
                 if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
@@ -595,6 +644,9 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(project_path);
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(project_path);
+            }
 
             const auto end = std::chrono::steady_clock::now();
             result.build_time = std::chrono::duration_cast<Duration>(end - start);
@@ -648,13 +700,13 @@ namespace bha::build_systems
 
     class MSBuildAdapter : public IBuildSystemAdapter {
     public:
-        std::string name() const override { return "MSBuild"; }
+        [[nodiscard]] std::string name() const override { return "MSBuild"; }
 
-        std::string description() const override {
+        [[nodiscard]] std::string description() const override {
             return "Microsoft MSBuild/Visual Studio adapter";
         }
 
-        double detect(const fs::path& project_path) const override {
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
             for (const auto& entry : fs::directory_iterator(project_path)) {
                 if (entry.path().extension() == ".sln") {
                     return 0.9;
@@ -714,6 +766,10 @@ namespace bha::build_systems
                 cmd << " /p:EnableBuildInsights=true";
             }
 
+            if (options.enable_memory_profiling) {
+                cmd << " /p:GenerateMapFile=true";
+            }
+
             if (options.verbose) {
                 cmd << " /v:detailed";
             } else {
@@ -734,6 +790,9 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(project_path);
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(project_path);
+            }
 
             const auto end = std::chrono::steady_clock::now();
             result.build_time = std::chrono::duration_cast<Duration>(end - start);

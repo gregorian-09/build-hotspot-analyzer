@@ -37,6 +37,9 @@ namespace bha::build_systems
         /** Enable time tracing output */
         bool enable_tracing = true;
 
+        /** Enable memory profiling output */
+        bool enable_memory_profiling = false;
+
         /** Compiler to use (auto-detected if empty) */
         std::string compiler;
 
@@ -56,6 +59,9 @@ namespace bha::build_systems
 
         /** Path to trace output file(s) */
         std::vector<fs::path> trace_files;
+
+        /** Path to memory output file(s) (.su, .map) */
+        std::vector<fs::path> memory_files;
 
         /** Build duration */
         Duration build_time = Duration::zero();

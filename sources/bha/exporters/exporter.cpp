@@ -234,6 +234,16 @@ namespace bha::exporters
         summary["total_compile_time_ms"] = duration_to_ms(analysis.performance.total_build_time);
         summary["analysis_duration_ms"] = duration_to_ms(analysis.analysis_duration);
         summary["suggestions_count"] = suggestions.size();
+
+        if (analysis.performance.total_memory.has_data()) {
+            json memory_summary;
+            memory_summary["total_peak_bytes"] = analysis.performance.total_memory.peak_memory_bytes;
+            memory_summary["peak_file_bytes"] = analysis.performance.peak_memory.peak_memory_bytes;
+            memory_summary["average_peak_bytes"] = analysis.performance.average_memory.peak_memory_bytes;
+            memory_summary["max_stack_bytes"] = analysis.performance.peak_memory.max_stack_bytes;
+            summary["memory"] = memory_summary;
+        }
+
         output["summary"] = summary;
 
         if (options.include_file_details) {
@@ -256,8 +266,16 @@ namespace bha::exporters
                 file_entry["total_time_ms"] = duration_to_ms(file.compile_time);
                 file_entry["frontend_time_ms"] = duration_to_ms(file.frontend_time);
                 file_entry["backend_time_ms"] = duration_to_ms(file.backend_time);
-                file_entry["lines_of_code"] = file.lines_of_code;
                 file_entry["include_count"] = file.include_count;
+
+                if (file.memory.has_data()) {
+                    json memory;
+                    memory["peak_bytes"] = file.memory.peak_memory_bytes;
+                    memory["frontend_peak_bytes"] = file.memory.frontend_peak_bytes;
+                    memory["backend_peak_bytes"] = file.memory.backend_peak_bytes;
+                    memory["max_stack_bytes"] = file.memory.max_stack_bytes;
+                    file_entry["memory"] = memory;
+                }
 
                 files.push_back(file_entry);
                 file_count++;
@@ -522,14 +540,12 @@ namespace bha::exporters
                 : 0.0;
 
             file_rows << "\n                            <tr data-time=\"" << time_ms << "\" data-name=\""
-                      << escape_html(file.file.string()) << "\" data-lines=\""
-                      << file.lines_of_code << "\">\n"
+                      << escape_html(file.file.string()) << "\">\n"
                       << R"(                                <td><i class="fas fa-file-code" style="color: var(--accent-color); margin-right: 8px;"></i>)"
                       << escape_html(file.file.string()) << "</td>\n"
                       << "                                <td><strong>" << std::fixed << std::setprecision(1) << time_ms << " ms</strong></td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << fe_ms << " ms</td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << be_ms << " ms</td>\n"
-                      << "                                <td>" << file.lines_of_code << "</td>\n"
                       << "                                <td>\n"
                       << "                                    <div class=\"time-bar-container\">\n"
                       << R"(                                        <div class="time-bar" style="width: )" << bar_width << "%\"></div>\n"
@@ -675,7 +691,7 @@ namespace bha::exporters
         ExportProgressCallback
     ) const {
         stream << "# Files\n";
-        stream << "Path,Total Time (ms),Frontend Time (ms),Backend Time (ms),Lines of Code,Include Count\n";
+        stream << "Path,Total Time (ms),Frontend Time (ms),Backend Time (ms),Include Count\n";
 
         for (const auto& file : analysis.files) {
             if (options.min_compile_time > Duration::zero() &&
@@ -687,7 +703,6 @@ namespace bha::exporters
                    << std::fixed << std::setprecision(3) << duration_to_ms(file.compile_time) << ","
                    << duration_to_ms(file.frontend_time) << ","
                    << duration_to_ms(file.backend_time) << ","
-                   << file.lines_of_code << ","
                    << file.include_count << "\n";
         }
 
@@ -767,8 +782,8 @@ namespace bha::exporters
 
         if (options.include_file_details) {
             stream << "## Top Files by Compile Time\n\n";
-            stream << "| File | Time (ms) | Frontend | Backend | LOC |\n";
-            stream << "|------|-----------|----------|---------|-----|\n";
+            stream << "| File | Time (ms) | Frontend | Backend |\n";
+            stream << "|------|-----------|----------|---------|\n";
 
             auto sorted_files = analysis.files;
             std::ranges::sort(sorted_files,
@@ -782,8 +797,7 @@ namespace bha::exporters
                 stream << "| " << file.file.filename().string()
                        << " | " << std::fixed << std::setprecision(1) << duration_to_ms(file.compile_time)
                        << " | " << duration_to_ms(file.frontend_time)
-                       << " | " << duration_to_ms(file.backend_time)
-                       << " | " << file.lines_of_code << " |\n";
+                       << " | " << duration_to_ms(file.backend_time) << " |\n";
                 count++;
             }
             stream << "\n";

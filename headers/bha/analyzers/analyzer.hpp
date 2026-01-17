@@ -42,15 +42,13 @@ namespace bha::analyzers {
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
         TimeBreakdown breakdown;
+        MemoryMetrics memory;
 
         double time_percent = 0.0;
         std::size_t rank = 0;
 
         std::size_t include_count = 0;
         std::size_t template_count = 0;
-        std::size_t lines_of_code = 0;
-
-        double time_per_loc = 0.0;
     };
 
     /**
@@ -130,6 +128,10 @@ namespace bha::analyzers {
         Duration median_file_time = Duration::zero();
         Duration p90_file_time = Duration::zero();
         Duration p99_file_time = Duration::zero();
+
+        MemoryMetrics total_memory;
+        MemoryMetrics peak_memory;
+        MemoryMetrics average_memory;
 
         std::vector<FileAnalysisResult> slowest_files;
         std::vector<fs::path> critical_path;
