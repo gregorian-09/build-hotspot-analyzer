@@ -9,6 +9,7 @@
 #include "bha/parsers/all_parsers.hpp"
 #include "bha/analyzers/all_analyzers.hpp"
 #include "bha/suggestions/all_suggesters.hpp"
+#include "bha/build_systems/adapter.hpp"
 
 #include <iostream>
 #include <string>
@@ -113,6 +114,7 @@ int main(const int argc, char* argv[]) {
     bha::parsers::register_all_parsers();
     bha::analyzers::register_all_analyzers();
     bha::suggestions::register_all_suggesters();
+    bha::build_systems::register_all_adapters();
 
     std::vector<std::string> args(argv + 1, argv + argc);
 
