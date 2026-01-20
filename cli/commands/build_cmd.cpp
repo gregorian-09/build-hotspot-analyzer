@@ -41,6 +41,7 @@ namespace bha::cli
                 {"clean", 0, "Clean before build", false, false, "", ""},
                 {"output", 'o', "Directory for trace files", false, true, "", "DIR"},
                 {"compiler", 0, "Compiler to use", false, true, "", "COMPILER"},
+                {"cmake-args", 0, "Additional CMake arguments (semicolon-separated)", false, true, "", "ARGS"},
             };
         }
 
@@ -96,6 +97,16 @@ namespace bha::cli
 
             if (std::string output = args.get_or("output", ""); !output.empty()) {
                 options.build_dir = fs::path(output);
+            }
+
+            if (std::string cmake_args = args.get_or("cmake-args", ""); !cmake_args.empty()) {
+                std::istringstream ss(cmake_args);
+                std::string arg;
+                while (std::getline(ss, arg, ';')) {
+                    if (!arg.empty()) {
+                        options.extra_args.push_back(arg);
+                    }
+                }
             }
 
             print_verbose("Configuring project...");
