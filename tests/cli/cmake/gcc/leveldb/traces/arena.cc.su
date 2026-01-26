@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.cc:11:1:leveldb::Arena::Arena()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.cc:14:1:leveldb::Arena::~Arena()	32	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {char* const&}; _Tp = char*; _Alloc = std::allocator<char*>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.cc:58:7:char* leveldb::Arena::AllocateNewBlock(size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.cc:20:7:char* leveldb::Arena::AllocateFallback(size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.cc:38:7:char* leveldb::Arena::AllocateAligned(size_t)	48	static

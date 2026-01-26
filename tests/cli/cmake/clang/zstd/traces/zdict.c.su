@@ -1,0 +1,11 @@
+repos/zstd/lib/dictBuilder/zdict.c:98:ZDICT_isError	0	static
+repos/zstd/lib/dictBuilder/zdict.c:100:ZDICT_getErrorName	0	static
+repos/zstd/lib/dictBuilder/zdict.c:102:ZDICT_getDictID	0	static
+repos/zstd/lib/dictBuilder/zdict.c:109:ZDICT_getDictHeaderSize	40	static
+repos/zstd/lib/dictBuilder/zdict.c:862:ZDICT_finalizeDictionary	328	static
+repos/zstd/lib/dictBuilder/zdict.c:663:ZDICT_analyzeEntropy	13032	static
+repos/zstd/lib/dictBuilder/zdict.c:1088:ZDICT_trainFromBuffer_legacy	1048	static
+repos/zstd/lib/dictBuilder/zdict.c:1111:ZDICT_trainFromBuffer	56	static
+repos/zstd/lib/dictBuilder/zdict.c:1129:ZDICT_addEntropyTablesFromBuffer	24	static
+repos/zstd/lib/dictBuilder/zdict.c:944:ZDICT_addEntropyTablesFromBuffer_advanced	72	static
+repos/zstd/lib/dictBuilder/zdict.c:360:ZDICT_tryMerge	48	static

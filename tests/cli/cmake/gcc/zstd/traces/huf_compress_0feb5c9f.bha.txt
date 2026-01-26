@@ -1,0 +1,216 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c
+# Output: CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -Dlibzstd_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/build/cmake/lib -ftime-report -fmem-report -fstack-usage -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT lib/CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c.o -MF CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c.o.d -o CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c
+# Timestamp: 2026-01-25T20:18:13+01:00
+# Exit code: 0
+# ---
+
+
+################################################################################
+# Final                                                                        #
+################################################################################
+
+Number of expanded macros:                      2780
+Average number of tokens per macro expansion:      6
+
+Line Table allocations during the compilation process
+Number of ordinary maps used:          250 
+Ordinary map used size:               6000 
+Number of ordinary maps allocated:     341 
+Ordinary maps allocated size:         8184 
+Number of macro maps used:            2704 
+Macro maps used size:                   84k
+Macro maps locations size:             148k
+Macro maps size:                       232k
+Duplicated maps locations size:         57k
+Total allocated maps size:             284k
+Total used maps size:                  238k
+Ad-hoc table size:                    1024k
+Ad-hoc table entries used:              16k
+optimized_ranges:                       98k
+unoptimized_ranges:                   6129 
+
+Memory still allocated at the end of the compilation process
+Size      Allocated        Used    Overhead
+8                28k         24k        840 
+16             1128k       1126k         24k
+32             2260k       2258k         39k
+64              764k        761k         11k
+256            1420k       1419k         19k
+512              52k         51k        728 
+1024            412k        409k       5768 
+2048            180k        180k       2520 
+4096            156k        120k       2184 
+8192            112k         80k        784 
+16384           688k        144k       2408 
+32768           192k         64k        336 
+65536           320k        192k        280 
+131072          256k        128k        112 
+262144          256k          0          56 
+524288         1024k          0         112 
+1048576        1024k       1024k         56 
+24             6928k       6897k        121k
+40             5552k       5528k         86k
+48              800k        796k         12k
+56              472k        470k       7552 
+72             1584k       1556k         21k
+80             1708k       1700k         23k
+88              904k        889k         12k
+104             104k         20k       1456 
+112              48k         33k        672 
+120              96k         92k       1344 
+152              84k         80k       1176 
+128             380k        378k       5320 
+144             740k        725k         10k
+168             512k        494k       7168 
+184             132k         14k       1848 
+96             1092k       1073k         14k
+272             196k         18k       2744 
+424             152k         34k       2128 
+Total            31M         28M        445k
+
+String pool
+entries:                        7267
+identifiers:                    7267 (100.00%)
+slots:                          16384
+deleted:                        0
+GGC bytes:                      96k
+table size:                     128k
+coll/search:                    0.3990
+ins/search:                     0.0899
+avg. entry:                     13.63 bytes (+/- 6.64)
+longest entry:                  107
+(No per-node statistics)
+Type hash: size 4093, 1777 elements, 0.609792 collisions
+DECL_DEBUG_EXPR  hash: size 1021, 29 elements, 0.000000 collisions
+DECL_VALUE_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+No GIMPLE statistics
+No RTX statistics
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                               0                         0                0 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Alias oracle query stats:
+  refs_may_alias_p: 62902 disambiguations, 97081 queries
+  ref_maybe_used_by_call_p: 20 disambiguations, 63238 queries
+  call_may_clobber_ref_p: 0 disambiguations, 0 queries
+  stmt_kills_ref_p: 570 kills, 7611 queries
+  nonoverlapping_component_refs_p: 0 disambiguations, 8 queries
+  nonoverlapping_refs_since_match_p: 0 disambiguations, 701 must overlaps, 701 queries
+  aliasing_component_refs_p: 6 disambiguations, 225 queries
+  TBAA oracle: 10990 disambiguations 85135 queries
+               34617 are in alias set 0
+               39099 queries asked about the same object
+               0 queries asked about the same alias set
+               0 access volatile
+               429 are dependent in the DAG
+               0 are aritificially in conflict with void *
+
+Modref stats:
+  modref kill: 0 kills, 0 queries
+  modref use: 0 disambiguations, 72 queries
+  modref clobber: 20 disambiguations, 380 queries
+  400 tbaa queries (1.052632 per modref query)
+  333 base compares (0.876316 per modref query)
+
+PTA query stats:
+  pt_solution_includes: 36125 disambiguations, 38405 queries
+  pt_solutions_intersect: 1295 disambiguations, 36308 queries
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1819k (  4%)
+ phase parsing                      :   0.04 (  5%)   0.04 ( 33%)   0.19 ( 10%)  4590k ( 10%)
+ phase opt and generate             :   0.72 ( 95%)   0.08 ( 67%)   1.77 ( 89%)    38M ( 86%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  2824  (  0%)
+ callgraph functions expansion      :   0.63 ( 83%)   0.06 ( 50%)   1.46 ( 74%)    30M ( 68%)
+ callgraph ipa passes               :   0.09 ( 12%)   0.02 ( 17%)   0.30 ( 15%)  7507k ( 16%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   334k (  1%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   234k (  1%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   960  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.01 (  8%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df reg dead/unused notes           :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%)   299k (  1%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1050k (  2%)
+ alias stmt walking                 :   0.02 (  3%)   0.00 (  0%)   0.10 (  5%)    98k (  0%)
+ preprocessing                      :   0.02 (  3%)   0.02 ( 17%)   0.08 (  4%)   757k (  2%)
+ lexical analysis                   :   0.02 (  3%)   0.01 (  8%)   0.05 (  3%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  2027k (  4%)
+ parser function body               :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)   559k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  1188k (  3%)
+ inline parameters                  :   0.02 (  3%)   0.01 (  8%)   0.00 (  0%)   146k (  0%)
+ integration                        :   0.03 (  4%)   0.00 (  0%)   0.02 (  1%)  4941k ( 11%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6232  (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    46k (  0%)
+ tree VRP                           :   0.04 (  5%)   0.01 (  8%)   0.08 (  4%)   820k (  2%)
+ tree Early VRP                     :   0.02 (  3%)   0.00 (  0%)   0.06 (  3%)   496k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   106k (  0%)
+ tree SSA incremental               :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%)   735k (  2%)
+ tree operand scan                  :   0.02 (  3%)   0.01 (  8%)   0.11 (  6%)  1228k (  3%)
+ dominator optimization             :   0.02 (  3%)   0.01 (  8%)   0.04 (  2%)   623k (  1%)
+ backwards jump threading           :   0.04 (  5%)   0.00 (  0%)   0.03 (  2%)   156k (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   107k (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    15k (  0%)
+ tree PRE                           :   0.02 (  3%)   0.00 (  0%)   0.03 (  2%)  1378k (  3%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.06 (  3%)   500k (  1%)
+ tree RPO VN                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   102k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   123k (  0%)
+ tree loop unswitching              :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)   430k (  1%)
+ loop splitting                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ complete unrolling                 :   0.02 (  3%)   0.01 (  8%)   0.04 (  2%)  2793k (  6%)
+ tree vectorization                 :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)  1923k (  4%)
+ tree slp vectorization             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  3394k (  7%)
+ tree iv optimization               :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%)  1128k (  2%)
+ predictive commoning               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   400k (  1%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    46k (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4200  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  1625k (  4%)
+ lower subreg                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   106k (  0%)
+ CSE                                :   0.02 (  3%)   0.00 (  0%)   0.03 (  2%)    42k (  0%)
+ dead code elimination              :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dead store elim1                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   269k (  1%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   868k (  2%)
+ loop invariant motion              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1232  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.07 (  4%)  2776  (  0%)
+ CPROP                              :   0.01 (  1%)   0.00 (  0%)   0.03 (  2%)   533k (  1%)
+ CSE 2                              :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.01 (  8%)   0.01 (  1%)   364k (  1%)
+ combiner                           :   0.05 (  7%)   0.00 (  0%)   0.10 (  5%)  3913k (  9%)
+ integrated RA                      :   0.04 (  5%)   0.00 (  0%)   0.12 (  6%)  2701k (  6%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   152k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    70k (  0%)
+ LRA create live ranges             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ reload CSE regs                    :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   340k (  1%)
+ load CSE after reload              :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)  2640  (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    28k (  0%)
+ if-conversion 2                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2112  (  0%)
+ combine stack adjustments          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  5016  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)    69k (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   183k (  0%)
+ straight-line strength reduction   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ tree loop if-conversion            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   220k (  0%)
+ access analysis                    :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)  7168  (  0%)
+ rest of compilation                :   0.03 (  4%)   0.00 (  0%)   0.11 (  6%)   181k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   256  (  0%)
+ address taken                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ rebuild frequencies                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   208  (  0%)
+ TOTAL                              :   0.76          0.12          1.98           44M

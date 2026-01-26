@@ -1,0 +1,15 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:296:13:swapIntervalEGL	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:301:12:extensionSupportedEGL	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:329:13:destroyContextEGL	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:313:19:getProcAddressEGL	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:88:17:chooseEGLConfig	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:275:13:swapBuffersEGL	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:243:13:makeContextCurrentEGL	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:550:6:_glfwTerminateEGL	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:363:10:_glfwInitEGL	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:575:10:_glfwCreateContextEGL	352	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:863:10:_glfwChooseVisualEGL	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:904:20:glfwGetEGLDisplay	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:910:20:glfwGetEGLContext	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:930:20:glfwGetEGLSurface	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/egl_context.c:950:13:glfwGetEGLConfig	16	static

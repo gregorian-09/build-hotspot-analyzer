@@ -1,0 +1,13 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:818:1:do_sarray_io	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:267:1:alloc_small	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:666:1:request_virt_barray	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:636:1:request_virt_sarray	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:1098:1:free_pool	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:1169:1:self_destruct	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:919:1:access_virt_sarray	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:364:1:alloc_large	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:552:1:alloc_barray	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:435:1:alloc_sarray	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:696:1:realize_virt_arrays	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:1010:1:access_virt_barray	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemmgr.c:1195:1:jinit_memory_mgr	96	static

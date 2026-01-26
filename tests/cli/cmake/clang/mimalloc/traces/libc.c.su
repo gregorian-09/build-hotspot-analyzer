@@ -1,0 +1,10 @@
+repos/mimalloc/src/libc.c:19:_mi_toupper	0	static
+repos/mimalloc/src/libc.c:24:_mi_strnicmp	0	static
+repos/mimalloc/src/libc.c:32:_mi_strlcpy	0	static
+repos/mimalloc/src/libc.c:43:_mi_strlcat	0	static
+repos/mimalloc/src/libc.c:54:_mi_strlen	0	static
+repos/mimalloc/src/libc.c:61:_mi_strnlen	0	static
+repos/mimalloc/src/libc.c:76:_mi_getenv	0	static
+repos/mimalloc/src/libc.c:163:_mi_vsnprintf	88	static
+repos/mimalloc/src/libc.c:271:_mi_snprintf	216	static
+repos/mimalloc/src/libc.c:330:_mi_popcount_generic	0	static

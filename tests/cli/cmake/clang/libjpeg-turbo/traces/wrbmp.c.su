@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/wrbmp.c:477:jinit_write_bmp	40	static
+repos/libjpeg-turbo/src/wrbmp.c:417:start_output_bmp	0	static
+repos/libjpeg-turbo/src/wrbmp.c:432:finish_output_bmp	56	static
+repos/libjpeg-turbo/src/wrbmp.c:172:put_gray_rows	24	static
+repos/libjpeg-turbo/src/wrbmp.c:97:put_pixel_rows	40	static
+repos/libjpeg-turbo/src/wrbmp.c:295:write_os2_header	72	static
+repos/libjpeg-turbo/src/wrbmp.c:216:write_bmp_header	88	static
+repos/libjpeg-turbo/src/wrbmp.c:361:write_colormap	56	static

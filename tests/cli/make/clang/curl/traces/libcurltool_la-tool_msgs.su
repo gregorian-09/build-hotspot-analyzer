@@ -1,0 +1,5 @@
+tool_msgs.c:79:notef	216	static
+tool_msgs.c:37:voutf	1128	static
+tool_msgs.c:93:warnf	216	static
+tool_msgs.c:107:helpf	216	static
+tool_msgs.c:129:errorf	216	static

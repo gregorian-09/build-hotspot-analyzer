@@ -1,0 +1,6 @@
+strcase.c:74:Curl_raw_toupper	8	static
+strcase.c:81:Curl_raw_tolower	8	static
+strcase.c:91:Curl_strntoupper	40	static
+strcase.c:106:Curl_strntolower	40	static
+strcase.c:119:Curl_safecmp	40	static
+strcase.c:130:Curl_timestrcmp	8	static

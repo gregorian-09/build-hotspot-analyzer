@@ -1,0 +1,13 @@
+pngmem.c:24:1:png_destroy_png_struct	1280	static
+pngmem.c:48:1:png_calloc	48	static
+pngmem.c:67:1:png_malloc_base	32	static
+pngmem.c:108:1:png_malloc_array_checked	64	static
+pngmem.c:120:1:png_malloc_array	48	static
+pngmem.c:131:1:png_realloc_array	64	static
+pngmem.c:172:1:png_malloc	48	static
+pngmem.c:190:1:png_malloc_default	48	static
+pngmem.c:213:1:png_malloc_warn	48	static
+pngmem.c:234:1:png_free	32	static
+pngmem.c:247:1:png_free_default	32	static
+pngmem.c:263:1:png_set_mem_fn	16	static
+pngmem.c:279:1:png_get_mem_ptr	16	static

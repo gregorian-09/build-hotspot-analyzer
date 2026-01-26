@@ -1,0 +1,7 @@
+repos/abseil/absl/crc/crc32c.cc:40:_ZN4absl12crc_internal22UnextendCrc32cByZeroesENS_8crc32c_tEm	24	static
+repos/abseil/absl/crc/crc32c.cc:48:_ZN4absl12crc_internal20ExtendCrc32cInternalENS_8crc32c_tESt17basic_string_viewIcSt11char_traitsIcEE	24	static
+repos/abseil/absl/crc/crc32c.cc:57:_ZN4absl20ExtendCrc32cByZeroesENS_8crc32c_tEm	24	static
+repos/abseil/absl/crc/crc32c.cc:63:_ZN4absl12ConcatCrc32cENS_8crc32c_tES0_m	24	static
+repos/abseil/absl/crc/crc32c.cc:69:_ZN4absl18RemoveCrc32cPrefixENS_8crc32c_tES0_m	24	static
+repos/abseil/absl/crc/crc32c.cc:73:_ZN4absl12MemcpyCrc32cEPvPKvmNS_8crc32c_tE	40	static
+repos/abseil/absl/crc/crc32c.cc:86:_ZN4absl18RemoveCrc32cSuffixENS_8crc32c_tES0_m	24	static

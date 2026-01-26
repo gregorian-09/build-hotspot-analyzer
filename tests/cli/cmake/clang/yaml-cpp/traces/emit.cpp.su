@@ -1,0 +1,8 @@
+repos/yaml-cpp/src/emit.cpp:7:_ZN4YAMLlsERNS_7EmitterERKNS_4NodeE	200	static
+repos/yaml-cpp/src/nodeevents.h:26:_ZN4YAML10NodeEventsD2Ev	8	static
+repos/yaml-cpp/include/yaml-cpp/emitfromevents.h:26:_ZN4YAML14EmitFromEventsD2Ev	24	static
+repos/yaml-cpp/src/emit.cpp:14:_ZN4YAMLlsERSoRKNS_4NodeE	104	static
+repos/yaml-cpp/src/emit.cpp:20:_ZN4YAML4DumpB5cxx11ERKNS_4NodeE	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeIPKN4YAML6detail8node_refESt4pairIKS4_iESt10_Select1stIS7_ESt4lessIS4_ESaIS7_EE8_M_eraseEPSt13_Rb_tree_nodeIS7_E	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emit.cpp:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	8	static

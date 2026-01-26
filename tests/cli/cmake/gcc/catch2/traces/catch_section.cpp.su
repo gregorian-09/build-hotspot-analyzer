@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_section.cpp:15:5:Catch::Section::Section(Catch::SectionInfo&&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_section.cpp:26:5:Catch::Section::Section(const Catch::SourceLineInfo&, Catch::StringRef, const char*)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_section.cpp:43:5:Catch::Section::~Section()	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_section.cpp:55:5:Catch::Section::operator bool() const	8	static

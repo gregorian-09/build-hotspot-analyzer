@@ -1,0 +1,8 @@
+cw-pause.c:73:cw_pause_init	8	static
+cw-pause.c:142:cw_pause_write	136	static
+cw-pause.c:91:cw_pause_close	40	static
+cw-pause.c:215:Curl_cw_pause_flush	40	static
+cw-pause.c:99:cw_pause_flush	104	static
+cw-pause.c:45:cw_pause_buf_create	40	static
+cw-pause.c:82:cw_pause_bufs_free	24	static
+cw-pause.c:59:cw_pause_buf_free	24	static

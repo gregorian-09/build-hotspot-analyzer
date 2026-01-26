@@ -1,0 +1,8 @@
+infotest.c:5:InfoFunc	56	static
+infotest.c:38:info_get	56	static
+infotest.c:79:info_gets	40	static
+infotest.c:83:info_getc	40	static
+infotest.c:87:info_geti	40	static
+infotest.c:91:info_getu	40	static
+infotest.c:95:info_getd	40	static
+infotest.c:99:RedisModule_OnLoad	56	static

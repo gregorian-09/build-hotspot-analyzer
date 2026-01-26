@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/output_validator.cc:12:8:rocksdb::Status rocksdb::OutputValidator::Add(const rocksdb::Slice&, const rocksdb::Slice&)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/output_validator.cc:29:1:cc)	8	static

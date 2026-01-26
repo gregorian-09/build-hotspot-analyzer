@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:15:5:Catch::StringRef::StringRef(const char*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:20:10:bool Catch::StringRef::operator<(Catch::StringRef) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:27:9:int Catch::StringRef::compare(Catch::StringRef) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:48:10:std::ostream& Catch::operator<<(std::ostream&, StringRef)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:52:17:std::string Catch::operator+(StringRef, StringRef)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_stringref.cpp:60:10:std::string& Catch::operator+=(std::string&, StringRef)	16	static

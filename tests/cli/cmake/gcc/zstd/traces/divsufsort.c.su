@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:400:1:ss_mintrosort.constprop	592	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:1175:1:tr_introsort.constprop	2288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:744:1:ss_swapmerge.constprop	1136	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:1441:1:sort_typeBstar.isra	320	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:1847:1:divsufsort	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/divsufsort.c:1876:1:divbwt	144	static

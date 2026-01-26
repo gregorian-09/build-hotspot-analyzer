@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/djpeg.c:537:main	936	static
+repos/libjpeg-turbo/src/djpeg.c:469:print_text_marker	56	static
+repos/libjpeg-turbo/src/djpeg.c:182:parse_switches	120	static
+repos/libjpeg-turbo/src/djpeg.c:520:my_emit_message	0	static
+repos/libjpeg-turbo/src/djpeg.c:99:usage	24	static

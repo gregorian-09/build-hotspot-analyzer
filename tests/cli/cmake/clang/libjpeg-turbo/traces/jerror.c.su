@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/jerror.c:228:jpeg_std_error	0	static
+repos/libjpeg-turbo/src/jerror.c:67:error_exit	8	static
+repos/libjpeg-turbo/src/jerror.c:125:emit_message	8	static
+repos/libjpeg-turbo/src/jerror.c:95:output_message	216	static
+repos/libjpeg-turbo/src/jerror.c:154:format_message	40	static
+repos/libjpeg-turbo/src/jerror.c:209:reset_error_mgr	0	static

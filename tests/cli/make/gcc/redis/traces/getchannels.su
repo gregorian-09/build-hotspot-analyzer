@@ -1,0 +1,2 @@
+getchannels.c:8:5:getChannels_subscribe	80	static
+getchannels.c:59:5:RedisModule_OnLoad	64	dynamic,bounded

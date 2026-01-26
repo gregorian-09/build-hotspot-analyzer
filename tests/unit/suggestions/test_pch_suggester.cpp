@@ -51,6 +51,8 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(500);
         header.inclusion_count = 20;
         header.including_files = 15;
+        header.is_stable = true;
+        header.is_external = false;
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;

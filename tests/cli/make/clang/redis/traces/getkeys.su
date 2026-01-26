@@ -1,0 +1,5 @@
+getkeys.c:13:getkeys_command	72	static
+getkeys.c:47:getkeys_command_with_flags	72	static
+getkeys.c:81:getkeys_fixed	40	static
+getkeys.c:96:getkeys_introspect	184	static
+getkeys.c:159:RedisModule_OnLoad	56	static

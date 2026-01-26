@@ -1,0 +1,5 @@
+rand.c:187:Curl_rand_bytes	72	static
+rand.c:135:randit	40	static
+rand.c:225:Curl_rand_hex	184	static
+rand.c:261:Curl_rand_alnum	56	static
+rand.c:88:weak_random	40	static

@@ -1,0 +1,6 @@
+repos/rocksdb/logging/log_buffer.cc:13:_ZN7rocksdb9LogBufferC2ENS_12InfoLogLevelEPNS_6LoggerE	24	static
+repos/rocksdb/logging/log_buffer.cc:16:_ZN7rocksdb9LogBuffer14AddLogToBufferEmPKcP13__va_list_tag	88	static
+repos/rocksdb/util/autovector.h:278:_ZN7rocksdb10autovectorIPNS_9LogBuffer11BufferedLogELm8EE9push_backERKS3_	56	static
+repos/rocksdb/logging/log_buffer.cc:58:_ZN7rocksdb9LogBuffer16FlushBufferToLogEv	136	static
+repos/rocksdb/logging/log_buffer.cc:72:_ZN7rocksdb11LogToBufferEPNS_9LogBufferEmPKcz	216	static
+repos/rocksdb/logging/log_buffer.cc:82:_ZN7rocksdb11LogToBufferEPNS_9LogBufferEPKcz	296	static

@@ -1,0 +1,91 @@
+{
+  "name": "build-hotspot-analyzer",
+  "displayName": "Build Hotspot Analyzer",
+  "description": "C++ build time optimization suggestions via LSP",
+  "version": "0.1.0",
+  "publisher": "build-hotspot-analyzer",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "C++",
+    "build",
+    "optimization",
+    "performance",
+    "LSP"
+  ],
+  "activationEvents": [
+    "onLanguage:cpp",
+    "onLanguage:c",
+    "workspaceContains:**/CMakeLists.txt",
+    "workspaceContains:**/Makefile",
+    "workspaceContains:**/meson.build"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Build Hotspot Analyzer",
+      "properties": {
+        "buildHotspotAnalyzer.serverPath": {
+          "type": "string",
+          "default": "bha-lsp",
+          "description": "Path to the bha-lsp executable"
+        },
+        "buildHotspotAnalyzer.autoAnalyze": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically analyze project on startup"
+        },
+        "buildHotspotAnalyzer.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the BHA language server"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "buildHotspotAnalyzer.analyzeProject",
+        "title": "BHA: Analyze Build Performance"
+      },
+      {
+        "command": "buildHotspotAnalyzer.showSuggestions",
+        "title": "BHA: Show Suggestions"
+      },
+      {
+        "command": "buildHotspotAnalyzer.applySuggestion",
+        "title": "BHA: Apply Suggestion"
+      },
+      {
+        "command": "buildHotspotAnalyzer.restartServer",
+        "title": "BHA: Restart Language Server"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.0"
+  }
+}

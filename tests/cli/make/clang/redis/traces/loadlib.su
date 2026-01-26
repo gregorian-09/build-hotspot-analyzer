@@ -1,0 +1,12 @@
+loadlib.c:627:luaopen_package	8	static
+loadlib.c:286:gctm	8	static
+loadlib.c:309:ll_loadlib	24	static
+loadlib.c:572:ll_seeall	8	static
+loadlib.c:294:ll_loadfunc	24	static
+loadlib.c:435:loader_preload	24	static
+loadlib.c:380:loader_Lua	24	static
+loadlib.c:402:loader_C	24	static
+loadlib.c:414:loader_Croot	40	static
+loadlib.c:351:findfile	56	static
+loadlib.c:544:ll_module	152	static
+loadlib.c:451:ll_require	40	static

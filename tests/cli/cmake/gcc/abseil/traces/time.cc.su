@@ -1,0 +1,23 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:211:23:absl::Time::Breakdown absl::Time::In(absl::TimeZone) const	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:241:12:absl::Time absl::FromUDate(double)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:245:12:absl::Time absl::FromUniversal(int64_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:249:9:int64_t absl::ToUnixNanos(Time)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:259:9:int64_t absl::ToUnixMicros(Time)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:269:9:int64_t absl::ToUnixMillis(Time)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:279:9:int64_t absl::ToUnixSeconds(Time)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:283:8:time_t absl::ToTimeT(Time)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:285:8:double absl::ToUDate(Time)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:290:9:int64_t absl::ToUniversal(Time)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:294:12:absl::Time absl::TimeFromTimespec(timespec)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:298:12:absl::Time absl::TimeFromTimeval(timeval)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:302:10:timespec absl::ToTimespec(Time)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:322:9:timeval absl::ToTimeval(Time)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:340:6:absl::Time absl::FromChrono(const std::chrono::_V2::system_clock::time_point&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:345:39:std::chrono::_V2::system_clock::time_point absl::ToChronoTime(Time)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:357:27:absl::TimeZone::CivilInfo absl::TimeZone::At(absl::Time) const	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:374:26:absl::TimeZone::TimeInfo absl::TimeZone::At(absl::CivilSecond) const	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:396:6:bool absl::TimeZone::NextTransition(absl::Time, CivilTransition*) const	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:400:6:bool absl::TimeZone::PrevTransition(absl::Time, CivilTransition*) const	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:408:22:absl::TimeConversion absl::ConvertDateTime(int64_t, int, int, int, int, int, TimeZone)	208	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:441:12:absl::Time absl::FromTM(const tm&, TimeZone)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.cc:456:11:tm absl::ToTM(Time, TimeZone)	320	static

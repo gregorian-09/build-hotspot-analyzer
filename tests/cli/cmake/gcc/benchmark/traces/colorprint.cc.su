@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc:85:13:std::string benchmark::FormatString(const char*, __va_list_tag*)	368	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc:113:13:)	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc:128:6:void benchmark::ColorPrintf(std::ostream&, LogColor, const char*, __va_list_tag*)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc:121:6:)	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc:166:6:bool benchmark::IsColorTerminal()	32	static

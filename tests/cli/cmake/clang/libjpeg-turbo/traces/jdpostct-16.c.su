@@ -1,0 +1,2 @@
+repos/libjpeg-turbo/src/wrapper/../jdpostct.c:266:j16init_d_post_controller	8	static
+repos/libjpeg-turbo/src/wrapper/../jdpostct.c:84:start_pass_dpost	8	static

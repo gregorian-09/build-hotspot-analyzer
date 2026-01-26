@@ -1,0 +1,2 @@
+repos/zstd/lib/compress/zstd_compress_superblock.c:665:ZSTD_compressSuperBlock	600	static
+repos/zstd/lib/compress/zstd_compress_superblock.c:263:ZSTD_compressSubBlock	120	static

@@ -1,0 +1,17 @@
+repos/rocksdb/table/block_based/block_prefetcher.cc:15:_ZN7rocksdb15BlockPrefetcher16PrefetchIfNeededEPKNS_15BlockBasedTable3RepERKNS_11BlockHandleEmbbRKNS_11ReadOptionsERKSt8functionIFvbRmSC_EEb	472	static
+repos/rocksdb/include/rocksdb/status.h:589:_ZN7rocksdb6StatusC2EOS0_	0	static
+repos/rocksdb/include/rocksdb/status.h:594:_ZN7rocksdb6StatusaSEOS0_	24	static
+repos/rocksdb/include/rocksdb/file_system.h:228:_ZN7rocksdb14IODebugContextD2Ev	24	static
+repos/rocksdb/include/rocksdb/file_system.h:100:_ZN7rocksdb9IOOptionsD2Ev	40	static
+repos/rocksdb/table/block_based/block_based_table_reader.h:763:_ZNK7rocksdb15BlockBasedTable3Rep35CreateFilePrefetchBufferIfNotExistsERKNS_15ReadaheadParamsEPSt10unique_ptrINS_18FilePrefetchBufferESt14default_deleteIS6_EERKSt8functionIFvbRmSC_EENS_23FilePrefetchBufferUsageE	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/block_prefetcher.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_mESt10_Select1stIS8_ESt4lessIS5_ESaIS8_EE8_M_eraseEPSt13_Rb_tree_nodeIS8_E	40	static
+repos/rocksdb/file/file_prefetch_buffer.h:187:_ZN7rocksdb18FilePrefetchBufferC2ERKNS_15ReadaheadParamsEbbPNS_10FileSystemEPNS_11SystemClockEPNS_10StatisticsERKSt8functionIFvbRmSB_EENS_23FilePrefetchBufferUsageE	72	static
+repos/rocksdb/file/file_prefetch_buffer.h:233:_ZN7rocksdb18FilePrefetchBufferD2Ev	136	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1027:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EED2Ev	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1288:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE6resizeEm	72	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIPN7rocksdb10BufferInfoESaIS2_EE17_M_initialize_mapEm	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:351:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE17_M_default_appendEm	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:907:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE23_M_new_elements_at_backEm	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:932:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE17_M_reallocate_mapEmb	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:981:_ZSt9__fill_a1IPN7rocksdb10BufferInfoES2_EvRKSt15_Deque_iteratorIT_RS4_PS4_ES9_RKT0_	8	static

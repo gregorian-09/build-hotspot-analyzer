@@ -1,0 +1,8 @@
+repos/glfw/src/posix_thread.c:40:_glfwPlatformCreateTls	24	static
+repos/glfw/src/posix_thread.c:55:_glfwPlatformDestroyTls	8	static
+repos/glfw/src/posix_thread.c:62:_glfwPlatformGetTls	0	static
+repos/glfw/src/posix_thread.c:68:_glfwPlatformSetTls	0	static
+repos/glfw/src/posix_thread.c:74:_glfwPlatformCreateMutex	24	static
+repos/glfw/src/posix_thread.c:87:_glfwPlatformDestroyMutex	8	static
+repos/glfw/src/posix_thread.c:94:_glfwPlatformLockMutex	0	static
+repos/glfw/src/posix_thread.c:100:_glfwPlatformUnlockMutex	0	static

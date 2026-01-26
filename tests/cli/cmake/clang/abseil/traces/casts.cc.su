@@ -1,0 +1,2 @@
+repos/abseil/absl/base/casts.cc:52:_ZN4absl13base_internal16BadDownCastCrashEPKcS2_	88	static
+repos/abseil/absl/base/casts.cc:34:_ZN4absl13base_internal12_GLOBAL__N_117DemangleCppStringB5cxx11EPKc	56	static

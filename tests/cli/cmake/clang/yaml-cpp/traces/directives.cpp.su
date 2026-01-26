@@ -1,0 +1,2 @@
+repos/yaml-cpp/src/directives.cpp:4:_ZN4YAML10DirectivesC2Ev	0	static
+repos/yaml-cpp/src/directives.cpp:6:_ZNK4YAML10Directives18TranslateTagHandleERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	88	static

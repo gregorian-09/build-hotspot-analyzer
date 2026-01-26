@@ -1,0 +1,13 @@
+repos/libjpeg-turbo/src/transupp.c:1396:jtransform_parse_crop_spec	24	static
+repos/libjpeg-turbo/src/transupp.c:1496:jtransform_request_workspace	56	static
+repos/libjpeg-turbo/src/transupp.c:2274:jtransform_perfect_transform	0	static
+repos/libjpeg-turbo/src/transupp.c:2043:jtransform_adjust_parameters	136	static
+repos/libjpeg-turbo/src/transupp.c:1881:adjust_exif_parameters	16	static
+repos/libjpeg-turbo/src/transupp.c:2162:jtransform_execute_transform	168	static
+repos/libjpeg-turbo/src/transupp.c:470:do_crop_ext_reflect	168	static
+repos/libjpeg-turbo/src/transupp.c:390:do_crop_ext_flat	200	static
+repos/libjpeg-turbo/src/transupp.c:279:do_crop	104	static
+repos/libjpeg-turbo/src/transupp.c:728:do_flip_h_no_crop	200	static
+repos/libjpeg-turbo/src/transupp.c:657:do_reflect	104	static
+repos/libjpeg-turbo/src/transupp.c:2313:jcopy_markers_setup	24	static
+repos/libjpeg-turbo/src/transupp.c:2346:jcopy_markers_execute	40	static

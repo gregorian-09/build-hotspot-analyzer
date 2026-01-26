@@ -1,0 +1,17 @@
+http_chunks.c:72:Curl_httpchunk_init	40	static
+http_chunks.c:83:Curl_httpchunk_reset	40	static
+http_chunks.c:94:Curl_httpchunk_free	24	static
+http_chunks.c:100:Curl_httpchunk_is_done	8	static
+http_chunks.c:380:Curl_httpchunk_read	56	static
+http_chunks.c:106:httpchunk_readwrite	120	static
+http_chunks.c:393:cw_chunked_init	40	static
+http_chunks.c:410:cw_chunked_write	88	static
+http_chunks.c:403:cw_chunked_close	40	static
+http_chunks.c:473:cr_chunked_init	40	static
+http_chunks.c:596:cr_chunked_read	88	static
+http_chunks.c:482:cr_chunked_close	40	static
+http_chunks.c:630:cr_chunked_total_length	8	static
+http_chunks.c:654:Curl_httpchunk_add_reader	40	static
+http_chunks.c:360:Curl_chunked_strerror	8	static
+http_chunks.c:542:add_chunk	1144	static
+http_chunks.c:490:add_last_chunk	104	static

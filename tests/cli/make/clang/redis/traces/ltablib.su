@@ -1,0 +1,12 @@
+ltablib.c:283:luaopen_table	8	static
+ltablib.c:144:tconcat	8280	static
+ltablib.c:39:foreach	24	static
+ltablib.c:22:foreachi	40	static
+ltablib.c:72:getn	8	static
+ltablib.c:56:maxn	24	static
+ltablib.c:90:tinsert	40	static
+ltablib.c:118:tremove	40	static
+ltablib.c:78:setn	8	static
+ltablib.c:256:sort	24	static
+ltablib.c:193:auxsort	72	static
+ltablib.c:178:sort_comp	24	static

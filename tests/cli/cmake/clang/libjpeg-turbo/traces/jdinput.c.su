@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/jdinput.c:404:jinit_input_controller	8	static
+repos/libjpeg-turbo/src/jdinput.c:331:consume_markers	56	static
+repos/libjpeg-turbo/src/jdinput.c:382:reset_input_controller	8	static
+repos/libjpeg-turbo/src/jdinput.c:296:start_input_pass	56	static
+repos/libjpeg-turbo/src/jdinput.c:314:finish_input_pass	0	static

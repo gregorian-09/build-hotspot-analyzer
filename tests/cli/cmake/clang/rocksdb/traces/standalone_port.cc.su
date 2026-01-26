@@ -1,0 +1,10 @@
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:19:_Z9toku_freePv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:21:_Z12toku_xmallocm	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:23:_Z13toku_xreallocPvm	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:25:_Z12toku_xmemdupPKvm	24	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:32:_Z12toku_xcallocmm	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:49:_Z21toku_memory_footprintPvm	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:55:_ZN12LTM_STATUS_S4initEv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:108:_ZN12LTM_STATUS_S7destroyEv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:119:_Z15toku_keycomparePKvmS0_m	24	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:136:_Z24toku_builtin_compare_funPK10__toku_dbtS1_	24	static

@@ -1,0 +1,5 @@
+adler32.c:61:adler32_z	8	static
+adler32.c:128:adler32	40	static
+adler32.c:158:adler32_combine	40	static
+adler32.c:133:adler32_combine_	8	static
+adler32.c:162:adler32_combine64	40	static

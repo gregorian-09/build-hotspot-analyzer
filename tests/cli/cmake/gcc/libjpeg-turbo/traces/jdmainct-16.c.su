@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdmainct.c:296:1:process_data_simple_main	96	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdmainct.c:335:1:process_data_context_main	112	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdmainct.c:412:1:process_data_crank_post	32	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdmainct.c:258:1:start_pass_main	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdmainct.c:428:1:j16init_d_main_controller	80	static

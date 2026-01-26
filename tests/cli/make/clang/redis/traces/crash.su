@@ -1,0 +1,4 @@
+crash.c:8:assertCrash	8	static
+crash.c:14:segfaultCrash	8	static
+crash.c:24:cmd_crash	8	static
+crash.c:33:RedisModule_OnLoad	3496	static

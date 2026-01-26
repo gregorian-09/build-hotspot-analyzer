@@ -1,0 +1,6 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/bitmap.c:85:1:bitmap_info_init	32	static
+src/bitmap.c:94:1:bitmap_info_ngroups	16	static
+src/bitmap.c:99:1:bitmap_init	64	static
+src/bitmap.c:118:1:bitmap_size	24	static

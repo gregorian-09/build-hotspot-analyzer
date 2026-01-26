@@ -1,0 +1,16 @@
+asyn-thrdd.c:82:Curl_async_global_init	8	static
+asyn-thrdd.c:97:Curl_async_global_cleanup	8	static
+asyn-thrdd.c:107:Curl_async_get_impl	8	static
+asyn-thrdd.c:526:Curl_async_thrdd_shutdown	24	static
+asyn-thrdd.c:461:async_thrdd_shutdown	40	static
+asyn-thrdd.c:531:Curl_async_thrdd_destroy	24	static
+asyn-thrdd.c:493:asyn_thrdd_await	40	static
+asyn-thrdd.c:290:async_thrdd_destroy	40	static
+asyn-thrdd.c:554:Curl_async_await	40	static
+asyn-thrdd.c:568:Curl_async_is_resolved	56	static
+asyn-thrdd.c:665:Curl_async_pollset	56	static
+asyn-thrdd.c:734:Curl_async_getaddrinfo	104	static
+asyn-thrdd.c:392:async_thrdd_init	88	static
+asyn-thrdd.c:115:addr_ctx_unlink	40	static
+asyn-thrdd.c:146:addr_ctx_create	56	static
+asyn-thrdd.c:199:getaddrinfo_thread	56	static

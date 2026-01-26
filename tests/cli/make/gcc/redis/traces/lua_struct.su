@@ -1,0 +1,7 @@
+lua_struct.c:92:12:getnum	64	static
+lua_struct.c:111:15:optsize	32	static
+lua_struct.c:148:13:controloptions	32	static
+lua_struct.c:366:12:b_size	112	static
+lua_struct.c:208:12:b_pack	8416	static
+lua_struct.c:293:12:b_unpack	144	static
+lua_struct.c:401:16:luaopen_struct	16	static

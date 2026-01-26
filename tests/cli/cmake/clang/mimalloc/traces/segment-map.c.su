@@ -1,0 +1,4 @@
+repos/mimalloc/src/segment-map.c:82:_mi_segment_map_allocated_at	88	static
+repos/mimalloc/src/segment-map.c:95:_mi_segment_map_freed_at	0	static
+repos/mimalloc/src/segment-map.c:131:mi_is_in_heap_region	8	static
+repos/mimalloc/src/segment-map.c:135:_mi_segment_map_unsafe_destroy	24	static

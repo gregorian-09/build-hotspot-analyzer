@@ -1,0 +1,7 @@
+repos/libjpeg-turbo/src/rdswitch.c:85:read_quant_tables	344	static
+repos/libjpeg-turbo/src/rdswitch.c:46:read_text_integer	56	static
+repos/libjpeg-turbo/src/rdswitch.c:175:read_scan_script	3704	static
+repos/libjpeg-turbo/src/rdswitch.c:146:read_scan_integer	40	static
+repos/libjpeg-turbo/src/rdswitch.c:322:set_quality_ratings	40	static
+repos/libjpeg-turbo/src/rdswitch.c:362:set_quant_slots	56	static
+repos/libjpeg-turbo/src/rdswitch.c:397:set_sample_factors	72	static

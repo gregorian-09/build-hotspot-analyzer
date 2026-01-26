@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_leak_detector.cpp:32:5:Catch::LeakDetector::LeakDetector()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_leak_detector.cpp:36:1:Catch::LeakDetector::~LeakDetector()	16	static

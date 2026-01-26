@@ -1,0 +1,3 @@
+compress.c:22:13:compress2	208	static
+compress.c:63:13:compress	48	static
+compress.c:72:15:compressBound	16	static

@@ -1,0 +1,2 @@
+repos/abseil/absl/random/internal/chi_square.cc:104:_ZN4absl15random_internal14ChiSquareValueEid	72	static
+repos/abseil/absl/random/internal/chi_square.cc:154:_ZN4absl15random_internal15ChiSquarePValueEdi	104	static

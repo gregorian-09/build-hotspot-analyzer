@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_source_line_info.cpp:15:10:bool Catch::SourceLineInfo::operator==(const Catch::SourceLineInfo&) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_source_line_info.cpp:18:10:bool Catch::SourceLineInfo::operator<(const Catch::SourceLineInfo&) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_source_line_info.cpp:24:19:std::ostream& Catch::operator<<(std::ostream&, const SourceLineInfo&)	48	static

@@ -1,0 +1,17 @@
+ltable.c:263:13:setarrayvector	32	static
+ltable.c:272:13:setnodevector	64	static
+ltable.c:100:14:mainposition	8	static
+ltable.c:211:12:countint.isra	16	static
+ltable.c:162:5:luaH_next	48	static
+ltable.c:358:8:luaH_new	48	static
+ltable.c:375:6:luaH_free	32	static
+ltable.c:436:15:luaH_getnum	8	static
+ltable.c:455:15:luaH_getstr	8	static
+ltable.c:469:15:luaH_get	32	static
+ltable.c:494:9:luaH_set	32	static
+ltable.c:400:16:newkey	224	static
+ltable.c:297:13:resize	128	static
+ltable.c:327:6:luaH_resizearray	8	static
+ltable.c:508:9:luaH_setnum	48	static
+ltable.c:520:9:luaH_setstr	48	static
+ltable.c:560:5:luaH_getn	8	static

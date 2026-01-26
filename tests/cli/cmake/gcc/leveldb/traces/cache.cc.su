@@ -1,0 +1,15 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/cache.h:94:16:virtual void leveldb::Cache::Prune()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:376:9:virtual void* leveldb::{anonymous}::ShardedLRUCache::Value(leveldb::Cache::Handle*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:358:3:virtual leveldb::{anonymous}::ShardedLRUCache::~ShardedLRUCache()	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:388:10:virtual size_t leveldb::{anonymous}::ShardedLRUCache::TotalCharge() const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:358:3:leveldb::{anonymous}::ShardedLRUCache::~ShardedLRUCache()	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:383:8:virtual void leveldb::{anonymous}::ShardedLRUCache::Prune()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:379:12:virtual uint64_t leveldb::{anonymous}::ShardedLRUCache::NewId()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:368:8:virtual void leveldb::{anonymous}::ShardedLRUCache::Release(leveldb::Cache::Handle*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:308:6:bool leveldb::{anonymous}::LRUCache::FinishErase(leveldb::{anonymous}::LRUHandle*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:359:11:virtual leveldb::Cache::Handle* leveldb::{anonymous}::ShardedLRUCache::Insert(const leveldb::Slice&, void*, size_t, void (*)(const leveldb::Slice&, void*))	192	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:372:8:virtual void leveldb::{anonymous}::ShardedLRUCache::Erase(const leveldb::Slice&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:364:11:virtual leveldb::Cache::Handle* leveldb::{anonymous}::ShardedLRUCache::Lookup(const leveldb::Slice&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:18:1:leveldb::Cache::~Cache()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:18:1:virtual leveldb::Cache::~Cache()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/cache.cc:399:8:leveldb::Cache* leveldb::NewLRUCache(size_t)	48	static

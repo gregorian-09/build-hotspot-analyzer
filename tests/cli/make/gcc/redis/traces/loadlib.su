@@ -1,0 +1,14 @@
+loadlib.c:451:12:ll_require	48	static
+loadlib.c:544:12:ll_module	176	static
+loadlib.c:435:12:loader_preload	32	static
+loadlib.c:391:20:mkfuncname	32	static
+loadlib.c:351:20:findfile	64	static
+loadlib.c:572:12:ll_seeall	16	static
+loadlib.c:286:12:gctm	16	static
+loadlib.c:592:13:setpath	32	static
+loadlib.c:294:12:ll_loadfunc.isra	48	static
+loadlib.c:309:12:ll_loadlib	32	static
+loadlib.c:414:12:loader_Croot	48	static
+loadlib.c:380:12:loader_Lua	32	static
+loadlib.c:402:12:loader_C	32	static
+loadlib.c:627:16:luaopen_package	32	static

@@ -1,0 +1,2 @@
+tool_stderr.c:31:tool_init_stderr	8	static
+tool_stderr.c:37:tool_set_stderr_file	24	static

@@ -1,0 +1,5 @@
+repos/glfw/src/null_joystick.c:34:_glfwInitJoysticksNull	0	static
+repos/glfw/src/null_joystick.c:39:_glfwTerminateJoysticksNull	0	static
+repos/glfw/src/null_joystick.c:43:_glfwPollJoystickNull	0	static
+repos/glfw/src/null_joystick.c:48:_glfwGetMappingNameNull	0	static
+repos/glfw/src/null_joystick.c:53:_glfwUpdateGamepadGUIDNull	0	static

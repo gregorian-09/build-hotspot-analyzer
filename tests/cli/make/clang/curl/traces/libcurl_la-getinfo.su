@@ -1,0 +1,8 @@
+getinfo.c:41:Curl_initinfo	40	static
+getinfo.c:619:Curl_getinfo	440	static
+getinfo.c:87:getinfo_char	88	static
+getinfo.c:189:getinfo_long	72	static
+getinfo.c:484:getinfo_double	8	static
+getinfo.c:384:getinfo_offt	8	static
+getinfo.c:562:getinfo_slist	72	static
+getinfo.c:605:getinfo_socket	40	static

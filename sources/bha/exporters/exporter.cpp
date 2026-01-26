@@ -72,6 +72,89 @@ namespace bha::exporters
             return result;
         }
 
+        std::string format_markdown_simple(const std::string& markdown) {
+            std::string html;
+            std::istringstream stream(markdown);
+            std::string line;
+            bool in_list = false;
+            bool in_code_block = false;
+            std::string code_block_content;
+
+            while (std::getline(stream, line)) {
+                if (line.find("```") == 0) {
+                    if (in_code_block) {
+                        html += R"(<pre class="code-block" style="margin: 6px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border-left: 3px solid var(--accent-color); overflow-x: auto;">)";
+                        html += escape_html(code_block_content);
+                        html += "</pre>\n";
+                        code_block_content.clear();
+                        in_code_block = false;
+                    } else {
+                        if (in_list) {
+                            html += "</ul>\n";
+                            in_list = false;
+                        }
+                        in_code_block = true;
+                    }
+                    continue;
+                }
+
+                if (in_code_block) {
+                    code_block_content += line + "\n";
+                    continue;
+                }
+
+                if (line.empty()) {
+                    if (in_list) {
+                        html += "</ul>\n";
+                        in_list = false;
+                    }
+                    continue;
+                }
+
+                if (line.find("  - ") == 0 || line.find("- ") == 0) {
+                    if (!in_list) {
+                        html += "<ul style=\"margin: 8px 0; padding-left: 24px;\">\n";
+                        in_list = true;
+                    }
+                    std::string item = line.substr(line.find("- ") + 2);
+                    html += "<li>" + escape_html(item) + "</li>\n";
+                    continue;
+                }
+
+                if (in_list) {
+                    html += "</ul>\n";
+                    in_list = false;
+                }
+
+                std::string processed = line;
+                size_t pos = 0;
+                while ((pos = processed.find("**", pos)) != std::string::npos) {
+                    if (size_t end_pos = processed.find("**", pos + 2); end_pos != std::string::npos) {
+                        std::string bold_text = processed.substr(pos + 2, end_pos - pos - 2);
+                        std::string replacement = "<strong>" + bold_text + "</strong>";
+                        processed.replace(pos, end_pos - pos + 2, replacement);
+                        pos += replacement.length();
+                    } else {
+                        break;
+                    }
+                }
+
+                html += "<p style=\"margin: 2px 0;\">" + processed + "</p>\n";
+            }
+
+            if (in_list) {
+                html += "</ul>\n";
+            }
+
+            if (in_code_block && !code_block_content.empty()) {
+                html += R"(<pre class="code-block" style="margin: 6px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border-left: 3px solid var(--accent-color); overflow-x: auto;">)";
+                html += escape_html(code_block_content);
+                html += "</pre>\n";
+            }
+
+            return html;
+        }
+
         /**
          * Replaces multiple placeholders in a template string.
          */
@@ -295,14 +378,17 @@ namespace bha::exporters
             deps["circular_dependencies_count"] = analysis.dependencies.circular_dependencies.size();
 
             json headers_array = json::array();
-            for (const auto& [path, total_parse_time, inclusion_count, including_files, included_by, impact_score] : analysis.dependencies.headers) {
+            for (const auto& header : analysis.dependencies.headers) {
                 json h;
-                h["path"] = path.string();
-                h["inclusion_count"] = inclusion_count;
-                h["including_files"] = including_files;
-                h["parse_time_ms"] = duration_to_ms(total_parse_time);
-                h["impact_score"] = impact_score;
-                h["included_by"] = included_by;
+                h["path"] = header.path.string();
+                h["inclusion_count"] = header.inclusion_count;
+                h["including_files"] = header.including_files;
+                h["parse_time_ms"] = duration_to_ms(header.total_parse_time);
+                h["impact_score"] = header.impact_score;
+                h["included_by"] = header.included_by;
+                h["modification_count"] = header.modification_count;
+                h["is_stable"] = header.is_stable;
+                h["is_external"] = header.is_external;
                 headers_array.push_back(h);
             }
             deps["headers"] = headers_array;
@@ -531,6 +617,13 @@ namespace bha::exporters
 
         Duration max_time = sorted_files.empty() ? Duration::zero() : sorted_files[0].compile_time;
 
+        auto format_bytes = [](size_t bytes) -> std::string {
+            if (bytes == 0) return "-";
+            if (bytes < 1024) return std::to_string(bytes) + " B";
+            if (bytes < 1024 * 1024) return std::to_string(bytes / 1024) + " KB";
+            return std::to_string(bytes / (1024 * 1024)) + " MB";
+        };
+
         for (const auto& file : sorted_files) {
             double time_ms = duration_to_ms(file.compile_time);
             double fe_ms = duration_to_ms(file.frontend_time);
@@ -539,6 +632,9 @@ namespace bha::exporters
                 ? 100.0 * static_cast<double>(file.compile_time.count()) / static_cast<double>(max_time.count())
                 : 0.0;
 
+            std::string peak_mem = format_bytes(file.memory.peak_memory_bytes);
+            std::string stack_usage = format_bytes(file.memory.max_stack_bytes);
+
             file_rows << "\n                            <tr data-time=\"" << time_ms << "\" data-name=\""
                       << escape_html(file.file.string()) << "\">\n"
                       << R"(                                <td><i class="fas fa-file-code" style="color: var(--accent-color); margin-right: 8px;"></i>)"
@@ -546,6 +642,8 @@ namespace bha::exporters
                       << "                                <td><strong>" << std::fixed << std::setprecision(1) << time_ms << " ms</strong></td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << fe_ms << " ms</td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << be_ms << " ms</td>\n"
+                      << "                                <td>" << peak_mem << "</td>\n"
+                      << "                                <td>" << stack_usage << "</td>\n"
                       << "                                <td>\n"
                       << "                                    <div class=\"time-bar-container\">\n"
                       << R"(                                        <div class="time-bar" style="width: )" << bar_width << "%\"></div>\n"
@@ -588,26 +686,47 @@ namespace bha::exporters
                             << "                            Est. savings: " << std::fixed << std::setprecision(1) << duration_to_ms(sugg.estimated_savings) << " ms\n"
                             << "                        </span>\n"
                             << "                    </div>\n"
-                            << "                    <p>" << escape_html(sugg.description) << "</p>";
+                            << "                    <div class=\"suggestion-description\">" << format_markdown_simple(sugg.description) << "</div>";
 
             if (!sugg.before_code.code.empty() || !sugg.after_code.code.empty()) {
-                suggestion_cards << "\n                    <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; overflow: hidden;\">";
+                suggestion_cards << "\n                    <div class=\"code-comparison\">";
+
                 if (!sugg.before_code.code.empty()) {
-                    suggestion_cards << "\n                        <div style=\"min-width: 0;\">\n"
-                                    << "                            <div style=\"font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;\">\n"
-                                    << "                                <i class=\"fas fa-times-circle\" style=\"color: var(--danger-color);\"></i> Before:\n"
+                    std::string before_file_label = !sugg.before_code.file.empty()
+                        ? escape_html(sugg.before_code.file.string())
+                        : "Current Code";
+
+                    suggestion_cards << "\n                        <div style=\"min-width: 0; display: flex; flex-direction: column;\">\n"
+                                    << "                            <div style=\"font-size: 0.9rem; color: var(--text-primary); margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px;\">\n"
+                                    << "                                <i class=\"fas fa-times-circle\" style=\"color: var(--danger-color); font-size: 1.1rem;\"></i>\n"
+                                    << "                                <span style=\"background: linear-gradient(135deg, var(--danger-color), #c82333); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;\">Before</span>\n"
                                     << "                            </div>\n"
-                                    << "                            <pre class=\"code-block\">" << escape_html(sugg.before_code.code) << "</pre>\n"
+                                    << "                            <div style=\"font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; font-style: italic;\">\n"
+                                    << "                                <i class=\"fas fa-file-code\"></i> " << before_file_label << "\n"
+                                    << "                            </div>\n"
+                                    << R"(                            <pre class="code-block" style="flex: 1; margin: 0;">)" << escape_html(sugg.before_code.code) << "</pre>\n"
                                     << "                        </div>";
+                } else {
+                    suggestion_cards << "\n                        <div></div>";
                 }
+
                 if (!sugg.after_code.code.empty()) {
-                    suggestion_cards << "\n                        <div style=\"min-width: 0;\">\n"
-                                    << "                            <div style=\"font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;\">\n"
-                                    << "                                <i class=\"fas fa-check-circle\" style=\"color: var(--success-color);\"></i> After:\n"
+                    std::string after_file_label = !sugg.after_code.file.empty()
+                        ? escape_html(sugg.after_code.file.string())
+                        : "Optimized Code";
+
+                    suggestion_cards << "\n                        <div style=\"min-width: 0; display: flex; flex-direction: column;\">\n"
+                                    << "                            <div style=\"font-size: 0.9rem; color: var(--text-primary); margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px;\">\n"
+                                    << "                                <i class=\"fas fa-check-circle\" style=\"color: var(--success-color); font-size: 1.1rem;\"></i>\n"
+                                    << "                                <span style=\"background: linear-gradient(135deg, var(--success-color), #28a745); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;\">After</span>\n"
                                     << "                            </div>\n"
-                                    << "                            <pre class=\"code-block\">" << escape_html(sugg.after_code.code) << "</pre>\n"
+                                    << "                            <div style=\"font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; font-style: italic;\">\n"
+                                    << "                                <i class=\"fas fa-file-code\"></i> " << after_file_label << "\n"
+                                    << "                            </div>\n"
+                                    << R"(                            <pre class="code-block" style="flex: 1; margin: 0; border-left: 3px solid var(--success-color);">)" << escape_html(sugg.after_code.code) << "</pre>\n"
                                     << "                        </div>";
                 }
+
                 suggestion_cards << "\n                    </div>";
             }
 

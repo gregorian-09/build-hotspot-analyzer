@@ -1,0 +1,8 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:40:10:_glfwPlatformCreateTls	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:55:6:_glfwPlatformDestroyTls	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:62:7:_glfwPlatformGetTls	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:68:6:_glfwPlatformSetTls	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:74:10:_glfwPlatformCreateMutex	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:87:6:_glfwPlatformDestroyMutex	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:94:6:_glfwPlatformLockMutex	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_thread.c:100:6:_glfwPlatformUnlockMutex	8	static

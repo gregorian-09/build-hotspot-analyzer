@@ -1,0 +1,9 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/hpa_hooks.c:25:1:hpa_hooks_map	48	static
+src/hpa_hooks.c:31:1:hpa_hooks_unmap	32	static
+src/hpa_hooks.c:36:1:hpa_hooks_purge	32	static
+src/hpa_hooks.c:41:1:hpa_hooks_hugify	48	static
+src/hpa_hooks.c:47:1:hpa_hooks_dehugify	48	static
+src/hpa_hooks.c:53:1:hpa_hooks_curtime	48	static
+src/hpa_hooks.c:61:1:hpa_hooks_ms_since	32	static

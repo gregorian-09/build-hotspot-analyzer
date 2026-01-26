@@ -1,0 +1,16 @@
+reply.c:8:rw_string	0	static
+reply.c:14:rw_cstring	0	static
+reply.c:21:rw_int	24	static
+reply.c:33:rw_double	56	static
+reply.c:51:rw_longdouble	40	static
+reply.c:61:rw_bignumber	24	static
+reply.c:70:rw_array	40	static
+reply.c:85:rw_map	56	static
+reply.c:101:rw_set	40	static
+reply.c:116:rw_attribute	40	static
+reply.c:136:rw_bool	24	static
+reply.c:145:rw_null	0	static
+reply.c:152:rw_error	0	static
+reply.c:159:rw_error_format	40	static
+reply.c:167:rw_verbatim	24	static
+reply.c:176:RedisModule_OnLoad	56	static

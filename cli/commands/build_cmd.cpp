@@ -39,6 +39,7 @@ namespace bha::cli
                 {"memory", 'm', "Enable memory profiling", false, false, "", ""},
                 {"analyze", 'a', "Run analysis after build", false, false, "", ""},
                 {"clean", 0, "Clean before build", false, false, "", ""},
+                {"build-dir", 'b', "Directory for build artifacts", false, true, "", "DIR"},
                 {"output", 'o', "Directory for trace files", false, true, "", "DIR"},
                 {"compiler", 0, "Compiler to use", false, true, "", "COMPILER"},
                 {"cmake-args", 0, "Additional CMake arguments (semicolon-separated)", false, true, "", "ARGS"},
@@ -95,8 +96,12 @@ namespace bha::cli
                 options.compiler = compiler;
             }
 
+            if (std::string build_dir = args.get_or("build-dir", ""); !build_dir.empty()) {
+                options.build_dir = fs::path(build_dir);
+            }
+
             if (std::string output = args.get_or("output", ""); !output.empty()) {
-                options.build_dir = fs::path(output);
+                options.trace_output_dir = fs::path(output);
             }
 
             if (std::string cmake_args = args.get_or("cmake-args", ""); !cmake_args.empty()) {
@@ -127,7 +132,10 @@ namespace bha::cli
             if (!result.success) {
                 print_error("Build failed");
                 if (!result.error_message.empty()) {
-                    std::cerr << result.error_message << "\n";
+                    std::cerr << result.error_message;
+                    if (!result.error_message.ends_with('\n')) {
+                        std::cerr << "\n";
+                    }
                 }
                 return 1;
             }

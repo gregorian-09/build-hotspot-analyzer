@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.h:106:13:bool absl::ascii_isspace(unsigned char)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.cc:220:6:void absl::ascii_internal::AsciiStrToLower(char*, const char*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.cc:225:6:void absl::ascii_internal::AsciiStrToUpper(char*, const char*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.cc:256:6:void absl::AsciiStrToLower(std::string*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.cc:261:6:void absl::AsciiStrToUpper(std::string*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.cc:266:6:void absl::RemoveExtraAsciiWhitespace(std::string*)	16	static

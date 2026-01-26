@@ -1,0 +1,11 @@
+repos/libjpeg-turbo/src/jcmarker.c:651:jinit_marker_writer	8	static
+repos/libjpeg-turbo/src/jcmarker.c:475:write_file_header	40	static
+repos/libjpeg-turbo/src/jcmarker.c:500:write_frame_header	40	static
+repos/libjpeg-turbo/src/jcmarker.c:563:write_scan_header	72	static
+repos/libjpeg-turbo/src/jcmarker.c:608:write_file_trailer	8	static
+repos/libjpeg-turbo/src/jcmarker.c:622:write_tables_only	8	static
+repos/libjpeg-turbo/src/jcmarker.c:444:write_marker_header	24	static
+repos/libjpeg-turbo/src/jcmarker.c:456:write_marker_byte	8	static
+repos/libjpeg-turbo/src/jcmarker.c:151:emit_dqt	120	static
+repos/libjpeg-turbo/src/jcmarker.c:290:emit_sof	24	static
+repos/libjpeg-turbo/src/jcmarker.c:191:emit_dht	40	static

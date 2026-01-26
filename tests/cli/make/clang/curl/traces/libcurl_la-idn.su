@@ -1,0 +1,2 @@
+idn.c:223:Curl_is_ASCII_name	8	static
+idn.c:359:Curl_idnconvert_hostname	8	static

@@ -1,0 +1,15 @@
+repos/glfw/src/egl_context.c:363:_glfwInitEGL	40	static
+repos/glfw/src/egl_context.c:550:_glfwTerminateEGL	8	static
+repos/glfw/src/egl_context.c:301:extensionSupportedEGL	8	static
+repos/glfw/src/egl_context.c:575:_glfwCreateContextEGL	232	static
+repos/glfw/src/egl_context.c:88:chooseEGLConfig	184	static
+repos/glfw/src/egl_context.c:243:makeContextCurrentEGL	24	static
+repos/glfw/src/egl_context.c:275:swapBuffersEGL	8	static
+repos/glfw/src/egl_context.c:296:swapIntervalEGL	0	static
+repos/glfw/src/egl_context.c:313:getProcAddressEGL	8	static
+repos/glfw/src/egl_context.c:329:destroyContextEGL	24	static
+repos/glfw/src/egl_context.c:863:_glfwChooseVisualEGL	104	static
+repos/glfw/src/egl_context.c:904:glfwGetEGLDisplay	8	static
+repos/glfw/src/egl_context.c:910:glfwGetEGLContext	8	static
+repos/glfw/src/egl_context.c:930:glfwGetEGLSurface	8	static
+repos/glfw/src/egl_context.c:950:glfwGetEGLConfig	8	static

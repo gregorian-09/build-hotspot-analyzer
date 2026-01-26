@@ -1,0 +1,4 @@
+repos/rocksdb/port/stack_trace.cc:15:_ZN7rocksdb4port24InstallStackTraceHandlerEv	0	static
+repos/rocksdb/port/stack_trace.cc:16:_ZN7rocksdb4port10PrintStackEi	0	static
+repos/rocksdb/port/stack_trace.cc:17:_ZN7rocksdb4port17PrintAndFreeStackEPvi	0	static
+repos/rocksdb/port/stack_trace.cc:18:_ZN7rocksdb4port9SaveStackEPii	0	static

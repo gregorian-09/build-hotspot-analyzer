@@ -1,0 +1,20 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/atomic_hook.h:135:21:) [with ReturnType = void; Args = {}]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:69:6:void absl::log_internal::RawSetMinLogLevel(absl::LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:73:6:void absl::log_internal::RawSetStderrThreshold(absl::LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:77:6:void absl::log_internal::RawEnableLogPrefix(bool)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:81:6:void absl::log_internal::SetLoggingGlobalsListener(LoggingGlobalsListener)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:87:26:absl::LogSeverityAtLeast absl::MinLogLevel()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:92:6:void absl::SetMinLogLevel(LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:99:1:absl::log_internal::ScopedMinLogLevel::ScopedMinLogLevel(absl::LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:103:1:absl::log_internal::ScopedMinLogLevel::~ScopedMinLogLevel()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:109:26:absl::LogSeverityAtLeast absl::StderrThreshold()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:114:6:void absl::SetStderrThreshold(LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:119:1:absl::ScopedStderrThreshold::ScopedStderrThreshold(absl::LogSeverityAtLeast)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:124:1:absl::ScopedStderrThreshold::~ScopedStderrThreshold()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:130:13:const char* absl::log_internal::GetAndroidNativeTag()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:136:6:void absl::SetAndroidNativeTag(const char*)	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:150:6:bool absl::log_internal::ShouldLogBacktraceAt(std::string_view, int)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:159:6:void absl::SetLogBacktraceLocation(std::string_view, int)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:164:6:void absl::ClearLogBacktraceLocation()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:168:6:bool absl::ShouldPrependLogPrefix()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/globals.cc:172:6:void absl::EnableLogPrefix(bool)	8	static

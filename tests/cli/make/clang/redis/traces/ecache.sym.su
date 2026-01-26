@@ -1,0 +1,4 @@
+src/ecache.c:7:ecache_init	56	static
+src/ecache.c:23:ecache_prefork	24	static
+src/ecache.c:28:ecache_postfork_parent	24	static
+src/ecache.c:33:ecache_postfork_child	24	static

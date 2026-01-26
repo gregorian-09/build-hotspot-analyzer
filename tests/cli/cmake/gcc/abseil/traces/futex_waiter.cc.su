@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/futex_waiter.cc:34:5:static int absl::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int32_t, absl::synchronization_internal::KernelTimeout)	96	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/futex_waiter.cc:56:6:bool absl::synchronization_internal::FutexWaiter::Wait(absl::synchronization_internal::KernelTimeout)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/futex_waiter.cc:88:6:void absl::synchronization_internal::FutexWaiter::Post()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/futex_waiter.cc:95:6:void absl::synchronization_internal::FutexWaiter::Poke()	16	static

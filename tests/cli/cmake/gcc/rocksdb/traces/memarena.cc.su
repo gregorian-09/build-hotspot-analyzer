@@ -1,0 +1,10 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:63:6:void memarena::create(size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:76:6:void memarena::destroy()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:103:7:void* memarena::malloc_from_arena(size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:141:6:void memarena::move_memory(memarena*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:167:8:size_t memarena::total_size_in_use() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:162:8:size_t memarena::total_memory_size() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:171:8:size_t memarena::total_footprint() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:179:13:const void* memarena::chunk_iterator::current(size_t*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:191:6:void memarena::chunk_iterator::next()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:193:6:bool memarena::chunk_iterator::more() const	8	static

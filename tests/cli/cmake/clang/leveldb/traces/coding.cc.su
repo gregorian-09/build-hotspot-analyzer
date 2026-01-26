@@ -1,0 +1,13 @@
+repos/leveldb/util/coding.cc:9:_ZN7leveldb10PutFixed32EPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEj	8	static
+repos/leveldb/util/coding.cc:15:_ZN7leveldb10PutFixed64EPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEm	8	static
+repos/leveldb/util/coding.cc:21:_ZN7leveldb14EncodeVarint32EPcj	0	static
+repos/leveldb/util/coding.cc:49:_ZN7leveldb11PutVarint32EPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEj	8	static
+repos/leveldb/util/coding.cc:55:_ZN7leveldb14EncodeVarint64EPcm	0	static
+repos/leveldb/util/coding.cc:66:_ZN7leveldb11PutVarint64EPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEm	24	static
+repos/leveldb/util/coding.cc:72:_ZN7leveldb22PutLengthPrefixedSliceEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_5SliceE	40	static
+repos/leveldb/util/coding.cc:77:_ZN7leveldb12VarintLengthEm	0	static
+repos/leveldb/util/coding.cc:86:_ZN7leveldb22GetVarint32PtrFallbackEPKcS1_Pj	0	static
+repos/leveldb/util/coding.cc:104:_ZN7leveldb11GetVarint32EPNS_5SliceEPj	0	static
+repos/leveldb/util/coding.cc:116:_ZN7leveldb14GetVarint64PtrEPKcS1_Pm	0	static
+repos/leveldb/util/coding.cc:133:_ZN7leveldb11GetVarint64EPNS_5SliceEPm	0	static
+repos/leveldb/util/coding.cc:145:_ZN7leveldb22GetLengthPrefixedSliceEPNS_5SliceES1_	0	static

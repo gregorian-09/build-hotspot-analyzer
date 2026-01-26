@@ -1,0 +1,14 @@
+/usr/include/c++/13/array:94:12:constexpr std::array<std::__cxx11::basic_string<char>, 14>::~array()	32	static
+/usr/include/c++/13/bits/basic_string.h:641:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	48	static
+/usr/include/c++/13/bits/basic_string.h:803:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::~basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:48:20:const std::string& rocksdb::GetCacheEntryRoleName(CacheEntryRole)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:52:20:static const std::string& rocksdb::BlockCacheEntryStatsMapKeys::CacheId()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:57:20:static const std::string& rocksdb::BlockCacheEntryStatsMapKeys::CacheCapacityBytes()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:63:1:static const std::string& rocksdb::BlockCacheEntryStatsMapKeys::LastCollectionDurationSeconds()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:69:20:static const std::string& rocksdb::BlockCacheEntryStatsMapKeys::LastCollectionAgeSeconds()	32	static
+/usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:77:13:std::string rocksdb::{anonymous}::GetPrefixedCacheEntryRoleName(const std::string&, rocksdb::CacheEntryRole)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:89:13:static std::string rocksdb::BlockCacheEntryStatsMapKeys::EntryCount(rocksdb::CacheEntryRole)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:94:13:static std::string rocksdb::BlockCacheEntryStatsMapKeys::UsedBytes(rocksdb::CacheEntryRole)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:99:13:static std::string rocksdb::BlockCacheEntryStatsMapKeys::UsedPercent(rocksdb::CacheEntryRole)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc:104:1:cc)	48	static

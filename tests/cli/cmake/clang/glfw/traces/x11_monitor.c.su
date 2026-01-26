@@ -1,0 +1,13 @@
+repos/glfw/src/x11_monitor.c:102:_glfwPollMonitorsX11	104	static
+repos/glfw/src/x11_monitor.c:234:_glfwSetVideoModeX11	120	static
+repos/glfw/src/x11_monitor.c:501:_glfwGetVideoModeX11	56	static
+repos/glfw/src/x11_monitor.c:288:_glfwRestoreVideoModeX11	40	static
+repos/glfw/src/x11_monitor.c:320:_glfwFreeMonitorX11	0	static
+repos/glfw/src/x11_monitor.c:324:_glfwGetMonitorPosX11	40	static
+repos/glfw/src/x11_monitor.c:346:_glfwGetMonitorContentScaleX11	0	static
+repos/glfw/src/x11_monitor.c:355:_glfwGetMonitorWorkareaX11	104	static
+repos/glfw/src/x11_monitor.c:449:_glfwGetVideoModesX11	104	static
+repos/glfw/src/x11_monitor.c:540:_glfwGetGammaRampX11	40	static
+repos/glfw/src/x11_monitor.c:578:_glfwSetGammaRampX11	40	static
+repos/glfw/src/x11_monitor.c:619:glfwGetX11Adapter	8	static
+repos/glfw/src/x11_monitor.c:635:glfwGetX11Monitor	8	static

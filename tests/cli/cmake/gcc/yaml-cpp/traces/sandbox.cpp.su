@@ -1,0 +1,18 @@
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<YAML::detail::memory_holder*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<YAML::detail::memory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = YAML::detail::memory_holder*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = YAML::detail::memory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<YAML::detail::memory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = YAML::detail::memory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<YAML::detail::memory_holder*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = YAML::detail::memory_holder*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = YAML::detail::node*; _Val = YAML::detail::node*; _KeyOfValue = std::_Identity<YAML::detail::node*>; _Compare = YAML::detail::node::less; _Alloc = std::allocator<YAML::detail::node*>]	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node.h:46:8:void YAML::detail::node::mark_defined()	240	static
+/usr/include/c++/13/bits/shared_ptr_base.h:198:7:void std::_Sp_counted_base<_Lp>::_M_release_last_use_cold() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	16	static
+/usr/include/c++/13/bits/shared_ptr_base.h:317:5:void std::_Sp_counted_base<_Lp>::_M_release() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/impl.h:56:8:YAML::Node::~Node()	32	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = YAML::detail::memory_holder*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = std::shared_ptr<YAML::detail::node>; _Val = std::shared_ptr<YAML::detail::node>; _KeyOfValue = std::_Identity<std::shared_ptr<YAML::detail::node> >; _Compare = std::less<std::shared_ptr<YAML::detail::node> >; _Alloc = std::allocator<std::shared_ptr<YAML::detail::node> >]	112	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = YAML::detail::memory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions.h:233:3:YAML::InvalidNode::InvalidNode(const std::string&)	560	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/util/sandbox.cpp:28:5:int main()	208	static

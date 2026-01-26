@@ -1,0 +1,5 @@
+repos/benchmark/src/timers.cc:118:_ZN9benchmark15ProcessCPUUsageEv	24	static
+repos/benchmark/src/timers.cc:110:_ZN9benchmark12_GLOBAL__N_115DiagnoseAndExitEPKc	24	static
+repos/benchmark/src/timers.cc:158:_ZN9benchmark14ThreadCPUUsageEv	24	static
+repos/benchmark/src/timers.cc:213:_ZN9benchmark19LocalDateTimeStringB5cxx11Ev	280	static
+repos/benchmark/src/timers.cc:0:_GLOBAL__sub_I_timers.cc	0	static

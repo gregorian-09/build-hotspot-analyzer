@@ -1,0 +1,4 @@
+tool_writeout_json.c:37:jsonquoted	88	static
+tool_writeout_json.c:84:jsonWriteString	72	static
+tool_writeout_json.c:98:ourWriteOutJSON	72	static
+tool_writeout_json.c:119:headerJSON	72	static

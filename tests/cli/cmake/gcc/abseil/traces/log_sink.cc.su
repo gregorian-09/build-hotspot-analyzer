@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_sink.h:55:16:virtual void absl::LogSink::Flush()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_sink.cc:21:6:virtual void absl::LogSink::KeyFunction() const	8	static

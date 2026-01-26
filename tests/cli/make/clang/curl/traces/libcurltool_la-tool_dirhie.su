@@ -1,0 +1,2 @@
+tool_dirhie.c:88:create_dir_hierarchy	104	static
+tool_dirhie.c:37:show_dir_errno	24	static

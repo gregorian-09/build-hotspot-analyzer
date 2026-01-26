@@ -1,0 +1,8 @@
+read.c:162:12:string2ll	8	static
+read.c:53:13:__redisReaderSetError	32	static
+read.c:240:13:moveToNextTask	16	static
+read.c:268:12:processLineItem	448	static
+read.c:686:6:redisReaderFree	32	static
+read.c:654:14:redisReaderCreateWithFunctions	48	static
+read.c:706:5:redisReaderFeed	48	static
+read.c:737:5:redisReaderGetReply	288	static

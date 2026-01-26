@@ -99,4 +99,70 @@ namespace bha::analyzers
             EXPECT_GE(headers[i - 1].impact_score, headers[i].impact_score);
         }
     }
+
+    TEST_F(DependencyAnalyzerTest, StabilityFieldsInitialized) {
+        const auto trace = create_test_trace();
+        constexpr AnalysisOptions options;
+
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+
+        for (const auto& headers = result.value().dependencies.headers; const auto& header : headers) {
+            EXPECT_GE(header.modification_count, 0u);
+            EXPECT_FALSE(header.is_external);
+        }
+    }
+
+    TEST_F(DependencyAnalyzerTest, ExternalHeadersDetected) {
+        BuildTrace trace;
+        trace.id = "test-trace-external";
+
+        CompilationUnit unit;
+        unit.source_file = "/src/main.cpp";
+        unit.includes = {
+            {"/usr/include/vector", std::chrono::milliseconds(50), 1, {}, {}},
+            {"/opt/include/lib.h", std::chrono::milliseconds(30), 1, {}, {}},
+            {"third_party/json.hpp", std::chrono::milliseconds(100), 1, {}, {}},
+            {"src/internal.h", std::chrono::milliseconds(20), 1, {}, {}},
+        };
+
+        trace.units = {unit};
+        constexpr AnalysisOptions options;
+
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& headers = result.value().dependencies.headers;
+
+        const auto external_count = std::count_if(headers.begin(), headers.end(),
+                                            [](const auto& h) { return h.is_external; });
+
+        EXPECT_GE(external_count, 2);
+    }
+
+    TEST_F(DependencyAnalyzerTest, CircularDependencyDetection) {
+        BuildTrace trace;
+        trace.id = "test-circular";
+
+        CompilationUnit unit1;
+        unit1.source_file = "/src/a.cpp";
+        unit1.includes = {
+            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}},
+            {"/include/b.h", std::chrono::milliseconds(50), 1, {}, {}},
+        };
+
+        CompilationUnit unit2;
+        unit2.source_file = "/include/b.h";
+        unit2.includes = {
+            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}},
+        };
+
+        trace.units = {unit1, unit2};
+        constexpr AnalysisOptions options;
+
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+    }
 }

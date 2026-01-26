@@ -1,0 +1,3 @@
+repos/abseil/absl/strings/internal/escaping.cc:36:_ZN4absl16strings_internal33CalculateBase64EscapedLenInternalEmb	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:641:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_	40	static
+repos/abseil/absl/strings/internal/escaping.cc:91:_ZN4absl16strings_internal20Base64EscapeInternalEPKhmPcmPKcb	24	static

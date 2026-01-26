@@ -1,0 +1,69 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/sst_partitioner.h:130:15:virtual const char* rocksdb::SstPartitionerFixedPrefixFactory::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/block_based_table_factory.h:60:15:virtual const char* rocksdb::BlockBasedTableFactory::Name() const	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<const rocksdb::FilterPolicy*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<rocksdb::BlockBasedTableFactory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<rocksdb::SkipListFactory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = const rocksdb::FilterPolicy*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = const rocksdb::FilterPolicy*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:608:7:std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::~_Sp_counted_ptr_inplace() [with _Tp = rocksdb::WriteBufferManager; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = rocksdb::BlockBasedTableFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = rocksdb::SkipListFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = rocksdb::SkipListFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<rocksdb::SkipListFactory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = rocksdb::SkipListFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<const rocksdb::FilterPolicy*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = const rocksdb::FilterPolicy*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:608:7:std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::~_Sp_counted_ptr_inplace() [with _Tp = rocksdb::WriteBufferManager; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<rocksdb::BlockBasedTableFactory*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = rocksdb::BlockBasedTableFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:631:7:void* std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_M_get_deleter(const std::type_info&) [with _Tp = rocksdb::WriteBufferManager; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/shared_ptr_base.h:611:7:void std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_M_dispose() [with _Tp = rocksdb::WriteBufferManager; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:618:7:void std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_M_destroy() [with _Tp = rocksdb::WriteBufferManager; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/env.h:1754:8:virtual void rocksdb::EnvWrapper::SetBackgroundThreads(int, rocksdb::Env::Priority)	8	static
+/usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = rocksdb::CacheEntryRole; _Val = std::pair<const rocksdb::CacheEntryRole, rocksdb::CacheEntryRoleOptions>; _KeyOfValue = std::_Select1st<std::pair<const rocksdb::CacheEntryRole, rocksdb::CacheEntryRoleOptions> >; _Compare = std::less<rocksdb::CacheEntryRole>; _Alloc = std::allocator<std::pair<const rocksdb::CacheEntryRole, rocksdb::CacheEntryRoleOptions> >]	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/advanced_cache.h:428:23:virtual std::string rocksdb::Cache::GetPrintableOptions() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/table_properties.h:212:23:virtual std::string rocksdb::TablePropertiesCollectorFactory::ToString() const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:486:10:rocksdb::Options* rocksdb::Options::PrepareForBulkLoad()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:534:10:rocksdb::Options* rocksdb::Options::DisableExtraChecks()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:554:12:rocksdb::DBOptions* rocksdb::DBOptions::OldDefaults(int, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:573:22:rocksdb::ColumnFamilyOptions* rocksdb::ColumnFamilyOptions::OldDefaults(int, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:546:10:rocksdb::Options* rocksdb::Options::OldDefaults(int, int)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:645:22:rocksdb::ColumnFamilyOptions* rocksdb::ColumnFamilyOptions::OptimizeLevelStyleCompaction(uint64_t)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:680:22:rocksdb::ColumnFamilyOptions* rocksdb::ColumnFamilyOptions::OptimizeUniversalStyleCompaction(uint64_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:694:12:rocksdb::DBOptions* rocksdb::DBOptions::IncreaseParallelism(int)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:701:1:rocksdb::ReadOptions::ReadOptions(bool, bool)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:704:1:rocksdb::ReadOptions::ReadOptions(rocksdb::Env::IOActivity)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:707:1:rocksdb::WriteOptions::WriteOptions(rocksdb::Env::IOActivity)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:710:1:rocksdb::WriteOptions::WriteOptions(rocksdb::Env::IOPriority, rocksdb::Env::IOActivity)	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:198:7:void std::_Sp_counted_base<_Lp>::_M_release_last_use_cold() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/shared_ptr_base.h:317:5:void std::_Sp_counted_base<_Lp>::_M_release() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/cache.h:204:11:rocksdb::ShardedCacheOptions::~ShardedCacheOptions()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/cache.h:222:8:rocksdb::LRUCacheOptions::~LRUCacheOptions()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/cache.h:204:11:virtual rocksdb::ShardedCacheOptions::~ShardedCacheOptions()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/cache.h:222:8:virtual rocksdb::LRUCacheOptions::~LRUCacheOptions()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/advanced_options.h:214:8:rocksdb::AdvancedColumnFamilyOptions::~AdvancedColumnFamilyOptions()	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/table.h:156:8:rocksdb::BlockBasedTableOptions::~BlockBasedTableOptions()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/block_based_table_factory.h:55:3:rocksdb::BlockBasedTableFactory::~BlockBasedTableFactory()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/block_based_table_factory.h:55:3:virtual rocksdb::BlockBasedTableFactory::~BlockBasedTableFactory()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:597:12:rocksdb::DBOptions* rocksdb::DBOptions::OptimizeForSmallDb(std::shared_ptr<rocksdb::Cache>*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:610:22:rocksdb::ColumnFamilyOptions* rocksdb::ColumnFamilyOptions::OptimizeForSmallDb(std::shared_ptr<rocksdb::Cache>*)	384	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:525:10:rocksdb::Options* rocksdb::Options::OptimizeForSmallDb()	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/db_options.h:16:8:rocksdb::ImmutableDBOptions::~ImmutableDBOptions()	64	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = rocksdb::BlockBasedTableFactory*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:630:22:rocksdb::ColumnFamilyOptions* rocksdb::ColumnFamilyOptions::OptimizeForPointLookup(uint64_t)	544	dynamic,bounded
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::FileTemperatureAge; _Alloc = std::allocator<rocksdb::FileTemperatureAge>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:38:1:rocksdb::AdvancedColumnFamilyOptions::AdvancedColumnFamilyOptions()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:126:1:rocksdb::ColumnFamilyOptions::ColumnFamilyOptions()	368	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::DbPath; _Alloc = std::allocator<rocksdb::DbPath>]	48	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = std::shared_ptr<rocksdb::EventListener>; _Alloc = std::allocator<std::shared_ptr<rocksdb::EventListener> >]	64	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = std::shared_ptr<rocksdb::TablePropertiesCollectorFactory>; _Alloc = std::allocator<std::shared_ptr<rocksdb::TablePropertiesCollectorFactory> >]	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:42:1:rocksdb::AdvancedColumnFamilyOptions::AdvancedColumnFamilyOptions(const rocksdb::Options&)	80	static
+/usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression.h:751:20:std::string rocksdb::CompressionTypeToString(CompressionType)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:138:6:void rocksdb::DBOptions::Dump(rocksdb::Logger*) const	688	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:134:1:rocksdb::DBOptions::DBOptions()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:131:1:rocksdb::ColumnFamilyOptions::ColumnFamilyOptions(const rocksdb::Options&)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:143:6:void rocksdb::ColumnFamilyOptions::Dump(rocksdb::Logger*) const	992	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:473:6:void rocksdb::Options::Dump(rocksdb::Logger*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:478:6:void rocksdb::Options::DumpCFOptions(rocksdb::Logger*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/options/options.cc:135:1:rocksdb::DBOptions::DBOptions(const rocksdb::Options&)	96	static

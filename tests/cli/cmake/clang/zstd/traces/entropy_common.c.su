@@ -1,0 +1,11 @@
+repos/zstd/lib/common/entropy_common.c:27:FSE_versionNumber	0	static
+repos/zstd/lib/common/entropy_common.c:31:FSE_isError	0	static
+repos/zstd/lib/common/entropy_common.c:32:FSE_getErrorName	0	static
+repos/zstd/lib/common/entropy_common.c:34:HUF_isError	0	static
+repos/zstd/lib/common/entropy_common.c:35:HUF_getErrorName	0	static
+repos/zstd/lib/common/entropy_common.c:206:FSE_readNCount_bmi2	72	static
+repos/zstd/lib/common/entropy_common.c:198:FSE_readNCount_body_bmi2	72	static
+repos/zstd/lib/common/entropy_common.c:219:FSE_readNCount	0	static
+repos/zstd/lib/common/entropy_common.c:234:HUF_readStats	888	static
+repos/zstd/lib/common/entropy_common.c:327:HUF_readStats_wksp	56	static
+repos/zstd/lib/common/entropy_common.c:318:HUF_readStats_body_bmi2	56	static

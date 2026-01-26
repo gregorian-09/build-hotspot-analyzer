@@ -1,0 +1,7 @@
+repos/abseil/absl/base/internal/spinlock.cc:68:_ZN4absl13base_internal24RegisterSpinLockProfilerEPFvPKvlE	0	static
+repos/abseil/absl/base/internal/spinlock.cc:77:_ZN4absl13base_internal8SpinLock8SpinLoopEv	8	static
+repos/abseil/absl/base/internal/spinlock.cc:98:_ZN4absl13base_internal8SpinLock8SlowLockEv	56	static
+repos/abseil/absl/base/internal/spinlock.cc:192:_ZN4absl13base_internal8SpinLock16EncodeWaitCyclesEll	0	static
+repos/abseil/absl/base/internal/spinlock.cc:166:_ZN4absl13base_internal8SpinLock10SlowUnlockEj	24	static
+repos/abseil/absl/base/internal/spinlock.cc:216:_ZN4absl13base_internal8SpinLock16DecodeWaitCyclesEj	0	static
+repos/abseil/absl/base/internal/atomic_hook.h:135:_ZN4absl13base_internal10AtomicHookIPFvPKvlEE13DummyFunctionES3_l	0	static

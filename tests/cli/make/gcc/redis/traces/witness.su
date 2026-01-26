@@ -1,0 +1,17 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+include/jemalloc/internal/witness.h:248:1:witness_depth_to_rank	16	static
+include/jemalloc/internal/witness.h:266:1:witness_assert_depth_to_rank	80	static
+include/jemalloc/internal/witness.h:281:1:witness_assert_depth	32	static
+include/jemalloc/internal/witness.h:286:1:witness_assert_lockless	32	static
+src/witness.c:8:1:je_witness_init	16	static
+src/witness.c:17:1:witness_print_witness	32	static
+src/witness.c:27:1:witness_print_witnesses	64	static
+src/witness.c:48:1:witness_lock_error_impl	32	static
+src/witness.c:58:1:witness_owner_error_impl	32	static
+src/witness.c:67:1:witness_not_owner_error_impl	32	static
+src/witness.c:76:1:witness_depth_error_impl	32	static
+src/witness.c:88:1:je_witnesses_cleanup	48	static
+src/witness.c:95:1:je_witness_prefork	16	static
+src/witness.c:103:1:je_witness_postfork_parent	16	static
+src/witness.c:111:1:je_witness_postfork_child	16	static

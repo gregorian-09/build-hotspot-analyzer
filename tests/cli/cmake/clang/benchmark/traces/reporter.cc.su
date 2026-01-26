@@ -1,0 +1,11 @@
+repos/benchmark/src/reporter.cc:29:_ZN9benchmark17BenchmarkReporterC2Ev	0	static
+repos/benchmark/src/reporter.cc:32:_ZN9benchmark17BenchmarkReporterD2Ev	0	static
+repos/benchmark/src/reporter.cc:32:_ZN9benchmark17BenchmarkReporterD0Ev	0	static
+repos/benchmark/src/reporter.cc:34:_ZN9benchmark17BenchmarkReporter17PrintBasicContextEPSoRKNS0_7ContextE	104	static
+repos/benchmark/src/reporter.cc:106:_ZN9benchmark17BenchmarkReporter7ContextC2Ev	8	static
+repos/benchmark/src/reporter.cc:109:_ZNK9benchmark17BenchmarkReporter3Run14benchmark_nameB5cxx11Ev	72	static
+repos/benchmark/src/reporter.cc:117:_ZNK9benchmark17BenchmarkReporter3Run19GetAdjustedRealTimeEv	0	static
+repos/benchmark/src/reporter.cc:125:_ZNK9benchmark17BenchmarkReporter3Run18GetAdjustedCPUTimeEv	0	static
+repos/benchmark/include/benchmark/benchmark.h:1924:_ZN9benchmark17BenchmarkReporter16ReportRunsConfigEdbl	0	static
+repos/benchmark/include/benchmark/benchmark.h:1939:_ZN9benchmark17BenchmarkReporter8FinalizeEv	0	static
+repos/benchmark/src/reporter.cc:0:_GLOBAL__sub_I_reporter.cc	0	static

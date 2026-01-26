@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/cdjpeg.c:64:start_progress_monitor	0	static
+repos/libjpeg-turbo/src/cdjpeg.c:29:progress_monitor	8	static
+repos/libjpeg-turbo/src/cdjpeg.c:80:end_progress_monitor	8	static
+repos/libjpeg-turbo/src/cdjpeg.c:97:keymatch	56	static
+repos/libjpeg-turbo/src/cdjpeg.c:124:read_stdin	0	static
+repos/libjpeg-turbo/src/cdjpeg.c:142:write_stdout	0	static

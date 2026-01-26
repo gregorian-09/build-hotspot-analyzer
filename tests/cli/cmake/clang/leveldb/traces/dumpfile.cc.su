@@ -1,0 +1,11 @@
+repos/leveldb/db/dumpfile.cc:214:_ZN7leveldb8DumpFileEPNS_3EnvERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_12WritableFileE	360	static
+repos/leveldb/db/dumpfile.cc:54:_ZN7leveldb12_GLOBAL__N_116PrintLogContentsEPNS_3EnvERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPFvmNS_5SliceEPNS_12WritableFileEESD_	216	static
+repos/leveldb/db/dumpfile.cc:97:_ZN7leveldb12_GLOBAL__N_117WriteBatchPrinterEmNS_5SliceEPNS_12WritableFileE	296	static
+repos/leveldb/db/dumpfile.cc:39:_ZN7leveldb12_GLOBAL__N_118CorruptionReporterD0Ev	8	static
+repos/leveldb/db/dumpfile.cc:41:_ZN7leveldb12_GLOBAL__N_118CorruptionReporter10CorruptionEmRKNS_6StatusE	104	static
+repos/leveldb/db/dumpfile.cc:75:_ZN7leveldb12_GLOBAL__N_121WriteBatchItemPrinterD0Ev	8	static
+repos/leveldb/db/dumpfile.cc:77:_ZN7leveldb12_GLOBAL__N_121WriteBatchItemPrinter3PutERKNS_5SliceES4_	88	static
+repos/leveldb/db/dumpfile.cc:85:_ZN7leveldb12_GLOBAL__N_121WriteBatchItemPrinter6DeleteERKNS_5SliceE	72	static
+repos/leveldb/db/dumpfile.cc:128:_ZN7leveldb12_GLOBAL__N_118VersionEditPrinterEmNS_5SliceEPNS_12WritableFileE	296	static
+repos/leveldb/./db/version_edit.h:32:_ZN7leveldb11VersionEditD2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeISt4pairIimES1_St9_IdentityIS1_ESt4lessIS1_ESaIS1_EE8_M_eraseEPSt13_Rb_tree_nodeIS1_E	24	static

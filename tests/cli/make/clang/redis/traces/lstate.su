@@ -1,0 +1,7 @@
+lstate.c:119:luaE_newthread	24	static
+lstate.c:134:luaE_freethread	24	static
+lstate.c:143:lua_newstate	40	static
+lstate.c:70:f_luaopen	24	static
+lstate.c:105:close_state	24	static
+lstate.c:199:lua_close	24	static
+lstate.c:193:callallgcTM	0	static

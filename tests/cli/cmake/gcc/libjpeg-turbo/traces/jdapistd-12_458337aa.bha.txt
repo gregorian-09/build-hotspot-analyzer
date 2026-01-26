@@ -1,0 +1,153 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/jdapistd-12.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jdapistd-12.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/libjpeg-turbo/build -ftime-report -fmem-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jdapistd-12.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jdapistd-12.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jdapistd-12.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/jdapistd-12.c
+# Timestamp: 2026-01-25T19:40:47+01:00
+# Exit code: 0
+# ---
+
+
+################################################################################
+# Final                                                                        #
+################################################################################
+
+Number of expanded macros:                      2834
+Average number of tokens per macro expansion:      6
+
+Line Table allocations during the compilation process
+Number of ordinary maps used:          213 
+Ordinary map used size:               5112 
+Number of ordinary maps allocated:     341 
+Ordinary maps allocated size:         8184 
+Number of macro maps used:            2777 
+Macro maps used size:                   86k
+Macro maps locations size:             153k
+Macro maps size:                       240k
+Duplicated maps locations size:         59k
+Total allocated maps size:             289k
+Total used maps size:                  245k
+Ad-hoc table size:                     256k
+Ad-hoc table entries used:            4153 
+optimized_ranges:                       53k
+unoptimized_ranges:                   3707 
+
+Memory still allocated at the end of the compilation process
+Size      Allocated        Used    Overhead
+8                20k         17k        600 
+16              132k        131k       2904 
+32              164k        162k       2952 
+64              128k        127k       2048 
+256             880k        876k         12k
+512              28k         25k        392 
+1024            152k        147k       2128 
+2048            128k        118k       1792 
+4096             60k         36k        840 
+8192             72k         64k        504 
+16384           112k         16k        392 
+32768            64k         32k        112 
+65536            64k          0          56 
+131072          256k        128k        112 
+262144          256k        256k         56 
+24              608k        602k         10k
+40             1052k       1047k         16k
+48              424k        420k       6784 
+56               88k         85k       1408 
+72              132k        126k       1848 
+80              612k        606k       8568 
+88               32k         30k        448 
+104              16k       8216         224 
+112              24k         19k        336 
+120              20k         19k        280 
+152             140k        131k       1960 
+128             208k        207k       2912 
+144              84k         79k       1176 
+168             444k        433k       6216 
+184              16k       3128         224 
+96              128k        124k       1792 
+272              28k       9248         392 
+424              44k         27k        616 
+Total          6616k       6120k         88k
+
+String pool
+entries:                        6319
+identifiers:                    6319 (100.00%)
+slots:                          16384
+deleted:                        0
+GGC bytes:                      85k
+table size:                     128k
+coll/search:                    0.1568
+ins/search:                     0.1470
+avg. entry:                     13.78 bytes (+/- 6.57)
+longest entry:                  114
+(No per-node statistics)
+Type hash: size 4093, 1731 elements, 1.050150 collisions
+DECL_DEBUG_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+DECL_VALUE_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+No GIMPLE statistics
+No RTX statistics
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                               0                         0                0 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Alias oracle query stats:
+  refs_may_alias_p: 6260 disambiguations, 8298 queries
+  ref_maybe_used_by_call_p: 2 disambiguations, 6535 queries
+  call_may_clobber_ref_p: 0 disambiguations, 0 queries
+  stmt_kills_ref_p: 1 kills, 659 queries
+  nonoverlapping_component_refs_p: 0 disambiguations, 0 queries
+  nonoverlapping_refs_since_match_p: 0 disambiguations, 0 must overlaps, 0 queries
+  aliasing_component_refs_p: 8 disambiguations, 169 queries
+  TBAA oracle: 6810 disambiguations 11631 queries
+               961 are in alias set 0
+               3554 queries asked about the same object
+               0 queries asked about the same alias set
+               0 access volatile
+               225 are dependent in the DAG
+               81 are aritificially in conflict with void *
+
+Modref stats:
+  modref kill: 0 kills, 0 queries
+  modref use: 2 disambiguations, 47 queries
+  modref clobber: 23 disambiguations, 151 queries
+  66 tbaa queries (0.437086 per modref query)
+  4 base compares (0.026490 per modref query)
+
+PTA query stats:
+  pt_solution_includes: 5 disambiguations, 39 queries
+  pt_solutions_intersect: 0 disambiguations, 6486 queries
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1819k ( 22%)
+ phase parsing                      :   0.01 ( 10%)   0.02 ( 50%)   0.03 ( 21%)  2757k ( 33%)
+ phase opt and generate             :   0.09 ( 90%)   0.01 ( 25%)   0.10 ( 71%)  3734k ( 45%)
+ phase finalize                     :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.08 ( 80%)   0.00 (  0%)   0.09 ( 64%)  3047k ( 37%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 25%)   0.01 (  7%)   412k (  5%)
+ preprocessing                      :   0.01 ( 10%)   0.00 (  0%)   0.01 (  7%)   767k (  9%)
+ lexical analysis                   :   0.00 (  0%)   0.02 ( 50%)   0.02 ( 14%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1333k ( 16%)
+ tree gimplify                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)   201k (  2%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 ( 14%)    42k (  1%)
+ backwards jump threading           :   0.01 ( 10%)   0.00 (  0%)   0.01 (  7%)    44k (  1%)
+ tree PRE                           :   0.02 ( 20%)   0.00 (  0%)   0.00 (  0%)   118k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.01 ( 25%)   0.00 (  0%)    34k (  0%)
+ tree aggressive DCE                :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    99k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    34k (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    42k (  1%)
+ PRE                                :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)  1360  (  0%)
+ LRA rematerialization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ thread pro- & epilogue             :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ peephole 2                         :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)    22k (  0%)
+ initialize rtl                     :   0.01 ( 10%)   0.00 (  0%)   0.01 (  7%)    12k (  0%)
+ TOTAL                              :   0.10          0.04          0.14         8311k

@@ -1,0 +1,5 @@
+repos/leveldb/table/block_builder.cc:40:_ZN7leveldb12BlockBuilderC2EPKNS_7OptionsE	8	static
+repos/leveldb/table/block_builder.cc:46:_ZN7leveldb12BlockBuilder5ResetEv	40	static
+repos/leveldb/table/block_builder.cc:55:_ZNK7leveldb12BlockBuilder19CurrentSizeEstimateEv	0	static
+repos/leveldb/table/block_builder.cc:61:_ZN7leveldb12BlockBuilder6FinishEv	24	static
+repos/leveldb/table/block_builder.cc:71:_ZN7leveldb12BlockBuilder3AddERKNS_5SliceES3_	72	static

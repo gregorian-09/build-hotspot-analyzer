@@ -1,0 +1,5 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/log.c:14:1:log_var_extract_segment	16	static
+src/log.c:22:1:log_var_matches_segment	64	static
+src/log.c:44:1:je_log_var_update_state	144	static

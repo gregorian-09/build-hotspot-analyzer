@@ -1,0 +1,40 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::Slice; _Alloc = std::allocator<rocksdb::Slice>]	8	static
+/usr/include/c++/13/bits/basic_string.h:641:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:38:22:void __tcf_0(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:63:27:void __tcf_1(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:103:26:void __tcf_3(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:112:26:void __tcf_4(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:93:18:void __tcf_2(void*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.h:299:11:rocksdb::WriteThread::~WriteThread()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.h:299:11:virtual rocksdb::WriteThread::~WriteThread()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.h:205:5:rocksdb::WriteThread::Writer::~Writer()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:19:1:rocksdb::WriteThread::WriteThread(const rocksdb::ImmutableDBOptions&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:36:9:uint8_t rocksdb::WriteThread::BlockingAwaitState(Writer*, uint8_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:64:9:uint8_t rocksdb::WriteThread::AwaitState(Writer*, uint8_t, AdaptationContext*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:212:6:void rocksdb::WriteThread::SetState(Writer*, uint8_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:226:6:bool rocksdb::WriteThread::LinkOne(Writer*, std::atomic<Writer*>*)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:262:6:bool rocksdb::WriteThread::LinkGroup(WriteGroup&, std::atomic<Writer*>*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:287:6:void rocksdb::WriteThread::CreateMissingNewerLinks(Writer*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:299:6:void rocksdb::WriteThread::CompleteLeader(WriteGroup&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:314:6:void rocksdb::WriteThread::CompleteFollower(Writer*, WriteGroup&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:328:6:void rocksdb::WriteThread::BeginWriteStall()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:359:6:void rocksdb::WriteThread::EndWriteStall()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:378:10:uint64_t rocksdb::WriteThread::GetBegunCountOfOutstandingStall()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:392:6:void rocksdb::WriteThread::WaitForStallEndedCount(uint64_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:401:6:void rocksdb::WriteThread::JoinBatchGroup(Writer*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:440:8:size_t rocksdb::WriteThread::EnterAsBatchGroupLeader(Writer*, WriteGroup*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:571:6:void rocksdb::WriteThread::EnterAsMemTableWriter(Writer*, WriteGroup*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:631:6:void rocksdb::WriteThread::ExitAsMemTableWriter(Writer*, WriteGroup&)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:664:6:void rocksdb::WriteThread::SetMemWritersEachStride(Writer*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:680:6:void rocksdb::WriteThread::LaunchParallelMemTableWriters(WriteGroup*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:720:6:bool rocksdb::WriteThread::CompleteParallelMemTableWriter(Writer*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:751:6:void rocksdb::WriteThread::ExitAsBatchGroupLeader(WriteGroup&, rocksdb::Status&)	384	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:739:6:void rocksdb::WriteThread::ExitAsBatchGroupFollower(Writer*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:908:6:void rocksdb::WriteThread::ExitUnbatched(Writer*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:921:6:void rocksdb::WriteThread::WaitForMemTableWriters()	320	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:893:6:void rocksdb::WriteThread::EnterUnbatched(Writer*, rocksdb::InstrumentedMutex*)	48	static
+/usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_thread.cc:933:1:cc)	48	static

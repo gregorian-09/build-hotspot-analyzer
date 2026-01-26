@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/jdphuff.c:653:jinit_phuff_decoder	8	static
+repos/libjpeg-turbo/src/jdphuff.c:82:start_pass_phuff_decoder	72	static
+repos/libjpeg-turbo/src/jdphuff.c:290:decode_mcu_DC_first	168	static
+repos/libjpeg-turbo/src/jdphuff.c:366:decode_mcu_AC_first	120	static
+repos/libjpeg-turbo/src/jdphuff.c:452:decode_mcu_DC_refine	88	static
+repos/libjpeg-turbo/src/jdphuff.c:502:decode_mcu_AC_refine	424	static

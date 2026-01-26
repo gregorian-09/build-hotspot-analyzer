@@ -1,0 +1,8 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:158:6:_glfwTerminateVulkan	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:164:13:_glfwGetVulkanResultString	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:42:10:_glfwInitVulkan	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:224:13:glfwVulkanSupported	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:230:22:glfwGetRequiredInstanceExtensions	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:248:20:glfwGetInstanceProcAddress	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:273:13:glfwGetPhysicalDevicePresentationSupport	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/vulkan.c:297:18:glfwCreateWindowSurface	48	static

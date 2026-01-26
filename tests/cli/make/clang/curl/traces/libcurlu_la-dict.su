@@ -1,0 +1,3 @@
+dict.c:137:dict_do	168	static
+dict.c:69:unescape_word	72	static
+dict.c:95:sendf	280	static

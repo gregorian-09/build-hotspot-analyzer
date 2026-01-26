@@ -1,0 +1,9 @@
+repos/libjpeg-turbo/src/jchuff.c:233:jpeg_make_c_derived_tbl	1368	static
+repos/libjpeg-turbo/src/jchuff.c:947:jpeg_gen_optimal_table	3400	static
+repos/libjpeg-turbo/src/jchuff.c:1158:jinit_huff_encoder	8	static
+repos/libjpeg-turbo/src/jchuff.c:144:start_pass_huff	40	static
+repos/libjpeg-turbo/src/jchuff.c:886:encode_mcu_gather	88	static
+repos/libjpeg-turbo/src/jchuff.c:1113:finish_pass_gather	72	static
+repos/libjpeg-turbo/src/jchuff.c:693:encode_mcu_huff	648	static
+repos/libjpeg-turbo/src/jchuff.c:770:finish_pass_huff	632	static
+repos/libjpeg-turbo/src/jchuff.c:563:encode_one_block	616	static

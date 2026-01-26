@@ -1,0 +1,12 @@
+uint-spbset.c:36:Curl_uint32_spbset_init	24	static
+uint-spbset.c:44:Curl_uint32_spbset_destroy	24	static
+uint-spbset.c:64:Curl_uint32_spbset_clear	40	static
+uint-spbset.c:50:Curl_uint32_spbset_count	8	static
+uint-spbset.c:117:Curl_uint32_spbset_add	56	static
+uint-spbset.c:76:uint32_spbset_get_chunk	56	static
+uint-spbset.c:133:Curl_uint32_spbset_remove	40	static
+uint-spbset.c:147:Curl_uint32_spbset_contains	56	static
+uint-spbset.c:163:Curl_uint32_spbset_first	8	static
+uint-spbset.c:221:Curl_uint32_spbset_next	56	static
+uint-spbset.c:194:uint32_spbset_chunk_next	8	static
+uint-spbset.c:180:uint32_spbset_chunk_first	8	static

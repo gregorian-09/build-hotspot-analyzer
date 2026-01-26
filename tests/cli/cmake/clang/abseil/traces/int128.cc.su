@@ -1,0 +1,8 @@
+repos/abseil/absl/numeric/int128.cc:134:_ZN4absl7uint128C2Ef	40	static
+repos/abseil/absl/numeric/int128.cc:135:_ZN4absl7uint128C2Ed	40	static
+repos/abseil/absl/numeric/int128.cc:136:_ZN4absl7uint128C2Ee	88	static
+repos/abseil/absl/numeric/int128.cc:202:_ZNK4absl7uint1288ToStringB5cxx11Ev	8	static
+repos/abseil/absl/numeric/int128.cc:156:_ZN4absl12_GLOBAL__N_124Uint128ToFormattedStringB5cxx11ENS_7uint128ESt13_Ios_Fmtflags	440	static
+repos/abseil/absl/numeric/int128.cc:206:_ZN4absllsERSoNS_7uint128E	72	static
+repos/abseil/absl/numeric/int128.cc:289:_ZNK4absl6int1288ToStringB5cxx11Ev	56	static
+repos/abseil/absl/numeric/int128.cc:297:_ZN4absllsERSoNS_6int128E	120	static

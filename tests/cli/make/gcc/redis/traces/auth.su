@@ -1,0 +1,15 @@
+auth.c:18:6:UserChangedCallback	8	static
+auth.c:24:5:Auth_CreateModuleUser	32	static
+auth.c:40:5:Auth_AuthModuleUser	32	static
+auth.c:76:5:Auth_ChangeCount	8	static
+auth.c:106:5:test_rm_register_auth_cb	16	static
+auth.c:154:5:AuthBlock_Reply	64	static
+auth.c:179:6:AuthBlock_FreeData	8	static
+auth.c:229:5:test_rm_register_blocking_auth_cb	16	static
+auth.c:88:5:auth_cb	64	static
+auth.c:120:7:AuthBlock_ThreadMain	48	static
+auth.c:190:5:blocking_auth_cb	48	static
+auth.c:49:5:Auth_AuthRealUser	48	static
+auth.c:67:5:Auth_RedactedAPI	32	static
+auth.c:239:5:RedisModule_OnLoad	64	dynamic,bounded
+auth.c:277:5:RedisModule_OnUnload	16	static

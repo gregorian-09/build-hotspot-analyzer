@@ -1,0 +1,16 @@
+repos/abseil/absl/base/internal/low_level_alloc.cc:229:_ZN4absl13base_internal12SigSafeArenaEv	0	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:233:_ZN4absl13base_internal16InitSigSafeArenaEv	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:395:_ZN4absl13base_internal13LowLevelAlloc8NewArenaEj	24	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:411:_ZN4absl13base_internal13LowLevelAlloc11DeleteArenaEPNS1_5ArenaE	296	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:299:_ZN4absl13base_internal13LowLevelAlloc12DefaultArenaEv	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:269:_ZN4absl13base_internal12_GLOBAL__N_118CreateGlobalArenasEv	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:379:_ZN4absl13base_internal13LowLevelAlloc5ArenaC2Ej	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:651:_ZN4absl13base_internal13LowLevelAlloc14AllocWithArenaEmPNS1_5ArenaE	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:538:_ZN4absl13base_internal13LowLevelAlloc4FreeEPv	296	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:323:_ZN4absl13base_internal12_GLOBAL__N_19ArenaLockD2Ev	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:519:_ZN4absl13base_internalL13AddToFreelistEPvPNS0_13LowLevelAlloc5ArenaE	264	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:646:_ZN4absl13base_internal13LowLevelAlloc5AllocEm	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:553:_ZN4absl13base_internalL16DoAllocWithArenaEmPNS0_13LowLevelAlloc5ArenaE	456	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc:__clang_call_terminate	8	static
+repos/abseil/absl/base/internal/low_level_alloc.cc:500:_ZN4absl13base_internalL8CoalesceEPNS0_12_GLOBAL__N_19AllocListE	248	static
+repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIRFvvEJEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	24	static

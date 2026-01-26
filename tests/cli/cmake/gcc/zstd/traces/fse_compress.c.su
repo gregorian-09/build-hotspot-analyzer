@@ -1,0 +1,11 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:234:1:FSE_writeNCount_generic	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:551:15:FSE_compress_usingCTable_generic	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:68:8:FSE_buildCTable_wksp	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:223:8:FSE_NCountWriteBound	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:330:8:FSE_writeNCount	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:357:10:FSE_optimalTableLog_internal	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:371:10:FSE_optimalTableLog	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:465:8:FSE_normalizeCount	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:528:8:FSE_buildCTable_rle	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:610:8:FSE_compress_usingCTable	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c:623:8:FSE_compressBound	8	static

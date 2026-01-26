@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_test_case_info_hasher.cpp:13:5:Catch::TestCaseInfoHasher::TestCaseInfoHasher(hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_test_case_info_hasher.cpp:15:14:uint32_t Catch::TestCaseInfoHasher::operator()(const Catch::TestCaseInfo&) const	8	static

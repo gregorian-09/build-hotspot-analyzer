@@ -1,0 +1,9 @@
+cf-haproxy.c:156:cf_haproxy_destroy	24	static
+cf-haproxy.c:99:cf_haproxy_connect	104	static
+cf-haproxy.c:163:cf_haproxy_close	24	static
+cf-haproxy.c:173:cf_haproxy_adjust_pollset	56	static
+cf-haproxy.c:231:Curl_cf_haproxy_insert_after	40	static
+cf-haproxy.c:204:cf_haproxy_create	56	static
+cf-haproxy.c:53:cf_haproxy_ctx_free	24	static
+cf-haproxy.c:61:cf_haproxy_date_out_set	168	static
+cf-haproxy.c:46:cf_haproxy_ctx_reset	24	static

@@ -1,0 +1,8 @@
+repos/abseil/absl/log/internal/proto.cc:40:_ZN4absl12log_internal12EncodeVarintEmmPNS_4SpanIcEE	48	static
+repos/abseil/absl/log/internal/proto.cc:53:_ZN4absl12log_internal11Encode64BitEmmPNS_4SpanIcEE	40	static
+repos/abseil/absl/log/internal/proto.cc:69:_ZN4absl12log_internal11Encode32BitEmjPNS_4SpanIcEE	40	static
+repos/abseil/absl/log/internal/proto.cc:85:_ZN4absl12log_internal11EncodeBytesEmNS_4SpanIKcEEPNS1_IcEE	56	static
+repos/abseil/absl/log/internal/proto.cc:102:_ZN4absl12log_internal19EncodeBytesTruncateEmNS_4SpanIKcEEPNS1_IcEE	56	static
+repos/abseil/absl/log/internal/proto.cc:126:_ZN4absl12log_internal18EncodeMessageStartEmmPNS_4SpanIcEE	40	static
+repos/abseil/absl/log/internal/proto.cc:143:_ZN4absl12log_internal19EncodeMessageLengthENS_4SpanIcEEPKS2_	8	static
+repos/abseil/absl/log/internal/proto.cc:190:_ZN4absl12log_internal10ProtoField10DecodeFromEPNS_4SpanIKcEE	8	static

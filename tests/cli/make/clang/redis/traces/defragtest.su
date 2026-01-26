@@ -1,0 +1,14 @@
+defragtest.c:268:createFragObject	56	static
+defragtest.c:360:FragFree	24	static
+defragtest.c:369:FragFreeEffort	0	static
+defragtest.c:376:FragDefrag	56	static
+defragtest.c:437:RedisModule_OnLoad	216	static
+defragtest.c:306:fragCreateCommand	56	static
+defragtest.c:342:fragCreateGlobalCommand	136	static
+defragtest.c:282:fragResetStatsCommand	8	static
+defragtest.c:248:FragInfo	24	static
+defragtest.c:221:defragGlobal	56	static
+defragtest.c:238:defragStart	0	static
+defragtest.c:243:defragEnd	0	static
+defragtest.c:165:defragGlobalDictValueCB	8	static
+defragtest.c:157:defragGlobalSubDictValueCB	8	static

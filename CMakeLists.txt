@@ -169,6 +169,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/build_systems/adapter.cpp
+        sources/bha/suggestions/consolidator.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
         sources/bha/suggestions/header_split_suggester.cpp
         sources/bha/suggestions/include_suggester.cpp
@@ -187,6 +188,8 @@ target_sources(bha_lib PRIVATE
         sources/bha/exporters/exporter.cpp
         sources/bha/git/git_integration.cpp
         sources/bha/storage/storage.cpp
+        sources/bha/lsp/server.cpp
+        sources/bha/lsp/suggestion_manager.cpp
 )
 
 target_include_directories(bha_lib
@@ -224,6 +227,18 @@ if(BHA_BUILD_CLI)
     )
 
     target_link_libraries(bha
+            PRIVATE
+            bha::bha
+            bha::warnings
+            $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
+            $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
+    )
+
+    add_executable(bha-lsp
+            cli/lsp_server/main.cpp
+    )
+
+    target_link_libraries(bha-lsp
             PRIVATE
             bha::bha
             bha::warnings

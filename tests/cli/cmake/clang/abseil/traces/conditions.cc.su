@@ -1,0 +1,4 @@
+repos/abseil/absl/log/internal/conditions.cc:39:_ZN4absl12log_internal14LogEveryNState9ShouldLogEi	0	static
+repos/abseil/absl/log/internal/conditions.cc:43:_ZN4absl12log_internal14LogFirstNState9ShouldLogEi	0	static
+repos/abseil/absl/log/internal/conditions.cc:52:_ZN4absl12log_internal17LogEveryPow2State9ShouldLogEv	0	static
+repos/abseil/absl/log/internal/conditions.cc:57:_ZN4absl12log_internal17LogEveryNSecState9ShouldLogEd	40	static

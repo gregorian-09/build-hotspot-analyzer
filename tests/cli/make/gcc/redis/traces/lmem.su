@@ -1,0 +1,3 @@
+lmem.c:66:7:luaM_toobig	16	static
+lmem.c:76:7:luaM_realloc_	64	static
+lmem.c:46:7:luaM_growaux_	64	static

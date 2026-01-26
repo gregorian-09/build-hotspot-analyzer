@@ -1,0 +1,3 @@
+repos/glfw/src/null_init.c:38:_glfwConnectNull	8	static
+repos/glfw/src/null_init.c:120:_glfwInitNull	8	static
+repos/glfw/src/null_init.c:258:_glfwTerminateNull	8	static

@@ -1,0 +1,6 @@
+repos/rocksdb/memtable/alloc_tracker.cc:18:_ZN7rocksdb12AllocTrackerC2EPNS_18WriteBufferManagerE	0	static
+repos/rocksdb/memtable/alloc_tracker.cc:24:_ZN7rocksdb12AllocTrackerD2Ev	24	static
+repos/rocksdb/memtable/alloc_tracker.cc:48:_ZN7rocksdb12AllocTracker7FreeMemEv	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:__clang_call_terminate	8	static
+repos/rocksdb/memtable/alloc_tracker.cc:26:_ZN7rocksdb12AllocTracker8AllocateEm	0	static
+repos/rocksdb/memtable/alloc_tracker.cc:35:_ZN7rocksdb12AllocTracker14DoneAllocatingEv	24	static

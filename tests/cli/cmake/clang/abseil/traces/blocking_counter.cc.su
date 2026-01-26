@@ -1,0 +1,5 @@
+repos/abseil/absl/synchronization/blocking_counter.cc:32:_ZN4absl15BlockingCounterC2Ei	8	static
+repos/abseil/absl/synchronization/blocking_counter.cc:39:_ZN4absl15BlockingCounter14DecrementCountEv	24	static
+repos/abseil/absl/synchronization/blocking_counter.cc:52:_ZN4absl15BlockingCounter4WaitEv	56	static
+repos/abseil/absl/synchronization/blocking_counter.cc:28:_ZN4absl12_GLOBAL__N_16IsDoneEPv	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/blocking_counter.cc:__clang_call_terminate	8	static

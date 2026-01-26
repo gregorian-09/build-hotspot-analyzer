@@ -1,0 +1,2 @@
+repos/abseil/absl/flags/internal/commandlineflag.cc:22:_ZN4absl14flags_internal18FlagStateInterfaceD2Ev	0	static
+repos/abseil/absl/flags/internal/commandlineflag.cc:22:_ZN4absl14flags_internal18FlagStateInterfaceD0Ev	0	static

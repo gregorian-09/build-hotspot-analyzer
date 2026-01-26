@@ -1,0 +1,14 @@
+src/witness.c:8:witness_init	8	static
+src/witness.c:48:witness_lock_error_impl	24	static
+src/witness.c:58:witness_owner_error_impl	24	static
+src/witness.c:67:witness_not_owner_error_impl	24	static
+src/witness.c:76:witness_depth_error_impl	24	static
+src/witness.c:88:witnesses_cleanup	24	static
+include/jemalloc/internal/witness.h:286:witness_assert_lockless	24	static
+src/witness.c:95:witness_prefork	8	static
+src/witness.c:103:witness_postfork_parent	8	static
+src/witness.c:111:witness_postfork_child	8	static
+src/witness.c:27:witness_print_witnesses	56	static
+src/witness.c:17:witness_print_witness	24	static
+include/jemalloc/internal/witness.h:281:witness_assert_depth	24	static
+include/jemalloc/internal/witness.h:266:witness_assert_depth_to_rank	8	static

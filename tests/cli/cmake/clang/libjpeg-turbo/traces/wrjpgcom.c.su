@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/wrjpgcom.c:398:main	136	static
+repos/libjpeg-turbo/src/wrjpgcom.c:336:usage	8	static
+repos/libjpeg-turbo/src/wrjpgcom.c:120:write_marker	8	static
+repos/libjpeg-turbo/src/wrjpgcom.c:127:copy_rest_of_file	8	static
+repos/libjpeg-turbo/src/wrjpgcom.c:229:copy_variable	8	static
+repos/libjpeg-turbo/src/wrjpgcom.c:90:read_2_bytes	8	static

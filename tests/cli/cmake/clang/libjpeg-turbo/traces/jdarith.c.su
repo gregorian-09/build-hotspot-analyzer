@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/jdarith.c:750:jinit_arith_decoder	8	static
+repos/libjpeg-turbo/src/jdarith.c:632:start_pass	56	static
+repos/libjpeg-turbo/src/jdarith.c:250:decode_mcu_DC_first	104	static
+repos/libjpeg-turbo/src/jdarith.c:329:decode_mcu_AC_first	104	static
+repos/libjpeg-turbo/src/jdarith.c:403:decode_mcu_DC_refine	40	static
+repos/libjpeg-turbo/src/jdarith.c:436:decode_mcu_AC_refine	120	static
+repos/libjpeg-turbo/src/jdarith.c:505:decode_mcu	120	static
+repos/libjpeg-turbo/src/jdarith.c:115:arith_decode	40	static

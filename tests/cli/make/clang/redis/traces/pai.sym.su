@@ -1,0 +1,7 @@
+src/pai.c:5:pai_alloc_batch_default	104	static
+include/jemalloc/internal/pai.h:40:pai_alloc	88	static
+include/jemalloc/internal/edata.h:253:edata_list_active_append	8	static
+src/pai.c:22:pai_dalloc_batch_default	56	static
+include/jemalloc/internal/edata.h:253:edata_list_active_first	8	static
+include/jemalloc/internal/edata.h:253:edata_list_active_remove	8	static
+include/jemalloc/internal/pai.h:69:pai_dalloc	40	static

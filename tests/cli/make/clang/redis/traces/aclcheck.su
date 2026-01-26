@@ -1,0 +1,11 @@
+aclcheck.c:9:set_aclcheck_key	56	static
+aclcheck.c:55:set_aclcheck_prefixkey	56	static
+aclcheck.c:101:publish_aclcheck_channel	40	static
+aclcheck.c:131:rm_call_aclcheck_cmd	40	static
+aclcheck.c:158:rm_call_aclcheck_cmd_default_user	56	static
+aclcheck.c:169:rm_call_aclcheck_cmd_module_user	40	static
+aclcheck.c:185:rm_call_aclcheck_with_errors	24	static
+aclcheck.c:202:rm_call_aclcheck	136	static
+aclcheck.c:232:module_test_acl_category	8	static
+aclcheck.c:239:commandBlockCheck	56	static
+aclcheck.c:267:RedisModule_OnLoad	72	static

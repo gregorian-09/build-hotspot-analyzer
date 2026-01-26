@@ -8,11 +8,13 @@
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
+#include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <unordered_map>
 
 namespace bha::cli
 {
@@ -32,10 +34,13 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string usage() const override {
-            return "Usage: bha analyze [OPTIONS] <trace-files...>\n"
+            return "Usage: bha analyze [OPTIONS] [trace-files...]\n"
+                   "\n"
+                   "If no trace files are specified, defaults to build/traces/\n"
                    "\n"
                    "Examples:\n"
-                   "  bha analyze build/*.json\n"
+                   "  bha analyze                           # Use build/traces/\n"
+                   "  bha analyze build/*.json              # Analyze specific files\n"
                    "  bha analyze --top 20 trace.json\n"
                    "  bha analyze --json --output report.json traces/";
         }
@@ -55,10 +60,7 @@ namespace bha::cli
             };
         }
 
-        [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
-            if (args.positional().empty()) {
-                return "No trace files specified. Use 'bha analyze <files...>'";
-            }
+        [[nodiscard]] std::string validate(const ParsedArgs&) const override {
             return "";
         }
 
@@ -78,14 +80,30 @@ namespace bha::cli
                 set_output_format(OutputFormat::JSON);
             }
 
-            // Get options
             std::size_t top_count = static_cast<std::size_t>(args.get_int("top").value_or(10));
             std::size_t threads = static_cast<std::size_t>(args.get_int("parallel").value_or(0));
             Duration min_time = std::chrono::milliseconds(args.get_int("min-time").value_or(10));
 
-            // Collect trace files
             std::vector<fs::path> trace_files;
-            for (const auto& path_str : args.positional()) {
+            std::vector<fs::path> memory_files;
+
+            std::vector<std::string> paths_to_analyze;
+
+            if (args.positional().empty()) {
+                fs::path default_trace_dir = fs::current_path() / "build" / "traces";
+                if (fs::exists(default_trace_dir)) {
+                    paths_to_analyze.push_back(default_trace_dir.string());
+                    print_verbose("Using default trace directory: " + default_trace_dir.string());
+                } else {
+                    print_error("No trace files specified and default directory not found: " + default_trace_dir.string());
+                    print_error("Use 'bha analyze <files...>' or ensure traces exist in build/traces/");
+                    return 1;
+                }
+            } else {
+                paths_to_analyze = args.positional();
+            }
+
+            for (const auto& path_str : paths_to_analyze) {
                 fs::path path(path_str);
 
                 if (!fs::exists(path)) {
@@ -95,6 +113,19 @@ namespace bha::cli
 
                 auto files = parsers::collect_trace_files(path);
                 trace_files.insert(trace_files.end(), files.begin(), files.end());
+
+                if (fs::is_directory(path)) {
+                    for (const auto& entry : fs::recursive_directory_iterator(path)) {
+                        if (entry.is_regular_file()) {
+                            auto ext = entry.path().extension().string();
+                            if (ext == ".su" || ext == ".map") {
+                                memory_files.push_back(entry.path());
+                            }
+                        }
+                    }
+                } else if (auto ext = path.extension().string(); ext == ".su" || ext == ".map") {
+                    memory_files.push_back(path);
+                }
             }
 
             if (trace_files.empty()) {
@@ -103,6 +134,9 @@ namespace bha::cli
             }
 
             print_verbose("Found " + std::to_string(trace_files.size()) + " trace files");
+            if (!memory_files.empty()) {
+                print_verbose("Found " + std::to_string(memory_files.size()) + " memory files");
+            }
 
             BuildTrace build_trace;
             build_trace.timestamp = std::chrono::system_clock::now();
@@ -125,6 +159,53 @@ namespace bha::cli
                 }
             }
 
+            if (!memory_files.empty()) {
+                std::unordered_map<std::string, MemoryMetrics> memory_map;
+
+                ScopedProgress progress(memory_files.size(), "Parsing memory files");
+                for (const auto& file : memory_files) {
+                    progress.set_message(format_path(file, 40));
+
+                    if (auto result = parsers::parse_memory_file(file); result.is_ok()) {
+                        std::string key;
+                        std::string filename = file.filename().string();
+
+                        if (file.extension() == ".su") {
+                            if (filename.size() > 3) {
+                                key = filename.substr(0, filename.size() - 3);
+                            }
+                        } else if (file.extension() == ".map") {
+                            if (filename.size() > 4) {
+                                std::string temp = filename.substr(0, filename.size() - 4);
+                                if (temp.size() > 2 && temp.substr(temp.size() - 2) == ".o") {
+                                    temp = temp.substr(0, temp.size() - 2);
+                                }
+                                key = temp;
+                            }
+                        }
+
+                        if (!key.empty()) {
+                            memory_map[key] = result.value();
+                        }
+                    }
+
+                    progress.tick();
+                }
+
+                std::size_t matched = 0;
+                for (auto& unit : build_trace.units) {
+                    std::string source_name = unit.source_file.filename().string();
+
+                    if (auto it = memory_map.find(source_name); it != memory_map.end()) {
+                        unit.metrics.memory = it->second;
+                        matched++;
+                    }
+                }
+
+                print_verbose("Matched " + std::to_string(matched) + "/" +
+                              std::to_string(build_trace.units.size()) + " files with memory data");
+            }
+
             if (build_trace.units.empty()) {
                 print_error("No valid trace files parsed");
                 return 1;
@@ -133,8 +214,6 @@ namespace bha::cli
             AnalysisOptions analysis_opts;
             analysis_opts.max_threads = threads;
             analysis_opts.min_duration_threshold = min_time;
-            analysis_opts.analyze_templates = args.get_flag("include-templates") || true;  // Default on
-            analysis_opts.analyze_includes = args.get_flag("include-includes") || true;    // Default on
             analysis_opts.verbose = is_verbose();
 
             print_verbose("Running analysis...");
@@ -147,7 +226,6 @@ namespace bha::cli
 
             const auto& result = analysis_result.value();
 
-            // Output results
             bool list_files = args.get_flag("list-files");
             bool list_headers = args.get_flag("list-headers");
             bool list_templates = args.get_flag("list-templates");
@@ -158,7 +236,6 @@ namespace bha::cli
                 SummaryPrinter printer(std::cout);
                 printer.print_build_summary(result);
 
-                // If --top 0 or any --list flag, show all items
                 std::size_t file_limit = list_files ? 0 : top_count;
                 std::size_t header_limit = list_headers ? 0 : top_count;
                 std::size_t template_limit = list_templates ? 0 : top_count;
@@ -168,7 +245,6 @@ namespace bha::cli
                 printer.print_template_summary(result.templates, template_limit, list_templates);
             }
 
-            // Write to output file if specified
             if (auto output_file = args.get("output")) {
                 std::ofstream out(*output_file);
                 if (!out) {

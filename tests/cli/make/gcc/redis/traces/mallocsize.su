@@ -1,0 +1,8 @@
+mallocsize.c:31:6:udt_free	64	static
+mallocsize.c:57:6:udt_rdb_save	80	static
+mallocsize.c:84:7:udt_rdb_load	64	static
+mallocsize.c:113:8:udt_mem_usage	80	static
+mallocsize.c:147:5:cmd_setraw	64	static
+mallocsize.c:168:5:cmd_setstr	48	static
+mallocsize.c:187:5:cmd_setdict	80	static
+mallocsize.c:209:5:RedisModule_OnLoad	240	dynamic,bounded

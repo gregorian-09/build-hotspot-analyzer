@@ -1,0 +1,5 @@
+lzio.c:21:5:luaZ_fill	32	static
+lzio.c:35:5:luaZ_lookahead	16	static
+lzio.c:48:6:luaZ_init	8	static
+lzio.c:58:8:luaZ_read	48	static
+lzio.c:74:7:luaZ_openspace	32	static

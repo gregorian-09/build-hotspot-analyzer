@@ -1,0 +1,12 @@
+repos/abseil/absl/base/internal/sysinfo.cc:369:_ZN4absl13base_internal7NumCPUsEv	8	static
+repos/abseil/absl/base/internal/sysinfo.cc:381:_ZN4absl13base_internal19NominalCPUFrequencyEv	8	static
+repos/abseil/absl/base/internal/sysinfo.cc:400:_ZN4absl13base_internal6GetTIDEv	0	static
+repos/abseil/absl/base/internal/sysinfo.cc:483:_ZN4absl13base_internal12GetCachedTIDEv	8	static
+repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIZNS0_7NumCPUsEvE3$_0JEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:__clang_call_terminate	8	static
+repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIZNS0_19NominalCPUFrequencyEvE3$_0JEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	1080	static
+repos/abseil/absl/base/internal/sysinfo.cc:268:_ZN4absl13base_internalL14GetTimeTscPairEv	56	static
+repos/abseil/absl/base/internal/sysinfo.cc:239:_ZN4absl13base_internalL23ReadMonotonicClockNanosEv	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3688:_ZStplIcSt11char_traitsIcESaIcEENSt7__cxx1112basic_stringIT_T0_T1_EEOS8_PKS5_	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3674:_ZStplIcSt11char_traitsIcESaIcEENSt7__cxx1112basic_stringIT_T0_T1_EEPKS5_OS8_	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:4162:_ZNSt7__cxx119to_stringEi	40	static

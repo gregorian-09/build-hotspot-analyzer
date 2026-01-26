@@ -1,0 +1,122 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c
+# Output: CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -Dlibzstd_shared_EXPORTS -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/zstd/build/lib -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/build/cmake/lib -ftime-report -fmem-report -fstack-usage -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT lib/CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c.o -MF CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c.o.d -o CMakeFiles/libzstd_shared.dir/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/debug.c
+# Timestamp: 2026-01-25T20:18:08+01:00
+# Exit code: 0
+# ---
+
+
+################################################################################
+# Final                                                                        #
+################################################################################
+
+Number of expanded macros:                         6
+Average number of tokens per macro expansion:      1
+
+Line Table allocations during the compilation process
+Number of ordinary maps used:            8 
+Ordinary map used size:                192 
+Number of ordinary maps allocated:     341 
+Ordinary maps allocated size:         8184 
+Number of macro maps used:               6 
+Macro maps used size:                  192 
+Macro maps locations size:              48 
+Macro maps size:                       240 
+Duplicated maps locations size:         24 
+Total allocated maps size:              16k
+Total used maps size:                  432 
+Ad-hoc table size:                       0 
+Ad-hoc table entries used:               0 
+optimized_ranges:                      325 
+unoptimized_ranges:                      0 
+
+Memory still allocated at the end of the compilation process
+Size      Allocated        Used    Overhead
+8              8192        5256         240 
+16               36k         32k        792 
+32               12k       8960         216 
+64             4096          64          64 
+256             676k        670k       9464 
+512            8192        4608         112 
+1024             20k         17k        280 
+2048             48k         48k        672 
+8192             40k         40k        280 
+16384            32k         32k        112 
+24               44k         42k        792 
+40              316k        314k       5056 
+48              232k        227k       3712 
+56             4096         280          64 
+72             4096        3600          56 
+80              264k        262k       3696 
+104            4096         624          56 
+112            4096           0          56 
+120            4096        3240          56 
+152              12k       9424         168 
+128            4096         256          56 
+144            4096        3456          56 
+168             164k        158k       2296 
+96             4096        1248          56 
+272            8192        4624         112 
+424            4096         848          56 
+Total          1960k       1890k         27k
+
+String pool
+entries:                        3366
+identifiers:                    3366 (100.00%)
+slots:                          16384
+deleted:                        0
+GGC bytes:                      49k
+table size:                     128k
+coll/search:                    0.0438
+ins/search:                     0.2977
+avg. entry:                     15.05 bytes (+/- 6.77)
+longest entry:                  98
+(No per-node statistics)
+Type hash: size 2039, 830 elements, 1.136417 collisions
+DECL_DEBUG_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+DECL_VALUE_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+No GIMPLE statistics
+No RTX statistics
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                               0                         0                0 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Alias oracle query stats:
+  refs_may_alias_p: 0 disambiguations, 0 queries
+  ref_maybe_used_by_call_p: 0 disambiguations, 0 queries
+  call_may_clobber_ref_p: 0 disambiguations, 0 queries
+  stmt_kills_ref_p: 0 kills, 0 queries
+  nonoverlapping_component_refs_p: 0 disambiguations, 0 queries
+  nonoverlapping_refs_since_match_p: 0 disambiguations, 0 must overlaps, 0 queries
+  aliasing_component_refs_p: 0 disambiguations, 0 queries
+  TBAA oracle: 0 disambiguations 0 queries
+               0 are in alias set 0
+               0 queries asked about the same object
+               0 queries asked about the same alias set
+               0 access volatile
+               0 are dependent in the DAG
+               0 are aritificially in conflict with void *
+
+Modref stats:
+  modref kill: 0 kills, 0 queries
+  modref use: 0 disambiguations, 0 queries
+  modref clobber: 0 disambiguations, 0 queries
+  0 tbaa queries (-nan per modref query)
+  0 base compares (-nan per modref query)
+
+PTA query stats:
+  pt_solution_includes: 0 disambiguations, 0 queries
+  pt_solutions_intersect: 0 disambiguations, 0 queries
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (100%)  1819k ( 92%)
+ TOTAL                              :   0.00          0.00          0.01         1984k

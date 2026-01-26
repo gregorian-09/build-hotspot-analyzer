@@ -1,0 +1,16 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:215:1:build_ycc_rgb_table	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:262:1:ycc_rgb_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:338:1:rgb_gray_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:377:1:null_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:451:1:gray_rgb_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:496:1:rgb_rgb_convert	136	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:544:1:ycck_cmyk_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:676:1:ycc_rgb565_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:687:1:ycc_rgb565D_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:698:1:rgb_rgb565_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:709:1:rgb_rgb565D_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:720:1:gray_rgb565_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:731:1:gray_rgb565D_convert	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:746:1:start_pass_dcolor	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:438:1:grayscale_convert	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdcolor.c:757:1:j12init_color_deconverter	32	static

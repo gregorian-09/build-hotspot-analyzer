@@ -1,0 +1,6 @@
+repos/leveldb/db/leveldbutil.cc:48:main	152	static
+repos/leveldb/db/leveldbutil.cc:14:_ZN7leveldb12_GLOBAL__N_113StdoutPrinterD0Ev	8	static
+repos/leveldb/db/leveldbutil.cc:16:_ZN7leveldb12_GLOBAL__N_113StdoutPrinter6AppendERKNS_5SliceE	8	static
+repos/leveldb/db/leveldbutil.cc:20:_ZN7leveldb12_GLOBAL__N_113StdoutPrinter5CloseEv	0	static
+repos/leveldb/db/leveldbutil.cc:21:_ZN7leveldb12_GLOBAL__N_113StdoutPrinter5FlushEv	0	static
+repos/leveldb/db/leveldbutil.cc:22:_ZN7leveldb12_GLOBAL__N_113StdoutPrinter4SyncEv	0	static

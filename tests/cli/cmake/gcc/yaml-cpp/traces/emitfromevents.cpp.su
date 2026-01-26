@@ -1,0 +1,16 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/eventhandler.h:38:16:virtual void YAML::EventHandler::OnAnchor(const YAML::Mark&, const std::string&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:25:6:virtual void YAML::EmitFromEvents::OnDocumentStart(const YAML::Mark&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:27:6:virtual void YAML::EmitFromEvents::OnDocumentEnd()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:94:6:virtual void YAML::EmitFromEvents::OnMapEnd()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emitfromevents.h:26:3:virtual YAML::EmitFromEvents::~EmitFromEvents()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:68:6:virtual void YAML::EmitFromEvents::OnSequenceEnd()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emitfromevents.h:26:3:YAML::EmitFromEvents::~EmitFromEvents()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:22:1:YAML::EmitFromEvents::EmitFromEvents(YAML::Emitter&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:100:6:void YAML::EmitFromEvents::BeginNode()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:118:6:void YAML::EmitFromEvents::EmitProps(const std::string&, YAML::anchor_t)	624	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:29:6:virtual void YAML::EmitFromEvents::OnNull(const YAML::Mark&, YAML::anchor_t)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:40:6:virtual void YAML::EmitFromEvents::OnScalar(const YAML::Mark&, const std::string&, YAML::anchor_t, const std::string&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:35:6:virtual void YAML::EmitFromEvents::OnAlias(const YAML::Mark&, YAML::anchor_t)	608	static
+/usr/include/c++/13/bits/deque.tcc:484:7:) [with _Args = {YAML::EmitFromEvents::State::value}; _Tp = YAML::EmitFromEvents::State::value; _Alloc = std::allocator<YAML::EmitFromEvents::State::value>]	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:47:6:virtual void YAML::EmitFromEvents::OnSequenceStart(const YAML::Mark&, const std::string&, YAML::anchor_t, YAML::EmitterStyle::value)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitfromevents.cpp:74:6:virtual void YAML::EmitFromEvents::OnMapStart(const YAML::Mark&, const std::string&, YAML::anchor_t, YAML::EmitterStyle::value)	64	static

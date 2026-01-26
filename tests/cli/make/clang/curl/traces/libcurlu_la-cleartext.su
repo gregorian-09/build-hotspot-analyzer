@@ -1,0 +1,3 @@
+vauth/cleartext.c:50:Curl_auth_create_plain_message	104	static
+vauth/cleartext.c:89:Curl_auth_create_login_message	40	static
+vauth/cleartext.c:107:Curl_auth_create_external_message	24	static

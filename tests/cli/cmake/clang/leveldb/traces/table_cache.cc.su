@@ -1,0 +1,8 @@
+repos/leveldb/db/table_cache.cc:32:_ZN7leveldb10TableCacheC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_7OptionsEi	72	static
+repos/leveldb/db/table_cache.cc:39:_ZN7leveldb10TableCacheD2Ev	8	static
+repos/leveldb/db/table_cache.cc:41:_ZN7leveldb10TableCache9FindTableEmmPPNS_5Cache6HandleE	168	static
+repos/leveldb/db/table_cache.cc:19:_ZN7leveldbL11DeleteEntryERKNS_5SliceEPv	24	static
+repos/leveldb/db/table_cache.cc:78:_ZN7leveldb10TableCache11NewIteratorERKNS_11ReadOptionsEmmPPNS_5TableE	56	static
+repos/leveldb/db/table_cache.cc:26:_ZN7leveldbL10UnrefEntryEPvS0_	0	static
+repos/leveldb/db/table_cache.cc:100:_ZN7leveldb10TableCache3GetERKNS_11ReadOptionsEmmRKNS_5SliceEPvPFvS7_S6_S6_E	72	static
+repos/leveldb/db/table_cache.cc:114:_ZN7leveldb10TableCache5EvictEm	24	static

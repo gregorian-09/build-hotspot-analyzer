@@ -1,0 +1,7 @@
+repos/abseil/absl/debugging/leak_check.cc:63:_ZN4absl17HaveLeakSanitizerEv	0	static
+repos/abseil/absl/debugging/leak_check.cc:64:_ZN4absl19LeakCheckerIsActiveEv	0	static
+repos/abseil/absl/debugging/leak_check.cc:65:_ZN4absl12DoIgnoreLeakEPKv	0	static
+repos/abseil/absl/debugging/leak_check.cc:66:_ZN4absl20RegisterLivePointersEPKvm	0	static
+repos/abseil/absl/debugging/leak_check.cc:67:_ZN4absl22UnRegisterLivePointersEPKvm	0	static
+repos/abseil/absl/debugging/leak_check.cc:68:_ZN4absl17LeakCheckDisablerC2Ev	0	static
+repos/abseil/absl/debugging/leak_check.cc:69:_ZN4absl17LeakCheckDisablerD2Ev	0	static

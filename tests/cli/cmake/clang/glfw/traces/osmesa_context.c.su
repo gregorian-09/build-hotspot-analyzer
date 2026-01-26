@@ -1,0 +1,12 @@
+repos/glfw/src/osmesa_context.c:110:_glfwInitOSMesa	24	static
+repos/glfw/src/osmesa_context.c:181:_glfwTerminateOSMesa	8	static
+repos/glfw/src/osmesa_context.c:197:_glfwCreateContextOSMesa	168	static
+repos/glfw/src/osmesa_context.c:34:makeContextCurrentOSMesa	24	static
+repos/glfw/src/osmesa_context.c:89:swapBuffersOSMesa	0	static
+repos/glfw/src/osmesa_context.c:94:swapIntervalOSMesa	0	static
+repos/glfw/src/osmesa_context.c:99:extensionSupportedOSMesa	0	static
+repos/glfw/src/osmesa_context.c:68:getProcAddressOSMesa	0	static
+repos/glfw/src/osmesa_context.c:73:destroyContextOSMesa	8	static
+repos/glfw/src/osmesa_context.c:294:glfwGetOSMesaColorBuffer	56	static
+repos/glfw/src/osmesa_context.c:332:glfwGetOSMesaDepthBuffer	56	static
+repos/glfw/src/osmesa_context.c:372:glfwGetOSMesaContext	8	static

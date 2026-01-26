@@ -1,0 +1,12 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:65:1:leveldb::TableBuilder::TableBuilder(const leveldb::Options&, leveldb::WritableFile*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:72:1:leveldb::TableBuilder::~TableBuilder()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:78:8:leveldb::Status leveldb::TableBuilder::ChangeOptions(const leveldb::Options&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:141:6:void leveldb::TableBuilder::WriteBlock(leveldb::BlockBuilder*, leveldb::BlockHandle*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:192:6:void leveldb::TableBuilder::WriteRawBlock(const leveldb::Slice&, leveldb::CompressionType, leveldb::BlockHandle*)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:125:6:void leveldb::TableBuilder::Flush()	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:94:6:void leveldb::TableBuilder::Add(const leveldb::Slice&, const leveldb::Slice&)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:211:8:leveldb::Status leveldb::TableBuilder::status() const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:213:8:leveldb::Status leveldb::TableBuilder::Finish()	368	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:270:6:void leveldb::TableBuilder::Abandon()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:276:10:uint64_t leveldb::TableBuilder::NumEntries() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/table_builder.cc:278:10:uint64_t leveldb::TableBuilder::FileSize() const	8	static

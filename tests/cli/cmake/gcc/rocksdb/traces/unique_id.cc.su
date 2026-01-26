@@ -1,0 +1,12 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:15:13:std::string rocksdb::EncodeSessionId(uint64_t, uint64_t)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:29:8:rocksdb::Status rocksdb::DecodeSessionId(const std::string&, uint64_t*, uint64_t*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:59:8:rocksdb::Status rocksdb::GetSstInternalUniqueId(const std::string&, const std::string&, uint64_t, UniqueIdPtr, bool)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:131:6:void rocksdb::InternalUniqueIdToExternal(UniqueIdPtr)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:142:6:void rocksdb::ExternalUniqueIdToInternal(UniqueIdPtr)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:153:13:std::string rocksdb::EncodeUniqueIdBytes(UniqueIdPtr)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:163:8:rocksdb::Status rocksdb::DecodeUniqueIdBytes(const std::string&, UniqueIdPtr)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:191:8:rocksdb::Status rocksdb::GetExtendedUniqueIdFromTableProperties(const TableProperties&, std::string*)	144	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:196:8:rocksdb::Status rocksdb::GetUniqueIdFromTableProperties(const TableProperties&, std::string*)	128	dynamic,bounded
+/usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:210:13:std::string rocksdb::InternalUniqueIdToHumanString(UniqueIdPtr)	576	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/unique_id.cc:201:13:std::string rocksdb::UniqueIdToHumanString(const std::string&)	128	static

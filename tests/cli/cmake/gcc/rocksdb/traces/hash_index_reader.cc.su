@@ -1,0 +1,25 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/block_based_table_reader.h:252:20:virtual rocksdb::Status rocksdb::BlockBasedTable::IndexReader::CacheDependencies(const rocksdb::ReadOptions&, bool, rocksdb::FilePrefetchBuffer*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/cachable_entry.h:234:15:static void rocksdb::CachableEntry<T>::DeleteValue(void*, void*) [with T = rocksdb::Block]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.h:30:10:virtual size_t rocksdb::HashIndexReader::ApproximateMemoryUsage() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::Slice; _Alloc = std::allocator<rocksdb::Slice>]	8	static
+/usr/include/c++/13/bits/basic_string.h:641:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memory/memory_allocator_impl.h:18:8:void rocksdb::CacheAllocationDeleter::operator()(char*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:38:22:void __tcf_0(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:63:27:void __tcf_1(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:103:26:void __tcf_3(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:112:26:void __tcf_4(void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:93:18:void __tcf_2(void*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/cachable_entry.h:224:15:static void rocksdb::CachableEntry<T>::ReleaseCacheHandle(void*, void*) [with T = rocksdb::Block]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/advanced_cache.h:597:8:virtual bool rocksdb::CacheWrapper::Release(rocksdb::Cache::Handle*, bool)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.h:16:7:rocksdb::HashIndexReader::~HashIndexReader()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.h:16:7:virtual rocksdb::HashIndexReader::~HashIndexReader()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_fetcher.h:40:7:rocksdb::BlockFetcher::~BlockFetcher()	48	static
+/usr/include/c++/13/bits/unique_ptr.h:398:7:std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = void; _Dp = std::function<void(void*)>]	48	static
+/usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/cachable_entry.h:208:8:void rocksdb::CachableEntry<T>::ReleaseResource(bool) [with T = rocksdb::Block]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.cc:112:35:virtual rocksdb::InternalIteratorBase<rocksdb::IndexValue>* rocksdb::HashIndexReader::NewIterator(const rocksdb::ReadOptions&, bool, rocksdb::IndexBlockIter*, rocksdb::GetContext*, rocksdb::BlockCacheLookupContext*)	208	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.cc:15:8:static rocksdb::Status rocksdb::HashIndexReader::Create(const rocksdb::BlockBasedTable*, const rocksdb::ReadOptions&, rocksdb::FilePrefetchBuffer*, rocksdb::InternalIterator*, bool, bool, bool, rocksdb::BlockCacheLookupContext*, std::unique_ptr<rocksdb::BlockBasedTable::IndexReader>*)	11408	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.cc:146:1:cc)	48	static

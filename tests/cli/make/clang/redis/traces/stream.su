@@ -1,0 +1,6 @@
+stream.c:15:stream_add	56	static
+stream.c:41:stream_addn	56	static
+stream.c:65:stream_delete	40	static
+stream.c:90:stream_range	184	static
+stream.c:176:stream_trim	72	static
+stream.c:235:RedisModule_OnLoad	56	static

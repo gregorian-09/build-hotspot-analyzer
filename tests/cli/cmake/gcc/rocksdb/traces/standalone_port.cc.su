@@ -1,0 +1,12 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/portability/toku_instrumentation.h:101:3:toku_instr_key::~toku_instr_key()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:19:6:void toku_free(void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:21:7:void* toku_xmalloc(size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:23:7:void* toku_xrealloc(void*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:25:7:void* toku_xmemdup(const void*, size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:32:7:void* toku_xcalloc(size_t, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:49:8:size_t toku_memory_footprint(void*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:55:6:void LTM_STATUS_S::init()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:108:6:void LTM_STATUS_S::destroy()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:119:5:int toku_keycompare(const void*, size_t, const void*, size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:136:5:int toku_builtin_compare_fun(const DBT*, const DBT*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/standalone_port.cc:138:1:cc)	32	static

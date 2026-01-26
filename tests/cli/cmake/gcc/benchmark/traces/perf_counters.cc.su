@@ -1,0 +1,9 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.h:96:3:benchmark::internal::PerfCounters::~PerfCounters()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:246:8:size_t benchmark::internal::PerfCounterValues::Read(const std::vector<int>&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:250:6:static bool benchmark::internal::PerfCounters::Initialize()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:252:6:static bool benchmark::internal::PerfCounters::IsCounterSupported(const std::string&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:254:14:static benchmark::internal::PerfCounters benchmark::internal::PerfCounters::Create(const std::vector<std::__cxx11::basic_string<char> >&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:262:6:void benchmark::internal::PerfCounters::CloseCounters() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:265:1:benchmark::internal::PerfCountersMeasurement::PerfCountersMeasurement(const std::vector<std::__cxx11::basic_string<char> >&)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:271:15:benchmark::internal::PerfCounters& benchmark::internal::PerfCounters::operator=(benchmark::internal::PerfCounters&&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc:282:1:cc)	8	static

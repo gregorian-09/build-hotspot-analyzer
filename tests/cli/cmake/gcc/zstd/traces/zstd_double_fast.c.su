@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:562:1:ZSTD_compressBlock_doubleFast_dictMatchState_4	104	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:563:1:ZSTD_compressBlock_doubleFast_dictMatchState_5	104	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:90:6:ZSTD_fillDoubleHashTable	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:568:8:ZSTD_compressBlock_doubleFast	304	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:610:8:ZSTD_compressBlock_doubleFast_extDict_generic	104	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:588:8:ZSTD_compressBlock_doubleFast_dictMatchState	104	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_double_fast.c:759:8:ZSTD_compressBlock_doubleFast_extDict	8	static

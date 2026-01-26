@@ -1,0 +1,9 @@
+repos/zstd/lib/compress/zstd_ldm.c:135:ZSTD_ldm_adjustParameters	0	static
+repos/zstd/lib/compress/zstd_ldm.c:169:ZSTD_ldm_getTableSize	0	static
+repos/zstd/lib/compress/zstd_ldm.c:179:ZSTD_ldm_getMaxNbSeq	0	static
+repos/zstd/lib/compress/zstd_ldm.c:285:ZSTD_ldm_fillHashTable	136	static
+repos/zstd/lib/compress/zstd_ldm.c:96:ZSTD_ldm_gear_feed	24	static
+repos/zstd/lib/compress/zstd_ldm.c:526:ZSTD_ldm_generateSequences	472	static
+repos/zstd/lib/compress/zstd_ldm.c:604:ZSTD_ldm_skipSequences	0	static
+repos/zstd/lib/compress/zstd_ldm.c:664:ZSTD_ldm_skipRawSeqStoreBytes	0	static
+repos/zstd/lib/compress/zstd_ldm.c:681:ZSTD_ldm_blockCompress	120	static

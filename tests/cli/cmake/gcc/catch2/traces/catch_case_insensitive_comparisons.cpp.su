@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_case_insensitive_comparisons.cpp:17:14:bool Catch::Detail::CaseInsensitiveLess::operator()(Catch::StringRef, Catch::StringRef) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_case_insensitive_comparisons.cpp:26:9:bool Catch::Detail::CaseInsensitiveEqualTo::operator()(Catch::StringRef, Catch::StringRef) const	48	static

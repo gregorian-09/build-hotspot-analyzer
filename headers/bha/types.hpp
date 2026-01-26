@@ -284,12 +284,7 @@ namespace bha {
         IncludeRemoval,
         MoveToCpp,
         ExplicitTemplate,
-        UnityBuild,
-        ModuleMigration,
-        InlineReduction,
-        CompilationFirewall,
-        DependencyInversion,
-        SymbolVisibility
+        UnityBuild
     };
 
     /**
@@ -305,11 +300,6 @@ namespace bha {
             case SuggestionType::MoveToCpp:             return "Move to CPP";
             case SuggestionType::ExplicitTemplate:      return "Explicit Template";
             case SuggestionType::UnityBuild:            return "Unity Build";
-            case SuggestionType::ModuleMigration:       return "Module Migration";
-            case SuggestionType::InlineReduction:       return "Inline Reduction";
-            case SuggestionType::CompilationFirewall:   return "Compilation Firewall";
-            case SuggestionType::DependencyInversion:   return "Dependency Inversion";
-            case SuggestionType::SymbolVisibility:      return "Symbol Visibility";
         }
         return "Unknown";
     }
@@ -509,19 +499,9 @@ namespace bha {
         Priority min_priority = Priority::Low;
         double min_confidence = 0.5;
         bool include_unsafe = false;
+        bool enable_consolidation = true;
         std::vector<SuggestionType> enabled_types;
         heuristics::HeuristicsConfig heuristics = heuristics::HeuristicsConfig::defaults();
-    };
-
-    /**
-     * Build options for triggering builds with tracing.
-     */
-    struct BuildOptions {
-        std::string configuration = "Release";
-        std::string target;
-        bool clean_first = false;
-        std::vector<std::string> extra_args;
-        fs::path output_dir;
     };
 
 }  // namespace bha

@@ -1,0 +1,14 @@
+datatype.c:237:createDataTypeBlockCheck	168	static
+datatype.c:26:datatype_load	40	static
+datatype.c:51:datatype_save	24	static
+datatype.c:57:datatype_free	8	static
+datatype.c:66:datatype_copy	56	static
+datatype.c:262:RedisModule_OnLoad	216	static
+datatype.c:92:datatype_set	40	static
+datatype.c:144:datatype_get	24	static
+datatype.c:118:datatype_restore	40	static
+datatype.c:164:datatype_dump	24	static
+datatype.c:185:datatype_swap	40	static
+datatype.c:209:datatype_slow_loading	24	static
+datatype.c:226:datatype_is_in_slow_loading	8	static
+datatype.c:316:RedisModule_OnUnload	8	static

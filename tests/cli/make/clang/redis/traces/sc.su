@@ -1,0 +1,12 @@
+src/sc.c:17:je_reg_size_compute	8	static
+src/sc.c:256:je_sc_data_init	24	static
+src/sc.c:85:size_classes	184	static
+src/sc.c:288:je_sc_data_update_slab_size	56	static
+src/sc.c:264:sc_data_update_sc_slab_size	8	static
+src/sc.c:304:je_sc_boot	24	static
+src/sc.c:54:size_class	56	static
+include/jemalloc/internal/bit_util.h:402:lg_ceil	24	static
+src/sc.c:23:slab_size	88	static
+include/jemalloc/internal/bit_util.h:392:lg_floor	24	static
+include/jemalloc/internal/bit_util.h:326:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:98:fls_lu	8	static

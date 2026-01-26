@@ -1,0 +1,13 @@
+vtls/vtls.c:174:Curl_ssl_easy_config_init	24	static
+vtls/vtls.c:221:Curl_ssl_conn_config_match	40	static
+vtls/vtls.c:188:match_ssl_primary_config	40	static
+vtls/vtls.c:289:Curl_ssl_easy_config_complete	24	static
+vtls/vtls.c:437:Curl_ssl_backend	8	static
+vtls/vtls.c:390:Curl_ssl_conn_config_init	40	static
+vtls/vtls.c:236:clone_ssl_primary_config	40	static
+vtls/vtls.c:406:Curl_ssl_conn_config_cleanup	24	static
+vtls/vtls.c:268:free_primary_ssl_config	24	static
+vtls/vtls.c:414:Curl_ssl_conn_config_update	8	static
+vtls/vtls.c:1163:Curl_init_sslset_nolock	8	static
+vtls/vtls.c:120:blobcmp	40	static
+vtls/vtls.c:98:blobdup	40	static

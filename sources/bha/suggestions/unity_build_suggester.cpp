@@ -314,7 +314,7 @@ namespace bha::suggestions
         std::vector<std::vector<std::size_t>> hierarchical_clustering(
             const std::vector<FileMetadata>& files,
             double distance_threshold,
-            std::size_t max_cluster_size
+            const std::size_t max_cluster_size
         ) {
             const std::size_t n = files.size();
             if (n == 0) {
@@ -702,12 +702,13 @@ namespace bha::suggestions
         const auto& files = context.analysis.files;
         const auto& deps = context.analysis.dependencies;
         const auto& symbols = context.analysis.symbols;
+        const auto& unity_config = context.options.heuristics.unity_build;
 
         auto metadata = build_file_metadata(files, deps, symbols);
 
-        std::size_t max_files = 10;
+        std::size_t max_files = unity_config.files_per_unit;
         Duration max_time = std::chrono::seconds(30);
-        std::size_t max_memory = 4ULL * 1024 * 1024 * 1024;  // 4GB
+        std::size_t max_memory = 4ULL * 1024 * 1024 * 1024;
         auto groups = create_unity_groups(metadata, max_files, max_time, max_memory);
 
         std::size_t analyzed = files.size();
@@ -720,6 +721,11 @@ namespace bha::suggestions
             }
 
             if (group.conflict_risk_score > 0.9) {
+                ++skipped;
+                continue;
+            }
+
+            if (group.total_compile_time < std::chrono::milliseconds(10)) {
                 ++skipped;
                 continue;
             }
@@ -766,7 +772,7 @@ namespace bha::suggestions
 
             suggestion.rationale = rationale.str();
 
-            suggestion.estimated_savings = estimate_unity_savings(group);
+            suggestion.estimated_savings = estimate_unity_savings(group, unity_config);
 
             if (context.trace.total_time.count() > 0) {
                 suggestion.estimated_savings_percent =

@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/wrapper/../jcprepct.c:320:j12init_c_prep_controller	216	static
+repos/libjpeg-turbo/src/wrapper/../jcprepct.c:86:start_pass_prep	24	static
+repos/libjpeg-turbo/src/wrapper/../jcprepct.c:202:pre_process_context	120	static
+repos/libjpeg-turbo/src/wrapper/../jcprepct.c:136:pre_process_data	120	static

@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/md5/md5.c:71:MD5Init	0	static
+repos/libjpeg-turbo/src/md5/md5.c:86:MD5Update	40	static
+repos/libjpeg-turbo/src/md5/md5.c:194:MD5Transform	48	static
+repos/libjpeg-turbo/src/md5/md5.c:134:MD5Final	24	static

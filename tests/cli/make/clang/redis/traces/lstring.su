@@ -1,0 +1,3 @@
+lstring.c:22:luaS_resize	40	static
+lstring.c:75:luaS_newlstr	56	static
+lstring.c:96:luaS_newudata	24	static

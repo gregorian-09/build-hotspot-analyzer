@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_time.c:40:6:_glfwPlatformInitTimer	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_time.c:52:10:_glfwPlatformGetTimerValue	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_time.c:59:10:_glfwPlatformGetTimerFrequency	8	static

@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:343:j12init_c_diff_controller	56	static
+repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:101:start_pass_diff	24	static
+repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:157:compress_data	136	static
+repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:256:compress_first_pass	136	static
+repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:312:compress_output	72	static

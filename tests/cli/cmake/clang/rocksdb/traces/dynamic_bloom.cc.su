@@ -1,0 +1,1 @@
+repos/rocksdb/util/dynamic_bloom.cc:28:_ZN7rocksdb12DynamicBloomC2EPNS_9AllocatorEjjmPNS_6LoggerE	40	static

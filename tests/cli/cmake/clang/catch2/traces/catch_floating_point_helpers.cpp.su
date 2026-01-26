@@ -1,0 +1,4 @@
+src/catch2/internal/catch_floating_point_helpers.cpp:16:_ZN5Catch6Detail13convertToBitsEf	0	static
+src/catch2/internal/catch_floating_point_helpers.cpp:23:_ZN5Catch6Detail13convertToBitsEd	0	static
+src/catch2/internal/catch_floating_point_helpers.cpp:34:_ZN5Catch6Detail13directCompareEff	0	static
+src/catch2/internal/catch_floating_point_helpers.cpp:35:_ZN5Catch6Detail13directCompareEdd	0	static

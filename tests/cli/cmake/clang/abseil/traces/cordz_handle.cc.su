@@ -1,0 +1,9 @@
+repos/abseil/absl/strings/internal/cordz_handle.cc:54:_ZN4absl13cord_internal11CordzHandleC2Eb	24	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:67:_ZN4absl13cord_internal11CordzHandleD2Ev	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cordz_handle.cc:__clang_call_terminate	8	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:67:_ZN4absl13cord_internal11CordzHandleD0Ev	8	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:97:_ZNK4absl13cord_internal11CordzHandle12SafeToDeleteEv	8	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:101:_ZN4absl13cord_internal11CordzHandle6DeleteEPS1_	8	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:119:_ZN4absl13cord_internal11CordzHandle25DiagnosticsGetDeleteQueueEv	56	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:130:_ZNK4absl13cord_internal11CordzHandle32DiagnosticsHandleIsSafeToInspectEPKS1_	24	static
+repos/abseil/absl/strings/internal/cordz_handle.cc:147:_ZN4absl13cord_internal11CordzHandle41DiagnosticsGetSafeToInspectDeletedHandlesEv	56	static

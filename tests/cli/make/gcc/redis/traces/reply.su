@@ -1,0 +1,16 @@
+reply.c:8:5:rw_string	8	static
+reply.c:14:5:rw_cstring	8	static
+reply.c:21:5:rw_int	32	static
+reply.c:33:5:rw_double	80	static
+reply.c:51:5:rw_longdouble	64	dynamic,bounded
+reply.c:61:5:rw_bignumber	32	static
+reply.c:70:5:rw_array	64	static
+reply.c:85:5:rw_map	64	static
+reply.c:101:5:rw_set	64	static
+reply.c:116:5:rw_attribute	64	static
+reply.c:136:5:rw_bool	32	static
+reply.c:145:5:rw_null	8	static
+reply.c:152:5:rw_error	8	static
+reply.c:159:5:rw_error_format	48	static
+reply.c:167:5:rw_verbatim	32	static
+reply.c:176:5:RedisModule_OnLoad	64	dynamic,bounded

@@ -1,0 +1,3 @@
+src/catch2/internal/catch_source_line_info.cpp:15:_ZNK5Catch14SourceLineInfoeqERKS0_	8	static
+src/catch2/internal/catch_source_line_info.cpp:18:_ZNK5Catch14SourceLineInfoltERKS0_	8	static
+src/catch2/internal/catch_source_line_info.cpp:24:_ZN5CatchlsERSoRKNS_14SourceLineInfoE	40	static

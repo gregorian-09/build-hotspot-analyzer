@@ -1,0 +1,13 @@
+crc32.c:113:16:byte_swap	16	static
+crc32.c:155:15:multmodp	16	static
+crc32.c:176:15:x2nmodp	48	static
+crc32.c:549:29:get_crc_table	16	static
+crc32.c:676:15:crc_word	16	static
+crc32.c:683:16:crc_word_big	16	static
+crc32.c:694:23:crc32_z	240	static
+crc32.c:1015:23:crc32	48	static
+crc32.c:1021:15:crc32_combine64	48	static
+crc32.c:1029:15:crc32_combine	40	static
+crc32.c:1034:15:crc32_combine_gen64	24	static
+crc32.c:1042:15:crc32_combine_gen	24	static
+crc32.c:1047:15:crc32_combine_op	40	static

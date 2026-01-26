@@ -1,0 +1,14 @@
+lvm.c:205:12:l_strcmp	48	static
+lvm.c:178:22:get_compTM.constprop	48	static
+lvm.c:80:13:callTMres.isra	32	static
+lvm.c:192:12:call_orderTM	48	static
+lvm.c:167:12:call_binTM	48	static
+lvm.c:319:13:Arith	128	static
+lvm.c:35:15:luaV_tonumber	32	static
+lvm.c:47:5:luaV_tostring	80	static
+lvm.c:108:6:luaV_gettable	80	static
+lvm.c:134:6:luaV_settable	128	static
+lvm.c:227:5:luaV_lessthan	32	static
+lvm.c:257:5:luaV_equalval	32	static
+lvm.c:284:6:luaV_concat	144	static
+lvm.c:379:6:luaV_execute	144	static

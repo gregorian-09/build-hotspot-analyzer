@@ -1,0 +1,5 @@
+repos/abseil/absl/random/internal/entropy_pool.cc:178:_ZN4absl15random_internal24GetEntropyFromRandenPoolEPvm	40	static
+repos/abseil/absl/random/internal/entropy_pool.cc:155:_ZN4absl15random_internal12_GLOBAL__N_112InitPoolURBGEv	2072	static
+repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIRFvvEJEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/entropy_pool.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_mutex.h:254:_ZNSt10lock_guardIN4absl13base_internal8SpinLockEED2Ev	8	static

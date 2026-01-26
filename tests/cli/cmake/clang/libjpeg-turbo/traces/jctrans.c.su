@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/jctrans.c:43:jpeg_write_coefficients	24	static
+repos/libjpeg-turbo/src/jctrans.c:71:jpeg_copy_critical_parameters	72	static
+repos/libjpeg-turbo/src/jctrans.c:274:start_pass_coef	24	static
+repos/libjpeg-turbo/src/jctrans.c:297:compress_output	232	static
+repos/libjpeg-turbo/src/jctrans.c:374:compress_output_12	0	static

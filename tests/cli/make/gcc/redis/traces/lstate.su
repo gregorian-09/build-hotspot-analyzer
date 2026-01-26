@@ -1,0 +1,8 @@
+lstate.c:42:13:stack_init	32	static
+lstate.c:70:13:f_luaopen	32	static
+lstate.c:105:13:close_state	32	static
+lstate.c:193:13:callallgcTM	8	static
+lstate.c:119:12:luaE_newthread	32	static
+lstate.c:134:6:luaE_freethread	32	static
+lstate.c:143:20:lua_newstate	32	static
+lstate.c:199:14:lua_close	32	static

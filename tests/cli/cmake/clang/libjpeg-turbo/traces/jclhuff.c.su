@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/jclhuff.c:567:jinit_lhuff_encoder	8	static
+repos/libjpeg-turbo/src/jclhuff.c:136:start_pass_lhuff	56	static
+repos/libjpeg-turbo/src/jclhuff.c:461:encode_mcus_gather	56	static
+repos/libjpeg-turbo/src/jclhuff.c:532:finish_pass_gather	56	static
+repos/libjpeg-turbo/src/jclhuff.c:317:encode_mcus_huff	104	static
+repos/libjpeg-turbo/src/jclhuff.c:420:finish_pass_huff	72	static

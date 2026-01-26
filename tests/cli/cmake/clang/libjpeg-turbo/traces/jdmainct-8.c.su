@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/wrapper/../jdmainct.c:428:jinit_d_main_controller	72	static
+repos/libjpeg-turbo/src/wrapper/../jdmainct.c:258:start_pass_main	48	static
+repos/libjpeg-turbo/src/wrapper/../jdmainct.c:335:process_data_context_main	104	static
+repos/libjpeg-turbo/src/wrapper/../jdmainct.c:296:process_data_simple_main	56	static
+repos/libjpeg-turbo/src/wrapper/../jdmainct.c:412:process_data_crank_post	8	static

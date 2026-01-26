@@ -1,0 +1,10 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:26:20:virtual const std::string& rocksdb::ConcurrentTaskLimiterImpl::GetName() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:28:6:virtual void rocksdb::ConcurrentTaskLimiterImpl::SetMaxOutstandingTask(int32_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:32:6:virtual void rocksdb::ConcurrentTaskLimiterImpl::ResetMaxOutstandingTask()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:36:9:virtual int32_t rocksdb::ConcurrentTaskLimiterImpl::GetOutstandingTask() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:40:35:virtual std::unique_ptr<rocksdb::TaskLimiterToken> rocksdb::ConcurrentTaskLimiterImpl::GetToken(bool)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:22:1:rocksdb::ConcurrentTaskLimiterImpl::~ConcurrentTaskLimiterImpl()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:22:1:virtual rocksdb::ConcurrentTaskLimiterImpl::~ConcurrentTaskLimiterImpl()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:16:1:rocksdb::ConcurrentTaskLimiterImpl::ConcurrentTaskLimiterImpl(const std::string&, int32_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:54:24:rocksdb::ConcurrentTaskLimiter* rocksdb::NewConcurrentTaskLimiter(const std::string&, int32_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/concurrent_task_limiter_impl.cc:59:1:rocksdb::TaskLimiterToken::~TaskLimiterToken()	8	static

@@ -1,0 +1,3 @@
+repos/rocksdb/util/coding.cc:24:_ZN7rocksdb14EncodeVarint32EPcj	0	static
+repos/rocksdb/util/coding.cc:55:_ZN7rocksdb22GetVarint32PtrFallbackEPKcS1_Pj	0	static
+repos/rocksdb/util/coding.cc:73:_ZN7rocksdb14GetVarint64PtrEPKcS1_Pm	0	static

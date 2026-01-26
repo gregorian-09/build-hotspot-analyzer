@@ -1,0 +1,8 @@
+repos/rocksdb/db/blob/blob_file_meta.cc:15:_ZNK7rocksdb22SharedBlobFileMetaData15GetBlobFileSizeEv	0	static
+repos/rocksdb/db/blob/blob_file_meta.cc:19:_ZNK7rocksdb22SharedBlobFileMetaData11DebugStringB5cxx11Ev	408	static
+repos/rocksdb/db/blob/blob_file_meta.cc:26:_ZN7rocksdblsERSoRKNS_22SharedBlobFileMetaDataE	88	static
+repos/rocksdb/db/blob/blob_file_meta.cc:38:_ZNK7rocksdb16BlobFileMetaData11DebugStringB5cxx11Ev	408	static
+repos/rocksdb/db/blob/blob_file_meta.cc:45:_ZN7rocksdblsERSoRKNS_16BlobFileMetaDataE	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static

@@ -1,0 +1,5 @@
+fast_float.h:3513:47:fast_float::from_chars_result_t<UC> fast_float::detail::parse_infnan(const UC*, const UC*, T&) [with T = double; UC = char]	32	static
+fast_float.h:3298:1:void fast_float::parse_mantissa(bigint&, parsed_number_string_t<UC>&, size_t, size_t&) [with UC = char]	56	static
+fast_float.h:3474:1:fast_float::adjusted_mantissa fast_float::digit_comp(parsed_number_string_t<UC>&, adjusted_mantissa) [with T = double; UC = char]	2224	static
+fast_float.h:3692:1:fast_float::from_chars_result_t<UC> fast_float::from_chars_advanced(parsed_number_string_t<UC>&, T&) [with T = double; UC = char]	64	static
+fast_float_strtod.cpp:22:19:double fast_float_strtod(const char*, char**)	192	static

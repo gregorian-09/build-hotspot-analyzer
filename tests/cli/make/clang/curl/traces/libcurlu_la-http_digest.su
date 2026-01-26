@@ -1,0 +1,3 @@
+http_digest.c:41:Curl_input_digest	56	static
+http_digest.c:65:Curl_output_digest	168	static
+http_digest.c:172:Curl_http_auth_cleanup_digest	24	static

@@ -1,0 +1,15 @@
+dynhds.c:62:Curl_dynhds_init	8	static
+dynhds.c:74:Curl_dynhds_free	24	static
+dynhds.c:57:entry_free	24	static
+dynhds.c:88:Curl_dynhds_reset	24	static
+dynhds.c:102:Curl_dynhds_count	8	static
+dynhds.c:107:Curl_dynhds_set_opts	8	static
+dynhds.c:112:Curl_dynhds_getn	8	static
+dynhds.c:118:Curl_dynhds_get	56	static
+dynhds.c:131:Curl_dynhds_cget	40	static
+dynhds.c:136:Curl_dynhds_add	88	static
+dynhds.c:34:entry_new	72	static
+dynhds.c:182:Curl_dynhds_cadd	72	static
+dynhds.c:188:Curl_dynhds_h1_add_line	88	static
+dynhds.c:222:Curl_dynhds_h1_cadd_line	56	static
+dynhds.c:302:Curl_dynhds_h1_dprint	56	static

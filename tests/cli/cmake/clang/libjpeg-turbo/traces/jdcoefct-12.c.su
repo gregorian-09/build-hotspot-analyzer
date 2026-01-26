@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:817:j12init_d_coef_controller	56	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:46:start_input_pass	0	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:58:start_output_pass	72	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:193:consume_data	168	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:266:decompress_data	120	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:177:dummy_consume_data	0	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:86:decompress_onepass	136	static
+repos/libjpeg-turbo/src/wrapper/../jdcoefct.c:429:decompress_smooth_data	616	static

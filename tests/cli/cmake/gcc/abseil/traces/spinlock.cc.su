@@ -1,0 +1,8 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/atomic_hook.h:135:21:) [with ReturnType = void; Args = {const void*, long int}]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/cycleclock.h:125:16:static int64_t absl::base_internal::CycleClock::Now()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:68:6:void absl::base_internal::RegisterSpinLockProfiler(void (*)(const void*, int64_t))	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:77:10:uint32_t absl::base_internal::SpinLock::SpinLoop()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:98:6:void absl::base_internal::SpinLock::SlowLock()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:166:6:void absl::base_internal::SpinLock::SlowUnlock(uint32_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:192:10:static uint32_t absl::base_internal::SpinLock::EncodeWaitCycles(int64_t, int64_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc:216:9:static int64_t absl::base_internal::SpinLock::DecodeWaitCycles(uint32_t)	8	static

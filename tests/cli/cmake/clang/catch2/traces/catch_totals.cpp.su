@@ -1,0 +1,8 @@
+src/catch2/catch_totals.cpp:12:_ZNK5Catch6CountsmiERKS0_	0	static
+src/catch2/catch_totals.cpp:21:_ZN5Catch6CountspLERKS0_	0	static
+src/catch2/catch_totals.cpp:29:_ZNK5Catch6Counts5totalEv	0	static
+src/catch2/catch_totals.cpp:32:_ZNK5Catch6Counts9allPassedEv	0	static
+src/catch2/catch_totals.cpp:35:_ZNK5Catch6Counts5allOkEv	0	static
+src/catch2/catch_totals.cpp:39:_ZNK5Catch6TotalsmiERKS0_	0	static
+src/catch2/catch_totals.cpp:46:_ZN5Catch6TotalspLERKS0_	0	static
+src/catch2/catch_totals.cpp:52:_ZNK5Catch6Totals5deltaERKS0_	16	static

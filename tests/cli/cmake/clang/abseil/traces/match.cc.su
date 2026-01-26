@@ -1,0 +1,8 @@
+repos/abseil/absl/strings/match.cc:31:_ZN4absl16EqualsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:__clang_call_terminate	8	static
+repos/abseil/absl/strings/match.cc:39:_ZN4absl21StrContainsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	40	static
+repos/abseil/absl/strings/match.cc:60:_ZN4absl20StartsWithIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	8	static
+repos/abseil/absl/strings/match.cc:48:_ZN4absl21StrContainsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEEc	56	static
+repos/abseil/absl/strings/match.cc:66:_ZN4absl18EndsWithIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	8	static
+repos/abseil/absl/strings/match.cc:72:_ZN4absl23FindLongestCommonPrefixESt17basic_string_viewIcSt11char_traitsIcEES3_	0	static
+repos/abseil/absl/strings/match.cc:115:_ZN4absl23FindLongestCommonSuffixESt17basic_string_viewIcSt11char_traitsIcEES3_	0	static

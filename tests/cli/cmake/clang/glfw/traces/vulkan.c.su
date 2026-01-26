@@ -1,0 +1,8 @@
+repos/glfw/src/vulkan.c:42:_glfwInitVulkan	56	static
+repos/glfw/src/vulkan.c:158:_glfwTerminateVulkan	0	static
+repos/glfw/src/vulkan.c:164:_glfwGetVulkanResultString	0	static
+repos/glfw/src/vulkan.c:224:glfwVulkanSupported	8	static
+repos/glfw/src/vulkan.c:230:glfwGetRequiredInstanceExtensions	24	static
+repos/glfw/src/vulkan.c:248:glfwGetInstanceProcAddress	24	static
+repos/glfw/src/vulkan.c:273:glfwGetPhysicalDevicePresentationSupport	40	static
+repos/glfw/src/vulkan.c:297:glfwCreateWindowSurface	40	static

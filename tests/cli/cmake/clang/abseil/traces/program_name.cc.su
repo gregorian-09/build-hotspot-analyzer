@@ -1,0 +1,4 @@
+repos/abseil/absl/flags/internal/program_name.cc:39:_ZN4absl14flags_internal21ProgramInvocationNameB5cxx11Ev	40	static
+repos/abseil/absl/flags/internal/program_name.cc:44:_ZN4absl14flags_internal26ShortProgramInvocationNameB5cxx11Ev	40	static
+repos/abseil/absl/flags/internal/program_name.cc:50:_ZN4absl14flags_internal24SetProgramInvocationNameESt17basic_string_viewIcSt11char_traitsIcEE	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/program_name.cc:__clang_call_terminate	8	static

@@ -1,0 +1,15 @@
+postnotifications.c:37:13:KeySpace_PostNotificationStringFreePD	8	static
+postnotifications.c:41:13:KeySpace_PostNotificationReadKey	16	static
+postnotifications.c:46:13:KeySpace_PostNotificationString	16	static
+postnotifications.c:52:12:KeySpace_NotificationExpired	32	static
+postnotifications.c:148:14:KeySpace_PostNotificationsAsyncSetInner	32	static
+postnotifications.c:183:13:KeySpace_ServerEventPostNotificationFree	32	static
+postnotifications.c:190:13:KeySpace_ServerEventPostNotification	16	static
+postnotifications.c:63:12:KeySpace_NotificationEvicted	32	static
+postnotifications.c:128:12:KeySpace_NestedNotification	32	static
+postnotifications.c:111:12:KeySpace_LazyExpireInsidePostNotificationJob	32	static
+postnotifications.c:84:12:KeySpace_NotificationString	32	static
+postnotifications.c:162:12:KeySpace_PostNotificationsAsyncSet	48	static
+postnotifications.c:197:13:KeySpace_ServerEventCallback	80	static
+postnotifications.c:230:5:RedisModule_OnLoad	80	dynamic,bounded
+postnotifications.c:286:5:RedisModule_OnUnload	8	static

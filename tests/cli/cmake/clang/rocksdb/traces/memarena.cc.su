@@ -1,0 +1,10 @@
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:63:_ZN8memarena6createEm	24	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:76:_ZN8memarena7destroyEv	40	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:103:_ZN8memarena17malloc_from_arenaEm	40	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:141:_ZN8memarena11move_memoryEPS_	40	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:162:_ZNK8memarena17total_memory_sizeEv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:167:_ZNK8memarena17total_size_in_useEv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:171:_ZNK8memarena15total_footprintEv	24	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:179:_ZNK8memarena14chunk_iterator7currentEPm	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:191:_ZN8memarena14chunk_iterator4nextEv	0	static
+repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/util/memarena.cc:193:_ZNK8memarena14chunk_iterator4moreEv	0	static

@@ -1,0 +1,3 @@
+ltm.c:30:6:luaT_init	48	static
+ltm.c:50:15:luaT_gettm	32	static
+ltm.c:61:15:luaT_gettmbyobj	8	static

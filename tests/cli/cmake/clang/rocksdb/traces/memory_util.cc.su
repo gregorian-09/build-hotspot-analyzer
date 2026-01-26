@@ -1,0 +1,11 @@
+repos/rocksdb/utilities/memory/memory_util.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/utilities/memory/memory_util.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/utilities/memory/memory_util.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/utilities/memory/memory_util.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/utilities/memory/memory_util.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/utilities/memory/memory_util.cc:12:_ZN7rocksdb10MemoryUtil31GetApproximateMemoryUsageByTypeERKSt6vectorIPNS_2DBESaIS3_EESt13unordered_setIPKNS_5CacheESt4hashISB_ESt8equal_toISB_ESaISB_EEPSt3mapINS0_9UsageTypeEmSt4lessISJ_ESaISt4pairIKSJ_mEEE	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:524:_ZNSt3mapIN7rocksdb10MemoryUtil9UsageTypeEmSt4lessIS2_ESaISt4pairIKS2_mEEEixEOS2_	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/memory/memory_util.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeIN7rocksdb10MemoryUtil9UsageTypeESt4pairIKS2_mESt10_Select1stIS5_ESt4lessIS2_ESaIS5_EE8_M_eraseEPSt13_Rb_tree_nodeIS5_E	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:2211:_ZNSt8_Rb_treeIN7rocksdb10MemoryUtil9UsageTypeESt4pairIKS2_mESt10_Select1stIS5_ESt4lessIS2_ESaIS5_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS5_ERS4_	56	static
+repos/rocksdb/utilities/memory/memory_util.cc:0:_GLOBAL__sub_I_memory_util.cc	40	static

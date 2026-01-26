@@ -1,0 +1,13 @@
+src/prof_stats.c:24:prof_stats_inc	8	static
+src/prof_stats.c:12:prof_stats_enter	40	static
+src/prof_stats.c:19:prof_stats_leave	24	static
+src/prof_stats.c:35:prof_stats_dec	8	static
+src/prof_stats.c:44:prof_stats_get_live	8	static
+src/prof_stats.c:52:prof_stats_get_accum	8	static
+include/jemalloc/internal/mutex.h:213:malloc_mutex_lock	216	static
+include/jemalloc/internal/witness.h:220:witness_assert_not_owner	8	static
+include/jemalloc/internal/mutex.h:156:malloc_mutex_trylock_final	24	static
+include/jemalloc/internal/mutex.h:161:mutex_owner_stats_update	8	static
+include/jemalloc/internal/witness.h:306:witness_lock	8	static
+include/jemalloc/internal/mutex.h:226:malloc_mutex_unlock	152	static
+include/jemalloc/internal/witness.h:349:witness_unlock	8	static

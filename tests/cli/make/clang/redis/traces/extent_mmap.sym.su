@@ -1,0 +1,2 @@
+src/extent_mmap.c:21:extent_alloc_mmap	72	static
+src/extent_mmap.c:36:extent_dalloc_mmap	24	static

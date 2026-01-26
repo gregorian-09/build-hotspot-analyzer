@@ -1,0 +1,6 @@
+repos/zstd/lib/compress/zstd_compress_sequences.c:104:ZSTD_fseBitCost	24	static
+repos/zstd/lib/compress/zstd_compress_sequences.c:139:ZSTD_crossEntropyCost	8	static
+repos/zstd/lib/compress/zstd_compress_sequences.c:157:ZSTD_selectEncodingType	696	static
+repos/zstd/lib/compress/zstd_compress_sequences.c:243:ZSTD_buildCTable	72	static
+repos/zstd/lib/compress/zstd_compress_sequences.c:419:ZSTD_encodeSequences	72	static
+repos/zstd/lib/compress/zstd_compress_sequences.c:403:ZSTD_encodeSequences_bmi2	48	static

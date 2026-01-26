@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/create_thread_identity.cc:44:13:void absl::synchronization_internal::ReclaimThreadIdentity(void*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/create_thread_identity.cc:75:6:void absl::synchronization_internal::OneTimeInitThreadIdentity(absl::base_internal::ThreadIdentity*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/create_thread_identity.cc:141:32:absl::base_internal::ThreadIdentity* absl::synchronization_internal::CreateThreadIdentity()	16	static

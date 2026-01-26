@@ -1,0 +1,17 @@
+repos/abseil/absl/flags/usage_config.cc:38:AbslInternalReportFatalUsageError	0	static
+repos/abseil/absl/flags/usage_config.cc:118:_ZN4absl14flags_internal14GetUsageConfigEv	8	static
+repos/abseil/absl/flags/usage_config.h:68:_ZN4absl16FlagsUsageConfigC2ERKS0_	56	static
+repos/abseil/absl/flags/usage_config.cc:53:_ZN4absl14flags_internal12_GLOBAL__N_122ContainsHelpshortFlagsESt17basic_string_viewIcSt11char_traitsIcEE	72	static
+repos/abseil/absl/flags/usage_config.cc:74:_ZN4absl14flags_internal12_GLOBAL__N_124ContainsHelppackageFlagsESt17basic_string_viewIcSt11char_traitsIcEE	0	static
+repos/abseil/absl/flags/usage_config.cc:82:_ZN4absl14flags_internal12_GLOBAL__N_113VersionStringB5cxx11Ev	24	static
+repos/abseil/absl/flags/usage_config.cc:97:_ZN4absl14flags_internal12_GLOBAL__N_117NormalizeFilenameB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEE	40	static
+repos/abseil/absl/flags/usage_config.cc:133:_ZN4absl14flags_internal16ReportUsageErrorESt17basic_string_viewIcSt11char_traitsIcEEb	40	static
+repos/abseil/absl/flags/usage_config.cc:143:_ZN4absl19SetFlagsUsageConfigENS_16FlagsUsageConfigE	24	static
+repos/abseil/absl/flags/usage_config.h:68:_ZN4absl16FlagsUsageConfigaSERKS0_	72	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/usage_config.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFbSt17basic_string_viewIcSt11char_traitsIcEEEPS4_E9_M_invokeERKSt9_Any_dataOS3_	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFbSt17basic_string_viewIcSt11char_traitsIcEEEPS4_E10_M_managerERSt9_Any_dataRKS7_St18_Manager_operation	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEvEPS6_E9_M_invokeERKSt9_Any_data	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEvEPS6_E10_M_managerERSt9_Any_dataRKS9_St18_Manager_operation	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt17basic_string_viewIcS3_EEPS8_E9_M_invokeERKSt9_Any_dataOS7_	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt17basic_string_viewIcS3_EEPS8_E10_M_managerERSt9_Any_dataRKSB_St18_Manager_operation	0	static

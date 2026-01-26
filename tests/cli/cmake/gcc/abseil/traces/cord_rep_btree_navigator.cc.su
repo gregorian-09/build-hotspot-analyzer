@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_navigator.cc:68:33:absl::cord_internal::CordRepBtreeNavigator::Position absl::cord_internal::CordRepBtreeNavigator::Skip(size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_navigator.cc:108:12:absl::cord_internal::ReadResult absl::cord_internal::CordRepBtreeNavigator::Read(size_t, size_t)	112	static

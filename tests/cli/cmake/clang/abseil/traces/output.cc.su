@@ -1,0 +1,2 @@
+repos/abseil/absl/strings/internal/str_format/output.cc:34:_ZN4absl19str_format_internal13BufferRawSink5WriteESt17basic_string_viewIcSt11char_traitsIcEE	24	static
+repos/abseil/absl/strings/internal/str_format/output.cc:44:_ZN4absl19str_format_internal11FILERawSink5WriteESt17basic_string_viewIcSt11char_traitsIcEE	40	static

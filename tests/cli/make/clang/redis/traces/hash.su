@@ -1,0 +1,9 @@
+hash.c:23:hash_set	120	static
+hash.c:81:openKeyWithMode	24	static
+hash.c:97:test_open_key_subexpired_hget	40	static
+hash.c:120:test_open_key_hget_expire	40	static
+hash.c:146:test_open_key_hget_two_expire	56	static
+hash.c:166:test_open_key_hget_min_expire	24	static
+hash.c:182:ScanCallback	24	static
+hash.c:196:test_open_key_access_expired_hscan	56	static
+hash.c:224:RedisModule_OnLoad	56	static

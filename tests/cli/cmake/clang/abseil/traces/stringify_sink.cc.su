@@ -1,0 +1,2 @@
+repos/abseil/absl/strings/internal/stringify_sink.cc:20:_ZN4absl16strings_internal13StringifySink6AppendEmc	0	static
+repos/abseil/absl/strings/internal/stringify_sink.cc:22:_ZN4absl16strings_internal13StringifySink6AppendESt17basic_string_viewIcSt11char_traitsIcEE	8	static

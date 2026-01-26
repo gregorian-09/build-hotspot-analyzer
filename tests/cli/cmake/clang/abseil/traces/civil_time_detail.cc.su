@@ -1,0 +1,7 @@
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:32:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_8year_tagEEE	440	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:37:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_9month_tagEEE	472	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:43:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_7day_tagEEE	472	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:49:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_8hour_tagEEE	472	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:55:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_10minute_tagEEE	472	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:61:_ZN4absl13time_internal4cctz6detaillsERSoRKNS2_10civil_timeINS2_10second_tagEEE	472	static
+repos/abseil/absl/time/internal/cctz/src/civil_time_detail.cc:70:_ZN4absl13time_internal4cctz6detaillsERSoNS2_7weekdayE	8	static

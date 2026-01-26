@@ -1,0 +1,12 @@
+include/jemalloc/internal/bit_util.h:98:1:fls_lu	16	static
+include/jemalloc/internal/bit_util.h:326:1:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:392:1:lg_floor	40	static
+include/jemalloc/internal/bit_util.h:402:1:lg_ceil	24	static
+src/sc.c:17:1:je_reg_size_compute	16	static
+src/sc.c:23:1:slab_size	96	static
+src/sc.c:54:1:size_class	64	static
+src/sc.c:85:1:size_classes	192	dynamic,bounded
+src/sc.c:256:1:je_sc_data_init	48	dynamic,bounded
+src/sc.c:264:1:sc_data_update_sc_slab_size	64	static
+src/sc.c:288:1:je_sc_data_update_slab_size	80	static
+src/sc.c:304:1:je_sc_boot	32	static

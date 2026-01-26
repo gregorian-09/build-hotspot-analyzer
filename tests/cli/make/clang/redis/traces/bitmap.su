@@ -1,0 +1,4 @@
+src/bitmap.c:85:je_bitmap_info_init	8	static
+src/bitmap.c:99:je_bitmap_init	72	static
+src/bitmap.c:118:je_bitmap_size	24	static
+src/bitmap.c:94:bitmap_info_ngroups	8	static

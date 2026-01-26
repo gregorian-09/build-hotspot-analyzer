@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/data_block_footer.cc:24:10:uint32_t rocksdb::PackIndexTypeAndNumRestarts(BlockBasedTableOptions::DataBlockIndexType, uint32_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/data_block_footer.cc:41:6:void rocksdb::UnPackIndexTypeAndNumRestarts(uint32_t, BlockBasedTableOptions::DataBlockIndexType*, uint32_t*)	8	static

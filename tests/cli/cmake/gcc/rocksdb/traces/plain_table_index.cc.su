@@ -1,0 +1,13 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/usr/include/c++/13/bits/basic_string.h:803:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::~basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:23:8:rocksdb::Status rocksdb::PlainTableIndex::InitFromRawData(rocksdb::Slice)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:40:36:rocksdb::PlainTableIndex::IndexSearchResult rocksdb::PlainTableIndex::GetOffset(uint32_t, uint32_t*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:56:6:void rocksdb::PlainTableIndexBuilder::IndexRecordList::AddRecord(uint32_t, uint32_t)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:108:6:void rocksdb::PlainTableIndexBuilder::AllocateIndex()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:121:6:void rocksdb::PlainTableIndexBuilder::BucketizeIndexes(std::vector<IndexRecord*>*, std::vector<unsigned int>*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:153:7:rocksdb::Slice rocksdb::PlainTableIndexBuilder::FillIndexes(const std::vector<IndexRecord*>&, const std::vector<unsigned int>&)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:210:1:cc)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:68:6:void rocksdb::PlainTableIndexBuilder::AddKeyPrefix(rocksdb::Slice, uint32_t)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_index.cc:94:7:rocksdb::Slice rocksdb::PlainTableIndexBuilder::Finish()	160	static

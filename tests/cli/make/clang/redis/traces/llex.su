@@ -1,0 +1,14 @@
+llex.c:64:luaX_init	40	static
+llex.c:78:luaX_token2str	24	static
+llex.c:102:luaX_lexerror	120	static
+llex.c:112:luaX_syntaxerror	0	static
+llex.c:117:luaX_newstring	24	static
+llex.c:140:luaX_setinput	8	static
+llex.c:456:luaX_next	8	static
+llex.c:341:llex	152	static
+llex.c:467:luaX_lookahead	8	static
+llex.c:51:save	120	static
+llex.c:129:inclinenumber	24	static
+llex.c:215:skip_sep	24	static
+llex.c:230:read_long_string	136	static
+llex.c:195:read_numeral	120	static

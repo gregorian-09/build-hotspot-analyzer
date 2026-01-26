@@ -1,0 +1,14 @@
+repos/mimalloc/src/bitmap.c:43:_mi_bitmap_try_find_claim_field	0	static
+repos/mimalloc/src/bitmap.c:100:_mi_bitmap_try_find_from_claim	40	static
+repos/mimalloc/src/bitmap.c:112:_mi_bitmap_try_find_from_claim_pred	88	static
+repos/mimalloc/src/bitmap.c:132:_mi_bitmap_unclaim	0	static
+repos/mimalloc/src/bitmap.c:145:_mi_bitmap_claim	0	static
+repos/mimalloc/src/bitmap.c:169:_mi_bitmap_try_claim	0	static
+repos/mimalloc/src/bitmap.c:184:_mi_bitmap_is_claimed	0	static
+repos/mimalloc/src/bitmap.c:188:_mi_bitmap_is_any_claimed	0	static
+repos/mimalloc/src/bitmap.c:295:_mi_bitmap_try_find_from_claim_across	48	static
+repos/mimalloc/src/bitmap.c:349:_mi_bitmap_unclaim_across	16	static
+repos/mimalloc/src/bitmap.c:372:_mi_bitmap_claim_across	48	static
+repos/mimalloc/src/bitmap.c:433:_mi_bitmap_is_claimed_across	0	static
+repos/mimalloc/src/bitmap.c:404:mi_bitmap_is_claimedx_across	48	static
+repos/mimalloc/src/bitmap.c:437:_mi_bitmap_is_any_claimed_across	8	static

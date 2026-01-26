@@ -1,0 +1,14 @@
+include/jemalloc/internal/cache_bin.h:173:1:cache_bin_info_ncached_max	16	static
+include/jemalloc/internal/cache_bin.h:184:1:cache_bin_assert_earlier	32	static
+include/jemalloc/internal/cache_bin.h:197:1:cache_bin_diff	48	static
+include/jemalloc/internal/cache_bin.h:215:1:cache_bin_ncached_get_internal	48	static
+include/jemalloc/internal/cache_bin.h:238:1:cache_bin_ncached_get_local	48	static
+include/jemalloc/internal/cache_bin.h:254:1:cache_bin_empty_position_get	64	static
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/cache_bin.c:9:1:cache_bin_info_init	48	static
+src/cache_bin.c:18:1:cache_bin_info_compute_alloc	64	static
+src/cache_bin.c:41:1:cache_bin_preincrement	80	static
+src/cache_bin.c:59:1:cache_bin_postincrement	16	static
+src/cache_bin.c:67:1:cache_bin_init	80	static
+src/cache_bin.c:97:1:cache_bin_still_zero_initialized	16	static

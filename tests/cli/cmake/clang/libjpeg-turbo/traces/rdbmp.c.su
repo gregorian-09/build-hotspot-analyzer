@@ -1,0 +1,7 @@
+repos/libjpeg-turbo/src/rdbmp.c:667:jinit_read_bmp	24	static
+repos/libjpeg-turbo/src/rdbmp.c:413:start_input_bmp	184	static
+repos/libjpeg-turbo/src/rdbmp.c:656:finish_input_bmp	0	static
+repos/libjpeg-turbo/src/rdbmp.c:358:preload_image	56	static
+repos/libjpeg-turbo/src/rdbmp.c:145:get_8bit_row	104	static
+repos/libjpeg-turbo/src/rdbmp.c:223:get_24bit_row	40	static
+repos/libjpeg-turbo/src/rdbmp.c:286:get_32bit_row	40	static

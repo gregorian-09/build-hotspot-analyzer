@@ -1,0 +1,4 @@
+hmac.c:45:Curl_HMAC_init	72	static
+hmac.c:101:Curl_HMAC_update	40	static
+hmac.c:110:Curl_HMAC_final	40	static
+hmac.c:144:Curl_hmacit	104	static

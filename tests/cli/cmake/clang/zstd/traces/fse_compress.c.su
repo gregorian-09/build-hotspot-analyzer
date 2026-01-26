@@ -1,0 +1,11 @@
+repos/zstd/lib/compress/fse_compress.c:68:FSE_buildCTable_wksp	48	static
+repos/zstd/lib/compress/fse_compress.c:223:FSE_NCountWriteBound	0	static
+repos/zstd/lib/compress/fse_compress.c:330:FSE_writeNCount	0	static
+repos/zstd/lib/compress/fse_compress.c:234:FSE_writeNCount_generic	48	static
+repos/zstd/lib/compress/fse_compress.c:357:FSE_optimalTableLog_internal	0	static
+repos/zstd/lib/compress/fse_compress.c:371:FSE_optimalTableLog	0	static
+repos/zstd/lib/compress/fse_compress.c:465:FSE_normalizeCount	48	static
+repos/zstd/lib/compress/fse_compress.c:528:FSE_buildCTable_rle	0	static
+repos/zstd/lib/compress/fse_compress.c:610:FSE_compress_usingCTable	0	static
+repos/zstd/lib/compress/fse_compress.c:551:FSE_compress_usingCTable_generic	48	static
+repos/zstd/lib/compress/fse_compress.c:623:FSE_compressBound	0	static

@@ -1,0 +1,5 @@
+socketpair.c:268:Curl_wakeup_init	24	static
+socketpair.c:38:wakeup_eventfd	40	static
+socketpair.c:295:Curl_wakeup_signal	40	static
+socketpair.c:322:Curl_wakeup_consume	104	static
+socketpair.c:349:Curl_wakeup_destroy	24	static

@@ -1,0 +1,2 @@
+repos/rocksdb/table/block_based/data_block_footer.cc:24:_ZN7rocksdb27PackIndexTypeAndNumRestartsENS_22BlockBasedTableOptions18DataBlockIndexTypeEj	0	static
+repos/rocksdb/table/block_based/data_block_footer.cc:41:_ZN7rocksdb29UnPackIndexTypeAndNumRestartsEjPNS_22BlockBasedTableOptions18DataBlockIndexTypeEPj	0	static

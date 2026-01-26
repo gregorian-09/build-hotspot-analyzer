@@ -1,0 +1,9 @@
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:466:j16init_downsampler	56	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:87:start_pass_downsample	0	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:126:sep_downsample	72	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:396:fullsize_smooth_downsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:200:fullsize_downsample	56	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:227:h2v1_downsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:307:h2v2_smooth_downsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:264:h2v2_downsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jcsample.c:152:int_downsample	48	static

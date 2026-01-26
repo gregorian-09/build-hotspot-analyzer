@@ -1,0 +1,5 @@
+repos/leveldb/db/log_writer.cc:23:_ZN7leveldb3log6WriterC2EPNS_12WritableFileE	24	static
+repos/leveldb/db/log_writer.cc:27:_ZN7leveldb3log6WriterC2EPNS_12WritableFileEm	24	static
+repos/leveldb/db/log_writer.cc:32:_ZN7leveldb3log6WriterD2Ev	0	static
+repos/leveldb/db/log_writer.cc:34:_ZN7leveldb3log6Writer9AddRecordERKNS_5SliceE	88	static
+repos/leveldb/db/log_writer.cc:82:_ZN7leveldb3log6Writer18EmitPhysicalRecordENS0_10RecordTypeEPKcm	72	static

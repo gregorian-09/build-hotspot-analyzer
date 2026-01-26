@@ -1,0 +1,5 @@
+curl_share.c:34:curl_share_init	24	static
+curl_share.c:59:curl_share_setopt	424	static
+curl_share.c:222:curl_share_cleanup	40	static
+curl_share.c:270:Curl_share_lock	40	static
+curl_share.c:287:Curl_share_unlock	40	static

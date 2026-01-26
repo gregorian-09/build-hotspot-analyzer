@@ -1,0 +1,5 @@
+src/counter.c:7:je_counter_accum_init	24	static
+include/jemalloc/internal/lockedint.h:146:locked_init_u64_unsynchronized	8	static
+src/counter.c:18:je_counter_prefork	8	static
+src/counter.c:23:je_counter_postfork_parent	8	static
+src/counter.c:28:je_counter_postfork_child	8	static

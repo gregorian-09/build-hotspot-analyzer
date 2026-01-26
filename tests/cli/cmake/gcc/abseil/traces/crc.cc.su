@@ -1,0 +1,18 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:410:6:virtual void absl::crc_internal::CRC32::Scramble(uint32_t*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:417:6:virtual void absl::crc_internal::CRC32::Unscramble(uint32_t*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_internal.h:98:3:absl::crc_internal::CRC32::~CRC32()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_internal.h:98:3:virtual absl::crc_internal::CRC32::~CRC32()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:358:6:0(uint32_t*, size_t, const uint32_t*, const uint32_t*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:398:6:virtual void absl::crc_internal::CRC32::ExtendByZeroes(uint32_t*, size_t) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:402:6:virtual void absl::crc_internal::CRC32::UnextendByZeroes(uint32_t*, size_t) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:102:6:static void absl::crc_internal::CRCImpl::FillWordTable(uint32_t, uint32_t, int, uint32_t (*)[256])	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:257:6:virtual void absl::crc_internal::CRC32::Extend(uint32_t*, const void*, size_t) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:102:6:static void absl::crc_internal::CRCImpl::FillWordTable(uint32_t, uint32_t, int, uint32_t (*)[256])	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:138:5:static int absl::crc_internal::CRCImpl::FillZeroesTable(uint32_t, uint32_t (*)[256])	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:182:6:virtual void absl::crc_internal::CRC32::InitTables()	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:166:10:static absl::crc_internal::CRCImpl* absl::crc_internal::CRCImpl::NewInternal()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:358:6:static void absl::crc_internal::CRC32::ExtendByZeroesImpl(uint32_t*, size_t, const uint32_t*, const uint32_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:424:1:absl::crc_internal::CRC::~CRC()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:424:1:virtual absl::crc_internal::CRC::~CRC()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:425:1:absl::crc_internal::CRC::CRC()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc.cc:428:6:static absl::crc_internal::CRC* absl::crc_internal::CRC::Crc32c()	32	static

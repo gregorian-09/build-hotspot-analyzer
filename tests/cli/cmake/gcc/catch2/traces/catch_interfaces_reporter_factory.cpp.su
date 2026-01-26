@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_reporter_factory.cpp:12:5:Catch::IReporterFactory::~IReporterFactory()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_reporter_factory.cpp:12:5:virtual Catch::IReporterFactory::~IReporterFactory()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_reporter_factory.cpp:13:5:Catch::EventListenerFactory::~EventListenerFactory()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_reporter_factory.cpp:13:5:virtual Catch::EventListenerFactory::~EventListenerFactory()	8	static

@@ -1,0 +1,6 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/ecache.c:7:1:je_ecache_init	48	static
+src/ecache.c:23:1:je_ecache_prefork	32	static
+src/ecache.c:28:1:je_ecache_postfork_parent	32	static
+src/ecache.c:33:1:je_ecache_postfork_child	32	static

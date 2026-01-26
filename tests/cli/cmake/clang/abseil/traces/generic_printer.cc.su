@@ -1,0 +1,8 @@
+repos/abseil/absl/strings/internal/generic_printer.cc:32:_ZN4absl24internal_generic_printer18PrintEscapedStringERSoSt17basic_string_viewIcSt11char_traitsIcEE	56	static
+repos/abseil/absl/strings/internal/generic_printer.cc:52:_ZN4absl24internal_generic_printer14PrintPreciseFPERSof	136	static
+repos/abseil/absl/strings/internal/generic_printer.cc:58:_ZN4absl24internal_generic_printer14PrintPreciseFPERSod	136	static
+repos/abseil/absl/strings/internal/generic_printer.cc:64:_ZN4absl24internal_generic_printer14PrintPreciseFPERSoe	152	static
+repos/abseil/absl/strings/internal/generic_printer.cc:87:_ZN4absl24internal_generic_printer9PrintCharERSoc	40	static
+repos/abseil/absl/strings/internal/generic_printer.cc:91:_ZN4absl24internal_generic_printer9PrintCharERSoa	40	static
+repos/abseil/absl/strings/internal/generic_printer.cc:95:_ZN4absl24internal_generic_printer9PrintCharERSoh	40	static
+repos/abseil/absl/strings/internal/generic_printer.cc:99:_ZN4absl24internal_generic_printer9PrintByteERSoSt4byte	24	static

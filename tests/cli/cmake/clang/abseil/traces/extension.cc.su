@@ -1,0 +1,2 @@
+repos/abseil/absl/strings/internal/str_format/extension.cc:26:_ZN4absl19str_format_internal13FlagsToStringB5cxx11ENS0_5FlagsE	40	static
+repos/abseil/absl/strings/internal/str_format/extension.cc:36:_ZN4absl19str_format_internal14FormatSinkImpl15PutPaddedStringESt17basic_string_viewIcSt11char_traitsIcEEiib	56	static

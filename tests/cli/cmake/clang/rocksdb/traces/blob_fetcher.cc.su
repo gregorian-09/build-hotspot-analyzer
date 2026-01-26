@@ -1,0 +1,8 @@
+repos/rocksdb/db/blob/blob_fetcher.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/db/blob/blob_fetcher.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/db/blob/blob_fetcher.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/db/blob/blob_fetcher.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/db/blob/blob_fetcher.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/db/blob/blob_fetcher.cc:12:_ZNK7rocksdb11BlobFetcher9FetchBlobERKNS_5SliceES3_PNS_18FilePrefetchBufferEPNS_13PinnableSliceEPm	24	static
+repos/rocksdb/db/blob/blob_fetcher.cc:23:_ZNK7rocksdb11BlobFetcher9FetchBlobERKNS_5SliceERKNS_9BlobIndexEPNS_18FilePrefetchBufferEPNS_13PinnableSliceEPm	24	static
+repos/rocksdb/db/blob/blob_fetcher.cc:0:_GLOBAL__sub_I_blob_fetcher.cc	40	static

@@ -1,0 +1,4 @@
+src/fxp.c:12:fxp_parse	88	static
+src/fxp.c:7:fxp_isdigit	8	static
+src/fxp.c:98:fxp_print	72	static
+include/jemalloc/internal/fxp.h:83:fxp_round_down	8	static

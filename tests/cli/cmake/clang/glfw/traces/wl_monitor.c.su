@@ -1,0 +1,16 @@
+repos/glfw/src/wl_monitor.c:132:outputHandleName	0	static
+repos/glfw/src/wl_monitor.c:139:outputHandleDescription	0	static
+repos/glfw/src/wl_monitor.c:160:_glfwAddOutputWayland	40	static
+repos/glfw/src/wl_monitor.c:193:_glfwFreeMonitorWayland	0	static
+repos/glfw/src/wl_monitor.c:199:_glfwGetMonitorPosWayland	0	static
+repos/glfw/src/wl_monitor.c:207:_glfwGetMonitorContentScaleWayland	0	static
+repos/glfw/src/wl_monitor.c:216:_glfwGetMonitorWorkareaWayland	0	static
+repos/glfw/src/wl_monitor.c:230:_glfwGetVideoModesWayland	0	static
+repos/glfw/src/wl_monitor.c:236:_glfwGetVideoModeWayland	0	static
+repos/glfw/src/wl_monitor.c:242:_glfwGetGammaRampWayland	8	static
+repos/glfw/src/wl_monitor.c:249:_glfwSetGammaRampWayland	0	static
+repos/glfw/src/wl_monitor.c:260:glfwGetWaylandMonitor	8	static
+repos/glfw/src/wl_monitor.c:41:outputHandleGeometry	0	static
+repos/glfw/src/wl_monitor.c:63:outputHandleMode	40	static
+repos/glfw/src/wl_monitor.c:89:outputHandleDone	0	static
+repos/glfw/src/wl_monitor.c:110:outputHandleScale	24	static

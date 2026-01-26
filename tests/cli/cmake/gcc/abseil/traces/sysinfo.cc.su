@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:203:13:bool absl::base_internal::ReadLongFromFile(const char*, long int*)	1088	static
+/usr/include/c++/13/bits/basic_string.h:4162:3:std::string std::__cxx11::to_string(int)	272	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:239:16:int64_t absl::base_internal::ReadMonotonicClockNanos()	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:369:5:int absl::base_internal::NumCPUs()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:381:8:double absl::base_internal::NominalCPUFrequency()	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:400:7:pid_t absl::base_internal::GetTID()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:483:7:pid_t absl::base_internal::GetCachedTID()	16	static

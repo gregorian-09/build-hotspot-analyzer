@@ -1,0 +1,2 @@
+repos/abseil/absl/strings/internal/utf8.cc:29:_ZN4absl16strings_internal14EncodeUTF8CharEPcDi	0	static
+repos/abseil/absl/strings/internal/utf8.cc:57:_ZN4absl16strings_internal10WideToUtf8EwPcRNS0_10ShiftStateE	0	static

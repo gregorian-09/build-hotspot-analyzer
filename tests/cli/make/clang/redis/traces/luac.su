@@ -1,0 +1,3 @@
+luac.c:186:main	72	static
+luac.c:158:pmain	56	static
+luac.c:147:writer	8	static

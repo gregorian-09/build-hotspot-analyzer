@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/depthguard.h:24:11:YAML::DeepRecursion::~DeepRecursion()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/depthguard.h:24:11:virtual YAML::DeepRecursion::~DeepRecursion()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions.h:167:28:static const std::string YAML::Exception::build_what(const YAML::Mark&, const std::string&)	576	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/depthguard.cpp:5:1:YAML::DeepRecursion::DeepRecursion(int, const YAML::Mark&, const std::string&)	112	static

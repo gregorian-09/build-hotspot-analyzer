@@ -1,0 +1,2 @@
+repos/yaml-cpp/src/tag.cpp:9:_ZN4YAML3TagC2ERKNS_5TokenE	40	static
+repos/yaml-cpp/src/tag.cpp:32:_ZN4YAML3Tag9TranslateB5cxx11ERKNS_10DirectivesE	152	static

@@ -1,0 +1,8 @@
+http_proxy.c:166:Curl_http_proxy_get_destination	40	static
+http_proxy.c:198:Curl_http_proxy_create_CONNECT	120	static
+http_proxy.c:41:dynhds_add_custom	152	static
+http_proxy.c:355:Curl_cf_http_proxy_query	72	static
+http_proxy.c:378:http_proxy_cf_destroy	40	static
+http_proxy.c:274:http_proxy_cf_connect	72	static
+http_proxy.c:387:http_proxy_cf_close	24	static
+http_proxy.c:414:Curl_cf_http_proxy_insert_after	56	static

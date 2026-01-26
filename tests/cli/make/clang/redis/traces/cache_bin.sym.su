@@ -1,0 +1,8 @@
+src/cache_bin.c:9:cache_bin_info_init	8	static
+src/cache_bin.c:18:cache_bin_info_compute_alloc	8	static
+src/cache_bin.c:41:cache_bin_preincrement	8	static
+src/cache_bin.c:59:cache_bin_postincrement	8	static
+src/cache_bin.c:67:cache_bin_init	88	static
+include/jemalloc/internal/cache_bin.h:197:cache_bin_diff	24	static
+src/cache_bin.c:97:cache_bin_still_zero_initialized	8	static
+include/jemalloc/internal/cache_bin.h:184:cache_bin_assert_earlier	8	static

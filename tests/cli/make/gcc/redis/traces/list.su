@@ -1,0 +1,8 @@
+list.c:56:5:list_edit	128	static
+list.c:7:5:list_getall	96	static
+list.c:145:12:replyByErrno.isra	16	static
+list.c:215:5:list_delete	48	static
+list.c:197:5:list_insert	48	static
+list.c:175:5:list_set	48	static
+list.c:156:5:list_get	64	static
+list.c:232:5:RedisModule_OnLoad	64	dynamic,bounded

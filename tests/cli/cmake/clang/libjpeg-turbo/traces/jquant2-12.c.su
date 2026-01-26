@@ -1,0 +1,10 @@
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:1222:j12init_2pass_quantizer	40	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:1145:start_pass_2_quant	40	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:1208:new_color_map_2_quant	0	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:204:prescan_quantize	16	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:1121:finish_pass1	168	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:932:pass2_fs_dither	280	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:898:pass2_no_dither	88	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:1134:finish_pass2	0	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:293:update_box	48	static
+repos/libjpeg-turbo/src/wrapper/../jquant2.c:838:fill_inverse_cmap	41336	static

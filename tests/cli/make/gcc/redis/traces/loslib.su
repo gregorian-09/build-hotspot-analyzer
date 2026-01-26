@@ -1,0 +1,2 @@
+loslib.c:74:12:os_clock	16	static
+loslib.c:245:16:luaopen_os	16	static

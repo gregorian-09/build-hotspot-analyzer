@@ -1,0 +1,7 @@
+repos/zstd/lib/common/zstd_common.c:24:ZSTD_versionNumber	0	static
+repos/zstd/lib/common/zstd_common.c:26:ZSTD_versionString	0	static
+repos/zstd/lib/common/zstd_common.c:36:ZSTD_isError	0	static
+repos/zstd/lib/common/zstd_common.c:40:ZSTD_getErrorName	0	static
+repos/zstd/lib/common/zstd_common.c:44:ZSTD_getErrorCode	0	static
+repos/zstd/lib/common/zstd_common.c:48:ZSTD_getErrorString	0	static
+repos/zstd/lib/common/zstd_common.c:50:ZSTD_isDeterministicBuild	0	static

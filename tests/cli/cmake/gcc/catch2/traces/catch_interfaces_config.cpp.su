@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_config.cpp:12:5:Catch::IConfig::~IConfig()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_config.cpp:12:5:virtual Catch::IConfig::~IConfig()	8	static

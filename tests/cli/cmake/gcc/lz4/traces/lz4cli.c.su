@@ -1,0 +1,9 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:289:17:readU32FromChar	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:354:24:determineOpMode	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:278:12:exeNameMatch	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:340:12:longCommandWArg	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/util.h:433:17:UTIL_prepareFileList	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:124:12:usage.isra	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:145:12:usage_advanced.isra	32	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:253:12:badusage.isra	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lz4cli.c:393:5:main	416	dynamic,bounded

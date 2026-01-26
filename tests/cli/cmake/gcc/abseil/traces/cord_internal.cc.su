@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_internal.cc:34:6:void absl::cord_internal::LogFatalNodeType(CordRep*)	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_internal.cc:39:6:static void absl::cord_internal::CordRep::Destroy(absl::cord_internal::CordRep*)	16	static

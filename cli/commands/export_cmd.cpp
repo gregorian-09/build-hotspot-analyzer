@@ -50,7 +50,15 @@ namespace bha::cli
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
                 {"title", 0, "Report title for HTML", false, true, "Build Analysis Report", "TITLE"},
-                {"max-files", 0, "Maximum files to include", false, true, "0", "N"},
+                {"max-files", 0, "Maximum files to include (0=unlimited)", false, true, "0", "N"},
+                {"max-suggestions", 0, "Maximum suggestions to include (0=unlimited)", false, true, "0", "N"},
+                {"no-file-details", 0, "Exclude per-file analysis details", false, false, "", ""},
+                {"no-dependencies", 0, "Exclude dependency graph", false, false, "", ""},
+                {"no-templates", 0, "Exclude template instantiation data", false, false, "", ""},
+                {"no-symbols", 0, "Exclude symbol information", false, false, "", ""},
+                {"no-timing", 0, "Exclude timing breakdown", false, false, "", ""},
+                {"no-interactive", 0, "Disable interactive visualizations (HTML)", false, false, "", ""},
+                {"use-cdn", 0, "Use CDN for assets instead of bundling (HTML)", false, false, "", ""},
             };
         }
 
@@ -179,7 +187,19 @@ namespace bha::cli
             export_opts.html_dark_mode = args.get_flag("dark-mode");
             export_opts.html_title = args.get_or("title", "Build Analysis Report");
             export_opts.max_files = static_cast<std::size_t>(args.get_int("max-files").value_or(0));
+            export_opts.max_suggestions = static_cast<std::size_t>(args.get_int("max-suggestions").value_or(0));
             export_opts.include_suggestions = !suggestions.empty();
+
+            // Content control options (inverted logic - flags disable features)
+            export_opts.include_file_details = !args.get_flag("no-file-details");
+            export_opts.include_dependencies = !args.get_flag("no-dependencies");
+            export_opts.include_templates = !args.get_flag("no-templates");
+            export_opts.include_symbols = !args.get_flag("no-symbols");
+            export_opts.include_timing = !args.get_flag("no-timing");
+
+            // HTML options
+            export_opts.html_interactive = !args.get_flag("no-interactive");
+            export_opts.html_offline = !args.get_flag("use-cdn");
 
             print_verbose("Exporting to " + output_path.string() + "...");
 

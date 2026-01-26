@@ -1,0 +1,2 @@
+repos/libjpeg-turbo/src/wrapper/../jcapistd.c:85:jpeg12_write_scanlines	56	static
+repos/libjpeg-turbo/src/wrapper/../jcapistd.c:153:jpeg12_write_raw_data	40	static

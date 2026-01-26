@@ -1,0 +1,6 @@
+repos/abseil/absl/crc/internal/crc_non_temporal_memcpy.cc:27:_ZNK4absl12crc_internal26CrcNonTemporalMemcpyEngine7ComputeEPvPKvmNS_8crc32c_tE	56	static
+repos/abseil/absl/crc/internal/crc_non_temporal_memcpy.cc:59:_ZNK4absl12crc_internal29CrcNonTemporalMemcpyAVXEngine7ComputeEPvPKvmNS_8crc32c_tE	56	static
+repos/abseil/absl/crc/internal/non_temporal_memcpy.h:129:_ZN4absl12crc_internal29non_temporal_store_memcpy_avxEPvPKvm	0	static
+repos/abseil/absl/crc/internal/crc_memcpy.h:85:_ZN4absl12crc_internal26CrcNonTemporalMemcpyEngineD0Ev	0	static
+repos/abseil/absl/crc/internal/crc_memcpy.h:40:_ZN4absl12crc_internal15CrcMemcpyEngineD2Ev	0	static
+repos/abseil/absl/crc/internal/crc_memcpy.h:97:_ZN4absl12crc_internal29CrcNonTemporalMemcpyAVXEngineD0Ev	0	static

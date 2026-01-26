@@ -22,6 +22,7 @@
  */
 
 #include "bha/parsers/gcc_parser.hpp"
+#include "bha/parsers/memory_parser.hpp"
 #include "bha/utils/file_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
@@ -218,6 +219,10 @@ namespace bha::parsers {
                                       unit.metrics.breakdown.template_instantiation;
         unit.metrics.backend_time = unit.metrics.breakdown.code_generation +
                                      unit.metrics.breakdown.optimization;
+
+        if (auto mem_result = parse_gcc_mem_report(std::string(content)); mem_result.is_ok()) {
+            unit.metrics.memory = mem_result.value();
+        }
 
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }

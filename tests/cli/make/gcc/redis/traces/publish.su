@@ -1,0 +1,4 @@
+publish.c:8:5:cmd_publish_classic_multi	64	static
+publish.c:20:5:cmd_publish_classic	16	static
+publish.c:30:5:cmd_publish_shard	16	static
+publish.c:40:5:RedisModule_OnLoad	64	dynamic,bounded

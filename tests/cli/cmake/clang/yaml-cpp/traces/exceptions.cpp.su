@@ -1,0 +1,14 @@
+repos/yaml-cpp/src/exceptions.cpp:7:_ZN4YAML9ExceptionD2Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:7:_ZN4YAML9ExceptionD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:8:_ZN4YAML15ParserExceptionD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:9:_ZN4YAML23RepresentationExceptionD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:10:_ZN4YAML13InvalidScalarD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:11:_ZN4YAML11KeyNotFoundD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:12:_ZN4YAML11InvalidNodeD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:13:_ZN4YAML13BadConversionD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:14:_ZN4YAML14BadDereferenceD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:15:_ZN4YAML12BadSubscriptD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:16:_ZN4YAML11BadPushbackD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:17:_ZN4YAML9BadInsertD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:18:_ZN4YAML16EmitterExceptionD0Ev	8	static
+repos/yaml-cpp/src/exceptions.cpp:19:_ZN4YAML7BadFileD0Ev	8	static

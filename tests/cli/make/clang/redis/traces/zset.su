@@ -1,0 +1,6 @@
+zset.c:10:zset_rem	24	static
+zset.c:27:zset_add	72	static
+zset.c:52:zset_incrby	56	static
+zset.c:81:zset_delall_callback	40	static
+zset.c:117:zset_delall	88	static
+zset.c:157:RedisModule_OnLoad	56	static

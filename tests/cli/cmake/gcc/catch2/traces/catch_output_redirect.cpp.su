@@ -1,0 +1,21 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:37:18:virtual void Catch::{anonymous}::NoopRedirect::activateImpl()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:39:25:virtual std::string Catch::{anonymous}::NoopRedirect::getStdout()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:36:15:Catch::{anonymous}::NoopRedirect::~NoopRedirect()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:36:15:virtual Catch::{anonymous}::NoopRedirect::~NoopRedirect()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:73:15:Catch::{anonymous}::StreamRedirect::~StreamRedirect()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:73:15:virtual Catch::{anonymous}::StreamRedirect::~StreamRedirect()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:94:25:virtual std::string Catch::{anonymous}::StreamRedirect::getStderr()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:93:25:virtual std::string Catch::{anonymous}::StreamRedirect::getStdout()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:88:18:virtual void Catch::{anonymous}::StreamRedirect::deactivateImpl()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:83:18:virtual void Catch::{anonymous}::StreamRedirect::activateImpl()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:95:18:virtual void Catch::{anonymous}::StreamRedirect::clearBuffers()	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:249:10:bool Catch::isRedirectAvailable(OutputRedirect::Kind)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:264:40:Catch::Detail::unique_ptr<Catch::OutputRedirect> Catch::makeOutputRedirect(bool)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:277:19:Catch::RedirectGuard Catch::scopedActivate(OutputRedirect&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:281:19:Catch::RedirectGuard Catch::scopedDeactivate(OutputRedirect&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:285:5:Catch::OutputRedirect::~OutputRedirect()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:285:5:virtual Catch::OutputRedirect::~OutputRedirect()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:287:5:Catch::RedirectGuard::RedirectGuard(bool, Catch::OutputRedirect&)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:302:5:Catch::RedirectGuard::~RedirectGuard()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:314:5:Catch::RedirectGuard::RedirectGuard(Catch::RedirectGuard&&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_output_redirect.cpp:322:20:Catch::RedirectGuard& Catch::RedirectGuard::operator=(Catch::RedirectGuard&&)	8	static

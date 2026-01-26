@@ -1,0 +1,7 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+include/jemalloc/internal/lockedint.h:146:1:locked_init_u64_unsynchronized	64	static
+src/counter.c:7:1:je_counter_accum_init	32	static
+src/counter.c:18:1:je_counter_prefork	16	static
+src/counter.c:23:1:je_counter_postfork_parent	16	static
+src/counter.c:28:1:je_counter_postfork_child	16	static

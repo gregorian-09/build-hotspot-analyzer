@@ -1,0 +1,3 @@
+repos/rocksdb/db/wide/wide_columns_helper.cc:13:_ZN7rocksdb17WideColumnsHelper15DumpWideColumnsERKSt6vectorINS_10WideColumnESaIS2_EERSob	56	static
+repos/rocksdb/include/rocksdb/wide_columns.h:76:_ZN7rocksdblsERSoRKNS_10WideColumnE	72	static
+repos/rocksdb/db/wide/wide_columns_helper.cc:33:_ZN7rocksdb17WideColumnsHelper22DumpSliceAsWideColumnsERKNS_5SliceERSob	104	static

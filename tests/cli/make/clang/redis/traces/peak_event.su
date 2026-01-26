@@ -1,0 +1,13 @@
+src/peak_event.c:19:je_peak_event_update	152	static
+include/jemalloc/internal/peak.h:23:peak_update	8	static
+src/peak_event.c:39:je_peak_event_zero	152	static
+include/jemalloc/internal/peak.h:32:peak_set_zero	8	static
+src/peak_event.c:47:je_peak_event_max	56	static
+include/jemalloc/internal/peak.h:18:peak_max	8	static
+src/peak_event.c:53:je_peak_alloc_new_event_wait	8	static
+src/peak_event.c:58:je_peak_alloc_postponed_event_wait	8	static
+src/peak_event.c:63:je_peak_alloc_event_handler	24	static
+src/peak_event.c:27:peak_event_activity_callback	152	static
+src/peak_event.c:69:je_peak_dalloc_new_event_wait	8	static
+src/peak_event.c:74:je_peak_dalloc_postponed_event_wait	8	static
+src/peak_event.c:79:je_peak_dalloc_event_handler	24	static

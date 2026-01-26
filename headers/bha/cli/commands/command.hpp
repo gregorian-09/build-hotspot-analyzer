@@ -44,6 +44,7 @@ namespace bha::cli
     class ParsedArgs {
     public:
         void set(const std::string& name, const std::string& value);
+        void add_multi(const std::string& name, const std::string& value);
         void set_flag(const std::string& name);
         void add_positional(const std::string& value);
 
@@ -53,10 +54,12 @@ namespace bha::cli
         [[nodiscard]] std::optional<int> get_int(const std::string& name) const;
         [[nodiscard]] std::optional<double> get_double(const std::string& name) const;
         [[nodiscard]] bool get_flag(const std::string& name) const;
+        [[nodiscard]] std::vector<std::string> get_all(const std::string& name) const;
         [[nodiscard]] const std::vector<std::string>& positional() const { return positional_; }
 
     private:
         std::unordered_map<std::string, std::string> args_;
+        std::unordered_map<std::string, std::vector<std::string>> multi_args_;
         std::unordered_map<std::string, bool> flags_;
         std::vector<std::string> positional_;
     };

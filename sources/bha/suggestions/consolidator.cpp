@@ -23,16 +23,16 @@ namespace bha::suggestions
             return filtered;
         }
 
-        [[maybe_unused]] std::string format_duration_estimate(Duration d) {
-            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
+        [[maybe_unused]] std::string format_duration_estimate(const Duration d) {
+            const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
             if (ms < 1000) {
                 return std::to_string(ms) + "ms";
             }
-            auto sec = ms / 1000;
+            const auto sec = ms / 1000;
             if (sec < 60) {
                 return std::to_string(sec) + "s";
             }
-            auto min = sec / 60;
+            const auto min = sec / 60;
             return std::to_string(min) + "m " + std::to_string(sec % 60) + "s";
         }
 
@@ -47,14 +47,13 @@ namespace bha::suggestions
 
         std::vector<Suggestion> consolidated;
 
-        for (auto type : {
+        for (const auto type : {
             SuggestionType::PCHOptimization,
             SuggestionType::HeaderSplit,
             SuggestionType::UnityBuild,
             SuggestionType::IncludeRemoval,
             SuggestionType::ForwardDeclaration,
-            SuggestionType::ExplicitTemplate,
-            SuggestionType::DependencyInversion
+            SuggestionType::ExplicitTemplate
         }) {
             auto group = group_by_type(suggestions, type);
             if (group.empty()) continue;
@@ -105,7 +104,7 @@ namespace bha::suggestions
 
     std::optional<Suggestion> SuggestionConsolidator::consolidate_pch(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    ) {
         if (suggestions.empty()) {
             return std::nullopt;
         }
@@ -124,9 +123,7 @@ namespace bha::suggestions
             }
 
             if (!sug.target_file.path.empty()) {
-                std::string header_str = sug.target_file.path.string();
-
-                if (header_str.find("<") == 0 ||
+                if (std::string header_str = sug.target_file.path.string(); header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
@@ -139,8 +136,7 @@ namespace bha::suggestions
             }
 
             for (const auto& secondary : sug.secondary_files) {
-                std::string header_str = secondary.path.string();
-                if (header_str.find("<") == 0 ||
+                if (std::string header_str = secondary.path.string(); header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
@@ -157,32 +153,42 @@ namespace bha::suggestions
         std::ostringstream desc;
         desc << "Consolidate frequently-used stable headers into a precompiled header to improve build times.\n\n";
 
-        if (!external_headers.empty()) {
-            desc << "**Add to precompiled header (external/stable libraries):**\n";
-            std::vector<std::string> sorted_external(external_headers.begin(), external_headers.end());
-            std::ranges::sort(sorted_external);
-            for (const auto& header : sorted_external) {
-                desc << "  - " << header << "\n";
-            }
-            desc << "\n";
-        }
+        if (!external_headers.empty() || !stable_headers.empty()) {
+            desc << "**Recommended pch.h content:**\n```\n";
+            desc << "// pch.h - Precompiled Header\n";
+            desc << "#pragma once\n\n";
 
-        if (!stable_headers.empty()) {
-            desc << "**Add to precompiled header (project stable headers):**\n";
-            std::vector<std::string> sorted_stable(stable_headers.begin(), stable_headers.end());
-            std::ranges::sort(sorted_stable);
-            for (const auto& header : sorted_stable) {
-                desc << "  - " << header << "\n";
+            if (!external_headers.empty()) {
+                desc << "// External/System Headers (inherently stable)\n";
+                std::vector sorted_external(external_headers.begin(), external_headers.end());
+                std::ranges::sort(sorted_external);
+                for (const auto& header : sorted_external) {
+                    if (header.find('<') == 0 || header.find('>') != std::string::npos) {
+                        desc << "#include " << header << "\n";
+                    } else {
+                        desc << "#include \"" << header << "\"\n";
+                    }
+                }
+                desc << "\n";
             }
-            desc << "\n";
+
+            if (!stable_headers.empty()) {
+                desc << "// Project Stable Headers (rarely modified)\n";
+                std::vector sorted_stable(stable_headers.begin(), stable_headers.end());
+                std::ranges::sort(sorted_stable);
+                for (const auto& header : sorted_stable) {
+                    desc << "#include \"" << header << "\"\n";
+                }
+            }
+            desc << "```\n\n";
         }
 
         if (!volatile_headers.empty()) {
-            desc << "**Exclude from PCH (volatile headers):**\n";
-            std::vector<std::string> sorted_volatile(volatile_headers.begin(), volatile_headers.end());
+            desc << "**Note:** These headers should NOT be added to PCH (frequently modified):\n";
+            std::vector sorted_volatile(volatile_headers.begin(), volatile_headers.end());
             std::ranges::sort(sorted_volatile);
             for (const auto& header : sorted_volatile) {
-                desc << "  - " << header << " (frequently modified)\n";
+                desc << "  - " << header << "\n";
             }
             desc << "\n";
         }
@@ -207,7 +213,7 @@ namespace bha::suggestions
             "2. Add stable headers (listed above) to the PCH file",
             "3. Configure build system to use PCH:",
             "   - CMake: target_precompile_headers(target PRIVATE pch.h)",
-            "   - MSVC: /Yu\"pch.h\" for source files, /Yc\"pch.h\" for PCH generation",
+            R"(   - MSVC: /Yu"pch.h" for source files, /Yc"pch.h" for PCH generation)",
             "   - GCC/Clang: -include pch.h",
             "4. Verify all translation units can access PCH",
             "5. Measure build time improvement"
@@ -238,80 +244,6 @@ namespace bha::suggestions
         consolidated.estimated_savings = total_savings;
         consolidated.estimated_savings_percent = total_percent;
 
-        std::ostringstream before_code;
-        before_code << "// Current: These headers are included separately in each source file\n";
-        before_code << "// causing redundant parsing across translation units\n\n";
-
-        std::vector<std::string> example_headers;
-        for (const auto& header : stable_headers) {
-            example_headers.push_back(header);
-            if (example_headers.size() >= 3) break;
-        }
-        for (const auto& header : external_headers) {
-            example_headers.push_back(header);
-            if (example_headers.size() >= 5) break;
-        }
-
-        if (!example_headers.empty()) {
-            before_code << "// Example: file1.cpp\n";
-            for (const auto& header : example_headers) {
-                if (header.find('<') == 0 || header.find('>') != std::string::npos) {
-                    before_code << "#include " << header << "\n";
-                } else {
-                    before_code << "#include \"" << header << "\"\n";
-                }
-            }
-            before_code << "// ... other includes\n\n";
-            before_code << "// Example: file2.cpp\n";
-            for (const auto& header : example_headers) {
-                if (header.find('<') == 0 || header.find('>') != std::string::npos) {
-                    before_code << "#include " << header << "  // Parsed again!\n";
-                } else {
-                    before_code << "#include \"" << header << "\"  // Parsed again!\n";
-                }
-            }
-            before_code << "\n// This pattern repeats across "
-                       << consolidated.impact.total_files_affected << "+ files";
-        }
-
-        consolidated.before_code.file = "Current state";
-        consolidated.before_code.code = before_code.str();
-
-        std::ostringstream after_code;
-        after_code << "// pch.h - Precompiled Header\n";
-        after_code << "#pragma once\n\n";
-
-        if (!external_headers.empty()) {
-            after_code << "// External/System Headers (inherently stable)\n";
-            std::vector<std::string> sorted_ext(external_headers.begin(), external_headers.end());
-            std::ranges::sort(sorted_ext);
-            for (const auto& header : sorted_ext) {
-                if (header.find('<') == 0 || header.find('>') != std::string::npos) {
-                    after_code << "#include " << header << "\n";
-                } else {
-                    after_code << "#include \"" << header << "\"\n";
-                }
-            }
-            after_code << "\n";
-        }
-
-        if (!stable_headers.empty()) {
-            after_code << "// Project Stable Headers (rarely modified)\n";
-            std::vector<std::string> sorted_stable(stable_headers.begin(), stable_headers.end());
-            std::ranges::sort(sorted_stable);
-            for (const auto& header : sorted_stable) {
-                after_code << "#include \"" << header << "\"\n";
-            }
-            after_code << "\n";
-        }
-
-        after_code << "// Then in your source files:\n";
-        after_code << "// file1.cpp, file2.cpp, etc.\n";
-        after_code << "#include \"pch.h\"  // Parsed once, reused everywhere";
-
-        consolidated.after_code.file = "pch.h (proposed)";
-        consolidated.after_code.code = after_code.str();
-
         consolidated.target_file.path = "pch.h";
         consolidated.target_file.action = FileAction::Create;
         consolidated.target_file.note = "Create or update precompiled header";
@@ -321,7 +253,7 @@ namespace bha::suggestions
 
     std::optional<Suggestion> SuggestionConsolidator::consolidate_header_split(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    ) {
         if (suggestions.empty()) {
             return std::nullopt;
         }
@@ -387,30 +319,46 @@ namespace bha::suggestions
 
         std::unordered_set<std::string> all_files;
         for (const auto& sug : suggestions) {
-            all_files.insert(sug.target_file.path.string());
+            if (!sug.target_file.path.empty()) {
+                all_files.insert(sug.target_file.path.string());
+            }
             for (const auto& sec : sug.secondary_files) {
-                all_files.insert(sec.path.string());
+                if (!sec.path.empty()) {
+                    all_files.insert(sec.path.string());
+                }
             }
         }
 
         std::ostringstream desc;
         desc << "Group compatible source files into unity builds to reduce compilation overhead.\n\n";
-        desc << "**Suggested grouping (" << all_files.size() << " files):**\n\n";
 
         std::size_t group_num = 1;
-        std::size_t files_per_group = options_.max_items_per_suggestion / 3;
+        const std::size_t files_per_group = options_.max_items_per_suggestion / 3;
 
-        std::vector<std::string> sorted_files(all_files.begin(), all_files.end());
+        std::vector sorted_files(all_files.begin(), all_files.end());
         std::ranges::sort(sorted_files);
 
         for (std::size_t i = 0; i < sorted_files.size(); i += files_per_group) {
-            desc << "**unity_build_" << group_num << ".cpp:**\n";
+            desc << "**unity_build_" << group_num << ".cpp:**\n```\n";
+            desc << "// unity_build_" << group_num << ".cpp\n";
+            desc << "// Generated unity build file - combines multiple translation units\n\n";
             for (std::size_t j = i; j < std::min(i + files_per_group, sorted_files.size()); ++j) {
-                desc << "  - " << sorted_files[j] << "\n";
+                desc << "#include \"" << sorted_files[j] << "\"\n";
             }
-            desc << "\n";
+            desc << "```\n\n";
+
+            desc << "**Rationale:** Combining these " << std::min(files_per_group, sorted_files.size() - i)
+                 << " files reduces header parsing overhead.\n\n";
             ++group_num;
         }
+
+        desc << "**Build system changes:**\n```\n";
+        desc << "# CMakeLists.txt\n";
+        desc << "# Remove original source files and add unity build files:\n";
+        for (std::size_t i = 1; i < group_num; ++i) {
+            desc << "# add_library(mylib unity_build_" << i << ".cpp ...)\n";
+        }
+        desc << "```\n";
 
         consolidated.description = desc.str();
         consolidated.impact = merge_impacts(suggestions);
@@ -431,12 +379,21 @@ namespace bha::suggestions
         consolidated.is_safe = false;
         consolidated.confidence = 0.65;
 
+        Duration total_savings = Duration::zero();
+        double total_percent = 0.0;
+        for (const auto& sug : suggestions) {
+            total_savings += sug.estimated_savings;
+            total_percent += sug.estimated_savings_percent;
+        }
+        consolidated.estimated_savings = total_savings;
+        consolidated.estimated_savings_percent = total_percent;
+
         return consolidated;
     }
 
     std::optional<Suggestion> SuggestionConsolidator::consolidate_include_removal(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    ) {
         if (suggestions.empty()) {
             return std::nullopt;
         }
@@ -476,7 +433,7 @@ namespace bha::suggestions
 
     std::optional<Suggestion> SuggestionConsolidator::consolidate_forward_decl(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    ) {
         if (suggestions.empty()) {
             return std::nullopt;
         }
@@ -506,7 +463,7 @@ namespace bha::suggestions
 
     std::optional<Suggestion> SuggestionConsolidator::consolidate_template(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    ) {
         if (suggestions.empty()) {
             return std::nullopt;
         }
@@ -518,11 +475,53 @@ namespace bha::suggestions
         std::ostringstream desc;
         desc << "Explicitly instantiate frequently-used templates to reduce instantiation overhead.\n\n";
 
+        desc << "**Create template_instantiations.cpp:**\n```\n";
+        desc << "// template_instantiations.cpp\n";
+        desc << "// Explicit template instantiations to reduce compile-time overhead\n\n";
+
+        std::unordered_set<std::string> added_includes;
         for (const auto& sug : suggestions) {
-            if (!sug.description.empty()) {
-                desc << "- " << sug.description << "\n";
+            if (!sug.target_file.path.empty()) {
+                std::string include_path = sug.target_file.path.string();
+                if (include_path.find(".cpp") != std::string::npos) {
+                    include_path.replace(include_path.find(".cpp"), 4, ".h");
+                } else if (include_path == "template_instantiations.cpp") {
+                    continue;
+                }
+
+                if (!added_includes.contains(include_path)) {
+                    desc << "#include \"" << include_path << "\"\n";
+                    added_includes.insert(include_path);
+                }
             }
         }
+        desc << "\n// Explicit template instantiations\n";
+
+        for (const auto& sug : suggestions) {
+            std::string code = sug.after_code.code;
+            if (size_t start = code.find("template class "); start != std::string::npos) {
+                if (size_t end = code.find(';', start); end != std::string::npos) {
+                    std::string instantiation = code.substr(start, end - start + 1);
+                    desc << instantiation << "\n";
+                }
+            }
+        }
+        desc << "```\n\n";
+
+        desc << "**In corresponding headers, add extern declarations:**\n```\n";
+        desc << "// Prevent implicit instantiation in other translation units\n";
+        for (const auto& sug : suggestions) {
+            std::string code = sug.after_code.code;
+            if (size_t start = code.find("extern template class "); start != std::string::npos) {
+                if (size_t end = code.find(';', start); end != std::string::npos) {
+                    std::string extern_decl = code.substr(start, end - start + 1);
+                    desc << extern_decl << "\n";
+                }
+            }
+        }
+        desc << "```\n\n";
+
+        desc << "**Impact:** " << suggestions.size() << " templates will be instantiated once instead of multiple times.\n";
 
         consolidated.description = desc.str();
         consolidated.impact = merge_impacts(suggestions);
@@ -530,12 +529,32 @@ namespace bha::suggestions
         consolidated.is_safe = true;
         consolidated.confidence = 0.8;
 
+        std::ostringstream rationale;
+        rationale << "These templates are instantiated multiple times across the codebase. "
+                  << "Explicit instantiation compiles the template once and reuses it everywhere.";
+        consolidated.rationale = rationale.str();
+
+        consolidated.implementation_steps = {
+            "1. Create template_instantiations.cpp with explicit instantiations",
+            "2. Add extern template declarations in corresponding headers",
+            "3. Add template_instantiations.cpp to your build system",
+            "4. Rebuild and verify all instantiations are found at link time",
+            "5. Measure compilation time improvement"
+        };
+
+        Duration total_savings = Duration::zero();
+        for (const auto& sug : suggestions) {
+            total_savings += sug.estimated_savings;
+        }
+        consolidated.estimated_savings = total_savings;
+
         return consolidated;
     }
 
     Impact SuggestionConsolidator::merge_impacts(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    )
+    {
         Impact merged;
 
         for (const auto& sug : suggestions) {
@@ -558,7 +577,8 @@ namespace bha::suggestions
 
     std::vector<std::string> SuggestionConsolidator::merge_steps(
         const std::vector<Suggestion>& suggestions
-    ) const {
+    )
+    {
         std::unordered_set<std::string> unique_steps;
         std::vector<std::string> merged;
 

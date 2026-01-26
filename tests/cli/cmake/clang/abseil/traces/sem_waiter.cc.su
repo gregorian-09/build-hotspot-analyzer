@@ -1,0 +1,5 @@
+repos/abseil/absl/synchronization/internal/sem_waiter.cc:36:_ZN4absl24synchronization_internal9SemWaiterC2Ev	8	static
+repos/abseil/absl/synchronization/internal/sem_waiter.cc:53:_ZN4absl24synchronization_internal9SemWaiter9TimedWaitENS0_13KernelTimeoutE	40	static
+repos/abseil/absl/synchronization/internal/sem_waiter.cc:65:_ZN4absl24synchronization_internal9SemWaiter4WaitENS0_13KernelTimeoutE	72	static
+repos/abseil/absl/synchronization/internal/sem_waiter.cc:100:_ZN4absl24synchronization_internal9SemWaiter4PostEv	8	static
+repos/abseil/absl/synchronization/internal/sem_waiter.cc:108:_ZN4absl24synchronization_internal9SemWaiter4PokeEv	8	static

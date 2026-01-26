@@ -19,6 +19,10 @@ namespace bha::cli
         args_[name] = value;
     }
 
+    void ParsedArgs::add_multi(const std::string& name, const std::string& value) {
+        multi_args_[name].push_back(value);
+    }
+
     void ParsedArgs::set_flag(const std::string& name) {
         flags_[name] = true;
     }
@@ -28,7 +32,7 @@ namespace bha::cli
     }
 
     bool ParsedArgs::has(const std::string& name) const {
-        return args_.contains(name) || flags_.contains(name);
+        return args_.contains(name) || flags_.contains(name) || multi_args_.contains(name);
     }
 
     std::optional<std::string> ParsedArgs::get(const std::string& name) const {
@@ -66,6 +70,13 @@ namespace bha::cli
     bool ParsedArgs::get_flag(const std::string& name) const {
         const auto it = flags_.find(name);
         return it != flags_.end() && it->second;
+    }
+
+    std::vector<std::string> ParsedArgs::get_all(const std::string& name) const {
+        if (const auto it = multi_args_.find(name); it != multi_args_.end()) {
+            return it->second;
+        }
+        return {};
     }
 
     // ============================================================================
@@ -232,7 +243,7 @@ namespace bha::cli
                     std::string value;
 
                     // Check for --name=value format
-                    if (auto eq_pos = name.find('='); eq_pos != std::string::npos) {
+                    if (const auto eq_pos = name.find('='); eq_pos != std::string::npos) {
                         value = name.substr(eq_pos + 1);
                         name = name.substr(0, eq_pos);
                     }
@@ -257,7 +268,12 @@ namespace bha::cli
                             result.success = false;
                             return result;
                         }
-                        result.args.set(name, value);
+                        // Support multivalued arguments (can be repeated)
+                        if (name == "type") {
+                            result.args.add_multi(name, value);
+                        } else {
+                            result.args.set(name, value);
+                        }
                     } else {
                         result.args.set_flag(name);
                     }

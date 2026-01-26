@@ -1,0 +1,4 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/bin_info.c:9:1:bin_infos_init	16	static
+src/bin_info.c:27:1:bin_info_boot	32	static

@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_floating_point_helpers.cpp:16:18:uint32_t Catch::Detail::convertToBits(float)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_floating_point_helpers.cpp:23:18:uint64_t Catch::Detail::convertToBits(double)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_floating_point_helpers.cpp:34:14:bool Catch::Detail::directCompare(float, float)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_floating_point_helpers.cpp:35:14:bool Catch::Detail::directCompare(double, double)	8	static

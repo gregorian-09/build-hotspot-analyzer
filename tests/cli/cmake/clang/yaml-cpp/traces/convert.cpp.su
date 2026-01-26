@@ -1,0 +1,7 @@
+repos/yaml-cpp/src/convert.cpp:41:_ZN4YAML7convertIbE6decodeERKNS_4NodeERb	104	static
+repos/yaml-cpp/src/convert.cpp:48:_ZZN4YAML7convertIbE6decodeERKNS_4NodeERbEN3$_0D2Ev	8	static
+repos/yaml-cpp/src/convert.cpp:0:__cxx_global_array_dtor	8	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:233:_ZN4YAML11InvalidNodeC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:145:_ZN4YAML8ErrorMsg21INVALID_NODE_WITH_KEYERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	424	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:157:_ZN4YAML9ExceptionC2ERKNS_4MarkERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:167:_ZN4YAML9Exception10build_whatERKNS_4MarkERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	424	static

@@ -1,0 +1,19 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:55:8:virtual bool leveldb::MemTableIterator::Valid() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:67:10:virtual leveldb::Status leveldb::MemTableIterator::status() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:59:8:virtual void leveldb::MemTableIterator::Next()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:57:8:virtual void leveldb::MemTableIterator::SeekToFirst()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:58:8:virtual void leveldb::MemTableIterator::SeekToLast()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:53:3:virtual leveldb::MemTableIterator::~MemTableIterator()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:53:3:leveldb::MemTableIterator::~MemTableIterator()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:56:8:virtual void leveldb::MemTableIterator::Seek(const leveldb::Slice&)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:60:8:virtual void leveldb::MemTableIterator::Prev()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:61:9:virtual leveldb::Slice leveldb::MemTableIterator::key() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:62:9:virtual leveldb::Slice leveldb::MemTableIterator::value() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:21:1:leveldb::MemTable::MemTable(const leveldb::InternalKeyComparator&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:24:1:leveldb::MemTable::~MemTable()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:26:8:size_t leveldb::MemTable::ApproximateMemoryUsage()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:28:5:int leveldb::MemTable::KeyComparator::operator()(const char*, const char*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:74:11:leveldb::Iterator* leveldb::MemTable::NewIterator()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:102:6:bool leveldb::MemTable::Get(const leveldb::LookupKey&, std::string*, leveldb::Status*)	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/./db/skiplist.h:335:6:void leveldb::SkipList<Key, Comparator>::Insert(const Key&) [with Key = const char*; Comparator = leveldb::MemTable::KeyComparator]	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.cc:76:6:void leveldb::MemTable::Add(leveldb::SequenceNumber, leveldb::ValueType, const leveldb::Slice&, const leveldb::Slice&)	96	static

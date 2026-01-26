@@ -1,0 +1,17 @@
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:13:_ZN7rocksdb28WritePreparedSnapshotCheckerC2EPNS_18WritePreparedTxnDBE	0	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:17:_ZNK7rocksdb28WritePreparedSnapshotChecker15CheckInSnapshotEmm	24	static
+repos/rocksdb/utilities/transactions/write_prepared_txn_db.h:126:_ZNK7rocksdb18WritePreparedTxnDB12IsInSnapshotEmmmPb	152	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:30:_ZN7rocksdb24DisableGCSnapshotChecker8InstanceEv	24	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:35:_ZN7rocksdb26DataIsDefinitelyInSnapshotEmmPKNS_15SnapshotCheckerE	8	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:43:_ZN7rocksdb29DataIsDefinitelyNotInSnapshotEmmPKNS_15SnapshotCheckerE	8	static
+repos/rocksdb/db/snapshot_checker.h:22:_ZN7rocksdb15SnapshotCheckerD2Ev	0	static
+repos/rocksdb/db/snapshot_checker.h:49:_ZN7rocksdb28WritePreparedSnapshotCheckerD0Ev	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/snapshot_checker.cc:__clang_call_terminate	8	static
+repos/rocksdb/db/snapshot_checker.h:29:_ZN7rocksdb24DisableGCSnapshotCheckerD0Ev	0	static
+repos/rocksdb/db/snapshot_checker.h:30:_ZNK7rocksdb24DisableGCSnapshotChecker15CheckInSnapshotEmm	0	static
+repos/rocksdb/utilities/transactions/snapshot_checker.cc:0:_GLOBAL__sub_I_snapshot_checker.cc	40	static

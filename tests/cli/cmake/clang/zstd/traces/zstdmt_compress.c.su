@@ -1,0 +1,17 @@
+repos/zstd/lib/compress/zstdmt_compress.c:992:ZSTDMT_createCCtx_advanced	88	static
+repos/zstd/lib/compress/zstdmt_compress.c:1046:ZSTDMT_freeCCtx	56	static
+repos/zstd/lib/compress/zstdmt_compress.c:1007:ZSTDMT_releaseAllJobResources	152	static
+repos/zstd/lib/compress/zstdmt_compress.c:106:ZSTDMT_freeBufferPool	24	static
+repos/zstd/lib/compress/zstdmt_compress.c:365:ZSTDMT_freeCCtxPool	24	static
+repos/zstd/lib/compress/zstdmt_compress.c:1064:ZSTDMT_sizeof_CCtx	88	static
+repos/zstd/lib/compress/zstdmt_compress.c:1098:ZSTDMT_updateCParams_whileCompressing	56	static
+repos/zstd/lib/compress/zstdmt_compress.c:1115:ZSTDMT_getFrameProgression	104	static
+repos/zstd/lib/compress/zstdmt_compress.c:1149:ZSTDMT_toFlushNow	40	static
+repos/zstd/lib/compress/zstdmt_compress.c:1251:ZSTDMT_initCStream_internal	408	static
+repos/zstd/lib/compress/zstdmt_compress.c:1843:ZSTDMT_nextInputSizeHint	0	static
+repos/zstd/lib/compress/zstdmt_compress.c:1854:ZSTDMT_compressStream_generic	104	static
+repos/zstd/lib/compress/zstdmt_compress.c:908:ZSTDMT_createJobsTable	56	static
+repos/zstd/lib/compress/zstdmt_compress.c:122:ZSTDMT_createBufferPool	56	static
+repos/zstd/lib/compress/zstdmt_compress.c:380:ZSTDMT_createCCtxPool	72	static
+repos/zstd/lib/compress/zstdmt_compress.c:693:ZSTDMT_compressionJob	360	static
+repos/zstd/lib/compress/zstdmt_compress.c:192:ZSTDMT_getBuffer	24	static

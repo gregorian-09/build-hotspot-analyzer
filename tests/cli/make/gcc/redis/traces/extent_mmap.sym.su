@@ -1,0 +1,4 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/extent_mmap.c:21:1:extent_alloc_mmap	80	static
+src/extent_mmap.c:36:1:extent_dalloc_mmap	32	static

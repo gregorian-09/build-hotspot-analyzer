@@ -1,0 +1,5 @@
+repos/rocksdb/cache/cache_key.cc:27:_ZN7rocksdb8CacheKey28CreateUniqueForCacheLifetimeEPNS_5CacheE	8	static
+repos/rocksdb/cache/cache_key.cc:35:_ZN7rocksdb8CacheKey30CreateUniqueForProcessLifetimeEv	0	static
+repos/rocksdb/cache/cache_key.cc:300:_ZN7rocksdb18OffsetableCacheKeyC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_m	56	static
+repos/rocksdb/cache/cache_key.cc:310:_ZN7rocksdb18OffsetableCacheKey20FromInternalUniqueIdENS_11UniqueIdPtrE	0	static
+repos/rocksdb/cache/cache_key.cc:352:_ZN7rocksdb18OffsetableCacheKey18ToInternalUniqueIdEv	0	static

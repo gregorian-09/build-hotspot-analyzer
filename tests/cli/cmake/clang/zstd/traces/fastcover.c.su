@@ -1,0 +1,5 @@
+repos/zstd/lib/dictBuilder/fastcover.c:548:ZDICT_trainFromBuffer_fastCover	216	static
+repos/zstd/lib/dictBuilder/fastcover.c:306:FASTCOVER_ctx_init	120	static
+repos/zstd/lib/dictBuilder/fastcover.c:395:FASTCOVER_buildDictionary	184	static
+repos/zstd/lib/dictBuilder/fastcover.c:616:ZDICT_optimizeTrainFromBuffer_fastCover	456	static
+repos/zstd/lib/dictBuilder/fastcover.c:471:FASTCOVER_tryParameters	264	static

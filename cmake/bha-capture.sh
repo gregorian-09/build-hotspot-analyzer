@@ -107,8 +107,7 @@ EXIT_CODE=$?
 
 # Check if stderr contains timing information
 if [ -s "$TEMP_STDERR" ]; then
-    # Check for timing markers (GCC/Clang)
-    if grep -q "Execution times\|TOTAL\|time in" "$TEMP_STDERR"; then
+    if grep -qE "Execution times|TOTAL|time in|Time variable" "$TEMP_STDERR"; then
         # Create trace file with metadata and timing data
         {
             echo "# BHA Trace"

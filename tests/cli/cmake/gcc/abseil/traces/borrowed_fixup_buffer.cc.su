@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:48:1:absl::internal_stacktrace::BorrowedFixupBuffer::~BorrowedFixupBuffer()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:56:1:absl::internal_stacktrace::BorrowedFixupBuffer::BorrowedFixupBuffer(size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:67:6:void absl::internal_stacktrace::BorrowedFixupBuffer::InitViaBorrow()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:73:6:void absl::internal_stacktrace::BorrowedFixupBuffer::InitViaAllocation(size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:96:1:absl::internal_stacktrace::BorrowedFixupBuffer::FixupStackBuffer* absl::internal_stacktrace::BorrowedFixupBuffer::TryLock()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:110:6:void absl::internal_stacktrace::BorrowedFixupBuffer::Unlock() &&	8	static

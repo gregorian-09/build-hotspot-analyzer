@@ -1,0 +1,49 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:38:7:YAML::SettingChange<long unsigned int>::~SettingChange()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:38:7:YAML::SettingChange<YAML::EMITTER_MANIP>::~SettingChange()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:49:8:void YAML::SettingChange<T>::pop() [with T = long unsigned int]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:49:8:void YAML::SettingChange<T>::pop() [with T = YAML::EMITTER_MANIP]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:38:7:virtual YAML::SettingChange<YAML::EMITTER_MANIP>::~SettingChange()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/setting.h:38:7:virtual YAML::SettingChange<long unsigned int>::~SettingChange()	8	static
+/usr/include/c++/13/bits/unique_ptr.h:93:7:void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = YAML::EmitterState::Group]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:7:1:YAML::EmitterState::EmitterState()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:37:1:YAML::EmitterState::~EmitterState()	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:55:6:void YAML::EmitterState::SetAnchor()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:57:6:void YAML::EmitterState::SetAlias()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:59:6:void YAML::EmitterState::SetTag()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:61:6:void YAML::EmitterState::SetNonContent()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:63:6:void YAML::EmitterState::SetLongKey()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:73:6:void YAML::EmitterState::ForceFlow()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:82:6:void YAML::EmitterState::StartedNode()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:115:6:void YAML::EmitterState::StartedDoc()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:121:6:void YAML::EmitterState::EndedDoc()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:198:24:YAML::EmitterNodeType::value YAML::EmitterState::CurGroupNodeType() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:206:18:YAML::GroupType::value YAML::EmitterState::CurGroupType() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:210:17:YAML::FlowType::value YAML::EmitterState::CurGroupFlowType() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:214:13:std::size_t YAML::EmitterState::CurGroupIndent() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:218:13:std::size_t YAML::EmitterState::CurGroupChildCount() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:222:6:bool YAML::EmitterState::CurGroupLongKey() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:226:13:std::size_t YAML::EmitterState::LastIndent() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:234:6:void YAML::EmitterState::ClearModifiedSettings()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:127:6:void YAML::EmitterState::StartedScalar()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:159:6:void YAML::EmitterState::EndedGroup(YAML::GroupType::value)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:236:6:void YAML::EmitterState::RestoreGlobalModifiedSettings()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:366:15:YAML::EMITTER_MANIP YAML::EmitterState::GetFlowType(YAML::GroupType::value) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:98:24:YAML::EmitterNodeType::value YAML::EmitterState::NextGroupType(YAML::GroupType::value) const	16	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {std::unique_ptr<YAML::SettingChangeBase, std::default_delete<YAML::SettingChangeBase> >}; _Tp = std::unique_ptr<YAML::SettingChangeBase>; _Alloc = std::allocator<std::unique_ptr<YAML::SettingChangeBase> >]	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:345:6:bool YAML::EmitterState::SetPostCommentIndent(std::size_t, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:278:6:bool YAML::EmitterState::SetBoolLengthFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:328:6:bool YAML::EmitterState::SetIndent(std::size_t, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:393:6:bool YAML::EmitterState::SetDoublePrecision(std::size_t, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:336:6:bool YAML::EmitterState::SetPreCommentIndent(std::size_t, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:386:6:bool YAML::EmitterState::SetFloatPrecision(std::size_t, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:354:6:bool YAML::EmitterState::SetFlowType(YAML::GroupType::value, YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:266:6:bool YAML::EmitterState::SetBoolFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:290:6:bool YAML::EmitterState::SetBoolCaseFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:316:6:bool YAML::EmitterState::SetIntFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:240:6:bool YAML::EmitterState::SetOutputCharset(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:303:6:bool YAML::EmitterState::SetNullFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:375:6:bool YAML::EmitterState::SetMapKeyFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:253:6:bool YAML::EmitterState::SetStringFormat(YAML::EMITTER_MANIP, YAML::FmtScope::value)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:42:6:void YAML::EmitterState::SetLocalValue(YAML::EMITTER_MANIP)	32	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {std::unique_ptr<YAML::EmitterState::Group, std::default_delete<YAML::EmitterState::Group> >}; _Tp = std::unique_ptr<YAML::EmitterState::Group>; _Alloc = std::allocator<std::unique_ptr<YAML::EmitterState::Group> >]	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emitterstate.cpp:132:6:void YAML::EmitterState::StartedGroup(YAML::GroupType::value)	64	static

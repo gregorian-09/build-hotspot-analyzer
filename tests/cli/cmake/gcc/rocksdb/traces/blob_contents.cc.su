@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/memory_allocator.h:34:18:virtual size_t rocksdb::MemoryAllocator::UsableSize(void*, size_t) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_contents.cc:16:8:size_t rocksdb::BlobContents::ApproximateMemoryUsage() const	32	static

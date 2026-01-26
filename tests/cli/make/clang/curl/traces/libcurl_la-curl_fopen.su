@@ -1,0 +1,2 @@
+curl_fopen.c:85:Curl_fopen	280	static
+curl_fopen.c:55:dirslash	72	static

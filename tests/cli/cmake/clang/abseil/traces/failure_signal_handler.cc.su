@@ -1,0 +1,8 @@
+repos/abseil/absl/debugging/failure_signal_handler.cc:146:_ZN4absl18debugging_internal21FailureSignalToStringEi	0	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:426:_ZN4absl27InstallFailureSignalHandlerERKNS_27FailureSignalHandlerOptionsE	200	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:369:_ZN4abslL24AbslFailureSignalHandlerEiP9siginfo_tPv	184	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:159:_ZN4abslL23SetupAlternateStackOnceEv	40	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:343:_ZN4abslL27ImmediateAbortSignalHandlerEi	8	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:295:_ZN4abslL15WriteStackTraceEPvbPFvPKcS0_ES0_	456	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:288:_ZN4abslL15WriterFnWrapperEPKcPv	0	static
+repos/abseil/absl/debugging/failure_signal_handler.cc:408:_ZZN4abslL24AbslFailureSignalHandlerEiP9siginfo_tPvEN3$_08__invokeEPKc	8	static

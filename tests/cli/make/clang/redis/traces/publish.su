@@ -1,0 +1,4 @@
+publish.c:8:cmd_publish_classic_multi	56	static
+publish.c:20:cmd_publish_classic	8	static
+publish.c:30:cmd_publish_shard	8	static
+publish.c:40:RedisModule_OnLoad	56	static

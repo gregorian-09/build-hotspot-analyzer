@@ -1,0 +1,7 @@
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:31:_ZN4absl24synchronization_internal12PerThreadSem23SetThreadBlockedCounterEPSt6atomicIiE	8	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:37:_ZN4absl24synchronization_internal12PerThreadSem23GetThreadBlockedCounterEv	8	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:43:_ZN4absl24synchronization_internal12PerThreadSem4TickEPNS_13base_internal14ThreadIdentityE	0	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:71:AbslInternalPerThreadSemPoke	0	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:60:AbslInternalPerThreadSemInit	0	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:66:AbslInternalPerThreadSemPost	0	static
+repos/abseil/absl/synchronization/internal/per_thread_sem.cc:76:AbslInternalPerThreadSemWait	24	static

@@ -1,0 +1,2 @@
+repos/abseil/absl/random/internal/randen.cc:81:_ZN4absl15random_internal6RandenC2Ev	8	static
+repos/abseil/absl/random/internal/randen.cc:54:_ZZN4absl15random_internal12_GLOBAL__N_114GetRandenStateEvENK3$_0clEv	8	static

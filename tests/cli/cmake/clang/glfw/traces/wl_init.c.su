@@ -1,0 +1,9 @@
+repos/glfw/src/wl_init.c:235:libdecorHandleError	0	static
+repos/glfw/src/wl_init.c:435:_glfwConnectWayland	24	static
+repos/glfw/src/wl_init.c:564:_glfwInitWayland	56	static
+repos/glfw/src/wl_init.c:895:_glfwTerminateWayland	40	static
+repos/glfw/src/wl_init.c:398:loadCursorTheme	24	static
+repos/glfw/src/wl_init.c:106:registryHandleGlobal	40	static
+repos/glfw/src/wl_init.c:213:registryHandleGlobalRemove	0	static
+repos/glfw/src/wl_init.c:94:wmBaseHandlePing	24	static
+repos/glfw/src/wl_init.c:249:libdecorReadyCallback	8	static

@@ -1,0 +1,37 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:688:6:void absl::{anonymous}::AppendNumberUnit(std::string*, int64_t, DisplayUnit)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:700:6:void absl::{anonymous}::AppendNumberUnit(std::string*, double, DisplayUnit)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:353:9:int64_t absl::{anonymous}::IDivSlowPath(bool, absl::Duration, absl::Duration, absl::Duration*)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:408:9:int64_t absl::IDivDuration(Duration, Duration, Duration*)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:417:11:absl::Duration& absl::Duration::operator+=(absl::Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:436:11:absl::Duration& absl::Duration::operator-=(absl::Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:462:11:absl::Duration& absl::Duration::operator*=(int64_t)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:470:11:absl::Duration& absl::Duration::operator*=(double)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:478:11:absl::Duration& absl::Duration::operator/=(int64_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:486:11:absl::Duration& absl::Duration::operator/=(double)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:494:11:absl::Duration& absl::Duration::operator%=(absl::Duration)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:499:8:double absl::FDivDuration(Duration, Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:521:10:absl::Duration absl::Trunc(Duration, Duration)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:523:10:absl::Duration absl::Floor(Duration, Duration)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:528:10:absl::Duration absl::Ceil(Duration, Duration)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:537:10:absl::Duration absl::DurationFromTimespec(timespec)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:545:10:absl::Duration absl::DurationFromTimeval(timeval)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:556:8:double absl::ToDoubleNanoseconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:559:8:double absl::ToDoubleMicroseconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:562:8:double absl::ToDoubleMilliseconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:565:8:double absl::ToDoubleSeconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:566:8:double absl::ToDoubleMinutes(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:567:8:double absl::ToDoubleHours(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:569:10:timespec absl::ToTimespec(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:599:9:timeval absl::ToTimeval(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:626:26:std::chrono::nanoseconds absl::ToChronoNanoseconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:629:27:std::chrono::microseconds absl::ToChronoMicroseconds(Duration)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:632:27:std::chrono::milliseconds absl::ToChronoMilliseconds(Duration)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:635:22:std::chrono::seconds absl::ToChronoSeconds(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:638:22:std::chrono::minutes absl::ToChronoMinutes(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:641:20:std::chrono::hours absl::ToChronoHours(Duration)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:731:13:std::string absl::FormatDuration(Duration)	128	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:865:6:bool absl::ParseDuration(std::string_view, Duration*)	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:906:6:bool absl::AbslParseFlag(std::string_view, Duration*, std::string*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:910:13:std::string absl::AbslUnparseFlag(Duration)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:911:6:bool absl::ParseFlag(const std::string&, Duration*, std::string*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/duration.cc:915:13:std::string absl::UnparseFlag(Duration)	48	static

@@ -1,0 +1,2 @@
+src/catch2/generators/catch_generator_exception.cpp:13:_ZNK5Catch18GeneratorException4whatEv	0	static
+src/catch2/../catch2/generators/catch_generator_exception.hpp:18:_ZN5Catch18GeneratorExceptionD0Ev	8	static

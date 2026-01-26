@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/suggester.hpp"
+#include "bha/suggestions/consolidator.hpp"
 
 #include <algorithm>
 
@@ -77,6 +78,15 @@ namespace bha::suggestions
             if (all_suggestions.size() >= options.max_suggestions) {
                 break;
             }
+        }
+
+        if (options.enable_consolidation) {
+            ConsolidationOptions consol_opts;
+            consol_opts.enable_consolidation = true;
+            consol_opts.max_items_per_suggestion = 50;
+
+            const SuggestionConsolidator consolidator(consol_opts);
+            all_suggestions = consolidator.consolidate(std::move(all_suggestions));
         }
 
         std::ranges::sort(all_suggestions,

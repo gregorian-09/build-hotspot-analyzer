@@ -1,0 +1,2 @@
+repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc:751:_ZN4absl12crc_internal36NewCRC32AcceleratedX86ARMCombinedAllEv	0	static
+repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc:756:_ZN4absl12crc_internal36TryNewCRC32AcceleratedX86ARMCombinedEv	0	static

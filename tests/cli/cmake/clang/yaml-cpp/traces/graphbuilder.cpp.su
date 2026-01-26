@@ -1,0 +1,4 @@
+repos/yaml-cpp/src/contrib/graphbuilder.cpp:8:_ZN4YAML24BuildGraphOfNextDocumentERNS_6ParserERNS_21GraphBuilderInterfaceE	168	static
+repos/yaml-cpp/src/contrib/graphbuilderadapter.h:25:_ZN4YAML19GraphBuilderAdapterD2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIN4YAML19GraphBuilderAdapter14ContainerFrameESaIS2_EE17_M_initialize_mapEm	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/contrib/graphbuilder.cpp:__clang_call_terminate	8	static

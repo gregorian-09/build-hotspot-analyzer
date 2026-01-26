@@ -1,0 +1,9 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/../catch2/generators/catch_generator_exception.hpp:18:11:Catch::GeneratorException::~GeneratorException()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:16:5:Catch::IGeneratorTracker::~IGeneratorTracker()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:16:5:virtual Catch::IGeneratorTracker::~IGeneratorTracker()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/../catch2/generators/catch_generator_exception.hpp:18:11:virtual Catch::GeneratorException::~GeneratorException()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:23:10:void Catch::Generators::Detail::throw_generator_exception(const char*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:28:5:Catch::Generators::GeneratorUntypedBase::~GeneratorUntypedBase()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:28:5:virtual Catch::Generators::GeneratorUntypedBase::~GeneratorUntypedBase()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:30:24:Catch::IGeneratorTracker* Catch::Generators::acquireGeneratorTracker(Catch::StringRef, const Catch::SourceLineInfo&)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generators.cpp:34:24:Catch::IGeneratorTracker* Catch::Generators::createGeneratorTracker(Catch::StringRef, Catch::SourceLineInfo, GeneratorBasePtr&&)	16	static

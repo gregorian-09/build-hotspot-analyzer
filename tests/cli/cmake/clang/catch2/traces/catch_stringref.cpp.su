@@ -1,0 +1,6 @@
+src/catch2/internal/catch_stringref.cpp:15:_ZN5Catch9StringRefC2EPKc	24	static
+src/catch2/internal/catch_stringref.cpp:20:_ZNK5Catch9StringRefltES0_	24	static
+src/catch2/internal/catch_stringref.cpp:27:_ZNK5Catch9StringRef7compareES0_	8	static
+src/catch2/internal/catch_stringref.cpp:48:_ZN5CatchlsERSoNS_9StringRefE	0	static
+src/catch2/internal/catch_stringref.cpp:52:_ZN5CatchplB5cxx11ENS_9StringRefES0_	56	static
+src/catch2/internal/catch_stringref.cpp:60:_ZN5CatchpLERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_9StringRefE	8	static

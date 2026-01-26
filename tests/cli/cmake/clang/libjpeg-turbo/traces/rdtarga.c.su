@@ -1,0 +1,11 @@
+repos/libjpeg-turbo/src/rdtarga.c:487:jinit_read_targa	8	static
+repos/libjpeg-turbo/src/rdtarga.c:329:start_input_tga	104	static
+repos/libjpeg-turbo/src/rdtarga.c:476:finish_input_tga	0	static
+repos/libjpeg-turbo/src/rdtarga.c:130:read_rle_pixel	24	static
+repos/libjpeg-turbo/src/rdtarga.c:118:read_non_rle_pixel	24	static
+repos/libjpeg-turbo/src/rdtarga.c:183:get_8bit_row	56	static
+repos/libjpeg-turbo/src/rdtarga.c:207:get_16bit_row	40	static
+repos/libjpeg-turbo/src/rdtarga.c:235:get_24bit_row	24	static
+repos/libjpeg-turbo/src/rdtarga.c:167:get_8bit_gray_row	40	static
+repos/libjpeg-turbo/src/rdtarga.c:296:preload_image	40	static
+repos/libjpeg-turbo/src/rdtarga.c:269:get_memory_row	8	static

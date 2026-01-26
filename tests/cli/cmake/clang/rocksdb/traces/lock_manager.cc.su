@@ -1,0 +1,10 @@
+repos/rocksdb/utilities/transactions/lock/lock_manager.cc:12:_ZN7rocksdb14NewLockManagerEPNS_24PessimisticTransactionDBERKNS_20TransactionDBOptionsE	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:608:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb22PerKeyPointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:611:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb22PerKeyPointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:618:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb22PerKeyPointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:631:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb22PerKeyPointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:133:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EED2Ev	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:608:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb16PointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:611:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb16PointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:618:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb16PointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:631:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb16PointLockManagerESaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info	24	static

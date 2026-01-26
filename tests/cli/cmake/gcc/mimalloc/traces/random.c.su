@@ -1,0 +1,8 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:165:11:_mi_os_random_weak	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:47:13:chacha_block	192	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:177:13:mi_random_init_ex	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:138:6:_mi_random_split	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:144:11:_mi_random_next	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:198:6:_mi_random_init	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:202:6:_mi_random_init_weak	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/random.c:206:6:_mi_random_reinit_if_weak	8	static

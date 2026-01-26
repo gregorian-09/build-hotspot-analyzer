@@ -1,0 +1,5 @@
+rdbloadsave.c:10:5:sanity	48	static
+rdbloadsave.c:53:5:cmd_rdbsave	64	dynamic
+rdbloadsave.c:81:5:cmd_rdbsave_fork	48	dynamic
+rdbloadsave.c:116:5:cmd_rdbload	48	dynamic
+rdbloadsave.c:142:5:RedisModule_OnLoad	64	dynamic,bounded

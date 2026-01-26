@@ -1,0 +1,8 @@
+infotest.c:5:6:InfoFunc	64	static
+infotest.c:38:5:info_get	64	static
+infotest.c:79:5:info_gets	8	static
+infotest.c:83:5:info_getc	8	static
+infotest.c:87:5:info_geti	8	static
+infotest.c:91:5:info_getu	8	static
+infotest.c:95:5:info_getd	8	static
+infotest.c:99:5:RedisModule_OnLoad	64	dynamic,bounded

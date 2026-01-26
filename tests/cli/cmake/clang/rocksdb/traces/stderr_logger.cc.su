@@ -1,0 +1,8 @@
+repos/rocksdb/util/stderr_logger.cc:13:_ZN7rocksdb12StderrLoggerD2Ev	24	static
+repos/rocksdb/util/stderr_logger.cc:13:_ZN7rocksdb12StderrLoggerD0Ev	24	static
+repos/rocksdb/util/stderr_logger.cc:19:_ZN7rocksdb12StderrLogger4LogvEPKcP13__va_list_tag	200	static
+repos/rocksdb/include/rocksdb/env.h:1384:_ZN7rocksdb6Logger9LogHeaderEPKcP13__va_list_tag	0	static
+repos/rocksdb/include/rocksdb/env.h:1406:_ZNK7rocksdb6Logger14GetLogFileSizeEv	0	static
+repos/rocksdb/include/rocksdb/env.h:1408:_ZN7rocksdb6Logger5FlushEv	0	static
+repos/rocksdb/include/rocksdb/env.h:1409:_ZNK7rocksdb6Logger15GetInfoLogLevelEv	0	static
+repos/rocksdb/include/rocksdb/env.h:1410:_ZN7rocksdb6Logger15SetInfoLogLevelENS_12InfoLogLevelE	0	static

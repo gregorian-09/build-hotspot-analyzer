@@ -1,0 +1,150 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/options.cc
+# Output: CMakeFiles/leveldb.dir/util/options.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/leveldb/build/include -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/. -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include -ftime-report -fmem-report -fstack-usage -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/options.cc.o -MF CMakeFiles/leveldb.dir/util/options.cc.o.d -o CMakeFiles/leveldb.dir/util/options.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/options.cc
+# Timestamp: 2026-01-25T19:40:36+01:00
+# Exit code: 0
+# ---
+
+
+################################################################################
+# Final                                                                        #
+################################################################################
+
+Number of expanded macros:                      8001
+Average number of tokens per macro expansion:      5
+
+Line Table allocations during the compilation process
+Number of ordinary maps used:          470 
+Ordinary map used size:                 11k
+Number of ordinary maps allocated:    1365 
+Ordinary maps allocated size:           31k
+Number of macro maps used:            7893 
+Macro maps used size:                  246k
+Macro maps locations size:             347k
+Macro maps size:                       594k
+Duplicated maps locations size:        130k
+Total allocated maps size:             891k
+Total used maps size:                  605k
+Ad-hoc table size:                    1024k
+Ad-hoc table entries used:              23k
+optimized_ranges:                      272k
+unoptimized_ranges:                     24k
+
+Memory still allocated at the end of the compilation process
+Size      Allocated        Used    Overhead
+8                56k         53k       1680 
+16              360k        356k       7920 
+32             2908k       2904k         51k
+64             1400k       1399k         21k
+256            2924k       2921k         39k
+512              16k         12k        224 
+1024            140k        137k       1960 
+2048            288k        286k       4032 
+4096            124k        112k       1736 
+8192             56k         48k        392 
+16384            96k         16k        336 
+32768           224k        160k        392 
+65536           192k        128k        168 
+131072          256k        128k        112 
+262144          256k          0          56 
+524288         1024k        512k        112 
+1048576        1024k       1024k         56 
+2097152        2048k          0          56 
+4194304        4096k          0          56 
+24             1008k       1003k         17k
+40             4848k       4825k         75k
+48             1320k       1311k         20k
+56              296k        294k       4736 
+72              152k        146k       2128 
+80               68k         64k        952 
+88               60k         57k        840 
+104             352k        347k       4928 
+112              48k         44k        672 
+120             792k        788k         10k
+152            2200k       2122k         30k
+128            2752k       2739k         37k
+144             584k        572k       8176 
+168            5956k       5861k         81k
+184             492k        314k       6888 
+96              440k        433k       6160 
+272             276k         19k       3864 
+424              84k         73k       1176 
+Total            38M         30M        445k
+
+String pool
+entries:                        10451
+identifiers:                    10451 (100.00%)
+slots:                          16384
+deleted:                        0
+GGC bytes:                      179k
+table size:                     128k
+coll/search:                    0.4525
+ins/search:                     0.0723
+avg. entry:                     17.55 bytes (+/- 16.48)
+longest entry:                  157
+(No per-node statistics)
+Type hash: size 16381, 8358 elements, 1.180706 collisions
+DECL_DEBUG_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+DECL_VALUE_EXPR  hash: size 1021, 6 elements, 0.000000 collisions
+decl_specializations: size 8191, 3140 elements, 1.336664 collisions
+type_specializations: size 4093, 2226 elements, 1.893895 collisions
+No GIMPLE statistics
+No RTX statistics
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                               0                         0                0 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Alias oracle query stats:
+  refs_may_alias_p: 285 disambiguations, 296 queries
+  ref_maybe_used_by_call_p: 0 disambiguations, 305 queries
+  call_may_clobber_ref_p: 0 disambiguations, 0 queries
+  stmt_kills_ref_p: 0 kills, 296 queries
+  nonoverlapping_component_refs_p: 0 disambiguations, 0 queries
+  nonoverlapping_refs_since_match_p: 0 disambiguations, 0 must overlaps, 0 queries
+  aliasing_component_refs_p: 0 disambiguations, 0 queries
+  TBAA oracle: 0 disambiguations 35 queries
+               35 are in alias set 0
+               0 queries asked about the same object
+               0 queries asked about the same alias set
+               0 access volatile
+               0 are dependent in the DAG
+               0 are aritificially in conflict with void *
+
+Modref stats:
+  modref kill: 0 kills, 0 queries
+  modref use: 0 disambiguations, 0 queries
+  modref clobber: 0 disambiguations, 0 queries
+  0 tbaa queries (-nan per modref query)
+  0 base compares (-nan per modref query)
+
+PTA query stats:
+  pt_solution_includes: 0 disambiguations, 0 queries
+  pt_solutions_intersect: 0 disambiguations, 84 queries
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1880k (  4%)
+ phase parsing                      :   0.20 ( 87%)   0.16 ( 94%)   0.37 ( 90%)    38M ( 88%)
+ phase lang. deferred               :   0.02 (  9%)   0.01 (  6%)   0.03 (  7%)  3185k (  7%)
+ phase opt and generate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   212k (  0%)
+ phase finalize                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ |name lookup                       :   0.04 ( 17%)   0.03 ( 18%)   0.06 ( 15%)  1778k (  4%)
+ |overload resolution               :   0.03 ( 13%)   0.02 ( 12%)   0.04 ( 10%)  2015k (  5%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   101k (  0%)
+ preprocessing                      :   0.03 ( 13%)   0.05 ( 29%)   0.06 ( 15%)  1822k (  4%)
+ parser (global)                    :   0.08 ( 35%)   0.03 ( 18%)   0.12 ( 29%)    16M ( 37%)
+ parser struct body                 :   0.03 ( 13%)   0.03 ( 18%)   0.05 ( 12%)  7535k ( 17%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1115k (  3%)
+ parser inl. func. body             :   0.03 ( 13%)   0.04 ( 24%)   0.07 ( 17%)  2979k (  7%)
+ parser inl. meth. body             :   0.00 (  0%)   0.01 (  6%)   0.03 (  7%)  3617k (  8%)
+ template instantiation             :   0.05 ( 22%)   0.01 (  6%)   0.06 ( 15%)  8449k ( 19%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.23          0.17          0.41           43M

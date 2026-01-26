@@ -1,0 +1,15 @@
+llex.c:51:13:save	144	static
+llex.c:215:15:skip_sep	32	static
+llex.c:164:12:check_next	32	static
+llex.c:64:6:luaX_init	48	static
+llex.c:78:13:luaX_token2str	32	static
+llex.c:102:6:luaX_lexerror	144	static
+llex.c:195:13:read_numeral	48	static
+llex.c:129:13:inclinenumber	32	static
+llex.c:112:6:luaX_syntaxerror	8	static
+llex.c:117:10:luaX_newstring	32	static
+llex.c:230:13:read_long_string	48	static
+llex.c:341:12:llex	80	static
+llex.c:140:6:luaX_setinput	32	static
+llex.c:456:6:luaX_next	16	static
+llex.c:467:6:luaX_lookahead	16	static

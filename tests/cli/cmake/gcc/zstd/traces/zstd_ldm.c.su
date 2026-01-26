@@ -1,0 +1,9 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:96:15:ZSTD_ldm_gear_feed.constprop	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:135:6:ZSTD_ldm_adjustParameters	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:169:8:ZSTD_ldm_getTableSize	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:179:8:ZSTD_ldm_getMaxNbSeq	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:285:6:ZSTD_ldm_fillHashTable	192	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:526:8:ZSTD_ldm_generateSequences	464	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:604:1:ZSTD_ldm_skipSequences	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:664:6:ZSTD_ldm_skipRawSeqStoreBytes	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_ldm.c:681:8:ZSTD_ldm_blockCompress	112	static

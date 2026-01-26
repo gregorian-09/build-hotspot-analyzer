@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/catch_chronometer.cpp:14:13:Catch::Benchmark::Detail::ChronometerConcept::~ChronometerConcept()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/catch_chronometer.cpp:14:13:virtual Catch::Benchmark::Detail::ChronometerConcept::~ChronometerConcept()	8	static

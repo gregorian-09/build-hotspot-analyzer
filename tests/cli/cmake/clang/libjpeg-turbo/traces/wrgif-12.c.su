@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:527:j12init_write_gif	24	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:336:start_output_gif	0	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:495:finish_output_gif	24	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:517:calc_buffer_dimensions_gif	0	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:359:put_LZW_pixel_rows	56	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:460:put_raw_pixel_rows	40	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:253:emit_header	88	static
+repos/libjpeg-turbo/src/wrapper/../wrgif.c:137:output	24	static

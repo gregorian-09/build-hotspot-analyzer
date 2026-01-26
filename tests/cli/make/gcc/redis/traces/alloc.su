@@ -1,0 +1,2 @@
+alloc.c:45:19:hiredisSetAllocators	8	static
+alloc.c:54:6:hiredisResetAllocators	8	static

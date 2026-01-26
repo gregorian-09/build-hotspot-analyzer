@@ -1,0 +1,5 @@
+repos/yaml-cpp/util/parse.cpp:27:_Z5parseRSi	88	static
+repos/yaml-cpp/include/yaml-cpp/node/impl.h:56:_ZN4YAML4NodeD2Ev	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/util/parse.cpp:__clang_call_terminate	8	static
+repos/yaml-cpp/util/parse.cpp:36:main	552	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	8	static

@@ -1,0 +1,3 @@
+repos/abseil/absl/strings/internal/cord_rep_btree_navigator.cc:68:_ZN4absl13cord_internal21CordRepBtreeNavigator4SkipEm	8	static
+repos/abseil/absl/strings/internal/cord_rep_btree_navigator.cc:108:_ZN4absl13cord_internal21CordRepBtreeNavigator4ReadEmm	88	static
+repos/abseil/absl/strings/internal/cord_rep_btree_navigator.cc:39:_ZN4absl13cord_internal12_GLOBAL__N_19SubstringEPNS0_7CordRepEmm	24	static

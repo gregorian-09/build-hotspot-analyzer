@@ -1,0 +1,15 @@
+repos/abseil/absl/crc/internal/crc.cc:102:_ZN4absl12crc_internal7CRCImpl13FillWordTableEjjiPA256_j	48	static
+repos/abseil/absl/crc/internal/crc.cc:138:_ZN4absl12crc_internal7CRCImpl15FillZeroesTableEjPA256_j	24	static
+repos/abseil/absl/crc/internal/crc.cc:166:_ZN4absl12crc_internal7CRCImpl11NewInternalEv	8	static
+repos/abseil/absl/crc/internal/crc.cc:182:_ZN4absl12crc_internal5CRC3210InitTablesEv	24	static
+repos/abseil/absl/crc/internal/crc.cc:257:_ZNK4absl12crc_internal5CRC326ExtendEPjPKvm	48	static
+repos/abseil/absl/crc/internal/crc.cc:358:_ZN4absl12crc_internal5CRC3218ExtendByZeroesImplEPjmPKjS4_	8	static
+repos/abseil/absl/crc/internal/crc.cc:398:_ZNK4absl12crc_internal5CRC3214ExtendByZeroesEPjm	0	static
+repos/abseil/absl/crc/internal/crc.cc:402:_ZNK4absl12crc_internal5CRC3216UnextendByZeroesEPjm	8	static
+repos/abseil/absl/crc/internal/crc.cc:410:_ZNK4absl12crc_internal5CRC328ScrambleEPj	0	static
+repos/abseil/absl/crc/internal/crc.cc:417:_ZNK4absl12crc_internal5CRC3210UnscrambleEPj	0	static
+repos/abseil/absl/crc/internal/crc.cc:424:_ZN4absl12crc_internal3CRCD0Ev	0	static
+repos/abseil/absl/crc/internal/crc.cc:425:_ZN4absl12crc_internal3CRCC2Ev	0	static
+repos/abseil/absl/crc/internal/crc.cc:428:_ZN4absl12crc_internal3CRC6Crc32cEv	8	static
+repos/abseil/absl/crc/internal/crc.cc:424:_ZN4absl12crc_internal3CRCD2Ev	0	static
+repos/abseil/absl/crc/internal/crc_internal.h:98:_ZN4absl12crc_internal5CRC32D0Ev	0	static

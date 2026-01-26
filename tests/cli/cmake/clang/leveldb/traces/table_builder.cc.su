@@ -1,0 +1,13 @@
+repos/leveldb/table/table_builder.cc:65:_ZN7leveldb12TableBuilderC2ERKNS_7OptionsEPNS_12WritableFileE	40	static
+repos/leveldb/table/table_builder.cc:72:_ZN7leveldb12TableBuilderD2Ev	24	static
+repos/leveldb/table/table_builder.cc:21:_ZN7leveldb12TableBuilder3RepD2Ev	8	static
+repos/leveldb/table/table_builder.cc:78:_ZN7leveldb12TableBuilder13ChangeOptionsERKNS_7OptionsE	40	static
+repos/leveldb/table/table_builder.cc:94:_ZN7leveldb12TableBuilder3AddERKNS_5SliceES3_	104	static
+repos/leveldb/table/table_builder.cc:125:_ZN7leveldb12TableBuilder5FlushEv	56	static
+repos/leveldb/table/table_builder.cc:141:_ZN7leveldb12TableBuilder10WriteBlockEPNS_12BlockBuilderEPNS_11BlockHandleE	56	static
+repos/leveldb/table/table_builder.cc:192:_ZN7leveldb12TableBuilder13WriteRawBlockERKNS_5SliceENS_15CompressionTypeEPNS_11BlockHandleE	72	static
+repos/leveldb/table/table_builder.cc:211:_ZNK7leveldb12TableBuilder6statusEv	8	static
+repos/leveldb/table/table_builder.cc:213:_ZN7leveldb12TableBuilder6FinishEv	296	static
+repos/leveldb/table/table_builder.cc:270:_ZN7leveldb12TableBuilder7AbandonEv	0	static
+repos/leveldb/table/table_builder.cc:276:_ZNK7leveldb12TableBuilder10NumEntriesEv	0	static
+repos/leveldb/table/table_builder.cc:278:_ZNK7leveldb12TableBuilder8FileSizeEv	0	static

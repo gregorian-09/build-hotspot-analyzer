@@ -1,0 +1,2 @@
+vauth/oauth2.c:50:Curl_auth_create_oauth_bearer_message	88	static
+vauth/oauth2.c:86:Curl_auth_create_xoauth_bearer_message	72	static

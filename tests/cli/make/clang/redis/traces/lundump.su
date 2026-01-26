@@ -1,0 +1,5 @@
+lundump.c:195:luaU_undump	72	static
+lundump.c:161:LoadFunction	72	static
+lundump.c:214:luaU_header	0	static
+lundump.c:76:LoadString	24	static
+lundump.c:61:LoadInt	24	static

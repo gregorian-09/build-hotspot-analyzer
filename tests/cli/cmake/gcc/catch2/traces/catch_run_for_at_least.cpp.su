@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/detail/catch_run_for_at_least.cpp:21:25:virtual const char* Catch::Benchmark::Detail::optimized_away_error::what() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/detail/catch_run_for_at_least.cpp:17:20:Catch::Benchmark::Detail::optimized_away_error::~optimized_away_error()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/detail/catch_run_for_at_least.cpp:17:20:virtual Catch::Benchmark::Detail::optimized_away_error::~optimized_away_error()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/benchmark/detail/catch_run_for_at_least.cpp:25:18:void Catch::Benchmark::Detail::throw_optimized_away_error()	48	static

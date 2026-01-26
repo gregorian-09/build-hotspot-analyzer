@@ -1,0 +1,15 @@
+include/jemalloc/internal/peak.h:18:1:peak_max	16	static
+include/jemalloc/internal/peak.h:23:1:peak_update	16	static
+include/jemalloc/internal/peak.h:32:1:peak_set_zero	16	static
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/peak_event.c:19:1:je_peak_event_update	160	static
+src/peak_event.c:27:1:peak_event_activity_callback	160	static
+src/peak_event.c:39:1:je_peak_event_zero	160	static
+src/peak_event.c:47:1:je_peak_event_max	80	static
+src/peak_event.c:53:1:je_peak_alloc_new_event_wait	16	static
+src/peak_event.c:58:1:je_peak_alloc_postponed_event_wait	16	static
+src/peak_event.c:63:1:je_peak_alloc_event_handler	32	static
+src/peak_event.c:69:1:je_peak_dalloc_new_event_wait	16	static
+src/peak_event.c:74:1:je_peak_dalloc_postponed_event_wait	16	static
+src/peak_event.c:79:1:je_peak_dalloc_event_handler	32	static

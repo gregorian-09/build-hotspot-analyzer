@@ -20,6 +20,29 @@ namespace bha::cli
 {
     namespace fs = std::filesystem;
 
+    namespace {
+        std::optional<SuggestionType> parse_suggestion_type(const std::string& str) {
+            std::string lower = str;
+            std::ranges::transform(lower, lower.begin(), [](unsigned char c) { return std::tolower(c); });
+
+            if (lower == "pch" || lower == "pch-optimization") return SuggestionType::PCHOptimization;
+            if (lower == "forward-decl" || lower == "forward-declaration") return SuggestionType::ForwardDeclaration;
+            if (lower == "header-split") return SuggestionType::HeaderSplit;
+            if (lower == "pimpl" || lower == "pimpl-pattern") return SuggestionType::PIMPLPattern;
+            if (lower == "include-removal") return SuggestionType::IncludeRemoval;
+            if (lower == "move-to-cpp") return SuggestionType::MoveToCpp;
+            if (lower == "explicit-template") return SuggestionType::ExplicitTemplate;
+            if (lower == "unity-build") return SuggestionType::UnityBuild;
+            if (lower == "module-migration") return SuggestionType::ModuleMigration;
+            if (lower == "inline-reduction") return SuggestionType::InlineReduction;
+            if (lower == "compilation-firewall") return SuggestionType::CompilationFirewall;
+            if (lower == "dependency-inversion") return SuggestionType::DependencyInversion;
+            if (lower == "symbol-visibility") return SuggestionType::SymbolVisibility;
+
+            return std::nullopt;
+        }
+    }
+
     /**
      * Suggest command - generates optimization suggestions.
      */
@@ -52,6 +75,7 @@ namespace bha::cli
                 {"type", 0, "Filter by suggestion type (can be repeated)", false, true, "", "TYPE"},
                 {"include-unsafe", 0, "Include potentially unsafe suggestions", false, false, "", ""},
                 {"detailed", 'd', "Show detailed suggestion info", false, false, "", ""},
+                {"disable-consolidation", 0, "Disable suggestion consolidation", false, false, "", ""},
 
                     // Heuristics configuration overrides
                 {"pch-min-includes", 0, "Min header inclusions for PCH (default: 10)", false, true, "10", "N"},
@@ -161,6 +185,22 @@ namespace bha::cli
             suggester_opts.min_priority = min_priority;
             suggester_opts.min_confidence = min_confidence;
             suggester_opts.include_unsafe = include_unsafe;
+            suggester_opts.enable_consolidation = !args.get_flag("disable-consolidation");
+
+            // Parse and validate suggestion types filter
+            auto type_filters = args.get_all("type");
+            if (!type_filters.empty()) {
+                for (const auto& type_str : type_filters) {
+                    if (auto type = parse_suggestion_type(type_str)) {
+                        suggester_opts.enabled_types.push_back(*type);
+                    } else {
+                        print_error("Unknown suggestion type: " + type_str);
+                        print_error("Valid types: pch, forward-decl, header-split, unity-build, etc.");
+                        return 1;
+                    }
+                }
+                print_verbose("Filtering suggestions to " + std::to_string(suggester_opts.enabled_types.size()) + " types");
+            }
 
              // Apply heuristics config overrides from CLI
             auto& [analysis, pch, templates, codegen, headers, unity_build, forward_decl] = suggester_opts.heuristics;
@@ -315,30 +355,6 @@ namespace bha::cli
                     for (const auto& f : s.secondary_files) {
                         std::cout << "  - " << f.path.string();
                         std::cout << " (" << to_string(f.action) << ")\n";
-                    }
-                    std::cout << "\n";
-                }
-
-                if (!s.before_code.code.empty()) {
-                    std::cout << "Before:\n";
-                    if (colors::enabled()) {
-                        std::cout << colors::RED;
-                    }
-                    std::cout << "  " << s.before_code.code << "\n";
-                    if (colors::enabled()) {
-                        std::cout << colors::RESET;
-                    }
-                    std::cout << "\n";
-                }
-
-                if (!s.after_code.code.empty()) {
-                    std::cout << "After:\n";
-                    if (colors::enabled()) {
-                        std::cout << colors::GREEN;
-                    }
-                    std::cout << "  " << s.after_code.code << "\n";
-                    if (colors::enabled()) {
-                        std::cout << colors::RESET;
                     }
                     std::cout << "\n";
                 }

@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compaction_job_stats_impl.cc:10:6:void rocksdb::CompactionJobStats::Reset()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compaction_job_stats_impl.cc:58:6:void rocksdb::CompactionJobStats::Add(const rocksdb::CompactionJobStats&)	8	static

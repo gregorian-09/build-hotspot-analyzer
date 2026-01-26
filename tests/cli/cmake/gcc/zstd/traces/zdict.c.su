@@ -1,0 +1,11 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:360:12:ZDICT_tryMerge	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:169:17:ZDICT_analyzePos	960	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:663:15:ZDICT_analyzeEntropy	13120	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:98:10:ZDICT_isError	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:100:13:ZDICT_getErrorName	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:102:10:ZDICT_getDictID	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:109:8:ZDICT_getDictHeaderSize	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:862:8:ZDICT_finalizeDictionary	400	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:1088:8:ZDICT_trainFromBuffer_legacy	272	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:1111:8:ZDICT_trainFromBuffer	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/zdict.c:1129:8:ZDICT_addEntropyTablesFromBuffer	128	dynamic,bounded

@@ -1,0 +1,3 @@
+moduleauthtwo.c:27:5:test_rm_register_auth_cb	16	static
+moduleauthtwo.c:9:5:auth_cb	64	static
+moduleauthtwo.c:35:5:RedisModule_OnLoad	64	dynamic,bounded

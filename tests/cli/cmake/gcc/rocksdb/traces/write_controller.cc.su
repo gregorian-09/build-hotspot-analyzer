@@ -1,0 +1,12 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:106:1:rocksdb::StopWriteToken::~StopWriteToken()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:106:1:virtual rocksdb::StopWriteToken::~StopWriteToken()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:111:1:rocksdb::DelayWriteToken::~DelayWriteToken()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:111:1:virtual rocksdb::DelayWriteToken::~DelayWriteToken()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:116:1:rocksdb::CompactionPressureToken::~CompactionPressureToken()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:116:1:virtual rocksdb::CompactionPressureToken::~CompactionPressureToken()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:17:39:std::unique_ptr<rocksdb::WriteControllerToken> rocksdb::WriteController::GetStopToken()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:22:39:std::unique_ptr<rocksdb::WriteControllerToken> rocksdb::WriteController::GetDelayToken(uint64_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:37:1:std::unique_ptr<rocksdb::WriteControllerToken> rocksdb::WriteController::GetCompactionPressureToken()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:43:6:bool rocksdb::WriteController::IsStopped() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:102:10:uint64_t rocksdb::WriteController::NowMicrosMonotonic(rocksdb::SystemClock*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_controller.cc:51:10:uint64_t rocksdb::WriteController::GetDelay(rocksdb::SystemClock*, uint64_t)	32	static

@@ -1,0 +1,17 @@
+ldo.c:51:luaD_seterrorobj	24	static
+ldo.c:94:luaD_throw	40	static
+ldo.c:111:luaD_rawrunprotected	248	static
+ldo.c:141:luaD_reallocstack	40	static
+ldo.c:152:luaD_reallocCI	40	static
+ldo.c:161:luaD_growstack	0	static
+ldo.c:181:luaD_callhook	152	static
+ldo.c:265:luaD_precall	216	static
+ldo.c:169:growCI	40	static
+ldo.c:343:luaD_poscall	184	static
+ldo.c:370:luaD_call	24	static
+ldo.c:418:lua_resume	24	static
+ldo.c:384:resume	8	static
+ldo.c:444:lua_yield	24	static
+ldo.c:456:luaD_pcall	72	static
+ldo.c:509:luaD_protectedparser	56	static
+ldo.c:491:f_parser	40	static

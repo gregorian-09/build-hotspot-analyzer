@@ -1,0 +1,57 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:3716:1:XXH128_hash_t XXH_mult64to128(xxh_u64, xxh_u64)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:3850:1:xxh_u64 XXH3_mul128_fold64(xxh_u64, xxh_u64)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:4090:1:XXH64_hash_t XXH3_len_129to240_64b(const xxh_u8*, size_t, const xxh_u8*, size_t, XXH64_hash_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5944:1:XXH128_hash_t XXH3_len_129to240_128b(const xxh_u8*, size_t, const xxh_u8*, size_t, XXH64_hash_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5238:1:XXH64_hash_t XXH3_hashLong_64b_default(const void*, size_t, XXH64_hash_t, const xxh_u8*, size_t)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6030:1:XXH128_hash_t XXH3_hashLong_128b_default(const void*, size_t, XXH64_hash_t, const void*, size_t)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5280:1:XXH64_hash_t XXH3_hashLong_64b_withSeed(const void*, size_t, XXH64_hash_t, const xxh_u8*, size_t)	320	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6075:1:XXH128_hash_t XXH3_hashLong_128b_withSeed(const void*, size_t, XXH64_hash_t, const void*, size_t)	320	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2204:25:unsigned int ROCKSDB_XXH_versionNumber()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2448:29:XXH32_hash_t ROCKSDB_XXH32(const void*, size_t, XXH32_hash_t)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2471:31:XXH32_state_t* ROCKSDB_XXH32_createState()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2476:30:XXH_errorcode ROCKSDB_XXH32_freeState(XXH32_state_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2483:21:void ROCKSDB_XXH32_copyState(XXH32_state_t*, const XXH32_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2489:30:XXH_errorcode ROCKSDB_XXH32_reset(XXH32_state_t*, XXH32_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2503:1:XXH_errorcode ROCKSDB_XXH32_update(XXH32_state_t*, const void*, size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2557:29:XXH32_hash_t ROCKSDB_XXH32_digest(const XXH32_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2592:21:void ROCKSDB_XXH32_canonicalFromHash(XXH32_canonical_t*, XXH32_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2599:29:XXH32_hash_t ROCKSDB_XXH32_hashFromCanonical(const XXH32_canonical_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2891:29:XXH64_hash_t ROCKSDB_XXH64(const void*, size_t, XXH64_hash_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2913:31:XXH64_state_t* ROCKSDB_XXH64_createState()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2918:30:XXH_errorcode ROCKSDB_XXH64_freeState(XXH64_state_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2925:21:void ROCKSDB_XXH64_copyState(XXH64_state_t*, const XXH64_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2931:30:XXH_errorcode ROCKSDB_XXH64_reset(XXH64_state_t*, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2944:1:XXH_errorcode ROCKSDB_XXH64_update(XXH64_state_t*, const void*, size_t)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:2995:29:XXH64_hash_t ROCKSDB_XXH64_digest(const XXH64_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:3018:21:void ROCKSDB_XXH64_canonicalFromHash(XXH64_canonical_t*, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:3026:29:XXH64_hash_t ROCKSDB_XXH64_hashFromCanonical(const XXH64_canonical_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5318:29:XXH64_hash_t ROCKSDB_XXH3_64bits(const void*, size_t)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5325:1:XXH64_hash_t ROCKSDB_XXH3_64bits_withSecret(const void*, size_t, const void*, size_t)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5332:1:XXH64_hash_t ROCKSDB_XXH3_64bits_withSeed(const void*, size_t, XXH64_hash_t)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5338:1:XXH64_hash_t ROCKSDB_XXH3_64bits_withSecretandSeed(const void*, size_t, const void*, size_t, XXH64_hash_t)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5414:30:XXH3_state_t* ROCKSDB_XXH3_createState()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5423:30:XXH_errorcode ROCKSDB_XXH3_freeState(XXH3_state_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5431:1:void ROCKSDB_XXH3_copyState(XXH3_state_t*, const XXH3_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5465:1:XXH_errorcode ROCKSDB_XXH3_64bits_reset(XXH3_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5474:1:XXH_errorcode ROCKSDB_XXH3_64bits_reset_withSecret(XXH3_state_t*, const void*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5485:1:XXH_errorcode ROCKSDB_XXH3_64bits_reset_withSeed(XXH3_state_t*, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5497:1:XXH_errorcode ROCKSDB_XXH3_64bits_reset_withSecretandSeed(XXH3_state_t*, const void*, size_t, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5659:1:XXH_errorcode ROCKSDB_XXH3_64bits_update(XXH3_state_t*, const void*, size_t)	192	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:5701:29:XXH64_hash_t ROCKSDB_XXH3_64bits_digest(const XXH3_state_t*)	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6111:30:XXH128_hash_t ROCKSDB_XXH3_128bits(const void*, size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6120:1:XXH128_hash_t ROCKSDB_XXH3_128bits_withSecret(const void*, size_t, const void*, size_t)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6129:1:XXH128_hash_t ROCKSDB_XXH3_128bits_withSeed(const void*, size_t, XXH64_hash_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6138:1:XXH128_hash_t ROCKSDB_XXH3_128bits_withSecretandSeed(const void*, size_t, const void*, size_t, XXH64_hash_t)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6147:1:XXH128_hash_t ROCKSDB_XXH128(const void*, size_t, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6162:1:XXH_errorcode ROCKSDB_XXH3_128bits_reset(XXH3_state_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6169:1:XXH_errorcode ROCKSDB_XXH3_128bits_reset_withSecret(XXH3_state_t*, const void*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6176:1:XXH_errorcode ROCKSDB_XXH3_128bits_reset_withSeed(XXH3_state_t*, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6183:1:XXH_errorcode ROCKSDB_XXH3_128bits_reset_withSecretandSeed(XXH3_state_t*, const void*, size_t, XXH64_hash_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6190:1:XXH_errorcode ROCKSDB_XXH3_128bits_update(XXH3_state_t*, const void*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6197:30:XXH128_hash_t ROCKSDB_XXH3_128bits_digest(const XXH3_state_t*)	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6228:20:int ROCKSDB_XXH128_isEqual(XXH128_hash_t, XXH128_hash_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6239:20:int ROCKSDB_XXH128_cmp(const void*, const void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6253:1:void ROCKSDB_XXH128_canonicalFromHash(XXH128_canonical_t*, XXH128_hash_t)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6266:1:XXH128_hash_t ROCKSDB_XXH128_hashFromCanonical(const XXH128_canonical_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6290:1:XXH_errorcode ROCKSDB_XXH3_generateSecret(void*, size_t, const void*, size_t)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/xxhash.h:6335:1:void ROCKSDB_XXH3_generateSecret_fromSeed(void*, XXH64_hash_t)	256	static

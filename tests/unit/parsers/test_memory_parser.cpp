@@ -45,7 +45,9 @@ TEST(MemoryParserTest, ParseGccStackUsage) {
     ASSERT_TRUE(result.is_ok());
 
     const auto& metrics = result.value();
-    EXPECT_EQ(metrics.max_stack_bytes, 512);
+    // Parser correctly skips unreliable 'dynamic' measurements (512 bytes)
+    // and only considers reliable 'static' measurements (256 and 128 bytes)
+    EXPECT_EQ(metrics.max_stack_bytes, 256);
 
     fs::remove(temp_file);
 }

@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_builder.cc:55:8:size_t leveldb::BlockBuilder::CurrentSizeEstimate() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_builder.cc:61:7:leveldb::Slice leveldb::BlockBuilder::Finish()	32	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {unsigned int}; _Tp = unsigned int; _Alloc = std::allocator<unsigned int>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_builder.cc:71:6:void leveldb::BlockBuilder::Add(const leveldb::Slice&, const leveldb::Slice&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_builder.cc:40:1:leveldb::BlockBuilder::BlockBuilder(const leveldb::Options*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_builder.cc:46:6:void leveldb::BlockBuilder::Reset()	32	static

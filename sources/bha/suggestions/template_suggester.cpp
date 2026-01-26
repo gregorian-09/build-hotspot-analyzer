@@ -121,7 +121,17 @@ namespace bha::suggestions
             desc << "Template '" << template_name << "' is instantiated "
                  << tmpl.instantiation_count << " times with total time of "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(tmpl.total_time).count()
-                 << "ms. Using explicit instantiation eliminates redundant instantiations.";
+                 << "ms.\n\n";
+
+            desc << "**Add to template_instantiations.cpp:**\n```\n";
+            desc << generate_explicit_instantiation(template_name) << "\n";
+            desc << "```\n\n";
+
+            desc << "**Add to header:**\n```\n";
+            desc << generate_extern_template(template_name) << "\n";
+            desc << "```\n\n";
+
+            desc << "Using explicit instantiation eliminates redundant instantiations.";
             suggestion.description = desc.str();
 
             suggestion.rationale = "Explicit template instantiation forces the compiler to "
@@ -142,13 +152,42 @@ namespace bha::suggestions
             suggestion.target_file.action = FileAction::Create;
             suggestion.target_file.note = "Create file for explicit instantiations";
 
-            suggestion.before_code.code = "// Implicit instantiation in each TU";
+            std::ostringstream before;
+            before << "// Current: Implicit instantiation in each translation unit\n";
+            before << "// Template instantiated " << tmpl.instantiation_count << " times across files:\n";
+            std::size_t file_count = 0;
+            for (const auto& file : tmpl.files_using) {
+                if (file_count >= 5) {
+                    before << "// ... and " << (tmpl.files_using.size() - 5) << " more files\n";
+                    break;
+                }
+                before << "// - " << file << "\n";
+                ++file_count;
+            }
+            before << "\n// Each file pays the instantiation cost:\n";
+            before << "// " << template_name << "\n";
+            before << "// Total time wasted: "
+                   << std::chrono::duration_cast<std::chrono::milliseconds>(tmpl.total_time).count()
+                   << "ms";
+            suggestion.before_code.file = "Multiple files";
+            suggestion.before_code.code = before.str();
 
             std::ostringstream after;
-            after << "// In template_instantiations.cpp:\n"
+            after << "// template_instantiations.cpp - Explicit instantiation\n";
+            if (!tmpl.files_using.empty()) {
+                fs::path first_file(tmpl.files_using[0]);
+                after << "#include \"" << first_file.parent_path().string() << "/templates.h\"\n";
+            }
+            after << "\n// Explicitly instantiate once:\n"
                   << generate_explicit_instantiation(template_name) << "\n\n"
-                  << "// In header or using files:\n"
-                  << generate_extern_template(template_name);
+                  << "// In header file:\n"
+                  << "// Prevent implicit instantiation in other TUs:\n"
+                  << generate_extern_template(template_name) << "\n\n"
+                  << "// Result: Instantiated once, linked " << tmpl.instantiation_count << " times\n"
+                  << "// Savings: ~"
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(suggestion.estimated_savings).count()
+                  << "ms";
+            suggestion.after_code.file = "template_instantiations.cpp";
             suggestion.after_code.code = after.str();
 
             suggestion.implementation_steps = {

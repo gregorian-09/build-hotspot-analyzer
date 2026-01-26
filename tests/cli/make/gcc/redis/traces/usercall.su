@@ -1,0 +1,8 @@
+usercall.c:9:5:call_without_user	32	static
+usercall.c:116:7:bg_call_worker	80	static
+usercall.c:166:5:call_with_user_bg	80	static
+usercall.c:26:5:call_with_user_flag	64	static
+usercall.c:52:5:add_to_acl	64	static
+usercall.c:92:5:reset_user	32	static
+usercall.c:74:5:get_acl	32	static
+usercall.c:204:5:RedisModule_OnLoad	64	dynamic,bounded

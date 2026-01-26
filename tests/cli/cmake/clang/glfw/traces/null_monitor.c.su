@@ -1,0 +1,9 @@
+repos/glfw/src/null_monitor.c:52:_glfwPollMonitorsNull	8	static
+repos/glfw/src/null_monitor.c:66:_glfwFreeMonitorNull	0	static
+repos/glfw/src/null_monitor.c:71:_glfwGetMonitorPosNull	0	static
+repos/glfw/src/null_monitor.c:79:_glfwGetMonitorContentScaleNull	0	static
+repos/glfw/src/null_monitor.c:88:_glfwGetMonitorWorkareaNull	0	static
+repos/glfw/src/null_monitor.c:104:_glfwGetVideoModesNull	8	static
+repos/glfw/src/null_monitor.c:112:_glfwGetVideoModeNull	0	static
+repos/glfw/src/null_monitor.c:118:_glfwGetGammaRampNull	24	static
+repos/glfw/src/null_monitor.c:147:_glfwSetGammaRampNull	24	static

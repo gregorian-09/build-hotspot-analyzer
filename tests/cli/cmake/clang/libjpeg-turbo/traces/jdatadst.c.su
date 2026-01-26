@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/jdatadst.c:193:jpeg_stdio_dest	24	static
+repos/libjpeg-turbo/src/jdatadst.c:62:init_destination	8	static
+repos/libjpeg-turbo/src/jdatadst.c:106:empty_output_buffer	24	static
+repos/libjpeg-turbo/src/jdatadst.c:160:term_destination	24	static
+repos/libjpeg-turbo/src/jdatadst.c:237:jpeg_mem_dest	40	static
+repos/libjpeg-turbo/src/jdatadst.c:76:init_mem_destination	0	static
+repos/libjpeg-turbo/src/jdatadst.c:121:empty_mem_output_buffer	40	static
+repos/libjpeg-turbo/src/jdatadst.c:177:term_mem_destination	0	static

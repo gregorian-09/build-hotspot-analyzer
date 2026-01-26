@@ -1,0 +1,10 @@
+parsedate.c:559:curl_getdate	56	static
+parsedate.c:345:parsedate	168	static
+parsedate.c:579:Curl_getdate_capped	40	static
+parsedate.c:254:skip	8	static
+parsedate.c:199:checkday	56	static
+parsedate.c:219:checkmonth	56	static
+parsedate.c:237:checktz	56	static
+parsedate.c:300:match_time	88	static
+parsedate.c:271:time2epoch	8	static
+parsedate.c:288:oneortwodigit	8	static

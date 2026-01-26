@@ -1,0 +1,10 @@
+lua.c:377:main	56	static
+lua.c:340:pmain	104	static
+lua.c:65:report	40	static
+lua.c:111:print_version	8	static
+lua.c:216:dotty	72	static
+lua.c:96:docall	40	static
+lua.c:76:traceback	8	static
+lua.c:35:laction	8	static
+lua.c:28:lstop	8	static
+lua.c:177:pushline	552	static

@@ -1,0 +1,3 @@
+repos/abseil/absl/base/internal/strerror.cc:77:_ZN4absl13base_internal8StrErrorB5cxx11Ei	56	static
+repos/abseil/absl/base/internal/strerror.cc:67:_ZN4absl13base_internal12_GLOBAL__N_116NewStrErrorTableB5cxx11Ev	72	static
+repos/abseil/absl/base/internal/strerror.cc:53:_ZN4absl13base_internal12_GLOBAL__N_116StrErrorInternalB5cxx11Ei	168	static

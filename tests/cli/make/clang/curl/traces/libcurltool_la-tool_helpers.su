@@ -1,0 +1,3 @@
+tool_helpers.c:35:param2text	8	static
+tool_helpers.c:75:SetHTTPrequest	72	static
+tool_helpers.c:99:customrequest_helper	72	static

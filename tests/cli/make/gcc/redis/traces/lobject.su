@@ -1,0 +1,9 @@
+lobject.c:104:13:pushstr	32	static
+lobject.c:35:5:luaO_int2fb	8	static
+lobject.c:47:5:luaO_fb2int	8	static
+lobject.c:54:5:luaO_log2	8	static
+lobject.c:72:5:luaO_rawequalObj	8	static
+lobject.c:90:5:luaO_str2d	64	static
+lobject.c:111:13:luaO_pushvfstring	112	static
+lobject.c:172:13:luaO_pushfstring	224	static
+lobject.c:182:6:luaO_chunkid	32	static

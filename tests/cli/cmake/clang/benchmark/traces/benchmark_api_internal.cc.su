@@ -1,0 +1,10 @@
+repos/benchmark/src/benchmark_api_internal.cc:10:_ZN9benchmark8internal17BenchmarkInstanceC2EPNS_9BenchmarkEiiRKSt6vectorIlSaIlEEi	184	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:314:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEN9benchmark7CounterESt4lessIS5_ESaISt4pairIKS5_S7_EEED2Ev	8	static
+repos/benchmark/include/benchmark/benchmark.h:1786:_ZN9benchmark13BenchmarkNameD2Ev	8	static
+repos/benchmark/src/benchmark_api_internal.cc:92:_ZNK9benchmark8internal17BenchmarkInstance3RunEliPNS0_11ThreadTimerEPNS0_13ThreadManagerEPNS0_23PerfCountersMeasurementEPNS_15ProfilerManagerE	104	static
+repos/benchmark/include/benchmark/benchmark.h:767:_ZN9benchmark5StateD2Ev	8	static
+repos/benchmark/src/benchmark_api_internal.cc:103:_ZNK9benchmark8internal17BenchmarkInstance5SetupEv	376	static
+repos/benchmark/src/benchmark_api_internal.cc:111:_ZNK9benchmark8internal17BenchmarkInstance8TeardownEv	376	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_api_internal.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_N9benchmark7CounterEESt10_Select1stISA_ESt4lessIS5_ESaISA_EE8_M_eraseEPSt13_Rb_tree_nodeISA_E	24	static
+repos/benchmark/src/benchmark_api_internal.cc:0:_GLOBAL__sub_I_benchmark_api_internal.cc	0	static

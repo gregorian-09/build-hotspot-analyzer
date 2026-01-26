@@ -1,0 +1,4 @@
+tool_cb_dbg.c:128:tool_debug_cb	280	static
+tool_cb_dbg.c:35:hms_for_sec	88	static
+tool_cb_dbg.c:52:log_line_start	40	static
+tool_cb_dbg.c:68:dump	104	static

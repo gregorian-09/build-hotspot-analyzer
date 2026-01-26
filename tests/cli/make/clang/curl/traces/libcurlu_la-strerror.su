@@ -1,0 +1,4 @@
+strerror.c:34:curl_easy_strerror	8	static
+strerror.c:326:curl_multi_strerror	8	static
+strerror.c:385:curl_share_strerror	8	static
+strerror.c:420:curl_url_strerror	8	static

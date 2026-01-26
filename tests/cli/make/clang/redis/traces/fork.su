@@ -1,0 +1,5 @@
+fork.c:16:done_handler	8	static
+fork.c:23:fork_create	56	static
+fork.c:60:fork_exitcode	8	static
+fork.c:68:fork_kill	24	static
+fork.c:80:RedisModule_OnLoad	56	static

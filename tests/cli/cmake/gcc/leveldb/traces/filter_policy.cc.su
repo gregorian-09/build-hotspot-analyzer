@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/filter_policy.cc:9:1:leveldb::FilterPolicy::~FilterPolicy()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/filter_policy.cc:9:1:virtual leveldb::FilterPolicy::~FilterPolicy()	8	static

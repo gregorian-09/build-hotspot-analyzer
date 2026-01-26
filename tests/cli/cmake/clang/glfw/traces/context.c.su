@@ -1,0 +1,10 @@
+repos/glfw/src/context.c:47:_glfwIsValidContextConfig	8	static
+repos/glfw/src/context.c:183:_glfwChooseFBConfig	48	static
+repos/glfw/src/context.c:345:_glfwRefreshContextAttribs	72	static
+repos/glfw/src/context.c:616:glfwMakeContextCurrent	8	static
+repos/glfw/src/context.c:682:glfwExtensionSupported	56	static
+repos/glfw/src/context.c:585:_glfwStringInExtensionString	40	static
+repos/glfw/src/context.c:642:glfwGetCurrentContext	8	static
+repos/glfw/src/context.c:648:glfwSwapBuffers	0	static
+repos/glfw/src/context.c:665:glfwSwapInterval	8	static
+repos/glfw/src/context.c:748:glfwGetProcAddress	8	static

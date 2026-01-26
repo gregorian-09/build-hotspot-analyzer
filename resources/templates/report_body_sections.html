@@ -14,6 +14,9 @@
             <div class="tab" onclick="showTab('templates')">
                 <i class="fas fa-code"></i> Templates
             </div>
+            <div class="tab" onclick="showTab('memory')">
+                <i class="fas fa-memory"></i> Memory
+            </div>
             <div class="tab" onclick="showTab('suggestions')">
                 <i class="fas fa-magic"></i> Suggestions
             </div>
@@ -48,6 +51,8 @@
                                 <th>Total Time</th>
                                 <th>Frontend</th>
                                 <th>Backend</th>
+                                <th>Peak Memory</th>
+                                <th>Stack Usage</th>
                                 <th style="width: 200px;">Distribution</th>
                             </tr>
                         </thead>
@@ -153,6 +158,68 @@
                     <div class="loading">
                         <div class="spinner"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="memory" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-memory"></i> Memory Usage Analysis</h2>
+
+                <div class="dep-stats" style="margin-bottom: 32px;">
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="total-peak-memory">-</div>
+                        <div class="dep-stat-label">Total Peak Memory</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="max-file-memory">-</div>
+                        <div class="dep-stat-label">Max File Memory</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="avg-file-memory">-</div>
+                        <div class="dep-stat-label">Avg File Memory</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="max-stack-usage">-</div>
+                        <div class="dep-stat-label">Max Stack Usage</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px; color: var(--text-primary);">
+                    <i class="fas fa-chart-bar"></i> Top Memory Consumers
+                </h3>
+                <div class="controls">
+                    <select id="memory-sort">
+                        <option value="peak">Sort by Peak Memory</option>
+                        <option value="stack">Sort by Stack Usage</option>
+                        <option value="name">Sort by Name</option>
+                    </select>
+                    <input type="number" id="memory-limit" value="50" min="10" max="200"
+                           placeholder="Show top N" style="max-width: 150px;">
+                    <button class="btn btn-small" onclick="renderMemoryChart()">Refresh</button>
+                </div>
+                <div id="memory-chart-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 32px 0 16px; color: var(--text-primary);">
+                    <i class="fas fa-table"></i> Detailed Memory Usage
+                </h3>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table id="memory-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Peak Memory</th>
+                                <th>Frontend Peak</th>
+                                <th>Backend Peak</th>
+                                <th>Stack Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memory-table-body"></tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/segment-map.c:82:6:_mi_segment_map_allocated_at	96	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/segment-map.c:95:6:_mi_segment_map_freed_at	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/segment-map.c:131:39:mi_is_in_heap_region	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/segment-map.c:135:6:_mi_segment_map_unsafe_destroy	64	dynamic,bounded

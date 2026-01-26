@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.cc:23:1:leveldb::log::Writer::Writer(leveldb::WritableFile*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.cc:27:1:leveldb::log::Writer::Writer(leveldb::WritableFile*, uint64_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.cc:32:1:leveldb::log::Writer::~Writer()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.cc:82:8:leveldb::Status leveldb::log::Writer::EmitPhysicalRecord(leveldb::log::RecordType, const char*, size_t)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.cc:34:8:leveldb::Status leveldb::log::Writer::AddRecord(const leveldb::Slice&)	128	static

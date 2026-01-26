@@ -1,0 +1,11 @@
+lvm.c:35:luaV_tonumber	24	static
+lvm.c:47:luaV_tostring	56	static
+lvm.c:108:luaV_gettable	56	static
+lvm.c:134:luaV_settable	88	static
+lvm.c:227:luaV_lessthan	40	static
+lvm.c:192:call_orderTM	56	static
+lvm.c:257:luaV_equalval	56	static
+lvm.c:284:luaV_concat	136	static
+lvm.c:167:call_binTM	56	static
+lvm.c:379:luaV_execute	120	static
+lvm.c:319:Arith	104	static

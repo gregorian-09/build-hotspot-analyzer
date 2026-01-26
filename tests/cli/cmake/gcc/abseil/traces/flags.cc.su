@@ -1,0 +1,15 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/flag.h:159:30:const std::type_info* absl::flags_internal::GenRuntimeTypeId() [with T = int]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/flag.h:159:30:const std::type_info* absl::flags_internal::GenRuntimeTypeId() [with T = bool]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:119:15:static constexpr void<lambda()>::_FUN()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:83:15:static constexpr void<lambda()>::_FUN()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:40:6:void absl::log_internal::{anonymous}::SyncLoggingFlags()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:125:15:static constexpr void<lambda()>::_FUN()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:74:15:static constexpr void<lambda()>::_FUN()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:129:1:static void AbslFlagDefaultGenForvmodule::Gen(void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:89:1:static void AbslFlagDefaultGenForlog_backtrace_at::Gen(void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:141:15:static constexpr void<lambda()>::_FUN()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:91:15:static constexpr void<lambda()>::_FUN()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/flag.h:876:7:void* absl::flags_internal::FlagOps(FlagOp, const void*, void*, void*) [with T = int]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/flag.h:876:7:void* absl::flags_internal::FlagOps(FlagOp, const void*, void*, void*) [with T = bool]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/internal/flag.h:876:7:void* absl::flags_internal::FlagOps(FlagOp, const void*, void*, void*) [with T = std::__cxx11::basic_string<char>]	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/flags.cc:143:7:cc)	32	static

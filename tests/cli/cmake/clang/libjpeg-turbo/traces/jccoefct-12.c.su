@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/wrapper/../jccoefct.c:407:j12init_c_coef_controller	56	static
+repos/libjpeg-turbo/src/wrapper/../jccoefct.c:100:start_pass_coef	8	static
+repos/libjpeg-turbo/src/wrapper/../jccoefct.c:143:compress_data	168	static
+repos/libjpeg-turbo/src/wrapper/../jccoefct.c:247:compress_first_pass	168	static
+repos/libjpeg-turbo/src/wrapper/../jccoefct.c:343:compress_output	168	static

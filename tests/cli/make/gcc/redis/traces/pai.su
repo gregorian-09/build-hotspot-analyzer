@@ -1,0 +1,9 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+include/jemalloc/internal/edata.h:253:1:edata_list_active_first	16	static
+include/jemalloc/internal/edata.h:253:1:edata_list_active_append	16	static
+include/jemalloc/internal/edata.h:253:1:edata_list_active_remove	16	static
+include/jemalloc/internal/pai.h:40:1:pai_alloc	80	dynamic,bounded
+include/jemalloc/internal/pai.h:69:1:pai_dalloc	48	static
+src/pai.c:5:1:je_pai_alloc_batch_default	112	dynamic,bounded
+src/pai.c:22:1:je_pai_dalloc_batch_default	80	static

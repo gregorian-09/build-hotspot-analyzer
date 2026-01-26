@@ -1,0 +1,7 @@
+repos/libjpeg-turbo/src/jdhuff.c:143:jpeg_make_d_derived_tbl	1384	static
+repos/libjpeg-turbo/src/jdhuff.c:287:jpeg_fill_bit_buffer	56	static
+repos/libjpeg-turbo/src/jdhuff.c:436:jpeg_huff_decode	40	static
+repos/libjpeg-turbo/src/jdhuff.c:814:jinit_huff_decoder	24	static
+repos/libjpeg-turbo/src/jdhuff.c:79:start_pass_huff_decoder	56	static
+repos/libjpeg-turbo/src/jdhuff.c:770:decode_mcu	168	static
+repos/libjpeg-turbo/src/jstdhuff.c:20:add_huff_table	40	static

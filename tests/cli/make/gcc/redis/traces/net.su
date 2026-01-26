@@ -1,0 +1,17 @@
+net.c:101:13:__redisSetErrorFromErrno.constprop	192	static
+net.c:55:6:redisNetClose	16	static
+net.c:62:9:redisNetRead	16	static
+net.c:84:9:redisNetWrite	16	static
+net.c:171:5:redisKeepAlive	64	static
+net.c:221:5:redisSetTcpNoDelay	208	static
+net.c:231:5:redisContextSetTcpUserTimeout	208	static
+net.c:307:5:redisCheckConnectDone	48	static
+net.c:343:5:redisCheckSocketError	192	static
+net.c:274:12:redisContextWaitReady	192	static
+net.c:384:5:redisContextUpdateConnectTimeout	32	static
+net.c:416:12:_redisContextConnectTcp	336	static
+net.c:400:5:redisContextUpdateCommandTimeout	32	static
+net.c:365:5:redisContextSetTimeout	192	static
+net.c:596:5:redisContextConnectTcp	8	static
+net.c:601:5:redisContextConnectBindTcp	8	static
+net.c:607:5:redisContextConnectUnix	208	static

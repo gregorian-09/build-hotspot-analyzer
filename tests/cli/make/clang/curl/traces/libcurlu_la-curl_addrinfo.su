@@ -1,0 +1,6 @@
+curl_addrinfo.c:70:Curl_freeaddrinfo	40	static
+curl_addrinfo.c:95:Curl_getaddrinfo_ex	120	static
+curl_addrinfo.c:407:Curl_str2addr	72	static
+curl_addrinfo.c:341:ip2addr	104	static
+curl_addrinfo.c:425:Curl_is_ipaddr	56	static
+curl_addrinfo.c:447:Curl_unix2addr	72	static

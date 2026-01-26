@@ -1,0 +1,2 @@
+ldump.c:153:luaU_dump	88	static
+ldump.c:129:DumpFunction	56	static

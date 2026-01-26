@@ -361,17 +361,20 @@ namespace bha::suggestions
             );
 
             Suggestion suggestion;
-            suggestion.id = "split-" + header.path.filename().string();
+            suggestion.id = "split-" + filename;
             suggestion.type = SuggestionType::HeaderSplit;
             suggestion.priority = priority;
             suggestion.confidence = confidence;
 
             std::ostringstream title;
-            title << "Consider splitting " << header.path.filename().string();
+            title << "Consider splitting " << filename;
             suggestion.title = title.str();
 
             auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 header.total_parse_time).count();
+
+            std::string fwd_header_name = suggest_split_name(header.path, "fwd");
+            std::string types_header_name = suggest_split_name(header.path, "types");
 
             std::ostringstream desc;
             desc << "Header '" << header.path.string() << "' takes "
@@ -380,8 +383,37 @@ namespace bha::suggestions
             if (header.inclusion_count > header.including_files) {
                 desc << " (" << header.inclusion_count << " total inclusions)";
             }
-            desc << ". Splitting into smaller, focused headers can reduce "
-                 << "compile times when files only need a subset of declarations.";
+            desc << ".\n\n";
+
+            desc << "**Suggested split pattern:**\n```\n";
+            switch (pattern) {
+                case SplitPattern::ForwardDecl:
+                    desc << "// " << fwd_header_name << " - Forward declarations\n";
+                    desc << "#pragma once\n\n";
+                    desc << "class MyClass;  // Forward declaration\n";
+                    desc << "struct MyStruct;  // Forward declaration\n\n";
+                    desc << "// " << filename << " - Full definitions\n";
+                    desc << "#pragma once\n";
+                    desc << "#include \"" << fwd_header_name << "\"\n\n";
+                    desc << "class MyClass { /* ... */ };  // Full definition\n";
+                    desc << "struct MyStruct { /* ... */ };  // Full definition\n";
+                    break;
+                case SplitPattern::TypesAndFwd:
+                    desc << "// " << fwd_header_name << " - Forward declarations\n";
+                    desc << "// " << types_header_name << " - Type definitions\n";
+                    desc << "// " << filename << " - Full interface\n";
+                    break;
+                case SplitPattern::FunctionalGroups:
+                    desc << "// " << suggest_split_name(header.path, "group1") << " - Group 1 functionality\n";
+                    desc << "// " << suggest_split_name(header.path, "group2") << " - Group 2 functionality\n";
+                    break;
+                case SplitPattern::PublicPrivate:
+                    desc << "// " << filename << " - Public API\n";
+                    desc << "// " << suggest_split_name(header.path, "internal") << " - Internal details\n";
+                    break;
+            }
+            desc << "```\n\n";
+            desc << "Splitting into smaller, focused headers can reduce compile times when files only need a subset of declarations.";
             suggestion.description = desc.str();
 
             std::ostringstream rationale;
@@ -421,35 +453,88 @@ namespace bha::suggestions
             suggestion.target_file.action = FileAction::Modify;
             suggestion.target_file.note = "Split into smaller, focused headers";
 
-            // Example code
-            std::string fwd_header_name = suggest_split_name(header.path, "fwd");
-            std::string types_header_name = suggest_split_name(header.path, "types");
-
             std::ostringstream before;
-            before << "// " << header.path.filename().string() << "\n"
+            before << "// " << header.path.string() << "\n"
                    << "#pragma once\n\n"
-                   << "// All declarations, types, and implementations in one file\n"
-                   << "class MyClass { ... };\n"
-                   << "struct MyStruct { ... };\n"
-                   << "void my_function();\n";
+                   << "// Current: Single monolithic header\n"
+                   << "// Parse time: " << parse_ms << "ms\n"
+                   << "// Included by " << header.including_files << " files";
+            if (header.inclusion_count > header.including_files) {
+                before << " (" << header.inclusion_count << " total inclusions)";
+            }
+            before << "\n\n"
+                   << "// All " << header.including_files << " files must parse:\n"
+                   << "// - All type definitions\n"
+                   << "// - All function declarations\n"
+                   << "// - All inline implementations\n"
+                   << "// - All template instantiations\n"
+                   << "//\n"
+                   << "// Even if they only need forward declarations!\n"
+                   << "// Total wasted time: ~"
+                   << (static_cast<std::size_t>(parse_ms) * header.including_files / 3) << "ms";
             suggestion.before_code.file = header.path;
             suggestion.before_code.code = before.str();
 
             std::ostringstream after;
-            after << "// " << fwd_header_name << " - forward declarations only\n"
-                  << "#pragma once\n"
-                  << "class MyClass;\n"
-                  << "struct MyStruct;\n\n"
-                  << "// " << types_header_name << " - type definitions\n"
-                  << "#pragma once\n"
-                  << "#include \"" << fwd_header_name << "\"\n"
-                  << "struct MyStruct { ... };\n\n"
-                  << "// " << header.path.filename().string() << " - full header\n"
-                  << "#pragma once\n"
-                  << "#include \"" << types_header_name << "\"\n"
-                  << "class MyClass { ... };\n"
-                  << "void my_function();";
-            suggestion.after_code.file = header.path;
+            switch (pattern) {
+                case SplitPattern::ForwardDecl:
+                    after << "// " << fwd_header_name << " - Forward declarations only\n"
+                          << "#pragma once\n\n"
+                          << "// Fast to parse - just forward decls\n"
+                          << "// Use when you only need pointers/references\n"
+                          << "// Files using forward decls: ~" << (header.including_files * 30 / 100) << "\n\n"
+                          << "// Original header\n"
+                          << "// " << header.path.string() << "\n"
+                          << "#pragma once\n"
+                          << "#include \"" << fwd_header_name << "\"\n\n"
+                          << "// Full definitions for files that need them\n"
+                          << "// Files needing full header: ~" << (header.including_files * 70 / 100) << "\n\n"
+                          << "// Estimated savings: ~"
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(savings).count() << "ms";
+                    break;
+
+                case SplitPattern::TypesAndFwd:
+                    after << "// " << fwd_header_name << " - Forward declarations\n"
+                          << "#pragma once\n\n"
+                          << "// " << types_header_name << " - Type definitions only\n"
+                          << "#pragma once\n"
+                          << "#include \"" << fwd_header_name << "\"\n\n"
+                          << "// " << header.path.string() << " - Full header\n"
+                          << "#pragma once\n"
+                          << "#include \"" << types_header_name << "\"\n\n"
+                          << "// Includers can now choose:\n"
+                          << "// - " << fwd_header_name << " (fastest, forward decls only)\n"
+                          << "// - " << types_header_name << " (type defs, no functions)\n"
+                          << "// - " << header.path.filename().string() << " (complete interface)\n\n"
+                          << "// Estimated savings: ~"
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(savings).count() << "ms";
+                    break;
+
+                case SplitPattern::FunctionalGroups:
+                    after << "// Split " << header.path.string() << " into focused headers:\n\n"
+                          << "// " << suggest_split_name(header.path, "group1") << " - Specific functionality\n"
+                          << "// " << suggest_split_name(header.path, "group2") << " - Another functionality\n\n"
+                          << "// Benefits:\n"
+                          << "// - Files only include what they use\n"
+                          << "// - Reduces transitive dependencies\n"
+                          << "// - Faster incremental builds\n\n"
+                          << "// Estimated savings: ~"
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(savings).count() << "ms";
+                    break;
+
+                case SplitPattern::PublicPrivate:
+                    after << "// " << header.path.filename().string() << " - Public API only\n"
+                          << "#pragma once\n\n"
+                          << "// " << suggest_split_name(header.path, "internal") << " - Internal details\n"
+                          << "#pragma once\n"
+                          << "#include \"" << header.path.filename().string() << "\"\n\n"
+                          << "// External code uses: " << header.path.filename().string() << "\n"
+                          << "// Internal code uses: " << suggest_split_name(header.path, "internal") << "\n\n"
+                          << "// Estimated savings: ~"
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(savings).count() << "ms";
+                    break;
+            }
+            suggestion.after_code.file = "Proposed split";
             suggestion.after_code.code = after.str();
 
             suggestion.implementation_steps = generate_implementation_steps(header.path, pattern);

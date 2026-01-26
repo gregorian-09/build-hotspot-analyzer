@@ -1,0 +1,7 @@
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:48:_ZN4absl19internal_stacktrace19BorrowedFixupBufferD2Ev	8	static
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:110:_ZNO4absl19internal_stacktrace19BorrowedFixupBuffer6UnlockEv	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:__clang_call_terminate	8	static
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:56:_ZN4absl19internal_stacktrace19BorrowedFixupBufferC2Em	24	static
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:96:_ZN4absl19internal_stacktrace19BorrowedFixupBuffer7TryLockEv	0	static
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:67:_ZN4absl19internal_stacktrace19BorrowedFixupBuffer13InitViaBorrowEv	0	static
+repos/abseil/absl/debugging/internal/borrowed_fixup_buffer.cc:73:_ZN4absl19internal_stacktrace19BorrowedFixupBuffer17InitViaAllocationEm	24	static

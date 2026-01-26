@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock_linux.inc:59:26:void AbslInternalSpinLockDelay(std::atomic<unsigned int>*, uint32_t, int, absl::base_internal::SchedulingMode)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock_linux.inc:66:26:void AbslInternalSpinLockWake(std::atomic<unsigned int>*, bool)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock_wait.cc:39:10:uint32_t absl::base_internal::SpinLockWait(std::atomic<unsigned int>*, int, const SpinLockWaitTransition*, SchedulingMode)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock_wait.cc:62:5:int absl::base_internal::SpinLockSuggestedDelayNS(int)	8	static

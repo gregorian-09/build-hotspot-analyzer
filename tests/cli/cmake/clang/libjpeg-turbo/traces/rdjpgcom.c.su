@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/rdjpgcom.c:437:main	120	static
+repos/libjpeg-turbo/src/rdjpgcom.c:323:scan_JPEG_header	72	static
+repos/libjpeg-turbo/src/rdjpgcom.c:185:skip_variable	8	static
+repos/libjpeg-turbo/src/rdjpgcom.c:211:process_COM	56	static
+repos/libjpeg-turbo/src/rdjpgcom.c:77:read_2_bytes	8	static

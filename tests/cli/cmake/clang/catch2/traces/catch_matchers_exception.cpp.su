@@ -1,0 +1,5 @@
+src/catch2/matchers/catch_matchers_exception.cpp:13:_ZNK5Catch8Matchers23ExceptionMessageMatcher5matchERKSt9exception	24	static
+src/catch2/matchers/catch_matchers_exception.cpp:17:_ZNK5Catch8Matchers23ExceptionMessageMatcher8describeB5cxx11Ev	72	static
+src/catch2/matchers/catch_matchers_exception.cpp:21:_ZN5Catch8Matchers7MessageERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	56	static
+src/catch2/../catch2/matchers/catch_matchers_exception.hpp:16:_ZN5Catch8Matchers23ExceptionMessageMatcherD2Ev	8	static
+src/catch2/../catch2/matchers/catch_matchers_exception.hpp:16:_ZN5Catch8Matchers23ExceptionMessageMatcherD0Ev	8	static

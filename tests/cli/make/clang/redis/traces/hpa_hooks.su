@@ -1,0 +1,7 @@
+src/hpa_hooks.c:25:hpa_hooks_map	24	static
+src/hpa_hooks.c:31:hpa_hooks_unmap	24	static
+src/hpa_hooks.c:36:hpa_hooks_purge	24	static
+src/hpa_hooks.c:41:hpa_hooks_hugify	40	static
+src/hpa_hooks.c:47:hpa_hooks_dehugify	40	static
+src/hpa_hooks.c:53:hpa_hooks_curtime	40	static
+src/hpa_hooks.c:61:hpa_hooks_ms_since	24	static

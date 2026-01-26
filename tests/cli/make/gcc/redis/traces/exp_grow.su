@@ -1,0 +1,7 @@
+include/jemalloc/internal/bit_util.h:98:1:fls_lu	16	static
+include/jemalloc/internal/bit_util.h:326:1:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:392:1:lg_floor	40	static
+include/jemalloc/internal/bit_util.h:402:1:lg_ceil	24	static
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/exp_grow.c:5:1:je_exp_grow_init	96	static

@@ -1,0 +1,10 @@
+repos/libjpeg-turbo/src/jcparam.c:30:jpeg_add_quant_table	40	static
+repos/libjpeg-turbo/src/jcparam.c:115:jpeg_set_linear_quality	40	static
+repos/libjpeg-turbo/src/jcparam.c:132:jpeg_quality_scaling	0	static
+repos/libjpeg-turbo/src/jcparam.c:158:jpeg_set_quality	0	static
+repos/libjpeg-turbo/src/jcparam.c:184:jpeg_set_defaults	24	static
+repos/libjpeg-turbo/src/jcparam.c:286:jpeg_default_colorspace	8	static
+repos/libjpeg-turbo/src/jcparam.c:333:jpeg_set_colorspace	24	static
+repos/libjpeg-turbo/src/jcparam.c:477:jpeg_simple_progression	24	static
+repos/libjpeg-turbo/src/jcparam.c:567:jpeg_enable_lossless	24	static
+repos/libjpeg-turbo/src/jstdhuff.c:20:add_huff_table	40	static

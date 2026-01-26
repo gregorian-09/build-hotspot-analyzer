@@ -1,0 +1,5 @@
+src/catch2/internal/catch_fatal_condition_handler.cpp:207:_ZN5Catch21FatalConditionHandlerC2Ev	24	static
+src/catch2/internal/catch_fatal_condition_handler.cpp:215:_ZN5Catch21FatalConditionHandlerD2Ev	8	static
+src/catch2/internal/catch_fatal_condition_handler.cpp:222:_ZN5Catch21FatalConditionHandler15engage_platformEv	184	static
+src/catch2/internal/catch_fatal_condition_handler.cpp:191:_ZN5CatchL12handleSignalEi	40	static
+src/catch2/internal/catch_fatal_condition_handler.cpp:242:_ZN5Catch21FatalConditionHandler18disengage_platformEv	8	static

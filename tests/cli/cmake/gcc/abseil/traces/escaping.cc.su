@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/escaping.cc:36:8:size_t absl::strings_internal::CalculateBase64EscapedLenInternal(size_t, bool)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/escaping.cc:91:8:size_t absl::strings_internal::Base64EscapeInternal(const unsigned char*, size_t, char*, size_t, const char*, bool)	32	static

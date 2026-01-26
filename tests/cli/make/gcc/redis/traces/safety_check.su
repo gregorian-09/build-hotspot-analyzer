@@ -1,0 +1,5 @@
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+src/safety_check.c:6:6:je_safety_check_fail_sized_dealloc	64	static
+src/safety_check.c:18:6:je_safety_check_set_abort	16	static
+src/safety_check.c:22:6:je_safety_check_fail	4352	static

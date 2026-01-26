@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/conditions.cc:39:6:bool absl::log_internal::LogEveryNState::ShouldLog(int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/conditions.cc:43:6:bool absl::log_internal::LogFirstNState::ShouldLog(int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/conditions.cc:52:6:bool absl::log_internal::LogEveryPow2State::ShouldLog()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/conditions.cc:57:6:bool absl::log_internal::LogEveryNSecState::ShouldLog(double)	48	static

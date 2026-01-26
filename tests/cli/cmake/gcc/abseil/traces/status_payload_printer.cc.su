@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/atomic_hook.h:135:21:) [with ReturnType = std::optional<std::__cxx11::basic_string<char> >; Args = {std::basic_string_view<char, std::char_traits<char> >, const absl::Cord&}]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/status/status_payload_printer.cc:26:6:void absl::status_internal::SetStatusPayloadPrinter(StatusPayloadPrinter)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/status/status_payload_printer.cc:30:22:std::optional<std::__cxx11::basic_string<char> > (* absl::status_internal::GetStatusPayloadPrinter())(std::string_view, const absl::Cord&)	8	static

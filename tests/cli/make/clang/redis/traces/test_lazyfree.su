@@ -1,0 +1,12 @@
+test_lazyfree.c:23:createLazyFreeLinkObject	8	static
+test_lazyfree.c:31:LazyFreeLinkInsert	40	static
+test_lazyfree.c:49:LazyFreeLinkReleaseObject	24	static
+test_lazyfree.c:61:LazyFreeLinkInsert_RedisCommand	56	static
+test_lazyfree.c:96:LazyFreeLinkLen_RedisCommand	24	static
+test_lazyfree.c:114:LazyFreeLinkRdbLoad	56	static
+test_lazyfree.c:127:LazyFreeLinkRdbSave	24	static
+test_lazyfree.c:137:LazyFreeLinkAofRewrite	56	static
+test_lazyfree.c:146:LazyFreeLinkFree	24	static
+test_lazyfree.c:150:LazyFreeLinkFreeEffort	0	static
+test_lazyfree.c:156:LazyFreeLinkUnlink	0	static
+test_lazyfree.c:162:RedisModule_OnLoad	216	static

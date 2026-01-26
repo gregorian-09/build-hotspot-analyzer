@@ -1,0 +1,13 @@
+configaccess.c:10:5:getBoolConfigCommand	8	static
+configaccess.c:15:5:setBoolConfigCommand	8	static
+configaccess.c:106:5:TestGetBoolConfig_RedisCommand	64	static
+configaccess.c:125:5:TestGetNumericConfig_RedisCommand	64	static
+configaccess.c:144:5:TestGetConfig_RedisCommand	64	static
+configaccess.c:164:5:TestGetEnumConfig_RedisCommand	64	static
+configaccess.c:215:5:TestSetNumericConfig_RedisCommand	80	static
+configaccess.c:251:5:TestSetConfig_RedisCommand	80	static
+configaccess.c:273:5:TestSetEnumConfig_RedisCommand	64	static
+configaccess.c:23:5:TestGetConfigType_RedisCommand	64	static
+configaccess.c:62:5:TestConfigIteration_RedisCommand	96	static
+configaccess.c:184:5:TestSetBoolConfig_RedisCommand	80	static
+configaccess.c:294:5:RedisModule_OnLoad	64	dynamic,bounded

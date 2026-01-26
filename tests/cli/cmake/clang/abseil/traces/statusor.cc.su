@@ -1,0 +1,16 @@
+repos/abseil/absl/status/statusor.cc:30:_ZN4absl17BadStatusOrAccessC2ENS_6StatusE	0	static
+repos/abseil/absl/status/statusor.cc:33:_ZN4absl17BadStatusOrAccessC2ERKS0_	0	static
+repos/abseil/absl/status/statusor.cc:36:_ZN4absl17BadStatusOrAccessaSERKS0_	24	static
+repos/abseil/absl/status/statusor.cc:65:_ZNK4absl17BadStatusOrAccess8InitWhatEv	8	static
+repos/abseil/absl/status/statusor.cc:46:_ZN4absl17BadStatusOrAccessaSEOS0_	24	static
+repos/abseil/absl/status/statusor.cc:55:_ZN4absl17BadStatusOrAccessC2EOS0_	0	static
+repos/abseil/absl/status/statusor.cc:58:_ZNK4absl17BadStatusOrAccess4whatEv	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/status/statusor.cc:__clang_call_terminate	8	static
+repos/abseil/absl/status/statusor.cc:63:_ZNK4absl17BadStatusOrAccess6statusEv	0	static
+repos/abseil/absl/status/statusor.cc:73:_ZN4absl17internal_statusor6Helper26HandleInvalidStatusCtorArgEPNS_6StatusE	40	static
+repos/abseil/absl/base/internal/atomic_hook.h:116:_ZNK4absl13base_internal10AtomicHookIPFvNS_11LogSeverityEPKciRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEclIJS2_RKS4_iRS4_EEEvDpOT_	104	static
+repos/abseil/absl/status/statusor.cc:85:_ZN4absl17internal_statusor6Helper5CrashERKNS_6StatusE	184	static
+repos/abseil/absl/status/statusor.cc:92:_ZN4absl17internal_statusor22ThrowBadStatusOrAccessENS_6StatusE	8	static
+repos/abseil/absl/status/statusor.h:81:_ZN4absl17BadStatusOrAccessD2Ev	8	static
+repos/abseil/absl/status/statusor.h:81:_ZN4absl17BadStatusOrAccessD0Ev	8	static
+repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIZNKS_17BadStatusOrAccess8InitWhatEvE3$_0JEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	184	static

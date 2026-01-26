@@ -1,0 +1,8 @@
+http1.c:36:Curl_h1_req_parse_init	24	static
+http1.c:43:Curl_h1_req_parse_free	24	static
+http1.c:262:Curl_h1_req_parse_read	72	static
+http1.c:94:next_line	72	static
+http1.c:131:start_req	8424	static
+http1.c:317:Curl_h1_req_write_head	120	static
+http1.c:77:detect_line	56	static
+http1.c:53:trim_line	8	static

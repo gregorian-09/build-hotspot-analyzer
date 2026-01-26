@@ -1,0 +1,272 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:687:26:virtual tinyxml2::XMLElement* tinyxml2::XMLNode::ToElement()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:691:23:virtual tinyxml2::XMLText* tinyxml2::XMLNode::ToText()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:695:26:virtual tinyxml2::XMLComment* tinyxml2::XMLNode::ToComment()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:699:26:virtual tinyxml2::XMLDocument* tinyxml2::XMLNode::ToDocument()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:703:29:virtual tinyxml2::XMLDeclaration* tinyxml2::XMLNode::ToDeclaration()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:707:26:virtual tinyxml2::XMLUnknown* tinyxml2::XMLNode::ToUnknown()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:711:32:virtual const tinyxml2::XMLElement* tinyxml2::XMLNode::ToElement() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:714:30:virtual const tinyxml2::XMLText* tinyxml2::XMLNode::ToText() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:717:32:virtual const tinyxml2::XMLComment* tinyxml2::XMLNode::ToComment() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:720:33:virtual const tinyxml2::XMLDocument* tinyxml2::XMLNode::ToDocument() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:723:35:virtual const tinyxml2::XMLDeclaration* tinyxml2::XMLNode::ToDeclaration() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:726:32:virtual const tinyxml2::XMLUnknown* tinyxml2::XMLNode::ToUnknown() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:998:22:virtual tinyxml2::XMLText* tinyxml2::XMLText::ToText()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1001:28:virtual const tinyxml2::XMLText* tinyxml2::XMLText::ToText() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1036:25:virtual tinyxml2::XMLComment* tinyxml2::XMLComment::ToComment()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1039:31:virtual const tinyxml2::XMLComment* tinyxml2::XMLComment::ToComment() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1075:29:virtual tinyxml2::XMLDeclaration* tinyxml2::XMLDeclaration::ToDeclaration()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1078:35:virtual const tinyxml2::XMLDeclaration* tinyxml2::XMLDeclaration::ToDeclaration() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1110:25:virtual tinyxml2::XMLUnknown* tinyxml2::XMLUnknown::ToUnknown()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1113:31:virtual const tinyxml2::XMLUnknown* tinyxml2::XMLUnknown::ToUnknown() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1278:25:virtual tinyxml2::XMLElement* tinyxml2::XMLElement::ToElement()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1281:31:virtual const tinyxml2::XMLElement* tinyxml2::XMLElement::ToElement() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1733:26:virtual tinyxml2::XMLDocument* tinyxml2::XMLDocument::ToDocument()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1737:32:virtual const tinyxml2::XMLDocument* tinyxml2::XMLDocument::ToDocument() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1925:22:virtual tinyxml2::XMLNode* tinyxml2::XMLDocument::ShallowClone(tinyxml2::XMLDocument*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1928:18:virtual bool tinyxml2::XMLDocument::ShallowEqual(const tinyxml2::XMLNode*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:2297:18:virtual bool tinyxml2::XMLPrinter::VisitExit(const tinyxml2::XMLDocument&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:2335:15:virtual bool tinyxml2::XMLPrinter::CompactMode(const tinyxml2::XMLElement&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:803:6:virtual bool tinyxml2::XMLDocument::Accept(tinyxml2::XMLVisitor*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1300:6:virtual bool tinyxml2::XMLText::Accept(tinyxml2::XMLVisitor*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1348:6:virtual bool tinyxml2::XMLComment::Accept(tinyxml2::XMLVisitor*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1398:6:virtual bool tinyxml2::XMLDeclaration::Accept(tinyxml2::XMLVisitor*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1445:6:virtual bool tinyxml2::XMLUnknown::Accept(tinyxml2::XMLVisitor*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2164:6:virtual bool tinyxml2::XMLElement::Accept(tinyxml2::XMLVisitor*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:363:20:size_t tinyxml2::MemPoolT<ITEM_SIZE>::ItemSize() const [with long unsigned int ITEM_SIZE = 104]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:396:18:void tinyxml2::MemPoolT<ITEM_SIZE>::Free(void*) [with long unsigned int ITEM_SIZE = 104]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:414:10:void tinyxml2::MemPoolT<ITEM_SIZE>::SetTracked() [with long unsigned int ITEM_SIZE = 104]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:363:20:size_t tinyxml2::MemPoolT<ITEM_SIZE>::ItemSize() const [with long unsigned int ITEM_SIZE = 112]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:396:18:void tinyxml2::MemPoolT<ITEM_SIZE>::Free(void*) [with long unsigned int ITEM_SIZE = 112]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:414:10:void tinyxml2::MemPoolT<ITEM_SIZE>::SetTracked() [with long unsigned int ITEM_SIZE = 112]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:363:20:size_t tinyxml2::MemPoolT<ITEM_SIZE>::ItemSize() const [with long unsigned int ITEM_SIZE = 80]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:396:18:void tinyxml2::MemPoolT<ITEM_SIZE>::Free(void*) [with long unsigned int ITEM_SIZE = 80]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:414:10:void tinyxml2::MemPoolT<ITEM_SIZE>::SetTracked() [with long unsigned int ITEM_SIZE = 80]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:363:20:size_t tinyxml2::MemPoolT<ITEM_SIZE>::ItemSize() const [with long unsigned int ITEM_SIZE = 120]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:396:18:void tinyxml2::MemPoolT<ITEM_SIZE>::Free(void*) [with long unsigned int ITEM_SIZE = 120]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:414:10:void tinyxml2::MemPoolT<ITEM_SIZE>::SetTracked() [with long unsigned int ITEM_SIZE = 120]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:2254:13:tinyxml2::XMLPrinter::~XMLPrinter()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2631:6:)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:370:19:void* tinyxml2::MemPoolT<ITEM_SIZE>::Alloc() [with long unsigned int ITEM_SIZE = 80]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:370:19:void* tinyxml2::MemPoolT<ITEM_SIZE>::Alloc() [with long unsigned int ITEM_SIZE = 104]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:370:19:void* tinyxml2::MemPoolT<ITEM_SIZE>::Alloc() [with long unsigned int ITEM_SIZE = 112]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:370:19:void* tinyxml2::MemPoolT<ITEM_SIZE>::Alloc() [with long unsigned int ITEM_SIZE = 120]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 104]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 80]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 112]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 120]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 80]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 120]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 104]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:346:5:tinyxml2::MemPoolT<ITEM_SIZE>::~MemPoolT() [with long unsigned int ITEM_SIZE = 112]	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:2254:13:virtual tinyxml2::XMLPrinter::~XMLPrinter()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2679:6:virtual void tinyxml2::XMLPrinter::PrintSpace(int)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2666:6:virtual void tinyxml2::XMLPrinter::Putc(char)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2687:6:0(const char*, bool)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2653:6:virtual void tinyxml2::XMLPrinter::Write(const char*, size_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1245:13:tinyxml2::XMLAttribute::~XMLAttribute()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1245:13:virtual tinyxml2::XMLAttribute::~XMLAttribute()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:215:6:void tinyxml2::StrPair::SetStr(const char*, int)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2753:6:void tinyxml2::XMLPrinter::PrepareForNewNode(bool)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2518:6:)	80	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1416:7:virtual char* tinyxml2::XMLUnknown::ParseDeep(char*, tinyxml2::StrPair*, int*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1368:7:virtual char* tinyxml2::XMLDeclaration::ParseDeep(char*, tinyxml2::StrPair*, int*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1319:7:virtual char* tinyxml2::XMLComment::ParseDeep(char*, tinyxml2::StrPair*, int*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2983:6:virtual bool tinyxml2::XMLPrinter::VisitEnter(const tinyxml2::XMLDocument&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:2345:17:void tinyxml2::XMLPrinter::Write(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2843:6:virtual void tinyxml2::XMLPrinter::CloseElement(bool)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:3009:6:virtual bool tinyxml2::XMLPrinter::VisitExit(const tinyxml2::XMLElement&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:173:1:tinyxml2::StrPair::~StrPair()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:179:6:void tinyxml2::StrPair::TransferTo(tinyxml2::StrPair*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:204:6:void tinyxml2::StrPair::Reset()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:215:6:void tinyxml2::StrPair::SetStr(const char*, int)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:228:7:char* tinyxml2::StrPair::ParseText(char*, const char*, int, int*)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1254:7:virtual char* tinyxml2::XMLText::ParseDeep(char*, tinyxml2::StrPair*, int*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:253:7:char* tinyxml2::StrPair::ParseName(char*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:273:6:void tinyxml2::StrPair::CollapseWhitespace()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:410:6:static void tinyxml2::XMLUtil::SetBoolSerialization(const char*, const char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:420:13:static const char* tinyxml2::XMLUtil::ReadBOM(const char*, bool*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:438:6:static void tinyxml2::XMLUtil::ConvertUTF32ToUTF8(long unsigned int, char*, int*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:491:13:static const char* tinyxml2::XMLUtil::GetCharacterRef(const char*, char*, int*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:302:13:const char* tinyxml2::StrPair::GetStr()	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1281:10:virtual tinyxml2::XMLNode* tinyxml2::XMLText::ShallowClone(tinyxml2::XMLDocument*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:3016:6:virtual bool tinyxml2::XMLPrinter::Visit(const tinyxml2::XMLText&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:3023:6:virtual bool tinyxml2::XMLPrinter::Visit(const tinyxml2::XMLComment&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:3029:6:virtual bool tinyxml2::XMLPrinter::Visit(const tinyxml2::XMLDeclaration&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:3036:6:virtual bool tinyxml2::XMLPrinter::Visit(const tinyxml2::XMLUnknown&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1389:6:virtual bool tinyxml2::XMLDeclaration::ShallowEqual(const tinyxml2::XMLNode*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1292:6:virtual bool tinyxml2::XMLText::ShallowEqual(const tinyxml2::XMLNode*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1340:6:virtual bool tinyxml2::XMLComment::ShallowEqual(const tinyxml2::XMLNode*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1437:6:virtual bool tinyxml2::XMLUnknown::ShallowEqual(const tinyxml2::XMLNode*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1379:10:virtual tinyxml2::XMLNode* tinyxml2::XMLDeclaration::ShallowClone(tinyxml2::XMLDocument*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1330:10:virtual tinyxml2::XMLNode* tinyxml2::XMLComment::ShallowClone(tinyxml2::XMLDocument*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1427:10:virtual tinyxml2::XMLNode* tinyxml2::XMLUnknown::ShallowClone(tinyxml2::XMLDocument*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2138:6:virtual bool tinyxml2::XMLElement::ShallowEqual(const tinyxml2::XMLNode*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:579:6:static void tinyxml2::XMLUtil::ToStr(int, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:585:6:static void tinyxml2::XMLUtil::ToStr(unsigned int, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:591:6:static void tinyxml2::XMLUtil::ToStr(bool, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:600:6:static void tinyxml2::XMLUtil::ToStr(float, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:606:6:static void tinyxml2::XMLUtil::ToStr(double, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:612:6:static void tinyxml2::XMLUtil::ToStr(int64_t, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:618:6:static void tinyxml2::XMLUtil::ToStr(uint64_t, char*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:624:6:static bool tinyxml2::XMLUtil::ToInt(const char*, int*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:641:6:static bool tinyxml2::XMLUtil::ToUnsigned(const char*, unsigned int*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:649:6:static bool tinyxml2::XMLUtil::ToBool(const char*, bool*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:675:6:static bool tinyxml2::XMLUtil::ToFloat(const char*, float*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:684:6:static bool tinyxml2::XMLUtil::ToDouble(const char*, double*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:693:6:static bool tinyxml2::XMLUtil::ToInt64(const char*, int64_t*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:713:6:static bool tinyxml2::XMLUtil::ToUnsigned64(const char*, uint64_t*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:819:1:tinyxml2::XMLNode::XMLNode(tinyxml2::XMLDocument*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:842:5:int tinyxml2::XMLNode::ChildElementCount(const char*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:855:5:int tinyxml2::XMLNode::ChildElementCount() const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:868:13:const char* tinyxml2::XMLNode::Value() const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:876:6:void tinyxml2::XMLNode::SetValue(const char*, bool)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:886:10:tinyxml2::XMLNode* tinyxml2::XMLNode::DeepClone(tinyxml2::XMLDocument*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:909:6:void tinyxml2::XMLNode::Unlink(tinyxml2::XMLNode*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:946:10:tinyxml2::XMLNode* tinyxml2::XMLNode::InsertEndChild(tinyxml2::XMLNode*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:976:10:tinyxml2::XMLNode* tinyxml2::XMLNode::InsertFirstChild(tinyxml2::XMLNode*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1045:19:const tinyxml2::XMLElement* tinyxml2::XMLNode::FirstChildElement(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1057:19:const tinyxml2::XMLElement* tinyxml2::XMLNode::LastChildElement(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1069:19:const tinyxml2::XMLElement* tinyxml2::XMLNode::NextSiblingElement(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1081:19:const tinyxml2::XMLElement* tinyxml2::XMLNode::PreviousSiblingElement(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1209:17:static void tinyxml2::XMLNode::DeleteNode(tinyxml2::XMLNode*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:933:6:void tinyxml2::XMLNode::DeleteChild(tinyxml2::XMLNode*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:899:6:void tinyxml2::XMLNode::DeleteChildren()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:832:1:tinyxml2::XMLNode::~XMLNode()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:832:1:virtual tinyxml2::XMLNode::~XMLNode()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1019:13:tinyxml2::XMLText::~XMLText()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1019:13:virtual tinyxml2::XMLText::~XMLText()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1314:1:tinyxml2::XMLComment::~XMLComment()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1314:1:virtual tinyxml2::XMLComment::~XMLComment()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1362:1:tinyxml2::XMLDeclaration::~XMLDeclaration()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1362:1:virtual tinyxml2::XMLDeclaration::~XMLDeclaration()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1411:1:tinyxml2::XMLUnknown::~XMLUnknown()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1411:1:virtual tinyxml2::XMLUnknown::~XMLUnknown()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1627:1:tinyxml2::XMLElement::~XMLElement()	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1627:1:virtual tinyxml2::XMLElement::~XMLElement()	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1224:6:void tinyxml2::XMLNode::InsertChildPreamble(tinyxml2::XMLNode*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1007:10:tinyxml2::XMLNode* tinyxml2::XMLNode::InsertAfterChild(tinyxml2::XMLNode*, tinyxml2::XMLNode*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1238:19:const tinyxml2::XMLElement* tinyxml2::XMLNode::ToElementWithName(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1309:1:tinyxml2::XMLComment::XMLComment(tinyxml2::XMLDocument*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1357:1:tinyxml2::XMLDeclaration::XMLDeclaration(tinyxml2::XMLDocument*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1406:1:tinyxml2::XMLUnknown::XMLUnknown(tinyxml2::XMLDocument*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1453:13:const char* tinyxml2::XMLAttribute::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1458:13:const char* tinyxml2::XMLAttribute::Value() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1463:7:char* tinyxml2::XMLAttribute::ParseDeep(char*, bool, int*)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1491:6:void tinyxml2::XMLAttribute::SetName(const char*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1497:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryIntValue(int*) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1506:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryUnsignedValue(unsigned int*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1515:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryInt64Value(int64_t*) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1524:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryUnsigned64Value(uint64_t*) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1533:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryBoolValue(bool*) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1542:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryFloatValue(float*) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1551:10:tinyxml2::XMLError tinyxml2::XMLAttribute::QueryDoubleValue(double*) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1560:6:void tinyxml2::XMLAttribute::SetAttribute(const char*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1566:6:void tinyxml2::XMLAttribute::SetAttribute(int)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1574:6:void tinyxml2::XMLAttribute::SetAttribute(unsigned int)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1582:6:void tinyxml2::XMLAttribute::SetAttribute(int64_t)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1589:6:void tinyxml2::XMLAttribute::SetAttribute(uint64_t)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1597:6:void tinyxml2::XMLAttribute::SetAttribute(bool)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1604:6:void tinyxml2::XMLAttribute::SetAttribute(double)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1611:6:void tinyxml2::XMLAttribute::SetAttribute(float)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1620:1:tinyxml2::XMLElement::XMLElement(tinyxml2::XMLDocument*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1637:21:const tinyxml2::XMLAttribute* tinyxml2::XMLElement::FindAttribute(const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1648:13:const char* tinyxml2::XMLElement::Attribute(const char*, const char*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1660:5:int tinyxml2::XMLElement::IntAttribute(const char*, int) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1667:10:unsigned int tinyxml2::XMLElement::UnsignedAttribute(const char*, unsigned int) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1674:9:int64_t tinyxml2::XMLElement::Int64Attribute(const char*, int64_t) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1681:10:uint64_t tinyxml2::XMLElement::Unsigned64Attribute(const char*, uint64_t) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1688:6:bool tinyxml2::XMLElement::BoolAttribute(const char*, bool) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1695:8:double tinyxml2::XMLElement::DoubleAttribute(const char*, double) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1702:7:float tinyxml2::XMLElement::FloatAttribute(const char*, float) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1709:13:const char* tinyxml2::XMLElement::GetText() const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1728:6:void tinyxml2::XMLElement::SetText(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1739:6:void tinyxml2::XMLElement::SetText(int)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1747:6:void tinyxml2::XMLElement::SetText(unsigned int)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1755:6:void tinyxml2::XMLElement::SetText(int64_t)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1762:6:void tinyxml2::XMLElement::SetText(uint64_t)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1769:6:void tinyxml2::XMLElement::SetText(bool)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1777:6:void tinyxml2::XMLElement::SetText(float)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1785:6:void tinyxml2::XMLElement::SetText(double)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1793:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryIntText(int*) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1806:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryUnsignedText(unsigned int*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1819:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryInt64Text(int64_t*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1832:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryUnsigned64Text(uint64_t*) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1845:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryBoolText(bool*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1858:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryDoubleText(double*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1871:10:tinyxml2::XMLError tinyxml2::XMLElement::QueryFloatText(float*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1883:5:int tinyxml2::XMLElement::IntText(int) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1890:10:unsigned int tinyxml2::XMLElement::UnsignedText(unsigned int) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1897:9:int64_t tinyxml2::XMLElement::Int64Text(int64_t) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1904:10:uint64_t tinyxml2::XMLElement::Unsigned64Text(uint64_t) const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1911:6:bool tinyxml2::XMLElement::BoolText(bool) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1918:8:double tinyxml2::XMLElement::DoubleText(double) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1925:7:float tinyxml2::XMLElement::FloatText(float) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1961:6:void tinyxml2::XMLElement::DeleteAttribute(const char*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2039:6:static void tinyxml2::XMLElement::DeleteAttribute(tinyxml2::XMLAttribute*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2049:15:tinyxml2::XMLAttribute* tinyxml2::XMLElement::CreateAttribute()	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1933:15:tinyxml2::XMLAttribute* tinyxml2::XMLElement::FindOrCreateAttribute(const char*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2125:10:virtual tinyxml2::XMLNode* tinyxml2::XMLElement::ShallowClone(tinyxml2::XMLDocument*) const	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2060:13:tinyxml2::XMLElement* tinyxml2::XMLElement::InsertNewChildElement(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2066:13:tinyxml2::XMLComment* tinyxml2::XMLElement::InsertNewComment(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2072:10:tinyxml2::XMLText* tinyxml2::XMLElement::InsertNewText(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2078:17:tinyxml2::XMLDeclaration* tinyxml2::XMLElement::InsertNewDeclaration(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2084:13:tinyxml2::XMLUnknown* tinyxml2::XMLElement::InsertNewUnknown(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2204:1:tinyxml2::XMLDocument::XMLDocument(bool, tinyxml2::Whitespace)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2232:6:void tinyxml2::XMLDocument::MarkInUse(const tinyxml2::XMLNode*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2245:6:void tinyxml2::XMLDocument::Clear()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2226:1:tinyxml2::XMLDocument::~XMLDocument()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2226:1:virtual tinyxml2::XMLDocument::~XMLDocument()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2279:6:void tinyxml2::XMLDocument::DeepCopy(tinyxml2::XMLDocument*) const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2292:13:tinyxml2::XMLElement* tinyxml2::XMLDocument::NewElement(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2300:13:tinyxml2::XMLComment* tinyxml2::XMLDocument::NewComment(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2308:10:tinyxml2::XMLText* tinyxml2::XMLDocument::NewText(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2316:17:tinyxml2::XMLDeclaration* tinyxml2::XMLDocument::NewDeclaration(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2324:13:tinyxml2::XMLUnknown* tinyxml2::XMLDocument::NewUnknown(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2347:6:void tinyxml2::XMLDocument::DeleteNode(tinyxml2::XMLNode*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2511:6:void tinyxml2::XMLDocument::ClearError()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2518:6:)	288	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1980:7:char* tinyxml2::XMLElement::ParseAttributes(char*, int*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2547:24:static const char* tinyxml2::XMLDocument::ErrorIDToName(tinyxml2::XMLError)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2555:13:const char* tinyxml2::XMLDocument::ErrorStr() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2561:6:void tinyxml2::XMLDocument::PrintError() const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2566:13:const char* tinyxml2::XMLDocument::ErrorName() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2571:6:void tinyxml2::XMLDocument::Parse()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2384:10:tinyxml2::XMLError tinyxml2::XMLDocument::LoadFile(FILE*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2365:10:tinyxml2::XMLError tinyxml2::XMLDocument::LoadFile(const char*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2468:10:tinyxml2::XMLError tinyxml2::XMLDocument::Parse(const char*, size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2587:6:void tinyxml2::XMLDocument::PushDepth()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2595:6:void tinyxml2::XMLDocument::PopDepth()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2601:1:tinyxml2::XMLPrinter::XMLPrinter(FILE*, bool, int, EscapeAposCharsInAttributes)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2499:6:void tinyxml2::XMLDocument::Print(tinyxml2::XMLPrinter*) const	368	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2457:10:tinyxml2::XMLError tinyxml2::XMLDocument::SaveFile(FILE*, bool)	416	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2438:10:tinyxml2::XMLError tinyxml2::XMLDocument::SaveFile(const char*, bool)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2687:6:void tinyxml2::XMLPrinter::PrintString(const char*, bool)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2742:6:void tinyxml2::XMLPrinter::PushHeader(bool, bool)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2753:6:void tinyxml2::XMLPrinter::PrepareForNewNode(bool)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2771:6:void tinyxml2::XMLPrinter::OpenElement(const char*, bool)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2784:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2993:6:virtual bool tinyxml2::XMLPrinter::VisitEnter(const tinyxml2::XMLElement&, const tinyxml2::XMLAttribute*)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2795:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, int)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2803:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, unsigned int)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2811:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, int64_t)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2819:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, uint64_t)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2827:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, bool)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2835:6:void tinyxml2::XMLPrinter::PushAttribute(const char*, double)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2871:6:void tinyxml2::XMLPrinter::SealElementIfJustOpened()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2881:6:void tinyxml2::XMLPrinter::PushText(const char*, bool)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2897:6:void tinyxml2::XMLPrinter::PushText(int64_t)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2905:6:void tinyxml2::XMLPrinter::PushText(uint64_t)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2913:6:void tinyxml2::XMLPrinter::PushText(int)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2921:6:void tinyxml2::XMLPrinter::PushText(unsigned int)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2929:6:void tinyxml2::XMLPrinter::PushText(bool)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2937:6:void tinyxml2::XMLPrinter::PushText(float)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2945:6:void tinyxml2::XMLPrinter::PushText(double)	240	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2953:6:void tinyxml2::XMLPrinter::PushComment(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2963:6:void tinyxml2::XMLPrinter::PushDeclaration(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2973:6:void tinyxml2::XMLPrinter::PushUnknown(const char*)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1987:18:NodeType* tinyxml2::XMLDocument::CreateUnlinkedNode(tinyxml2::MemPoolT<PoolElementSize>&) [with NodeType = tinyxml2::XMLText; long unsigned int PoolElementSize = 112]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1987:18:NodeType* tinyxml2::XMLDocument::CreateUnlinkedNode(tinyxml2::MemPoolT<PoolElementSize>&) [with NodeType = tinyxml2::XMLUnknown; long unsigned int PoolElementSize = 104]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.h:1987:18:NodeType* tinyxml2::XMLDocument::CreateUnlinkedNode(tinyxml2::MemPoolT<PoolElementSize>&) [with NodeType = tinyxml2::XMLElement; long unsigned int PoolElementSize = 120]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:723:7:char* tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**, bool)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:1093:7:virtual char* tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*, int*)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/tinyxml2/tinyxml2.cpp:2096:7:virtual char* tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*, int*)	48	static

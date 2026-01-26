@@ -1,0 +1,5 @@
+src/exp_grow.c:5:je_exp_grow_init	120	static
+include/jemalloc/internal/bit_util.h:402:lg_ceil	24	static
+include/jemalloc/internal/bit_util.h:392:lg_floor	24	static
+include/jemalloc/internal/bit_util.h:326:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:98:fls_lu	8	static

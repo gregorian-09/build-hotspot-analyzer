@@ -1,0 +1,9 @@
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:309:j16init_write_ppm	24	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:238:start_output_ppm	24	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:278:finish_output_ppm	24	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:292:calc_buffer_dimensions_ppm	0	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:135:put_rgb	0	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:163:put_cmyk	24	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:107:copy_pixel_rows	8	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:215:put_demapped_gray	0	static
+repos/libjpeg-turbo/src/wrapper/../wrppm.c:190:put_demapped_rgb	8	static

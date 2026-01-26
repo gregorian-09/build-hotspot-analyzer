@@ -1,0 +1,148 @@
+# BHA Trace
+# Source: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-sinksource.cc
+# Output: CMakeFiles/snappy.dir/snappy-sinksource.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DHAVE_CONFIG_H -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/gcc/snappy/build -I/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy -ftime-report -fmem-report -fstack-usage -Wall -Wextra -Wno-sign-compare -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=c++11 -MD -MT CMakeFiles/snappy.dir/snappy-sinksource.cc.o -MF CMakeFiles/snappy.dir/snappy-sinksource.cc.o.d -o CMakeFiles/snappy.dir/snappy-sinksource.cc.o -c /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-sinksource.cc
+# Timestamp: 2026-01-25T20:16:43+01:00
+# Exit code: 0
+# ---
+
+
+################################################################################
+# Final                                                                        #
+################################################################################
+
+Number of expanded macros:                       796
+Average number of tokens per macro expansion:      6
+
+Line Table allocations during the compilation process
+Number of ordinary maps used:           59 
+Ordinary map used size:               1416 
+Number of ordinary maps allocated:     341 
+Ordinary maps allocated size:         8184 
+Number of macro maps used:             785 
+Macro maps used size:                   24k
+Macro maps locations size:              41k
+Macro maps size:                        66k
+Duplicated maps locations size:         16k
+Total allocated maps size:              81k
+Total used maps size:                   67k
+Ad-hoc table size:                      32k
+Ad-hoc table entries used:             686 
+optimized_ranges:                       20k
+unoptimized_ranges:                    578 
+
+Memory still allocated at the end of the compilation process
+Size      Allocated        Used    Overhead
+8                12k       9856         360 
+16               60k         56k       1320 
+32              100k         99k       1800 
+64              496k        494k       7936 
+256             700k        697k       9800 
+512              12k       7168         168 
+1024            216k        213k       3024 
+2048            108k        108k       1512 
+4096             40k         32k        560 
+8192             48k         40k        336 
+16384            80k         48k        280 
+32768           128k        128k        224 
+524288          512k          0          56 
+24              128k        127k       2304 
+40              376k        373k       6016 
+48               84k         80k       1344 
+56               36k         34k        576 
+72               28k         24k        392 
+80               20k         17k        280 
+88             8192        5368         112 
+104              16k         12k        224 
+112            8192        4480         112 
+120              32k         28k        448 
+152              24k         22k        336 
+128              64k         63k        896 
+144              52k         48k        728 
+168             260k        249k       3640 
+184              16k       1104         224 
+96               28k         26k        392 
+272              28k         13k        392 
+424              24k       4240         336 
+Total          3744k       3071k         45k
+
+String pool
+entries:                        4843
+identifiers:                    4843 (100.00%)
+slots:                          16384
+deleted:                        0
+GGC bytes:                      71k
+table size:                     128k
+coll/search:                    0.0989
+ins/search:                     0.2355
+avg. entry:                     15.13 bytes (+/- 7.51)
+longest entry:                  102
+(No per-node statistics)
+Type hash: size 2039, 1039 elements, 1.017298 collisions
+DECL_DEBUG_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+DECL_VALUE_EXPR  hash: size 1021, 0 elements, 0.000000 collisions
+decl_specializations: size 61, 0 elements, 0.000000 collisions
+type_specializations: size 61, 0 elements, 0.000000 collisions
+No GIMPLE statistics
+No RTX statistics
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+Heap vectors                                      sizeof(T)       Leak            Peak     Times       Leak items Peak items
+--------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                               0                         0                0 
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Alias oracle query stats:
+  refs_may_alias_p: 34 disambiguations, 105 queries
+  ref_maybe_used_by_call_p: 0 disambiguations, 57 queries
+  call_may_clobber_ref_p: 0 disambiguations, 0 queries
+  stmt_kills_ref_p: 6 kills, 16 queries
+  nonoverlapping_component_refs_p: 0 disambiguations, 0 queries
+  nonoverlapping_refs_since_match_p: 0 disambiguations, 0 must overlaps, 0 queries
+  aliasing_component_refs_p: 0 disambiguations, 2 queries
+  TBAA oracle: 43 disambiguations 112 queries
+               54 are in alias set 0
+               13 queries asked about the same object
+               0 queries asked about the same alias set
+               0 access volatile
+               2 are dependent in the DAG
+               0 are aritificially in conflict with void *
+
+Modref stats:
+  modref kill: 0 kills, 0 queries
+  modref use: 0 disambiguations, 0 queries
+  modref clobber: 0 disambiguations, 1 queries
+  2 tbaa queries (2.000000 per modref query)
+  1 base compares (1.000000 per modref query)
+
+PTA query stats:
+  pt_solution_includes: 0 disambiguations, 0 queries
+  pt_solutions_intersect: 0 disambiguations, 93 queries
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1744k ( 39%)
+ phase parsing                      :   0.00 (  0%)   0.01 ( 33%)   0.03 ( 21%)  1573k ( 35%)
+ phase opt and generate             :   0.03 (100%)   0.02 ( 67%)   0.09 ( 64%)  1203k ( 27%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   142k (  3%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ callgraph functions expansion      :   0.03 (100%)   0.02 ( 67%)   0.08 ( 57%)   928k ( 21%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   199k (  4%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   192  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.02 ( 14%)   233k (  5%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.00 (  0%)   999k ( 22%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   464  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 14%)    26k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   436k ( 10%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)  1336  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  7%)   432  (  0%)
+ machine dep reorg                  :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)  1872  (  0%)
+ initialize rtl                     :   0.01 ( 33%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 ( 33%)   0.01 ( 33%)   0.01 (  7%)    45k (  1%)
+ TOTAL                              :   0.03          0.03          0.14         4522k

@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:12:5:Catch::IExceptionTranslator::~IExceptionTranslator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:12:5:virtual Catch::IExceptionTranslator::~IExceptionTranslator()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:13:5:Catch::IExceptionTranslatorRegistry::~IExceptionTranslatorRegistry()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:13:5:virtual Catch::IExceptionTranslatorRegistry::~IExceptionTranslatorRegistry()	8	static

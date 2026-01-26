@@ -1,0 +1,10 @@
+tool_xattr.c:108:fwrite_xattr	88	static
+tool_xattr.c:77:xattr	72	static
+../include/curl/typecheck-gcc.h:374:Wcurl_easy_getinfo_err_long	8	static
+../include/curl/typecheck-gcc.h:376:Wcurl_easy_getinfo_err_double	8	static
+../include/curl/typecheck-gcc.h:378:Wcurl_easy_getinfo_err_curl_slist	8	static
+../include/curl/typecheck-gcc.h:380:Wcurl_easy_getinfo_err_curl_tlssessioninfo	8	static
+../include/curl/typecheck-gcc.h:383:Wcurl_easy_getinfo_err_curl_certinfo	8	static
+../include/curl/typecheck-gcc.h:386:Wcurl_easy_getinfo_err_curl_socket	8	static
+../include/curl/typecheck-gcc.h:388:Wcurl_easy_getinfo_err_curl_off_t	8	static
+tool_xattr.c:45:stripcredentials	56	static

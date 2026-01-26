@@ -1,0 +1,5 @@
+timer.c:4:13:timer_callback	32	static
+timer.c:15:5:test_createtimer	48	static
+timer.c:37:5:test_gettimer	48	static
+timer.c:63:5:test_stoptimer	48	static
+timer.c:88:5:RedisModule_OnLoad	64	dynamic,bounded

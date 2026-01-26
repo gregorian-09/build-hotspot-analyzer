@@ -1,0 +1,8 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:170:6:static long int absl::debugging_internal::VDSOSupport::GetCPUViaSyscall(unsigned int*, void*, void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:93:13:static const void* absl::debugging_internal::VDSOSupport::Init()	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:76:1:absl::debugging_internal::VDSOSupport::VDSOSupport()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:183:6:static long int absl::debugging_internal::VDSOSupport::InitAndGetCPU(unsigned int*, void*, void*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:146:13:const void* absl::debugging_internal::VDSOSupport::SetBase(const void*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:157:6:bool absl::debugging_internal::VDSOSupport::LookupSymbol(const char*, const char*, int, SymbolInfo*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:164:6:bool absl::debugging_internal::VDSOSupport::LookupSymbolByAddress(const void*, SymbolInfo*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/vdso_support.cc:198:5:int absl::debugging_internal::GetCPU()	32	static

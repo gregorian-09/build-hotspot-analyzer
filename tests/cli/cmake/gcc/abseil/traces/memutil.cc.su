@@ -1,0 +1,1 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/memutil.cc:25:5:int absl::strings_internal::memcasecmp(const char*, const char*, size_t)	8	static

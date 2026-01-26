@@ -1,0 +1,21 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:116:7:leveldb::{anonymous}::MemTableInserter::~MemTableInserter()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:116:7:virtual leveldb::{anonymous}::MemTableInserter::~MemTableInserter()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:121:8:virtual void leveldb::{anonymous}::MemTableInserter::Put(const leveldb::Slice&, const leveldb::Slice&)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:125:8:virtual void leveldb::{anonymous}::MemTableInserter::Delete(const leveldb::Slice&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:29:1:leveldb::WriteBatch::WriteBatch()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:31:1:leveldb::WriteBatch::~WriteBatch()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:33:1:leveldb::WriteBatch::Handler::~Handler()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:33:1:virtual leveldb::WriteBatch::Handler::~Handler()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:35:6:void leveldb::WriteBatch::Clear()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:40:8:size_t leveldb::WriteBatch::ApproximateSize() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:42:8:leveldb::Status leveldb::WriteBatch::Iterate(Handler*) const	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:82:5:static int leveldb::WriteBatchInternal::Count(const leveldb::WriteBatch*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:86:6:static void leveldb::WriteBatchInternal::SetCount(leveldb::WriteBatch*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:90:16:static leveldb::SequenceNumber leveldb::WriteBatchInternal::Sequence(const leveldb::WriteBatch*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:94:6:static void leveldb::WriteBatchInternal::SetSequence(leveldb::WriteBatch*, leveldb::SequenceNumber)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:98:6:void leveldb::WriteBatch::Put(const leveldb::Slice&, const leveldb::Slice&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:105:6:void leveldb::WriteBatch::Delete(const leveldb::Slice&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:111:6:void leveldb::WriteBatch::Append(const leveldb::WriteBatch&)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:132:8:static leveldb::Status leveldb::WriteBatchInternal::InsertInto(const leveldb::WriteBatch*, leveldb::MemTable*)	192	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:139:6:static void leveldb::WriteBatchInternal::SetContents(leveldb::WriteBatch*, const leveldb::Slice&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/write_batch.cc:144:6:static void leveldb::WriteBatchInternal::Append(leveldb::WriteBatch*, const leveldb::WriteBatch*)	16	static

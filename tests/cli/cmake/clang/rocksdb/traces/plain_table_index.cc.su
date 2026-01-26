@@ -1,0 +1,11 @@
+repos/rocksdb/table/plain/plain_table_index.cc:23:_ZN7rocksdb15PlainTableIndex15InitFromRawDataENS_5SliceE	72	static
+repos/rocksdb/table/plain/plain_table_index.cc:40:_ZNK7rocksdb15PlainTableIndex9GetOffsetEjPj	0	static
+repos/rocksdb/table/plain/plain_table_index.cc:56:_ZN7rocksdb22PlainTableIndexBuilder15IndexRecordList9AddRecordEjj	40	static
+repos/rocksdb/table/plain/plain_table_index.h:194:_ZN7rocksdb22PlainTableIndexBuilder15IndexRecordList16AllocateNewGroupEv	72	static
+repos/rocksdb/table/plain/plain_table_index.cc:68:_ZN7rocksdb22PlainTableIndexBuilder12AddKeyPrefixENS_5SliceEj	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:803:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEED2Ev	0	static
+repos/rocksdb/table/plain/plain_table_index.cc:94:_ZN7rocksdb22PlainTableIndexBuilder6FinishEv	152	static
+repos/rocksdb/table/plain/plain_table_index.cc:108:_ZN7rocksdb22PlainTableIndexBuilder13AllocateIndexEv	0	static
+repos/rocksdb/table/plain/plain_table_index.cc:121:_ZN7rocksdb22PlainTableIndexBuilder16BucketizeIndexesEPSt6vectorIPNS0_11IndexRecordESaIS3_EEPS1_IjSaIjEE	32	static
+repos/rocksdb/table/plain/plain_table_index.cc:153:_ZN7rocksdb22PlainTableIndexBuilder11FillIndexesERKSt6vectorIPNS0_11IndexRecordESaIS3_EERKS1_IjSaIjEE	88	static
+repos/rocksdb/table/plain/plain_table_index.cc:0:_GLOBAL__sub_I_plain_table_index.cc	24	static

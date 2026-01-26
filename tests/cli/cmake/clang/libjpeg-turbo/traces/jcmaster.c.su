@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/jcmaster.c:718:jinit_c_master_control	2744	static
+repos/libjpeg-turbo/src/jcmaster.c:575:prepare_for_pass	24	static
+repos/libjpeg-turbo/src/jcmaster.c:664:pass_startup	8	static
+repos/libjpeg-turbo/src/jcmaster.c:678:finish_pass_master	24	static
+repos/libjpeg-turbo/src/jcmaster.c:439:select_scan_parameters	8	static
+repos/libjpeg-turbo/src/jcmaster.c:481:per_scan_setup	40	static

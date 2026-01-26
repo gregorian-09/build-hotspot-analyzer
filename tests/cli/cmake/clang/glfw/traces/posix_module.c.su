@@ -1,0 +1,3 @@
+repos/glfw/src/posix_module.c:37:_glfwPlatformLoadModule	0	static
+repos/glfw/src/posix_module.c:42:_glfwPlatformFreeModule	0	static
+repos/glfw/src/posix_module.c:47:_glfwPlatformGetModuleSymbol	0	static

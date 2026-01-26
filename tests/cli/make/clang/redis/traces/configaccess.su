@@ -1,0 +1,13 @@
+configaccess.c:10:getBoolConfigCommand	0	static
+configaccess.c:15:setBoolConfigCommand	0	static
+configaccess.c:23:TestGetConfigType_RedisCommand	40	static
+configaccess.c:62:TestConfigIteration_RedisCommand	72	static
+configaccess.c:106:TestGetBoolConfig_RedisCommand	24	static
+configaccess.c:125:TestGetNumericConfig_RedisCommand	24	static
+configaccess.c:144:TestGetConfig_RedisCommand	24	static
+configaccess.c:164:TestGetEnumConfig_RedisCommand	24	static
+configaccess.c:184:TestSetBoolConfig_RedisCommand	56	static
+configaccess.c:215:TestSetNumericConfig_RedisCommand	56	static
+configaccess.c:251:TestSetConfig_RedisCommand	56	static
+configaccess.c:273:TestSetEnumConfig_RedisCommand	56	static
+configaccess.c:294:RedisModule_OnLoad	72	static

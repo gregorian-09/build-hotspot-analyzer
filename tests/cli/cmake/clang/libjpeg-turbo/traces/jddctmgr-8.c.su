@@ -1,0 +1,2 @@
+repos/libjpeg-turbo/src/wrapper/../jddctmgr.c:340:jinit_inverse_dct	40	static
+repos/libjpeg-turbo/src/wrapper/../jddctmgr.c:97:start_pass	56	static

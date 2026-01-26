@@ -1,0 +1,13 @@
+src/catch2/catch_message.cpp:21:_ZN5Catch13ScopedMessageC2EONS_14MessageBuilderE	136	static
+src/catch2/catch_message.cpp:28:_ZN5Catch13ScopedMessageC2EOS0_	0	static
+src/catch2/catch_message.cpp:33:_ZN5Catch13ScopedMessageD2Ev	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/catch_message.cpp:__clang_call_terminate	8	static
+src/catch2/catch_message.cpp:38:_ZN5Catch8CapturerC2ENS_9StringRefERKNS_14SourceLineInfoENS_9ResultWas6OfTypeES1_b	248	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_stack.h:99:_ZNSt5stackIcSt5dequeIcSaIcEEED2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN5Catch11MessageInfoESaIS1_EED2Ev	24	static
+src/catch2/catch_message.cpp:102:_ZN5Catch8CapturerD2Ev	24	static
+src/catch2/catch_message.cpp:111:_ZN5Catch8Capturer12captureValueEmRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIcSaIcEE17_M_initialize_mapEm	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:485:_ZNSt5dequeIcSaIcEE16_M_push_back_auxIJRKcEEEvDpOT_	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:932:_ZNSt5dequeIcSaIcEE17_M_reallocate_mapEmb	72	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorIN5Catch11MessageInfoESaIS1_EE17_M_realloc_insertIJRNS0_9StringRefERKNS0_14SourceLineInfoERNS0_9ResultWas6OfTypeEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_	88	static

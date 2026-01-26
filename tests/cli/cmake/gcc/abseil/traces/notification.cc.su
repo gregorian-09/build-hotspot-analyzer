@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.h:121:22:static bool absl::Notification::HasBeenNotifiedInternal(const std::atomic<bool>*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/mutex.h:1221:6:static bool absl::Condition::CastAndCallFunction(const absl::Condition*) [with T = const std::atomic<bool>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:27:6:void absl::Notification::Notify()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:43:1:absl::Notification::~Notification()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:49:6:void absl::Notification::WaitForNotification() const	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:59:6:bool absl::Notification::WaitForNotificationWithTimeout(absl::Duration) const	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:72:6:bool absl::Notification::WaitForNotificationWithDeadline(absl::Time) const	128	static

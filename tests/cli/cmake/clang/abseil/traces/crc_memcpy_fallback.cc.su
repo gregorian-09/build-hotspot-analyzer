@@ -1,0 +1,5 @@
+repos/abseil/absl/crc/internal/crc_memcpy_fallback.cc:27:_ZNK4absl12crc_internal23FallbackCrcMemcpyEngine7ComputeEPvPKvmNS_8crc32c_tE	56	static
+repos/abseil/absl/crc/internal/crc_memcpy_fallback.cc:61:_ZN4absl12crc_internal9CrcMemcpy22GetArchSpecificEnginesEv	24	static
+repos/abseil/absl/crc/internal/crc_memcpy_fallback.cc:68:_ZN4absl12crc_internal9CrcMemcpy13GetTestEngineEii	8	static
+repos/abseil/absl/crc/internal/crc_memcpy.h:40:_ZN4absl12crc_internal15CrcMemcpyEngineD2Ev	0	static
+repos/abseil/absl/crc/internal/crc_memcpy.h:74:_ZN4absl12crc_internal23FallbackCrcMemcpyEngineD0Ev	0	static

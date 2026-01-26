@@ -1,0 +1,9 @@
+keyspecs.c:7:kspec_impl	40	static
+keyspecs.c:23:createKspecNone	8	static
+keyspecs.c:30:createKspecNoneWithGetkeys	8	static
+keyspecs.c:37:createKspecTwoRanges	264	static
+keyspecs.c:70:createKspecTwoRangesWithGap	264	static
+keyspecs.c:103:createKspecKeyword	200	static
+keyspecs.c:129:createKspecComplex1	328	static
+keyspecs.c:166:createKspecComplex2	440	static
+keyspecs.c:221:RedisModule_OnLoad	296	static

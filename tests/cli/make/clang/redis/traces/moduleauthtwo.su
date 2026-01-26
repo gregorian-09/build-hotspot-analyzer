@@ -1,0 +1,3 @@
+moduleauthtwo.c:9:auth_cb	56	static
+moduleauthtwo.c:27:test_rm_register_auth_cb	8	static
+moduleauthtwo.c:35:RedisModule_OnLoad	56	static

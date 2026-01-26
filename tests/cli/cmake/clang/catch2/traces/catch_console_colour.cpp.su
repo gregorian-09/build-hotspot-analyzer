@@ -1,0 +1,17 @@
+src/catch2/internal/catch_console_colour.cpp:32:_ZN5Catch10ColourImplD0Ev	0	static
+src/catch2/internal/catch_console_colour.cpp:34:_ZN5Catch10ColourImpl11guardColourENS_6Colour4CodeE	0	static
+src/catch2/internal/catch_console_colour.cpp:38:_ZN5Catch10ColourImpl11ColourGuard10engageImplERSo	0	static
+src/catch2/internal/catch_console_colour.cpp:48:_ZN5Catch10ColourImpl11ColourGuardC2ENS_6Colour4CodeEPKS0_	0	static
+src/catch2/internal/catch_console_colour.cpp:52:_ZN5Catch10ColourImpl11ColourGuardC2EOS1_	0	static
+src/catch2/internal/catch_console_colour.cpp:59:_ZN5Catch10ColourImpl11ColourGuardaSEOS1_	0	static
+src/catch2/internal/catch_console_colour.cpp:67:_ZN5Catch10ColourImpl11ColourGuardD2Ev	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_console_colour.cpp:__clang_call_terminate	8	static
+src/catch2/internal/catch_console_colour.cpp:74:_ZNR5Catch10ColourImpl11ColourGuard6engageERSo	8	static
+src/catch2/internal/catch_console_colour.cpp:80:_ZNO5Catch10ColourImpl11ColourGuard6engageERSo	8	static
+src/catch2/internal/catch_console_colour.cpp:239:_ZN5Catch14makeColourImplENS_10ColourModeEPNS_7IStreamE	72	static
+src/catch2/internal/catch_console_colour.cpp:268:_ZN5Catch21isColourImplAvailableENS_10ColourModeE	0	static
+src/catch2/internal/catch_console_colour.cpp:178:_ZN5Catch12_GLOBAL__N_114ANSIColourImplD0Ev	0	static
+src/catch2/internal/catch_console_colour.cpp:204:_ZNK5Catch12_GLOBAL__N_114ANSIColourImpl3useENS_6Colour4CodeE	88	static
+src/catch2/internal/catch_console_colour.cpp:32:_ZN5Catch10ColourImplD2Ev	0	static
+src/catch2/internal/catch_console_colour.cpp:88:_ZN5Catch12_GLOBAL__N_112NoColourImplD0Ev	0	static
+src/catch2/internal/catch_console_colour.cpp:93:_ZNK5Catch12_GLOBAL__N_112NoColourImpl3useENS_6Colour4CodeE	0	static

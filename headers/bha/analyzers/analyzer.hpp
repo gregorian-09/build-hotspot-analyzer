@@ -62,6 +62,12 @@ namespace bha::analyzers {
             std::size_t including_files = 0;
             std::vector<fs::path> included_by;
             double impact_score = 0.0;
+
+            std::size_t modification_count = 0;
+            Timestamp last_modified = Timestamp{};
+            Duration time_since_modification = Duration::zero();
+            bool is_stable = false;
+            bool is_external = false;
         };
 
         std::vector<HeaderInfo> headers;

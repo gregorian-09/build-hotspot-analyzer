@@ -1,0 +1,6 @@
+repos/zstd/lib/common/fse_decompress.c:161:FSE_buildDTable_wksp	0	static
+repos/zstd/lib/common/fse_decompress.c:58:FSE_buildDTable_internal	48	static
+repos/zstd/lib/common/fse_decompress.c:304:FSE_decompress_wksp_bmi2	184	static
+repos/zstd/lib/common/fse_decompress.c:298:FSE_decompress_wksp_body_bmi2	168	static
+repos/zstd/lib/common/bitstream.h:254:BIT_initDStream	0	static
+repos/zstd/lib/common/fse.h:517:FSE_initDState	0	static

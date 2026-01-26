@@ -1,0 +1,3 @@
+/usr/include/c++/13/bits/locale_facets.h:1092:7:virtual std::ctype<char>::char_type std::ctype<char>::do_widen(char) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_entry.cc:66:6:void absl::{anonymous}::PrintEscapedRangeTo(std::string_view, std::string_view, std::ostream*)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_entry.cc:90:6:void absl::PrintTo(const LogEntry&, std::ostream*)	240	static

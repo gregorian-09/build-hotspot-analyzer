@@ -1,0 +1,12 @@
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:52:jpeg_start_decompress	8	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:109:output_pass_setup	40	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:186:jpeg_crop_scanline	88	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:319:jpeg_read_scanlines	40	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:486:jpeg_skip_scanlines	184	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:396:read_and_discard_scanlines	56	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:451:increment_simple_rowgroup_ctr	56	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:676:jpeg_read_raw_data	40	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:731:jpeg_start_output	24	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:755:jpeg_finish_output	8	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:373:noop_convert	0	static
+repos/libjpeg-turbo/src/wrapper/../jdapistd.c:381:noop_quantize	0	static

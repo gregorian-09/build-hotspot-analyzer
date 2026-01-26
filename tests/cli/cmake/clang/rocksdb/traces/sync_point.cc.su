@@ -1,0 +1,3 @@
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED2Ev	40	static
+repos/rocksdb/test_util/sync_point.cc:61:_ZN7rocksdb29SetupSyncPointsToMockDirectIOEv	0	static
+repos/rocksdb/test_util/sync_point.cc:0:_GLOBAL__sub_I_sync_point.cc	0	static

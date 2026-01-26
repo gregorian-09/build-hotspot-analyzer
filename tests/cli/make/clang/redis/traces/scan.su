@@ -1,0 +1,5 @@
+scan.c:11:scan_strings_callback	56	static
+scan.c:31:scan_strings	56	static
+scan.c:54:scan_key_callback	56	static
+scan.c:78:scan_key	72	static
+scan.c:106:RedisModule_OnLoad	56	static

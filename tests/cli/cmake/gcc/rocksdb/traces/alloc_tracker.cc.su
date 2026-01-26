@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:18:1:rocksdb::AllocTracker::AllocTracker(rocksdb::WriteBufferManager*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:26:6:void rocksdb::AllocTracker::Allocate(size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:35:6:void rocksdb::AllocTracker::DoneAllocating()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:48:6:void rocksdb::AllocTracker::FreeMem()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memtable/alloc_tracker.cc:24:1:rocksdb::AllocTracker::~AllocTracker()	16	static

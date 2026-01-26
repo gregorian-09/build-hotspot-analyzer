@@ -1,0 +1,2 @@
+repos/lz4/programs/lorem.c:337:LOREM_genBlock	120	static
+repos/lz4/programs/lorem.c:363:LOREM_genBuffer	0	static

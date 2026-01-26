@@ -1,0 +1,37 @@
+/usr/include/c++/13/bits/basic_string.h:641:7:std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:23:1:YAML::Scanner::~Scanner()	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:52:6:YAML::Mark YAML::Scanner::mark() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:247:6:bool YAML::Scanner::IsWhitespaceToBeEaten(char)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:296:13:YAML::Token::TYPE YAML::Scanner::GetStartTokenFor(IndentMarker::INDENT_TYPE) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:400:5:int YAML::Scanner::GetTopIndent() const	8	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:std::vector<_Tp, _Alloc>::~vector() [with _Tp = YAML::RegEx; _Alloc = std::allocator<YAML::RegEx>]	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/regex_yaml.h:37:3:YAML::RegEx::~RegEx()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exp.h:39:21:const YAML::RegEx& YAML::Exp::Break()	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exp.h:43:21:const YAML::RegEx& YAML::Exp::BlankOrBreak()	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exp.h:153:21:const YAML::RegEx& YAML::Exp::PlainScalar()	432	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exp.h:159:21:const YAML::RegEx& YAML::Exp::PlainScalarInFlow()	432	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:259:14:const YAML::RegEx& YAML::Scanner::GetValueRegex() const	256	static
+/usr/include/c++/13/bits/stl_vector.h:601:7:std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = YAML::RegEx; _Alloc = std::allocator<YAML::RegEx>]	128	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:std::vector<_Tp, _Alloc>::~vector() [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions.h:167:28:static const std::string YAML::Exception::build_what(const YAML::Mark&, const std::string&)	576	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions.h:157:3:YAML::Exception::Exception(const YAML::Mark&, const std::string&)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:407:6:void YAML::Scanner::ThrowParserException(const std::string&) const	64	static
+/usr/include/c++/13/bits/stl_deque.h:1027:7:std::deque<_Tp, _Alloc>::~deque() [with _Tp = YAML::Token; _Alloc = std::allocator<YAML::Token>]	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:10:1:YAML::Scanner::Scanner(std::istream&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/regeximpl.h:77:12:int YAML::RegEx::MatchUnchecked(const Source&) const [with Source = YAML::StreamCharSource]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:195:6:void YAML::Scanner::ScanToNextToken()	304	static
+/usr/include/c++/13/bits/deque.tcc:164:7:) [with _Args = {YAML::Token}; _Tp = YAML::Token; _Alloc = std::allocator<YAML::Token>]	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:291:8:YAML::Token* YAML::Scanner::PushToken(YAML::Token::TYPE)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:384:6:void YAML::Scanner::PopIndent()	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:340:6:void YAML::Scanner::PopIndentToHere()	224	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:367:6:void YAML::Scanner::PopAllIndents()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:277:6:void YAML::Scanner::EndStream()	16	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {std::unique_ptr<YAML::Scanner::IndentMarker, std::default_delete<YAML::Scanner::IndentMarker> >}; _Tp = std::unique_ptr<YAML::Scanner::IndentMarker, std::default_delete<YAML::Scanner::IndentMarker> >; _Alloc = std::allocator<std::unique_ptr<YAML::Scanner::IndentMarker, std::default_delete<YAML::Scanner::IndentMarker> > >]	96	static
+/usr/include/c++/13/bits/deque.tcc:484:7:) [with _Args = {YAML::Scanner::IndentMarker*}; _Tp = YAML::Scanner::IndentMarker*; _Alloc = std::allocator<YAML::Scanner::IndentMarker*>]	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:267:6:void YAML::Scanner::StartStream()	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:83:6:void YAML::Scanner::ScanNextToken()	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:54:6:void YAML::Scanner::EnsureTokensInQueue()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:25:6:bool YAML::Scanner::empty()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:30:6:void YAML::Scanner::pop()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:36:8:YAML::Token& YAML::Scanner::peek()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.cpp:310:24:YAML::Scanner::IndentMarker* YAML::Scanner::PushIndentTo(int, IndentMarker::INDENT_TYPE)	80	static

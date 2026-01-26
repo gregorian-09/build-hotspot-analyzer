@@ -1,0 +1,3 @@
+src/log.c:44:je_log_var_update_state	216	static
+src/log.c:14:log_var_extract_segment	8	static
+src/log.c:22:log_var_matches_segment	72	static

@@ -1,0 +1,17 @@
+repos/leveldb/table/iterator.cc:9:_ZN7leveldb8IteratorC2Ev	0	static
+repos/leveldb/table/iterator.cc:14:_ZN7leveldb8IteratorD2Ev	24	static
+repos/leveldb/table/iterator.cc:14:_ZN7leveldb8IteratorD0Ev	0	static
+repos/leveldb/table/iterator.cc:26:_ZN7leveldb8Iterator15RegisterCleanupEPFvPvS1_ES1_S1_	40	static
+repos/leveldb/table/iterator.cc:70:_ZN7leveldb16NewEmptyIteratorEv	8	static
+repos/leveldb/table/iterator.cc:72:_ZN7leveldb16NewErrorIteratorERKNS_6StatusE	8	static
+repos/leveldb/table/iterator.cc:46:_ZN7leveldb12_GLOBAL__N_113EmptyIteratorD2Ev	24	static
+repos/leveldb/table/iterator.cc:46:_ZN7leveldb12_GLOBAL__N_113EmptyIteratorD0Ev	24	static
+repos/leveldb/table/iterator.cc:48:_ZNK7leveldb12_GLOBAL__N_113EmptyIterator5ValidEv	0	static
+repos/leveldb/table/iterator.cc:50:_ZN7leveldb12_GLOBAL__N_113EmptyIterator11SeekToFirstEv	0	static
+repos/leveldb/table/iterator.cc:51:_ZN7leveldb12_GLOBAL__N_113EmptyIterator10SeekToLastEv	0	static
+repos/leveldb/table/iterator.cc:49:_ZN7leveldb12_GLOBAL__N_113EmptyIterator4SeekERKNS_5SliceE	0	static
+repos/leveldb/table/iterator.cc:52:_ZN7leveldb12_GLOBAL__N_113EmptyIterator4NextEv	0	static
+repos/leveldb/table/iterator.cc:53:_ZN7leveldb12_GLOBAL__N_113EmptyIterator4PrevEv	0	static
+repos/leveldb/table/iterator.cc:54:_ZNK7leveldb12_GLOBAL__N_113EmptyIterator3keyEv	0	static
+repos/leveldb/table/iterator.cc:58:_ZNK7leveldb12_GLOBAL__N_113EmptyIterator5valueEv	0	static
+repos/leveldb/table/iterator.cc:62:_ZNK7leveldb12_GLOBAL__N_113EmptyIterator6statusEv	8	static

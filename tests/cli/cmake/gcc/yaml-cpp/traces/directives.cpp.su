@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/directives.cpp:4:1:YAML::Directives::Directives()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/directives.cpp:6:13:std::string YAML::Directives::TranslateTagHandle(const std::string&) const	112	static

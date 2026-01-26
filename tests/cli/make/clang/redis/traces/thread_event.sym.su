@@ -1,0 +1,17 @@
+src/thread_event.c:137:te_assert_invariants_debug	616	static
+src/thread_event.c:106:te_assert_invariants_impl	152	static
+src/thread_event.c:202:te_recompute_fast_threshold	712	static
+src/thread_event.c:194:te_ctx_next_event_fast_update	8	static
+src/thread_event.c:251:te_event_trigger	872	static
+include/jemalloc/internal/tsd.h:452:tsd_nominal	8	static
+src/thread_event.c:237:te_clip_event_wait	8	static
+src/thread_event.c:222:te_adjust_thresholds_helper	88	static
+src/thread_event.c:37:tcache_gc_fetch_elapsed	8	static
+src/thread_event.c:47:prof_sample_fetch_elapsed	48	static
+src/thread_event.c:55:stats_interval_fetch_elapsed	48	static
+src/thread_event.c:42:tcache_gc_dalloc_fetch_elapsed	8	static
+src/thread_event.c:63:peak_alloc_fetch_elapsed	8	static
+src/thread_event.c:68:peak_dalloc_fetch_elapsed	8	static
+src/thread_event.c:337:tsd_te_init	24	static
+src/thread_event.c:306:te_init	712	static
+src/thread_event.c:87:te_next_event_compute	240	static

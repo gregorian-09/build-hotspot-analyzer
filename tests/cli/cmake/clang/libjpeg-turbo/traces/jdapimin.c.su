@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/jdapimin.c:36:jpeg_CreateDecompress	24	static
+repos/libjpeg-turbo/src/jdapimin.c:107:jpeg_destroy_decompress	0	static
+repos/libjpeg-turbo/src/jdapimin.c:119:jpeg_abort_decompress	0	static
+repos/libjpeg-turbo/src/jdapimin.c:267:jpeg_read_header	24	static
+repos/libjpeg-turbo/src/jdapimin.c:313:jpeg_consume_input	24	static
+repos/libjpeg-turbo/src/jdapimin.c:360:jpeg_input_complete	8	static
+repos/libjpeg-turbo/src/jdapimin.c:375:jpeg_has_multiple_scans	8	static
+repos/libjpeg-turbo/src/jdapimin.c:395:jpeg_finish_decompress	8	static

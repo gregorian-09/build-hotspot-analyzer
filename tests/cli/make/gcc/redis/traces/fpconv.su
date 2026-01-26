@@ -1,0 +1,3 @@
+fpconv.c:106:8:fpconv_strtod	144	static
+fpconv.c:174:5:fpconv_g_fmt	96	static
+fpconv.c:199:6:fpconv_init	32	static

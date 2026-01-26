@@ -1,0 +1,3 @@
+src/catch2/internal/catch_leak_detector.cpp:32:_ZN5Catch12LeakDetectorC2Ev	0	static
+src/catch2/internal/catch_leak_detector.cpp:36:_ZN5Catch12LeakDetectorD2Ev	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_leak_detector.cpp:__clang_call_terminate	8	static

@@ -1,0 +1,3 @@
+repos/abseil/absl/strings/charconv.cc:947:_ZN4absl10from_charsEPKcS1_RdNS_12chars_formatE	232	static
+repos/abseil/absl/strings/charconv.cc:953:_ZN4absl10from_charsEPKcS1_RfNS_12chars_formatE	248	static
+repos/abseil/absl/strings/charconv.cc:509:_ZN4absl12_GLOBAL__N_111MustRoundUpEmiRKNS_16strings_internal11ParsedFloatE	760	static

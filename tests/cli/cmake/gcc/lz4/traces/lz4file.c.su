@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:119:18:LZ4F_readOpen	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:154:8:LZ4F_read	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:198:18:LZ4F_readClose	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:253:18:LZ4F_writeOpen	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:303:8:LZ4F_write	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/lib/lz4file.c:338:18:LZ4F_writeClose	32	static

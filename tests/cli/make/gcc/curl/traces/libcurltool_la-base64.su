@@ -1,0 +1,4 @@
+../lib/curlx/base64.c:61:curlx_base64_decode	392	static
+../lib/curlx/base64.c:241:curlx_base64_encode	40	static
+../lib/curlx/base64.c:165:base64_encode	88	static
+../lib/curlx/base64.c:263:curlx_base64url_encode	40	static

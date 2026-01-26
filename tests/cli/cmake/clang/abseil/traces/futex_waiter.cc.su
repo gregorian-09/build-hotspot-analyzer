@@ -1,0 +1,4 @@
+repos/abseil/absl/synchronization/internal/futex_waiter.cc:34:_ZN4absl24synchronization_internal11FutexWaiter9WaitUntilEPSt6atomicIiEiNS0_13KernelTimeoutE	56	static
+repos/abseil/absl/synchronization/internal/futex_waiter.cc:56:_ZN4absl24synchronization_internal11FutexWaiter4WaitENS0_13KernelTimeoutE	24	static
+repos/abseil/absl/synchronization/internal/futex_waiter.cc:88:_ZN4absl24synchronization_internal11FutexWaiter4PostEv	8	static
+repos/abseil/absl/synchronization/internal/futex_waiter.cc:95:_ZN4absl24synchronization_internal11FutexWaiter4PokeEv	8	static

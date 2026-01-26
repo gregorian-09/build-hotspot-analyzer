@@ -1,0 +1,8 @@
+repos/mimalloc/src/random.c:138:_mi_random_split	0	static
+repos/mimalloc/src/random.c:144:_mi_random_next	24	static
+repos/mimalloc/src/random.c:165:_mi_os_random_weak	8	static
+repos/mimalloc/src/random.c:198:_mi_random_init	0	static
+repos/mimalloc/src/random.c:177:mi_random_init_ex	56	static
+repos/mimalloc/src/random.c:202:_mi_random_init_weak	0	static
+repos/mimalloc/src/random.c:206:_mi_random_reinit_if_weak	0	static
+repos/mimalloc/src/random.c:47:chacha_block	0	static

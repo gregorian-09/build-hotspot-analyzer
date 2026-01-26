@@ -1,0 +1,5 @@
+repos/leveldb/table/format.cc:16:_ZNK7leveldb11BlockHandle8EncodeToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
+repos/leveldb/table/format.cc:24:_ZN7leveldb11BlockHandle10DecodeFromEPNS_5SliceE	56	static
+repos/leveldb/table/format.cc:32:_ZNK7leveldb6Footer8EncodeToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
+repos/leveldb/table/format.cc:43:_ZN7leveldb6Footer10DecodeFromEPNS_5SliceE	72	static
+repos/leveldb/table/format.cc:69:_ZN7leveldb9ReadBlockEPNS_16RandomAccessFileERKNS_11ReadOptionsERKNS_11BlockHandleEPNS_13BlockContentsE	120	static

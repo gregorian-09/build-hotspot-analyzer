@@ -1,0 +1,2 @@
+repos/rocksdb/util/compaction_job_stats_impl.cc:10:_ZN7rocksdb18CompactionJobStats5ResetEv	0	static
+repos/rocksdb/util/compaction_job_stats_impl.cc:58:_ZN7rocksdb18CompactionJobStats3AddERKS0_	0	static

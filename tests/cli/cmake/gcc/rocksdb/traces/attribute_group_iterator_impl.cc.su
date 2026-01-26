@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/iterator.h:54:30:virtual const rocksdb::WideColumns& rocksdb::Iterator::columns() const	8	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::AttributeGroup; _Alloc = std::allocator<rocksdb::AttributeGroup>]	48	static
+/usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::IteratorAttributeGroup; _Alloc = std::allocator<rocksdb::IteratorAttributeGroup>]	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/attribute_group_iterator_impl.cc:13:6:void rocksdb::AttributeGroupIteratorImpl::AddToAttributeGroups(const rocksdb::autovector<rocksdb::MultiCfIteratorInfo>&)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/attribute_group_iterator_impl.cc:20:1:cc)	32	static

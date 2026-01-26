@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/example.c:586:main	872	static
+repos/libjpeg-turbo/src/example.c:563:usage	24	static
+repos/libjpeg-turbo/src/example.c:380:do_read_JPEG_file	440	static
+repos/libjpeg-turbo/src/example.c:338:my_error_exit	8	static

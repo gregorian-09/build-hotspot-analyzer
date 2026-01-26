@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/jcomapi.c:32:jpeg_abort	8	static
+repos/libjpeg-turbo/src/jcomapi.c:73:jpeg_destroy	8	static
+repos/libjpeg-turbo/src/jcomapi.c:90:jpeg_alloc_quant_table	8	static
+repos/libjpeg-turbo/src/jcomapi.c:102:jpeg_alloc_huff_table	8	static

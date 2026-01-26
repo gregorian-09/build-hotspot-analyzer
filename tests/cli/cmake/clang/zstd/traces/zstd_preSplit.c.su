@@ -1,0 +1,5 @@
+repos/zstd/lib/compress/zstd_preSplit.c:228:ZSTD_splitBlock	72	static
+repos/zstd/lib/compress/zstd_preSplit.c:90:ZSTD_recordFingerprint_43	24	static
+repos/zstd/lib/compress/zstd_preSplit.c:89:ZSTD_recordFingerprint_11	24	static
+repos/zstd/lib/compress/zstd_preSplit.c:88:ZSTD_recordFingerprint_5	24	static
+repos/zstd/lib/compress/zstd_preSplit.c:87:ZSTD_recordFingerprint_1	24	static

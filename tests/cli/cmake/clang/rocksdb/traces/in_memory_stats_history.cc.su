@@ -1,0 +1,17 @@
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:15:_ZN7rocksdb28InMemoryStatsHistoryIteratorD2Ev	24	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:15:_ZN7rocksdb28InMemoryStatsHistoryIteratorD0Ev	24	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:17:_ZNK7rocksdb28InMemoryStatsHistoryIterator5ValidEv	0	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:19:_ZNK7rocksdb28InMemoryStatsHistoryIterator6statusEv	24	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:25:_ZN7rocksdb28InMemoryStatsHistoryIterator4NextEv	24	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:39:_ZN7rocksdb28InMemoryStatsHistoryIterator21AdvanceIteratorByTimeEmm	24	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:30:_ZNK7rocksdb28InMemoryStatsHistoryIterator12GetStatsTimeEv	0	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:33:_ZNK7rocksdb28InMemoryStatsHistoryIterator11GetStatsMapB5cxx11Ev	0	static
+repos/rocksdb/include/rocksdb/stats_history.h:57:_ZNK7rocksdb20StatsHistoryIterator16GetFormatVersionEv	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/in_memory_stats_history.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_mESt10_Select1stIS8_ESt4lessIS5_ESaIS8_EE8_M_eraseEPSt13_Rb_tree_nodeIS8_E	40	static
+repos/rocksdb/monitoring/in_memory_stats_history.cc:0:_GLOBAL__sub_I_in_memory_stats_history.cc	40	static

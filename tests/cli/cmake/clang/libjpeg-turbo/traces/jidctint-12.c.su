@@ -1,0 +1,13 @@
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:173:jpeg12_idct_islow	232	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:427:jpeg12_idct_7x7	152	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:576:jpeg12_idct_6x6	72	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:697:jpeg12_idct_5x5	240	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:812:jpeg12_idct_3x3	48	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:902:jpeg12_idct_9x9	248	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:1073:jpeg12_idct_10x10	280	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:1268:jpeg12_idct_11x11	344	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:1462:jpeg12_idct_12x12	376	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:1678:jpeg12_idct_13x13	424	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:1906:jpeg12_idct_14x14	456	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:2132:jpeg12_idct_15x15	504	static
+repos/libjpeg-turbo/src/wrapper/../jidctint.c:2374:jpeg12_idct_16x16	568	static

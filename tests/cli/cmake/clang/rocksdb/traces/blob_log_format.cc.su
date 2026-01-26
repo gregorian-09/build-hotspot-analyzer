@@ -1,0 +1,8 @@
+repos/rocksdb/db/blob/blob_log_format.cc:14:_ZN7rocksdb13BlobLogHeader8EncodeToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/rocksdb/db/blob/blob_log_format.cc:28:_ZN7rocksdb13BlobLogHeader10DecodeFromENS_5SliceE	56	static
+repos/rocksdb/db/blob/blob_log_format.cc:59:_ZN7rocksdb13BlobLogFooter8EncodeToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/rocksdb/db/blob/blob_log_format.cc:72:_ZN7rocksdb13BlobLogFooter10DecodeFromENS_5SliceE	72	static
+repos/rocksdb/db/blob/blob_log_format.cc:96:_ZN7rocksdb13BlobLogRecord14EncodeHeaderToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/rocksdb/db/blob/blob_log_format.cc:112:_ZN7rocksdb13BlobLogRecord16DecodeHeaderFromENS_5SliceE	72	static
+repos/rocksdb/db/blob/blob_log_format.cc:132:_ZNK7rocksdb13BlobLogRecord12CheckBlobCRCEv	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static

@@ -1,0 +1,16 @@
+repos/abseil/absl/flags/internal/flag.h:876:_ZN4absl14flags_internal7FlagOpsIiEEPvNS0_6FlagOpEPKvS2_S2_	56	static
+repos/abseil/absl/flags/internal/flag.h:876:_ZN4absl14flags_internal7FlagOpsINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEPvNS0_6FlagOpEPKvS8_S8_	88	static
+repos/abseil/absl/log/flags.cc:89:_ZN37AbslFlagDefaultGenForlog_backtrace_at3GenEPv	0	static
+repos/abseil/absl/flags/internal/flag.h:876:_ZN4absl14flags_internal7FlagOpsIbEEPvNS0_6FlagOpEPKvS2_S2_	56	static
+repos/abseil/absl/log/flags.cc:129:_ZN28AbslFlagDefaultGenForvmodule3GenEPv	0	static
+repos/abseil/absl/log/flags.cc:40:_ZN4absl12log_internal12_GLOBAL__N_116SyncLoggingFlagsEv	24	static
+repos/abseil/absl/flags/internal/flag.h:159:_ZN4absl14flags_internal16GenRuntimeTypeIdIiEEPKSt9type_infov	0	static
+repos/abseil/absl/flags/internal/flag.h:159:_ZN4absl14flags_internal16GenRuntimeTypeIdIbEEPKSt9type_infov	0	static
+repos/abseil/absl/log/flags.cc:74:_ZN3$_08__invokeEv	8	static
+repos/abseil/absl/log/flags.cc:83:_ZN3$_18__invokeEv	8	static
+repos/abseil/absl/log/flags.cc:91:_ZN3$_28__invokeEv	56	static
+repos/abseil/absl/flags/internal/flag.h:820:_ZNK4absl14flags_internal4FlagINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE3GetEv	72	static
+repos/abseil/absl/log/flags.cc:119:_ZN3$_38__invokeEv	8	static
+repos/abseil/absl/log/flags.cc:125:_ZN3$_48__invokeEv	8	static
+repos/abseil/absl/log/flags.cc:141:_ZN3$_58__invokeEv	40	static
+repos/abseil/absl/log/flags.cc:0:_GLOBAL__sub_I_flags.cc	24	static

@@ -1,0 +1,9 @@
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:551:jinit_color_converter	24	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:540:null_method	0	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:451:grayscale_convert	24	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:214:rgb_ycc_start	8	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:302:rgb_gray_convert	40	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:479:null_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:347:rgb_rgb_convert	24	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:254:rgb_ycc_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jccolor.c:396:cmyk_ycck_convert	48	static

@@ -1,0 +1,8 @@
+repos/zstd/lib/compress/hist.c:30:HIST_isError	0	static
+repos/zstd/lib/compress/hist.c:35:HIST_add	0	static
+repos/zstd/lib/compress/hist.c:45:HIST_count_simple	56	static
+repos/zstd/lib/compress/hist.c:394:HIST_countFast_wksp	40	static
+repos/zstd/lib/compress/hist.c:321:HIST_count_parallel_wksp	72	static
+repos/zstd/lib/compress/hist.c:414:HIST_count_wksp	40	static
+repos/zstd/lib/compress/hist.c:433:HIST_countFast	4136	static
+repos/zstd/lib/compress/hist.c:440:HIST_count	4136	static

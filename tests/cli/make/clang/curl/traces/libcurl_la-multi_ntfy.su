@@ -1,0 +1,13 @@
+multi_ntfy.c:124:Curl_mntfy_init	24	static
+multi_ntfy.c:130:Curl_mntfy_resize	24	static
+multi_ntfy.c:137:Curl_mntfy_cleanup	24	static
+multi_ntfy.c:52:mnfty_chunk_destroy	24	static
+multi_ntfy.c:148:Curl_mntfy_enable	40	static
+multi_ntfy.c:156:Curl_mntfy_disable	40	static
+multi_ntfy.c:164:Curl_mntfy_add	56	static
+multi_ntfy.c:76:mntfy_non_full_tail	40	static
+multi_ntfy.c:62:mntfy_chunk_append	8	static
+multi_ntfy.c:180:Curl_mntfy_dispatch_all	40	static
+multi_ntfy.c:100:mntfy_chunk_dispatch_all	56	static
+multi_ntfy.c:47:mnfty_chunk_create	8	static
+multi_ntfy.c:57:mnfty_chunk_reset	24	static

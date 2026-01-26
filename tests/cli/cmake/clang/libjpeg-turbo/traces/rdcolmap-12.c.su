@@ -1,0 +1,2 @@
+repos/libjpeg-turbo/src/wrapper/../rdcolmap.c:235:read_color_map_12	104	static
+repos/libjpeg-turbo/src/wrapper/../rdcolmap.c:142:read_pbm_integer	40	static

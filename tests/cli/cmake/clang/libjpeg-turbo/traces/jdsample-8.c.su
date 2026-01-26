@@ -1,0 +1,11 @@
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:416:jinit_upsampler	56	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:42:start_pass_upsample	0	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:62:sep_upsample	72	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:142:noop_upsample	0	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:129:fullsize_upsample	0	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:276:h2v1_fancy_upsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:205:h2v1_upsample	24	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:316:h1v2_fancy_upsample	32	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:362:h2v2_fancy_upsample	48	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:233:h2v2_upsample	40	static
+repos/libjpeg-turbo/src/wrapper/../jdsample.c:161:int_upsample	104	static

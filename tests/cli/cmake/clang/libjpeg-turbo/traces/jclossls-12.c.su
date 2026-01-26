@@ -1,0 +1,12 @@
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:307:j12init_lossless_compressor	8	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:278:start_pass_lossless	8	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:256:simple_downscale	0	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:266:noscale	0	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:194:jpeg_difference_first_row	16	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:125:jpeg_difference1	16	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:134:jpeg_difference2	32	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:144:jpeg_difference3	40	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:153:jpeg_difference4	40	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:161:jpeg_difference5	40	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:169:jpeg_difference6	40	static
+repos/libjpeg-turbo/src/wrapper/../jclossls.c:177:jpeg_difference7	40	static

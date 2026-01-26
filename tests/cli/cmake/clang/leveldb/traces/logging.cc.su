@@ -1,0 +1,5 @@
+repos/leveldb/util/logging.cc:17:_ZN7leveldb14AppendNumberToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEm	56	static
+repos/leveldb/util/logging.cc:23:_ZN7leveldb21AppendEscapedStringToEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_5SliceE	72	static
+repos/leveldb/util/logging.cc:37:_ZN7leveldb14NumberToStringB5cxx11Em	56	static
+repos/leveldb/util/logging.cc:43:_ZN7leveldb12EscapeStringB5cxx11ERKNS_5SliceE	8	static
+repos/leveldb/util/logging.cc:49:_ZN7leveldb20ConsumeDecimalNumberEPNS_5SliceEPm	8	static

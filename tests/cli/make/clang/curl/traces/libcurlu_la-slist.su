@@ -1,0 +1,5 @@
+slist.c:54:Curl_slist_append_nodup	56	static
+slist.c:29:slist_get_last	8	static
+slist.c:85:curl_slist_append	40	static
+slist.c:104:Curl_slist_duplicate	40	static
+slist.c:124:curl_slist_free_all	40	static

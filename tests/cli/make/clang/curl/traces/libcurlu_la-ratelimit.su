@@ -1,0 +1,12 @@
+ratelimit.c:154:Curl_rlimit_init	8	static
+ratelimit.c:171:Curl_rlimit_start	40	static
+ratelimit.c:79:rlimit_tune_steps	8	static
+ratelimit.c:180:Curl_rlimit_per_step	8	static
+ratelimit.c:185:Curl_rlimit_active	8	static
+ratelimit.c:190:Curl_rlimit_is_blocked	8	static
+ratelimit.c:195:Curl_rlimit_avail	40	static
+ratelimit.c:35:rlimit_update	56	static
+ratelimit.c:208:Curl_rlimit_drain	40	static
+ratelimit.c:231:Curl_rlimit_wait_ms	56	static
+ratelimit.c:258:Curl_rlimit_next_step_ms	56	static
+ratelimit.c:273:Curl_rlimit_block	40	static

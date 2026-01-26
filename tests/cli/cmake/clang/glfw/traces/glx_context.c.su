@@ -1,0 +1,14 @@
+repos/glfw/src/glx_context.c:258:_glfwInitGLX	24	static
+repos/glfw/src/glx_context.c:210:extensionSupportedGLX	8	static
+repos/glfw/src/glx_context.c:223:getProcAddressGLX	0	static
+repos/glfw/src/glx_context.c:431:_glfwTerminateGLX	8	static
+repos/glfw/src/glx_context.c:452:_glfwCreateContextGLX	232	static
+repos/glfw/src/glx_context.c:52:chooseGLXFBConfig	104	static
+repos/glfw/src/glx_context.c:159:makeContextCurrentGLX	8	static
+repos/glfw/src/glx_context.c:185:swapBuffersGLX	0	static
+repos/glfw/src/glx_context.c:190:swapIntervalGLX	24	static
+repos/glfw/src/glx_context.c:236:destroyContextGLX	8	static
+repos/glfw/src/glx_context.c:645:_glfwChooseVisualGLX	40	static
+repos/glfw/src/glx_context.c:680:glfwGetGLXContext	8	static
+repos/glfw/src/glx_context.c:702:glfwGetGLXWindow	8	static
+repos/glfw/src/glx_context.c:724:glfwGetGLXFBConfig	8	static

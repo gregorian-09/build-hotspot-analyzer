@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/jmemnobs.c:32:jpeg_get_small	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:38:jpeg_free_small	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:49:jpeg_get_large	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:55:jpeg_free_large	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:66:jpeg_mem_available	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:88:jpeg_open_backing_store	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:101:jpeg_mem_init	0	static
+repos/libjpeg-turbo/src/jmemnobs.c:107:jpeg_mem_term	0	static

@@ -1,0 +1,5 @@
+pngwtran.c:500:png_do_write_transformations	24	static
+pngwtran.c:24:png_do_pack	24	static
+pngwtran.c:171:png_do_shift	72	static
+pngwtran.c:309:png_do_write_swap_alpha	24	static
+pngwtran.c:403:png_do_write_invert_alpha	8	static

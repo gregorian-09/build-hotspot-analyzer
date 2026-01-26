@@ -1,0 +1,6 @@
+repos/zstd/lib/compress/zstd_double_fast.c:90:ZSTD_fillDoubleHashTable	48	static
+repos/zstd/lib/compress/zstd_double_fast.c:568:ZSTD_compressBlock_doubleFast	112	static
+repos/zstd/lib/compress/zstd_double_fast.c:588:ZSTD_compressBlock_doubleFast_dictMatchState	328	static
+repos/zstd/lib/compress/zstd_double_fast.c:759:ZSTD_compressBlock_doubleFast_extDict	0	static
+repos/zstd/lib/compress/zstd_compress_internal.h:880:ZSTD_count_2segments	16	static
+repos/zstd/lib/compress/zstd_double_fast.c:610:ZSTD_compressBlock_doubleFast_extDict_generic	264	static

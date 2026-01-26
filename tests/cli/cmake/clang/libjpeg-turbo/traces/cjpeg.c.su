@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/cjpeg.c:622:main	824	static
+repos/libjpeg-turbo/src/cjpeg.c:270:parse_switches	120	static
+repos/libjpeg-turbo/src/cjpeg.c:601:my_emit_message	0	static
+repos/libjpeg-turbo/src/cjpeg.c:195:usage	24	static

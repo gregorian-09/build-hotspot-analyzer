@@ -1,0 +1,7 @@
+strbuf.c:45:strbuf_init	8	static
+strbuf.c:33:die	216	static
+strbuf.c:69:strbuf_new	24	static
+strbuf.c:95:strbuf_free	8	static
+strbuf.c:107:strbuf_free_to_string	24	static
+strbuf.c:159:strbuf_resize	24	static
+strbuf.c:177:strbuf_append_string	24	static

@@ -1,0 +1,13 @@
+tool_urlglob.c:487:glob_inuse	8	static
+tool_urlglob.c:492:glob_url	616	static
+tool_urlglob.c:407:glob_parse	88	static
+tool_urlglob.c:533:glob_cleanup	40	static
+tool_urlglob.c:554:glob_next_url	72	static
+tool_urlglob.c:639:glob_match_url	136	static
+tool_urlglob.c:346:peek_ipv6	200	static
+tool_urlglob.c:32:globerror	8	static
+tool_urlglob.c:40:glob_fixed	56	static
+tool_urlglob.c:387:add_glob	40	static
+tool_urlglob.c:91:glob_set	168	static
+tool_urlglob.c:212:glob_range	152	static
+tool_urlglob.c:67:multiply	8	static

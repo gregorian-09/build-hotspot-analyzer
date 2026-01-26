@@ -1,0 +1,7 @@
+read.c:654:redisReaderCreateWithFunctions	24	static
+read.c:686:redisReaderFree	24	static
+read.c:706:redisReaderFeed	24	static
+read.c:110:__redisReaderSetErrorOOM	8	static
+read.c:737:redisReaderGetReply	440	static
+read.c:53:__redisReaderSetError	40	static
+read.c:240:moveToNextTask	8	static

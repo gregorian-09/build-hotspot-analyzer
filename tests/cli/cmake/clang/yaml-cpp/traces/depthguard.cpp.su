@@ -1,0 +1,4 @@
+repos/yaml-cpp/src/depthguard.cpp:5:_ZN4YAML13DeepRecursionC2EiRKNS_4MarkERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
+repos/yaml-cpp/include/yaml-cpp/depthguard.h:24:_ZN4YAML13DeepRecursionD0Ev	8	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:157:_ZN4YAML9ExceptionC2ERKNS_4MarkERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/yaml-cpp/include/yaml-cpp/exceptions.h:167:_ZN4YAML9Exception10build_whatERKNS_4MarkERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	424	static

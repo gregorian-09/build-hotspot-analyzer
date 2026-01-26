@@ -1,0 +1,16 @@
+repos/snappy/snappy-sinksource.cc:36:_ZN6snappy6SourceD2Ev	0	static
+repos/snappy/snappy-sinksource.cc:36:_ZN6snappy6SourceD0Ev	0	static
+repos/snappy/snappy-sinksource.cc:38:_ZN6snappy4SinkD2Ev	0	static
+repos/snappy/snappy-sinksource.cc:38:_ZN6snappy4SinkD0Ev	0	static
+repos/snappy/snappy-sinksource.cc:40:_ZN6snappy4Sink15GetAppendBufferEmPc	0	static
+repos/snappy/snappy-sinksource.cc:47:_ZN6snappy4Sink23GetAppendBufferVariableEmmPcmPm	0	static
+repos/snappy/snappy-sinksource.cc:58:_ZN6snappy4Sink22AppendAndTakeOwnershipEPcmPFvPvPKcmES2_	40	static
+repos/snappy/snappy-sinksource.cc:66:_ZN6snappy15ByteArraySourceD0Ev	0	static
+repos/snappy/snappy-sinksource.cc:68:_ZNK6snappy15ByteArraySource9AvailableEv	0	static
+repos/snappy/snappy-sinksource.cc:70:_ZN6snappy15ByteArraySource4PeekEPm	0	static
+repos/snappy/snappy-sinksource.cc:75:_ZN6snappy15ByteArraySource4SkipEm	0	static
+repos/snappy/snappy-sinksource.cc:80:_ZN6snappy22UncheckedByteArraySinkD0Ev	0	static
+repos/snappy/snappy-sinksource.cc:82:_ZN6snappy22UncheckedByteArraySink6AppendEPKcm	24	static
+repos/snappy/snappy-sinksource.cc:90:_ZN6snappy22UncheckedByteArraySink15GetAppendBufferEmPc	0	static
+repos/snappy/snappy-sinksource.cc:98:_ZN6snappy22UncheckedByteArraySink22AppendAndTakeOwnershipEPcmPFvPvPKcmES2_	40	static
+repos/snappy/snappy-sinksource.cc:109:_ZN6snappy22UncheckedByteArraySink23GetAppendBufferVariableEmmPcmPm	0	static

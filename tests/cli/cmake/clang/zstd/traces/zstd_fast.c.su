@@ -1,0 +1,6 @@
+repos/zstd/lib/compress/zstd_fast.c:87:ZSTD_fillHashTable	48	static
+repos/zstd/lib/compress/zstd_fast.c:443:ZSTD_compressBlock_fast	96	static
+repos/zstd/lib/compress/zstd_fast.c:686:ZSTD_compressBlock_fast_dictMatchState	280	static
+repos/zstd/lib/compress/zstd_fast.c:967:ZSTD_compressBlock_fast_extDict	0	static
+repos/zstd/lib/compress/zstd_compress_internal.h:880:ZSTD_count_2segments	16	static
+repos/zstd/lib/compress/zstd_fast.c:709:ZSTD_compressBlock_fast_extDict_generic	232	static

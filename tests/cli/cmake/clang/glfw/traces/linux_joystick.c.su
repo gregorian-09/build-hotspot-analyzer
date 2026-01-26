@@ -1,0 +1,9 @@
+repos/glfw/src/linux_joystick.c:268:_glfwDetectJoystickConnectionLinux	20696	static
+repos/glfw/src/linux_joystick.c:128:openJoystickDevice	8472	static
+repos/glfw/src/linux_joystick.c:311:_glfwInitJoysticksLinux	4168	static
+repos/glfw/src/linux_joystick.c:256:compareJoysticks	0	static
+repos/glfw/src/linux_joystick.c:366:_glfwTerminateJoysticksLinux	24	static
+repos/glfw/src/linux_joystick.c:387:_glfwPollJoystickLinux	72	static
+repos/glfw/src/linux_joystick.c:108:pollAbsState	56	static
+repos/glfw/src/linux_joystick.c:427:_glfwGetMappingNameLinux	0	static
+repos/glfw/src/linux_joystick.c:432:_glfwUpdateGamepadGUIDLinux	0	static

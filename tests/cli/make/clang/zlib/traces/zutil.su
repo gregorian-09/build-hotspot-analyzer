@@ -1,0 +1,5 @@
+zutil.c:27:zlibVersion	8	static
+zutil.c:31:zlibCompileFlags	8	static
+zutil.c:131:zError	8	static
+zutil.c:286:zcalloc	24	static
+zutil.c:292:zcfree	24	static

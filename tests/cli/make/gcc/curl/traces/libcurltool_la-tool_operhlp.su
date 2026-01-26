@@ -1,0 +1,6 @@
+tool_operhlp.c:32:clean_getout	40	static
+tool_operhlp.c:51:output_expected	40	static
+tool_operhlp.c:61:stdin_upload	24	static
+tool_operhlp.c:67:urlerr_cvt	8	static
+tool_operhlp.c:84:add_file_name_to_url	136	static
+tool_operhlp.c:175:get_url_file_name	88	static

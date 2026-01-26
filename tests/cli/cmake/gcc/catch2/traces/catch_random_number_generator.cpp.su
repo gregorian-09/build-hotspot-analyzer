@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:39:5:Catch::SimplePcg32::SimplePcg32(result_type)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:44:10:void Catch::SimplePcg32::seed(result_type)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:51:10:void Catch::SimplePcg32::discard(uint64_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:60:30:Catch::SimplePcg32::result_type Catch::SimplePcg32::operator()()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:71:10:bool Catch::operator==(const SimplePcg32&, const SimplePcg32&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_number_generator.cpp:75:10:bool Catch::operator!=(const SimplePcg32&, const SimplePcg32&)	8	static

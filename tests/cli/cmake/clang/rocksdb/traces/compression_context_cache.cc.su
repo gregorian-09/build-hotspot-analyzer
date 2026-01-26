@@ -1,0 +1,6 @@
+repos/rocksdb/util/compression_context_cache.cc:86:_ZN7rocksdb23CompressionContextCacheC2Ev	40	static
+repos/rocksdb/util/compression_context_cache.cc:88:_ZN7rocksdb23CompressionContextCache8InstanceEv	24	static
+repos/rocksdb/util/compression_context_cache.cc:93:_ZN7rocksdb23CompressionContextCache13InitSingletonEv	24	static
+repos/rocksdb/util/compression_context_cache.cc:96:_ZN7rocksdb23CompressionContextCache27GetCachedZSTDUncompressDataEv	24	static
+repos/rocksdb/util/compression_context_cache.cc:100:_ZN7rocksdb23CompressionContextCache30ReturnCachedZSTDUncompressDataEl	0	static
+repos/rocksdb/util/compression_context_cache.cc:104:_ZN7rocksdb23CompressionContextCacheD2Ev	24	static

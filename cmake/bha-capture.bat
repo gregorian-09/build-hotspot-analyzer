@@ -99,10 +99,10 @@ if exist "%TEMP_STDERR%" (
 
     if !TEMP_SIZE! GTR 0 (
         REM Check if stderr contains timing information
-        REM MSVC timing markers: "time(", "c1xx.dll", "c2.dll", or just check for presence
-        REM GCC/Clang markers: "Execution times", "TOTAL", "time in"
+        REM MSVC timing markers: "time(", "c1xx.dll", "c2.dll"
+        REM GCC/Clang markers: "Execution times", "TOTAL", "time in", "Time variable"
 
-        findstr /C:"time(" /C:"c1xx.dll" /C:"c2.dll" /C:"Execution times" /C:"TOTAL" /C:"time in" "%TEMP_STDERR%" >nul 2>&1
+        findstr /C:"time(" /C:"c1xx.dll" /C:"c2.dll" /C:"Execution times" /C:"TOTAL" /C:"time in" /C:"Time variable" "%TEMP_STDERR%" >nul 2>&1
 
         if !ERRORLEVEL! EQU 0 (
             REM Timing data found, create trace file

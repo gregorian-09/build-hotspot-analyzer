@@ -1,0 +1,8 @@
+repos/abseil/absl/debugging/internal/vdso_support.cc:183:_ZN4absl18debugging_internal11VDSOSupport13InitAndGetCPUEPjPvS3_	24	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:76:_ZN4absl18debugging_internal11VDSOSupportC2Ev	8	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:93:_ZN4absl18debugging_internal11VDSOSupport4InitEv	120	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:170:_ZN4absl18debugging_internal11VDSOSupport16GetCPUViaSyscallEPjPvS3_	0	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:157:_ZNK4absl18debugging_internal11VDSOSupport12LookupSymbolEPKcS3_iPNS0_11ElfMemImage10SymbolInfoE	0	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:146:_ZN4absl18debugging_internal11VDSOSupport7SetBaseEPKv	8	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:164:_ZNK4absl18debugging_internal11VDSOSupport21LookupSymbolByAddressEPKvPNS0_11ElfMemImage10SymbolInfoE	0	static
+repos/abseil/absl/debugging/internal/vdso_support.cc:198:_ZN4absl18debugging_internal6GetCPUEv	8	static

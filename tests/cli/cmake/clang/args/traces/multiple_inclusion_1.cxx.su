@@ -1,0 +1,2 @@
+repos/args/test/multiple_inclusion_1.cxx:3:_Z3foov	0	static
+repos/args/test/multiple_inclusion_1.cxx:6:main	8	static

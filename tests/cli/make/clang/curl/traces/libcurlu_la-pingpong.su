@@ -1,0 +1,12 @@
+pingpong.c:43:Curl_pp_state_timeout	72	static
+pingpong.c:69:Curl_pp_statemach	88	static
+pingpong.c:128:Curl_pp_init	24	static
+pingpong.c:149:Curl_pp_vsendf	104	static
+pingpong.c:217:Curl_pp_sendf	248	static
+pingpong.c:245:Curl_pp_readresp	1048	static
+pingpong.c:231:pingpong_read	56	static
+pingpong.c:349:Curl_pp_pollset	40	static
+pingpong.c:358:Curl_pp_needs_flush	8	static
+pingpong.c:365:Curl_pp_flushsend	56	static
+pingpong.c:397:Curl_pp_disconnect	24	static
+pingpong.c:407:Curl_pp_moredata	24	static

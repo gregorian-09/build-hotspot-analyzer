@@ -1,0 +1,9 @@
+repos/rocksdb/db/compaction/compaction_state.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/db/compaction/compaction_state.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/db/compaction/compaction_state.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/db/compaction/compaction_state.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/db/compaction/compaction_state.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/db/compaction/compaction_state.cc:15:_ZN7rocksdb15CompactionState15SmallestUserKeyEv	40	static
+repos/rocksdb/db/compaction/compaction_state.cc:26:_ZN7rocksdb15CompactionState14LargestUserKeyEv	40	static
+repos/rocksdb/db/compaction/compaction_state.cc:38:_ZN7rocksdb15CompactionState24AggregateCompactionStatsERNS_13InternalStats19CompactionStatsFullERNS_18CompactionJobStatsE	40	static
+repos/rocksdb/db/compaction/compaction_state.cc:0:_GLOBAL__sub_I_compaction_state.cc	40	static

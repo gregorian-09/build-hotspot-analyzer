@@ -1,0 +1,3 @@
+curl_endian.c:41:Curl_read16_le	8	static
+curl_endian.c:60:Curl_read32_le	8	static
+curl_endian.c:79:Curl_read16_be	8	static

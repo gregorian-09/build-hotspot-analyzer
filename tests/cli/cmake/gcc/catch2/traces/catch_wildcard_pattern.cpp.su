@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_wildcard_pattern.cpp:44:17:std::string Catch::WildcardPattern::normaliseString(const std::string&) const	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_wildcard_pattern.cpp:14:5:Catch::WildcardPattern::WildcardPattern(const std::string&, Catch::CaseSensitive)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_wildcard_pattern.cpp:29:10:bool Catch::WildcardPattern::matches(const std::string&) const	112	static

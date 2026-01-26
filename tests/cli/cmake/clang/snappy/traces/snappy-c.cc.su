@@ -1,0 +1,5 @@
+repos/snappy/snappy-c.cc:34:snappy_compress	40	static
+repos/snappy/snappy-c.cc:65:snappy_max_compressed_length	0	static
+repos/snappy/snappy-c.cc:45:snappy_uncompress	40	static
+repos/snappy/snappy-c.cc:69:snappy_uncompressed_length	8	static
+repos/snappy/snappy-c.cc:81:snappy_validate_compressed_buffer	8	static

@@ -1,0 +1,8 @@
+repos/abseil/absl/synchronization/notification.cc:27:_ZN4absl12Notification6NotifyEv	8	static
+repos/abseil/absl/synchronization/notification.cc:43:_ZN4absl12NotificationD2Ev	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/notification.cc:__clang_call_terminate	8	static
+repos/abseil/absl/synchronization/notification.cc:49:_ZNK4absl12Notification19WaitForNotificationEv	40	static
+repos/abseil/absl/synchronization/notification.h:121:_ZN4absl12Notification23HasBeenNotifiedInternalEPKSt6atomicIbE	0	static
+repos/abseil/absl/synchronization/notification.cc:59:_ZNK4absl12Notification30WaitForNotificationWithTimeoutENS_8DurationE	72	static
+repos/abseil/absl/synchronization/notification.cc:72:_ZNK4absl12Notification31WaitForNotificationWithDeadlineENS_4TimeE	72	static
+repos/abseil/absl/synchronization/mutex.h:1221:_ZN4absl9Condition19CastAndCallFunctionIKSt6atomicIbEEEbPKS0_	0	static

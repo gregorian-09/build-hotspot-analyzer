@@ -1,0 +1,11 @@
+test/example.c:60:13:test_compress	64	static
+test/example.c:84:13:test_gzio	80	static
+test/example.c:166:13:test_deflate	176	static
+test/example.c:201:13:test_inflate	192	static
+test/example.c:240:13:test_large_deflate	192	static
+test/example.c:293:13:test_large_inflate	192	static
+test/example.c:332:13:test_flush	176	static
+test/example.c:367:13:test_sync	192	static
+test/example.c:408:13:test_dict_deflate	176	static
+test/example.c:442:13:test_dict_inflate	192	static
+test/example.c:491:5:main	80	static

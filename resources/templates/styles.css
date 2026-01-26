@@ -133,7 +133,7 @@ h2 i { color: var(--accent-color); }
     margin-bottom: 50px;
     background: var(--bg-secondary);
     border-radius: 16px;
-    padding: 30px;
+    padding: 20px;
     border: 1px solid var(--border-color);
 }
 
@@ -227,9 +227,15 @@ tr:last-child td {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
+    padding: 16px;
+    margin-bottom: 16px;
     transition: all 0.3s ease;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .suggestion-card:hover {
@@ -251,6 +257,38 @@ tr:last-child td {
     font-weight: 600;
     font-size: 1.2rem;
     color: var(--text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.suggestion-card p,
+.suggestion-card pre {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.suggestion-description {
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 12px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.code-comparison {
+    margin-top: 12px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .code-comparison {
+        grid-template-columns: 1fr;
+    }
 }
 
 .suggestion-badge {
@@ -291,11 +329,13 @@ tr:last-child td {
     font-size: 0.875rem;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 500px;
+    max-width: 100%;
     margin-top: 12px;
     border: 1px solid rgba(0, 212, 255, 0.2);
-    word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: pre;
+    word-break: break-all;
+    box-sizing: border-box;
 }
 
 .controls {

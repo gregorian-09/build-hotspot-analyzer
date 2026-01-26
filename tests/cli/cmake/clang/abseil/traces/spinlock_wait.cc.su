@@ -1,0 +1,4 @@
+repos/abseil/absl/base/internal/spinlock_linux.inc:59:AbslInternalSpinLockDelay	40	static
+repos/abseil/absl/base/internal/spinlock_linux.inc:66:AbslInternalSpinLockWake	0	static
+repos/abseil/absl/base/internal/spinlock_wait.cc:39:_ZN4absl13base_internal12SpinLockWaitEPSt6atomicIjEiPKNS0_22SpinLockWaitTransitionENS0_14SchedulingModeE	56	static
+repos/abseil/absl/base/internal/spinlock_wait.cc:62:_ZN4absl13base_internal24SpinLockSuggestedDelayNSEi	0	static

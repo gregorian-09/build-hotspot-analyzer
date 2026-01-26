@@ -1,0 +1,11 @@
+src/bin.c:10:bin_update_shard_size	72	static
+include/jemalloc/internal/sz.h:155:sz_size2index_compute	72	static
+src/bin.c:34:bin_shard_sizes_boot	8	static
+src/bin.c:42:bin_init	24	static
+include/jemalloc/internal/edata.h:253:edata_list_active_init	8	static
+src/bin.c:57:bin_prefork	24	static
+src/bin.c:62:bin_postfork_parent	24	static
+src/bin.c:67:bin_postfork_child	24	static
+include/jemalloc/internal/bit_util.h:392:lg_floor	24	static
+include/jemalloc/internal/bit_util.h:326:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:98:fls_lu	8	static

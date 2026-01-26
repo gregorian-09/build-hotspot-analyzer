@@ -1,0 +1,3 @@
+repos/zstd/lib/compress/zstd_compress_literals.c:39:ZSTD_noCompressLiterals	8	static
+repos/zstd/lib/compress/zstd_compress_literals.c:81:ZSTD_compressRleLiteralsBlock	0	static
+repos/zstd/lib/compress/zstd_compress_literals.c:129:ZSTD_compressLiterals	88	static

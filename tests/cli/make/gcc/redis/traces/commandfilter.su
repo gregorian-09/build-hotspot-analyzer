@@ -1,0 +1,9 @@
+commandfilter.c:20:5:CommandFilter_UnregisterCommand	32	static
+commandfilter.c:31:5:CommandFilter_PingCommand	32	static
+commandfilter.c:61:5:CommandFilter_LogCommand	112	static
+commandfilter.c:96:5:CommandFilter_UnfilteredClientId	32	static
+commandfilter.c:120:6:CommandFilter_BlmoveSwap	64	static
+commandfilter.c:47:5:CommandFilter_Retained	16	static
+commandfilter.c:142:6:CommandFilter_CommandFilter	96	static
+commandfilter.c:192:5:RedisModule_OnLoad	96	dynamic,bounded
+commandfilter.c:246:5:RedisModule_OnUnload	16	static

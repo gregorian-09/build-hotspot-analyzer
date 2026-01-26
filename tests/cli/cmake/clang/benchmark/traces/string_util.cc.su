@@ -1,0 +1,6 @@
+repos/benchmark/src/string_util.cc:151:_ZN9benchmark19HumanReadableNumberB5cxx11EdNS_7Counter4OneKE	520	static
+repos/benchmark/src/string_util.cc:155:_ZN9benchmark9StrFormatB5cxx11EPKcz	552	static
+repos/benchmark/src/string_util.cc:163:_ZN9benchmark8StrSplitERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEc	104	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_	88	static
+repos/benchmark/src/string_util.cc:0:_GLOBAL__sub_I_string_util.cc	0	static

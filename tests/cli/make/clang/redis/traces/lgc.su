@@ -1,0 +1,16 @@
+lgc.c:128:luaC_separateudata	56	static
+lgc.c:477:luaC_callGCTM	8	static
+lgc.c:445:GCTM	40	static
+lgc.c:483:luaC_freeall	40	static
+lgc.c:407:sweeplist	56	static
+lgc.c:610:luaC_step	24	static
+lgc.c:556:singlestep	40	static
+lgc.c:635:luaC_fullgc	24	static
+lgc.c:501:markroot	24	static
+lgc.c:661:luaC_barrierf	0	static
+lgc.c:69:reallymarkobject	24	static
+lgc.c:674:luaC_barrierback	0	static
+lgc.c:685:luaC_link	0	static
+lgc.c:694:luaC_linkupval	0	static
+lgc.c:277:propagatemark	56	static
+lgc.c:493:markmt	8	static

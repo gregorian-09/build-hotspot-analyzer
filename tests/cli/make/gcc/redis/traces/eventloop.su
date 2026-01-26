@@ -1,0 +1,9 @@
+eventloop.c:221:5:oneshot	32	static
+eventloop.c:213:6:oneshotCallback	16	static
+eventloop.c:31:6:onReadable	48	static
+eventloop.c:84:5:sendbytes	48	static
+eventloop.c:120:5:sanity	48	static
+eventloop.c:201:5:iteration	16	static
+eventloop.c:236:6:eventloopCallback	16	static
+eventloop.c:63:6:onWritable	48	static
+eventloop.c:249:5:RedisModule_OnLoad	64	dynamic,bounded

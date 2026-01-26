@@ -1,0 +1,11 @@
+repos/leveldb/table/table.cc:38:_ZN7leveldb5Table4OpenERKNS_7OptionsEPNS_16RandomAccessFileEmPPS0_	200	static
+repos/leveldb/table/table.cc:82:_ZN7leveldb5Table8ReadMetaERKNS_6FooterE	136	static
+repos/leveldb/table/table.cc:111:_ZN7leveldb5Table10ReadFilterERKNS_5SliceE	104	static
+repos/leveldb/table/table.cc:134:_ZN7leveldb5TableD2Ev	24	static
+repos/leveldb/table/table.cc:153:_ZN7leveldb5Table11BlockReaderEPvRKNS_11ReadOptionsERKNS_5SliceE	168	static
+repos/leveldb/table/table.cc:140:_ZN7leveldbL17DeleteCachedBlockERKNS_5SliceEPv	8	static
+repos/leveldb/table/table.cc:136:_ZN7leveldbL11DeleteBlockEPvS0_	8	static
+repos/leveldb/table/table.cc:145:_ZN7leveldbL12ReleaseBlockEPvS0_	0	static
+repos/leveldb/table/table.cc:208:_ZNK7leveldb5Table11NewIteratorERKNS_11ReadOptionsE	24	static
+repos/leveldb/table/table.cc:214:_ZN7leveldb5Table11InternalGetERKNS_11ReadOptionsERKNS_5SliceEPvPFvS7_S6_S6_E	136	static
+repos/leveldb/table/table.cc:244:_ZNK7leveldb5Table19ApproximateOffsetOfERKNS_5SliceE	72	static

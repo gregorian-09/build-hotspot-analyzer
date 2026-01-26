@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_joystick.c:34:10:_glfwInitJoysticksNull	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_joystick.c:39:6:_glfwTerminateJoysticksNull	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_joystick.c:43:10:_glfwPollJoystickNull	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_joystick.c:48:13:_glfwGetMappingNameNull	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_joystick.c:53:6:_glfwUpdateGamepadGUIDNull	8	static

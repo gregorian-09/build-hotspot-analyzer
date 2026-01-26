@@ -1,0 +1,16 @@
+config2setopts.c:754:config2setopts	152	static
+config2setopts.c:130:url_proto_and_rewrite	88	static
+config2setopts.c:635:gen_trace_setopts	24	static
+config2setopts.c:644:gen_cb_setopts	40	static
+config2setopts.c:685:proxy_setopts	40	static
+config2setopts.c:487:http_setopts	56	static
+config2setopts.c:538:cookie_setopts	120	static
+config2setopts.c:607:ftp_setopts	40	static
+config2setopts.c:181:ssh_setopts	56	static
+config2setopts.c:280:ssl_setopts	104	static
+config2setopts.c:582:tcp_setopts	24	static
+config2setopts.c:733:tls_srp_setopts	40	static
+config2setopts.c:62:sockopt_callback	616	static
+config2setopts.c:112:ssl_backend	24	static
+config2setopts.c:232:tlsversion	8	static
+config2setopts.c:46:get_address_family	56	static

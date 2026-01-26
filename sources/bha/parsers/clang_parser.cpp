@@ -158,14 +158,50 @@ namespace bha::parsers {
             const std::vector<TraceEvent>& events,
             std::vector<IncludeInfo>& includes
         ) {
-            std::unordered_map<std::string, IncludeInfo> include_map;
+            struct SourceEventInfo {
+                std::string detail;
+                double start_time;
+                double end_time;
+                double duration;
+                std::size_t depth;
+            };
+
+            std::vector<SourceEventInfo> source_events;
 
             for (const auto& event : events) {
                 if (event.name == "Source" && !event.detail.empty()) {
-                    auto& info = include_map[event.detail];
-                    info.header = event.detail;
-                    info.parse_time += microseconds_to_duration(event.duration);
+                    SourceEventInfo info;
+                    info.detail = event.detail;
+                    info.start_time = event.timestamp;
+                    info.end_time = event.timestamp + event.duration;
+                    info.duration = event.duration;
+                    info.depth = 0;
+                    source_events.push_back(info);
                 }
+            }
+
+            std::ranges::sort(source_events, [](const auto& a, const auto& b) {
+                return a.start_time < b.start_time;
+            });
+
+            for (std::size_t i = 0; i < source_events.size(); ++i) {
+                std::size_t depth = 0;
+                for (std::size_t j = 0; j < i; ++j) {
+                    if (source_events[j].start_time <= source_events[i].start_time &&
+                        source_events[i].start_time < source_events[j].end_time) {
+                        ++depth;
+                    }
+                }
+                source_events[i].depth = depth;
+            }
+
+            std::unordered_map<std::string, IncludeInfo> include_map;
+
+            for (const auto& event : source_events) {
+                auto& info = include_map[event.detail];
+                info.header = event.detail;
+                info.parse_time += microseconds_to_duration(event.duration);
+                info.depth = std::max(info.depth, event.depth);
             }
 
             includes.reserve(include_map.size());

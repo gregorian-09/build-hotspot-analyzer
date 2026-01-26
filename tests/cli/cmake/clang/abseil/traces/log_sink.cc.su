@@ -1,0 +1,4 @@
+repos/abseil/absl/log/log_sink.cc:21:_ZNK4absl7LogSink11KeyFunctionEv	0	static
+repos/abseil/absl/log/log_sink.h:39:_ZN4absl7LogSinkD2Ev	0	static
+repos/abseil/absl/log/log_sink.h:39:_ZN4absl7LogSinkD0Ev	0	static
+repos/abseil/absl/log/log_sink.h:55:_ZN4absl7LogSink5FlushEv	0	static

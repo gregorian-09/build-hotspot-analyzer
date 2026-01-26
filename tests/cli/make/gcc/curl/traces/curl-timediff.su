@@ -1,0 +1,2 @@
+../lib/curlx/timediff.c:34:curlx_mstotv	8	static
+../lib/curlx/timediff.c:82:curlx_tvtoms	8	static

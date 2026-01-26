@@ -1,0 +1,15 @@
+repos/abseil/absl/debugging/internal/stacktrace_x86-inl.inc:403:_ZN4absl18debugging_internal22StackTraceWorksForTestEv	0	static
+repos/abseil/absl/debugging/stacktrace.cc:140:_ZN4absl19internal_stacktrace14GetStackFramesEPPvPmPiii	104	static
+repos/abseil/absl/debugging/stacktrace.cc:148:_ZN4absl19internal_stacktrace25GetStackFramesWithContextEPPvPmPiiiPKvS4_	120	static
+repos/abseil/absl/debugging/stacktrace.cc:158:_ZN4absl19internal_stacktrace20GetStackTraceNoFixupEPPvii	72	static
+repos/abseil/absl/debugging/stacktrace.cc:165:_ZN4absl13GetStackTraceEPPvii	104	static
+repos/abseil/absl/debugging/stacktrace.cc:173:_ZN4absl24GetStackTraceWithContextEPPviiPKvPi	120	static
+repos/abseil/absl/debugging/stacktrace.cc:180:_ZN4absl16SetStackUnwinderEPFiPPvPiiiPKvS2_E	0	static
+repos/abseil/absl/debugging/stacktrace.cc:206:_ZN4absl19internal_stacktrace20DefaultStackUnwinderEPPvPmPiiiPKvS4_	24	static
+repos/abseil/absl/debugging/stacktrace.cc:216:_ZN4absl20DefaultStackUnwinderEPPvPiiiPKvS2_	8	static
+repos/abseil/absl/debugging/stacktrace.cc:225:_ZN4absl19internal_stacktrace16ShouldFixUpStackEv	0	static
+repos/abseil/absl/debugging/stacktrace.cc:239:_ZN4absl19internal_stacktrace10FixUpStackEPPvPmPimRm	0	static
+repos/abseil/absl/debugging/internal/stacktrace_x86-inl.inc:339:_ZL10UnwindImplILb0ELb0EEiPPvPmPiiiPKvS3_	56	static
+repos/abseil/absl/debugging/internal/stacktrace_x86-inl.inc:339:_ZL10UnwindImplILb0ELb1EEiPPvPmPiiiPKvS3_	56	static
+repos/abseil/absl/debugging/internal/stacktrace_x86-inl.inc:339:_ZL10UnwindImplILb1ELb0EEiPPvPmPiiiPKvS3_	88	static
+repos/abseil/absl/debugging/internal/stacktrace_x86-inl.inc:339:_ZL10UnwindImplILb1ELb1EEiPPvPmPiiiPKvS3_	88	static

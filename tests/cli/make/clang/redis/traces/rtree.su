@@ -1,0 +1,15 @@
+src/rtree.c:12:je_rtree_new	40	static
+src/rtree.c:164:je_rtree_leaf_elm_lookup_hard	280	static
+src/rtree.c:151:rtree_child_leaf_read	56	static
+src/rtree.c:135:rtree_child_leaf_tryread	16	static
+src/rtree.c:101:rtree_leaf_valid	8	static
+src/rtree.c:250:je_rtree_ctx_data_init	8	static
+src/rtree.c:70:rtree_leaf_init	168	static
+include/jemalloc/internal/mutex.h:213:malloc_mutex_lock	216	static
+src/rtree.c:37:rtree_leaf_alloc	40	static
+include/jemalloc/internal/mutex.h:226:malloc_mutex_unlock	152	static
+include/jemalloc/internal/witness.h:220:witness_assert_not_owner	8	static
+include/jemalloc/internal/mutex.h:156:malloc_mutex_trylock_final	24	static
+include/jemalloc/internal/mutex.h:161:mutex_owner_stats_update	8	static
+include/jemalloc/internal/witness.h:306:witness_lock	8	static
+include/jemalloc/internal/witness.h:349:witness_unlock	8	static

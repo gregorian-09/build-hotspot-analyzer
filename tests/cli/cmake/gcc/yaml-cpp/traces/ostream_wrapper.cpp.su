@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:8:1:YAML::ostream_wrapper::ostream_wrapper()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:16:1:YAML::ostream_wrapper::ostream_wrapper(std::ostream&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:24:1:YAML::ostream_wrapper::~ostream_wrapper()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:52:6:void YAML::ostream_wrapper::update_pos(char)	8	static
+/usr/include/c++/13/bits/vector.tcc:634:5:void std::vector<_Tp, _Alloc>::_M_default_append(size_type) [with _Tp = char; _Alloc = std::allocator<char>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:26:6:void YAML::ostream_wrapper::write(const std::string&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/ostream_wrapper.cpp:39:6:void YAML::ostream_wrapper::write(const char*, std::size_t)	48	static

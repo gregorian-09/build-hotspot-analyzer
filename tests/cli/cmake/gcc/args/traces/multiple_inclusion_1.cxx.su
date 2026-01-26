@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/args/test/multiple_inclusion_1.cxx:3:5:int foo()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/args/test/multiple_inclusion_1.cxx:6:5:int main()	16	static

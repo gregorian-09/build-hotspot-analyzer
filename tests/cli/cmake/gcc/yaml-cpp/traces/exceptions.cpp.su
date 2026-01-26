@@ -1,0 +1,26 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:7:1:YAML::Exception::~Exception()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:7:1:virtual YAML::Exception::~Exception()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:8:1:YAML::ParserException::~ParserException()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:8:1:virtual YAML::ParserException::~ParserException()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:9:1:YAML::RepresentationException::~RepresentationException()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:9:1:virtual YAML::RepresentationException::~RepresentationException()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:10:1:YAML::InvalidScalar::~InvalidScalar()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:10:1:virtual YAML::InvalidScalar::~InvalidScalar()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:11:1:YAML::KeyNotFound::~KeyNotFound()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:11:1:virtual YAML::KeyNotFound::~KeyNotFound()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:12:1:YAML::InvalidNode::~InvalidNode()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:12:1:virtual YAML::InvalidNode::~InvalidNode()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:13:1:YAML::BadConversion::~BadConversion()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:13:1:virtual YAML::BadConversion::~BadConversion()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:14:1:YAML::BadDereference::~BadDereference()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:14:1:virtual YAML::BadDereference::~BadDereference()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:15:1:YAML::BadSubscript::~BadSubscript()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:15:1:virtual YAML::BadSubscript::~BadSubscript()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:16:1:YAML::BadPushback::~BadPushback()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:16:1:virtual YAML::BadPushback::~BadPushback()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:17:1:YAML::BadInsert::~BadInsert()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:17:1:virtual YAML::BadInsert::~BadInsert()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:18:1:YAML::EmitterException::~EmitterException()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:18:1:virtual YAML::EmitterException::~EmitterException()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:19:1:YAML::BadFile::~BadFile()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/exceptions.cpp:19:1:virtual YAML::BadFile::~BadFile()	16	static

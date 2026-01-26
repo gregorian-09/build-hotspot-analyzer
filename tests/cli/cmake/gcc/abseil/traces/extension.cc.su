@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/extension.cc:26:13:std::string absl::str_format_internal::FlagsToString(Flags)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/extension.cc:36:6:bool absl::str_format_internal::FormatSinkImpl::PutPaddedString(std::string_view, int, int, bool)	96	static

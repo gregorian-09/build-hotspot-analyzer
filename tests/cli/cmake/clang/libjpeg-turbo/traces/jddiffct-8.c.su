@@ -1,0 +1,7 @@
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:347:jinit_d_diff_controller	56	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:93:start_input_pass	24	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:146:start_output_pass	0	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:265:consume_data	72	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:295:output_data	88	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:249:dummy_consume_data	0	static
+repos/libjpeg-turbo/src/wrapper/../jddiffct.c:163:decompress_data	120	static

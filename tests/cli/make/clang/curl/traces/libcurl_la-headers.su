@@ -1,0 +1,9 @@
+headers.c:55:curl_easy_header	120	static
+headers.c:35:copy_header_external	8	static
+headers.c:121:curl_easy_nextheader	104	static
+headers.c:221:Curl_headers_push	104	static
+headers.c:181:namevalue	8	static
+headers.c:324:Curl_headers_init	40	static
+headers.c:351:Curl_headers_cleanup	40	static
+headers.c:286:headers_reset	24	static
+headers.c:296:hds_cw_collect_write	72	static

@@ -1,0 +1,6 @@
+repos/abseil/absl/strings/ascii.cc:220:_ZN4absl14ascii_internal15AsciiStrToLowerEPcPKcm	0	static
+repos/abseil/absl/strings/ascii.cc:225:_ZN4absl14ascii_internal15AsciiStrToUpperEPcPKcm	0	static
+repos/abseil/absl/strings/ascii.cc:256:_ZN4absl15AsciiStrToLowerEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	0	static
+repos/abseil/absl/strings/ascii.cc:261:_ZN4absl15AsciiStrToUpperEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	0	static
+repos/abseil/absl/strings/ascii.cc:266:_ZN4absl26RemoveExtraAsciiWhitespaceEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	8	static
+repos/abseil/absl/strings/ascii.h:272:_ZN4absl20StripAsciiWhitespaceESt17basic_string_viewIcSt11char_traitsIcEE	8	static

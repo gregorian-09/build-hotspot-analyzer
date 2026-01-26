@@ -1,0 +1,10 @@
+repos/libjpeg-turbo/src/jcarith.c:912:jinit_arith_encoder	8	static
+repos/libjpeg-turbo/src/jcarith.c:828:start_pass	40	static
+repos/libjpeg-turbo/src/jcarith.c:139:finish_pass	24	static
+repos/libjpeg-turbo/src/jcarith.c:368:encode_mcu_DC_first	104	static
+repos/libjpeg-turbo/src/jcarith.c:459:encode_mcu_AC_first	104	static
+repos/libjpeg-turbo/src/jcarith.c:558:encode_mcu_DC_refine	40	static
+repos/libjpeg-turbo/src/jcarith.c:593:encode_mcu_AC_refine	88	static
+repos/libjpeg-turbo/src/jcarith.c:686:encode_mcu	120	static
+repos/libjpeg-turbo/src/jcarith.c:325:emit_restart	24	static
+repos/libjpeg-turbo/src/jcarith.c:225:arith_encode	24	static

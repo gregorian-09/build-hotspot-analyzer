@@ -1,0 +1,13 @@
+repos/libjpeg-turbo/src/jdmarker.c:1216:jpeg_resync_to_restart	56	static
+repos/libjpeg-turbo/src/jdmarker.c:890:next_marker	40	static
+repos/libjpeg-turbo/src/jdmarker.c:1286:jinit_marker_reader	8	static
+repos/libjpeg-turbo/src/jdmarker.c:1266:reset_marker_reader	0	static
+repos/libjpeg-turbo/src/jdmarker.c:968:read_markers	424	static
+repos/libjpeg-turbo/src/jdmarker.c:1137:read_restart_marker	8	static
+repos/libjpeg-turbo/src/jdmarker.c:861:skip_variable	56	static
+repos/libjpeg-turbo/src/jdmarker.c:709:get_interesting_appn	88	static
+repos/libjpeg-turbo/src/jdmarker.c:1324:jpeg_save_markers	0	static
+repos/libjpeg-turbo/src/jdmarker.c:757:save_marker	72	static
+repos/libjpeg-turbo/src/jdmarker.c:1373:jpeg_set_marker_processor	0	static
+repos/libjpeg-turbo/src/jdmarker.c:242:get_sof	56	static
+repos/libjpeg-turbo/src/jdmarker.c:605:examine_app0	24	static

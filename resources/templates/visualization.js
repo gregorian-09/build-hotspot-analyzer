@@ -19,6 +19,7 @@
             if (tabId === 'timeline') renderTimeline();
             if (tabId === 'treemap') renderTreemap();
             if (tabId === 'templates') renderTemplates();
+            if (tabId === 'memory') renderMemoryChart();
             if (tabId === 'dependencies') renderDependencyGraph();
         }
 
@@ -836,6 +837,174 @@
             }
         }
 
+        function renderMemoryChart() {
+            const container = document.getElementById('memory-chart-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (!analysisData.files || !analysisData.files.length) {
+                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No file data available</p>';
+                updateMemoryStats([]);
+                return;
+            }
+
+            const sortBy = document.getElementById('memory-sort')?.value || 'peak';
+            const limit = parseInt(document.getElementById('memory-limit')?.value) || 50;
+
+            const filesWithMemory = analysisData.files
+                .filter(f => f.memory && (f.memory.peak_memory_bytes > 0 || f.memory.max_stack_bytes > 0))
+                .map(f => ({
+                    file: f.file,
+                    peak: f.memory.peak_memory_bytes || 0,
+                    frontend: f.memory.frontend_peak_bytes || 0,
+                    backend: f.memory.backend_peak_bytes || 0,
+                    stack: f.memory.max_stack_bytes || 0
+                }));
+
+            if (filesWithMemory.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No memory data available</p>';
+                updateMemoryStats([]);
+                return;
+            }
+
+            filesWithMemory.sort((a, b) => {
+                if (sortBy === 'peak') return b.peak - a.peak;
+                if (sortBy === 'stack') return b.stack - a.stack;
+                return a.file.localeCompare(b.file);
+            });
+
+            const topFiles = filesWithMemory.slice(0, limit);
+            updateMemoryStats(filesWithMemory);
+            updateMemoryTable(topFiles);
+
+            const margin = {top: 20, right: 100, bottom: 150, left: 80};
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const x = d3.scaleBand()
+                .domain(topFiles.map(d => d.file))
+                .range([0, width])
+                .padding(0.2);
+
+            const maxValue = d3.max(topFiles, d => Math.max(d.peak, d.stack));
+            const y = d3.scaleLinear()
+                .domain([0, maxValue * 1.1])
+                .range([height, 0]);
+
+            svg.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll('text')
+                .attr('transform', 'rotate(-45)')
+                .style('text-anchor', 'end')
+                .style('font-size', '10px')
+                .text(d => d.length > 30 ? d.substring(0, 27) + '...' : d);
+
+            svg.append('g')
+                .call(d3.axisLeft(y).ticks(10).tickFormat(d => formatBytes(d)));
+
+            svg.selectAll('.bar-peak')
+                .data(topFiles)
+                .enter()
+                .append('rect')
+                .attr('class', 'bar-peak')
+                .attr('x', d => x(d.file))
+                .attr('y', d => y(d.peak))
+                .attr('width', x.bandwidth() / 2 - 2)
+                .attr('height', d => height - y(d.peak))
+                .attr('fill', 'var(--accent-color)')
+                .style('opacity', 0.8);
+
+            svg.selectAll('.bar-stack')
+                .data(topFiles)
+                .enter()
+                .append('rect')
+                .attr('class', 'bar-stack')
+                .attr('x', d => x(d.file) + x.bandwidth() / 2 + 2)
+                .attr('y', d => y(d.stack))
+                .attr('width', x.bandwidth() / 2 - 2)
+                .attr('height', d => height - y(d.stack))
+                .attr('fill', 'var(--success-color)')
+                .style('opacity', 0.8);
+
+            const legend = svg.append('g')
+                .attr('transform', `translate(${width - 90}, 0)`);
+
+            legend.append('rect')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', 15)
+                .attr('height', 15)
+                .attr('fill', 'var(--accent-color)');
+
+            legend.append('text')
+                .attr('x', 20)
+                .attr('y', 12)
+                .text('Peak Memory')
+                .style('font-size', '12px');
+
+            legend.append('rect')
+                .attr('x', 0)
+                .attr('y', 20)
+                .attr('width', 15)
+                .attr('height', 15)
+                .attr('fill', 'var(--success-color)');
+
+            legend.append('text')
+                .attr('x', 20)
+                .attr('y', 32)
+                .text('Stack Usage')
+                .style('font-size', '12px');
+        }
+
+        function updateMemoryStats(filesWithMemory) {
+            const totalPeak = filesWithMemory.reduce((sum, f) => sum + f.peak, 0);
+            const maxPeak = filesWithMemory.length > 0 ? Math.max(...filesWithMemory.map(f => f.peak)) : 0;
+            const avgPeak = filesWithMemory.length > 0 ? totalPeak / filesWithMemory.length : 0;
+            const maxStack = filesWithMemory.length > 0 ? Math.max(...filesWithMemory.map(f => f.stack)) : 0;
+
+            document.getElementById('total-peak-memory').textContent = formatBytes(totalPeak);
+            document.getElementById('max-file-memory').textContent = formatBytes(maxPeak);
+            document.getElementById('avg-file-memory').textContent = formatBytes(avgPeak);
+            document.getElementById('max-stack-usage').textContent = formatBytes(maxStack);
+        }
+
+        function updateMemoryTable(files) {
+            const tbody = document.getElementById('memory-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = files.map(f => `
+                <tr>
+                    <td><i class="fas fa-file-code" style="color: var(--accent-color); margin-right: 8px;"></i>${escapeHtml(f.file)}</td>
+                    <td><strong>${formatBytes(f.peak)}</strong></td>
+                    <td>${formatBytes(f.frontend)}</td>
+                    <td>${formatBytes(f.backend)}</td>
+                    <td>${formatBytes(f.stack)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '-';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         window.showTab = showTab;
         window.filterFiles = filterFiles;
         window.sortFiles = sortFiles;
@@ -847,3 +1016,4 @@
         window.renderTreemap = renderTreemap;
         window.renderTemplates = renderTemplates;
         window.renderDependencyGraph = renderDependencyGraph;
+        window.renderMemoryChart = renderMemoryChart;

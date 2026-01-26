@@ -1,0 +1,17 @@
+blockonbackground.c:18:blockClientPrivdataInit	8	static
+blockonbackground.c:24:blockClientMeasureTimeStart	24	static
+blockonbackground.c:30:blockClientMeasureTimeEnd	24	static
+blockonbackground.c:40:HelloBlock_Reply	8	static
+blockonbackground.c:48:HelloBlock_Timeout	24	static
+blockonbackground.c:58:HelloBlock_FreeData	8	static
+blockonbackground.c:66:HelloBlock_FreeStringData	0	static
+blockonbackground.c:72:BlockDebug_ThreadMain	56	static
+blockonbackground.c:96:DoubleBlock_ThreadMain	56	static
+blockonbackground.c:119:HelloBlock_Disconnected	0	static
+blockonbackground.c:127:HelloBlock_RedisCommand	56	static
+blockonbackground.c:170:HelloBlockNoTracking_RedisCommand	56	static
+blockonbackground.c:213:HelloDoubleBlock_RedisCommand	40	static
+blockonbackground.c:246:Block_RedisCommand	40	static
+blockonbackground.c:276:IsBlocked_RedisCommand	8	static
+blockonbackground.c:285:Release_RedisCommand	24	static
+blockonbackground.c:301:RedisModule_OnLoad	56	static

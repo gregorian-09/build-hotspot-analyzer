@@ -1,0 +1,4 @@
+repos/glfw/src/platform.c:61:_glfwSelectPlatform	24	static
+repos/glfw/src/platform.c:135:glfwGetPlatform	8	static
+repos/glfw/src/platform.c:141:glfwPlatformSupported	8	static
+repos/glfw/src/platform.c:168:glfwGetVersionString	0	static

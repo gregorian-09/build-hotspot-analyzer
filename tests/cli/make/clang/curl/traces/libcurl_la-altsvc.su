@@ -1,0 +1,15 @@
+altsvc.c:49:Curl_alpnid2str	8	static
+altsvc.c:282:Curl_altsvc_init	24	static
+altsvc.c:304:Curl_altsvc_load	24	static
+altsvc.c:197:altsvc_load	104	static
+altsvc.c:313:Curl_altsvc_ctrl	40	static
+altsvc.c:332:Curl_altsvc_cleanup	56	static
+altsvc.c:352:Curl_altsvc_save	88	static
+altsvc.c:233:altsvc_out	392	static
+altsvc.c:460:Curl_altsvc_parse	280	static
+altsvc.c:414:altsvc_flush	72	static
+altsvc.c:65:altsvc_createid	72	static
+altsvc.c:624:Curl_altsvc_lookup	104	static
+altsvc.c:399:hostcompare	56	static
+altsvc.c:130:altsvc_add	200	static
+altsvc.c:112:altsvc_create	88	static

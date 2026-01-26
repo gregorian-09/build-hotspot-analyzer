@@ -1,0 +1,5 @@
+repos/leveldb/util/bloom.cc:88:_ZN7leveldb20NewBloomFilterPolicyEi	8	static
+repos/leveldb/util/bloom.cc:17:_ZN7leveldb12_GLOBAL__N_117BloomFilterPolicyD0Ev	8	static
+repos/leveldb/util/bloom.cc:26:_ZNK7leveldb12_GLOBAL__N_117BloomFilterPolicy4NameEv	0	static
+repos/leveldb/util/bloom.cc:28:_ZNK7leveldb12_GLOBAL__N_117BloomFilterPolicy12CreateFilterEPKNS_5SliceEiPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
+repos/leveldb/util/bloom.cc:56:_ZNK7leveldb12_GLOBAL__N_117BloomFilterPolicy11KeyMayMatchERKNS_5SliceES4_	40	static

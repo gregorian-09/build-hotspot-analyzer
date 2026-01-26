@@ -1,0 +1,9 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:58:13:std::string absl::StrCat(const AlphaNum&, const AlphaNum&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:77:13:std::string absl::StrCat(const AlphaNum&, const AlphaNum&, const AlphaNum&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:99:13:std::string absl::StrCat(const AlphaNum&, const AlphaNum&, const AlphaNum&, const AlphaNum&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:126:13:std::string absl::strings_internal::CatPieces(std::initializer_list<std::basic_string_view<char> >)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:161:6:void absl::strings_internal::AppendPieces(std::string*, std::initializer_list<std::basic_string_view<char> >)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:185:6:void absl::StrAppend(std::string*, const AlphaNum&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:196:6:void absl::StrAppend(std::string*, const AlphaNum&, const AlphaNum&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:210:6:void absl::StrAppend(std::string*, const AlphaNum&, const AlphaNum&, const AlphaNum&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.cc:227:6:void absl::StrAppend(std::string*, const AlphaNum&, const AlphaNum&, const AlphaNum&, const AlphaNum&)	80	static

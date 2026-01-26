@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/jdatasrc.c:213:jpeg_stdio_src	24	static
+repos/libjpeg-turbo/src/jdatasrc.c:48:init_source	0	static
+repos/libjpeg-turbo/src/jdatasrc.c:100:fill_input_buffer	24	static
+repos/libjpeg-turbo/src/jdatasrc.c:159:skip_input_data	24	static
+repos/libjpeg-turbo/src/jdatasrc.c:200:term_source	0	static
+repos/libjpeg-turbo/src/jdatasrc.c:258:jpeg_mem_src	24	static
+repos/libjpeg-turbo/src/jdatasrc.c:60:init_mem_source	0	static
+repos/libjpeg-turbo/src/jdatasrc.c:125:fill_mem_input_buffer	8	static

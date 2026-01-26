@@ -1,0 +1,1 @@
+repos/abseil/absl/synchronization/internal/waiter_base.cc:24:_ZN4absl24synchronization_internal10WaiterBase15MaybeBecomeIdleEv	8	static

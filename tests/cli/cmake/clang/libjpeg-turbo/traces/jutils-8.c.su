@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/wrapper/../jutils.c:78:jdiv_round_up	0	static
+repos/libjpeg-turbo/src/wrapper/../jutils.c:87:jround_up	0	static
+repos/libjpeg-turbo/src/wrapper/../jutils.c:102:jcopy_sample_rows	40	static
+repos/libjpeg-turbo/src/wrapper/../jutils.c:132:jcopy_block_row	0	static
+repos/libjpeg-turbo/src/wrapper/../jutils.c:141:jzero_far	0	static

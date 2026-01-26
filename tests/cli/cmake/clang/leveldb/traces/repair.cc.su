@@ -1,0 +1,12 @@
+repos/leveldb/db/repair.cc:446:_ZN7leveldb8RepairDBERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_7OptionsE	1000	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRKS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_	104	static
+repos/leveldb/db/repair.cc:408:_ZN7leveldb12_GLOBAL__N_18Repairer11ArchiveFileERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	168	static
+repos/leveldb/db/repair.cc:148:_ZZN7leveldb12_GLOBAL__N_18Repairer17ConvertLogToTableEmEN11LogReporter10CorruptionEmRKNS_6StatusE	56	static
+repos/leveldb/db/repair.cc:144:_ZZN7leveldb12_GLOBAL__N_18Repairer17ConvertLogToTableEmEN11LogReporterD0Ev	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:1281:_ZNSt6vectorIN7leveldb12_GLOBAL__N_18Repairer9TableInfoESaIS3_EE9push_backERKS3_	104	static
+repos/leveldb/./db/version_edit.h:36:_ZN7leveldb11VersionEdit17SetComparatorNameERKNS_5SliceE	72	static
+repos/leveldb/./db/version_edit.h:63:_ZN7leveldb11VersionEdit7AddFileEimmRKNS_11InternalKeyES3_	248	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorISt4pairIiN7leveldb12FileMetaDataEESaIS3_EE17_M_realloc_insertIJS3_EEEvN9__gnu_cxx17__normal_iteratorIPS3_S5_EEDpOT_	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_pair.h:687:_ZNSt4pairIiN7leveldb12FileMetaDataEEC2IRiRS1_TnNSt9enable_ifIXaaclsr5_PCCPE22_MoveConstructiblePairIT_T0_EEclsr5_PCCPE30_ImplicitlyMoveConvertiblePairIS7_S8_EEEbE4typeELb1EEEOS7_OS8_	56	static
+repos/leveldb/./db/version_edit.h:32:_ZN7leveldb11VersionEditD2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeISt4pairIimES1_St9_IdentityIS1_ESt4lessIS1_ESaIS1_EE8_M_eraseEPSt13_Rb_tree_nodeIS1_E	24	static

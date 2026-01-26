@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc:76:6:void absl::base_internal::SetCurrentThreadIdentity(ThreadIdentity*, ThreadIdentityReclaimerFunction)	304	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc:139:6:void absl::base_internal::ClearCurrentThreadIdentity()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc:151:17:absl::base_internal::ThreadIdentity* absl::base_internal::CurrentThreadIdentityIfPresent()	8	static

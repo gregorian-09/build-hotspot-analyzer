@@ -1,0 +1,10 @@
+repos/glfw/src/x11_init.c:1098:_glfwGrabErrorHandlerX11	8	static
+repos/glfw/src/x11_init.c:1082:errorHandler	0	static
+repos/glfw/src/x11_init.c:1107:_glfwReleaseErrorHandlerX11	8	static
+repos/glfw/src/x11_init.c:1117:_glfwInputErrorX11	1048	static
+repos/glfw/src/x11_init.c:1128:_glfwCreateNativeCursorX11	40	static
+repos/glfw/src/x11_init.c:1166:_glfwConnectX11	56	static
+repos/glfw/src/x11_init.c:1321:_glfwInitX11	1176	static
+repos/glfw/src/x11_init.c:1555:_glfwTerminateX11	8	static
+repos/glfw/src/x11_init.c:466:inputMethodInstantiateCallback	24	static
+repos/glfw/src/x11_init.c:461:inputMethodDestroyCallback	0	static

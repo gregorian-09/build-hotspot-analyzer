@@ -34,6 +34,9 @@ namespace bha::build_systems
         /** Directory for build artifacts */
         fs::path build_dir;
 
+        /** Directory for trace output files (if empty, traces stay in build_dir) */
+        fs::path trace_output_dir;
+
         /** Enable time tracing output */
         bool enable_tracing = true;
 
@@ -91,10 +94,10 @@ namespace bha::build_systems
         virtual ~IBuildSystemAdapter() = default;
 
         /** Get the name of this build system (e.g., "CMake", "Ninja") */
-        virtual std::string name() const = 0;
+        [[nodiscard]] virtual std::string name() const = 0;
 
         /** Get a description of this adapter */
-        virtual std::string description() const = 0;
+        [[nodiscard]] virtual std::string description() const = 0;
 
         /**
          * Check if this adapter can handle the given project.
@@ -102,7 +105,7 @@ namespace bha::build_systems
          * @param project_path Path to the project root
          * @return Confidence level (0.0-1.0), 0 if cannot handle
          */
-        virtual double detect(const fs::path& project_path) const = 0;
+        [[nodiscard]] virtual double detect(const fs::path& project_path) const = 0;
 
         /**
          * Configure the project for building with tracing.
@@ -171,7 +174,7 @@ namespace bha::build_systems
         /**
          * Get all registered adapters.
          */
-        const std::vector<std::unique_ptr<IBuildSystemAdapter>>& adapters() const {
+        [[nodiscard]] const std::vector<std::unique_ptr<IBuildSystemAdapter>>& adapters() const {
             return adapters_;
         }
 
@@ -181,7 +184,7 @@ namespace bha::build_systems
          * @param project_path Path to the project root
          * @return Best matching adapter or nullptr
          */
-        IBuildSystemAdapter* detect(const fs::path& project_path) const;
+        [[nodiscard]] IBuildSystemAdapter* detect(const fs::path& project_path) const;
 
         /**
          * Get an adapter by name.
@@ -189,7 +192,7 @@ namespace bha::build_systems
          * @param name Adapter name
          * @return Adapter or nullptr
          */
-        IBuildSystemAdapter* get(const std::string& name) const;
+        [[nodiscard]] IBuildSystemAdapter* get(const std::string& name) const;
 
     private:
         BuildSystemRegistry() = default;
@@ -202,6 +205,7 @@ namespace bha::build_systems
     void register_ninja_adapter();
     void register_make_adapter();
     void register_msbuild_adapter();
+    void register_meson_adapter();
 
     // Register all built-in adapters
     inline void register_all_adapters() {
@@ -209,6 +213,7 @@ namespace bha::build_systems
         register_ninja_adapter();
         register_make_adapter();
         register_msbuild_adapter();
+        register_meson_adapter();
     }
 
 } // namespace bha::build_systems

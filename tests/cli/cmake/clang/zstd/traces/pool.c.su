@@ -1,0 +1,11 @@
+repos/zstd/lib/common/pool.c:107:ZSTD_createThreadPool	24	static
+repos/zstd/lib/common/pool.c:111:POOL_create	24	static
+repos/zstd/lib/common/pool.c:115:POOL_create_advanced	56	static
+repos/zstd/lib/common/pool.c:180:POOL_free	40	static
+repos/zstd/lib/common/pool.c:67:POOL_thread	56	static
+repos/zstd/lib/common/pool.c:194:POOL_joinJobs	24	static
+repos/zstd/lib/common/pool.c:202:ZSTD_freeThreadPool	0	static
+repos/zstd/lib/common/pool.c:206:POOL_sizeof	0	static
+repos/zstd/lib/common/pool.c:244:POOL_resize	56	static
+repos/zstd/lib/common/pool.c:286:POOL_add	40	static
+repos/zstd/lib/common/pool.c:299:POOL_tryAdd	40	static

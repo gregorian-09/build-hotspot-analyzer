@@ -1,0 +1,5 @@
+repos/benchmark/src/colorprint.cc:85:_ZN9benchmark12FormatStringB5cxx11EPKcP13__va_list_tag	360	static
+repos/benchmark/src/colorprint.cc:113:_ZN9benchmark12FormatStringB5cxx11EPKcz	216	static
+repos/benchmark/src/colorprint.cc:121:_ZN9benchmark11ColorPrintfERSoNS_8LogColorEPKcz	216	static
+repos/benchmark/src/colorprint.cc:128:_ZN9benchmark11ColorPrintfERSoNS_8LogColorEPKcP13__va_list_tag	56	static
+repos/benchmark/src/colorprint.cc:166:_ZN9benchmark15IsColorTerminalEv	24	static

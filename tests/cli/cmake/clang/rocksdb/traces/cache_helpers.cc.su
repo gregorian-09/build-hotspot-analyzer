@@ -1,0 +1,2 @@
+repos/rocksdb/cache/cache_helpers.cc:10:_ZN7rocksdb25ReleaseCacheHandleCleanupEPvS0_	0	static
+repos/rocksdb/cache/cache_helpers.cc:20:_ZN7rocksdb11WarmInCacheEPNS_5CacheERKNS_5SliceES4_PNS0_13CreateContextEPKNS0_15CacheItemHelperENS0_8PriorityEPm	104	static

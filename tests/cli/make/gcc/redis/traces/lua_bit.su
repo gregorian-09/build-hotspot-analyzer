@@ -1,0 +1,13 @@
+lua_bit.c:96:12:bit_tobit	32	static
+lua_bit.c:97:12:bit_bnot	32	static
+lua_bit.c:121:12:bit_bswap	32	static
+lua_bit.c:116:1:bit_rshift	32	static
+lua_bit.c:117:1:bit_arshift	32	static
+lua_bit.c:119:1:bit_ror	32	static
+lua_bit.c:118:1:bit_rol	32	static
+lua_bit.c:115:1:bit_lshift	32	static
+lua_bit.c:105:1:bit_bxor	48	static
+lua_bit.c:104:1:bit_bor	48	static
+lua_bit.c:103:1:bit_band	48	static
+lua_bit.c:128:12:bit_tohex	48	static
+lua_bit.c:165:16:luaopen_bit	16	static

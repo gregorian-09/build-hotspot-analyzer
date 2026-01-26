@@ -1,0 +1,15 @@
+pngtest.c:1832:main	120	static
+pngtest.c:855:test_one_file	1224	static
+pngtest.c:478:pngtest_error	24	static
+pngtest.c:458:pngtest_warning	40	static
+pngtest.c:657:init_user_chunk_info	24	static
+pngtest.c:694:read_user_chunk_callback	40	static
+pngtest.c:187:write_row_callback	24	static
+pngtest.c:157:read_row_callback	24	static
+pngtest.c:206:read_user_callback	40	static
+pngtest.c:226:count_zero_samples	72	static
+pngtest.c:817:pngtest_check_text_support	40	static
+pngtest.c:786:write_chunks	40	static
+pngtest.c:664:set_chunk_location	40	static
+pngtest.c:756:write_sTER_chunk	40	static
+pngtest.c:767:write_vpAg_chunk	40	static

@@ -1,0 +1,5 @@
+pngwio.c:32:1:png_write_data	48	static
+pngwio.c:50:1:png_default_write_data	64	static
+pngwio.c:70:1:png_flush	32	static
+pngwio.c:78:1:png_default_flush	48	static
+pngwio.c:121:1:png_set_write_fn	48	static

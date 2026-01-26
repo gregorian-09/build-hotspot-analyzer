@@ -1,0 +1,1 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-stubs-internal.cc:36:6:static void snappy::Varint::Append32(std::string*, uint32_t)	32	static

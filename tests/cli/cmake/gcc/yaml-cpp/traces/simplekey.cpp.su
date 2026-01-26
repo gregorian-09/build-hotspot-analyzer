@@ -1,0 +1,11 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:7:1:YAML::Scanner::SimpleKey::SimpleKey(const YAML::Mark&, std::size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:14:6:void YAML::Scanner::SimpleKey::Validate()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:26:6:void YAML::Scanner::SimpleKey::Invalidate()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:47:6:bool YAML::Scanner::ExistsActiveSimpleKey() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:36:6:bool YAML::Scanner::CanInsertPotentialSimpleKey() const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:84:6:void YAML::Scanner::InvalidateSimpleKey()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:100:6:bool YAML::Scanner::VerifySimpleKey()	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:128:6:void YAML::Scanner::PopAllSimpleKeys()	16	static
+/usr/include/c++/13/bits/deque.tcc:484:7:) [with _Args = {const YAML::Scanner::SimpleKey&}; _Tp = YAML::Scanner::SimpleKey; _Alloc = std::allocator<YAML::Scanner::SimpleKey>]	64	static
+/usr/include/c++/13/bits/deque.tcc:484:7:) [with _Args = {YAML::Token}; _Tp = YAML::Token; _Alloc = std::allocator<YAML::Token>]	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/simplekey.cpp:58:6:void YAML::Scanner::InsertPotentialSimpleKey()	208	static

@@ -1,0 +1,2 @@
+src/catch2/internal/catch_random_seed_generation.cpp:19:_ZN5Catch18generateRandomSeedENS_12GenerateFromE	5048	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_random_seed_generation.cpp:__clang_call_terminate	8	static

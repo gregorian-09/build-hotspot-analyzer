@@ -1,0 +1,7 @@
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:25:_ZN4absl13cord_internal16CordzSampleToken8IteratorppEv	8	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:32:_ZN4absl13cord_internal16CordzSampleToken8IteratorppEi	24	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:38:_ZN4absl13cord_internaleqERKNS0_16CordzSampleToken8IteratorES4_	0	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:44:_ZN4absl13cord_internalneERKNS0_16CordzSampleToken8IteratorES4_	0	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:49:_ZNK4absl13cord_internal16CordzSampleToken8IteratordeEv	0	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:54:_ZNK4absl13cord_internal16CordzSampleToken8IteratorptEv	0	static
+repos/abseil/absl/strings/internal/cordz_sample_token.cc:59:_ZN4absl13cord_internal16CordzSampleToken8IteratorC2EPKS1_	8	static

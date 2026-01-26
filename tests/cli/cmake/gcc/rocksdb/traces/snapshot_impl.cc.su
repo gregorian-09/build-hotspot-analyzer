@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/snapshot_impl.cc:11:1:rocksdb::ManagedSnapshot::ManagedSnapshot(rocksdb::DB*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/snapshot_impl.cc:14:1:rocksdb::ManagedSnapshot::ManagedSnapshot(rocksdb::DB*, const rocksdb::Snapshot*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/snapshot_impl.cc:17:1:rocksdb::ManagedSnapshot::~ManagedSnapshot()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/snapshot_impl.cc:23:17:const rocksdb::Snapshot* rocksdb::ManagedSnapshot::snapshot()	8	static

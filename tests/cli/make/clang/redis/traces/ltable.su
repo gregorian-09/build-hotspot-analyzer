@@ -1,0 +1,14 @@
+ltable.c:162:luaH_next	56	static
+ltable.c:327:luaH_resizearray	0	static
+ltable.c:297:resize	88	static
+ltable.c:358:luaH_new	40	static
+ltable.c:272:setnodevector	40	static
+ltable.c:375:luaH_free	24	static
+ltable.c:436:luaH_getnum	0	static
+ltable.c:455:luaH_getstr	0	static
+ltable.c:469:luaH_get	24	static
+ltable.c:494:luaH_set	24	static
+ltable.c:400:newkey	184	static
+ltable.c:508:luaH_setnum	24	static
+ltable.c:520:luaH_setstr	24	static
+ltable.c:560:luaH_getn	16	static

@@ -1,0 +1,10 @@
+repos/rocksdb/db/flush_scheduler.cc:0:__cxx_global_array_dtor	8	static
+repos/rocksdb/db/flush_scheduler.cc:0:__cxx_global_array_dtor.24	8	static
+repos/rocksdb/db/flush_scheduler.cc:0:__cxx_global_array_dtor.27	8	static
+repos/rocksdb/db/flush_scheduler.cc:0:__cxx_global_array_dtor.35	8	static
+repos/rocksdb/db/flush_scheduler.cc:0:__cxx_global_array_dtor.38	8	static
+repos/rocksdb/db/flush_scheduler.cc:14:_ZN7rocksdb14FlushScheduler12ScheduleWorkEPNS_16ColumnFamilyDataE	24	static
+repos/rocksdb/db/flush_scheduler.cc:36:_ZN7rocksdb14FlushScheduler20TakeNextColumnFamilyEv	24	static
+repos/rocksdb/db/flush_scheduler.cc:67:_ZN7rocksdb14FlushScheduler5EmptyEv	0	static
+repos/rocksdb/db/flush_scheduler.cc:78:_ZN7rocksdb14FlushScheduler5ClearEv	24	static
+repos/rocksdb/db/flush_scheduler.cc:0:_GLOBAL__sub_I_flush_scheduler.cc	40	static

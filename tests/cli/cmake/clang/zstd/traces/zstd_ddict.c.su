@@ -1,0 +1,11 @@
+repos/zstd/lib/decompress/zstd_ddict.c:46:ZSTD_DDict_dictContent	0	static
+repos/zstd/lib/decompress/zstd_ddict.c:52:ZSTD_DDict_dictSize	0	static
+repos/zstd/lib/decompress/zstd_ddict.c:58:ZSTD_copyDDictParameters	0	static
+repos/zstd/lib/decompress/zstd_ddict.c:145:ZSTD_createDDict_advanced	40	static
+repos/zstd/lib/decompress/zstd_ddict.c:212:ZSTD_freeDDict	24	static
+repos/zstd/lib/decompress/zstd_ddict.c:170:ZSTD_createDDict	56	static
+repos/zstd/lib/decompress/zstd_ddict.c:180:ZSTD_createDDict_byReference	56	static
+repos/zstd/lib/decompress/zstd_ddict.c:187:ZSTD_initStaticDDict	40	static
+repos/zstd/lib/decompress/zstd_ddict.c:225:ZSTD_estimateDDictSize	0	static
+repos/zstd/lib/decompress/zstd_ddict.c:230:ZSTD_sizeof_DDict	0	static
+repos/zstd/lib/decompress/zstd_ddict.c:240:ZSTD_getDictID_fromDDict	0	static

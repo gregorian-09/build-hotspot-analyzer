@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/generators/catch_generator_exception.cpp:13:17:virtual const char* Catch::GeneratorException::what() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/../catch2/generators/catch_generator_exception.hpp:18:11:Catch::GeneratorException::~GeneratorException()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/../catch2/generators/catch_generator_exception.hpp:18:11:virtual Catch::GeneratorException::~GeneratorException()	16	static

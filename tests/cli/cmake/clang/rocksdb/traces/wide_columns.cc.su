@@ -1,0 +1,1 @@
+repos/rocksdb/db/wide/wide_columns.cc:16:_ZN7rocksdb19PinnableWideColumns25CreateIndexForWideColumnsEv	40	static

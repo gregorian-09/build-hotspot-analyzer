@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_module.c:37:7:_glfwPlatformLoadModule	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_module.c:42:6:_glfwPlatformFreeModule	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_module.c:47:10:_glfwPlatformGetModuleSymbol	8	static

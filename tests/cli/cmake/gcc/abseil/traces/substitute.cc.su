@@ -1,0 +1,4 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/substitute.cc:38:6:void absl::substitute_internal::SubstituteAndAppendArray(std::string*, std::string_view, const std::string_view*, size_t)	176	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/substitute.cc:113:1:absl::substitute_internal::Arg::Arg(const void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/substitute.cc:133:1:absl::substitute_internal::Arg::Arg(absl::Hex)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/substitute.cc:154:1:absl::substitute_internal::Arg::Arg(absl::Dec)	32	static

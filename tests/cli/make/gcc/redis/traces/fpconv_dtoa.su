@@ -1,0 +1,2 @@
+fpconv_dtoa.c:137:11:multiply	16	static
+fpconv_dtoa.c:349:5:fpconv_dtoa	192	static

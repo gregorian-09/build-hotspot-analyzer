@@ -1,0 +1,4 @@
+repos/abseil/absl/flags/usage.cc:42:_ZN4absl22SetProgramUsageMessageESt17basic_string_viewIcSt11char_traitsIcEE	40	static
+repos/abseil/absl/base/internal/atomic_hook.h:116:_ZNK4absl13base_internal10AtomicHookIPFvNS_11LogSeverityEPKciRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEclIJS2_RKS4_iRA39_S3_EEEvDpOT_	104	static
+repos/abseil/absl/flags/usage.cc:57:_ZN4absl19ProgramUsageMessageEv	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/usage.cc:__clang_call_terminate	8	static

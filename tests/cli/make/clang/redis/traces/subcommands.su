@@ -1,0 +1,4 @@
+subcommands.c:5:cmd_set	8	static
+subcommands.c:12:cmd_get	8	static
+subcommands.c:22:cmd_get_fullname	8	static
+subcommands.c:31:RedisModule_OnLoad	440	static

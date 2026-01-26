@@ -1,0 +1,15 @@
+tool_formparse.c:177:tool_mime_free	24	static
+tool_formparse.c:195:tool_mime_stdin_read	344	static
+tool_formparse.c:78:uztoso	8	static
+tool_formparse.c:229:tool_mime_stdin_seek	56	static
+tool_formparse.c:321:tool2curlmime	40	static
+tool_formparse.c:253:tool2curlparts	72	static
+tool_formparse.c:714:formparse	152	static
+tool_formparse.c:49:tool_mime_new_parts	24	static
+tool_formparse.c:471:get_param_part	472	static
+tool_formparse.c:96:tool_mime_new_filedata	264	static
+tool_formparse.c:54:tool_mime_new_data	40	static
+tool_formparse.c:33:tool_mime_new	40	static
+tool_formparse.c:342:get_param_word	88	static
+tool_formparse.c:412:read_field_headers	136	static
+tool_formparse.c:400:slist_append	40	static

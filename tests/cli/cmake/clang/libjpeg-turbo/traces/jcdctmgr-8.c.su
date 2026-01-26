@@ -1,0 +1,8 @@
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:631:jinit_forward_dct	24	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:236:start_pass_fdctmgr	56	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:501:forward_DCT	72	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:590:forward_DCT_float	72	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:384:convsamp	0	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:419:quantize	0	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:536:convsamp_float	0	static
+repos/libjpeg-turbo/src/wrapper/../jcdctmgr.c:567:quantize_float	0	static

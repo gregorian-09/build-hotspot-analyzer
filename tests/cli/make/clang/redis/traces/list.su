@@ -1,0 +1,7 @@
+list.c:7:list_getall	56	static
+list.c:56:list_edit	104	static
+list.c:156:list_get	40	static
+list.c:175:list_set	40	static
+list.c:197:list_insert	40	static
+list.c:215:list_delete	24	static
+list.c:232:RedisModule_OnLoad	56	static

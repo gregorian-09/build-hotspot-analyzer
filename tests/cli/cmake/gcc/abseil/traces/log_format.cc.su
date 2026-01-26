@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/log_format.cc:170:13:std::string absl::log_internal::FormatLogMessage(absl::LogSeverity, absl::CivilSecond, absl::Duration, Tid, std::string_view, int, PrefixFormat, std::string_view)	304	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/log_format.cc:192:8:size_t absl::log_internal::FormatLogPrefix(absl::LogSeverity, absl::Time, Tid, std::string_view, int, PrefixFormat, absl::Span<char>&)	272	static

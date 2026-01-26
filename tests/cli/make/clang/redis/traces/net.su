@@ -1,0 +1,17 @@
+net.c:55:redisNetClose	8	static
+net.c:62:redisNetRead	8	static
+net.c:84:redisNetWrite	8	static
+net.c:171:redisKeepAlive	40	static
+net.c:221:redisSetTcpNoDelay	184	static
+net.c:231:redisContextSetTcpUserTimeout	184	static
+net.c:307:redisCheckConnectDone	40	static
+net.c:343:redisCheckSocketError	184	static
+net.c:365:redisContextSetTimeout	184	static
+net.c:400:redisContextUpdateCommandTimeout	24	static
+net.c:384:redisContextUpdateConnectTimeout	24	static
+net.c:596:redisContextConnectTcp	0	static
+net.c:416:_redisContextConnectTcp	280	static
+net.c:601:redisContextConnectBindTcp	0	static
+net.c:607:redisContextConnectUnix	168	static
+net.c:137:redisSetBlocking	168	static
+net.c:274:redisContextWaitReady	184	static

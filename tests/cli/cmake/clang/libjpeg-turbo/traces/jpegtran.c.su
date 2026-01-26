@@ -1,0 +1,5 @@
+repos/libjpeg-turbo/src/jpegtran.c:455:main	2472	static
+repos/libjpeg-turbo/src/jpegtran.c:130:parse_switches	88	static
+repos/libjpeg-turbo/src/jpegtran.c:438:my_emit_message	0	static
+repos/libjpeg-turbo/src/jpegtran.c:48:usage	8	static
+repos/libjpeg-turbo/src/jpegtran.c:107:select_transform	8	static

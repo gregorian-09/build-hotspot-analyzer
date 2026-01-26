@@ -1,0 +1,5 @@
+sha256.c:463:Curl_sha256it	200	static
+sha256.c:345:my_sha256_init	8	static
+sha256.c:368:my_sha256_update	72	static
+sha256.c:408:my_sha256_final	40	static
+sha256.c:296:sha256_compress	504	static

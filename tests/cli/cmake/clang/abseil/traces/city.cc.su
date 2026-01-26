@@ -1,0 +1,4 @@
+repos/abseil/absl/hash/internal/city.cc:119:_ZN4absl13hash_internal10CityHash32EPKcm	8	static
+repos/abseil/absl/hash/internal/city.cc:286:_ZN4absl13hash_internal10CityHash64EPKcm	48	static
+repos/abseil/absl/hash/internal/city.cc:326:_ZN4absl13hash_internal18CityHash64WithSeedEPKcmm	8	static
+repos/abseil/absl/hash/internal/city.cc:330:_ZN4absl13hash_internal19CityHash64WithSeedsEPKcmmm	24	static

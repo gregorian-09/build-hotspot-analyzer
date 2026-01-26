@@ -1,0 +1,4 @@
+repos/abseil/absl/base/internal/tracing.cc:26:AbslInternalTraceWait	0	static
+repos/abseil/absl/base/internal/tracing.cc:28:AbslInternalTraceContinue	0	static
+repos/abseil/absl/base/internal/tracing.cc:30:AbslInternalTraceSignal	0	static
+repos/abseil/absl/base/internal/tracing.cc:32:AbslInternalTraceObserved	0	static

@@ -1,0 +1,7 @@
+repos/libjpeg-turbo/src/wrtarga.c:229:jinit_write_targa	24	static
+repos/libjpeg-turbo/src/wrtarga.c:158:start_output_tga	72	static
+repos/libjpeg-turbo/src/wrtarga.c:202:finish_output_tga	24	static
+repos/libjpeg-turbo/src/wrtarga.c:216:calc_buffer_dimensions_tga	0	static
+repos/libjpeg-turbo/src/wrtarga.c:135:put_demapped_gray	0	static
+repos/libjpeg-turbo/src/wrtarga.c:114:put_gray_rows	8	static
+repos/libjpeg-turbo/src/wrtarga.c:93:put_pixel_rows	0	static

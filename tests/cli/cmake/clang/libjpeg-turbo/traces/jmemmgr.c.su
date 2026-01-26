@@ -1,0 +1,13 @@
+repos/libjpeg-turbo/src/jmemmgr.c:1195:jinit_memory_mgr	72	static
+repos/libjpeg-turbo/src/jmemmgr.c:267:alloc_small	72	static
+repos/libjpeg-turbo/src/jmemmgr.c:364:alloc_large	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:435:alloc_sarray	72	static
+repos/libjpeg-turbo/src/jmemmgr.c:552:alloc_barray	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:636:request_virt_sarray	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:666:request_virt_barray	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:696:realize_virt_arrays	104	static
+repos/libjpeg-turbo/src/jmemmgr.c:919:access_virt_sarray	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:1010:access_virt_barray	88	static
+repos/libjpeg-turbo/src/jmemmgr.c:1098:free_pool	56	static
+repos/libjpeg-turbo/src/jmemmgr.c:1169:self_destruct	8	static
+repos/libjpeg-turbo/src/jmemmgr.c:818:do_sarray_io	72	static

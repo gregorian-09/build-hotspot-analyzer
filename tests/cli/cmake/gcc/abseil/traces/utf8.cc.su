@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/utf8.cc:29:8:size_t absl::strings_internal::EncodeUTF8Char(char*, char32_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/utf8.cc:57:8:size_t absl::strings_internal::WideToUtf8(wchar_t, char*, ShiftState&)	8	static

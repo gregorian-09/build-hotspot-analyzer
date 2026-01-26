@@ -1,0 +1,6 @@
+repos/libjpeg-turbo/src/jdmaster.c:264:jpeg_calc_output_dimensions	40	static
+repos/libjpeg-turbo/src/jdmaster.c:35:use_merged_upsample	0	static
+repos/libjpeg-turbo/src/jdmaster.c:854:jpeg_new_colormap	24	static
+repos/libjpeg-turbo/src/jdmaster.c:882:jinit_master_decompress	40	static
+repos/libjpeg-turbo/src/jdmaster.c:777:prepare_for_output_pass	24	static
+repos/libjpeg-turbo/src/jdmaster.c:837:finish_output_pass	8	static

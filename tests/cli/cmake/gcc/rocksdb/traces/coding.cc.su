@@ -1,0 +1,3 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.cc:24:7:char* rocksdb::EncodeVarint32(char*, uint32_t)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.cc:55:13:const char* rocksdb::GetVarint32PtrFallback(const char*, const char*, uint32_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.cc:73:13:const char* rocksdb::GetVarint64Ptr(const char*, const char*, uint64_t*)	8	static

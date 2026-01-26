@@ -1,0 +1,12 @@
+test_lazyfree.c:127:6:LazyFreeLinkRdbSave	32	static
+test_lazyfree.c:137:6:LazyFreeLinkAofRewrite	64	static
+test_lazyfree.c:150:8:LazyFreeLinkFreeEffort	8	static
+test_lazyfree.c:156:6:LazyFreeLinkUnlink	8	static
+test_lazyfree.c:96:5:LazyFreeLinkLen_RedisCommand	32	static
+test_lazyfree.c:23:28:createLazyFreeLinkObject	16	static
+test_lazyfree.c:31:6:LazyFreeLinkInsert	48	static
+test_lazyfree.c:61:5:LazyFreeLinkInsert_RedisCommand	64	static
+test_lazyfree.c:114:7:LazyFreeLinkRdbLoad	48	static
+test_lazyfree.c:49:6:LazyFreeLinkReleaseObject	32	static
+test_lazyfree.c:146:6:LazyFreeLinkFree	8	static
+test_lazyfree.c:162:5:RedisModule_OnLoad	240	dynamic,bounded

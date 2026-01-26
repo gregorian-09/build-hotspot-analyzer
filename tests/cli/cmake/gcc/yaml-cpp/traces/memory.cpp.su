@@ -1,0 +1,24 @@
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<YAML::detail::node*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<YAML::detail::node_ref*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:std::_Sp_counted_ptr<YAML::detail::node_data*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = YAML::detail::node*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = YAML::detail::node_ref*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:435:7:void* std::_Sp_counted_ptr<_Ptr, _Lp>::_M_get_deleter(const std::type_info&) [with _Ptr = YAML::detail::node_data*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<YAML::detail::node*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = YAML::detail::node*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<YAML::detail::node_ref*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = YAML::detail::node_ref*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:419:11:virtual std::_Sp_counted_ptr<YAML::detail::node_data*, __gnu_cxx::_S_atomic>::~_Sp_counted_ptr()	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:431:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_destroy() [with _Ptr = YAML::detail::node_data*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = YAML::detail::node_data*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = YAML::detail::node*; _Val = YAML::detail::node*; _KeyOfValue = std::_Identity<YAML::detail::node*>; _Compare = YAML::detail::node::less; _Alloc = std::allocator<YAML::detail::node*>]	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/memory.cpp:26:6:void YAML::detail::memory::merge(const YAML::detail::memory&)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/memory.cpp:30:8:size_t YAML::detail::memory::size() const	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:198:7:void std::_Sp_counted_base<_Lp>::_M_release_last_use_cold() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	16	static
+/usr/include/c++/13/bits/shared_ptr_base.h:317:5:void std::_Sp_counted_base<_Lp>::_M_release() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = YAML::detail::node_ref*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/usr/include/c++/13/bits/shared_ptr_base.h:427:7:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = YAML::detail::node*; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/memory.cpp:8:6:void YAML::detail::memory_holder::merge(YAML::detail::memory_holder&)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_data.h:30:20:YAML::detail::node_data::~node_data()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node.h:20:7:YAML::detail::node::~node()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/memory.cpp:20:7:YAML::detail::node& YAML::detail::memory::create_node()	80	static

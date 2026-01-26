@@ -1,0 +1,2 @@
+print.c:51:13:PrintConstant.isra	48	static
+print.c:215:6:luaU_print	160	dynamic,bounded

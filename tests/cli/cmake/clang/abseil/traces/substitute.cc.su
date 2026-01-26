@@ -1,0 +1,5 @@
+repos/abseil/absl/strings/substitute.cc:38:_ZN4absl19substitute_internal24SubstituteAndAppendArrayEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt17basic_string_viewIcS4_EPKS9_m	136	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:641:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_	40	static
+repos/abseil/absl/strings/substitute.cc:113:_ZN4absl19substitute_internal3ArgC2EPKv	0	static
+repos/abseil/absl/strings/substitute.cc:133:_ZN4absl19substitute_internal3ArgC2ENS_3HexE	24	static
+repos/abseil/absl/strings/substitute.cc:154:_ZN4absl19substitute_internal3ArgC2ENS_3DecE	40	static

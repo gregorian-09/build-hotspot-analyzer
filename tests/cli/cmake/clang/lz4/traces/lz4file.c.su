@@ -1,0 +1,6 @@
+repos/lz4/lib/lz4file.c:119:LZ4F_readOpen	104	static
+repos/lz4/lib/lz4file.c:154:LZ4F_read	72	static
+repos/lz4/lib/lz4file.c:198:LZ4F_readClose	8	static
+repos/lz4/lib/lz4file.c:253:LZ4F_writeOpen	72	static
+repos/lz4/lib/lz4file.c:303:LZ4F_write	56	static
+repos/lz4/lib/lz4file.c:338:LZ4F_writeClose	24	static

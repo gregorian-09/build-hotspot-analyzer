@@ -1,0 +1,8 @@
+/usr/include/c++/13/bits/shared_ptr_base.h:455:5:void std::_Sp_counted_ptr<_Ptr, _Lp>::_M_dispose() [with _Ptr = std::nullptr_t; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/shared_ptr_base.h:143:7:void std::_Sp_counted_base<_Lp>::_M_destroy() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	8	static
+/usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = const YAML::detail::node_ref*; _Val = std::pair<const YAML::detail::node_ref* const, int>; _KeyOfValue = std::_Select1st<std::pair<const YAML::detail::node_ref* const, int> >; _Compare = std::less<const YAML::detail::node_ref*>; _Alloc = std::allocator<std::pair<const YAML::detail::node_ref* const, int> >]	96	static
+/usr/include/c++/13/bits/shared_ptr_base.h:198:7:void std::_Sp_counted_base<_Lp>::_M_release_last_use_cold() [with __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/nodeevents.h:26:7:YAML::NodeEvents::~NodeEvents()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emit.cpp:7:10:YAML::Emitter& YAML::operator<<(Emitter&, const Node&)	256	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emit.cpp:14:15:std::ostream& YAML::operator<<(std::ostream&, const Node&)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/emit.cpp:20:13:std::string YAML::Dump(const Node&)	144	static

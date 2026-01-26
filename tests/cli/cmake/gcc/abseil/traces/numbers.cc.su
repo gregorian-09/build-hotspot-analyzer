@@ -1,0 +1,23 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/ascii.h:106:13:bool absl::ascii_isspace(unsigned char)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:449:38:std::pair<long unsigned int, long unsigned int> absl::PowFive(uint64_t, int)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:50:6:bool absl::SimpleAtof(std::string_view, float*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:85:6:bool absl::SimpleAtod(std::string_view, double*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:120:6:bool absl::SimpleAtob(std::string_view, bool*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:331:6:void absl::numbers_internal::PutTwoDigits(uint32_t, char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:340:20:char* absl::numbers_internal::FastIntToBuffer(uint32_t, char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:347:20:char* absl::numbers_internal::FastIntToBuffer(int32_t, char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:362:20:char* absl::numbers_internal::FastIntToBuffer(uint64_t, char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:369:20:char* absl::numbers_internal::FastIntToBuffer(int64_t, char*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:384:20:char* absl::numbers_internal::FastIntToBuffer(absl::uint128, char*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:391:20:char* absl::numbers_internal::FastIntToBuffer(absl::int128, char*)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:611:8:size_t absl::numbers_internal::SixDigitsToBuffer(double, char*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1178:6:bool absl::numbers_internal::safe_strto8_base(std::string_view, int8_t*, int)	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1183:6:bool absl::numbers_internal::safe_strto16_base(std::string_view, int16_t*, int)	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1188:6:bool absl::numbers_internal::safe_strto32_base(std::string_view, int32_t*, int)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1193:6:bool absl::numbers_internal::safe_strto64_base(std::string_view, int64_t*, int)	24	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1198:6:bool absl::numbers_internal::safe_strto128_base(std::string_view, absl::int128*, int)	56	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1203:6:bool absl::numbers_internal::safe_strtou8_base(std::string_view, uint8_t*, int)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1208:6:bool absl::numbers_internal::safe_strtou16_base(std::string_view, uint16_t*, int)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1213:6:bool absl::numbers_internal::safe_strtou32_base(std::string_view, uint32_t*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1218:6:bool absl::numbers_internal::safe_strtou64_base(std::string_view, uint64_t*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/numbers.cc:1223:6:bool absl::numbers_internal::safe_strtou128_base(std::string_view, absl::uint128*, int)	56	static

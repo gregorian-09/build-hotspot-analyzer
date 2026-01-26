@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_singletons.cpp:23:5:Catch::ISingleton::~ISingleton()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_singletons.cpp:23:5:virtual Catch::ISingleton::~ISingleton()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_singletons.cpp:28:10:void Catch::cleanupSingletons()	48	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {Catch::ISingleton* const&}; _Tp = Catch::ISingleton*; _Alloc = std::allocator<Catch::ISingleton*>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_singletons.cpp:25:10:void Catch::addSingleton(ISingleton*)	32	static

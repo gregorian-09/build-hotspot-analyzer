@@ -1,0 +1,3 @@
+src/safety_check.c:6:je_safety_check_fail_sized_dealloc	56	static
+src/safety_check.c:22:je_safety_check_fail	4328	static
+src/safety_check.c:18:je_safety_check_set_abort	8	static

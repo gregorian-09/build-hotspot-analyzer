@@ -1,0 +1,12 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:461:13:inputMethodDestroyCallback	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1082:12:errorHandler	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1555:6:_glfwTerminateX11	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:466:13:inputMethodInstantiateCallback	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:213:13:createKeyTables	2080	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1098:6:_glfwGrabErrorHandlerX11	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1107:6:_glfwReleaseErrorHandlerX11	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1117:6:_glfwInputErrorX11	1072	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1128:8:_glfwCreateNativeCursorX11	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1028:15:createHiddenCursor	1072	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1321:5:_glfwInitX11	288	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/x11_init.c:1166:10:_glfwConnectX11	64	static

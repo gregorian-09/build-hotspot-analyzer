@@ -1,0 +1,12 @@
+src/sz.c:10:sz_psz_quantize_floor	88	static
+include/jemalloc/internal/sz.h:135:sz_pind2sz	24	static
+src/sz.c:33:sz_psz_quantize_ceil	72	static
+src/sz.c:109:sz_boot	24	static
+src/sz.c:57:sz_boot_pind2sz_tab	8	static
+src/sz.c:76:sz_boot_index2size_tab	8	static
+src/sz.c:92:sz_boot_size2index_tab	8	static
+include/jemalloc/internal/bit_util.h:402:lg_ceil	24	static
+include/jemalloc/internal/bit_util.h:392:lg_floor	24	static
+include/jemalloc/internal/bit_util.h:326:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:98:fls_lu	8	static
+include/jemalloc/internal/sz.h:128:sz_pind2sz_lookup	8	static

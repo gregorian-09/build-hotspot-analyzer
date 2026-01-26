@@ -1,0 +1,91 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:92:7:virtual int leveldb_comparator_t::Compare(const leveldb::Slice&, const leveldb::Slice&) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:96:15:virtual const char* leveldb_comparator_t::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:99:8:virtual void leveldb_comparator_t::FindShortestSeparator(std::string*, const leveldb::Slice&) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:100:8:virtual void leveldb_comparator_t::FindShortSuccessor(std::string*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:112:15:virtual const char* leveldb_filterpolicy_t::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:127:8:virtual bool leveldb_filterpolicy_t::KeyMayMatch(const leveldb::Slice&, const leveldb::Slice&) const	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:352:10:virtual void leveldb_writebatch_iterate(const leveldb_writebatch_t*, void*, void (*)(void*, const char*, size_t, const char*, size_t), void (*)(void*, const char*, size_t))::H::Put(const leveldb::Slice&, const leveldb::Slice&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:355:10:virtual void leveldb_writebatch_iterate(const leveldb_writebatch_t*, void*, void (*)(void*, const char*, size_t, const char*, size_t), void (*)(void*, const char*, size_t))::H::Delete(const leveldb::Slice&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:474:17:static void leveldb_filterpolicy_create_bloom(int)::Wrapper::DoNothing(void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:477:17:virtual const char* leveldb_filterpolicy_create_bloom(int)::Wrapper::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:478:10:virtual void leveldb_filterpolicy_create_bloom(int)::Wrapper::CreateFilter(const leveldb::Slice*, int, std::string*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:481:10:virtual bool leveldb_filterpolicy_create_bloom(int)::Wrapper::KeyMayMatch(const leveldb::Slice&, const leveldb::Slice&) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:347:9:leveldb_writebatch_iterate(const leveldb_writebatch_t*, void*, void (*)(void*, const char*, size_t, const char*, size_t), void (*)(void*, const char*, size_t))::H::~H()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:347:9:virtual leveldb_writebatch_iterate(const leveldb_writebatch_t*, void*, void (*)(void*, const char*, size_t, const char*, size_t), void (*)(void*, const char*, size_t))::H::~H()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:90:3:leveldb_comparator_t::~leveldb_comparator_t()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:90:3:virtual leveldb_comparator_t::~leveldb_comparator_t()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:110:3:leveldb_filterpolicy_t::~leveldb_filterpolicy_t()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:110:3:virtual leveldb_filterpolicy_t::~leveldb_filterpolicy_t()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:476:5:leveldb_filterpolicy_create_bloom(int)::Wrapper::~Wrapper()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:114:8:virtual void leveldb_filterpolicy_t::CreateFilter(const leveldb::Slice*, int, std::string*) const	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:476:5:virtual leveldb_filterpolicy_create_bloom(int)::Wrapper::~Wrapper()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/env.h:390:10:virtual leveldb::Status leveldb::EnvWrapper::GetTestDirectory(std::string*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:147:13:bool SaveError(char**, const leveldb::Status&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:168:12:leveldb_t* leveldb_open(const leveldb_options_t*, const char*, char**)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:179:6:void leveldb_close(leveldb_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:184:6:void leveldb_put(leveldb_t*, const leveldb_writeoptions_t*, const char*, size_t, const char*, size_t, char**)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:191:6:void leveldb_delete(leveldb_t*, const leveldb_writeoptions_t*, const char*, size_t, char**)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:196:6:void leveldb_write(leveldb_t*, const leveldb_writeoptions_t*, leveldb_writebatch_t*, char**)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:201:7:char* leveldb_get(leveldb_t*, const leveldb_readoptions_t*, const char*, size_t, size_t*, char**)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:219:21:leveldb_iterator_t* leveldb_create_iterator(leveldb_t*, const leveldb_readoptions_t*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:226:27:const leveldb_snapshot_t* leveldb_create_snapshot(leveldb_t*)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:232:6:void leveldb_release_snapshot(leveldb_t*, const leveldb_snapshot_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:238:7:char* leveldb_property_value(leveldb_t*, const char*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:248:6:void leveldb_approximate_sizes(leveldb_t*, int, const char* const*, const size_t*, const char* const*, const size_t*, uint64_t*)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:263:6:void leveldb_compact_range(leveldb_t*, const char*, size_t, const char*, size_t)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:273:6:void leveldb_destroy_db(const leveldb_options_t*, const char*, char**)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:278:6:void leveldb_repair_db(const leveldb_options_t*, const char*, char**)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:283:6:void leveldb_iter_destroy(leveldb_iterator_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:288:9:uint8_t leveldb_iter_valid(const leveldb_iterator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:292:6:void leveldb_iter_seek_to_first(leveldb_iterator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:296:6:void leveldb_iter_seek_to_last(leveldb_iterator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:300:6:void leveldb_iter_seek(leveldb_iterator_t*, const char*, size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:304:6:void leveldb_iter_next(leveldb_iterator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:306:6:void leveldb_iter_prev(leveldb_iterator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:308:13:const char* leveldb_iter_key(const leveldb_iterator_t*, size_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:314:13:const char* leveldb_iter_value(const leveldb_iterator_t*, size_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:320:6:void leveldb_iter_get_error(const leveldb_iterator_t*, char**)	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:324:23:leveldb_writebatch_t* leveldb_writebatch_create()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:328:6:void leveldb_writebatch_destroy(leveldb_writebatch_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:330:6:void leveldb_writebatch_clear(leveldb_writebatch_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:332:6:void leveldb_writebatch_put(leveldb_writebatch_t*, const char*, size_t, const char*, size_t)	64	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:337:6:void leveldb_writebatch_delete(leveldb_writebatch_t*, const char*, size_t)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:342:6:void leveldb_writebatch_iterate(const leveldb_writebatch_t*, void*, void (*)(void*, const char*, size_t, const char*, size_t), void (*)(void*, const char*, size_t))	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:366:6:void leveldb_writebatch_append(leveldb_writebatch_t*, const leveldb_writebatch_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:371:20:leveldb_options_t* leveldb_options_create()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:373:6:void leveldb_options_destroy(leveldb_options_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:375:6:void leveldb_options_set_comparator(leveldb_options_t*, leveldb_comparator_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:380:6:void leveldb_options_set_filter_policy(leveldb_options_t*, leveldb_filterpolicy_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:385:6:void leveldb_options_set_create_if_missing(leveldb_options_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:389:6:void leveldb_options_set_error_if_exists(leveldb_options_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:393:6:void leveldb_options_set_paranoid_checks(leveldb_options_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:397:6:void leveldb_options_set_env(leveldb_options_t*, leveldb_env_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:401:6:void leveldb_options_set_info_log(leveldb_options_t*, leveldb_logger_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:405:6:void leveldb_options_set_write_buffer_size(leveldb_options_t*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:409:6:void leveldb_options_set_max_open_files(leveldb_options_t*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:413:6:void leveldb_options_set_cache(leveldb_options_t*, leveldb_cache_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:417:6:void leveldb_options_set_block_size(leveldb_options_t*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:421:6:void leveldb_options_set_block_restart_interval(leveldb_options_t*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:425:6:void leveldb_options_set_max_file_size(leveldb_options_t*, size_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:429:6:void leveldb_options_set_compression(leveldb_options_t*, int)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:433:23:leveldb_comparator_t* leveldb_comparator_create(void*, void (*)(void*), int (*)(void*, const char*, size_t, const char*, size_t), const char* (*)(void*))	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:446:6:void leveldb_comparator_destroy(leveldb_comparator_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:448:25:leveldb_filterpolicy_t* leveldb_filterpolicy_create(void*, void (*)(void*), char* (*)(void*, const char* const*, const size_t*, int, size_t*), uint8_t (*)(void*, const char*, size_t, const char*, size_t), const char* (*)(void*))	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:465:6:void leveldb_filterpolicy_destroy(leveldb_filterpolicy_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:469:25:leveldb_filterpolicy_t* leveldb_filterpolicy_create_bloom(int)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:494:24:leveldb_readoptions_t* leveldb_readoptions_create()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:498:6:void leveldb_readoptions_destroy(leveldb_readoptions_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:500:6:void leveldb_readoptions_set_verify_checksums(leveldb_readoptions_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:505:6:void leveldb_readoptions_set_fill_cache(leveldb_readoptions_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:509:6:void leveldb_readoptions_set_snapshot(leveldb_readoptions_t*, const leveldb_snapshot_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:514:25:leveldb_writeoptions_t* leveldb_writeoptions_create()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:518:6:void leveldb_writeoptions_destroy(leveldb_writeoptions_t*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:520:6:void leveldb_writeoptions_set_sync(leveldb_writeoptions_t*, uint8_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:524:18:leveldb_cache_t* leveldb_cache_create_lru(size_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:530:6:void leveldb_cache_destroy(leveldb_cache_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:535:16:leveldb_env_t* leveldb_create_default_env()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:542:6:void leveldb_env_destroy(leveldb_env_t*)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:547:7:char* leveldb_env_get_test_directory(leveldb_env_t*)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:559:6:void leveldb_free(void*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:561:5:int leveldb_major_version()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/c.cc:563:5:int leveldb_minor_version()	8	static

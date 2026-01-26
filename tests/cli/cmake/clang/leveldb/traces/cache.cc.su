@@ -1,0 +1,14 @@
+repos/leveldb/util/cache.cc:18:_ZN7leveldb5CacheD2Ev	0	static
+repos/leveldb/util/cache.cc:18:_ZN7leveldb5CacheD0Ev	0	static
+repos/leveldb/util/cache.cc:399:_ZN7leveldb11NewLRUCacheEm	24	static
+repos/leveldb/include/leveldb/cache.h:94:_ZN7leveldb5Cache5PruneEv	0	static
+repos/leveldb/util/cache.cc:358:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCacheD2Ev	72	static
+repos/leveldb/util/cache.cc:358:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCacheD0Ev	72	static
+repos/leveldb/util/cache.cc:359:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache6InsertERKNS_5SliceEPvmPFvS4_S5_E	136	static
+repos/leveldb/util/cache.cc:364:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache6LookupERKNS_5SliceE	56	static
+repos/leveldb/util/cache.cc:368:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache7ReleaseEPNS_5Cache6HandleE	56	static
+repos/leveldb/util/cache.cc:376:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache5ValueEPNS_5Cache6HandleE	0	static
+repos/leveldb/util/cache.cc:372:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache5EraseERKNS_5SliceE	88	static
+repos/leveldb/util/cache.cc:379:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache5NewIdEv	24	static
+repos/leveldb/util/cache.cc:383:_ZN7leveldb12_GLOBAL__N_115ShardedLRUCache5PruneEv	104	static
+repos/leveldb/util/cache.cc:388:_ZNK7leveldb12_GLOBAL__N_115ShardedLRUCache11TotalChargeEv	136	static

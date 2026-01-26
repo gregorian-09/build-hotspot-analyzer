@@ -1,0 +1,4 @@
+repos/libjpeg-turbo/src/jdlhuff.c:283:jinit_lhuff_decoder	8	static
+repos/libjpeg-turbo/src/jdlhuff.c:83:start_pass_lhuff_decoder	56	static
+repos/libjpeg-turbo/src/jdlhuff.c:207:decode_mcus	104	static
+repos/libjpeg-turbo/src/jdlhuff.c:166:process_restart	24	static

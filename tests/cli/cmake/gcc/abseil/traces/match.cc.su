@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:31:6:bool absl::EqualsIgnoreCase(std::string_view, std::string_view)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:39:6:bool absl::StrContainsIgnoreCase(std::string_view, std::string_view)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:48:6:bool absl::StrContainsIgnoreCase(std::string_view, char)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:60:6:bool absl::StartsWithIgnoreCase(std::string_view, std::string_view)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:66:6:bool absl::EndsWithIgnoreCase(std::string_view, std::string_view)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:72:19:std::string_view absl::FindLongestCommonPrefix(std::string_view, std::string_view)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:115:19:std::string_view absl::FindLongestCommonSuffix(std::string_view, std::string_view)	8	static

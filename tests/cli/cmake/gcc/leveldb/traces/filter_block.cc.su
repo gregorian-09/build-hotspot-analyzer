@@ -1,0 +1,10 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:18:1:leveldb::FilterBlockBuilder::FilterBlockBuilder(const leveldb::FilterPolicy*)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:77:1:leveldb::FilterBlockReader::FilterBlockReader(const leveldb::FilterPolicy*, const leveldb::Slice&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:90:6:bool leveldb::FilterBlockReader::KeyMayMatch(uint64_t, const leveldb::Slice&)	48	static
+/usr/include/c++/13/bits/vector.tcc:634:5:void std::vector<_Tp, _Alloc>::_M_default_append(size_type) [with _Tp = leveldb::Slice; _Alloc = std::allocator<leveldb::Slice>]	80	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {long unsigned int}; _Tp = long unsigned int; _Alloc = std::allocator<long unsigned int>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:29:6:void leveldb::FilterBlockBuilder::AddKey(const leveldb::Slice&)	48	static
+/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {unsigned int}; _Tp = unsigned int; _Alloc = std::allocator<unsigned int>]	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:51:6:void leveldb::FilterBlockBuilder::GenerateFilter()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:35:7:leveldb::Slice leveldb::FilterBlockBuilder::Finish()	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/filter_block.cc:21:6:void leveldb::FilterBlockBuilder::StartBlock(uint64_t)	64	static

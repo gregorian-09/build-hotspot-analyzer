@@ -1,0 +1,15 @@
+src/malloc_io.c:70:je_wrtmessage	40	static
+include/jemalloc/internal/malloc_io.h:70:malloc_write_fd	40	static
+src/malloc_io.c:81:je_malloc_write	24	static
+src/malloc_io.c:94:je_buferror	40	static
+src/malloc_io.c:112:je_malloc_strtoumax	104	static
+include/jemalloc/internal/util.h:47:set_errno	24	static
+src/malloc_io.c:326:je_malloc_vsnprintf	2264	static
+src/malloc_io.c:275:d2s	56	static
+src/malloc_io.c:303:o2s	40	static
+src/malloc_io.c:233:u2s	8	static
+src/malloc_io.c:314:x2s	40	static
+src/malloc_io.c:634:je_malloc_snprintf	248	static
+src/malloc_io.c:646:je_malloc_vcprintf	4152	static
+src/malloc_io.c:670:je_malloc_cprintf	232	static
+src/malloc_io.c:681:je_malloc_printf	216	static

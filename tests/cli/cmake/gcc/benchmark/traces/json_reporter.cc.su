@@ -1,0 +1,13 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h:1924:16:virtual void benchmark::BenchmarkReporter::ReportRunsConfig(double, bool, benchmark::IterationCount)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h:1998:24:benchmark::JSONReporter::~JSONReporter()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h:1998:24:virtual benchmark::JSONReporter::~JSONReporter()	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:241:6:virtual void benchmark::JSONReporter::Finalize()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:33:13:std::string benchmark::{anonymous}::StrEscape(const std::string&)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:67:13:std::string benchmark::{anonymous}::FormatKV(const std::string&, const std::string&)	128	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:72:13:std::string benchmark::{anonymous}::FormatKV(const std::string&, const char*)	208	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:82:13:std::string benchmark::{anonymous}::FormatKV(const std::string&, int64_t)	848	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:116:6:virtual bool benchmark::JSONReporter::ReportContext(const benchmark::BenchmarkReporter::Context&)	400	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:94:13:std::string benchmark::{anonymous}::FormatKV(const std::string&, double)	592	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:246:6:void benchmark::JSONReporter::PrintRunData(const benchmark::BenchmarkReporter::Run&)	288	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:219:6:virtual void benchmark::JSONReporter::ReportRuns(const std::vector<benchmark::BenchmarkReporter::Run>&)	144	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc:343:1:cc)	8	static

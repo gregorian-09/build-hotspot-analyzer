@@ -1,0 +1,5 @@
+repos/zstd/lib/dictBuilder/divsufsort.c:1847:divsufsort	72	static
+repos/zstd/lib/dictBuilder/divsufsort.c:1441:sort_typeBstar	2376	static
+repos/zstd/lib/dictBuilder/divsufsort.c:1876:divbwt	104	static
+repos/zstd/lib/dictBuilder/divsufsort.c:400:ss_mintrosort	392	static
+repos/zstd/lib/dictBuilder/divsufsort.c:744:ss_swapmerge	1048	static

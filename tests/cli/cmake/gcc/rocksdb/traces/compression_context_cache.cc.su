@@ -1,0 +1,7 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:104:1:rocksdb::CompressionContextCache::~CompressionContextCache()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:96:1:rocksdb::ZSTDUncompressCachedData rocksdb::CompressionContextCache::GetCachedZSTDUncompressData()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:100:6:void rocksdb::CompressionContextCache::ReturnCachedZSTDUncompressData(int64_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/core_local.h:46:1:rocksdb::CoreLocalArray<T>::CoreLocalArray() [with T = rocksdb::compression_cache::ZSTDCachedData]	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:86:1:rocksdb::CompressionContextCache::CompressionContextCache()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:88:26:static rocksdb::CompressionContextCache* rocksdb::CompressionContextCache::Instance()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/compression_context_cache.cc:93:6:static void rocksdb::CompressionContextCache::InitSingleton()	8	static

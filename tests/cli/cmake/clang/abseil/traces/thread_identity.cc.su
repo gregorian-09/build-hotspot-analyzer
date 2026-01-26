@@ -1,0 +1,3 @@
+repos/abseil/absl/base/internal/thread_identity.cc:76:_ZN4absl13base_internal24SetCurrentThreadIdentityEPNS0_14ThreadIdentityEPFvPvE	280	static
+repos/abseil/absl/base/internal/thread_identity.cc:139:_ZN4absl13base_internal26ClearCurrentThreadIdentityEv	0	static
+repos/abseil/absl/base/internal/thread_identity.cc:151:_ZN4absl13base_internal30CurrentThreadIdentityIfPresentEv	0	static

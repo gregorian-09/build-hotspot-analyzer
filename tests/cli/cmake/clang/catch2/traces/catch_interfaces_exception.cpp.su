@@ -1,0 +1,4 @@
+src/catch2/interfaces/catch_interfaces_exception.cpp:12:_ZN5Catch20IExceptionTranslatorD2Ev	0	static
+src/catch2/interfaces/catch_interfaces_exception.cpp:12:_ZN5Catch20IExceptionTranslatorD0Ev	0	static
+src/catch2/interfaces/catch_interfaces_exception.cpp:13:_ZN5Catch28IExceptionTranslatorRegistryD2Ev	0	static
+src/catch2/interfaces/catch_interfaces_exception.cpp:13:_ZN5Catch28IExceptionTranslatorRegistryD0Ev	0	static

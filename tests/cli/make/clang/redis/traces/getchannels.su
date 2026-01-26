@@ -1,0 +1,2 @@
+getchannels.c:8:getChannels_subscribe	56	static
+getchannels.c:59:RedisModule_OnLoad	56	static

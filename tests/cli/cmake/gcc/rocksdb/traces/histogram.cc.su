@@ -1,0 +1,32 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:124:15:virtual const char* rocksdb::HistogramImpl::Name() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:134:11:rocksdb::HistogramImpl::~HistogramImpl()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:134:11:virtual rocksdb::HistogramImpl::~HistogramImpl()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:127:12:virtual uint64_t rocksdb::HistogramImpl::num() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:125:12:virtual uint64_t rocksdb::HistogramImpl::min() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:126:12:virtual uint64_t rocksdb::HistogramImpl::max() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.h:21:7:constexpr rocksdb::HistogramBucketMapper::~HistogramBucketMapper()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:23:1:rocksdb::HistogramBucketMapper::HistogramBucketMapper()	96	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:44:8:size_t rocksdb::HistogramBucketMapper::IndexForValue(uint64_t) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:63:6:void rocksdb::HistogramStat::Clear()	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:58:1:rocksdb::HistogramStat::HistogramStat()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:244:6:virtual void rocksdb::HistogramImpl::Clear()	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:74:6:bool rocksdb::HistogramStat::Empty() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:249:6:virtual bool rocksdb::HistogramImpl::Empty() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:76:6:void rocksdb::HistogramStat::Add(uint64_t)	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:251:6:virtual void rocksdb::HistogramImpl::Add(uint64_t)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:104:6:void rocksdb::HistogramStat::Merge(const rocksdb::HistogramStat&)	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:130:8:double rocksdb::HistogramStat::Percentile(double) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:128:8:double rocksdb::HistogramStat::Median() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:264:8:virtual double rocksdb::HistogramImpl::Median() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:266:8:virtual double rocksdb::HistogramImpl::Percentile(double) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:162:8:double rocksdb::HistogramStat::Average() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:270:8:virtual double rocksdb::HistogramImpl::Average() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:171:8:double rocksdb::HistogramStat::StandardDeviation() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:272:8:virtual double rocksdb::HistogramImpl::StandardDeviation() const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:184:13:std::string rocksdb::HistogramStat::ToString() const	1824	dynamic,bounded
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:276:13:virtual std::string rocksdb::HistogramImpl::ToString() const	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:231:6:void rocksdb::HistogramStat::Data(rocksdb::HistogramData*) const	32	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:278:6:virtual void rocksdb::HistogramImpl::Data(rocksdb::HistogramData*) const	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:259:6:void rocksdb::HistogramImpl::Merge(const rocksdb::HistogramImpl&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:253:6:virtual void rocksdb::HistogramImpl::Merge(const rocksdb::Histogram&)	48	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/histogram.cc:280:1:cc)	32	static

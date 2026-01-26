@@ -1,0 +1,5 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.cc:17:6:void leveldb::AppendNumberTo(std::string*, uint64_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.cc:23:6:void leveldb::AppendEscapedStringTo(std::string*, const Slice&)	112	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.cc:37:13:std::string leveldb::NumberToString(uint64_t)	80	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.cc:43:13:std::string leveldb::EscapeString(const Slice&)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.cc:49:6:bool leveldb::ConsumeDecimalNumber(Slice*, uint64_t*)	8	static

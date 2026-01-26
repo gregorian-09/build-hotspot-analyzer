@@ -1,0 +1,13 @@
+repos/libjpeg-turbo/src/jcphuff.c:1083:jinit_phuff_encoder	8	static
+repos/libjpeg-turbo/src/jcphuff.c:179:start_pass_phuff	56	static
+repos/libjpeg-turbo/src/jcphuff.c:459:encode_mcu_DC_first	72	static
+repos/libjpeg-turbo/src/jcphuff.c:639:encode_mcu_AC_first	408	static
+repos/libjpeg-turbo/src/jcphuff.c:571:encode_mcu_AC_first_prepare	8	static
+repos/libjpeg-turbo/src/jcphuff.c:737:encode_mcu_DC_refine	40	static
+repos/libjpeg-turbo/src/jcphuff.c:909:encode_mcu_AC_refine	312	static
+repos/libjpeg-turbo/src/jcphuff.c:808:encode_mcu_AC_refine_prepare	32	static
+repos/libjpeg-turbo/src/jcphuff.c:1036:finish_pass_gather_phuff	56	static
+repos/libjpeg-turbo/src/jcphuff.c:1015:finish_pass_phuff	24	static
+repos/libjpeg-turbo/src/jcphuff.c:429:emit_restart	24	static
+repos/libjpeg-turbo/src/jcphuff.c:313:emit_bits	40	static
+repos/libjpeg-turbo/src/jcphuff.c:400:emit_eobrun	40	static

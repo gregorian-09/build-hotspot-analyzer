@@ -1,0 +1,17 @@
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:757:j12init_color_deconverter	24	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:746:start_pass_dcolor	0	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:438:grayscale_convert	0	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:338:rgb_gray_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:310:build_rgb_y_table	8	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:262:ycc_rgb_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:215:build_ycc_rgb_table	24	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:451:gray_rgb_convert	16	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:377:null_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:496:rgb_rgb_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:676:ycc_rgb565_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:720:gray_rgb565_convert	8	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:698:rgb_rgb565_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:687:ycc_rgb565D_convert	72	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:731:gray_rgb565D_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:709:rgb_rgb565D_convert	48	static
+repos/libjpeg-turbo/src/wrapper/../jdcolor.c:544:ycck_cmyk_convert	48	static

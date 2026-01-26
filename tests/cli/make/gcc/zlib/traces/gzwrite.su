@@ -1,0 +1,13 @@
+gzwrite.c:11:11:gz_init	64	dynamic,bounded
+gzwrite.c:65:11:gz_comp	64	static
+gzwrite.c:143:11:gz_zero	48	static
+gzwrite.c:173:16:gz_write	80	static
+gzwrite.c:237:13:gzwrite	64	static
+gzwrite.c:261:18:gzfwrite	64	static
+gzwrite.c:287:13:gzputc	80	static
+gzwrite.c:332:13:gzputs	64	static
+gzwrite.c:359:15:gzvprintf	80	static
+gzwrite.c:430:15:gzprintf	256	static
+gzwrite.c:528:13:gzflush	48	static
+gzwrite.c:557:13:gzsetparams	48	static
+gzwrite.c:595:13:gzclose_w	48	static

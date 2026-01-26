@@ -1,0 +1,17 @@
+src/catch2/catch_test_case_info.cpp:108:_ZN5CatchltERKNS_3TagES2_	8	static
+src/catch2/catch_test_case_info.cpp:112:_ZN5CatcheqERKNS_3TagES2_	8	static
+src/catch2/catch_test_case_info.cpp:118:_ZN5Catch16makeTestCaseInfoENS_9StringRefERKNS_11NameAndTagsERKNS_14SourceLineInfoE	56	static
+src/catch2/catch_test_case_info.cpp:124:_ZN5Catch12TestCaseInfoC2ENS_9StringRefERKNS_11NameAndTagsERKNS_14SourceLineInfoE	216	static
+src/catch2/catch_test_case_info.cpp:50:_ZN5Catch12_GLOBAL__N_115parseSpecialTagENS_9StringRefE	0	static
+src/catch2/catch_test_case_info.cpp:238:_ZN5Catch12TestCaseInfo17internalAppendTagENS_9StringRefE	56	static
+src/catch2/catch_test_case_info.cpp:202:_ZNK5Catch12TestCaseInfo8isHiddenEv	0	static
+src/catch2/catch_test_case_info.cpp:205:_ZNK5Catch12TestCaseInfo6throwsEv	0	static
+src/catch2/catch_test_case_info.cpp:208:_ZNK5Catch12TestCaseInfo8okToFailEv	0	static
+src/catch2/catch_test_case_info.cpp:211:_ZNK5Catch12TestCaseInfo14expectedToFailEv	0	static
+src/catch2/catch_test_case_info.cpp:215:_ZN5Catch12TestCaseInfo14addFilenameTagEv	72	static
+src/catch2/catch_test_case_info.cpp:221:_ZNK5Catch12TestCaseInfo12tagsAsStringB5cxx11Ev	56	static
+src/catch2/catch_test_case_info.cpp:247:_ZN5CatchltERKNS_12TestCaseInfoES2_	72	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:1918:_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPN5Catch3TagESt6vectorIS3_SaIS3_EEEElNS0_5__ops15_Iter_less_iterEEvT_SB_T0_T1_	104	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_heap.h:224:_ZSt13__adjust_heapIN9__gnu_cxx17__normal_iteratorIPN5Catch3TagESt6vectorIS3_SaIS3_EEEElS3_NS0_5__ops15_Iter_less_iterEEvT_T0_SC_T1_T2_	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:85:_ZSt22__move_median_to_firstIN9__gnu_cxx17__normal_iteratorIPN5Catch3TagESt6vectorIS3_SaIS3_EEEENS0_5__ops15_Iter_less_iterEEvT_SB_SB_SB_T0_	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:1812:_ZSt16__insertion_sortIN9__gnu_cxx17__normal_iteratorIPN5Catch3TagESt6vectorIS3_SaIS3_EEEENS0_5__ops15_Iter_less_iterEEvT_SB_T0_	88	static

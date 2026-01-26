@@ -1,0 +1,6 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:452:10:uint64_t absl::{anonymous}::ShiftRightAndRound(absl::uint128, int, bool, bool*)	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:359:6:bool absl::{anonymous}::HandleEdgeCase(const absl::strings_internal::ParsedFloat&, bool, FloatType*) [with FloatType = double]	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:359:6:bool absl::{anonymous}::HandleEdgeCase(const absl::strings_internal::ParsedFloat&, bool, FloatType*) [with FloatType = float]	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:509:6:bool absl::{anonymous}::MustRoundUp(uint64_t, int, const absl::strings_internal::ParsedFloat&)	832	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:947:19:absl::from_chars_result absl::from_chars(const char*, const char*, double&, chars_format)	160	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/charconv.cc:953:19:absl::from_chars_result absl::from_chars(const char*, const char*, float&, chars_format)	192	static

@@ -1,0 +1,15 @@
+repos/rocksdb/utilities/trace/replayer_impl.cc:18:_ZN7rocksdb12ReplayerImplC2EPNS_2DBERKSt6vectorIPNS_18ColumnFamilyHandleESaIS5_EEOSt10unique_ptrINS_11TraceReaderESt14default_deleteISB_EE	24	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:30:_ZN7rocksdb12ReplayerImplD2Ev	24	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:30:_ZN7rocksdb12ReplayerImplD0Ev	24	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:35:_ZN7rocksdb12ReplayerImpl7PrepareEv	136	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:251:_ZN7rocksdb12ReplayerImpl10ReadHeaderEPNS_5TraceE	120	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:52:_ZN7rocksdb12ReplayerImpl4NextEPSt10unique_ptrINS_11TraceRecordESt14default_deleteIS2_EE	152	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:267:_ZN7rocksdb12ReplayerImpl9ReadTraceEPNS_5TraceE	88	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:74:_ZN7rocksdb12ReplayerImpl7ExecuteERKSt10unique_ptrINS_11TraceRecordESt14default_deleteIS2_EEPS1_INS_17TraceRecordResultES3_IS8_EE	24	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:79:_ZN7rocksdb12ReplayerImpl6ReplayERKNS_13ReplayOptionsERKSt8functionIFvNS_6StatusEOSt10unique_ptrINS_17TraceRecordResultESt14default_deleteIS7_EEEE	360	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:283:_ZN7rocksdb12ReplayerImpl14BackgroundWorkEPv	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb17ReplayerWorkerArgESt14default_deleteIS1_EED2Ev	24	static
+repos/rocksdb/utilities/trace/replayer_impl.cc:249:_ZNK7rocksdb12ReplayerImpl18GetHeaderTimestampEv	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/trace/replayer_impl.cc:__clang_call_terminate	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvN7rocksdb6StatusEmEZNS0_12ReplayerImpl6ReplayERKNS0_13ReplayOptionsERKSt8functionIFvS1_OSt10unique_ptrINS0_17TraceRecordResultESt14default_deleteIS9_EEEEE3$_0E9_M_invokeERKSt9_Any_dataOS1_Om	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvN7rocksdb6StatusEmEZNS0_12ReplayerImpl6ReplayERKNS0_13ReplayOptionsERKSt8functionIFvS1_OSt10unique_ptrINS0_17TraceRecordResultESt14default_deleteIS9_EEEEE3$_0E10_M_managerERSt9_Any_dataRKSK_St18_Manager_operation	24	static

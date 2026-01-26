@@ -1,0 +1,4 @@
+crash.c:8:6:assertCrash	16	static
+crash.c:24:5:cmd_crash	16	static
+crash.c:14:6:segfaultCrash	16	static
+crash.c:33:5:RedisModule_OnLoad	3616	dynamic,bounded

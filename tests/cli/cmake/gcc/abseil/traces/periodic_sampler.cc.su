@@ -1,0 +1,2 @@
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/internal/periodic_sampler.cc:25:9:virtual int64_t absl::profiling_internal::PeriodicSamplerBase::GetExponentialBiased(int)	16	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/internal/periodic_sampler.cc:29:6:bool absl::profiling_internal::PeriodicSamplerBase::SubtleConfirmSample()	32	static

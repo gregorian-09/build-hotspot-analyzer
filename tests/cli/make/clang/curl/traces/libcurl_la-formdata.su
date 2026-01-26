@@ -1,0 +1,13 @@
+formdata.c:609:curl_formadd	248	static
+formdata.c:301:FormAdd	696	static
+formdata.c:627:curl_formget	8696	static
+formdata.c:717:Curl_getformdata	136	static
+formdata.c:665:curl_formfree	24	static
+formdata.c:692:setname	56	static
+formdata.c:106:NewFormInfo	24	static
+formdata.c:142:AddFormInfo	8	static
+formdata.c:216:FormAddCheck	120	static
+formdata.c:155:free_formlist	24	static
+formdata.c:290:free_chain	24	static
+formdata.c:121:FormInfoCopyField	40	static
+formdata.c:57:AddHttpPost	72	static

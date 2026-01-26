@@ -1,0 +1,2 @@
+repos/abseil/absl/crc/internal/cpu_detect.cc:236:_ZN4absl12crc_internal10GetCpuTypeEv	72	static
+repos/abseil/absl/crc/internal/cpu_detect.cc:247:_ZN4absl12crc_internal21SupportsArmCRC32PMULLEv	0	static

@@ -43,79 +43,6 @@ namespace bha::suggestions
         }
 
         /**
-         * Generates the "before" code showing current scattered includes.
-         */
-        std::string generate_before_code(
-            const fs::path& header_path,
-            const std::vector<fs::path>& including_files
-        ) {
-            std::ostringstream oss;
-            oss << "// Currently included separately in each source file:\n";
-            oss << "// ";
-
-            // Show up to 3 example files
-            std::size_t count = 0;
-            for (const auto& file : including_files) {
-                if (count >= 3) {
-                    oss << "... and " << (including_files.size() - 3) << " more files";
-                    break;
-                }
-                if (count > 0) oss << ", ";
-                oss << file.filename().string();
-                ++count;
-            }
-            oss << "\n\n";
-
-            oss << "// source.cpp\n";
-            oss << "#include \"" << header_path.filename().string() << "\"  // Parsed every time\n";
-            oss << "#include <vector>\n";
-            oss << "#include <string>\n";
-            oss << "// ... other includes\n";
-
-            return oss.str();
-        }
-
-        /**
-         * Generates the "after" code showing PCH configuration.
-         *
-         * References:
-         * - Qt PCH: https://doc.qt.io/qt-6/qmake-precompiledheaders.html
-         * - CMake: target_precompile_headers()
-         */
-        std::string generate_after_code(
-            const fs::path& header_path,
-            const std::vector<fs::path>& other_pch_candidates
-        ) {
-            std::ostringstream oss;
-
-            oss << "// pch.h - Precompiled header (stable headers only)\n";
-            oss << "#pragma once\n\n";
-            oss << "// Standard library headers\n";
-            oss << "#include <vector>\n";
-            oss << "#include <string>\n";
-            oss << "#include <memory>\n";
-            oss << "#include <algorithm>\n\n";
-            oss << "// Frequently included project headers\n";
-            oss << "#include \"" << header_path.filename().string() << "\"\n";
-
-            std::size_t added = 0;
-            for (const auto& candidate : other_pch_candidates) {
-                if (candidate != header_path && added < 2) {
-                    oss << "#include \"" << candidate.filename().string() << "\"\n";
-                    ++added;
-                }
-            }
-
-            oss << "\n// CMakeLists.txt configuration:\n";
-            oss << "// target_precompile_headers(mylib PRIVATE pch.h)\n";
-            oss << "\n// qmake (.pro) configuration:\n";
-            oss << "// CONFIG += precompile_header\n";
-            oss << "// PRECOMPILED_HEADER = pch.h\n";
-
-            return oss.str();
-        }
-
-        /**
          * Estimates savings from adding header to PCH.
          *
          * Model:
@@ -131,10 +58,8 @@ namespace bha::suggestions
                 return Duration::zero();
             }
 
-            // Parse time per inclusion
             const Duration per_unit = total_parse_time / inclusion_count;
 
-            // PCH load overhead is typically 10-20% of parse time
             constexpr double load_overhead = 0.15;
             constexpr double effective_savings = 1.0 - load_overhead;
 
@@ -164,7 +89,6 @@ namespace bha::suggestions
 
         const auto& pch_config = context.options.heuristics.pch;
 
-        // Collect PCH candidates for showing in "after" code
         std::vector<fs::path> pch_candidates;
         for (const auto& header : deps.headers) {
             if (header.inclusion_count >= pch_config.min_include_count &&
@@ -180,7 +104,6 @@ namespace bha::suggestions
         for (const auto& header : deps.headers) {
             ++analyzed;
 
-            // Skip if below thresholds
             if (header.inclusion_count < pch_config.min_include_count) {
                 ++skipped;
                 continue;
@@ -190,11 +113,15 @@ namespace bha::suggestions
                 continue;
             }
 
-            // Skip standard library headers (they should already be in PCH)
             std::string filename = header.path.filename().string();
             bool is_std_header = filename.find('.') == std::string::npos ||
                                  filename.find("std") == 0;
             if (is_std_header) {
+                ++skipped;
+                continue;
+            }
+
+            if (!header.is_stable && !header.is_external) {
                 ++skipped;
                 continue;
             }
@@ -213,17 +140,46 @@ namespace bha::suggestions
                 header.total_parse_time).count();
 
             std::ostringstream desc;
-            desc << "Header '" << header.path.filename().string() << "' is included in "
+            desc << "Header '" << header.path.string() << "' is included in "
                  << header.inclusion_count << " translation units, spending "
-                 << parse_time_ms << "ms total on parsing. "
-                 << "Adding it to a precompiled header will parse it once and reuse the cached AST.";
+                 << parse_time_ms << "ms total on parsing. ";
+
+            if (header.is_external) {
+                desc << "This is an external/third-party header (stable).\n\n";
+            } else if (header.modification_count > 0) {
+                auto days_since_mod = std::chrono::duration_cast<std::chrono::hours>(
+                    header.time_since_modification).count() / 24;
+                desc << "This header has been modified " << header.modification_count
+                     << " times and hasn't changed in " << days_since_mod << " days (stable).\n\n";
+            } else {
+                desc << "\n\n";
+            }
+
+            desc << "**Add to pch.h:**\n```\n";
+            if (header.path.string().find('<') == 0 || header.path.string().find('>') != std::string::npos) {
+                desc << "#include " << header.path.string() << "\n";
+            } else {
+                desc << "#include \"" << header.path.string() << "\"\n";
+            }
+            desc << "```\n\n";
+
+            desc << "Adding it to a precompiled header will parse it once and reuse the cached AST across all translation units.";
             suggestion.description = desc.str();
 
-            suggestion.rationale =
-                "Precompiled headers (PCH) store the compiler's internal representation of "
-                "parsed headers, eliminating redundant parsing across translation units. "
-                "This is most effective for stable headers that rarely change and are "
-                "included in many source files.";
+            std::ostringstream rationale;
+            rationale << "Precompiled headers (PCH) store the compiler's internal representation of "
+                      << "parsed headers, eliminating redundant parsing across translation units. ";
+
+            if (header.is_external) {
+                rationale << "This external header is inherently stable. ";
+            } else if (header.modification_count > 0) {
+                rationale << "This header is stable (modified only " << header.modification_count
+                          << " times historically). ";
+            }
+
+            rationale << "Including stable, frequently-used headers in PCH maximizes benefit while "
+                      << "minimizing rebuild impact.";
+            suggestion.rationale = rationale.str();
 
             suggestion.estimated_savings = estimate_pch_savings(
                 header.total_parse_time,
@@ -236,18 +192,9 @@ namespace bha::suggestions
                     static_cast<double>(context.trace.total_time.count());
             }
 
-            suggestion.target_file.path = "pch.h";
-            suggestion.target_file.action = FileAction::Create;
-            suggestion.target_file.note = "Create or modify precompiled header";
-
-            suggestion.before_code.file = "Current state (multiple source files)";
-            suggestion.before_code.code = generate_before_code(
-                header.path,
-                header.included_by  // Use including files as examples
-            );
-
-            suggestion.after_code.file = "With precompiled header";
-            suggestion.after_code.code = generate_after_code(header.path, pch_candidates);
+            suggestion.target_file.path = header.path;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Add to precompiled header";
 
             suggestion.implementation_steps = {
                 "1. Create pch.h with stable, frequently-included headers",

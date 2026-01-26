@@ -1,0 +1,5 @@
+repos/abseil/absl/strings/internal/cordz_functions.cc:51:_ZN4absl13cord_internal25cordz_should_profile_slowERNS0_13SamplingStateE	40	static
+repos/abseil/absl/strings/internal/cordz_functions.cc:92:_ZN4absl13cord_internal23get_cordz_mean_intervalEv	0	static
+repos/abseil/absl/strings/internal/cordz_functions.cc:86:_ZN4absl13cord_internal33cordz_set_next_sample_for_testingEl	0	static
+repos/abseil/absl/strings/internal/cordz_functions.cc:96:_ZN4absl13cord_internal23set_cordz_mean_intervalEi	0	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cordz_functions.cc:_ZTWN4absl13cord_internal17cordz_next_sampleE	0	static

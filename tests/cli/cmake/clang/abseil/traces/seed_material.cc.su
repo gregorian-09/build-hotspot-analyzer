@@ -1,0 +1,3 @@
+repos/abseil/absl/random/internal/seed_material.cc:188:_ZN4absl15random_internal29ReadSeedMaterialFromOSEntropyENS_4SpanIjEE	56	static
+repos/abseil/absl/random/internal/seed_material.cc:199:_ZN4absl15random_internal19MixIntoSeedMaterialENS_4SpanIKjEENS1_IjEE	0	static
+repos/abseil/absl/random/internal/seed_material.cc:231:_ZN4absl15random_internal15GetSaltMaterialEv	24	static

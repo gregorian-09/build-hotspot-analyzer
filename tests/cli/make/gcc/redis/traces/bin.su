@@ -1,0 +1,13 @@
+include/jemalloc/internal/bit_util.h:98:1:fls_lu	16	static
+include/jemalloc/internal/bit_util.h:326:1:fls_u64	24	static
+include/jemalloc/internal/bit_util.h:392:1:lg_floor	40	static
+include/jemalloc/internal/sz.h:155:1:sz_size2index_compute	56	static
+include/jemalloc/internal/ticker.h:60:1:ticker_fixup	16	static
+include/jemalloc/internal/ticker.h:153:1:ticker_geom_fixup	80	static
+include/jemalloc/internal/edata.h:253:1:edata_list_active_init	16	static
+src/bin.c:10:1:je_bin_update_shard_size	64	static
+src/bin.c:34:1:je_bin_shard_sizes_boot	16	static
+src/bin.c:42:1:je_bin_init	32	static
+src/bin.c:57:1:je_bin_prefork	32	static
+src/bin.c:62:1:je_bin_postfork_parent	32	static
+src/bin.c:67:1:je_bin_postfork_child	32	static

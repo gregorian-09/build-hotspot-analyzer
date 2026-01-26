@@ -1,0 +1,6 @@
+repos/rocksdb/db/blob/blob_file_cache.cc:21:_ZN7rocksdb13BlobFileCacheC2EPNS_5CacheEPKNS_16ImmutableOptionsEPKNS_11FileOptionsEjPNS_13HistogramImplERKSt10shared_ptrINS_8IOTracerEE	88	static
+repos/rocksdb/db/blob/blob_file_cache.cc:39:_ZN7rocksdb13BlobFileCache17GetBlobFileReaderERKNS_11ReadOptionsEmPNS_16CacheHandleGuardINS_14BlobFileReaderEEE	120	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb14BlobFileReaderESt14default_deleteIS1_EED2Ev	24	static
+repos/rocksdb/db/blob/blob_file_cache.cc:102:_ZN7rocksdb13BlobFileCache5EvictEm	40	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_cache.cc:__clang_call_terminate	8	static
+repos/rocksdb/cache/typed_cache.h:113:_ZN7rocksdb24BasicTypedCacheHelperFnsINS_14BlobFileReaderEE6DeleteEPvPNS_15MemoryAllocatorE	24	static
