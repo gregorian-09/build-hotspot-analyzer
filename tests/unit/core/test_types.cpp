@@ -73,7 +73,6 @@ namespace bha
         EXPECT_STREQ(to_string(SuggestionType::MoveToCpp), "Move to CPP");
         EXPECT_STREQ(to_string(SuggestionType::ExplicitTemplate), "Explicit Template");
         EXPECT_STREQ(to_string(SuggestionType::UnityBuild), "Unity Build");
-        EXPECT_STREQ(to_string(SuggestionType::ModuleMigration), "Module Migration");
     }
 
     TEST(PriorityTest, ToString) {

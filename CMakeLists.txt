@@ -11,7 +11,6 @@ project(bha
 
 option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
 option(BHA_BUILD_CLI "Build command-line interface" ON)
-option(BHA_BUILD_PYTHON "Build Python bindings" ON)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS "Enable sanitizers (address, undefined)" OFF)
@@ -24,10 +23,6 @@ option(BHA_BUILD_SHARED "Build shared library" OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-# Use modern FindPython (disables legacy PythonInterp behavior)
-set(PYBIND11_FINDPYTHON ON)
-
 # Generate compile_commands.json for IDE support
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -276,29 +271,6 @@ if(BHA_BUILD_TESTS)
     include(GoogleTest)
     add_subdirectory(tests)
 endif()
-
-# =============================================================================
-# Python Bindings
-# =============================================================================
-
-if(BHA_BUILD_PYTHON)
-    find_package(Python COMPONENTS Interpreter Development REQUIRED)
-    find_package(pybind11 CONFIG QUIET)
-
-    if(NOT pybind11_FOUND)
-        include(FetchContent)
-
-        FetchContent_Declare(
-                pybind11
-                GIT_REPOSITORY https://github.com/pybind/pybind11.git
-                GIT_TAG v2.11.1
-        )
-        FetchContent_MakeAvailable(pybind11)
-    endif()
-
-    add_subdirectory(python)
-endif()
-
 
 # =============================================================================
 # Documentation

@@ -23,7 +23,7 @@ namespace bha::cli
     namespace {
         std::optional<SuggestionType> parse_suggestion_type(const std::string& str) {
             std::string lower = str;
-            std::ranges::transform(lower, lower.begin(), [](unsigned char c) { return std::tolower(c); });
+            std::ranges::transform(lower, lower.begin(), [](const unsigned char c) { return std::tolower(c); });
 
             if (lower == "pch" || lower == "pch-optimization") return SuggestionType::PCHOptimization;
             if (lower == "forward-decl" || lower == "forward-declaration") return SuggestionType::ForwardDeclaration;
@@ -33,11 +33,6 @@ namespace bha::cli
             if (lower == "move-to-cpp") return SuggestionType::MoveToCpp;
             if (lower == "explicit-template") return SuggestionType::ExplicitTemplate;
             if (lower == "unity-build") return SuggestionType::UnityBuild;
-            if (lower == "module-migration") return SuggestionType::ModuleMigration;
-            if (lower == "inline-reduction") return SuggestionType::InlineReduction;
-            if (lower == "compilation-firewall") return SuggestionType::CompilationFirewall;
-            if (lower == "dependency-inversion") return SuggestionType::DependencyInversion;
-            if (lower == "symbol-visibility") return SuggestionType::SymbolVisibility;
 
             return std::nullopt;
         }
@@ -188,8 +183,7 @@ namespace bha::cli
             suggester_opts.enable_consolidation = !args.get_flag("disable-consolidation");
 
             // Parse and validate suggestion types filter
-            auto type_filters = args.get_all("type");
-            if (!type_filters.empty()) {
+            if (auto type_filters = args.get_all("type"); !type_filters.empty()) {
                 for (const auto& type_str : type_filters) {
                     if (auto type = parse_suggestion_type(type_str)) {
                         suggester_opts.enabled_types.push_back(*type);

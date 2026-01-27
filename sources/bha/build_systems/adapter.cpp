@@ -389,14 +389,29 @@ namespace bha::build_systems
                     } else {
                         flags += "-ftime-report";
 
+                        fs::path capture_script;
 #ifdef _WIN32
-                        fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path().parent_path() / "cmake" / "bha-capture.bat";
+                        capture_script = "bha-capture.bat";
 #else
-                        fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path().parent_path() / "cmake" / "bha-capture.sh";
+                        capture_script = "bha-capture.sh";
 #endif
-                        if (fs::exists(capture_script)) {
-                            cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << capture_script.string() << "\"";
-                            cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << capture_script.string() << "\"";
+                        std::vector<fs::path> search_paths = {
+                            project_path / "cmake" / capture_script,
+                            fs::current_path() / "cmake" / capture_script,
+                            fs::current_path().parent_path() / "cmake" / capture_script
+                        };
+
+                        fs::path found_script;
+                        for (const auto& path : search_paths) {
+                            if (fs::exists(path)) {
+                                found_script = fs::absolute(path);
+                                break;
+                            }
+                        }
+
+                        if (!found_script.empty()) {
+                            cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << found_script.string() << "\"";
+                            cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << found_script.string() << "\"";
                         }
                     }
                 }
@@ -828,13 +843,23 @@ namespace bha::build_systems
                 }
 
                 if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
+                    fs::path capture_script_name;
 #ifdef _WIN32
-                    fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.bat";
+                    capture_script_name = "bha-capture.bat";
 #else
-                    fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.sh";
+                    capture_script_name = "bha-capture.sh";
 #endif
-                    if (fs::exists(capture_script)) {
-                        capture_launcher = capture_script.string() + " ";
+                    std::vector<fs::path> search_paths = {
+                        project_path / "cmake" / capture_script_name,
+                        fs::current_path() / "cmake" / capture_script_name,
+                        fs::current_path().parent_path() / "cmake" / capture_script_name
+                    };
+
+                    for (const auto& path : search_paths) {
+                        if (fs::exists(path)) {
+                            capture_launcher = fs::absolute(path).string() + " ";
+                            break;
+                        }
                     }
                 }
 
@@ -949,13 +974,23 @@ namespace bha::build_systems
             }
 
             if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
+                fs::path capture_script_name;
 #ifdef _WIN32
-                fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.bat";
+                capture_script_name = "bha-capture.bat";
 #else
-                fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.sh";
+                capture_script_name = "bha-capture.sh";
 #endif
-                if (fs::exists(capture_script)) {
-                    capture_launcher = capture_script.string() + " ";
+                std::vector<fs::path> search_paths = {
+                    project_path / "cmake" / capture_script_name,
+                    fs::current_path() / "cmake" / capture_script_name,
+                    fs::current_path().parent_path() / "cmake" / capture_script_name
+                };
+
+                for (const auto& path : search_paths) {
+                    if (fs::exists(path)) {
+                        capture_launcher = fs::absolute(path).string() + " ";
+                        break;
+                    }
                 }
             }
 
@@ -1286,13 +1321,23 @@ namespace bha::build_systems
             }
 
             if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
+                fs::path capture_script_name;
 #ifdef _WIN32
-                fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.bat";
+                capture_script_name = "bha-capture.bat";
 #else
-                fs::path capture_script = fs::path(__FILE__).parent_path().parent_path().parent_path() / "cmake" / "bha-capture.sh";
+                capture_script_name = "bha-capture.sh";
 #endif
-                if (fs::exists(capture_script)) {
-                    capture_launcher = capture_script.string() + " ";
+                std::vector<fs::path> search_paths = {
+                    project_path / "cmake" / capture_script_name,
+                    fs::current_path() / "cmake" / capture_script_name,
+                    fs::current_path().parent_path() / "cmake" / capture_script_name
+                };
+
+                for (const auto& path : search_paths) {
+                    if (fs::exists(path)) {
+                        capture_launcher = fs::absolute(path).string() + " ";
+                        break;
+                    }
                 }
             }
 
