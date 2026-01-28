@@ -10,6 +10,7 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
+#include "bha/exporters/exporter.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -90,8 +91,7 @@ namespace bha::cli
             std::vector<std::string> paths_to_analyze;
 
             if (args.positional().empty()) {
-                fs::path default_trace_dir = fs::current_path() / "build" / "traces";
-                if (fs::exists(default_trace_dir)) {
+                if (fs::path default_trace_dir = fs::current_path() / "build" / "traces"; fs::exists(default_trace_dir)) {
                     paths_to_analyze.push_back(default_trace_dir.string());
                     print_verbose("Using default trace directory: " + default_trace_dir.string());
                 } else {
@@ -251,7 +251,25 @@ namespace bha::cli
                     print_error("Failed to open output file: " + *output_file);
                     return 1;
                 }
-                out << json::to_json(result, true);
+
+                exporters::ExportOptions export_opts;
+                export_opts.include_file_details = true;
+                export_opts.include_dependencies = true;
+                export_opts.include_templates = true;
+                export_opts.include_symbols = true;
+                export_opts.include_suggestions = true;
+                export_opts.include_metadata = true;
+                export_opts.pretty_print = true;
+                export_opts.max_files = 0;  // Include all files
+                export_opts.min_compile_time = Duration::zero();  // Include all files regardless of time
+
+                exporters::JsonExporter exporter;
+
+                if (auto export_result = exporter.export_to_stream(out, result, {}, export_opts, nullptr); export_result.is_err()) {
+                    print_error("Failed to write output: " + export_result.error().message());
+                    return 1;
+                }
+
                 print("Results written to " + *output_file);
             }
 
