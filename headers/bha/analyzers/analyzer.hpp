@@ -37,12 +37,12 @@ namespace bha::analyzers {
      * Result of file-level analysis.
      */
     struct FileAnalysisResult {
-        fs::path file;
+        fs::path file{};
         Duration compile_time = Duration::zero();
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
-        TimeBreakdown breakdown;
-        MemoryMetrics memory;
+        TimeBreakdown breakdown{};
+        MemoryMetrics memory{};
 
         double time_percent = 0.0;
         std::size_t rank = 0;
@@ -56,11 +56,11 @@ namespace bha::analyzers {
      */
     struct DependencyAnalysisResult {
         struct HeaderInfo {
-            fs::path path;
+            fs::path path{};
             Duration total_parse_time = Duration::zero();
             std::size_t inclusion_count = 0;
             std::size_t including_files = 0;
-            std::vector<fs::path> included_by;
+            std::vector<fs::path> included_by{};
             double impact_score = 0.0;
 
             std::size_t modification_count = 0;
@@ -70,13 +70,13 @@ namespace bha::analyzers {
             bool is_external = false;
         };
 
-        std::vector<HeaderInfo> headers;
+        std::vector<HeaderInfo> headers{};
         std::size_t total_includes = 0;
         std::size_t unique_headers = 0;
         std::size_t max_include_depth = 0;
         Duration total_include_time = Duration::zero();
 
-        std::vector<std::pair<fs::path, fs::path>> circular_dependencies;
+        std::vector<std::pair<fs::path, fs::path>> circular_dependencies{};
     };
 
     /**
@@ -88,14 +88,14 @@ namespace bha::analyzers {
             std::string full_signature;
             Duration total_time = Duration::zero();
             std::size_t instantiation_count = 0;
-            std::vector<SourceLocation> locations;
-            std::vector<std::string> files_using;
+            std::vector<SourceLocation> locations{};
+            std::vector<std::string> files_using{};
             double time_percent = 0.0;
         };
 
         using TemplateStats = TemplateInfo;
 
-        std::vector<TemplateInfo> templates;
+        std::vector<TemplateInfo> templates{};
         Duration total_template_time = Duration::zero();
         double template_time_percent = 0.0;
         std::size_t total_instantiations = 0;
@@ -108,12 +108,12 @@ namespace bha::analyzers {
         struct SymbolInfo {
             std::string name;
             std::string type;
-            fs::path defined_in;
-            std::vector<fs::path> used_in;
+            fs::path defined_in{};
+            std::vector<fs::path> used_in{};
             std::size_t usage_count = 0;
         };
 
-        std::vector<SymbolInfo> symbols;
+        std::vector<SymbolInfo> symbols{};
         std::size_t total_symbols = 0;
         std::size_t unused_symbols = 0;
     };
@@ -135,12 +135,12 @@ namespace bha::analyzers {
         Duration p90_file_time = Duration::zero();
         Duration p99_file_time = Duration::zero();
 
-        MemoryMetrics total_memory;
-        MemoryMetrics peak_memory;
-        MemoryMetrics average_memory;
+        MemoryMetrics total_memory{};
+        MemoryMetrics peak_memory{};
+        MemoryMetrics average_memory{};
 
-        std::vector<FileAnalysisResult> slowest_files;
-        std::vector<fs::path> critical_path;
+        std::vector<FileAnalysisResult> slowest_files{};
+        std::vector<fs::path> critical_path{};
     };
 
     /**
@@ -148,12 +148,12 @@ namespace bha::analyzers {
      */
     struct AnalysisResult {
         PerformanceAnalysisResult performance;
-        std::vector<FileAnalysisResult> files;
+        std::vector<FileAnalysisResult> files{};
         DependencyAnalysisResult dependencies;
         TemplateAnalysisResult templates;
         SymbolAnalysisResult symbols;
 
-        Timestamp analysis_time;
+        Timestamp analysis_time{};
         Duration analysis_duration = Duration::zero();
     };
 
@@ -201,7 +201,7 @@ namespace bha::analyzers {
 
     private:
         AnalyzerRegistry() = default;
-        std::vector<std::unique_ptr<IAnalyzer>> analyzers_;
+        std::vector<std::unique_ptr<IAnalyzer>> analyzers_{};
     };
 
     /**
