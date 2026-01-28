@@ -58,20 +58,32 @@ namespace bha::parsers
         std::size_t skipped_unreliable = 0;
 
         static const std::regex su_regex(
-            R"(^(.+?)\s+(\d+)\s+(static|dynamic|dynamic,bounded|bounded)$)"
+            R"(^(.+?)\s+(\d+)\s+(static|dynamic|dynamic,bounded|bounded)\s*$)"
         );
 
         while (std::getline(file, line)) {
             ++line_number;
 
-            if (line.empty() || line.find_first_not_of(" \t\r\n") == std::string::npos) {
+            if (line.empty()) {
                 continue;
             }
 
-            if (std::smatch match; std::regex_search(line, match, su_regex)) {
-                std::size_t stack_size = std::stoull(match[2].str());
+            // Remove trailing carriage return if present (for Windows line endings)
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
 
-                if (std::string qualifier = match[3].str(); qualifier == "static" || qualifier == "dynamic,bounded" || qualifier == "bounded") {
+            // Skip empty lines after trimming
+            if (line.empty()) {
+                continue;
+            }
+
+            std::smatch match;
+            if (std::regex_match(line, match, su_regex)) {
+                std::size_t stack_size = std::stoull(match[2].str());
+                std::string qualifier = match[3].str();
+
+                if (qualifier == "static" || qualifier == "dynamic,bounded" || qualifier == "bounded") {
                     max_stack = std::max(max_stack, stack_size);
                     ++parsed_lines;
                 } else if (qualifier == "dynamic") {
