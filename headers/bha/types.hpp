@@ -57,7 +57,7 @@ namespace bha {
      * Source code location.
      */
     struct SourceLocation {
-        fs::path file;
+        fs::path file{};
         std::size_t line = 0;
         std::size_t column = 0;
 
@@ -183,7 +183,7 @@ namespace bha {
      * Metrics for a single source file.
      */
     struct FileMetrics {
-        fs::path path;
+        fs::path path{};
         Duration total_time = Duration::zero();
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
@@ -357,11 +357,11 @@ namespace bha {
      * and lines need to be changed to implement a suggestion.
      */
     struct FileTarget {
-        fs::path path;
+        fs::path path{};
         std::size_t line_start = 0;
         std::size_t line_end = 0;
         FileAction action = FileAction::Modify;
-        std::optional<std::string> note;
+        std::optional<std::string> note{};
 
         [[nodiscard]] bool has_line_range() const noexcept {
             return line_start > 0;
@@ -381,7 +381,7 @@ namespace bha {
      * Impact assessment of applying a suggestion.
      */
     struct Impact {
-        std::vector<fs::path> files_benefiting;
+        std::vector<fs::path> files_benefiting{};
         std::size_t total_files_affected = 0;
         Duration cumulative_savings = Duration::zero();
         std::size_t rebuild_files_count = 0;
