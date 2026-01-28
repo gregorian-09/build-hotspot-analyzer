@@ -75,7 +75,7 @@ namespace bha::exporters
         // HTML-specific options
         bool html_interactive = true;       // Include D3.js visualizations
         bool html_offline = true;           // Bundle all assets (no CDN)
-        bool html_dark_mode = false;        // Default to dark mode
+        bool html_dark_mode = true;        // Default to dark mode
         std::string html_title = "Build Hotspot Analysis Report";
 
         // JSON-specific options
@@ -89,7 +89,7 @@ namespace bha::exporters
     struct ExportMetadata {
         std::string bha_version = "2.0.0";
         std::string schema_version = "1.0.0";
-        Timestamp generated_at;
+        Timestamp generated_at{};
         std::string project_name;
         std::string project_path;
         std::string git_commit;
