@@ -7,7 +7,7 @@ set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEST_ROOT="${TEST_ROOT:-${SCRIPT_DIR}/cli}"
-BHA_BINARY="${BHA_BINARY:-${SCRIPT_DIR}/../cmake-build-debug/bha}"
+BHA_BINARY="${BHA_BINARY:-${SCRIPT_DIR}/../build/bha}"
 
 LOG_FILE="${TEST_ROOT}/bha_cmd_results.log"
 # shellcheck disable=SC2034
