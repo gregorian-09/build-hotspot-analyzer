@@ -8,12 +8,14 @@
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
+#include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/suggestions/suggester.hpp"
 #include "bha/exporters/exporter.hpp"
 
 #include <iostream>
 #include <filesystem>
+#include <unordered_map>
 
 namespace bha::cli
 {
@@ -67,7 +69,7 @@ namespace bha::cli
                 return "No trace files specified";
             }
 
-            if (auto output = args.get("output"); !output || output->empty()) {
+            if (const auto output = args.get("output"); !output || output->empty()) {
                 return "Output file is required (-o FILE)";
             }
 
@@ -111,8 +113,10 @@ namespace bha::cli
                 }
             }
 
-            // Collect trace files
+            // Collect trace files AND memory files
             std::vector<fs::path> trace_files;
+            std::vector<fs::path> memory_files;
+
             for (const auto& path_str : args.positional()) {
                 fs::path path(path_str);
 
@@ -123,11 +127,28 @@ namespace bha::cli
 
                 auto files = parsers::collect_trace_files(path);
                 trace_files.insert(trace_files.end(), files.begin(), files.end());
+
+                if (fs::is_directory(path)) {
+                    for (const auto& entry : fs::recursive_directory_iterator(path)) {
+                        if (entry.is_regular_file()) {
+                            if (auto ext = entry.path().extension().string(); ext == ".su" || ext == ".map") {
+                                memory_files.push_back(entry.path());
+                            }
+                        }
+                    }
+                } else if (auto ext = path.extension().string(); ext == ".su" || ext == ".map") {
+                    memory_files.push_back(path);
+                }
             }
 
             if (trace_files.empty()) {
                 print_error("No trace files found");
                 return 1;
+            }
+
+            print_verbose("Found " + std::to_string(trace_files.size()) + " trace files");
+            if (!memory_files.empty()) {
+                print_verbose("Found " + std::to_string(memory_files.size()) + " memory files");
             }
 
             BuildTrace build_trace;
@@ -143,6 +164,53 @@ namespace bha::cli
                     }
                     progress.tick();
                 }
+            }
+
+            if (!memory_files.empty()) {
+                std::unordered_map<std::string, MemoryMetrics> memory_map;
+
+                ScopedProgress progress(memory_files.size(), "Parsing memory files");
+                for (const auto& file : memory_files) {
+                    progress.set_message(format_path(file, 40));
+
+                    if (auto result = parsers::parse_memory_file(file); result.is_ok()) {
+                        std::string key;
+                        std::string filename = file.filename().string();
+
+                        if (file.extension() == ".su") {
+                            if (filename.size() > 3) {
+                                key = filename.substr(0, filename.size() - 3);
+                            }
+                        } else if (file.extension() == ".map") {
+                            if (filename.size() > 4) {
+                                std::string temp = filename.substr(0, filename.size() - 4);
+                                if (temp.size() > 2 && temp.substr(temp.size() - 2) == ".o") {
+                                    temp = temp.substr(0, temp.size() - 2);
+                                }
+                                key = temp;
+                            }
+                        }
+
+                        if (!key.empty()) {
+                            memory_map[key] = result.value();
+                        }
+                    }
+
+                    progress.tick();
+                }
+
+                std::size_t matched = 0;
+                for (auto& unit : build_trace.units) {
+                    std::string source_name = unit.source_file.filename().string();
+
+                    if (auto it = memory_map.find(source_name); it != memory_map.end()) {
+                        unit.metrics.memory = it->second;
+                        matched++;
+                    }
+                }
+
+                print_verbose("Matched " + std::to_string(matched) + "/" +
+                              std::to_string(build_trace.units.size()) + " files with memory data");
             }
 
             if (build_trace.units.empty()) {
@@ -237,7 +305,7 @@ namespace bha::cli
     /**
      * Report command - shorthand for common export operations.
      */
-    class ReportCommand : public Command {
+    class ReportCommand final : public Command {
     public:
         [[nodiscard]] std::string_view name() const noexcept override {
             return "report";
@@ -334,7 +402,7 @@ namespace bha::cli
     private:
         static void open_in_browser(const std::string& path) {
 #ifdef _WIN32
-            std::string cmd = "start \"\" \"" + path + "\"";
+            std::string cmd = R"(start "" ")" + path + "\"";
 #elif defined(__APPLE__)
             std::string cmd = "open \"" + path + "\"";
 #else
