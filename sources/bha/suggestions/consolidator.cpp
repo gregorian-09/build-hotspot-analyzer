@@ -53,7 +53,9 @@ namespace bha::suggestions
             SuggestionType::UnityBuild,
             SuggestionType::IncludeRemoval,
             SuggestionType::ForwardDeclaration,
-            SuggestionType::ExplicitTemplate
+            SuggestionType::ExplicitTemplate,
+            SuggestionType::PIMPLPattern,
+            SuggestionType::MoveToCpp
         }) {
             auto group = group_by_type(suggestions, type);
             if (group.empty()) continue;
@@ -79,23 +81,16 @@ namespace bha::suggestions
             case SuggestionType::ExplicitTemplate:
                 result = consolidate_template(group);
                 break;
-            default:
-                continue;
+            case SuggestionType::PIMPLPattern:
+                result = consolidate_pimpl(group);
+                break;
+            case SuggestionType::MoveToCpp:
+                result = consolidate_move_to_cpp(group);
+                break;
             }
 
             if (result.has_value()) {
                 consolidated.push_back(std::move(result.value()));
-            }
-        }
-
-        for (const auto& s : suggestions) {
-            if (s.type != SuggestionType::PCHOptimization &&
-                s.type != SuggestionType::HeaderSplit &&
-                s.type != SuggestionType::UnityBuild &&
-                s.type != SuggestionType::IncludeRemoval &&
-                s.type != SuggestionType::ForwardDeclaration &&
-                s.type != SuggestionType::ExplicitTemplate) {
-                consolidated.push_back(s);
             }
         }
 
@@ -592,6 +587,172 @@ namespace bha::suggestions
         }
 
         return merged;
+    }
+
+    std::optional<Suggestion> SuggestionConsolidator::consolidate_pimpl(
+        const std::vector<Suggestion>& suggestions
+    ) {
+        if (suggestions.empty()) {
+            return std::nullopt;
+        }
+
+        Suggestion consolidated;
+        consolidated.type = SuggestionType::PIMPLPattern;
+        consolidated.priority = Priority::Medium;
+
+        // Group by module/directory for better organization
+        std::unordered_map<std::string, std::vector<const Suggestion*>> by_module;
+
+        for (const auto& sug : suggestions) {
+            if (sug.priority == Priority::Critical || sug.priority == Priority::High) {
+                consolidated.priority = Priority::High;
+            }
+
+            std::string module_key = "default";
+            if (!sug.target_file.path.empty()) {
+                // Use parent directory as module grouping
+                if (sug.target_file.path.has_parent_path()) {
+                    module_key = sug.target_file.path.parent_path().filename().string();
+                }
+            }
+            by_module[module_key].push_back(&sug);
+        }
+
+        std::ostringstream desc;
+        desc << "Apply PIMPL (Pointer to Implementation) pattern to reduce compile-time coupling.\n\n";
+        desc << "The PIMPL idiom moves private implementation details to a separate compilation unit, "
+             << "reducing header dependencies and improving incremental build times.\n\n";
+
+        Duration total_savings = Duration::zero();
+        double total_percent = 0.0;
+
+        for (const auto& [module, sug_list] : by_module) {
+            desc << "**Module: " << module << "** (" << sug_list.size() << " candidates)\n";
+
+            for (const auto* sug : sug_list) {
+                desc << "  - `" << sug->target_file.path.filename().string() << "`";
+                if (sug->confidence > 0) {
+                    desc << " (confidence: " << static_cast<int>(sug->confidence * 100) << "%)";
+                }
+                desc << "\n";
+
+                total_savings += sug->estimated_savings;
+                total_percent += sug->estimated_savings_percent;
+            }
+            desc << "\n";
+        }
+
+        desc << "**Implementation Pattern:**\n```cpp\n";
+        desc << "// header.h\n";
+        desc << "class MyClass {\n";
+        desc << "public:\n";
+        desc << "    MyClass();\n";
+        desc << "    ~MyClass();\n";
+        desc << "    // ... public interface\n";
+        desc << "private:\n";
+        desc << "    struct Impl;\n";
+        desc << "    std::unique_ptr<Impl> pimpl_;\n";
+        desc << "};\n\n";
+        desc << "// source.cpp\n";
+        desc << "struct MyClass::Impl {\n";
+        desc << "    // ... private members and implementation\n";
+        desc << "};\n";
+        desc << "```\n";
+
+        consolidated.description = desc.str();
+        consolidated.impact = merge_impacts(suggestions);
+        consolidated.title = "PIMPL Pattern Opportunities (" + std::to_string(suggestions.size()) + " classes)";
+
+        consolidated.rationale = "These classes have significant private implementation details that cause "
+                                 "recompilation cascades when modified. Applying PIMPL decouples the "
+                                 "interface from implementation, reducing incremental build times.";
+
+        consolidated.implementation_steps = {
+            "1. Create a forward-declared Impl struct in the class header",
+            "2. Replace private members with std::unique_ptr<Impl>",
+            "3. Move implementation details to the .cpp file",
+            "4. Implement constructor/destructor in .cpp (after Impl is complete)",
+            "5. Update any member functions that access private data",
+            "6. Verify ABI compatibility if this is a library interface"
+        };
+
+        consolidated.caveats = {
+            "PIMPL adds one level of indirection (minor performance cost)",
+            "Requires heap allocation for Impl object",
+            "Cannot be used with classes that need to be trivially copyable",
+            "Move semantics require explicit implementation"
+        };
+
+        consolidated.verification =
+            "Measure incremental build time after modifying private implementation. "
+            "Verify no functionality regression. Check for memory leaks with sanitizers.";
+
+        consolidated.is_safe = false;
+        consolidated.confidence = 0.75;
+        consolidated.estimated_savings = total_savings;
+        consolidated.estimated_savings_percent = total_percent;
+
+        return consolidated;
+    }
+
+    std::optional<Suggestion> SuggestionConsolidator::consolidate_move_to_cpp(
+        const std::vector<Suggestion>& suggestions
+    ) {
+        if (suggestions.empty()) {
+            return std::nullopt;
+        }
+
+        Suggestion consolidated;
+        consolidated.type = SuggestionType::MoveToCpp;
+        consolidated.priority = Priority::Low;
+
+        std::unordered_map<std::string, std::vector<std::string>> by_header;
+
+        for (const auto& sug : suggestions) {
+            if (sug.priority >= Priority::High) {
+                consolidated.priority = Priority::Medium;
+            }
+
+            std::string header = sug.target_file.path.string();
+            if (!sug.description.empty()) {
+                by_header[header].push_back(sug.description);
+            }
+        }
+
+        std::ostringstream desc;
+        desc << "Move function implementations from headers to source files to reduce compilation overhead.\n\n";
+
+        for (const auto& [header, items] : by_header) {
+            desc << "**" << header << ":**\n";
+            for (const auto& item : items) {
+                desc << "  - " << item << "\n";
+            }
+            desc << "\n";
+        }
+
+        consolidated.description = desc.str();
+        consolidated.impact = merge_impacts(suggestions);
+        consolidated.title = "Move to Source File (" + std::to_string(suggestions.size()) + " items)";
+        consolidated.rationale = "Function definitions in headers are re-parsed and re-compiled "
+                                 "in every translation unit that includes them.";
+
+        consolidated.implementation_steps = {
+            "1. Identify function definitions that don't need to be inline",
+            "2. Move implementation to corresponding .cpp file",
+            "3. Keep only declaration in header",
+            "4. Verify linkage is correct (no ODR violations)"
+        };
+
+        consolidated.is_safe = false;
+        consolidated.confidence = 0.7;
+
+        Duration total_savings = Duration::zero();
+        for (const auto& sug : suggestions) {
+            total_savings += sug.estimated_savings;
+        }
+        consolidated.estimated_savings = total_savings;
+
+        return consolidated;
     }
 
 }  // namespace bha::suggestions
