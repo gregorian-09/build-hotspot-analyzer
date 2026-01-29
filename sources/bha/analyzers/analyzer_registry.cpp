@@ -104,29 +104,8 @@ namespace bha::analyzers
                             existing.breakdown.optimization = file.breakdown.optimization;
                         }
 
-                        if (file.memory.peak_memory_bytes > 0) {
-                            existing.memory.peak_memory_bytes = file.memory.peak_memory_bytes;
-                        }
-                        if (file.memory.frontend_peak_bytes > 0) {
-                            existing.memory.frontend_peak_bytes = file.memory.frontend_peak_bytes;
-                        }
-                        if (file.memory.backend_peak_bytes > 0) {
-                            existing.memory.backend_peak_bytes = file.memory.backend_peak_bytes;
-                        }
                         if (file.memory.max_stack_bytes > 0) {
                             existing.memory.max_stack_bytes = file.memory.max_stack_bytes;
-                        }
-                        if (file.memory.parsing_bytes > 0) {
-                            existing.memory.parsing_bytes = file.memory.parsing_bytes;
-                        }
-                        if (file.memory.semantic_bytes > 0) {
-                            existing.memory.semantic_bytes = file.memory.semantic_bytes;
-                        }
-                        if (file.memory.codegen_bytes > 0) {
-                            existing.memory.codegen_bytes = file.memory.codegen_bytes;
-                        }
-                        if (file.memory.ggc_memory > 0) {
-                            existing.memory.ggc_memory = file.memory.ggc_memory;
                         }
                     } else {
                         file_map[key] = std::move(file);
@@ -138,13 +117,13 @@ namespace bha::analyzers
                 if (combined_result.performance.total_build_time == Duration::zero()) {
                     combined_result.performance = partial.performance;
                 } else {
-                    if (partial.performance.peak_memory.peak_memory_bytes >
-                        combined_result.performance.peak_memory.peak_memory_bytes) {
+                    if (partial.performance.peak_memory.max_stack_bytes >
+                        combined_result.performance.peak_memory.max_stack_bytes) {
                         combined_result.performance.peak_memory = partial.performance.peak_memory;
                     }
-                    if (partial.performance.total_memory.peak_memory_bytes > 0) {
-                        combined_result.performance.total_memory.peak_memory_bytes +=
-                            partial.performance.total_memory.peak_memory_bytes;
+                    if (partial.performance.total_memory.max_stack_bytes > 0) {
+                        combined_result.performance.total_memory.max_stack_bytes +=
+                            partial.performance.total_memory.max_stack_bytes;
                     }
                 }
             }

@@ -240,12 +240,9 @@ namespace bha::analyzers
         std::size_t files_with_memory = 0;
         for (const auto& file : result.files) {
             if (file.memory.has_data()) {
-                result.performance.total_memory.peak_memory_bytes += file.memory.peak_memory_bytes;
-                result.performance.total_memory.frontend_peak_bytes += file.memory.frontend_peak_bytes;
-                result.performance.total_memory.backend_peak_bytes += file.memory.backend_peak_bytes;
                 result.performance.total_memory.max_stack_bytes += file.memory.max_stack_bytes;
 
-                if (file.memory.peak_memory_bytes > result.performance.peak_memory.peak_memory_bytes) {
+                if (file.memory.max_stack_bytes > result.performance.peak_memory.max_stack_bytes) {
                     result.performance.peak_memory = file.memory;
                 }
 
@@ -254,12 +251,6 @@ namespace bha::analyzers
         }
 
         if (files_with_memory > 0) {
-            result.performance.average_memory.peak_memory_bytes =
-                result.performance.total_memory.peak_memory_bytes / files_with_memory;
-            result.performance.average_memory.frontend_peak_bytes =
-                result.performance.total_memory.frontend_peak_bytes / files_with_memory;
-            result.performance.average_memory.backend_peak_bytes =
-                result.performance.total_memory.backend_peak_bytes / files_with_memory;
             result.performance.average_memory.max_stack_bytes =
                 result.performance.total_memory.max_stack_bytes / files_with_memory;
         }
