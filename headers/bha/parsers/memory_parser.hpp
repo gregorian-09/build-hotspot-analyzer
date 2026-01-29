@@ -10,19 +10,19 @@
 #include "bha/error.hpp"
 
 #include <filesystem>
-#include <string>
 
 namespace bha::parsers
 {
     namespace fs = std::filesystem;
 
-    Result<MemoryMetrics, Error> parse_gcc_mem_report(const std::string& stderr_output);
-
-    Result<MemoryMetrics, Error> parse_gcc_stack_usage(const fs::path& su_file);
-
-    Result<MemoryMetrics, Error> parse_msvc_map_file(const fs::path& map_file);
-
-    Result<MemoryMetrics, Error> parse_memory_file(const fs::path& file);
+    /**
+     * Parses a GCC/Clang stack usage (.su) file.
+     *
+     * Stack usage files are generated with -fstack-usage and contain per-function
+     * stack consumption data. This is the only reliable memory metric available
+     * from standard compiler output.
+     */
+    Result<MemoryMetrics, Error> parse_stack_usage_file(const fs::path& su_file);
 
 } // namespace bha::parsers
 

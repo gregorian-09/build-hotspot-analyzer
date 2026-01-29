@@ -162,20 +162,18 @@ namespace bha {
         }
     };
 
+    /**
+     * Memory metrics from compiler stack usage output.
+     *
+     * Compilers like GCC/Clang with -fstack-usage generate .su files containing
+     * per-function stack usage. This is the only reliable memory metric available
+     * from standard compiler outputs.
+     */
     struct MemoryMetrics {
-        std::size_t peak_memory_bytes = 0;
-        std::size_t frontend_peak_bytes = 0;
-        std::size_t backend_peak_bytes = 0;
         std::size_t max_stack_bytes = 0;
 
-        std::size_t parsing_bytes = 0;
-        std::size_t semantic_bytes = 0;
-        std::size_t codegen_bytes = 0;
-        std::size_t ggc_memory = 0;
-
         [[nodiscard]] bool has_data() const noexcept {
-            return peak_memory_bytes > 0 || frontend_peak_bytes > 0 ||
-                   backend_peak_bytes > 0 || max_stack_bytes > 0;
+            return max_stack_bytes > 0;
         }
     };
 
