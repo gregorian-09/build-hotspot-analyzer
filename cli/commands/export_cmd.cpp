@@ -169,29 +169,19 @@ namespace bha::cli
             if (!memory_files.empty()) {
                 std::unordered_map<std::string, MemoryMetrics> memory_map;
 
-                ScopedProgress progress(memory_files.size(), "Parsing memory files");
+                ScopedProgress progress(memory_files.size(), "Parsing stack usage files");
                 for (const auto& file : memory_files) {
+                    if (file.extension() != ".su") {
+                        progress.tick();
+                        continue;
+                    }
+
                     progress.set_message(format_path(file, 40));
 
-                    if (auto result = parsers::parse_memory_file(file); result.is_ok()) {
-                        std::string key;
+                    if (auto result = parsers::parse_stack_usage_file(file); result.is_ok()) {
                         std::string filename = file.filename().string();
-
-                        if (file.extension() == ".su") {
-                            if (filename.size() > 3) {
-                                key = filename.substr(0, filename.size() - 3);
-                            }
-                        } else if (file.extension() == ".map") {
-                            if (filename.size() > 4) {
-                                std::string temp = filename.substr(0, filename.size() - 4);
-                                if (temp.size() > 2 && temp.substr(temp.size() - 2) == ".o") {
-                                    temp = temp.substr(0, temp.size() - 2);
-                                }
-                                key = temp;
-                            }
-                        }
-
-                        if (!key.empty()) {
+                        if (filename.size() > 3) {
+                            std::string key = filename.substr(0, filename.size() - 3);
                             memory_map[key] = result.value();
                         }
                     }
