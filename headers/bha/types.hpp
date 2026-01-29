@@ -355,18 +355,83 @@ namespace bha {
      *
      * This provides exact targeting so users know precisely which file
      * and lines need to be changed to implement a suggestion.
+     * Line and column numbers are 1-based for human readability.
      */
     struct FileTarget {
         fs::path path{};
         std::size_t line_start = 0;
         std::size_t line_end = 0;
+        std::size_t col_start = 0;  ///< 1-based column start (0 = unknown)
+        std::size_t col_end = 0;    ///< 1-based column end (0 = end of line)
         FileAction action = FileAction::Modify;
         std::optional<std::string> note{};
 
         [[nodiscard]] bool has_line_range() const noexcept {
             return line_start > 0;
         }
+
+        [[nodiscard]] bool has_column_range() const noexcept {
+            return col_start > 0;
+        }
     };
+
+    /**
+     * LSP-compatible text edit for automated code modifications.
+     *
+     * Represents a single edit operation with precise location.
+     * Line and column numbers are 0-based to match LSP protocol.
+     */
+    struct TextEdit {
+        fs::path file{};
+        std::size_t start_line = 0;    ///< 0-based line number
+        std::size_t start_col = 0;     ///< 0-based column (UTF-16 offset)
+        std::size_t end_line = 0;      ///< 0-based line number
+        std::size_t end_col = 0;       ///< 0-based column (UTF-16 offset)
+        std::string new_text{};        ///< Replacement text
+
+        [[nodiscard]] bool is_valid() const noexcept {
+            return !file.empty() && (start_line < end_line ||
+                   (start_line == end_line && start_col <= end_col));
+        }
+
+        [[nodiscard]] bool is_insertion() const noexcept {
+            return start_line == end_line && start_col == end_col;
+        }
+    };
+
+    /**
+     * LSP Diagnostic Severity levels.
+     */
+    enum class DiagnosticSeverity {
+        Error = 1,
+        Warning = 2,
+        Information = 3,
+        Hint = 4
+    };
+
+    /**
+     * Converts Priority to LSP DiagnosticSeverity.
+     *
+     * Mapping:
+     * - Critical -> Warning (not Error, as suggestions aren't failures)
+     * - High -> Warning
+     * - Medium -> Information
+     * - Low -> Hint
+     */
+    [[nodiscard]] inline DiagnosticSeverity to_diagnostic_severity(const Priority priority) noexcept {
+        switch (priority) {
+            case Priority::Critical:
+            case Priority::High:
+                return DiagnosticSeverity::Warning;
+
+            case Priority::Medium:
+                return DiagnosticSeverity::Information;
+
+            case Priority::Low:
+                return DiagnosticSeverity::Hint;
+            }
+        return DiagnosticSeverity::Information;
+    }
 
     /**
      * Code example showing before/after state.
@@ -412,6 +477,10 @@ namespace bha {
 
         CodeExample before_code;
         CodeExample after_code;
+
+        /// LSP-compatible text edits for automated application.
+        /// When populated, IDEs can directly apply these edits.
+        std::vector<TextEdit> edits;
 
         std::vector<std::string> implementation_steps;
         Impact impact;
