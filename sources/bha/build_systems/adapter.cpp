@@ -21,6 +21,108 @@ namespace bha::build_systems
 {
     namespace {
 
+        enum class CompilerFamily { GCC, Clang, MSVC, Unknown };
+
+        struct CompilerInfo {
+            CompilerFamily family = CompilerFamily::Unknown;
+            std::string c_compiler;
+            std::string cxx_compiler;
+
+            static CompilerInfo from_name(const std::string& compiler) {
+                CompilerInfo info;
+                if (compiler.empty()) {
+                    info.family = CompilerFamily::GCC;
+                    info.c_compiler = "gcc";
+                    info.cxx_compiler = "g++";
+                } else if (compiler.find("clang") != std::string::npos) {
+                    info.family = CompilerFamily::Clang;
+                    info.c_compiler = compiler;
+                    info.cxx_compiler = (compiler == "clang") ? "clang++" : compiler;
+                } else if (compiler.find("gcc") != std::string::npos ||
+                           compiler.find("g++") != std::string::npos) {
+                    info.family = CompilerFamily::GCC;
+                    info.c_compiler = (compiler == "g++") ? "gcc" : compiler;
+                    info.cxx_compiler = (compiler == "gcc") ? "g++" : compiler;
+                } else if (compiler.find("cl") != std::string::npos ||
+                           compiler.find("msvc") != std::string::npos) {
+                    info.family = CompilerFamily::MSVC;
+                    info.c_compiler = "cl";
+                    info.cxx_compiler = "cl";
+                } else {
+                    info.family = CompilerFamily::GCC;
+                    info.c_compiler = compiler;
+                    info.cxx_compiler = compiler;
+                }
+                return info;
+            }
+        };
+
+        struct CompilerFlags {
+            std::string tracing_flags;
+            std::string memory_flags;
+
+            static CompilerFlags for_compiler(const CompilerFamily family, const bool tracing, const bool memory) {
+                CompilerFlags flags;
+
+                if (tracing) {
+                    switch (family) {
+                        case CompilerFamily::Clang:
+                            flags.tracing_flags = "-ftime-trace";
+                            break;
+                        case CompilerFamily::GCC:
+                            flags.tracing_flags = "-ftime-report";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if (memory) {
+                    switch (family) {
+                    case CompilerFamily::GCC:
+                    case CompilerFamily::Clang:
+                        flags.memory_flags = "-fstack-usage";
+                        break;
+                    default:
+                        break;
+                    }
+
+                }
+
+                return flags;
+            }
+
+            [[nodiscard]] std::string combined() const {
+                if (tracing_flags.empty()) return memory_flags;
+                if (memory_flags.empty()) return tracing_flags;
+                return tracing_flags + " " + memory_flags;
+            }
+
+            [[nodiscard]] bool empty() const {
+                return tracing_flags.empty() && memory_flags.empty();
+            }
+        };
+
+        fs::path find_capture_script(const fs::path& project_path) {
+#ifdef _WIN32
+            auto script_name = "bha-capture.bat";
+#else
+            const char* script_name = "bha-capture.sh";
+#endif
+            const std::vector search_paths = {
+                project_path / "cmake" / script_name,
+                fs::current_path() / "cmake" / script_name,
+                fs::current_path().parent_path() / "cmake" / script_name
+            };
+
+            for (const auto& path : search_paths) {
+                if (fs::exists(path)) {
+                    return fs::absolute(path);
+                }
+            }
+            return {};
+        }
+
         std::string extract_error_summary(const std::string& output, size_t max_lines = 50) {
             std::istringstream stream(output);
             std::string line;
@@ -69,7 +171,6 @@ namespace bha::build_systems
             int exit_code = -1;
 
 #ifdef _WIN32
-            // Windows implementation
             SECURITY_ATTRIBUTES sa;
             sa.nLength = sizeof(sa);
             sa.lpSecurityDescriptor = nullptr;
@@ -94,21 +195,23 @@ namespace bha::build_systems
             std::string cmd_line = "cmd /c " + command;
             std::string work_dir = working_dir.empty() ? "" : working_dir.string();
 
-            if (CreateProcessA(
-                    nullptr,
-                    const_cast<char*>(cmd_line.c_str()),
-                    nullptr, nullptr, TRUE, 0, nullptr,
-                    work_dir.empty() ? nullptr : work_dir.c_str(),
-                    &si, &pi)) {
+            BOOL process_created = CreateProcessA(
+                nullptr,
+                const_cast<char*>(cmd_line.c_str()),
+                nullptr, nullptr, TRUE, 0, nullptr,
+                work_dir.empty() ? nullptr : work_dir.c_str(),
+                &si, &pi
+            );
 
-                CloseHandle(write_pipe);
+            CloseHandle(write_pipe);
 
+            if (process_created) {
                 std::array<char, 4096> buffer{};
                 DWORD bytes_read;
                 while (ReadFile(read_pipe, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr)
                        && bytes_read > 0) {
                     output.append(buffer.data(), bytes_read);
-                       }
+                }
 
                 WaitForSingleObject(pi.hProcess, INFINITE);
                 DWORD code;
@@ -117,7 +220,7 @@ namespace bha::build_systems
 
                 CloseHandle(pi.hProcess);
                 CloseHandle(pi.hThread);
-                    }
+            }
 
             CloseHandle(read_pipe);
 #else
@@ -143,9 +246,6 @@ namespace bha::build_systems
             return std::pair{exit_code, std::move(output)};
         }
 
-        /**
-         * Find trace files in a directory.
-         */
         std::vector<fs::path> find_trace_files(const fs::path& dir) {
             std::vector<fs::path> traces;
 
@@ -153,16 +253,16 @@ namespace bha::build_systems
                 return traces;
             }
 
-            for (const auto& entry : fs::recursive_directory_iterator(dir)) {
+            std::error_code ec;
+            for (const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
+                if (ec) break;
                 if (!entry.is_regular_file()) continue;
 
                 std::string filename = entry.path().filename().string();
                 std::string ext = entry.path().extension().string();
 
                 if (ext == ".json") {
-                    std::string stem = entry.path().stem().string();
-
-                    if (stem.ends_with(".c") || stem.ends_with(".cc") ||
+                    if (std::string stem = entry.path().stem().string(); stem.ends_with(".c") || stem.ends_with(".cc") ||
                         stem.ends_with(".cpp") || stem.ends_with(".cxx") ||
                         stem.ends_with(".C") || stem.ends_with(".c++") ||
                         stem.ends_with(".m") || stem.ends_with(".mm")) {
@@ -170,12 +270,11 @@ namespace bha::build_systems
                     }
                 }
 
-                if (ext == ".txt" && filename.find(".bha.txt") != std::string::npos) {
+                if (ext == ".txt" && filename.ends_with(".bha.txt")) {
                     traces.push_back(entry.path());
                 }
 
-                if (filename.find(".trace") != std::string::npos ||
-                    filename.find("_trace") != std::string::npos) {
+                if (ext == ".trace" || filename.ends_with("_trace.json")) {
                     traces.push_back(entry.path());
                 }
             }
@@ -190,10 +289,11 @@ namespace bha::build_systems
                 return memory_files;
             }
 
-            for (const auto& entry : fs::recursive_directory_iterator(dir)) {
+            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
+                if (ec) break;
                 if (!entry.is_regular_file()) continue;
 
-                if (std::string ext = entry.path().extension().string(); ext == ".su" || ext == ".map") {
+                if (entry.path().extension() == ".su") {
                     memory_files.push_back(entry.path());
                 }
             }
@@ -207,37 +307,49 @@ namespace bha::build_systems
                 return;
             }
 
-            fs::create_directories(dest_dir);
+            std::error_code ec;
+            fs::create_directories(dest_dir, ec);
+            if (ec) return;
 
             std::vector<fs::path> new_trace_files;
             std::vector<fs::path> new_memory_files;
 
-            auto normalized_source = fs::absolute(source_dir).lexically_normal();
-            auto normalized_dest = fs::absolute(dest_dir).lexically_normal();
+            const auto normalized_dest = fs::absolute(dest_dir, ec).lexically_normal();
+            if (ec) return;
 
             for (const auto& trace_file : trace_files) {
-                auto normalized_file = fs::absolute(trace_file).lexically_normal();
-                auto file_parent = normalized_file.parent_path();
+                auto normalized_file = fs::absolute(trace_file, ec).lexically_normal();
+                if (ec) {
+                    new_trace_files.push_back(trace_file);
+                    ec.clear();
+                    continue;
+                }
 
-                if (file_parent == normalized_dest) {
+                if (normalized_file.parent_path() == normalized_dest) {
                     new_trace_files.push_back(trace_file);
                 } else {
                     fs::path dest_file = dest_dir / trace_file.filename();
-                    fs::copy_file(trace_file, dest_file, fs::copy_options::overwrite_existing);
-                    new_trace_files.push_back(dest_file);
+                    fs::copy_file(trace_file, dest_file, fs::copy_options::overwrite_existing, ec);
+                    new_trace_files.push_back(ec ? trace_file : dest_file);
+                    ec.clear();
                 }
             }
 
             for (const auto& memory_file : memory_files) {
-                auto normalized_file = fs::absolute(memory_file).lexically_normal();
-                auto file_parent = normalized_file.parent_path();
+                auto normalized_file = fs::absolute(memory_file, ec).lexically_normal();
+                if (ec) {
+                    new_memory_files.push_back(memory_file);
+                    ec.clear();
+                    continue;
+                }
 
-                if (file_parent == normalized_dest) {
+                if (normalized_file.parent_path() == normalized_dest) {
                     new_memory_files.push_back(memory_file);
                 } else {
                     fs::path dest_file = dest_dir / memory_file.filename();
-                    fs::copy_file(memory_file, dest_file, fs::copy_options::overwrite_existing);
-                    new_memory_files.push_back(dest_file);
+                    fs::copy_file(memory_file, dest_file, fs::copy_options::overwrite_existing, ec);
+                    new_memory_files.push_back(ec ? memory_file : dest_file);
+                    ec.clear();
                 }
             }
 
@@ -321,7 +433,7 @@ namespace bha::build_systems
     // CMake Adapter
     // --------------------------------------------------------------------------
 
-    class CMakeAdapter : public IBuildSystemAdapter {
+    class CMakeAdapter final : public IBuildSystemAdapter {
     public:
         [[nodiscard]] std::string name() const override { return "CMake"; }
 
@@ -343,12 +455,12 @@ namespace bha::build_systems
             if (has_git_submodules(project_path)) {
                 init_git_submodules(project_path);
             }
-            fs::path build_dir = options.build_dir;
-            if (build_dir.empty()) {
-                build_dir = project_path / "build";
-            }
 
+            fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
             fs::create_directories(build_dir);
+
+            auto compiler = CompilerInfo::from_name(options.compiler);
+            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
 
             std::ostringstream cmd;
             cmd << "cmake";
@@ -358,75 +470,20 @@ namespace bha::build_systems
             cmd << " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON";
 
             if (!options.compiler.empty()) {
-                std::string c_compiler = options.compiler;
-                std::string cxx_compiler = options.compiler;
-
-                if (options.compiler == "clang") {
-                    cxx_compiler = "clang++";
-                } else if (options.compiler == "gcc") {
-                    cxx_compiler = "g++";
-                }
-
-                cmd << " -DCMAKE_C_COMPILER=" << c_compiler;
-                cmd << " -DCMAKE_CXX_COMPILER=" << cxx_compiler;
+                cmd << " -DCMAKE_C_COMPILER=" << compiler.c_compiler;
+                cmd << " -DCMAKE_CXX_COMPILER=" << compiler.cxx_compiler;
             }
 
-            if (options.enable_tracing || options.enable_memory_profiling) {
-                std::string flags;
-                std::string compiler_name = options.compiler;
-                if (compiler_name.empty()) {
-                    compiler_name = "gcc";
+            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << script.string() << "\"";
+                    cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << script.string() << "\"";
                 }
+            }
 
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-                bool is_gcc = compiler_name.find("gcc") != std::string::npos ||
-                              compiler_name.find("g++") != std::string::npos ||
-                              compiler_name.empty();
-
-                if (options.enable_tracing) {
-                    if (is_clang) {
-                        flags += "-ftime-trace";
-                    } else {
-                        flags += "-ftime-report";
-
-                        fs::path capture_script;
-#ifdef _WIN32
-                        capture_script = "bha-capture.bat";
-#else
-                        capture_script = "bha-capture.sh";
-#endif
-                        std::vector<fs::path> search_paths = {
-                            project_path / "cmake" / capture_script,
-                            fs::current_path() / "cmake" / capture_script,
-                            fs::current_path().parent_path() / "cmake" / capture_script
-                        };
-
-                        fs::path found_script;
-                        for (const auto& path : search_paths) {
-                            if (fs::exists(path)) {
-                                found_script = fs::absolute(path);
-                                break;
-                            }
-                        }
-
-                        if (!found_script.empty()) {
-                            cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << found_script.string() << "\"";
-                            cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << found_script.string() << "\"";
-                        }
-                    }
-                }
-                if (options.enable_memory_profiling) {
-                    if (!flags.empty()) flags += " ";
-                    if (is_gcc) {
-                        flags += "-fmem-report -fstack-usage";
-                    } else if (is_clang) {
-                        flags += "-fstack-usage";
-                    }
-                }
-                if (!flags.empty()) {
-                    cmd << " -DCMAKE_CXX_FLAGS=\"" << flags << "\"";
-                    cmd << " -DCMAKE_C_FLAGS=\"" << flags << "\"";
-                }
+            if (!flags.empty()) {
+                cmd << " -DCMAKE_CXX_FLAGS=\"" << flags.combined() << "\"";
+                cmd << " -DCMAKE_C_FLAGS=\"" << flags.combined() << "\"";
             }
 
             for (const auto& arg : options.extra_args) {
@@ -449,15 +506,9 @@ namespace bha::build_systems
             BuildResult result;
             auto start = std::chrono::steady_clock::now();
 
-            fs::path build_dir = options.build_dir;
-            if (build_dir.empty()) {
-                build_dir = project_path / "build";
-            }
-
-            fs::path trace_output_dir = options.trace_output_dir;
-            if (trace_output_dir.empty() && options.enable_tracing) {
-                trace_output_dir = build_dir / "traces";
-            }
+            fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
+            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+                ? build_dir / "traces" : options.trace_output_dir;
 
             if (!fs::exists(build_dir / "CMakeCache.txt")) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
@@ -470,26 +521,19 @@ namespace bha::build_systems
                 clean(project_path, options);
             }
 
+            auto compiler = CompilerInfo::from_name(options.compiler);
+
             std::ostringstream cmd;
-
-            if (options.enable_tracing && !trace_output_dir.empty()) {
-                std::string compiler_name = options.compiler;
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-
-                if (!is_clang) {
+            if (options.enable_tracing && !trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
 #ifdef _WIN32
-                    cmd << "set BHA_TRACE_DIR=" << trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << trace_output_dir.string() << " && ";
 #else
-                    cmd << "BHA_TRACE_DIR=\"" << trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << trace_output_dir.string() << "\" ";
 #endif
-                }
             }
 
             cmd << "cmake --build \"" << build_dir.string() << "\"";
-
-            int jobs = options.parallel_jobs > 0 ?
-                       options.parallel_jobs : get_cpu_count();
-            cmd << " -j " << jobs;
+            cmd << " -j " << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
 
             if (options.verbose) {
                 cmd << " --verbose";
@@ -502,11 +546,10 @@ namespace bha::build_systems
 
             if (!result.success) {
                 std::string error_summary = extract_error_summary(output);
-                result.error_message = error_summary.empty() ? "Build failed with no specific error output" : error_summary;
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
             result.trace_files = find_trace_files(build_dir);
-
             if (!trace_output_dir.empty()) {
                 auto trace_dir_files = find_trace_files(trace_output_dir);
                 result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
@@ -518,9 +561,7 @@ namespace bha::build_systems
 
             copy_trace_files(build_dir, trace_output_dir, result.trace_files, result.memory_files);
 
-            auto end = std::chrono::steady_clock::now();
-            result.build_time = std::chrono::duration_cast<Duration>(end - start);
-
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);
         }
 
@@ -575,7 +616,7 @@ namespace bha::build_systems
     // Ninja Adapter
     // --------------------------------------------------------------------------
 
-    class NinjaAdapter : public IBuildSystemAdapter {
+    class NinjaAdapter final : public IBuildSystemAdapter {
     public:
         [[nodiscard]] std::string name() const override { return "Ninja"; }
 
@@ -605,12 +646,11 @@ namespace bha::build_systems
                     init_git_submodules(project_path);
                 }
 
-                fs::path build_dir = options.build_dir;
-                if (build_dir.empty()) {
-                    build_dir = project_path / "build";
-                }
-
+                fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
                 fs::create_directories(build_dir);
+
+                auto compiler = CompilerInfo::from_name(options.compiler);
+                auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
 
                 std::ostringstream cmd;
                 cmd << "cmake -G Ninja";
@@ -619,50 +659,13 @@ namespace bha::build_systems
                 cmd << " -DCMAKE_BUILD_TYPE=" << options.build_type;
 
                 if (!options.compiler.empty()) {
-                    std::string c_compiler = options.compiler;
-                    std::string cxx_compiler = options.compiler;
-
-                    if (options.compiler == "clang") {
-                        cxx_compiler = "clang++";
-                    } else if (options.compiler == "gcc") {
-                        cxx_compiler = "g++";
-                    }
-
-                    cmd << " -DCMAKE_C_COMPILER=" << c_compiler;
-                    cmd << " -DCMAKE_CXX_COMPILER=" << cxx_compiler;
+                    cmd << " -DCMAKE_C_COMPILER=" << compiler.c_compiler;
+                    cmd << " -DCMAKE_CXX_COMPILER=" << compiler.cxx_compiler;
                 }
 
-                if (options.enable_tracing || options.enable_memory_profiling) {
-                    std::string flags;
-                    std::string compiler_name = options.compiler;
-                    if (compiler_name.empty()) {
-                        compiler_name = "gcc";
-                    }
-
-                    bool is_clang = compiler_name.find("clang") != std::string::npos;
-                    bool is_gcc = compiler_name.find("gcc") != std::string::npos ||
-                                  compiler_name.find("g++") != std::string::npos ||
-                                  compiler_name.empty();
-
-                    if (options.enable_tracing) {
-                        if (is_clang) {
-                            flags += "-ftime-trace";
-                        } else if (is_gcc) {
-                            flags += "-ftime-report";
-                        }
-                    }
-                    if (options.enable_memory_profiling) {
-                        if (!flags.empty()) flags += " ";
-                        if (is_gcc) {
-                            flags += "-fmem-report -fstack-usage";
-                        } else if (is_clang) {
-                            flags += "-fstack-usage";
-                        }
-                    }
-                    if (!flags.empty()) {
-                        cmd << " -DCMAKE_CXX_FLAGS=\"" << flags << "\"";
-                        cmd << " -DCMAKE_C_FLAGS=\"" << flags << "\"";
-                    }
+                if (!flags.empty()) {
+                    cmd << " -DCMAKE_CXX_FLAGS=\"" << flags.combined() << "\"";
+                    cmd << " -DCMAKE_C_FLAGS=\"" << flags.combined() << "\"";
                 }
 
                 if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
@@ -684,11 +687,7 @@ namespace bha::build_systems
 
             fs::path build_dir = options.build_dir;
             if (build_dir.empty()) {
-                if (fs::exists(project_path / "build.ninja")) {
-                    build_dir = project_path;
-                } else {
-                    build_dir = project_path / "build";
-                }
+                build_dir = fs::exists(project_path / "build.ninja") ? project_path : project_path / "build";
             }
 
             if (!fs::exists(build_dir / "build.ninja")) {
@@ -795,7 +794,7 @@ namespace bha::build_systems
     // Make Adapter
     // --------------------------------------------------------------------------
 
-    class MakeAdapter : public IBuildSystemAdapter {
+    class MakeAdapter final : public IBuildSystemAdapter {
     public:
         [[nodiscard]] std::string name() const override { return "Make"; }
 
@@ -820,97 +819,38 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            if (fs::exists(project_path / "configure")) {
-                std::ostringstream cmd;
-                std::string env_vars;
+            if (!fs::exists(project_path / "configure")) {
+                return Result<void, Error>::success();
+            }
 
-                std::string c_compiler;
-                std::string cxx_compiler;
-                std::string capture_launcher;
+            auto compiler = CompilerInfo::from_name(options.compiler);
+            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
 
-                if (!options.compiler.empty()) {
-                    c_compiler = options.compiler;
-                    cxx_compiler = options.compiler;
-
-                    if (options.compiler == "clang") {
-                        cxx_compiler = "clang++";
-                    } else if (options.compiler == "gcc") {
-                        cxx_compiler = "g++";
-                    }
-                } else {
-                    c_compiler = "gcc";
-                    cxx_compiler = "g++";
+            std::string capture_launcher;
+            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    capture_launcher = script.string() + " ";
                 }
+            }
 
-                if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
-                    fs::path capture_script_name;
-#ifdef _WIN32
-                    capture_script_name = "bha-capture.bat";
-#else
-                    capture_script_name = "bha-capture.sh";
-#endif
-                    std::vector<fs::path> search_paths = {
-                        project_path / "cmake" / capture_script_name,
-                        fs::current_path() / "cmake" / capture_script_name,
-                        fs::current_path().parent_path() / "cmake" / capture_script_name
-                    };
+            std::ostringstream cmd;
+            cmd << "CC=\"" << capture_launcher << compiler.c_compiler << "\" ";
+            cmd << "CXX=\"" << capture_launcher << compiler.cxx_compiler << "\" ";
 
-                    for (const auto& path : search_paths) {
-                        if (fs::exists(path)) {
-                            capture_launcher = fs::absolute(path).string() + " ";
-                            break;
-                        }
-                    }
-                }
+            if (!flags.empty()) {
+                cmd << "CFLAGS=\"" << flags.combined() << "\" ";
+                cmd << "CXXFLAGS=\"" << flags.combined() << "\" ";
+            }
 
-                if (!c_compiler.empty()) {
-                    env_vars += "CC=\"" + capture_launcher + c_compiler + "\" CXX=\"" + capture_launcher + cxx_compiler + "\" ";
-                }
+            cmd << "./configure";
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
 
-                if (options.enable_tracing || options.enable_memory_profiling) {
-                    std::string flags;
-                    std::string compiler_name = options.compiler;
-                    if (compiler_name.empty()) {
-                        compiler_name = "gcc";
-                    }
-
-                    bool is_clang = compiler_name.find("clang") != std::string::npos;
-                    bool is_gcc = compiler_name.find("gcc") != std::string::npos ||
-                                  compiler_name.find("g++") != std::string::npos ||
-                                  compiler_name.empty();
-
-                    if (options.enable_tracing) {
-                        if (is_clang) {
-                            flags += "-ftime-trace";
-                        } else if (is_gcc) {
-                            flags += "-ftime-report";
-                        }
-                    }
-                    if (options.enable_memory_profiling) {
-                        if (!flags.empty()) flags += " ";
-                        if (is_gcc) {
-                            flags += "-fmem-report -fstack-usage";
-                        } else if (is_clang) {
-                            flags += "-fstack-usage";
-                        }
-                    }
-                    if (!flags.empty()) {
-                        env_vars += "CFLAGS=\"" + flags + "\" ";
-                        env_vars += "CXXFLAGS=\"" + flags + "\" ";
-                    }
-                }
-
-                cmd << env_vars << "./configure";
-
-                for (const auto& arg : options.extra_args) {
-                    cmd << " " << arg;
-                }
-
-                if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
-                    return Result<void, Error>::failure(
-                        Error(ErrorCode::InternalError, "Configure failed: " + output)
-                    );
-                }
+            if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::InternalError, "Configure failed: " + output)
+                );
             }
 
             return Result<void, Error>::success();
@@ -934,102 +874,34 @@ namespace bha::build_systems
                 clean(project_path, options);
             }
 
+            auto compiler = CompilerInfo::from_name(options.compiler);
+            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
+
             std::ostringstream cmd;
 
-            if (options.enable_tracing && !options.trace_output_dir.empty()) {
-                std::string compiler_name = options.compiler.empty() ? "gcc" : options.compiler;
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-
-                if (!is_clang) {
+            if (options.enable_tracing && !options.trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
 #ifdef _WIN32
-                    cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
 #else
-                    cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
 #endif
-                }
             }
 
-            cmd << "make";
+            cmd << "make -j" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
 
-            const int jobs = options.parallel_jobs > 0 ?
-                             options.parallel_jobs : get_cpu_count();
-            cmd << " -j" << jobs;
-
-            std::string c_compiler;
-            std::string cxx_compiler;
             std::string capture_launcher;
-
-            if (!options.compiler.empty()) {
-                c_compiler = options.compiler;
-                cxx_compiler = options.compiler;
-
-                if (options.compiler == "clang") {
-                    cxx_compiler = "clang++";
-                } else if (options.compiler == "gcc") {
-                    cxx_compiler = "g++";
-                }
-            } else {
-                c_compiler = "gcc";
-                cxx_compiler = "g++";
-            }
-
-            if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
-                fs::path capture_script_name;
-#ifdef _WIN32
-                capture_script_name = "bha-capture.bat";
-#else
-                capture_script_name = "bha-capture.sh";
-#endif
-                std::vector<fs::path> search_paths = {
-                    project_path / "cmake" / capture_script_name,
-                    fs::current_path() / "cmake" / capture_script_name,
-                    fs::current_path().parent_path() / "cmake" / capture_script_name
-                };
-
-                for (const auto& path : search_paths) {
-                    if (fs::exists(path)) {
-                        capture_launcher = fs::absolute(path).string() + " ";
-                        break;
-                    }
+            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    capture_launcher = script.string() + " ";
                 }
             }
 
-            if (!c_compiler.empty()) {
-                cmd << " CC=\"" << capture_launcher << c_compiler << "\"";
-                cmd << " CXX=\"" << capture_launcher << cxx_compiler << "\"";
-            }
+            cmd << " CC=\"" << capture_launcher << compiler.c_compiler << "\"";
+            cmd << " CXX=\"" << capture_launcher << compiler.cxx_compiler << "\"";
 
-            if (options.enable_tracing || options.enable_memory_profiling) {
-                std::string flags;
-                std::string compiler_name = options.compiler;
-                if (compiler_name.empty()) {
-                    compiler_name = "gcc";
-                }
-
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-                bool is_gcc = compiler_name.find("gcc") != std::string::npos ||
-                              compiler_name.find("g++") != std::string::npos ||
-                              compiler_name.empty();
-
-                if (options.enable_tracing) {
-                    if (is_clang) {
-                        flags += "-ftime-trace";
-                    } else if (is_gcc) {
-                        flags += "-ftime-report";
-                    }
-                }
-                if (options.enable_memory_profiling) {
-                    if (!flags.empty()) flags += " ";
-                    if (is_gcc) {
-                        flags += "-fmem-report -fstack-usage";
-                    } else if (is_clang) {
-                        flags += "-fstack-usage";
-                    }
-                }
-                if (!flags.empty()) {
-                    cmd << " CFLAGS=\"" << flags << "\"";
-                    cmd << " CXXFLAGS=\"" << flags << "\"";
-                }
+            if (!flags.empty()) {
+                cmd << " CFLAGS=\"" << flags.combined() << "\"";
+                cmd << " CXXFLAGS=\"" << flags.combined() << "\"";
             }
 
             auto [exit_code, output] = execute_command(cmd.str(), project_path);
@@ -1039,11 +911,10 @@ namespace bha::build_systems
 
             if (!result.success) {
                 std::string error_summary = extract_error_summary(output);
-                result.error_message = error_summary.empty() ? "Build failed with no specific error output" : error_summary;
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
             result.trace_files = find_trace_files(project_path);
-
             if (!options.trace_output_dir.empty()) {
                 auto trace_dir_files = find_trace_files(options.trace_output_dir);
                 result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
@@ -1055,9 +926,7 @@ namespace bha::build_systems
 
             copy_trace_files(project_path, options.trace_output_dir, result.trace_files, result.memory_files);
 
-            const auto end = std::chrono::steady_clock::now();
-            result.build_time = std::chrono::duration_cast<Duration>(end - start);
-
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);
         }
 
@@ -1105,7 +974,7 @@ namespace bha::build_systems
     // MSBuild Adapter
     // --------------------------------------------------------------------------
 
-    class MSBuildAdapter : public IBuildSystemAdapter {
+    class MSBuildAdapter final : public IBuildSystemAdapter {
     public:
         [[nodiscard]] std::string name() const override { return "MSBuild"; }
 
@@ -1262,7 +1131,7 @@ namespace bha::build_systems
     // Meson Adapter
     // --------------------------------------------------------------------------
 
-    class MesonAdapter : public IBuildSystemAdapter
+    class MesonAdapter final : public IBuildSystemAdapter
     {
     public:
         [[nodiscard]] std::string name() const override { return "Meson"; }
@@ -1288,10 +1157,7 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            fs::path build_dir = options.build_dir;
-            if (build_dir.empty()) {
-                build_dir = project_path / "builddir";
-            }
+            fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
 
             if (fs::exists(build_dir / "meson-private")) {
                 return Result<void, Error>::success();
@@ -1299,112 +1165,29 @@ namespace bha::build_systems
 
             fs::create_directories(build_dir);
 
-            std::ostringstream cmd;
-            std::string env_vars;
+            auto [family, c_compiler, cxx_compiler] = CompilerInfo::from_name(options.compiler);
+            auto flags = CompilerFlags::for_compiler(family, options.enable_tracing, options.enable_memory_profiling);
 
-            std::string c_compiler;
-            std::string cxx_compiler;
             std::string capture_launcher;
-
-            if (!options.compiler.empty()) {
-                c_compiler = options.compiler;
-                cxx_compiler = options.compiler;
-
-                if (options.compiler == "clang") {
-                    cxx_compiler = "clang++";
-                } else if (options.compiler == "gcc") {
-                    cxx_compiler = "g++";
-                }
-            } else {
-                c_compiler = "gcc";
-                cxx_compiler = "g++";
-            }
-
-            if (options.enable_tracing && c_compiler.find("clang") == std::string::npos) {
-                fs::path capture_script_name;
-#ifdef _WIN32
-                capture_script_name = "bha-capture.bat";
-#else
-                capture_script_name = "bha-capture.sh";
-#endif
-                std::vector<fs::path> search_paths = {
-                    project_path / "cmake" / capture_script_name,
-                    fs::current_path() / "cmake" / capture_script_name,
-                    fs::current_path().parent_path() / "cmake" / capture_script_name
-                };
-
-                for (const auto& path : search_paths) {
-                    if (fs::exists(path)) {
-                        capture_launcher = fs::absolute(path).string() + " ";
-                        break;
-                    }
+            if (options.enable_tracing && family == CompilerFamily::GCC) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    capture_launcher = script.string() + " ";
                 }
             }
 
-            if (!c_compiler.empty()) {
-                env_vars = "CC=\"" + capture_launcher + c_compiler + "\" CXX=\"" + capture_launcher + cxx_compiler + "\" ";
-            }
-
-            cmd << env_vars << "meson setup";
+            std::ostringstream cmd;
+            cmd << "CC=\"" << capture_launcher << c_compiler << "\" ";
+            cmd << "CXX=\"" << capture_launcher << cxx_compiler << "\" ";
+            cmd << "meson setup";
             cmd << " \"" << build_dir.string() << "\"";
             cmd << " \"" << project_path.string() << "\"";
             cmd << " --buildtype=" << (options.build_type == "Debug" ? "debug" :
                                        options.build_type == "Release" ? "release" :
                                        "debugoptimized");
 
-            if (options.enable_tracing || options.enable_memory_profiling) {
-                std::vector<std::string> c_args;
-                std::vector<std::string> cpp_args;
-
-                std::string compiler_name = options.compiler;
-                if (compiler_name.empty()) {
-                    compiler_name = "gcc";
-                }
-
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-                bool is_gcc = compiler_name.find("gcc") != std::string::npos ||
-                              compiler_name.find("g++") != std::string::npos ||
-                              compiler_name.empty();
-
-                if (options.enable_tracing) {
-                    if (is_clang) {
-                        c_args.emplace_back("-ftime-trace");
-                        cpp_args.emplace_back("-ftime-trace");
-                    } else if (is_gcc) {
-                        c_args.emplace_back("-ftime-report");
-                        cpp_args.emplace_back("-ftime-report");
-                    }
-                }
-
-                if (options.enable_memory_profiling) {
-                    if (is_gcc) {
-                        c_args.emplace_back("-fmem-report");
-                        c_args.emplace_back("-fstack-usage");
-                        cpp_args.emplace_back("-fmem-report");
-                        cpp_args.emplace_back("-fstack-usage");
-                    } else if (is_clang) {
-                        c_args.emplace_back("-fstack-usage");
-                        cpp_args.emplace_back("-fstack-usage");
-                    }
-                }
-
-                if (!c_args.empty()) {
-                    cmd << " -Dc_args='";
-                    for (size_t i = 0; i < c_args.size(); ++i) {
-                        if (i > 0) cmd << " ";
-                        cmd << c_args[i];
-                    }
-                    cmd << "'";
-                }
-
-                if (!cpp_args.empty()) {
-                    cmd << " -Dcpp_args='";
-                    for (size_t i = 0; i < cpp_args.size(); ++i) {
-                        if (i > 0) cmd << " ";
-                        cmd << cpp_args[i];
-                    }
-                    cmd << "'";
-                }
+            if (!flags.empty()) {
+                cmd << " -Dc_args='" << flags.combined() << "'";
+                cmd << " -Dcpp_args='" << flags.combined() << "'";
             }
 
             for (const auto& arg : options.extra_args) {
@@ -1427,44 +1210,32 @@ namespace bha::build_systems
             BuildResult result;
             auto start = std::chrono::steady_clock::now();
 
-            fs::path build_dir = options.build_dir;
-            if (build_dir.empty()) {
-                build_dir = project_path / "builddir";
-            }
+            fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
 
-            if (!fs::exists(build_dir / "build.ninja") &&
-                !fs::exists(build_dir / "meson-private")) {
+            if (!fs::exists(build_dir / "build.ninja") && !fs::exists(build_dir / "meson-private")) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
                     result.error_message = config_result.error().message();
                     return Result<BuildResult, Error>::success(result);
                 }
-                }
+            }
 
             if (options.clean_first) {
                 clean(project_path, options);
             }
 
+            auto compiler = CompilerInfo::from_name(options.compiler);
+
             std::ostringstream cmd;
-
-            if (options.enable_tracing && !options.trace_output_dir.empty()) {
-                std::string compiler_name = options.compiler.empty() ? "gcc" : options.compiler;
-                bool is_clang = compiler_name.find("clang") != std::string::npos;
-
-                if (!is_clang) {
+            if (options.enable_tracing && !options.trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
 #ifdef _WIN32
-                    cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
 #else
-                    cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
 #endif
-                }
             }
 
-            cmd << "meson compile";
-            cmd << " -C \"" << build_dir.string() << "\"";
-
-            int jobs = options.parallel_jobs > 0 ?
-                       options.parallel_jobs : get_cpu_count();
-            cmd << " -j " << jobs;
+            cmd << "meson compile -C \"" << build_dir.string() << "\"";
+            cmd << " -j " << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
 
             if (options.verbose) {
                 cmd << " -v";
@@ -1477,11 +1248,10 @@ namespace bha::build_systems
 
             if (!result.success) {
                 std::string error_summary = extract_error_summary(output);
-                result.error_message = error_summary.empty() ? "Build failed with no specific error output" : error_summary;
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
             result.trace_files = find_trace_files(build_dir);
-
             if (!options.trace_output_dir.empty()) {
                 auto trace_dir_files = find_trace_files(options.trace_output_dir);
                 result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
@@ -1493,9 +1263,7 @@ namespace bha::build_systems
 
             copy_trace_files(build_dir, options.trace_output_dir, result.trace_files, result.memory_files);
 
-            auto end = std::chrono::steady_clock::now();
-            result.build_time = std::chrono::duration_cast<Duration>(end - start);
-
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);
         }
 
