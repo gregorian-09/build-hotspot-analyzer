@@ -11,12 +11,6 @@ namespace bha::suggestions
 {
     namespace {
 
-        std::string generate_suggestion_id(const fs::path& header) {
-            std::ostringstream oss;
-            oss << "pch-" << header.filename().string();
-            return oss.str();
-        }
-
         Priority calculate_priority(
             const analyzers::DependencyAnalysisResult::HeaderInfo& header,
             const Duration total_build_time,
@@ -127,7 +121,7 @@ namespace bha::suggestions
             }
 
             Suggestion suggestion;
-            suggestion.id = generate_suggestion_id(header.path);
+            suggestion.id = generate_suggestion_id("pch", header.path);
             suggestion.type = SuggestionType::PCHOptimization;
             suggestion.priority = calculate_priority(header, context.trace.total_time, pch_config);
             suggestion.confidence = 0.85;

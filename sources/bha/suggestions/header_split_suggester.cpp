@@ -361,7 +361,7 @@ namespace bha::suggestions
             );
 
             Suggestion suggestion;
-            suggestion.id = "split-" + filename;
+            suggestion.id = generate_suggestion_id("split", header.path);
             suggestion.type = SuggestionType::HeaderSplit;
             suggestion.priority = priority;
             suggestion.confidence = confidence;

@@ -67,7 +67,7 @@ namespace bha::suggestions
 
             if (looks_removable(header)) {
                 Suggestion suggestion;
-                suggestion.id = "unused-" + header.path.filename().string();
+                suggestion.id = generate_suggestion_id("unused", header.path);
                 suggestion.type = SuggestionType::IncludeRemoval;
                 suggestion.priority = calculate_priority(header.total_parse_time,
                                                           header.including_files);
@@ -132,8 +132,8 @@ namespace bha::suggestions
                 for (const auto& includer : header.included_by) {
                     if (includer == file_result.file) {
                         Suggestion suggestion;
-                        suggestion.id = "move-" + header.path.filename().string() +
-                                        "-from-" + file_result.file.filename().string();
+                        suggestion.id = generate_suggestion_id("move", header.path,
+                                        file_result.file.filename().string());
                         suggestion.type = SuggestionType::MoveToCpp;
                         suggestion.priority = Priority::Medium;
                         suggestion.confidence = 0.4;

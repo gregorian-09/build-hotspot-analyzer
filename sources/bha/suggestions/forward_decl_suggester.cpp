@@ -154,8 +154,8 @@ namespace bha::suggestions
                 }
 
                 Suggestion suggestion;
-                suggestion.id = "fwd-" + header.path.filename().string() +
-                                "-in-" + includer_path.filename().string();
+                suggestion.id = generate_suggestion_id("fwd", header.path,
+                                includer_path.filename().string());
                 suggestion.type = SuggestionType::ForwardDeclaration;
                 suggestion.priority = calculate_priority(
                     header.total_parse_time,

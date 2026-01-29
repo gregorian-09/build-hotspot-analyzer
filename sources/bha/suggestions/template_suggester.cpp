@@ -98,7 +98,7 @@ namespace bha::suggestions
             }
 
             Suggestion suggestion;
-            suggestion.id = "template-" + std::to_string(analyzed);
+            suggestion.id = generate_suggestion_id("template", analyzed);
             suggestion.type = SuggestionType::ExplicitTemplate;
             suggestion.priority = calculate_priority(tmpl, context.trace.total_time);
             suggestion.confidence = 0.7;

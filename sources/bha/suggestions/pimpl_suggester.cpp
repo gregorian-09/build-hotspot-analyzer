@@ -398,7 +398,7 @@ namespace bha::suggestions
             }
 
             Suggestion suggestion;
-            suggestion.id = "pimpl-" + file.file.filename().string();
+            suggestion.id = generate_suggestion_id("pimpl", file.file);
             suggestion.type = SuggestionType::PIMPLPattern;
             suggestion.priority = candidate.priority;
             suggestion.confidence = candidate.confidence;

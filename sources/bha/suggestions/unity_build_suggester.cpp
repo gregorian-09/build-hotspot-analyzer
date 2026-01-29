@@ -713,6 +713,7 @@ namespace bha::suggestions
 
         std::size_t analyzed = files.size();
         std::size_t skipped = 0;
+        std::size_t group_counter = 0;
 
         for (const auto& group : groups) {
             if (group.files.size() < 2) {
@@ -731,7 +732,7 @@ namespace bha::suggestions
             }
 
             Suggestion suggestion;
-            suggestion.id = "unity-" + group.suggested_name;
+            suggestion.id = generate_suggestion_id("unity", group_counter++, group.suggested_name);
             suggestion.type = SuggestionType::UnityBuild;
             suggestion.priority = calculate_priority(group);
             suggestion.confidence = 0.85 - group.conflict_risk_score * 0.5;
