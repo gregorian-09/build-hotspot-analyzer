@@ -26,7 +26,11 @@
 #include "bha/error.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
+#include <atomic>
+#include <functional>
 #include <memory>
+#include <sstream>
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -40,7 +44,89 @@ namespace bha::suggestions {
         const BuildTrace& trace;
         const analyzers::AnalysisResult& analysis;
         const SuggesterOptions& options;
+
+        /// Optional cancellation token. Suggesters should check this periodically
+        /// in long-running loops and return early if canceled.
+        std::atomic<bool>* cancelled = nullptr;
+
+        /// Optional filter for incremental analysis. When set, only analyze
+        /// files in this list. Empty means analyze all files.
+        std::vector<fs::path> target_files{};
+
+        /// Check if the operation has been canceled.
+        [[nodiscard]] bool is_cancelled() const noexcept {
+            return cancelled != nullptr && cancelled->load(std::memory_order_relaxed);
+        }
+
+        /// Check if a file should be analyzed (respects target_files filter).
+        [[nodiscard]] bool should_analyze(const fs::path& file) const {
+            if (target_files.empty()) {
+                return true;
+            }
+
+            return std::ranges::any_of(
+                target_files,
+                [&](const fs::path& target) {
+                    return file == target || file.filename() == target.filename();
+                }
+            );
+        }
     };
+
+    /**
+     * Generates a unique suggestion ID from a prefix and file path.
+     *
+     * Uses hash of the full path to avoid collisions when multiple files
+     * have the same filename in different directories.
+     *
+     * @param prefix Suggestion type prefix (e.g., "pch", "fwd", "unused")
+     * @param path File path to include in the ID
+     * @param suffix Optional additional suffix for disambiguation
+     * @return Unique suggestion ID string
+     */
+    [[nodiscard]] inline std::string generate_suggestion_id(
+        const std::string_view prefix,
+        const fs::path& path,
+        const std::string_view suffix = ""
+    ) {
+        std::ostringstream oss;
+        oss << prefix << "-";
+
+        const std::size_t path_hash = std::hash<std::string>{}(path.string());
+        oss << std::hex << (path_hash & 0xFFFFFF);  // 24 bits (6 hex chars)
+
+        // Readable filename for human identification
+        oss << "-" << path.filename().string();
+
+        if (!suffix.empty()) {
+            oss << "-" << suffix;
+        }
+
+        return oss.str();
+    }
+
+    /**
+     * Generates a unique suggestion ID from a prefix and counter.
+     *
+     * Use this variant when there's no natural file path (e.g., unity builds).
+     *
+     * @param prefix Suggestion type prefix
+     * @param counter Unique counter value
+     * @param name Optional descriptive name
+     * @return Unique suggestion ID string
+     */
+    [[nodiscard]] inline std::string generate_suggestion_id(
+        const std::string_view prefix,
+        const std::size_t counter,
+        const std::string_view name = ""
+    ) {
+        std::ostringstream oss;
+        oss << prefix << "-" << counter;
+        if (!name.empty()) {
+            oss << "-" << name;
+        }
+        return oss.str();
+    }
 
     /**
      * Result of suggestion generation.
