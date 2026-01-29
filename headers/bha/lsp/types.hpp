@@ -94,6 +94,12 @@ namespace bha::lsp
         Impact estimated_impact;
         double confidence;
         bool auto_applicable;
+
+        /// Target file URI (file:// scheme)
+        std::optional<std::string> target_uri;
+
+        /// Source location range for code actions/diagnostics
+        std::optional<Range> range;
     };
 
     struct DetailedSuggestion : Suggestion {
@@ -138,6 +144,68 @@ namespace bha::lsp
         std::vector<Diagnostic> errors;
         std::vector<Diagnostic> warnings;
     };
+
+    // ============================================================================
+    // Progress Notification Types (LSP $/progress)
+    // ============================================================================
+
+    /**
+     * Progress token can be string or integer per LSP spec.
+     */
+    using ProgressToken = std::variant<std::string, int>;
+
+    /**
+     * Work done progress begin notification.
+     */
+    struct WorkDoneProgressBegin {
+        std::string kind = "begin";
+        std::string title;
+        std::optional<bool> cancellable;
+        std::optional<std::string> message;
+        std::optional<int> percentage;
+    };
+
+    /**
+     * Work done progress report notification.
+     */
+    struct WorkDoneProgressReport {
+        std::string kind = "report";
+        std::optional<bool> cancellable;
+        std::optional<std::string> message;
+        std::optional<int> percentage;
+    };
+
+    /**
+     * Work done progress end notification.
+     */
+    struct WorkDoneProgressEnd {
+        std::string kind = "end";
+        std::optional<std::string> message;
+    };
+
+    inline void to_json(json& j, const WorkDoneProgressBegin& p) {
+        j["kind"] = p.kind;
+        j["title"] = p.title;
+        if (p.cancellable) j["cancellable"] = *p.cancellable;
+        if (p.message) j["message"] = *p.message;
+        if (p.percentage) j["percentage"] = *p.percentage;
+    }
+
+    inline void to_json(json& j, const WorkDoneProgressReport& p) {
+        j["kind"] = p.kind;
+        if (p.cancellable) j["cancellable"] = *p.cancellable;
+        if (p.message) j["message"] = *p.message;
+        if (p.percentage) j["percentage"] = *p.percentage;
+    }
+
+    inline void to_json(json& j, const WorkDoneProgressEnd& p) {
+        j["kind"] = p.kind;
+        if (p.message) j["message"] = *p.message;
+    }
+
+    inline void to_json(json& j, const ProgressToken& token) {
+        std::visit([&j](auto&& arg) { j = arg; }, token);
+    }
 
     inline void to_json(json& j, const Position& p) {
         j["line"] = p.line;
@@ -195,6 +263,14 @@ namespace bha::lsp
         j["estimatedImpact"] = impact_json;
         j["confidence"] = s.confidence;
         j["autoApplicable"] = s.auto_applicable;
+        if (s.target_uri) {
+            j["targetUri"] = *s.target_uri;
+        }
+        if (s.range) {
+            json range_json;
+            to_json(range_json, *s.range);
+            j["range"] = range_json;
+        }
     }
 
     inline void to_json(json& j, const BuildMetrics& m) {
