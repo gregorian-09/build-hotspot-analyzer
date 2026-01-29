@@ -68,6 +68,14 @@
         "title": "BHA: Apply Suggestion"
       },
       {
+        "command": "buildHotspotAnalyzer.applyAllSuggestions",
+        "title": "BHA: Apply All Suggestions"
+      },
+      {
+        "command": "buildHotspotAnalyzer.revertChanges",
+        "title": "BHA: Revert Changes"
+      },
+      {
         "command": "buildHotspotAnalyzer.restartServer",
         "title": "BHA: Restart Language Server"
       }
