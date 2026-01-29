@@ -2,10 +2,12 @@
 #include "bha/cli/formatter.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/parsers/parser.hpp"
+#include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
 #include <iostream>
 #include <filesystem>
+#include <unordered_map>
 
 namespace bha::cli
 {
@@ -114,12 +116,6 @@ namespace bha::cli
                 }
             }
 
-            print_verbose("Configuring project...");
-            if (auto configure_result = adapter->configure(project_path, options); !configure_result.is_ok()) {
-                print_error("Configuration failed: " + configure_result.error().message());
-                return 1;
-            }
-
             print_verbose("Building project...");
             auto build_result = adapter->build(project_path, options);
             if (!build_result.is_ok()) {
@@ -168,6 +164,28 @@ namespace bha::cli
                 if (build_trace.units.empty()) {
                     print_warning("No valid trace files parsed");
                     return 0;
+                }
+
+                if (!result.memory_files.empty()) {
+                    std::unordered_map<std::string, MemoryMetrics> memory_map;
+                    for (const auto& file : result.memory_files) {
+                        if (file.extension() != ".su") continue;
+                        if (auto mem_result = parsers::parse_stack_usage_file(file); mem_result.is_ok()) {
+                            std::string filename = file.filename().string();
+                            if (filename.size() > 3) {
+                                std::string key = filename.substr(0, filename.size() - 3);
+                                memory_map[key] = mem_result.value();
+                            }
+                        }
+                    }
+
+                    for (auto& unit : build_trace.units) {
+                        std::string source_name = unit.source_file.filename().string();
+                        if (auto it = memory_map.find(source_name); it != memory_map.end()) {
+                            unit.metrics.memory = it->second;
+                        }
+                    }
+                    print_verbose("Matched " + std::to_string(memory_map.size()) + " files with stack usage data");
                 }
 
                 AnalysisOptions analysis_opts;
