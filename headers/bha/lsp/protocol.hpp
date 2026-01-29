@@ -37,12 +37,18 @@ namespace bha::lsp
     };
 
     enum class ErrorCode {
+        // JSON-RPC standard errors
         ParseError = -32700,
         InvalidRequest = -32600,
         MethodNotFound = -32601,
         InvalidParams = -32602,
         InternalError = -32603,
 
+        // LSP standard errors
+        ServerNotInitialized = -32002,
+        RequestCancelled = -32800,
+
+        // BHA-specific errors
         NoCompilationDatabase = -32001,
         AnalysisFailed = -32002,
         InvalidProject = -32003,
