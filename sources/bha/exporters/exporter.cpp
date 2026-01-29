@@ -320,9 +320,6 @@ namespace bha::exporters
 
         if (analysis.performance.total_memory.has_data()) {
             json memory_summary;
-            memory_summary["total_peak_bytes"] = analysis.performance.total_memory.peak_memory_bytes;
-            memory_summary["peak_file_bytes"] = analysis.performance.peak_memory.peak_memory_bytes;
-            memory_summary["average_peak_bytes"] = analysis.performance.average_memory.peak_memory_bytes;
             memory_summary["max_stack_bytes"] = analysis.performance.peak_memory.max_stack_bytes;
             summary["memory"] = memory_summary;
         }
@@ -353,9 +350,6 @@ namespace bha::exporters
 
                 if (file.memory.has_data()) {
                     json memory;
-                    memory["peak_bytes"] = file.memory.peak_memory_bytes;
-                    memory["frontend_peak_bytes"] = file.memory.frontend_peak_bytes;
-                    memory["backend_peak_bytes"] = file.memory.backend_peak_bytes;
                     memory["max_stack_bytes"] = file.memory.max_stack_bytes;
                     file_entry["memory"] = memory;
                 }
@@ -632,7 +626,6 @@ namespace bha::exporters
                 ? 100.0 * static_cast<double>(file.compile_time.count()) / static_cast<double>(max_time.count())
                 : 0.0;
 
-            std::string peak_mem = format_bytes(file.memory.peak_memory_bytes);
             std::string stack_usage = format_bytes(file.memory.max_stack_bytes);
 
             file_rows << "\n                            <tr data-time=\"" << time_ms << "\" data-name=\""
@@ -642,7 +635,6 @@ namespace bha::exporters
                       << "                                <td><strong>" << std::fixed << std::setprecision(1) << time_ms << " ms</strong></td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << fe_ms << " ms</td>\n"
                       << "                                <td>" << std::fixed << std::setprecision(1) << be_ms << " ms</td>\n"
-                      << "                                <td>" << peak_mem << "</td>\n"
                       << "                                <td>" << stack_usage << "</td>\n"
                       << "                                <td>\n"
                       << "                                    <div class=\"time-bar-container\">\n"

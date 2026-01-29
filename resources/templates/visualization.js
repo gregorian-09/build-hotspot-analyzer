@@ -818,7 +818,10 @@
                 html += `Depth: ${data.depth}<br/>`;
             }
             if (data.children !== undefined && data.children > 0) {
-                html += `Children: ${data.children}`;
+                html += `Children: ${data.children}<br/>`;
+            }
+            if (data.stack !== undefined) {
+                html += `Stack Usage: ${formatBytes(data.stack)}`;
             }
 
             tooltip.html(html)
@@ -849,27 +852,23 @@
                 return;
             }
 
-            const sortBy = document.getElementById('memory-sort')?.value || 'peak';
+            const sortBy = document.getElementById('memory-sort')?.value || 'stack';
             const limit = parseInt(document.getElementById('memory-limit')?.value) || 50;
 
             const filesWithMemory = analysisData.files
-                .filter(f => f.memory && (f.memory.peak_memory_bytes > 0 || f.memory.max_stack_bytes > 0))
+                .filter(f => f.memory && f.memory.max_stack_bytes > 0)
                 .map(f => ({
-                    file: f.file,
-                    peak: f.memory.peak_memory_bytes || 0,
-                    frontend: f.memory.frontend_peak_bytes || 0,
-                    backend: f.memory.backend_peak_bytes || 0,
+                    file: f.path,
                     stack: f.memory.max_stack_bytes || 0
                 }));
 
             if (filesWithMemory.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No memory data available</p>';
+                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No stack usage data available</p>';
                 updateMemoryStats([]);
                 return;
             }
 
             filesWithMemory.sort((a, b) => {
-                if (sortBy === 'peak') return b.peak - a.peak;
                 if (sortBy === 'stack') return b.stack - a.stack;
                 return a.file.localeCompare(b.file);
             });
@@ -878,7 +877,7 @@
             updateMemoryStats(filesWithMemory);
             updateMemoryTable(topFiles);
 
-            const margin = {top: 20, right: 100, bottom: 150, left: 80};
+            const margin = {top: 20, right: 40, bottom: 150, left: 80};
             const width = container.clientWidth - margin.left - margin.right;
             const height = 500 - margin.top - margin.bottom;
 
@@ -894,7 +893,7 @@
                 .range([0, width])
                 .padding(0.2);
 
-            const maxValue = d3.max(topFiles, d => Math.max(d.peak, d.stack));
+            const maxValue = d3.max(topFiles, d => d.stack);
             const y = d3.scaleLinear()
                 .domain([0, maxValue * 1.1])
                 .range([height, 0]);
@@ -911,70 +910,36 @@
             svg.append('g')
                 .call(d3.axisLeft(y).ticks(10).tickFormat(d => formatBytes(d)));
 
-            svg.selectAll('.bar-peak')
-                .data(topFiles)
-                .enter()
-                .append('rect')
-                .attr('class', 'bar-peak')
-                .attr('x', d => x(d.file))
-                .attr('y', d => y(d.peak))
-                .attr('width', x.bandwidth() / 2 - 2)
-                .attr('height', d => height - y(d.peak))
-                .attr('fill', 'var(--accent-color)')
-                .style('opacity', 0.8);
-
             svg.selectAll('.bar-stack')
                 .data(topFiles)
                 .enter()
                 .append('rect')
                 .attr('class', 'bar-stack')
-                .attr('x', d => x(d.file) + x.bandwidth() / 2 + 2)
+                .attr('x', d => x(d.file))
                 .attr('y', d => y(d.stack))
-                .attr('width', x.bandwidth() / 2 - 2)
+                .attr('width', x.bandwidth())
                 .attr('height', d => height - y(d.stack))
-                .attr('fill', 'var(--success-color)')
-                .style('opacity', 0.8);
-
-            const legend = svg.append('g')
-                .attr('transform', `translate(${width - 90}, 0)`);
-
-            legend.append('rect')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('width', 15)
-                .attr('height', 15)
-                .attr('fill', 'var(--accent-color)');
-
-            legend.append('text')
-                .attr('x', 20)
-                .attr('y', 12)
-                .text('Peak Memory')
-                .style('font-size', '12px');
-
-            legend.append('rect')
-                .attr('x', 0)
-                .attr('y', 20)
-                .attr('width', 15)
-                .attr('height', 15)
-                .attr('fill', 'var(--success-color)');
-
-            legend.append('text')
-                .attr('x', 20)
-                .attr('y', 32)
-                .text('Stack Usage')
-                .style('font-size', '12px');
+                .attr('fill', 'var(--accent-color)')
+                .style('opacity', 0.8)
+                .on('mouseover', (event, d) => {
+                    showTooltip(event, {
+                        name: d.file.split('/').pop().split('\\\\').pop(),
+                        fullPath: d.file,
+                        stack: d.stack
+                    });
+                })
+                .on('mouseout', hideTooltip);
         }
 
         function updateMemoryStats(filesWithMemory) {
-            const totalPeak = filesWithMemory.reduce((sum, f) => sum + f.peak, 0);
-            const maxPeak = filesWithMemory.length > 0 ? Math.max(...filesWithMemory.map(f => f.peak)) : 0;
-            const avgPeak = filesWithMemory.length > 0 ? totalPeak / filesWithMemory.length : 0;
+            const totalStack = filesWithMemory.reduce((sum, f) => sum + f.stack, 0);
             const maxStack = filesWithMemory.length > 0 ? Math.max(...filesWithMemory.map(f => f.stack)) : 0;
+            const avgStack = filesWithMemory.length > 0 ? totalStack / filesWithMemory.length : 0;
 
-            document.getElementById('total-peak-memory').textContent = formatBytes(totalPeak);
-            document.getElementById('max-file-memory').textContent = formatBytes(maxPeak);
-            document.getElementById('avg-file-memory').textContent = formatBytes(avgPeak);
             document.getElementById('max-stack-usage').textContent = formatBytes(maxStack);
+            document.getElementById('total-stack-usage').textContent = formatBytes(totalStack);
+            document.getElementById('avg-stack-usage').textContent = formatBytes(avgStack);
+            document.getElementById('files-with-stack').textContent = filesWithMemory.length;
         }
 
         function updateMemoryTable(files) {
@@ -984,10 +949,7 @@
             tbody.innerHTML = files.map(f => `
                 <tr>
                     <td><i class="fas fa-file-code" style="color: var(--accent-color); margin-right: 8px;"></i>${escapeHtml(f.file)}</td>
-                    <td><strong>${formatBytes(f.peak)}</strong></td>
-                    <td>${formatBytes(f.frontend)}</td>
-                    <td>${formatBytes(f.backend)}</td>
-                    <td>${formatBytes(f.stack)}</td>
+                    <td><strong>${formatBytes(f.stack)}</strong></td>
                 </tr>
             `).join('');
         }

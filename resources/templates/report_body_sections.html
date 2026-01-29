@@ -51,7 +51,6 @@
                                 <th>Total Time</th>
                                 <th>Frontend</th>
                                 <th>Backend</th>
-                                <th>Peak Memory</th>
                                 <th>Stack Usage</th>
                                 <th style="width: 200px;">Distribution</th>
                             </tr>
@@ -164,33 +163,32 @@
 
         <div id="memory" class="tab-content">
             <div class="section">
-                <h2><i class="fas fa-memory"></i> Memory Usage Analysis</h2>
+                <h2><i class="fas fa-memory"></i> Stack Usage Analysis</h2>
 
                 <div class="dep-stats" style="margin-bottom: 32px;">
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="total-peak-memory">-</div>
-                        <div class="dep-stat-label">Total Peak Memory</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="max-file-memory">-</div>
-                        <div class="dep-stat-label">Max File Memory</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="avg-file-memory">-</div>
-                        <div class="dep-stat-label">Avg File Memory</div>
-                    </div>
                     <div class="dep-stat">
                         <div class="dep-stat-value" id="max-stack-usage">-</div>
                         <div class="dep-stat-label">Max Stack Usage</div>
                     </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="total-stack-usage">-</div>
+                        <div class="dep-stat-label">Total Stack Usage</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="avg-stack-usage">-</div>
+                        <div class="dep-stat-label">Avg Stack Usage</div>
+                    </div>
+                    <div class="dep-stat">
+                        <div class="dep-stat-value" id="files-with-stack">-</div>
+                        <div class="dep-stat-label">Files with Data</div>
+                    </div>
                 </div>
 
                 <h3 style="margin-bottom: 16px; color: var(--text-primary);">
-                    <i class="fas fa-chart-bar"></i> Top Memory Consumers
+                    <i class="fas fa-chart-bar"></i> Top Stack Consumers
                 </h3>
                 <div class="controls">
                     <select id="memory-sort">
-                        <option value="peak">Sort by Peak Memory</option>
                         <option value="stack">Sort by Stack Usage</option>
                         <option value="name">Sort by Name</option>
                     </select>
@@ -205,16 +203,13 @@
                 </div>
 
                 <h3 style="margin: 32px 0 16px; color: var(--text-primary);">
-                    <i class="fas fa-table"></i> Detailed Memory Usage
+                    <i class="fas fa-table"></i> Detailed Stack Usage
                 </h3>
                 <div style="max-height: 500px; overflow-y: auto;">
                     <table id="memory-table">
                         <thead>
                             <tr>
                                 <th>File</th>
-                                <th>Peak Memory</th>
-                                <th>Frontend Peak</th>
-                                <th>Backend Peak</th>
                                 <th>Stack Usage</th>
                             </tr>
                         </thead>
