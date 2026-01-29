@@ -11,16 +11,59 @@
 
 namespace bha::lsp
 {
-    SuggestionManager::SuggestionManager() {
+    SuggestionManager::SuggestionManager(const SuggestionManagerConfig& config)
+        : config_(config)
+    {
         suggestions::register_all_suggesters();
+    }
+
+    void SuggestionManager::evict_old_backups() {
+        // Evict by count limit
+        while (config_.max_backups > 0 && backups_.size() > config_.max_backups && !backup_lru_.empty()) {
+            const auto oldest_id = backup_lru_.front();
+            backup_lru_.pop_front();
+            backups_.erase(oldest_id);
+        }
+
+        // Evict by size limit
+        while (config_.max_backup_bytes > 0 && calculate_backup_size() > config_.max_backup_bytes && !backup_lru_.empty()) {
+            const auto oldest_id = backup_lru_.front();
+            backup_lru_.pop_front();
+            backups_.erase(oldest_id);
+        }
+    }
+
+    void SuggestionManager::evict_old_analysis_cache() {
+        while (config_.max_analysis_cache > 0 && analysis_cache_.size() > config_.max_analysis_cache && !analysis_lru_.empty()) {
+            const auto oldest_id = analysis_lru_.front();
+            analysis_lru_.pop_front();
+            analysis_cache_.erase(oldest_id);
+        }
+    }
+
+    std::size_t SuggestionManager::calculate_backup_size() const {
+        std::size_t total = 0;
+        for (const auto& backup : backups_ | std::views::values) {
+            for (const auto& [path, content] : backup.files) {
+                total += content.size();
+            }
+        }
+        return total;
     }
 
     AnalysisResult SuggestionManager::analyze_project(
         const fs::path& project_root,
         const std::optional<fs::path>& build_dir,
-        bool rebuild
+        bool rebuild,
+        const ProgressCallback& on_progress
     ) {
         auto start = std::chrono::steady_clock::now();
+
+        auto report = [&on_progress](const std::string& msg, const int pct) {
+            if (on_progress) on_progress(msg, pct);
+        };
+
+        report("Detecting build system...", 5);
 
         auto& registry = build_systems::BuildSystemRegistry::instance();
         auto* adapter = registry.detect(project_root);
@@ -36,15 +79,18 @@ namespace bha::lsp
         }
 
         if (rebuild) {
+            report("Running build...", 10);
             if (auto build_result = adapter->build(project_root, options); !build_result.is_ok() || !build_result.value().success) {
                 throw std::runtime_error("Build failed");
             }
         }
 
+        report("Loading compile commands...", 20);
         if (auto compile_commands_result = adapter->get_compile_commands(project_root, options); !compile_commands_result.is_ok()) {
             throw std::runtime_error("Could not find compile_commands.json");
         }
 
+        report("Parsing trace files...", 30);
         BuildTrace build_trace;
         build_trace.timestamp = std::chrono::system_clock::now();
 
@@ -56,8 +102,7 @@ namespace bha::lsp
                 if (!entry.is_regular_file()) continue;
 
                 if (entry.path().extension() == ".json") {
-                    auto parse_result = parsers::parse_trace_file(entry.path());
-                    if (parse_result.is_ok()) {
+                    if (auto parse_result = parsers::parse_trace_file(entry.path()); parse_result.is_ok()) {
                         build_trace.units.push_back(std::move(parse_result.value()));
                         build_trace.total_time += parse_result.value().metrics.total_time;
                         files_analyzed++;
@@ -70,13 +115,16 @@ namespace bha::lsp
             throw std::runtime_error("No trace files found");
         }
 
-        // Run all analyzers on the build trace
+        report("Running analyzers...", 50);
+
         AnalysisOptions analysis_opts;
         auto analysis_result = analyzers::run_full_analysis(build_trace, analysis_opts);
 
         if (!analysis_result.is_ok()) {
             throw std::runtime_error("Analysis failed: " + analysis_result.error().message());
         }
+
+        report("Generating suggestions...", 70);
 
         // Configure suggester options
         SuggesterOptions suggester_opts;
@@ -95,6 +143,8 @@ namespace bha::lsp
             throw std::runtime_error("Suggestion generation failed: " + suggestions_result.error().message());
         }
 
+        report("Consolidating suggestions...", 85);
+
         // Consolidate related suggestions
         suggestions::SuggestionConsolidator consolidator;
         auto bha_suggestions = consolidator.consolidate(std::move(suggestions_result.value()));
@@ -109,14 +159,10 @@ namespace bha::lsp
             std::string sug_id = generate_analysis_id();
             bha_sug.id = sug_id;
 
-            // Store the original bha suggestion
             bha_suggestions_[sug_id] = bha_sug;
-
-            // Convert to LSP suggestion
             auto lsp_sug = convert_suggestion(bha_sug);
             lsp_suggestions.push_back(lsp_sug);
 
-            // Store detailed suggestion
             suggestions_[sug_id] = convert_to_detailed(bha_sug);
         }
 
@@ -127,6 +173,12 @@ namespace bha::lsp
         std::string analysis_id = generate_analysis_id();
         last_analysis_id_ = analysis_id;
         analysis_cache_[analysis_id] = std::move(build_trace);
+        analysis_lru_.push_back(analysis_id);
+
+        // Evict old analysis cache entries if over limit
+        evict_old_analysis_cache();
+
+        report("Finalizing results...", 95);
 
         AnalysisResult result;
         result.analysis_id = analysis_id;
@@ -135,11 +187,13 @@ namespace bha::lsp
         result.files_analyzed = files_analyzed;
         result.duration_ms = duration_ms;
 
+        report("Analysis complete", 100);
+
         return result;
     }
 
     DetailedSuggestion SuggestionManager::get_suggestion_details(const std::string& suggestion_id) {
-        auto it = suggestions_.find(suggestion_id);
+        const auto it = suggestions_.find(suggestion_id);
         if (it == suggestions_.end()) {
             throw std::runtime_error("Invalid suggestion ID: " + suggestion_id);
         }
@@ -167,8 +221,8 @@ namespace bha::lsp
         const auto& bha_sug = bha_it->second;
 
         std::vector<fs::path> files_to_backup;
-        if (bha_sug.target_file.action == bha::FileAction::Modify ||
-            bha_sug.target_file.action == bha::FileAction::AddInclude) {
+        if (bha_sug.target_file.action == FileAction::Modify ||
+            bha_sug.target_file.action == FileAction::AddInclude) {
             files_to_backup.push_back(bha_sug.target_file.path);
             }
         for (const auto& secondary : bha_sug.secondary_files) {
@@ -285,6 +339,7 @@ namespace bha::lsp
         }
 
         backups_.erase(it);
+        backup_lru_.remove(backup_id);
         return true;
     }
 
@@ -308,6 +363,10 @@ namespace bha::lsp
         }
 
         backups_[backup.id] = std::move(backup);
+        backup_lru_.push_back(backup.id);
+
+        evict_old_backups();
+
         return backup.id;
     }
 
@@ -514,6 +573,25 @@ namespace bha::lsp
             steps <= 5 ? Complexity::Moderate :
                          Complexity::Complex;
 
+        // Populate source location from FileTarget
+        if (!bha_sug.target_file.path.empty()) {
+            lsp_sug.target_uri = "file://" + fs::absolute(bha_sug.target_file.path).string();
+
+            if (bha_sug.target_file.has_line_range()) {
+                Range range{};
+                // LSP uses 0-based lines, BHA uses 1-based
+                range.start.line = static_cast<int>(bha_sug.target_file.line_start) - 1;
+                range.start.character = bha_sug.target_file.has_column_range()
+                    ? static_cast<int>(bha_sug.target_file.col_start) - 1
+                    : 0;
+                range.end.line = static_cast<int>(bha_sug.target_file.line_end) - 1;
+                range.end.character = bha_sug.target_file.has_column_range()
+                    ? static_cast<int>(bha_sug.target_file.col_end) - 1
+                    : 0;
+                lsp_sug.range = range;
+            }
+        }
+
         return lsp_sug;
     }
 
@@ -546,5 +624,142 @@ namespace bha::lsp
         detailed.dependencies = bha_sug.implementation_steps;
 
         return detailed;
+    }
+
+    ApplyAllResult SuggestionManager::apply_all_suggestions(
+        const std::optional<std::string>& min_priority,
+        const bool safe_only
+    ) {
+        ApplyAllResult result;
+        result.success = true;
+        result.applied_count = 0;
+        result.skipped_count = 0;
+
+        std::optional<bha::Priority> priority_threshold;
+        if (min_priority) {
+            std::string prio_lower = *min_priority;
+            std::ranges::transform(prio_lower, prio_lower.begin(), ::tolower);
+            if (prio_lower == "critical") {
+                priority_threshold = bha::Priority::Critical;
+            } else if (prio_lower == "high") {
+                priority_threshold = bha::Priority::High;
+            } else if (prio_lower == "medium") {
+                priority_threshold = bha::Priority::Medium;
+            } else if (prio_lower == "low") {
+                priority_threshold = bha::Priority::Low;
+            }
+        }
+
+        std::vector<fs::path> all_files_to_backup;
+        std::vector<std::string> ids_to_apply;
+
+        for (const auto& [id, bha_sug] : bha_suggestions_) {
+            if (safe_only && !bha_sug.is_safe) {
+                result.skipped_count++;
+                continue;
+            }
+
+            if (priority_threshold) {
+                bool meets_threshold = false;
+                switch (*priority_threshold) {
+                    case bha::Priority::Low:
+                        meets_threshold = true;
+                        break;
+                    case bha::Priority::Medium:
+                        meets_threshold = (bha_sug.priority == bha::Priority::Medium ||
+                                          bha_sug.priority == bha::Priority::High ||
+                                          bha_sug.priority == bha::Priority::Critical);
+                        break;
+                    case bha::Priority::High:
+                        meets_threshold = (bha_sug.priority == bha::Priority::High ||
+                                          bha_sug.priority == bha::Priority::Critical);
+                        break;
+                    case bha::Priority::Critical:
+                        meets_threshold = (bha_sug.priority == bha::Priority::Critical);
+                        break;
+                }
+                if (!meets_threshold) {
+                    result.skipped_count++;
+                    continue;
+                }
+            }
+
+            ids_to_apply.push_back(id);
+
+            if (bha_sug.target_file.action == bha::FileAction::Modify ||
+                bha_sug.target_file.action == bha::FileAction::AddInclude) {
+                all_files_to_backup.push_back(bha_sug.target_file.path);
+            }
+            for (const auto& secondary : bha_sug.secondary_files) {
+                if (secondary.action == bha::FileAction::Modify ||
+                    secondary.action == bha::FileAction::AddInclude) {
+                    all_files_to_backup.push_back(secondary.path);
+                }
+            }
+        }
+
+        // Single backup for all changes
+        if (!all_files_to_backup.empty()) {
+            result.backup_id = create_backup(all_files_to_backup);
+        }
+
+        for (const auto& id : ids_to_apply) {
+            if (auto apply_result = apply_suggestion(id, false, true, false); apply_result.success) {
+                result.applied_count++;
+                result.changed_files.insert(result.changed_files.end(),
+                                           apply_result.changed_files.begin(),
+                                           apply_result.changed_files.end());
+            } else {
+                result.skipped_count++;
+                result.errors.insert(result.errors.end(),
+                                    apply_result.errors.begin(),
+                                    apply_result.errors.end());
+            }
+        }
+
+        result.success = result.errors.empty();
+        return result;
+    }
+
+    RevertResult SuggestionManager::revert_changes_detailed(const std::string& backup_id) {
+        RevertResult result;
+
+        const auto it = backups_.find(backup_id);
+        if (it == backups_.end()) {
+            result.success = false;
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "Invalid backup ID: " + backup_id;
+            result.errors.push_back(diag);
+            return result;
+        }
+
+        result.success = true;
+        for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
+            try {
+                if (std::ofstream out(path, std::ios::binary); !out) {
+                    result.success = false;
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.message = "Failed to restore file: " + path.string();
+                    result.errors.push_back(diag);
+                } else {
+                    out << content;
+                    result.restored_files.push_back(path.string());
+                }
+            } catch (const std::exception& e) {
+                result.success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.message = "Error restoring " + path.string() + ": " + e.what();
+                result.errors.push_back(diag);
+            }
+        }
+
+        if (result.success) {
+            backups_.erase(it);
+            backup_lru_.remove(backup_id);
+        }
+        return result;
     }
 }
