@@ -77,18 +77,40 @@ namespace bha::lsp
                     auto request = j.get<RequestMessage>();
                     handle_request(request);
                 } else {
+                    // This is a response to a request sent (client->server response)
+                    // Currently not handled, but could be used for async operations
                     auto response = j.get<ResponseMessage>();
+                    (void)response;  // Suppress unused warning
                 }
             } else {
                 auto notification = j.get<NotificationMessage>();
                 handle_notification(notification);
             }
         } catch (const json::exception& e) {
+            // Send ParseError response per JSON-RPC spec
+            // Use a synthetic ID since request can't be parsed
             std::cerr << "JSON parse error: " << e.what() << std::endl;
+            send_error(0, ErrorCode::ParseError,
+                      std::string("JSON parse error: ") + e.what());
         }
     }
 
     void LSPServer::handle_request(const RequestMessage& request) {
+        // Lifecycle validation per LSP spec
+        // Only "initialize" is allowed before initialization
+        if (state_ == ServerState::Uninitialized && request.method != "initialize") {
+            send_error(request.id, ErrorCode::ServerNotInitialized,
+                      "Server not initialized. Call 'initialize' first.");
+            return;
+        }
+
+        // After shutdown, only "exit" notification is allowed (handled elsewhere)
+        if (state_ == ServerState::ShuttingDown) {
+            send_error(request.id, ErrorCode::InvalidRequest,
+                      "Server is shutting down. Only 'exit' notification is accepted.");
+            return;
+        }
+
         if (const auto it = request_handlers_.find(request.method); it != request_handlers_.end()) {
             try {
                 const json params = request.params.value_or(json::object());
@@ -118,7 +140,20 @@ namespace bha::lsp
         std::string header;
         int content_length = 0;
 
-        while (std::getline(std::cin, header) && header != "\r") {
+        // Read headers until empty line
+        // LSP uses HTTP-style headers with CRLF line endings
+        // After std::getline, the line has trailing \r (if CRLF was used)
+        // An empty line will be "" (Unix) or "\r" (CRLF)
+        while (std::getline(std::cin, header)) {
+            // Trim trailing \r if present (from CRLF line endings)
+            if (!header.empty() && header.back() == '\r') {
+                header.pop_back();
+            }
+
+            if (header.empty()) {
+                break;
+            }
+
             if (header.find("Content-Length: ") == 0) {
                 content_length = std::stoi(header.substr(16));
             }
@@ -205,11 +240,12 @@ namespace bha::lsp
             }}
         };
 
-        initialized_ = true;
+        state_ = ServerState::Initializing;
         return result;
     }
 
     void LSPServer::handle_initialized(const json&) {
+        state_ = ServerState::Running;
         send_notification("window/showMessage", {
             {"type", static_cast<int>(MessageType::Info)},
             {"message", "BHA LSP Server initialized"}
@@ -217,7 +253,7 @@ namespace bha::lsp
     }
 
     json LSPServer::handle_shutdown(const json&) {
-        shutdown_requested_ = true;
+        state_ = ServerState::ShuttingDown;
         return nullptr;
     }
 
