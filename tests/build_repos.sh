@@ -1,36 +1,38 @@
 #!/bin/bash
 
-# Build Hotspot Analyzer - Repository Building Script
-# Builds cloned repositories using the bha build command
+###############################################################################
+# BHA Repository Building Script
 #
-# Dependencies:
-#   - For curl (make): none (builds with --without-ssl --without-libpsl)
-#   - For libpng (make): zlib
-#   - For weston (meson): wayland-protocols >= 1.46 (Ubuntu 24.04 has 1.38, may fail)
+# Builds cloned repositories using the BHA build command with proper compiler
+# flags for time tracing and memory profiling.
 #
-# Note: Build artifacts go to build/, trace files (.json, .txt) go to traces/
+# Requirements:
+#   - BHA binary (default: ../build/bha)
+#   - Cloned repositories in REPO_CACHE directory
+#   - Build system tools (cmake, make, meson, ninja)
+#   - Compilers (gcc, g++, clang, clang++)
+#
+# Output:
+#   - Build artifacts: <TEST_ROOT>/<build-system>/<compiler>/<project>/build/
+#   - Trace files: <TEST_ROOT>/<build-system>/<compiler>/<project>/traces/
+#     * .json files for Clang -ftime-trace
+#     * .bha.txt files for GCC -ftime-report
+#     * .su files for memory profiling
+#
+###############################################################################
 
 set -o pipefail
 
-#=============================================================================
-# Configuration
-#=============================================================================
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_ROOT="${TEST_ROOT:-${SCRIPT_DIR}/cli}"
-BHA_BINARY="${BHA_BINARY:-${SCRIPT_DIR}/../cmake-build-debug/bha}"
+TEST_ROOT="${TEST_ROOT:-${SCRIPT_DIR}/temp}"
+BHA_BINARY="${BHA_BINARY:-${SCRIPT_DIR}/../build/bha}"
 REPO_CACHE="${REPO_CACHE:-${TEST_ROOT}/repos}"
 
-# Build parameters
 COMPILERS=("clang" "gcc")
-# shellcheck disable=SC2034
-BUILD_SYSTEMS=("cmake" "make" "meson")
 
-# Logging
 LOG_FILE="${TEST_ROOT}/build_results.log"
 ERROR_LOG="${TEST_ROOT}/build_errors.log"
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -38,11 +40,6 @@ CYAN='\033[0;36m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-#=============================================================================
-# Project Metadata
-#=============================================================================
-
-# Map project names to their build systems
 declare -A PROJECT_BUILD_SYSTEM=(
     ["benchmark"]="cmake"
     ["cli11"]="cmake"
@@ -72,35 +69,58 @@ declare -A PROJECT_BUILD_SYSTEM=(
     ["weston"]="meson"
 )
 
-# Project-specific CMake subdirectories
 declare -A PROJECT_CMAKE_SUBDIR=(
     ["lz4"]="build/cmake"
     ["zstd"]="build/cmake"
 )
 
-# Additional arguments passed to cmake
-declare -A PROJECT_EXTRA_CMAKE_ARGS=(
-    ["rocksdb"]="-DWITH_GFLAGS=OFF -DWITH_TESTS=OFF -DWITH_BENCHMARK_TOOLS=OFF"
+declare -A PROJECT_CMAKE_FLAGS=(
     ["benchmark"]="-DBENCHMARK_ENABLE_TESTING=OFF -DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
-    ["leveldb"]="-DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF"
+    ["cli11"]="-DCLI11_BUILD_TESTS=OFF -DCLI11_BUILD_EXAMPLES=OFF"
+    ["lz4"]="-DLZ4_BUILD_CLI=OFF -DLZ4_BUILD_LEGACY_LZ4C=OFF"
+    ["args"]="-DARGS_BUILD_EXAMPLE=OFF -DARGS_BUILD_UNITTESTS=OFF"
+    ["mimalloc"]="-DMI_BUILD_TESTS=OFF"
+    ["rocksdb"]="-DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DWITH_BENCHMARK_TOOLS=OFF -DFAIL_ON_WARNINGS=OFF"
     ["snappy"]="-DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF"
     ["fmt"]="-DFMT_TEST=OFF -DFMT_DOC=OFF"
     ["cxxopts"]="-DCXXOPTS_BUILD_EXAMPLES=OFF -DCXXOPTS_BUILD_TESTS=OFF"
     ["tinyxml2"]="-DBUILD_TESTING=OFF"
     ["zstd"]="-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_BUILD_CONTRIB=OFF -DZSTD_BUILD_TESTS=OFF"
+    ["abseil"]="-DABSL_BUILD_TESTING=OFF -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_BUILD_TEST_HELPERS=OFF"
     ["spdlog"]="-DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF"
     ["taskflow"]="-DTF_BUILD_TESTS=OFF -DTF_BUILD_EXAMPLES=OFF"
     ["catch2"]="-DCATCH_BUILD_TESTING=OFF -DCATCH_INSTALL_DOCS=OFF"
+    ["leveldb"]="-DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF -DHAVE_SNAPPY=OFF -DCMAKE_CXX_STANDARD=17"
     ["yaml-cpp"]="-DYAML_BUILD_SHARED_LIBS=OFF -DYAML_CPP_BUILD_TESTS=OFF"
     ["libjpeg-turbo"]="-DENABLE_SHARED=OFF -DWITH_TURBOJPEG=OFF"
     ["glfw"]="-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF"
-    ["leveldb"]="-DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF -DHAVE_SNAPPY=OFF -DCMAKE_CXX_STANDARD=17"
+    ["googletest"]="-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF"
 )
 
-#=============================================================================
-# Utility Functions
-#=============================================================================
+declare -A PROJECT_MAKE_FLAGS=(
+    ["redis"]="BUILD_TLS=no"
+)
 
+declare -A PROJECT_MAKE_EXTRA_ARGS=(
+    ["curl"]="--disable-dependency-tracking --without-ssl --without-libssh2 --without-libpsl --disable-shared"
+    ["libpng"]="--disable-dependency-tracking --disable-shared"
+)
+
+declare -A PROJECT_MESON_FLAGS=(
+    ["weston"]="-Dbackend-drm=true -Dbackend-wayland=false -Dbackend-x11=false -Dbackend-headless=true -Drenderer-gl=false -Dxwayland=false -Dpipewire=false -Dremoting=false -Dshell-lua=false -Dbackend-rdp=false -Drenderer-vulkan=false -Dshell-desktop=false -Dshell-ivi=false -Dbackend-pipewire=false -Dshell-kiosk=true -Ddemo-clients=false -Dsimple-clients=[] -Dtests=false"
+)
+
+###############################################################################
+# Logging Functions
+###############################################################################
+
+##
+# Logs a message with timestamp and level to console and log file.
+#
+# Arguments:
+#   $1 - Log level (INFO, WARN, ERROR)
+#   $@ - Message to log
+##
 log() {
     local level="$1"
     shift
@@ -110,16 +130,40 @@ log() {
     echo -e "[$level] [$timestamp] $message" | tee -a "$LOG_FILE"
 }
 
+##
+# Logs an error message to both main log and error log.
+#
+# Arguments:
+#   $@ - Error message to log
+##
 log_error() {
     local message="$*"
     log "ERROR" "$message"
     echo "$message" >> "$ERROR_LOG"
 }
 
-#=============================================================================
+###############################################################################
 # Build Functions
-#=============================================================================
+###############################################################################
 
+##
+# Builds a project using the BHA build command.
+#
+# Handles:
+#   - Build system detection and configuration
+#   - Compiler-specific flags (CMAKE, Make, Meson)
+#   - Trace directory setup
+#   - Skip if already built successfully
+#
+# Arguments:
+#   $1 - Project name
+#   $2 - Build system (cmake, make, meson)
+#   $3 - Compiler (gcc, clang)
+#   $4 - Repository directory path
+#
+# Returns:
+#   0 on success, 1 on failure
+##
 build_project_with_bha() {
     local project_name="$1"
     local build_system="$2"
@@ -164,21 +208,39 @@ build_project_with_bha() {
     bha_cmd="$bha_cmd --clean"
 
     local extra_args=""
-    if [ -n "${PROJECT_EXTRA_CMAKE_ARGS[$project_name]}" ]; then
-        extra_args="${PROJECT_EXTRA_CMAKE_ARGS[$project_name]}"
-    fi
 
-    if [ "$build_system" = "make" ] && [ "$project_name" = "curl" ]; then
-        extra_args="--without-ssl --without-libpsl"
-    elif [ "$build_system" = "make" ] && [ "$project_name" = "libpng" ]; then
-        extra_args="--disable-shared"
-    elif [ "$build_system" = "meson" ] && [ "$project_name" = "weston" ]; then
-        extra_args="-Drenderer-vulkan=false -Dbackend-pipewire=false -Dbackend-rdp=false -Dshell-lua=false -Dpipewire=false -Dremoting=false -Dbackend-default=headless -Dtests=false -Ddemo-clients=false"
-    fi
+    case "$build_system" in
+        cmake)
+            if [ -n "${PROJECT_CMAKE_FLAGS[$project_name]}" ]; then
+                extra_args="${PROJECT_CMAKE_FLAGS[$project_name]}"
+            fi
+            ;;
+        make)
+            if [ -n "${PROJECT_MAKE_FLAGS[$project_name]}" ]; then
+                extra_args="${PROJECT_MAKE_FLAGS[$project_name]}"
+            fi
+            if [ -n "${PROJECT_MAKE_EXTRA_ARGS[$project_name]}" ]; then
+                if [ -n "$extra_args" ]; then
+                    extra_args="$extra_args ${PROJECT_MAKE_EXTRA_ARGS[$project_name]}"
+                else
+                    extra_args="${PROJECT_MAKE_EXTRA_ARGS[$project_name]}"
+                fi
+            fi
+            ;;
+        meson)
+            if [ -n "${PROJECT_MESON_FLAGS[$project_name]}" ]; then
+                extra_args="${PROJECT_MESON_FLAGS[$project_name]}"
+            fi
+            ;;
+    esac
 
     if [ -n "$extra_args" ]; then
         extra_args="${extra_args// /;}"
-        bha_cmd="$bha_cmd --cmake-args \"$extra_args\""
+        if [ "$build_system" = "cmake" ]; then
+            bha_cmd="$bha_cmd --cmake-args \"$extra_args\""
+        else
+            bha_cmd="$bha_cmd --configure-args \"$extra_args\""
+        fi
     fi
 
     log "INFO" "  Working dir: $(pwd)"
@@ -206,10 +268,23 @@ build_project_with_bha() {
     fi
 }
 
-#=============================================================================
-# Main
-#=============================================================================
+###############################################################################
+# Main Entry Point
+###############################################################################
 
+##
+# Main function - orchestrates the build process for all projects.
+#
+# Workflow:
+#   1. Validates BHA binary exists
+#   2. Validates repository cache exists
+#   3. Iterates through all projects in REPO_CACHE
+#   4. Builds each project with each compiler
+#   5. Generates build summary
+#
+# Returns:
+#   0 on completion (regardless of individual build failures)
+##
 main() {
     # shellcheck disable=SC2188
     > "$LOG_FILE"
@@ -221,20 +296,18 @@ main() {
     echo -e "${CYAN}================================================================${NC}"
     echo ""
 
-    # Check if BHA binary exists
     if [ ! -f "$BHA_BINARY" ]; then
         echo -e "${RED}Error: BHA binary not found at $BHA_BINARY${NC}"
         echo "Please build BHA first or set BHA_BINARY environment variable."
         exit 1
     fi
 
-    echo -e "BHA Binary:    ${GREEN}$BHA_BINARY${NC}"
+    echo -e "BHA Binary:     ${GREEN}$BHA_BINARY${NC}"
     echo -e "Repository dir: ${CYAN}$REPO_CACHE${NC}"
     echo -e "Output dir:     ${CYAN}$TEST_ROOT${NC}"
     echo -e "Compilers:      ${YELLOW}${COMPILERS[*]}${NC}"
     echo ""
 
-    # Check if repositories exist
     if [ ! -d "$REPO_CACHE" ] || [ -z "$(ls -A "$REPO_CACHE" 2>/dev/null)" ]; then
         echo -e "${RED}Error: No repositories found in $REPO_CACHE${NC}"
         echo "Please run ./clone_repos.sh first to clone the repositories."
@@ -248,7 +321,6 @@ main() {
     local successful_builds=0
     local failed_builds=0
 
-    # Iterate through all projects in the repo cache
     for repo_dir in "$REPO_CACHE"/*; do
         [ ! -d "$repo_dir" ] && continue
 
@@ -262,7 +334,7 @@ main() {
         fi
 
         if [ "$project_name" = "weston" ]; then
-            export PKG_CONFIG_PATH="/home/gregorian-rayne/.local/share/pkgconfig:$PKG_CONFIG_PATH"
+            export PKG_CONFIG_PATH="$HOME/.local/share/pkgconfig:$PKG_CONFIG_PATH"
         fi
 
         for compiler in "${COMPILERS[@]}"; do
