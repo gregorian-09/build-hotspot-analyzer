@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/pngrio.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c ../../../../repos/libpng/pngrio.c
+# Timestamp: 2026-01-30T19:06:04+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 ( 11%)   0.00 (  0%)   0.04 (  6%)  1819k ( 29%)
+ phase parsing                      :   0.15 ( 79%)   0.15 (100%)   0.56 ( 89%)  4296k ( 68%)
+ phase opt and generate             :   0.02 ( 11%)   0.00 (  0%)   0.02 (  3%)   182k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.06 ( 32%)   0.08 ( 53%)   0.34 ( 54%)  2236k ( 36%)
+ lexical analysis                   :   0.05 ( 26%)   0.04 ( 27%)   0.15 ( 24%)     0  (  0%)
+ parser (global)                    :   0.03 ( 16%)   0.01 (  7%)   0.07 ( 11%)  1890k ( 30%)
+ parser struct body                 :   0.01 (  5%)   0.01 (  7%)   0.00 (  0%)    81k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    75k (  1%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    73k (  1%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ TOTAL                              :   0.19          0.15          0.63         6298k

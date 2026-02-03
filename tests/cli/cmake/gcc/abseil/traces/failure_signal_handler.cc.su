@@ -1,7 +1,7 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:288:13:void absl::WriterFnWrapper(const char*, void*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:408:33:static constexpr void absl::AbslFailureSignalHandler(int, siginfo_t*, void*)::<lambda(const char*)>::_FUN(const char*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:343:13:void absl::ImmediateAbortSignalHandler(int)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:295:37:void absl::WriteStackTrace(void*, bool, void (*)(const char*, void*), void*)	512	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:369:13:void absl::AbslFailureSignalHandler(int, siginfo_t*, void*)	256	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:146:13:const char* absl::debugging_internal::FailureSignalToString(int)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/failure_signal_handler.cc:426:6:void absl::InstallFailureSignalHandler(const FailureSignalHandlerOptions&)	256	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:288:13:void absl::WriterFnWrapper(const char*, void*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:408:33:static constexpr void absl::AbslFailureSignalHandler(int, siginfo_t*, void*)::<lambda(const char*)>::_FUN(const char*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:343:13:void absl::ImmediateAbortSignalHandler(int)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:295:37:void absl::WriteStackTrace(void*, bool, void (*)(const char*, void*), void*)	512	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:369:13:void absl::AbslFailureSignalHandler(int, siginfo_t*, void*)	256	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:146:13:const char* absl::debugging_internal::FailureSignalToString(int)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/failure_signal_handler.cc:426:6:void absl::InstallFailureSignalHandler(const FailureSignalHandlerOptions&)	256	static

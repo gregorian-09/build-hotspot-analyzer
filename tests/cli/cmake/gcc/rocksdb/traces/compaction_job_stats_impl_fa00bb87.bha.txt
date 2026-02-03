@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/compaction_job_stats_impl.cc
+# Output: CMakeFiles/rocksdb.dir/util/compaction_job_stats_impl.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/util/compaction_job_stats_impl.cc.o -MF CMakeFiles/rocksdb.dir/util/compaction_job_stats_impl.cc.o.d -o CMakeFiles/rocksdb.dir/util/compaction_job_stats_impl.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/compaction_job_stats_impl.cc
+# Timestamp: 2026-01-30T22:46:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.02 (  2%)   0.04 (  1%)  2143k (  5%)
+ phase parsing                      :   1.31 ( 86%)   1.08 ( 90%)   3.09 ( 88%)    38M ( 83%)
+ phase lang. deferred               :   0.16 ( 10%)   0.07 (  6%)   0.29 (  8%)  4594k ( 10%)
+ phase opt and generate             :   0.05 (  3%)   0.03 (  3%)   0.09 (  3%)  1080k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.30 ( 20%)   0.19 ( 16%)   0.65 ( 18%)  1836k (  4%)
+ |overload resolution               :   0.17 ( 11%)   0.08 (  7%)   0.28 (  8%)  3232k (  7%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)   134k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   832  (  0%)
+ callgraph functions expansion      :   0.03 (  2%)   0.01 (  1%)   0.05 (  1%)   771k (  2%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)   115k (  0%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2304  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.02 (  2%)   0.01 (  0%)  2032  (  0%)
+ preprocessing                      :   0.18 ( 12%)   0.31 ( 26%)   0.94 ( 27%)  1746k (  4%)
+ parser (global)                    :   0.34 ( 22%)   0.31 ( 26%)   0.63 ( 18%)    13M ( 30%)
+ parser struct body                 :   0.14 (  9%)   0.11 (  9%)   0.43 ( 12%)  7289k ( 15%)
+ parser function body               :   0.01 (  1%)   0.02 (  2%)   0.03 (  1%)   224k (  0%)
+ parser inl. func. body             :   0.10 (  7%)   0.04 (  3%)   0.30 (  9%)  4085k (  9%)
+ parser inl. meth. body             :   0.23 ( 15%)   0.12 ( 10%)   0.34 ( 10%)  4931k ( 10%)
+ template instantiation             :   0.40 ( 26%)   0.20 ( 17%)   0.65 ( 18%)    10M ( 23%)
+ constant expression evaluation     :   0.07 (  5%)   0.02 (  2%)   0.05 (  1%)   212k (  0%)
+ constraint normalization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    86k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    48  (  0%)
+ tree DSE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2192  (  0%)
+ tree slp vectorization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   492k (  1%)
+ varconst                           :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  4312  (  0%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1576  (  0%)
+ ree                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   120  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   1.53          1.20          3.52           46M

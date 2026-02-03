@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/src/tool_xattr.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -I../../../../../repos/curl/src -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/src/tool_xattr.c
+# Timestamp: 2026-01-31T00:31:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.03 (  2%)  1819k ( 20%)
+ phase parsing                      :   0.35 ( 83%)   0.34 ( 89%)   1.85 ( 92%)  4980k ( 56%)
+ phase opt and generate             :   0.07 ( 17%)   0.03 (  8%)   0.12 (  6%)  2139k ( 24%)
+ dump files                         :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    17k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)   156k (  2%)
+ ipa inlining heuristics            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df scan insns                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1392  (  0%)
+ preprocessing                      :   0.16 ( 38%)   0.17 ( 45%)   1.49 ( 75%)  2148k ( 24%)
+ lexical analysis                   :   0.08 ( 19%)   0.09 ( 24%)   0.22 ( 11%)     0  (  0%)
+ parser (global)                    :   0.07 ( 17%)   0.07 ( 18%)   0.13 (  6%)  2273k ( 25%)
+ parser struct body                 :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   124k (  1%)
+ parser enumerator list             :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)   315k (  4%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)   109k (  1%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   256  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    20k (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  1325k ( 15%)
+ LRA non-specific                   :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)  4032  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  3072  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    92k (  1%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   216  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   130k (  1%)
+ TOTAL                              :   0.42          0.38          2.00         8939k

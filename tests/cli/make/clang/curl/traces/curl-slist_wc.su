@@ -1,2 +1,2 @@
-slist_wc.c:34:slist_wc_append	40	static
-slist_wc.c:60:slist_wc_free_all	24	static
+../../../../../repos/curl/src/slist_wc.c:34:slist_wc_append	40	static
+../../../../../repos/curl/src/slist_wc.c:60:slist_wc_free_all	24	static

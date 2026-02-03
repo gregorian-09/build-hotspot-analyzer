@@ -1,5 +1,5 @@
 src/catch2/catch_session.cpp:191:_ZN5Catch7SessionC2Ev	232	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/catch_session.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_session.cpp:__clang_call_terminate	8	static
 src/catch2/catch_session.cpp:324:_ZN5Catch7Session6configEv	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:641:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_	40	static
 src/catch2/../catch2/internal/catch_clara.hpp:644:_ZN5Catch5Clara6ParseraSEOS1_	40	static

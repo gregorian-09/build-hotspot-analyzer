@@ -29,7 +29,7 @@ src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:114:_ZN5Catch2
 src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:118:_ZN5Catch22CumulativeReporterBase20testCasePartialEndedERKNS_13TestCaseStatsEm	0	static
 src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:124:_ZN5Catch22CumulativeReporterBase8skipTestERKNS_12TestCaseInfoE	0	static
 src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:106:_ZN5Catch22CumulativeReporterBase21fatalErrorEncounteredENS_9StringRefE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/reporters/catch_reporter_cumulative_base.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/reporters/catch_reporter_cumulative_base.cpp:__clang_call_terminate	8	static
 src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:72:_ZN5Catch22CumulativeReporterBase11SectionNodeD2Ev	24	static
 src/catch2/../catch2/reporters/catch_reporter_cumulative_base.hpp:24:_ZN5Catch6Detail26AssertionOrBenchmarkResultD2Ev	40	static
 src/catch2/../catch2/interfaces/catch_interfaces_reporter.hpp:62:_ZN5Catch14AssertionStatsC2ERKS0_	40	static

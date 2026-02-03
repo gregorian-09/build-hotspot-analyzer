@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/src/tool_util.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -I../../../../../repos/curl/src -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/src/tool_util.c
+# Timestamp: 2026-01-31T00:31:33+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.03 (  2%)  1819k ( 21%)
+ phase parsing                      :   0.30 ( 83%)   0.34 ( 87%)   1.79 ( 92%)  4882k ( 56%)
+ phase opt and generate             :   0.06 ( 17%)   0.04 ( 10%)   0.12 (  6%)  2033k ( 23%)
+ dump files                         :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8848  (  0%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)   143k (  2%)
+ preprocessing                      :   0.11 ( 31%)   0.20 ( 51%)   1.49 ( 77%)  2109k ( 24%)
+ lexical analysis                   :   0.11 ( 31%)   0.05 ( 13%)   0.12 (  6%)     0  (  0%)
+ parser (global)                    :   0.03 (  8%)   0.06 ( 15%)   0.12 (  6%)  2246k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.02 (  5%)   0.02 (  1%)   124k (  1%)
+ parser enumerator list             :   0.02 (  6%)   0.01 (  3%)   0.04 (  2%)   314k (  4%)
+ parser function body               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    79k (  1%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.01 (  3%)   0.01 (  3%)   0.00 (  0%)    49k (  1%)
+ varconst                           :   0.02 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ jump                               :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1323k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3384  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1320  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    69k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   136  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  3%)   0.03 (  2%)   131k (  2%)
+ TOTAL                              :   0.36          0.39          1.94         8736k

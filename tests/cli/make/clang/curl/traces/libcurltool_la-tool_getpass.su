@@ -1,2 +1,2 @@
-tool_getpass.c:164:getpass_r	56	static
-tool_getpass.c:126:ttyecho	24	static
+../../../../../repos/curl/src/tool_getpass.c:164:getpass_r	56	static
+../../../../../repos/curl/src/tool_getpass.c:126:ttyecho	24	static

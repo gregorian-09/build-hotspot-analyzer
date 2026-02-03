@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jcicc.c
+# Output: CMakeFiles/jpeg-static.dir/src/jcicc.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/jcicc.c.o -MF CMakeFiles/jpeg-static.dir/src/jcicc.c.o.d -o CMakeFiles/jpeg-static.dir/src/jcicc.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jcicc.c
+# Timestamp: 2026-01-30T19:04:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.03 (  4%)  1819k ( 39%)
+ phase parsing                      :   0.14 ( 70%)   0.24 ( 92%)   0.57 ( 81%)  2559k ( 54%)
+ phase opt and generate             :   0.06 ( 30%)   0.01 (  4%)   0.08 ( 11%)   317k (  7%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.05 ( 25%)   0.01 (  4%)   0.06 (  9%)   248k (  5%)
+ callgraph ipa passes               :   0.01 (  5%)   0.00 (  0%)   0.02 (  3%)    47k (  1%)
+ preprocessing                      :   0.04 ( 20%)   0.11 ( 42%)   0.31 ( 44%)   732k ( 16%)
+ lexical analysis                   :   0.07 ( 35%)   0.05 ( 19%)   0.06 (  9%)     0  (  0%)
+ parser (global)                    :   0.01 (  5%)   0.04 ( 15%)   0.12 ( 17%)  1303k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.04 (  6%)   231k (  5%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    35k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  9936  (  0%)
+ parser inl. func. body             :   0.02 ( 10%)   0.01 (  4%)   0.04 (  6%)   245k (  5%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  2112  (  0%)
+ backwards jump threading           :   0.01 (  5%)   0.01 (  4%)   0.01 (  1%)    24  (  0%)
+ tree RPO VN                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   520  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ dead store elim2                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  2160  (  0%)
+ branch prediction                  :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  2296  (  0%)
+ combiner                           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    25k (  1%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3896  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    48  (  0%)
+ TOTAL                              :   0.20          0.26          0.70         4696k

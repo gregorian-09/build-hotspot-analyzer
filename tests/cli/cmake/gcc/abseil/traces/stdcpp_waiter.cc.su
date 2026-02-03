@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:33:1:absl::synchronization_internal::StdcppWaiter::StdcppWaiter()	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:35:6:bool absl::synchronization_internal::StdcppWaiter::Wait(absl::synchronization_internal::KernelTimeout)	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:66:6:void absl::synchronization_internal::StdcppWaiter::Post()	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:72:6:void absl::synchronization_internal::StdcppWaiter::Poke()	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:77:6:void absl::synchronization_internal::StdcppWaiter::InternalCondVarPoke()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:33:1:absl::synchronization_internal::StdcppWaiter::StdcppWaiter()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:35:6:bool absl::synchronization_internal::StdcppWaiter::Wait(absl::synchronization_internal::KernelTimeout)	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:66:6:void absl::synchronization_internal::StdcppWaiter::Post()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:72:6:void absl::synchronization_internal::StdcppWaiter::Poke()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/stdcpp_waiter.cc:77:6:void absl::synchronization_internal::StdcppWaiter::InternalCondVarPoke()	8	static

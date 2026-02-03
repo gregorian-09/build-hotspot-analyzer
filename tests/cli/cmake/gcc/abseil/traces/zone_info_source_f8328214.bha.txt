@@ -1,0 +1,58 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/time/internal/cctz/src/zone_info_source.cc
+# Output: CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/time/CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o -MF CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o.d -o CMakeFiles/time_zone.dir/internal/cctz/src/zone_info_source.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/time/internal/cctz/src/zone_info_source.cc
+# Timestamp: 2026-01-30T18:39:00+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  1%)   0.03 (  1%)   0.08 (  1%)  1882k (  3%)
+ phase parsing                      :   2.88 ( 81%)   2.08 ( 85%)   5.47 ( 81%)    51M ( 89%)
+ phase lang. deferred               :   0.35 ( 10%)   0.17 (  7%)   0.54 (  8%)  3796k (  6%)
+ phase opt and generate             :   0.32 (  9%)   0.16 (  7%)   0.51 (  8%)   600k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.18 (  3%)     0  (  0%)
+ |name lookup                       :   0.66 ( 18%)   0.37 ( 15%)   1.06 ( 16%)  2515k (  4%)
+ |overload resolution               :   0.37 ( 10%)   0.17 (  7%)   0.52 (  8%)  3602k (  6%)
+ dump files                         :   0.00 (  0%)   0.02 (  1%)   0.03 (  0%)     0  (  0%)
+ callgraph construction             :   0.04 (  1%)   0.01 (  0%)   0.03 (  0%)   129k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)  2816  (  0%)
+ callgraph functions expansion      :   0.17 (  5%)   0.08 (  3%)   0.26 (  4%)   217k (  0%)
+ callgraph ipa passes               :   0.12 (  3%)   0.07 (  3%)   0.20 (  3%)   185k (  0%)
+ df live&initialized regs           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  0%)   0.01 (  0%)   0.00 (  0%)  1104  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.46 ( 13%)   0.49 ( 20%)   1.21 ( 18%)  2067k (  3%)
+ parser (global)                    :   0.68 ( 19%)   0.59 ( 24%)   1.29 ( 19%)    18M ( 31%)
+ parser struct body                 :   0.27 (  8%)   0.19 (  8%)   0.58 (  9%)    10M ( 19%)
+ parser function body               :   0.14 (  4%)   0.08 (  3%)   0.31 (  5%)  2118k (  4%)
+ parser inl. func. body             :   0.27 (  8%)   0.17 (  7%)   0.49 (  7%)  2937k (  5%)
+ parser inl. meth. body             :   0.36 ( 10%)   0.17 (  7%)   0.51 (  8%)  5419k (  9%)
+ template instantiation             :   0.97 ( 27%)   0.52 ( 21%)   1.49 ( 22%)    14M ( 25%)
+ constant expression evaluation     :   0.05 (  1%)   0.01 (  0%)   0.10 (  1%)    84k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    31k (  0%)
+ integration                        :   0.07 (  2%)   0.05 (  2%)   0.13 (  2%)    28k (  0%)
+ tree Early VRP                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ isolate eroneous paths             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree DSE                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   240  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  6008  (  0%)
+ tree SSA uncprop                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ gimple widening/fma detection      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dominance computation              :   0.02 (  1%)   0.01 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)  4368  (  0%)
+ CSE                                :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   240  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    31k (  0%)
+ PRE                                :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   144  (  0%)
+ branch prediction                  :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  2360  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)    97k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5208  (  0%)
+ scheduling 2                       :   0.05 (  1%)   0.03 (  1%)   0.08 (  1%)  2800  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6368  (  0%)
+ symout                             :   0.02 (  1%)   0.02 (  1%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.04 (  1%)   0.01 (  0%)   0.04 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    72  (  0%)
+ rest of compilation                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%) 10080  (  0%)
+ TOTAL                              :   3.57          2.44          6.78           58M

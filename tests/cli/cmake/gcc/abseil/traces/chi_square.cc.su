@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/chi_square.cc:104:8:double absl::random_internal::ChiSquareValue(int, double)	144	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/chi_square.cc:154:8:double absl::random_internal::ChiSquarePValue(double, int)	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/chi_square.cc:104:8:double absl::random_internal::ChiSquareValue(int, double)	144	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/chi_square.cc:154:8:double absl::random_internal::ChiSquarePValue(double, int)	96	static

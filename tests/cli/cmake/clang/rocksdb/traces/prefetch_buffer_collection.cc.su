@@ -3,7 +3,7 @@ repos/rocksdb/file/file_prefetch_buffer.h:187:_ZN7rocksdb18FilePrefetchBufferC2E
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1288:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE6resizeEm	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1027:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EED2Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIPN7rocksdb10BufferInfoESaIS2_EE17_M_initialize_mapEm	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/prefetch_buffer_collection.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/blob/prefetch_buffer_collection.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:351:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE17_M_default_appendEm	120	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:907:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE23_M_new_elements_at_backEm	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:932:_ZNSt5dequeIPN7rocksdb10BufferInfoESaIS2_EE17_M_reallocate_mapEmb	88	static

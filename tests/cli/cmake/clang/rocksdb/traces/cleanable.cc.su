@@ -1,5 +1,5 @@
 repos/rocksdb/util/cleanable.cc:18:_ZN7rocksdb9CleanableC2Ev	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/cleanable.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/cleanable.cc:__clang_call_terminate	8	static
 repos/rocksdb/util/cleanable.cc:25:_ZN7rocksdb9CleanableC2EOS0_	0	static
 repos/rocksdb/util/cleanable.cc:27:_ZN7rocksdb9CleanableaSEOS0_	0	static
 repos/rocksdb/util/cleanable.cc:51:_ZN7rocksdb9Cleanable18DelegateCleanupsToEPS0_	56	static

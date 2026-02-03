@@ -1,9 +1,9 @@
 lua.c:96:12:docall	48	static
 lua.c:35:13:laction	16	static
 lua.c:28:13:lstop	16	static
-lua.c:177:12:pushline	560	static
+lua.c:177:12:pushline	576	static
 lua.c:76:12:traceback	16	static
-lua.c:65:12:report	32	static
+lua.c:65:12:report	48	static
 lua.c:140:12:dostring	32	static
 lua.c:216:13:dotty	96	static
 lua.c:340:12:pmain	96	static

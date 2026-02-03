@@ -75,7 +75,7 @@ repos/rocksdb/include/rocksdb/env.h:1793:_ZNK7rocksdb10EnvWrapper11GetThreadIDEv
 repos/rocksdb/include/rocksdb/env.h:1830:_ZN7rocksdb10EnvWrapper12GetFreeSpaceERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPm	24	static
 repos/rocksdb/include/rocksdb/env.h:1695:_ZN7rocksdb10EnvWrapper11IsDirectoryERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPb	24	static
 repos/rocksdb/include/rocksdb/env.h:1833:_ZNK7rocksdb10EnvWrapper18SanitizeEnvOptionsEPNS_10EnvOptionsE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/env_mirror.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/env_mirror.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/env_mirror.cc:16:_ZN7rocksdb20SequentialFileMirrorD2Ev	24	static
 repos/rocksdb/utilities/env_mirror.cc:16:_ZN7rocksdb20SequentialFileMirrorD0Ev	24	static
 repos/rocksdb/utilities/env_mirror.cc:22:_ZN7rocksdb20SequentialFileMirror4ReadEmPNS_5SliceEPc	120	static

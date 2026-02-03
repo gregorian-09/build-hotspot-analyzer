@@ -65,7 +65,7 @@ repos/rocksdb/include/rocksdb/utilities/transaction.h:756:_ZNK7rocksdb11Transact
 repos/rocksdb/include/rocksdb/utilities/transaction.h:771:_ZN7rocksdb11Transaction5SetIdEm	0	static
 repos/rocksdb/include/rocksdb/utilities/transaction.h:791:_ZNK7rocksdb11Transaction16GetLastLogNumberEv	0	static
 repos/rocksdb/utilities/transactions/optimistic_transaction.h:71:_ZN7rocksdb21OptimisticTransaction18UnlockGetForUpdateEPNS_18ColumnFamilyHandleERKNS_5SliceE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/optimistic_transaction.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/optimistic_transaction.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/transactions/lock/lock_tracker.h:204:_ZN7rocksdb18LockTrackerFactoryD2Ev	0	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:91:_ZNK7rocksdb23PointLockTrackerFactory6CreateEv	8	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:84:_ZN7rocksdb23PointLockTrackerFactoryD0Ev	0	static

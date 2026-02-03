@@ -1,7 +1,7 @@
 src/catch2/internal/catch_list.cpp:78:_ZN5Catch7TagInfo3addENS_9StringRefE	24	static
 src/catch2/internal/catch_list.cpp:83:_ZNK5Catch7TagInfo3allB5cxx11Ev	56	static
 src/catch2/internal/catch_list.cpp:99:_ZN5Catch4listERNS_14IEventListenerERKNS_6ConfigE	312	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_list.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_list.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_pair.h:187:_ZNSt4pairIN5Catch9StringRefENS0_7TagInfoEED2Ev	8	static
 src/catch2/../catch2/internal/catch_list.hpp:31:_ZN5Catch7TagInfoD2Ev	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN5Catch7TagInfoESaIS1_EED2Ev	24	static

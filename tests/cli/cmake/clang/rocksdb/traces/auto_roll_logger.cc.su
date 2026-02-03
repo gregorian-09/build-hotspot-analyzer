@@ -25,7 +25,7 @@ repos/rocksdb/logging/auto_roll_logger.h:57:_ZN7rocksdb14AutoRollLogger5FlushEv	
 repos/rocksdb/logging/auto_roll_logger.h:78:_ZNK7rocksdb14AutoRollLogger15GetInfoLogLevelEv	24	static
 repos/rocksdb/logging/auto_roll_logger.h:87:_ZN7rocksdb14AutoRollLogger15SetInfoLogLevelENS_12InfoLogLevelE	40	static
 repos/rocksdb/logging/auto_roll_logger.h:108:_ZN7rocksdb14AutoRollLogger9CloseImplEv	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/logging/auto_roll_logger.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/logging/auto_roll_logger.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_mESt10_Select1stIS8_ESt4lessIS5_ESaIS8_EE8_M_eraseEPSt13_Rb_tree_nodeIS8_E	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1027:_ZNSt5dequeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED2Ev	104	static

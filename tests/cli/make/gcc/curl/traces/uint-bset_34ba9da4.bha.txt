@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/uint-bset.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/uint-bset.c
+# Timestamp: 2026-01-31T00:30:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 20%)
+ phase parsing                      :   0.24 ( 75%)   0.28 ( 80%)   0.98 ( 86%)  4624k ( 51%)
+ phase opt and generate             :   0.08 ( 25%)   0.07 ( 20%)   0.14 ( 12%)  2577k ( 29%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.01 (  3%)   0.00 (  0%)    67k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  3%)   0.02 (  2%)   204k (  2%)
+ trivially dead code                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.05 ( 16%)   0.11 ( 31%)   0.73 ( 64%)  1984k ( 22%)
+ lexical analysis                   :   0.09 ( 28%)   0.08 ( 23%)   0.14 ( 12%)     0  (  0%)
+ parser (global)                    :   0.08 ( 25%)   0.09 ( 26%)   0.07 (  6%)  2129k ( 24%)
+ parser struct body                 :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   113k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   268k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   120k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   125k (  1%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    21k (  0%)
+ varconst                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    70k (  1%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.03 (  3%)  1546k ( 17%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    83k (  1%)
+ reg stack                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   110k (  1%)
+ symout                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  3%)   0.04 ( 11%)   0.02 (  2%)   153k (  2%)
+ TOTAL                              :   0.32          0.35          1.14         9021k

@@ -1,8 +1,8 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:32:1:jpeg_get_small	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:38:1:jpeg_free_small	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:49:1:jpeg_get_large	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:55:1:jpeg_free_large	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:66:1:jpeg_mem_available	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:88:1:jpeg_open_backing_store	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:101:1:jpeg_mem_init	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jmemnobs.c:107:1:jpeg_mem_term	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:32:1:jpeg_get_small	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:38:1:jpeg_free_small	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:49:1:jpeg_get_large	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:55:1:jpeg_free_large	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:66:1:jpeg_mem_available	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:88:1:jpeg_open_backing_store	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:101:1:jpeg_mem_init	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jmemnobs.c:107:1:jpeg_mem_term	8	static

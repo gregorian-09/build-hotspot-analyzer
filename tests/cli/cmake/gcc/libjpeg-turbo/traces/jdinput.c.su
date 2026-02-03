@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jdinput.c:314:1:finish_input_pass	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jdinput.c:382:1:reset_input_controller	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jdinput.c:296:1:start_input_pass	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jdinput.c:331:1:consume_markers	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/jdinput.c:404:1:jinit_input_controller	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdinput.c:314:1:finish_input_pass	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdinput.c:382:1:reset_input_controller	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdinput.c:296:1:start_input_pass	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdinput.c:331:1:consume_markers	80	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdinput.c:404:1:jinit_input_controller	16	static

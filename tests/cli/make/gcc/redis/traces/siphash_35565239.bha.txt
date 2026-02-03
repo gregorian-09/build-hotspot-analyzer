@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: siphash.c
+# Output: siphash.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o siphash.o -c siphash.c
+# Timestamp: 2026-01-31T02:11:58+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  8%)   0.01 (  5%)   0.02 (  2%)  1828k ( 46%)
+ phase parsing                      :   0.09 ( 75%)   0.19 ( 90%)   1.12 ( 94%)  1703k ( 43%)
+ phase opt and generate             :   0.02 ( 17%)   0.01 (  5%)   0.04 (  3%)   448k ( 11%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph ipa passes               :   0.02 ( 17%)   0.01 (  5%)   0.04 (  3%)   202k (  5%)
+ lto stream output                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.05 ( 42%)   0.13 ( 62%)   0.91 ( 76%)   535k ( 13%)
+ lexical analysis                   :   0.03 ( 25%)   0.01 (  5%)   0.07 (  6%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.04 ( 19%)   0.11 (  9%)   727k ( 18%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16k (  0%)
+ parser function body               :   0.01 (  8%)   0.00 (  0%)   0.02 (  2%)   130k (  3%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    45k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1552  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    42k (  1%)
+ tree aggressive DCE                :   0.01 (  8%)   0.01 (  5%)   0.00 (  0%)  5088  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   154k (  4%)
+ remove unused locals               :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.12          0.21          1.19         3981k

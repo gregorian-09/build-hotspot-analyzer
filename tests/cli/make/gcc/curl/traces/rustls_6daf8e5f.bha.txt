@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vtls/rustls.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vtls/rustls.c
+# Timestamp: 2026-01-31T00:30:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.23 ( 82%)   0.19 ( 83%)   0.91 ( 88%)  4578k ( 55%)
+ phase opt and generate             :   0.05 ( 18%)   0.03 ( 13%)   0.10 ( 10%)  1889k ( 23%)
+ dump files                         :   0.02 (  7%)   0.01 (  4%)   0.02 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)  6104  (  0%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   131k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.12 ( 43%)   0.05 ( 22%)   0.73 ( 71%)  2008k ( 24%)
+ lexical analysis                   :   0.05 ( 18%)   0.06 ( 26%)   0.07 (  7%)     0  (  0%)
+ parser (global)                    :   0.04 ( 14%)   0.06 ( 26%)   0.09 (  9%)  2106k ( 25%)
+ parser struct body                 :   0.01 (  4%)   0.01 (  4%)   0.01 (  1%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   268k (  3%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ loop init                          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    53k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ symout                             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)   123k (  1%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.28          0.23          1.03         8287k

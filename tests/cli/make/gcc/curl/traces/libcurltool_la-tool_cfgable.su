@@ -1,6 +1,0 @@
-tool_cfgable.c:36:config_alloc	24	static
-tool_cfgable.c:193:config_free	40	static
-tool_cfgable.c:59:free_config_fields	40	static
-tool_cfgable.c:213:globalconf_init	24	static
-tool_cfgable.c:274:globalconf_free	8	static
-tool_cfgable.c:255:free_globalconfig	8	static

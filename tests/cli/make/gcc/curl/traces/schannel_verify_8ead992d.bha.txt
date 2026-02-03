@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vtls/schannel_verify.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vtls/schannel_verify.c
+# Timestamp: 2026-01-31T00:30:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.20 ( 83%)   0.22 ( 81%)   0.87 ( 90%)  4572k ( 55%)
+ phase opt and generate             :   0.04 ( 17%)   0.04 ( 15%)   0.08 (  8%)  1889k ( 23%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  6104  (  0%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  4%)   0.02 (  2%)   131k (  2%)
+ preprocessing                      :   0.07 ( 29%)   0.10 ( 37%)   0.69 ( 71%)  2002k ( 24%)
+ lexical analysis                   :   0.04 ( 17%)   0.09 ( 33%)   0.13 ( 13%)     0  (  0%)
+ parser (global)                    :   0.06 ( 25%)   0.03 ( 11%)   0.04 (  4%)  2106k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   112k (  1%)
+ parser enumerator list             :   0.03 ( 12%)   0.00 (  0%)   0.00 (  0%)   268k (  3%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    53k (  1%)
+ integrated RA                      :   0.02 (  8%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ reload                             :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)  1248  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5408  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   123k (  1%)
+ TOTAL                              :   0.24          0.27          0.97         8282k

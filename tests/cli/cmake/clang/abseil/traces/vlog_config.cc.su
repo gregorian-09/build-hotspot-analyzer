@@ -16,6 +16,6 @@ repos/abseil/absl/log/internal/vlog_config.cc:312:_ZN4absl12log_internal21Update
 repos/abseil/absl/log/internal/vlog_config.cc:325:_ZN4absl12log_internal14PrependVModuleESt17basic_string_viewIcSt11char_traitsIcEEi	184	static
 repos/abseil/absl/log/internal/vlog_config.cc:333:_ZN4absl12log_internal21OnVLogVerbosityUpdateESt8functionIFvvEE	8	static
 repos/abseil/absl/log/internal/vlog_config.cc:341:_ZN4absl12log_internal29SetVModuleListHeadForTestOnlyEPNS0_8VLogSiteE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/vlog_config.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/vlog_config.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorIN4absl12log_internal12_GLOBAL__N_111VModuleInfoESaIS3_EE17_M_realloc_insertIJNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERbRiEEEvN9__gnu_cxx17__normal_iteratorIPS3_S5_EEDpOT_	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorISt8functionIFvvEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_	72	static

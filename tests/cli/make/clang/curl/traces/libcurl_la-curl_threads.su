@@ -1,4 +1,4 @@
-curl_threads.c:52:Curl_thread_create	56	static
-curl_threads.c:39:curl_thread_create_thunk	40	static
-curl_threads.c:81:Curl_thread_destroy	24	static
-curl_threads.c:90:Curl_thread_join	24	static
+../../../../../repos/curl/lib/curl_threads.c:52:Curl_thread_create	56	static
+../../../../../repos/curl/lib/curl_threads.c:39:curl_thread_create_thunk	40	static
+../../../../../repos/curl/lib/curl_threads.c:81:Curl_thread_destroy	24	static
+../../../../../repos/curl/lib/curl_threads.c:90:Curl_thread_join	24	static

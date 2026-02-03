@@ -1,4 +1,4 @@
-strequal.c:76:curl_strequal	40	static
-strequal.c:35:casecompare	40	static
-strequal.c:87:curl_strnequal	56	static
-strequal.c:51:ncasecompare	56	static
+../../../../../repos/curl/lib/strequal.c:76:curl_strequal	40	static
+../../../../../repos/curl/lib/strequal.c:35:casecompare	40	static
+../../../../../repos/curl/lib/strequal.c:87:curl_strnequal	56	static
+../../../../../repos/curl/lib/strequal.c:51:ncasecompare	56	static

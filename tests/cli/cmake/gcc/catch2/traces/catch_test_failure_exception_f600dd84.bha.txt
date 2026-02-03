@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_test_failure_exception.cpp
+# Output: CMakeFiles/Catch2.dir/catch2/internal/catch_test_failure_exception.cpp.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/.. -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/catch2/build/generated-includes -ftime-report -fstack-usage -O3 -DNDEBUG -ffile-prefix-map=/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/internal/catch_test_failure_exception.cpp.o -MF CMakeFiles/Catch2.dir/catch2/internal/catch_test_failure_exception.cpp.o.d -o CMakeFiles/Catch2.dir/catch2/internal/catch_test_failure_exception.cpp.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_test_failure_exception.cpp
+# Timestamp: 2026-01-30T18:54:02+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.02 (  1%)   0.06 (  1%)  1882k (  4%)
+ phase parsing                      :   1.98 ( 92%)   1.59 ( 94%)   5.07 ( 94%)    38M ( 88%)
+ phase lang. deferred               :   0.12 (  6%)   0.07 (  4%)   0.22 (  4%)  3238k (  7%)
+ phase opt and generate             :   0.04 (  2%)   0.01 (  1%)   0.05 (  1%)   248k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   0.41 ( 19%)   0.24 ( 14%)   0.81 ( 15%)  1716k (  4%)
+ |overload resolution               :   0.15 (  7%)   0.08 (  5%)   0.27 (  5%)  2423k (  5%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   101k (  0%)
+ callgraph functions expansion      :   0.03 (  1%)   0.01 (  1%)   0.04 (  1%)   117k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    21k (  0%)
+ df reg dead/unused notes           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   912  (  0%)
+ preprocessing                      :   0.37 ( 17%)   0.49 ( 29%)   2.07 ( 38%)  1917k (  4%)
+ parser (global)                    :   0.51 ( 24%)   0.49 ( 29%)   0.96 ( 18%)    15M ( 35%)
+ parser struct body                 :   0.24 ( 11%)   0.21 ( 12%)   0.39 (  7%)  7933k ( 18%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   106k (  0%)
+ parser function body               :   0.08 (  4%)   0.06 (  4%)   0.18 (  3%)   973k (  2%)
+ parser inl. func. body             :   0.19 (  9%)   0.04 (  2%)   0.36 (  7%)  2984k (  7%)
+ parser inl. meth. body             :   0.20 (  9%)   0.15 (  9%)   0.48 (  9%)  3490k (  8%)
+ template instantiation             :   0.47 ( 22%)   0.20 ( 12%)   0.75 ( 14%)  9731k ( 21%)
+ constant expression evaluation     :   0.03 (  1%)   0.02 (  1%)   0.08 (  1%)   108k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1984  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   128  (  0%)
+ initialize rtl                     :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  5008  (  0%)
+ TOTAL                              :   2.15          1.69          5.42           44M

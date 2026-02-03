@@ -1,0 +1,60 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/pngrutil.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c ../../../../repos/libpng/pngrutil.c
+# Timestamp: 2026-01-30T19:06:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)  1819k ( 10%)
+ phase parsing                      :   0.82 ( 51%)   0.87 ( 83%)   1.97 ( 64%)  8673k ( 47%)
+ phase opt and generate             :   0.78 ( 49%)   0.16 ( 15%)   1.06 ( 34%)  7883k ( 43%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)     0  (  0%)
+ dump files                         :   0.03 (  2%)   0.01 (  1%)   0.07 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   174k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    64k (  0%)
+ callgraph ipa passes               :   0.07 (  4%)   0.04 (  4%)   0.11 (  4%)   927k (  5%)
+ cfg construction                   :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)    72k (  0%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2712  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df scan insns                      :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)  2832  (  0%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)   152k (  1%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias analysis                     :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)    54k (  0%)
+ rebuild jump labels                :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ preprocessing                      :   0.23 ( 14%)   0.31 ( 30%)   0.67 ( 22%)  5015k ( 27%)
+ lexical analysis                   :   0.33 ( 21%)   0.34 ( 32%)   0.68 ( 22%)     0  (  0%)
+ parser (global)                    :   0.03 (  2%)   0.04 (  4%)   0.13 (  4%)  1977k ( 11%)
+ parser struct body                 :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    87k (  0%)
+ parser function body               :   0.22 ( 14%)   0.18 ( 17%)   0.49 ( 16%)  1516k (  8%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   977k (  5%)
+ tree eh                            :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    22k (  0%)
+ tree CFG construction              :   0.02 (  1%)   0.00 (  0%)   0.03 (  1%)   351k (  2%)
+ tree SSA rewrite                   :   0.02 (  1%)   0.02 (  2%)   0.03 (  1%)   310k (  2%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   435k (  2%)
+ tree switch lowering               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    28k (  0%)
+ out of ssa                         :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)    18k (  0%)
+ expand                             :   0.05 (  3%)   0.00 (  0%)   0.03 (  1%)  1758k ( 10%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)    81k (  0%)
+ jump                               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   124k (  1%)
+ integrated RA                      :   0.15 (  9%)   0.03 (  3%)   0.17 (  6%)  2189k ( 12%)
+ LRA non-specific                   :   0.08 (  5%)   0.01 (  1%)   0.09 (  3%)    40k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   154k (  1%)
+ LRA reload inheritance             :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ LRA create live ranges             :   0.04 (  3%)   0.00 (  0%)   0.01 (  0%)  8856  (  0%)
+ LRA hard reg assignment            :   0.02 (  1%)   0.02 (  2%)   0.04 (  1%)     0  (  0%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1416  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 (  1%)   0.09 (  3%)    94k (  1%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)     0  (  0%)
+ final                              :   0.05 (  3%)   0.01 (  1%)   0.04 (  1%)   340k (  2%)
+ initialize rtl                     :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.03 (  2%)   0.01 (  1%)   0.03 (  1%)  5264  (  0%)
+ rest of compilation                :   0.05 (  3%)   0.02 (  2%)   0.09 (  3%)   192k (  1%)
+ unaccounted post reload            :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   1.60          1.05          3.09           17M

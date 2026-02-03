@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/randen_round_keys.cc
+# Output: CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o -MF CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o.d -o CMakeFiles/random_internal_platform.dir/internal/randen_round_keys.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/randen_round_keys.cc
+# Timestamp: 2026-01-30T18:38:43+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 ( 23%)   0.07 ( 47%)   0.16 ( 31%)  1882k ( 56%)
+ phase parsing                      :   0.10 ( 77%)   0.08 ( 53%)   0.32 ( 62%)  1454k ( 44%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.04 (  8%)     0  (  0%)
+ |name lookup                       :   0.01 (  8%)   0.03 ( 20%)   0.00 (  0%)   136k (  4%)
+ preprocessing                      :   0.03 ( 23%)   0.04 ( 27%)   0.19 ( 37%)   253k (  8%)
+ parser (global)                    :   0.06 ( 46%)   0.03 ( 20%)   0.10 ( 19%)  1073k ( 32%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    46k (  1%)
+ constant expression evaluation     :   0.00 (  0%)   0.01 (  7%)   0.01 (  2%)   240  (  0%)
+ symout                             :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.13          0.15          0.52         3342k

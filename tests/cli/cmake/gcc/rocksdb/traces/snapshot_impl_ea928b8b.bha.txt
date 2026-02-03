@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/snapshot_impl.cc
+# Output: CMakeFiles/rocksdb.dir/db/snapshot_impl.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/db/snapshot_impl.cc.o -MF CMakeFiles/rocksdb.dir/db/snapshot_impl.cc.o.d -o CMakeFiles/rocksdb.dir/db/snapshot_impl.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/snapshot_impl.cc
+# Timestamp: 2026-01-30T22:20:23+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.04 (  0%)   0.01 (  0%)   0.06 (  0%)  2143k (  1%)
+ phase parsing                      :  10.46 ( 75%)   6.54 ( 84%)  20.53 ( 79%)   207M ( 78%)
+ phase lang. deferred               :   3.38 ( 24%)   1.22 ( 16%)   5.07 ( 20%)    56M ( 21%)
+ phase opt and generate             :   0.15 (  1%)   0.01 (  0%)   0.19 (  1%)  1664k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   2.90 ( 21%)   1.19 ( 15%)   5.08 ( 20%)  8105k (  3%)
+ |overload resolution               :   3.01 ( 21%)   1.22 ( 16%)   4.89 ( 19%)    48M ( 18%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.09 (  1%)   0.00 (  0%)   0.10 (  0%)  1356k (  0%)
+ callgraph functions expansion      :   0.05 (  0%)   0.01 (  0%)   0.06 (  0%)   231k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    45k (  0%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3248  (  0%)
+ df reg dead/unused notes           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   984  (  0%)
+ preprocessing                      :   0.97 (  7%)   1.30 ( 17%)   4.37 ( 17%)  3305k (  1%)
+ parser (global)                    :   1.69 ( 12%)   1.55 ( 20%)   3.20 ( 12%)    50M ( 19%)
+ parser struct body                 :   1.43 ( 10%)   0.61 (  8%)   2.20 (  9%)    31M ( 12%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.04 (  0%)   307k (  0%)
+ parser function body               :   0.28 (  2%)   0.19 (  2%)   0.58 (  2%)  3963k (  1%)
+ parser inl. func. body             :   0.70 (  5%)   0.32 (  4%)   1.32 (  5%)    12M (  5%)
+ parser inl. meth. body             :   1.83 ( 13%)   0.78 ( 10%)   2.65 ( 10%)    27M ( 10%)
+ template instantiation             :   6.02 ( 43%)   2.72 ( 35%)  10.13 ( 39%)   130M ( 49%)
+ constant expression evaluation     :   0.51 (  4%)   0.18 (  2%)   0.55 (  2%)  1806k (  1%)
+ constraint normalization           :   0.03 (  0%)   0.01 (  0%)   0.03 (  0%)   584k (  0%)
+ constraint satisfaction            :   0.27 (  2%)   0.09 (  1%)   0.36 (  1%)  3035k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%) 10032  (  0%)
+ tree CFG construction              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  4592  (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.07 (  0%)   0.01 (  0%)   0.08 (  0%)  5528  (  0%)
+ combiner                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  2000  (  0%)
+ if-conversion                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    96  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    97k (  0%)
+ symout                             :   0.03 (  0%)   0.00 (  0%)   0.09 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%) 10152  (  0%)
+ TOTAL                              :  14.03          7.78         25.86          267M

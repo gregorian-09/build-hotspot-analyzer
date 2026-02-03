@@ -1,6 +1,0 @@
-tool_cb_hdr.c:224:tool_write_headers	56	static
-tool_cb_hdr.c:382:tool_header_cb	200	static
-tool_cb_hdr.c:245:save_etag	72	static
-tool_cb_hdr.c:285:content_disposition	120	static
-tool_cb_hdr.c:64:write_linked_location	136	static
-tool_cb_hdr.c:151:parse_filename	88	static

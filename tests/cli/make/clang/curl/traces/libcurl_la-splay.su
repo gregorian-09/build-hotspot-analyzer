@@ -1,6 +1,6 @@
-splay.c:41:Curl_splay	120	static
-splay.c:104:Curl_splayinsert	40	static
-splay.c:152:Curl_splaygetbest	56	static
-splay.c:208:Curl_splayremove	56	static
-splay.c:281:Curl_splayset	8	static
-splay.c:287:Curl_splayget	8	static
+../../../../../repos/curl/lib/splay.c:41:Curl_splay	120	static
+../../../../../repos/curl/lib/splay.c:104:Curl_splayinsert	40	static
+../../../../../repos/curl/lib/splay.c:152:Curl_splaygetbest	56	static
+../../../../../repos/curl/lib/splay.c:208:Curl_splayremove	56	static
+../../../../../repos/curl/lib/splay.c:281:Curl_splayset	8	static
+../../../../../repos/curl/lib/splay.c:287:Curl_splayget	8	static

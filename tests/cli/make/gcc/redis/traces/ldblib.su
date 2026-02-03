@@ -6,7 +6,7 @@ ldblib.c:22:12:db_getregistry	16	static
 ldblib.c:54:12:db_setfenv	16	static
 ldblib.c:28:12:db_getmetatable	16	static
 ldblib.c:47:12:db_getfenv	16	static
-ldblib.c:302:12:db_debug	320	static
+ldblib.c:302:12:db_debug	336	static
 ldblib.c:207:13:hookf	32	static
 ldblib.c:245:13:gethooktable	32	static
 ldblib.c:99:12:db_getinfo	176	static

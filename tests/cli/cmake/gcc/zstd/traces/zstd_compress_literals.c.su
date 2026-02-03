@@ -1,3 +1,3 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_literals.c:39:8:ZSTD_noCompressLiterals	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_literals.c:81:8:ZSTD_compressRleLiteralsBlock	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_literals.c:129:8:ZSTD_compressLiterals	176	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_literals.c:39:8:ZSTD_noCompressLiterals	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_literals.c:81:8:ZSTD_compressRleLiteralsBlock	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_literals.c:129:8:ZSTD_compressLiterals	176	dynamic,bounded

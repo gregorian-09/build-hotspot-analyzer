@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/mimalloc/src/alloc-posix.c
+# Output: CMakeFiles/mimalloc-static.dir/src/alloc-posix.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DMI_BUILD_RELEASE -DMI_CMAKE_BUILD_TYPE=release -DMI_MALLOC_OVERRIDE -DMI_STATIC_LIB -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/mimalloc/include -ftime-report -fstack-usage -O3 -DNDEBUG -std=gnu11 -fPIC -Wall -Wextra -Wno-unknown-pragmas -fvisibility=hidden -Wstrict-prototypes -ftls-model=initial-exec -fno-builtin-malloc -MD -MT CMakeFiles/mimalloc-static.dir/src/alloc-posix.c.o -MF CMakeFiles/mimalloc-static.dir/src/alloc-posix.c.o.d -o CMakeFiles/mimalloc-static.dir/src/alloc-posix.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/mimalloc/src/alloc-posix.c
+# Timestamp: 2026-01-30T19:08:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.02 (  2%)  1818k ( 22%)
+ phase parsing                      :   0.27 ( 69%)   0.39 ( 87%)   0.85 ( 80%)  4868k ( 59%)
+ phase opt and generate             :   0.12 ( 31%)   0.05 ( 11%)   0.18 ( 17%)  1549k ( 19%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.02 (  5%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   848  (  0%)
+ callgraph functions expansion      :   0.09 ( 23%)   0.04 (  9%)   0.15 ( 14%)  1156k ( 14%)
+ callgraph ipa passes               :   0.03 (  8%)   0.01 (  2%)   0.03 (  3%)   270k (  3%)
+ ipa function summary               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2968  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.08 ( 21%)   0.13 ( 29%)   0.31 ( 29%)   932k ( 11%)
+ lexical analysis                   :   0.08 ( 21%)   0.11 ( 24%)   0.24 ( 23%)     0  (  0%)
+ parser (global)                    :   0.04 ( 10%)   0.07 ( 16%)   0.15 ( 14%)  2238k ( 27%)
+ parser struct body                 :   0.01 (  3%)   0.01 (  2%)   0.00 (  0%)    78k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    41k (  1%)
+ parser inl. func. body             :   0.06 ( 15%)   0.07 ( 16%)   0.13 ( 12%)  1547k ( 19%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ backwards jump threading           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  7680  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    29k (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5448  (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2104  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    43k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    69k (  1%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   240  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   102k (  1%)
+ CPROP                              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ combiner                           :   0.00 (  0%)   0.01 (  2%)   0.01 (  1%)    13k (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   439k (  5%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  8776  (  0%)
+ reg stack                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.04 ( 10%)   0.02 (  4%)   0.01 (  1%)    47k (  1%)
+ TOTAL                              :   0.39          0.45          1.06         8237k

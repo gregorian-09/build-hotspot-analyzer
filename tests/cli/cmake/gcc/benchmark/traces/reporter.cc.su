@@ -1,11 +1,11 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h:1924:16:virtual void benchmark::BenchmarkReporter::ReportRunsConfig(double, bool, benchmark::IterationCount)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h:1939:16:virtual void benchmark::BenchmarkReporter::Finalize()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:29:1:benchmark::BenchmarkReporter::BenchmarkReporter()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:32:1:benchmark::BenchmarkReporter::~BenchmarkReporter()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:32:1:virtual benchmark::BenchmarkReporter::~BenchmarkReporter()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:34:6:static void benchmark::BenchmarkReporter::PrintBasicContext(std::ostream*, const Context&)	144	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:106:1:benchmark::BenchmarkReporter::Context::Context()	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:109:13:std::string benchmark::BenchmarkReporter::Run::benchmark_name() const	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:117:8:double benchmark::BenchmarkReporter::Run::GetAdjustedRealTime() const	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:125:8:double benchmark::BenchmarkReporter::Run::GetAdjustedCPUTime() const	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc:133:1:cc)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/include/benchmark/benchmark.h:1942:16:virtual void benchmark::BenchmarkReporter::ReportRunsConfig(double, bool, benchmark::IterationCount)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/include/benchmark/benchmark.h:1957:16:virtual void benchmark::BenchmarkReporter::Finalize()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:29:1:benchmark::BenchmarkReporter::BenchmarkReporter()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:32:1:benchmark::BenchmarkReporter::~BenchmarkReporter()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:32:1:virtual benchmark::BenchmarkReporter::~BenchmarkReporter()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:34:6:static void benchmark::BenchmarkReporter::PrintBasicContext(std::ostream*, const Context&)	144	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:106:1:benchmark::BenchmarkReporter::Context::Context()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:109:13:std::string benchmark::BenchmarkReporter::Run::benchmark_name() const	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:117:8:double benchmark::BenchmarkReporter::Run::GetAdjustedRealTime() const	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:125:8:double benchmark::BenchmarkReporter::Run::GetAdjustedCPUTime() const	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/reporter.cc:133:1:cc)	8	static

@@ -5,4 +5,4 @@ repos/abseil/absl/synchronization/internal/pthread_waiter.cc:49:_ZN4absl24synchr
 repos/abseil/absl/synchronization/internal/pthread_waiter.cc:139:_ZN4absl24synchronization_internal13PthreadWaiter4PostEv	24	static
 repos/abseil/absl/synchronization/internal/pthread_waiter.cc:150:_ZN4absl24synchronization_internal13PthreadWaiter19InternalCondVarPokeEv	8	static
 repos/abseil/absl/synchronization/internal/pthread_waiter.cc:145:_ZN4absl24synchronization_internal13PthreadWaiter4PokeEv	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/pthread_waiter.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/pthread_waiter.cc:__clang_call_terminate	8	static

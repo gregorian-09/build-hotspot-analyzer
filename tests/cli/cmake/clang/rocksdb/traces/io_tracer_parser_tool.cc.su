@@ -1,0 +1,12 @@
+/usr/include/gflags/gflags.h:587:_ZN3fLS20StringFlagDestructorD2Ev	24	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:26:_ZN7rocksdb19IOTraceRecordParserC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	40	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:29:_ZN7rocksdb19IOTraceRecordParser24PrintHumanReadableHeaderERKNS_13IOTraceHeaderE	456	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:38:_ZN7rocksdb19IOTraceRecordParser31PrintHumanReadableIOTraceRecordERKNS_13IOTraceRecordE	488	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:95:_ZN7rocksdb19IOTraceRecordParser18ReadIOTraceRecordsEv	312	static
+repos/rocksdb/trace_replay/io_tracer.h:40:_ZN7rocksdb13IOTraceRecordD2Ev	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb13IOTraceReaderESt14default_deleteIS1_EED2Ev	24	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:129:_ZN7rocksdb16io_tracer_parserEiPPc	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
+repos/rocksdb/tools/io_tracer_parser_tool.cc:0:_GLOBAL__sub_I_io_tracer_parser_tool.cc	24	static

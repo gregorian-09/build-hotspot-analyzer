@@ -1,0 +1,59 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/block_based/parsed_full_filter_block.cc
+# Output: CMakeFiles/rocksdb.dir/table/block_based/parsed_full_filter_block.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/table/block_based/parsed_full_filter_block.cc.o -MF CMakeFiles/rocksdb.dir/table/block_based/parsed_full_filter_block.cc.o.d -o CMakeFiles/rocksdb.dir/table/block_based/parsed_full_filter_block.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/block_based/parsed_full_filter_block.cc
+# Timestamp: 2026-01-30T22:38:28+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  0%)   0.02 (  0%)   0.08 (  0%)  2143k (  0%)
+ phase parsing                      :  14.86 ( 80%)   9.00 ( 87%)  28.47 ( 83%)   354M ( 82%)
+ phase lang. deferred               :   3.38 ( 18%)   1.30 ( 13%)   5.15 ( 15%)    73M ( 17%)
+ phase opt and generate             :   0.31 (  2%)   0.07 (  1%)   0.42 (  1%)  3633k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   3.86 ( 21%)   1.62 ( 16%)   6.05 ( 18%)    11M (  3%)
+ |overload resolution               :   3.72 ( 20%)   1.39 ( 13%)   5.56 ( 16%)    65M ( 15%)
+ garbage collection                 :   0.47 (  3%)   0.00 (  0%)   0.51 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  0%)   0.02 (  0%)   0.03 (  0%)     0  (  0%)
+ callgraph construction             :   0.16 (  1%)   0.02 (  0%)   0.16 (  0%)  1944k (  0%)
+ callgraph optimization             :   0.02 (  0%)   0.01 (  0%)   0.06 (  0%)  7840  (  0%)
+ callgraph functions expansion      :   0.07 (  0%)   0.02 (  0%)   0.10 (  0%)   526k (  0%)
+ callgraph ipa passes               :   0.09 (  0%)   0.04 (  0%)   0.14 (  0%)   864k (  0%)
+ ipa inlining heuristics            :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    18k (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)  4224  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   1.71 (  9%)   2.29 ( 22%)   6.41 ( 19%)  9113k (  2%)
+ parser (global)                    :   3.05 ( 16%)   2.48 ( 24%)   6.24 ( 18%)   105M ( 24%)
+ parser struct body                 :   1.31 (  7%)   0.44 (  4%)   2.10 (  6%)    43M ( 10%)
+ parser enumerator list             :   0.02 (  0%)   0.01 (  0%)   0.01 (  0%)   501k (  0%)
+ parser function body               :   0.51 (  3%)   0.26 (  3%)   0.91 (  3%)    14M (  3%)
+ parser inl. func. body             :   1.93 ( 10%)   0.95 (  9%)   3.14 (  9%)    43M ( 10%)
+ parser inl. meth. body             :   1.92 ( 10%)   0.74 (  7%)   2.87 (  8%)    35M (  8%)
+ template instantiation             :   6.59 ( 35%)   2.75 ( 26%)  10.32 ( 30%)   168M ( 39%)
+ constant expression evaluation     :   0.46 (  2%)   0.20 (  2%)   0.68 (  2%)  2363k (  1%)
+ constraint normalization           :   0.03 (  0%)   0.01 (  0%)   0.02 (  0%)   710k (  0%)
+ constraint satisfaction            :   0.14 (  1%)   0.10 (  1%)   0.32 (  1%)  3780k (  1%)
+ early inlining heuristics          :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   111k (  0%)
+ integration                        :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)   202k (  0%)
+ tree eh                            :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    19k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)  9344  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    82k (  0%)
+ tree modref                        :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    46k (  0%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.07 (  0%)   0.04 (  0%)   0.06 (  0%)  3200  (  0%)
+ CSE                                :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  1296  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    78k (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7656  (  0%)
+ machine dep reorg                  :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)  5200  (  0%)
+ final                              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ symout                             :   0.03 (  0%)   0.03 (  0%)   0.03 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ TOTAL                              :  18.57         10.39         34.14          433M

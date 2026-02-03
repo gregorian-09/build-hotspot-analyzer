@@ -55,7 +55,7 @@ repos/rocksdb/include/rocksdb/file_system.h:1685:_ZN7rocksdb17FileSystemWrapper4
 repos/rocksdb/include/rocksdb/file_system.h:1690:_ZN7rocksdb17FileSystemWrapper7AbortIOERSt6vectorIPvSaIS2_EE	24	static
 repos/rocksdb/include/rocksdb/file_system.h:1694:_ZN7rocksdb17FileSystemWrapper24DiscardCacheForDirectoryERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	0	static
 repos/rocksdb/include/rocksdb/file_system.h:1698:_ZN7rocksdb17FileSystemWrapper12SupportedOpsERl	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/env_timed.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/env_timed.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:133:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EED2Ev	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:608:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb15TimedFileSystemESaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev	0	static

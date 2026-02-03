@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/poison.cc
+# Output: CMakeFiles/poison.dir/internal/poison.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/poison.dir/internal/poison.cc.o -MF CMakeFiles/poison.dir/internal/poison.cc.o.d -o CMakeFiles/poison.dir/internal/poison.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/poison.cc
+# Timestamp: 2026-01-30T18:39:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  5%)   0.02 ( 10%)   0.07 ( 11%)  1882k ( 31%)
+ phase parsing                      :   0.18 ( 82%)   0.17 ( 85%)   0.50 ( 77%)  4088k ( 67%)
+ phase opt and generate             :   0.03 ( 14%)   0.01 (  5%)   0.06 (  9%)   142k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ |name lookup                       :   0.03 ( 14%)   0.01 (  5%)   0.04 (  6%)   264k (  4%)
+ |overload resolution               :   0.01 (  5%)   0.00 (  0%)   0.02 (  3%)   307k (  5%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph functions expansion      :   0.03 ( 14%)   0.01 (  5%)   0.05 (  8%)    78k (  1%)
+ preprocessing                      :   0.06 ( 27%)   0.08 ( 40%)   0.31 ( 48%)   957k ( 16%)
+ parser (global)                    :   0.06 ( 27%)   0.05 ( 25%)   0.10 ( 15%)  1808k ( 30%)
+ parser struct body                 :   0.01 (  5%)   0.01 (  5%)   0.00 (  0%)    97k (  2%)
+ parser function body               :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)    14k (  0%)
+ parser inl. func. body             :   0.05 ( 23%)   0.02 ( 10%)   0.08 ( 12%)  1103k ( 18%)
+ tree reassociation                 :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree strlen optimization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1072  (  0%)
+ CSE 2                              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    24  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   656  (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1544  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.02 (  3%)    12k (  0%)
+ TOTAL                              :   0.22          0.20          0.65         6113k

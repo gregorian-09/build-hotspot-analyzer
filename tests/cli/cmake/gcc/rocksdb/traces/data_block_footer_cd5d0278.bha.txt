@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/block_based/data_block_footer.cc
+# Output: CMakeFiles/rocksdb.dir/table/block_based/data_block_footer.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/table/block_based/data_block_footer.cc.o -MF CMakeFiles/rocksdb.dir/table/block_based/data_block_footer.cc.o.d -o CMakeFiles/rocksdb.dir/table/block_based/data_block_footer.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/block_based/data_block_footer.cc
+# Timestamp: 2026-01-30T22:36:49+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.03 (  0%)   0.06 (  0%)  2143k (  1%)
+ phase parsing                      :   8.57 ( 80%)   5.12 ( 85%)  16.32 ( 83%)   185M ( 79%)
+ phase lang. deferred               :   2.06 ( 19%)   0.89 ( 15%)   3.24 ( 16%)    45M ( 20%)
+ phase opt and generate             :   0.10 (  1%)   0.01 (  0%)   0.13 (  1%)  1325k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   2.53 ( 24%)   1.13 ( 19%)   3.72 ( 19%)  7227k (  3%)
+ |overload resolution               :   2.29 ( 21%)   0.78 ( 13%)   3.54 ( 18%)    38M ( 16%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.07 (  1%)   0.00 (  0%)   0.08 (  0%)  1144k (  0%)
+ callgraph functions expansion      :   0.03 (  0%)   0.01 (  0%)   0.04 (  0%)   129k (  0%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   1.03 ( 10%)   1.10 ( 18%)   3.29 ( 17%)  3256k (  1%)
+ parser (global)                    :   1.20 ( 11%)   1.15 ( 19%)   2.78 ( 14%)    49M ( 21%)
+ parser struct body                 :   1.07 ( 10%)   0.55 (  9%)   1.99 ( 10%)    30M ( 13%)
+ parser enumerator list             :   0.04 (  0%)   0.00 (  0%)   0.03 (  0%)   366k (  0%)
+ parser function body               :   0.35 (  3%)   0.17 (  3%)   0.57 (  3%)  2910k (  1%)
+ parser inl. func. body             :   0.58 (  5%)   0.19 (  3%)   0.89 (  5%)    11M (  5%)
+ parser inl. meth. body             :   1.51 ( 14%)   0.64 ( 11%)   2.25 ( 11%)    26M ( 11%)
+ template instantiation             :   4.37 ( 41%)   2.02 ( 33%)   6.88 ( 35%)   101M ( 43%)
+ constant expression evaluation     :   0.28 (  3%)   0.11 (  2%)   0.42 (  2%)  1621k (  1%)
+ constraint normalization           :   0.03 (  0%)   0.00 (  0%)   0.03 (  0%)   520k (  0%)
+ constraint satisfaction            :   0.15 (  1%)   0.07 (  1%)   0.32 (  2%)  3051k (  1%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)  4288  (  0%)
+ varconst                           :   0.02 (  0%)   0.01 (  0%)   0.09 (  0%)  1408  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    48k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ TOTAL                              :  10.74          6.05         19.76          235M

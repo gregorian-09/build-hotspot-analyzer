@@ -1,0 +1,57 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/cpu_detect.cc
+# Output: CMakeFiles/crc_cpu_detect.dir/internal/cpu_detect.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/crc/CMakeFiles/crc_cpu_detect.dir/internal/cpu_detect.cc.o -MF CMakeFiles/crc_cpu_detect.dir/internal/cpu_detect.cc.o.d -o CMakeFiles/crc_cpu_detect.dir/internal/cpu_detect.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/cpu_detect.cc
+# Timestamp: 2026-01-30T18:39:26+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  1%)   0.01 (  0%)   0.06 (  1%)  1882k (  3%)
+ phase parsing                      :   2.61 ( 91%)   1.97 ( 93%)   5.12 ( 91%)    47M ( 88%)
+ phase lang. deferred               :   0.10 (  3%)   0.08 (  4%)   0.20 (  4%)  3300k (  6%)
+ phase opt and generate             :   0.15 (  5%)   0.05 (  2%)   0.21 (  4%)  1425k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.51 ( 18%)   0.38 ( 18%)   0.85 ( 15%)  2266k (  4%)
+ |overload resolution               :   0.17 (  6%)   0.09 (  4%)   0.22 (  4%)  3018k (  5%)
+ dump files                         :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)   137k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)  3232  (  0%)
+ callgraph functions expansion      :   0.08 (  3%)   0.02 (  1%)   0.11 (  2%)   622k (  1%)
+ callgraph ipa passes               :   0.05 (  2%)   0.02 (  1%)   0.08 (  1%)   468k (  1%)
+ df live regs                       :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  8856  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)    29k (  0%)
+ preprocessing                      :   0.51 ( 18%)   0.53 ( 25%)   1.37 ( 24%)  1922k (  3%)
+ parser (global)                    :   0.58 ( 20%)   0.58 ( 27%)   1.30 ( 23%)    16M ( 30%)
+ parser struct body                 :   0.34 ( 12%)   0.16 (  8%)   0.71 ( 13%) 10018k ( 18%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ parser function body               :   0.17 (  6%)   0.16 (  8%)   0.24 (  4%)  1598k (  3%)
+ parser inl. func. body             :   0.24 (  8%)   0.12 (  6%)   0.40 (  7%)  3497k (  6%)
+ parser inl. meth. body             :   0.28 ( 10%)   0.23 ( 11%)   0.48 (  9%)  5765k ( 10%)
+ template instantiation             :   0.50 ( 17%)   0.24 ( 11%)   0.73 ( 13%)    12M ( 23%)
+ constant expression evaluation     :   0.05 (  2%)   0.02 (  1%)   0.09 (  2%)   107k (  0%)
+ inline parameters                  :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    64k (  0%)
+ integration                        :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)   150k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)   106k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  3248  (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    91k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ backwards jump threading           :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)    24k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ dominance frontiers                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    77k (  0%)
+ varconst                           :   0.03 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ branch prediction                  :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  4872  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    82k (  0%)
+ shorten branches                   :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ tree if-combine                    :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   624  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8872  (  0%)
+ TOTAL                              :   2.88          2.11          5.60           53M

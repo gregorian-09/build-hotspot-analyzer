@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/null.cpp
+# Output: CMakeFiles/yaml-cpp.dir/src/null.cpp.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DYAML_CPP_STATIC_DEFINE -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src -ftime-report -fstack-usage -O3 -DNDEBUG -std=gnu++11 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors -MD -MT CMakeFiles/yaml-cpp.dir/src/null.cpp.o -MF CMakeFiles/yaml-cpp.dir/src/null.cpp.o.d -o CMakeFiles/yaml-cpp.dir/src/null.cpp.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/null.cpp
+# Timestamp: 2026-01-30T19:19:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 ( 33%)   0.01 ( 14%)   0.08 ( 25%)  1876k ( 54%)
+ phase parsing                      :   0.03 ( 33%)   0.04 ( 57%)   0.16 ( 50%)  1368k ( 40%)
+ phase opt and generate             :   0.03 ( 33%)   0.02 ( 29%)   0.05 ( 16%)   194k (  6%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  9%)     0  (  0%)
+ |name lookup                       :   0.03 ( 33%)   0.01 ( 14%)   0.06 ( 19%)   153k (  4%)
+ dump files                         :   0.00 (  0%)   0.01 ( 14%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   400  (  0%)
+ callgraph functions expansion      :   0.02 ( 22%)   0.01 ( 14%)   0.04 ( 12%)   103k (  3%)
+ callgraph ipa passes               :   0.01 ( 11%)   0.01 ( 14%)   0.01 (  3%)    63k (  2%)
+ preprocessing                      :   0.02 ( 22%)   0.02 ( 29%)   0.10 ( 31%)   234k (  7%)
+ parser (global)                    :   0.01 ( 11%)   0.00 (  0%)   0.05 ( 16%)   929k ( 27%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 29%)   0.01 (  3%)   133k (  4%)
+ inline parameters                  :   0.01 ( 11%)   0.01 ( 14%)   0.00 (  0%)  6840  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ thread pro- & epilogue             :   0.01 ( 11%)   0.00 (  0%)   0.00 (  0%)  2528  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)  3040  (  0%)
+ initialize rtl                     :   0.01 ( 11%)   0.00 (  0%)   0.01 (  3%)    12k (  0%)
+ TOTAL                              :   0.09          0.07          0.32         3455k

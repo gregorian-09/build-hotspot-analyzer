@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/gaussian_distribution.cc
+# Output: CMakeFiles/random_distributions.dir/gaussian_distribution.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_distributions.dir/gaussian_distribution.cc.o -MF CMakeFiles/random_distributions.dir/gaussian_distribution.cc.o.d -o CMakeFiles/random_distributions.dir/gaussian_distribution.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/gaussian_distribution.cc
+# Timestamp: 2026-01-30T18:40:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.04 (  1%)   0.01 (  0%)   0.07 (  0%)  1882k (  2%)
+ phase parsing                      :   5.78 ( 93%)   4.59 ( 98%)  14.15 ( 96%)    86M ( 90%)
+ phase lang. deferred               :   0.39 (  6%)   0.09 (  2%)   0.51 (  3%)  7980k (  8%)
+ phase opt and generate             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   331k (  0%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  0%)   0.03 (  0%)     0  (  0%)
+ |name lookup                       :   1.03 ( 17%)   0.58 ( 12%)   1.77 ( 12%)  3223k (  3%)
+ |overload resolution               :   0.42 (  7%)   0.16 (  3%)   0.46 (  3%)    10M ( 10%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   301k (  0%)
+ preprocessing                      :   1.30 ( 21%)   1.71 ( 36%)   6.57 ( 44%)  6299k (  6%)
+ parser (global)                    :   1.61 ( 26%)   1.54 ( 33%)   3.09 ( 21%)    30M ( 31%)
+ parser struct body                 :   0.52 (  8%)   0.25 (  5%)   0.91 (  6%)    13M ( 14%)
+ parser enumerator list             :   0.02 (  0%)   0.02 (  0%)   0.01 (  0%)   118k (  0%)
+ parser function body               :   0.37 (  6%)   0.29 (  6%)   0.85 (  6%)  3693k (  4%)
+ parser inl. func. body             :   0.52 (  8%)   0.18 (  4%)   0.64 (  4%)    11M ( 12%)
+ parser inl. meth. body             :   0.61 ( 10%)   0.22 (  5%)   0.86 (  6%)  9378k (  9%)
+ template instantiation             :   1.13 ( 18%)   0.44 (  9%)   1.54 ( 10%)    19M ( 20%)
+ constant expression evaluation     :   0.07 (  1%)   0.03 (  1%)   0.17 (  1%)   346k (  0%)
+ varconst                           :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  4696  (  0%)
+ symout                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   6.22          4.70         14.78           96M

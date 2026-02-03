@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/murmurhash.cc
+# Output: CMakeFiles/rocksdb.dir/util/murmurhash.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/util/murmurhash.cc.o -MF CMakeFiles/rocksdb.dir/util/murmurhash.cc.o.d -o CMakeFiles/rocksdb.dir/util/murmurhash.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/murmurhash.cc
+# Timestamp: 2026-01-30T22:46:54+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  1%)   0.01 (  1%)   0.05 (  1%)  2143k (  4%)
+ phase parsing                      :   1.56 ( 87%)   1.08 ( 93%)   3.21 ( 89%)    39M ( 84%)
+ phase lang. deferred               :   0.16 (  9%)   0.06 (  5%)   0.25 (  7%)  4786k ( 10%)
+ phase opt and generate             :   0.06 (  3%)   0.01 (  1%)   0.07 (  2%)   588k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.42 ( 23%)   0.14 ( 12%)   0.44 ( 12%)  1882k (  4%)
+ |overload resolution               :   0.14 (  8%)   0.10 (  9%)   0.28 (  8%)  3614k (  8%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   138k (  0%)
+ callgraph functions expansion      :   0.05 (  3%)   0.01 (  1%)   0.06 (  2%)   387k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    43k (  0%)
+ preprocessing                      :   0.27 ( 15%)   0.30 ( 26%)   0.96 ( 27%)  1796k (  4%)
+ parser (global)                    :   0.41 ( 23%)   0.37 ( 32%)   0.82 ( 23%)    14M ( 31%)
+ parser struct body                 :   0.23 ( 13%)   0.05 (  4%)   0.43 ( 12%)  7985k ( 17%)
+ parser function body               :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   130k (  0%)
+ parser inl. func. body             :   0.18 ( 10%)   0.07 (  6%)   0.26 (  7%)  4713k ( 10%)
+ parser inl. meth. body             :   0.27 ( 15%)   0.09 (  8%)   0.30 (  8%)  4479k (  9%)
+ template instantiation             :   0.34 ( 19%)   0.20 ( 17%)   0.63 ( 18%)    10M ( 23%)
+ constant expression evaluation     :   0.01 (  1%)   0.05 (  4%)   0.05 (  1%)   187k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   632  (  0%)
+ dominator optimization             :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)  9744  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   115k (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  4440  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ combiner                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    50k (  0%)
+ ree                                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   424  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2120  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ TOTAL                              :   1.80          1.16          3.59           46M

@@ -1,4 +1,4 @@
-repos/rocksdb/cache/clock_cache.cc:1151:_ZN7rocksdb11clock_cache15ClockCacheShardINS0_20FixedHyperClockTableEEC2EmbNS_25CacheMetadataChargePolicyEPNS_15MemoryAllocatorEPKSt8functionIFbRKNS_5SliceEPNS_5Cache6HandleEbEEPKjRKNS2_4OptsE	0	static
+repos/rocksdb/cache/clock_cache.cc:1151:_ZN7rocksdb11clock_cache15ClockCacheShardINS0_20FixedHyperClockTableEEC2EmbNS_25CacheMetadataChargePolicyEPNS_15MemoryAllocatorEPKSt8functionIFbRKNS_5SliceEPNS_5Cache6HandleEbEEPKjRKNS2_4OptsE	40	static
 repos/rocksdb/cache/clock_cache.h:1093:_ZN7rocksdb11clock_cache15ClockCacheShardINS0_20FixedHyperClockTableEE20HashPieceForShardingERKSt5arrayImLm2EE	0	static
 repos/rocksdb/cache/clock_cache.h:1096:_ZN7rocksdb11clock_cache15ClockCacheShardINS0_20FixedHyperClockTableEE11ComputeHashERKNS_5SliceEj	24	static
 repos/rocksdb/cache/clock_cache.h:1109:_ZN7rocksdb11clock_cache15ClockCacheShardINS0_20FixedHyperClockTableEE11ReverseHashERKSt5arrayImLm2EEPS5_j	24	static
@@ -75,7 +75,7 @@ repos/rocksdb/cache/clock_cache.cc:568:_ZNK7rocksdb11clock_cache14BaseClockTable
 repos/rocksdb/cache/clock_cache.cc:717:_ZN7rocksdb11clock_cache20FixedHyperClockTableC2EmbNS_25CacheMetadataChargePolicyEPNS_15MemoryAllocatorEPKSt8functionIFbRKNS_5SliceEPNS_5Cache6HandleEbEEPKjRKNS1_4OptsE	40	static
 repos/rocksdb/cache/clock_cache.cc:1204:_ZN7rocksdb11clock_cache20FixedHyperClockTable12CalcHashBitsEmmNS_25CacheMetadataChargePolicyE	0	static
 repos/rocksdb/cache/clock_cache.cc:741:_ZN7rocksdb11clock_cache20FixedHyperClockTableD2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/clock_cache.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/cache/clock_cache.cc:__clang_call_terminate	8	static
 repos/rocksdb/cache/clock_cache.cc:774:_ZN7rocksdb11clock_cache20FixedHyperClockTable11StartInsertERNS1_11InsertStateE	0	static
 repos/rocksdb/cache/clock_cache.cc:776:_ZN7rocksdb11clock_cache20FixedHyperClockTable12GrowIfNeededEmRNS1_11InsertStateE	0	static
 repos/rocksdb/cache/clock_cache.cc:780:_ZN7rocksdb11clock_cache20FixedHyperClockTable8DoInsertERKNS0_20ClockHandleBasicDataEjbRNS1_11InsertStateE	48	static
@@ -157,7 +157,7 @@ repos/rocksdb/cache/sharded_cache.h:309:_ZNK7rocksdb12ShardedCacheINS_11clock_ca
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:1918:_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEElNS0_5__ops15_Iter_less_iterEEvT_S9_T0_T1_	72	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:1854:_ZSt22__final_insertion_sortIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEENS0_5__ops15_Iter_less_iterEEvT_S9_T0_	88	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_algo.h:1854:_ZSt22__final_insertion_sortIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEENS0_5__ops15_Iter_less_iterEEvT_S9_T0_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_heap.h:340:_ZSt11__make_heapIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEENS0_5__ops15_Iter_less_iterEEvT_S9_RT0_	0	static
 repos/rocksdb/include/rocksdb/cache.h:222:_ZN7rocksdb15LRUCacheOptionsD0Ev	24	static
 repos/rocksdb/include/rocksdb/cache.h:204:_ZN7rocksdb19ShardedCacheOptionsD0Ev	24	static
@@ -166,11 +166,11 @@ repos/rocksdb/include/rocksdb/cache.h:204:_ZN7rocksdb19ShardedCacheOptionsD0Ev	2
 repos/rocksdb/include/rocksdb/cache.h:403:_ZN7rocksdb22HyperClockCacheOptionsD0Ev	24	static
 repos/rocksdb/cache/sharded_cache.h:146:_ZN7rocksdb12ShardedCacheINS_11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEED0Ev	0	static
 repos/rocksdb/include/rocksdb/advanced_cache.h:434:_ZNK7rocksdb5Cache14ReportProblemsERKSt10shared_ptrINS_6LoggerEE	0	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E10_M_managerERSt9_Any_dataRKSB_St18_Manager_operation	0	static
 repos/rocksdb/include/rocksdb/advanced_cache.h:191:_ZN7rocksdb5CacheD2Ev	40	static
 repos/rocksdb/cache/sharded_cache.h:146:_ZN7rocksdb12ShardedCacheINS_11clock_cache15ClockCacheShardINS1_19AutoHyperClockTableEEEED0Ev	0	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_19AutoHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	0	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_19AutoHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_19AutoHyperClockTableEEEEZNS0_12ShardedCacheIS4_ED1EvEUlS5_E_E10_M_managerERSt9_Any_dataRKSB_St18_Manager_operation	0	static
 repos/rocksdb/cache/clock_cache.cc:438:_ZN7rocksdb11clock_cache14BaseClockTable27ChargeUsageMaybeEvictStrictINS0_20FixedHyperClockTableEEENS_6StatusEmbRNT_11InsertStateE	248	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3651:_ZStplIcSt11char_traitsIcESaIcEENSt7__cxx1112basic_stringIT_T0_T1_EEOS8_S9_	56	static
@@ -203,8 +203,9 @@ repos/rocksdb/cache/clock_cache.h:1191:_ZN7rocksdb11clock_cache19BaseHyperClockC
 repos/rocksdb/cache/clock_cache.cc:1391:_ZN7rocksdb11clock_cache19BaseHyperClockCacheINS0_20FixedHyperClockTableEEC2ERKNS_22HyperClockCacheOptionsE	104	static
 repos/rocksdb/cache/sharded_cache.h:146:_ZN7rocksdb12ShardedCacheINS_11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEED2Ev	104	static
 repos/rocksdb/cache/clock_cache.h:1191:_ZN7rocksdb11clock_cache19BaseHyperClockCacheINS0_20FixedHyperClockTableEED0Ev	0	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS1_19BaseHyperClockCacheIS3_EC1ERKNS0_22HyperClockCacheOptionsEEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS1_19BaseHyperClockCacheIS3_EC1ERKNS0_22HyperClockCacheOptionsEEUlS5_E_E9_M_invokeERKSt9_Any_dataOS5_	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvPN7rocksdb11clock_cache15ClockCacheShardINS1_20FixedHyperClockTableEEEEZNS1_19BaseHyperClockCacheIS3_EC1ERKNS0_22HyperClockCacheOptionsEEUlS5_E_E10_M_managerERSt9_Any_dataRKSE_St18_Manager_operation	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:60:_ZSt13__invoke_implIvRZN7rocksdb11clock_cache19BaseHyperClockCacheINS1_20FixedHyperClockTableEEC1ERKNS0_22HyperClockCacheOptionsEEUlPNS1_15ClockCacheShardIS3_EEE_JSA_EET_St14__invoke_otherOT0_DpOT1_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:133:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EED2Ev	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:608:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb25CacheWithSecondaryAdapterESaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:611:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb25CacheWithSecondaryAdapterESaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv	0	static

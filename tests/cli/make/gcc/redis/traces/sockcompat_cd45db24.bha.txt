@@ -1,0 +1,21 @@
+# BHA Trace
+# Source: sockcompat.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -std=c99 -c -O3 -fPIC -fPIC -ftime-report -fstack-usage -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -fPIC -ftime-report -fstack-usage -pedantic sockcompat.c
+# Timestamp: 2026-01-31T02:07:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 ( 14%)   0.00 (  0%)   0.04 ( 22%)  1532k ( 51%)
+ phase parsing                      :   0.06 ( 86%)   0.06 ( 86%)   0.14 ( 78%)  1448k ( 49%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)  3840  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 ( 14%)   0.00 (  0%)   816  (  0%)
+ preprocessing                      :   0.02 ( 29%)   0.04 ( 57%)   0.09 ( 50%)   498k ( 17%)
+ lexical analysis                   :   0.03 ( 43%)   0.02 ( 29%)   0.02 ( 11%)     0  (  0%)
+ parser (global)                    :   0.01 ( 14%)   0.00 (  0%)   0.01 (  6%)   426k ( 14%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)    17k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  6%)   124k (  4%)
+ TOTAL                              :   0.07          0.07          0.18         2986k

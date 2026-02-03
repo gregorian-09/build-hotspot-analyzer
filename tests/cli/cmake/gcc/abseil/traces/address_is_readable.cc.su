@@ -1,1 +1,1 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/address_is_readable.cc:52:6:bool absl::debugging_internal::AddressIsReadable(const void*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/internal/address_is_readable.cc:52:6:bool absl::debugging_internal::AddressIsReadable(const void*)	32	static

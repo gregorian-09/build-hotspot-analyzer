@@ -28,7 +28,7 @@ repos/rocksdb/monitoring/perf_step_timer.h:29:_ZN7rocksdb13PerfStepTimerD2Ev	24	
 repos/rocksdb/db/merge_helper.cc:650:_ZN7rocksdb19MergeOutputIteratorC2EPKNS_11MergeHelperE	0	static
 repos/rocksdb/db/merge_helper.cc:656:_ZN7rocksdb19MergeOutputIterator11SeekToFirstEv	0	static
 repos/rocksdb/db/merge_helper.cc:664:_ZN7rocksdb19MergeOutputIterator4NextEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/merge_helper.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/merge_helper.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_initialize_mapEm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static

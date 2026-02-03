@@ -24,6 +24,6 @@ repos/abseil/absl/container/internal/hashtablez_sampler.cc:288:_ZN4absl18contain
 repos/abseil/absl/container/internal/hashtablez_sampler.cc:297:_ZN4absl18container_internal23GetHashtablezMaxSamplesEv	8	static
 repos/abseil/absl/container/internal/hashtablez_sampler.cc:301:_ZN4absl18container_internal23SetHashtablezMaxSamplesEm	8	static
 repos/abseil/absl/container/internal/hashtablez_sampler.cc:306:_ZN4absl18container_internal31SetHashtablezMaxSamplesInternalEm	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/container/internal/hashtablez_sampler.cc:__clang_call_terminate	8	static
 repos/abseil/absl/profiling/internal/sample_recorder.h:170:_ZN4absl18profiling_internal14SampleRecorderINS_18container_internal14HashtablezInfoEE7PopDeadIJlmmmtEEEPS3_DpT_	72	static
 repos/abseil/absl/profiling/internal/sample_recorder.h:157:_ZN4absl18profiling_internal14SampleRecorderINS_18container_internal14HashtablezInfoEE8PushDeadEPS3_	24	static

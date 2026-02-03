@@ -1,4 +1,4 @@
-curlx/base64.c:61:curlx_base64_decode	392	static
-curlx/base64.c:241:curlx_base64_encode	40	static
-curlx/base64.c:165:base64_encode	104	static
-curlx/base64.c:263:curlx_base64url_encode	40	static
+../../../../../repos/curl/lib/curlx/base64.c:61:curlx_base64_decode	392	static
+../../../../../repos/curl/lib/curlx/base64.c:241:curlx_base64_encode	40	static
+../../../../../repos/curl/lib/curlx/base64.c:165:base64_encode	104	static
+../../../../../repos/curl/lib/curlx/base64.c:263:curlx_base64url_encode	40	static

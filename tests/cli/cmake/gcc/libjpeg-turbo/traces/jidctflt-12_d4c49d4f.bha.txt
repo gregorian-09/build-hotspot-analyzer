@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jidctflt-12.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-12.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-12.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-12.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-12.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jidctflt-12.c
+# Timestamp: 2026-01-30T19:04:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)  1819k ( 33%)
+ phase parsing                      :   0.22 ( 59%)   0.17 ( 89%)   0.69 ( 77%)  2649k ( 49%)
+ phase opt and generate             :   0.14 ( 38%)   0.02 ( 11%)   0.17 ( 19%)   978k ( 18%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ callgraph functions expansion      :   0.12 ( 32%)   0.01 (  5%)   0.14 ( 16%)   810k ( 15%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  5%)   0.02 (  2%)    96k (  2%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.06 ( 16%)   0.06 ( 32%)   0.40 ( 44%)   759k ( 14%)
+ lexical analysis                   :   0.06 ( 16%)   0.05 ( 26%)   0.15 ( 17%)     0  (  0%)
+ parser (global)                    :   0.05 ( 14%)   0.06 ( 32%)   0.07 (  8%)  1338k ( 25%)
+ parser struct body                 :   0.03 (  8%)   0.00 (  0%)   0.02 (  2%)   231k (  4%)
+ parser enumerator list             :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)    35k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    38k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)   245k (  5%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    65k (  1%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8096  (  0%)
+ tree Early VRP                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  8752  (  0%)
+ tree operand scan                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    37k (  1%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.01 (  5%)   0.01 (  1%)    24  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9920  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    94k (  2%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ tree loop distribution             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ tree iv optimization               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  1%)
+ predictive commoning               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ jump                               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dead store elim1                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%) 10200  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%) 10032  (  0%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    46k (  1%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   107k (  2%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  5592  (  0%)
+ initialize rtl                     :   0.02 (  5%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ access analysis                    :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   120  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)  8248  (  0%)
+ TOTAL                              :   0.37          0.19          0.90         5448k

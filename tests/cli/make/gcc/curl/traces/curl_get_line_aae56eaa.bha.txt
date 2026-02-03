@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curl_get_line.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curl_get_line.c
+# Timestamp: 2026-01-31T00:30:11+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.22 ( 73%)   0.21 ( 91%)   0.93 ( 89%)  4590k ( 55%)
+ phase opt and generate             :   0.08 ( 27%)   0.02 (  9%)   0.09 (  9%)  1986k ( 24%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    55k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)   145k (  2%)
+ preprocessing                      :   0.07 ( 23%)   0.08 ( 35%)   0.60 ( 57%)  1987k ( 24%)
+ lexical analysis                   :   0.09 ( 30%)   0.06 ( 26%)   0.16 ( 15%)     0  (  0%)
+ parser (global)                    :   0.04 ( 13%)   0.04 ( 17%)   0.15 ( 14%)  2127k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   113k (  1%)
+ parser enumerator list             :   0.02 (  7%)   0.01 (  4%)   0.02 (  2%)   268k (  3%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree switch lowering               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   264  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    56k (  1%)
+ mode switching                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  1276k ( 15%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5512  (  0%)
+ shorten branches                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  3%)   0.01 (  4%)   0.03 (  3%)   126k (  2%)
+ TOTAL                              :   0.30          0.23          1.05         8396k

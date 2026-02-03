@@ -8,7 +8,7 @@ repos/abseil/absl/debugging/symbolize_elf.inc:1654:_ZN4absl18debugging_internal2
 repos/abseil/absl/debugging/symbolize_elf.inc:1688:_ZN4absl18debugging_internal18GetFileMappingHintEPPKvS3_PmPPKc	24	static
 repos/abseil/absl/debugging/symbolize_elf.inc:1719:_ZN4absl9SymbolizeEPKvPci	1304	static
 repos/abseil/absl/debugging/symbolize_elf.inc:1748:AbslInternalGetFileMappingHint	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/symbolize.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/symbolize.cc:__clang_call_terminate	8	static
 repos/abseil/absl/debugging/symbolize_elf.inc:1188:_ZN4absl18debugging_internal12_GLOBAL__N_110Symbolizer11FindObjFileEPKvm	56	static
 repos/abseil/absl/debugging/symbolize_elf.inc:1290:_ZN4absl18debugging_internalL15DemangleInplaceEPcmS1_m	24	static
 repos/abseil/absl/debugging/symbolize_elf.inc:1083:_ZN4absl18debugging_internalL11ReadAddrMapEPFbPKcPKvS4_mPvES5_S5_m	168	static

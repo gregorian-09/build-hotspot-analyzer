@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/splay.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/splay.c
+# Timestamp: 2026-01-31T00:30:27+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)  1819k ( 21%)
+ phase parsing                      :   0.27 ( 73%)   0.27 ( 90%)   1.12 ( 88%)  4619k ( 52%)
+ phase opt and generate             :   0.10 ( 27%)   0.02 (  7%)   0.13 ( 10%)  2387k ( 27%)
+ dump files                         :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    60k (  1%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  3%)   0.02 (  2%)   186k (  2%)
+ trivially dead code                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.12 ( 32%)   0.13 ( 43%)   0.86 ( 68%)  1985k ( 22%)
+ lexical analysis                   :   0.09 ( 24%)   0.10 ( 33%)   0.15 ( 12%)     0  (  0%)
+ parser (global)                    :   0.05 ( 14%)   0.02 (  7%)   0.10 (  8%)  2128k ( 24%)
+ parser struct body                 :   0.01 (  3%)   0.01 (  3%)   0.00 (  0%)   113k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   268k (  3%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    67k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree SSA other                     :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ tree SSA rewrite                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   128  (  0%)
+ jump                               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    60k (  1%)
+ integrated RA                      :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)  1428k ( 16%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  3872  (  0%)
+ thread pro- & epilogue             :   0.01 (  3%)   0.00 (  0%)   0.03 (  2%)    74k (  1%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6032  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   101k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   141k (  2%)
+ TOTAL                              :   0.37          0.30          1.27         8826k

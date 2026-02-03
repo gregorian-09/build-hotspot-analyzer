@@ -6,7 +6,7 @@ repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:0:__cxx_global_array_d
 repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:18:_ZN7rocksdb15FileTraceReaderC2EOSt10unique_ptrINS_22RandomAccessFileReaderESt14default_deleteIS2_EE	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb22RandomAccessFileReaderESt14default_deleteIS1_EED2Ev	24	static
 repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:24:_ZN7rocksdb15FileTraceReaderD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:24:_ZN7rocksdb15FileTraceReaderD0Ev	24	static
 repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:29:_ZN7rocksdb15FileTraceReader5CloseEv	24	static
 repos/rocksdb/utilities/trace/file_trace_reader_writer.cc:34:_ZN7rocksdb15FileTraceReader5ResetEv	56	static

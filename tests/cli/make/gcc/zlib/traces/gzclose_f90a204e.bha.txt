@@ -1,0 +1,23 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/gzclose.c
+# Output: objs/gzclose.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/gzclose.o ../../../../repos/zlib/gzclose.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  6%)   0.04 (  8%)  1819k ( 48%)
+ phase parsing                      :   0.12 ( 92%)   0.14 ( 87%)   0.44 ( 85%)  1925k ( 50%)
+ phase opt and generate             :   0.01 (  8%)   0.01 (  6%)   0.03 (  6%)    75k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)  8112  (  0%)
+ preprocessing                      :   0.04 ( 31%)   0.08 ( 50%)   0.27 ( 52%)   676k ( 18%)
+ lexical analysis                   :   0.05 ( 38%)   0.04 ( 25%)   0.07 ( 13%)     0  (  0%)
+ parser (global)                    :   0.03 ( 23%)   0.02 ( 12%)   0.10 ( 19%)  1118k ( 29%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    24k (  1%)
+ initialize rtl                     :   0.01 (  8%)   0.00 (  0%)   0.02 (  4%)    12k (  0%)
+ TOTAL                              :   0.13          0.16          0.52         3820k

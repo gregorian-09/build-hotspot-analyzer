@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:84:1:start_pass_dpost	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:266:1:j16init_d_post_controller	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:84:1:start_pass_dpost	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:266:1:j16init_d_post_controller	16	static

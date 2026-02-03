@@ -1,8 +1,8 @@
-tool_help.c:225:tool_help	40	static
-tool_help.c:70:print_category	72	static
-tool_help.c:130:get_categories_list	40	static
-tool_help.c:122:get_categories	24	static
-tool_help.c:109:get_category_content	40	static
-tool_help.c:313:tool_version_info	40	static
-tool_help.c:304:is_debug	24	static
-tool_help.c:389:tool_list_engines	40	static
+../../../../../repos/curl/src/tool_help.c:225:tool_help	40	static
+../../../../../repos/curl/src/tool_help.c:70:print_category	72	static
+../../../../../repos/curl/src/tool_help.c:130:get_categories_list	40	static
+../../../../../repos/curl/src/tool_help.c:122:get_categories	24	static
+../../../../../repos/curl/src/tool_help.c:109:get_category_content	40	static
+../../../../../repos/curl/src/tool_help.c:313:tool_version_info	40	static
+../../../../../repos/curl/src/tool_help.c:304:is_debug	24	static
+../../../../../repos/curl/src/tool_help.c:389:tool_list_engines	40	static

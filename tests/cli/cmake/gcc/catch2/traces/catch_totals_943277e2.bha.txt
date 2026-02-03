@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp
+# Output: CMakeFiles/Catch2.dir/catch2/catch_totals.cpp.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/.. -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/catch2/build/generated-includes -ftime-report -fstack-usage -O3 -DNDEBUG -ffile-prefix-map=/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/= -MD -MT src/CMakeFiles/Catch2.dir/catch2/catch_totals.cpp.o -MF CMakeFiles/Catch2.dir/catch2/catch_totals.cpp.o.d -o CMakeFiles/Catch2.dir/catch2/catch_totals.cpp.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp
+# Timestamp: 2026-01-30T18:53:05+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.05 ( 17%)   0.05 ( 38%)   0.18 ( 23%)  1882k ( 49%)
+ phase parsing                      :   0.07 ( 23%)   0.01 (  8%)   0.31 ( 40%)  1041k ( 27%)
+ phase opt and generate             :   0.18 ( 60%)   0.07 ( 54%)   0.26 ( 33%)   952k ( 25%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)     0  (  0%)
+ |name lookup                       :   0.01 (  3%)   0.04 ( 31%)   0.06 (  8%)   141k (  4%)
+ dump files                         :   0.00 (  0%)   0.01 (  8%)   0.05 (  6%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)  4984  (  0%)
+ callgraph functions expansion      :   0.15 ( 50%)   0.06 ( 46%)   0.22 ( 28%)   727k ( 19%)
+ callgraph ipa passes               :   0.03 ( 10%)   0.00 (  0%)   0.03 (  4%)   171k (  4%)
+ alias analysis                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    25k (  1%)
+ alias stmt walking                 :   0.01 (  3%)   0.01 (  8%)   0.00 (  0%)  1384  (  0%)
+ preprocessing                      :   0.06 ( 20%)   0.00 (  0%)   0.25 ( 32%)   229k (  6%)
+ parser (global)                    :   0.01 (  3%)   0.00 (  0%)   0.05 (  6%)   657k ( 17%)
+ parser function body               :   0.00 (  0%)   0.01 (  8%)   0.01 (  1%)   108k (  3%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4224  (  0%)
+ inline parameters                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)  1984  (  0%)
+ tree SSA rewrite                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  6320  (  0%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    15k (  0%)
+ tree FRE                           :   0.01 (  3%)   0.00 (  0%)   0.03 (  4%)    13k (  0%)
+ tree conservative DCE              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree aggressive DCE                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree buildin call DCE              :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)     0  (  0%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3312  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   185k (  5%)
+ forward prop                       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   144  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   200k (  5%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  5616  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7496  (  0%)
+ scheduling 2                       :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)  4792  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    11k (  0%)
+ initialize rtl                     :   0.02 (  7%)   0.00 (  0%)   0.03 (  4%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   264  (  0%)
+ rest of compilation                :   0.02 (  7%)   0.01 (  8%)   0.05 (  6%)    19k (  1%)
+ TOTAL                              :   0.30          0.13          0.78         3876k

@@ -1,3 +1,3 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/randen_slow.cc:421:13:static const void* absl::random_internal::RandenSlow::GetKeys()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/randen_slow.cc:431:6:static void absl::random_internal::RandenSlow::Absorb(const void*, void*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/randen_slow.cc:450:6:static void absl::random_internal::RandenSlow::Generate(const void*, void*)	56	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/randen_slow.cc:421:13:static const void* absl::random_internal::RandenSlow::GetKeys()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/randen_slow.cc:431:6:static void absl::random_internal::RandenSlow::Absorb(const void*, void*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/randen_slow.cc:450:6:static void absl::random_internal::RandenSlow::Generate(const void*, void*)	56	static

@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: src/sec.c
+# Output: src/sec.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/sec.o src/sec.c
+# Timestamp: 2026-01-31T02:10:59+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  1819k (  6%)
+ phase parsing                      :   1.79 ( 86%)   1.81 ( 96%)   5.34 ( 93%)    25M ( 80%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    96  (  0%)
+ phase opt and generate             :   0.28 ( 13%)   0.07 (  4%)   0.39 (  7%)  4769k ( 15%)
+ phase finalize                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dump files                         :   0.01 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   154k (  0%)
+ callgraph optimization             :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)    74k (  0%)
+ callgraph ipa passes               :   0.04 (  2%)   0.02 (  1%)   0.06 (  1%)  1022k (  3%)
+ ipa inheritance graph              :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.04 (  2%)   0.00 (  0%)   0.04 (  1%)  2400  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    29k (  0%)
+ preprocessing                      :   0.56 ( 27%)   0.59 ( 31%)   2.78 ( 48%)    13M ( 44%)
+ lexical analysis                   :   0.64 ( 31%)   0.66 ( 35%)   1.47 ( 25%)     0  (  0%)
+ parser (global)                    :   0.19 (  9%)   0.23 ( 12%)   0.32 (  6%)  5712k ( 18%)
+ parser struct body                 :   0.01 (  0%)   0.01 (  1%)   0.06 (  1%)   254k (  1%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   151k (  0%)
+ parser function body               :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)   144k (  0%)
+ parser inl. func. body             :   0.35 ( 17%)   0.32 ( 17%)   0.68 ( 12%)  5382k ( 17%)
+ inline parameters                  :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ integration                        :   0.01 (  0%)   0.01 (  1%)   0.02 (  0%)   430k (  1%)
+ tree CFG construction              :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)   148k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   104k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   277k (  1%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.03 (  1%)   0.00 (  0%)   0.02 (  0%)   851k (  3%)
+ post expand cleanups               :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    37k (  0%)
+ varconst                           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  4224  (  0%)
+ integrated RA                      :   0.05 (  2%)   0.02 (  1%)   0.05 (  1%)  1450k (  4%)
+ LRA non-specific                   :   0.03 (  1%)   0.00 (  0%)   0.04 (  1%)    14k (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    58k (  0%)
+ reload                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1200  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    79k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ final                              :   0.01 (  0%)   0.01 (  1%)   0.02 (  0%)   173k (  1%)
+ initialize rtl                     :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  0%)   0.00 (  0%)   0.04 (  1%)   127k (  0%)
+ TOTAL                              :   2.09          1.88          5.77           31M

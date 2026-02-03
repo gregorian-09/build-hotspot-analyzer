@@ -15,7 +15,7 @@ repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:48:_ZNK7roc
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:50:_ZNK7rocksdb16PointLockTracker20IsRangeLockSupportedEv	0	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:56:_ZN7rocksdb16PointLockTracker5TrackERKNS_16RangeLockRequestE	0	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.h:58:_ZN7rocksdb16PointLockTracker7UntrackERKNS_16RangeLockRequestE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/transactions/lock/lock_tracker.h:157:_ZN7rocksdb11LockTracker20ColumnFamilyIteratorD2Ev	0	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.cc:12:_ZN7rocksdb12_GLOBAL__N_131TrackedKeysColumnFamilyIteratorD0Ev	0	static
 repos/rocksdb/utilities/transactions/lock/point/point_lock_tracker.cc:18:_ZNK7rocksdb12_GLOBAL__N_131TrackedKeysColumnFamilyIterator7HasNextEv	0	static

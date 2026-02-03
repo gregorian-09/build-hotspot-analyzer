@@ -4,7 +4,7 @@ src/catch2/internal/catch_jsonwriter.cpp:54:_ZN5Catch16JsonObjectWriterC2ERSo	8	
 src/catch2/internal/catch_jsonwriter.cpp:57:_ZN5Catch16JsonObjectWriterC2ERSom	8	static
 src/catch2/internal/catch_jsonwriter.cpp:62:_ZN5Catch16JsonObjectWriterC2EOS0_	0	static
 src/catch2/internal/catch_jsonwriter.cpp:70:_ZN5Catch16JsonObjectWriterD2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_jsonwriter.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_jsonwriter.cpp:__clang_call_terminate	8	static
 src/catch2/internal/catch_jsonwriter.cpp:78:_ZN5Catch16JsonObjectWriter5writeENS_9StringRefE	56	static
 src/catch2/internal/catch_jsonwriter.cpp:86:_ZN5Catch15JsonArrayWriterC2ERSo	8	static
 src/catch2/internal/catch_jsonwriter.cpp:88:_ZN5Catch15JsonArrayWriterC2ERSom	8	static

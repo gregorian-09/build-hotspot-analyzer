@@ -1,0 +1,67 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/rdswitch.c
+# Output: CMakeFiles/cjpeg-static.dir/src/rdswitch.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -DBMP_SUPPORTED -DGIF_SUPPORTED -DPPM_SUPPORTED -DTARGA_SUPPORTED -MD -MT CMakeFiles/cjpeg-static.dir/src/rdswitch.c.o -MF CMakeFiles/cjpeg-static.dir/src/rdswitch.c.o.d -o CMakeFiles/cjpeg-static.dir/src/rdswitch.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/rdswitch.c
+# Timestamp: 2026-01-30T19:05:03+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.06 (  5%)  1819k ( 28%)
+ phase parsing                      :   0.25 ( 46%)   0.18 ( 75%)   0.74 ( 63%)  2596k ( 40%)
+ phase opt and generate             :   0.29 ( 54%)   0.05 ( 21%)   0.36 ( 31%)  2043k ( 32%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.23 ( 43%)   0.05 ( 21%)   0.29 ( 25%)  1519k ( 24%)
+ callgraph ipa passes               :   0.06 ( 11%)   0.00 (  0%)   0.06 (  5%)   337k (  5%)
+ ipa cp                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  3832  (  0%)
+ cfg cleanup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    14k (  0%)
+ df reaching defs                   :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df use-def / def-use chains        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    61k (  1%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)  1800  (  0%)
+ preprocessing                      :   0.10 ( 19%)   0.08 ( 33%)   0.45 ( 38%)   760k ( 12%)
+ lexical analysis                   :   0.07 ( 13%)   0.01 (  4%)   0.14 ( 12%)     0  (  0%)
+ parser (global)                    :   0.05 (  9%)   0.07 ( 29%)   0.11 (  9%)  1184k ( 18%)
+ parser struct body                 :   0.01 (  2%)   0.02 (  8%)   0.01 (  1%)   138k (  2%)
+ parser function body               :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)   213k (  3%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   250k (  4%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6928  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    33k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    25k (  0%)
+ tree copy propagation              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   536  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    37k (  1%)
+ dominator optimization             :   0.02 (  4%)   0.00 (  0%)   0.02 (  2%)    41k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)  2112  (  0%)
+ tree CCP                           :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)  6560  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    42k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    31k (  0%)
+ tree RPO VN                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1296  (  0%)
+ tree DSE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1152  (  0%)
+ tree loop unswitching              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  1168  (  0%)
+ dominance computation              :   0.03 (  6%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ post expand cleanups               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ forward prop                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2096  (  0%)
+ CSE                                :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  7656  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   199k (  3%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CPROP                              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    50k (  1%)
+ combiner                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    43k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   215k (  3%)
+ LRA non-specific                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  8392  (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1536  (  0%)
+ thread pro- & epilogue             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ scheduling 2                       :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ shorten branches                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree if-combine                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   776  (  0%)
+ initialize rtl                     :   0.02 (  4%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1176  (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    32k (  1%)
+ remove unused locals               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ rebuild frequencies                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.54          0.24          1.17         6459k

@@ -1,6 +1,6 @@
-var.c:38:varcleanup	24	static
-var.c:207:varexpand	328	static
-var.c:49:varcontent	40	static
-var.c:76:varfunc	136	static
-var.c:375:setvariable	520	static
-var.c:343:addvariable	88	static
+../../../../../repos/curl/src/var.c:38:varcleanup	24	static
+../../../../../repos/curl/src/var.c:207:varexpand	328	static
+../../../../../repos/curl/src/var.c:49:varcontent	40	static
+../../../../../repos/curl/src/var.c:76:varfunc	136	static
+../../../../../repos/curl/src/var.c:375:setvariable	520	static
+../../../../../repos/curl/src/var.c:343:addvariable	88	static

@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/cpu_detect.cc:236:9:absl::crc_internal::CpuType absl::crc_internal::GetCpuType()	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/cpu_detect.cc:247:6:bool absl::crc_internal::SupportsArmCRC32PMULL()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/cpu_detect.cc:236:9:absl::crc_internal::CpuType absl::crc_internal::GetCpuType()	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/cpu_detect.cc:247:6:bool absl::crc_internal::SupportsArmCRC32PMULL()	8	static

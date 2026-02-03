@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: lstate.c
+# Output: lstate.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o lstate.o lstate.c
+# Timestamp: 2026-01-31T02:07:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  6%)   0.03 (  5%)  1819k ( 31%)
+ phase parsing                      :   0.12 ( 44%)   0.11 ( 61%)   0.39 ( 61%)  2833k ( 49%)
+ phase opt and generate             :   0.15 ( 56%)   0.06 ( 33%)   0.22 ( 34%)  1159k ( 20%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.13 ( 48%)   0.05 ( 28%)   0.18 ( 28%)   877k ( 15%)
+ callgraph ipa passes               :   0.02 (  7%)   0.01 (  6%)   0.03 (  5%)   200k (  3%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    18k (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    33k (  1%)
+ preprocessing                      :   0.06 ( 22%)   0.06 ( 33%)   0.20 ( 31%)  1664k ( 29%)
+ lexical analysis                   :   0.02 (  7%)   0.03 ( 17%)   0.12 ( 19%)     0  (  0%)
+ parser (global)                    :   0.03 ( 11%)   0.02 ( 11%)   0.04 (  6%)  1038k ( 18%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    47k (  1%)
+ parser function body               :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)    70k (  1%)
+ integration                        :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    19k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    55k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    15k (  0%)
+ tree PTA                           :   0.03 ( 11%)   0.01 (  6%)   0.01 (  2%)    12k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  6%)   0.01 (  2%)    39k (  1%)
+ tree reassociation                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    48  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    10k (  0%)
+ tree DSE                           :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)  6760  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   328  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  2296  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    12k (  0%)
+ loop init                          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    48k (  1%)
+ CPROP                              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3624  (  0%)
+ integrated RA                      :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)   200k (  3%)
+ LRA hard reg assignment            :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ thread pro- & epilogue             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)    16k (  0%)
+ machine dep reorg                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   624  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  6%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.01 (  6%)   0.04 (  6%)    24k (  0%)
+ remove unused locals               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ address taken                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ TOTAL                              :   0.27          0.18          0.64         5813k

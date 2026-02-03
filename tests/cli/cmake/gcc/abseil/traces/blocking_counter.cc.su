@@ -1,4 +1,4 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/blocking_counter.cc:28:6:bool absl::{anonymous}::IsDone(void*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/blocking_counter.cc:32:1:absl::BlockingCounter::BlockingCounter(int)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/blocking_counter.cc:39:6:bool absl::BlockingCounter::DecrementCount()	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/blocking_counter.cc:52:6:void absl::BlockingCounter::Wait()	80	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/blocking_counter.cc:28:6:bool absl::{anonymous}::IsDone(void*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/blocking_counter.cc:32:1:absl::BlockingCounter::BlockingCounter(int)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/blocking_counter.cc:39:6:bool absl::BlockingCounter::DecrementCount()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/blocking_counter.cc:52:6:void absl::BlockingCounter::Wait()	80	static

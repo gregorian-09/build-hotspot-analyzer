@@ -1,0 +1,48 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/commandlineflag.cc
+# Output: CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/flags/CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o -MF CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o.d -o CMakeFiles/flags_commandlineflag.dir/commandlineflag.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/commandlineflag.cc
+# Timestamp: 2026-01-30T18:40:28+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  0%)   0.01 (  0%)   0.05 (  0%)  1882k (  3%)
+ phase parsing                      :   5.37 ( 93%)   4.44 ( 97%)  10.80 ( 92%)    52M ( 90%)
+ phase lang. deferred               :   0.24 (  4%)   0.05 (  1%)   0.31 (  3%)  3647k (  6%)
+ phase opt and generate             :   0.14 (  2%)   0.10 (  2%)   0.27 (  2%)   355k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.26 (  2%)     0  (  0%)
+ |name lookup                       :   1.24 ( 21%)   0.95 ( 21%)   2.53 ( 22%)  2588k (  4%)
+ |overload resolution               :   0.28 (  5%)   0.19 (  4%)   0.52 (  4%)  3374k (  6%)
+ dump files                         :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  0%)   0.01 (  0%)   0.03 (  0%)   116k (  0%)
+ callgraph functions expansion      :   0.11 (  2%)   0.08 (  2%)   0.21 (  2%)   163k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    52k (  0%)
+ cfg cleanup                        :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ preprocessing                      :   0.54 (  9%)   0.79 ( 17%)   1.83 ( 16%)  2102k (  4%)
+ parser (global)                    :   1.07 ( 19%)   1.06 ( 23%)   2.22 ( 19%)    17M ( 31%)
+ parser struct body                 :   1.05 ( 18%)   0.68 ( 15%)   1.70 ( 15%)    11M ( 19%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    32k (  0%)
+ parser function body               :   0.38 (  7%)   0.28 (  6%)   0.67 (  6%)  1528k (  3%)
+ parser inl. func. body             :   0.52 (  9%)   0.43 (  9%)   1.00 (  9%)  3563k (  6%)
+ parser inl. meth. body             :   0.58 ( 10%)   0.53 ( 12%)   1.45 ( 12%)  6756k ( 11%)
+ template instantiation             :   1.33 ( 23%)   0.60 ( 13%)   2.09 ( 18%)    12M ( 22%)
+ constant expression evaluation     :   0.12 (  2%)   0.07 (  2%)   0.11 (  1%)   249k (  0%)
+ early inlining heuristics          :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    16  (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9784  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6456  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  1600  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.02 (  0%)   0.04 (  1%)   0.01 (  0%)     0  (  0%)
+ forward prop                       :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ CSE                                :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)    48  (  0%)
+ combiner                           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   856  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   312  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2776  (  0%)
+ machine dep reorg                  :   0.02 (  0%)   0.01 (  0%)   0.02 (  0%)   312  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)     0  (  0%)
+ store merging                      :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)    64  (  0%)
+ initialize rtl                     :   0.03 (  1%)   0.05 (  1%)   0.08 (  1%)    12k (  0%)
+ TOTAL                              :   5.77          4.60         11.69           57M

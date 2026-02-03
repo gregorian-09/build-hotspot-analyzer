@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/profiling/internal/periodic_sampler.cc
+# Output: CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/profiling/CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o -MF CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o.d -o CMakeFiles/periodic_sampler.dir/internal/periodic_sampler.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/profiling/internal/periodic_sampler.cc
+# Timestamp: 2026-01-30T18:38:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.03 (  7%)   0.09 (  7%)  1882k ( 18%)
+ phase parsing                      :   0.45 ( 80%)   0.35 ( 83%)   1.12 ( 81%)  8048k ( 77%)
+ phase lang. deferred               :   0.01 (  2%)   0.01 (  2%)   0.02 (  1%)   282k (  3%)
+ phase opt and generate             :   0.08 ( 14%)   0.02 (  5%)   0.10 (  7%)   277k (  3%)
+ phase finalize                     :   0.01 (  2%)   0.01 (  2%)   0.05 (  4%)     0  (  0%)
+ |name lookup                       :   0.10 ( 18%)   0.06 ( 14%)   0.17 ( 12%)   589k (  6%)
+ |overload resolution               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   104k (  1%)
+ callgraph functions expansion      :   0.06 ( 11%)   0.02 (  5%)   0.08 (  6%)   195k (  2%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    37k (  0%)
+ ipa function summary               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  3024  (  0%)
+ ipa inheritance graph              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   192  (  0%)
+ ipa modref                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1368  (  0%)
+ preprocessing                      :   0.11 ( 20%)   0.15 ( 36%)   0.53 ( 38%)   568k (  5%)
+ parser (global)                    :   0.11 ( 20%)   0.07 ( 17%)   0.19 ( 14%)  1913k ( 18%)
+ parser struct body                 :   0.03 (  5%)   0.05 ( 12%)   0.17 ( 12%)  2459k ( 23%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    21k (  0%)
+ parser inl. func. body             :   0.02 (  4%)   0.01 (  2%)   0.03 (  2%)   222k (  2%)
+ parser inl. meth. body             :   0.05 (  9%)   0.03 (  7%)   0.08 (  6%)   677k (  6%)
+ template instantiation             :   0.12 ( 21%)   0.05 ( 12%)   0.13 (  9%)  2454k ( 23%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2104  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4512  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    16k (  0%)
+ CSE                                :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   336  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%) 10208  (  0%)
+ PRE                                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1552  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   360  (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    50k (  0%)
+ reload CSE regs                    :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  1504  (  0%)
+ symout                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  4%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    48  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5704  (  0%)
+ TOTAL                              :   0.56          0.42          1.38           10M

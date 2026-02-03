@@ -1,4 +1,2 @@
-version.c:145:curl_version	280	static
-version.c:83:brotli_version	40	static
-version.c:94:zstd_version	40	static
-version.c:596:curl_version_info	40	static
+../../../../../repos/curl/lib/version.c:145:curl_version	216	static
+../../../../../repos/curl/lib/version.c:596:curl_version_info	40	static

@@ -1,0 +1,22 @@
+# BHA Trace
+# Source: endianconv.c
+# Output: endianconv.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o endianconv.o -c endianconv.c
+# Timestamp: 2026-01-31T02:11:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 ( 20%)   0.01 (  3%)  1828k ( 77%)
+ phase parsing                      :   0.00 (  0%)   0.03 ( 60%)   0.28 ( 90%)   428k ( 18%)
+ phase opt and generate             :   0.00 (  0%)   0.01 ( 20%)   0.01 (  3%)   118k (  5%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    64  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 20%)   0.01 (  3%)    66k (  3%)
+ preprocessing                      :   0.00 (  0%)   0.02 ( 40%)   0.25 ( 81%)   151k (  6%)
+ lexical analysis                   :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.03 ( 10%)   186k (  8%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 ( 20%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.00          0.05          0.31         2375k

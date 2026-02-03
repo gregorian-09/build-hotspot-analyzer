@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/cf-h2-proxy.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/cf-h2-proxy.c
+# Timestamp: 2026-01-31T00:30:01+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.00 (  0%)   0.03 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.27 ( 79%)   0.21 ( 84%)   1.07 ( 88%)  4576k ( 55%)
+ phase opt and generate             :   0.06 ( 18%)   0.03 ( 12%)   0.10 (  8%)  1889k ( 23%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.02 (  6%)   0.01 (  4%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   131k (  2%)
+ preprocessing                      :   0.13 ( 38%)   0.10 ( 40%)   0.79 ( 65%)  2006k ( 24%)
+ lexical analysis                   :   0.08 ( 24%)   0.06 ( 24%)   0.11 (  9%)     0  (  0%)
+ parser (global)                    :   0.05 ( 15%)   0.04 ( 16%)   0.12 ( 10%)  2106k ( 25%)
+ parser struct body                 :   0.01 (  3%)   0.01 (  4%)   0.01 (  1%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.04 (  3%)   268k (  3%)
+ tree eh                            :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ post expand cleanups               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1250k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  2912  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ machine dep reorg                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5408  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   123k (  1%)
+ unaccounted late compilation       :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.34          0.25          1.21         8286k

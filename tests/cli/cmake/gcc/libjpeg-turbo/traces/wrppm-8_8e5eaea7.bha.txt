@@ -1,0 +1,65 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/wrppm-8.c
+# Output: CMakeFiles/djpeg-static.dir/src/wrapper/wrppm-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -DBMP_SUPPORTED -DGIF_SUPPORTED -DPPM_SUPPORTED -DTARGA_SUPPORTED -MD -MT CMakeFiles/djpeg-static.dir/src/wrapper/wrppm-8.c.o -MF CMakeFiles/djpeg-static.dir/src/wrapper/wrppm-8.c.o.d -o CMakeFiles/djpeg-static.dir/src/wrapper/wrppm-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/wrppm-8.c
+# Timestamp: 2026-01-30T19:04:54+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.08 (  4%)  1819k ( 28%)
+ phase parsing                      :   0.27 ( 43%)   0.33 ( 80%)   1.69 ( 75%)  2731k ( 43%)
+ phase opt and generate             :   0.36 ( 57%)   0.07 ( 17%)   0.45 ( 20%)  1873k ( 29%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)     0  (  0%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph optimization             :   0.03 (  5%)   0.00 (  0%)   0.02 (  1%)  1352  (  0%)
+ callgraph functions expansion      :   0.28 ( 44%)   0.06 ( 15%)   0.35 ( 15%)  1454k ( 23%)
+ callgraph ipa passes               :   0.07 ( 11%)   0.01 (  2%)   0.08 (  4%)   286k (  4%)
+ ipa modref                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2008  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  5456  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ df must-initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.02 (  3%)   0.00 (  0%)   0.01 (  0%)  1176  (  0%)
+ preprocessing                      :   0.05 (  8%)   0.08 ( 20%)   1.19 ( 53%)   769k ( 12%)
+ lexical analysis                   :   0.14 ( 22%)   0.17 ( 41%)   0.33 ( 15%)     0  (  0%)
+ parser (global)                    :   0.05 (  8%)   0.04 ( 10%)   0.11 (  5%)  1349k ( 21%)
+ parser struct body                 :   0.01 (  2%)   0.01 (  2%)   0.02 (  1%)   243k (  4%)
+ parser function body               :   0.01 (  2%)   0.03 (  7%)   0.02 (  1%)    68k (  1%)
+ parser inl. func. body             :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   253k (  4%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    94k (  1%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)   856  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    30k (  0%)
+ tree PTA                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    24k (  0%)
+ dominator optimization             :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ tree PRE                           :   0.02 (  3%)   0.01 (  2%)   0.02 (  1%)    35k (  1%)
+ tree FRE                           :   0.04 (  6%)   0.00 (  0%)   0.02 (  1%)    19k (  0%)
+ tree DSE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3352  (  0%)
+ scev constant prop                 :   0.01 (  2%)   0.01 (  2%)   0.01 (  0%)     0  (  0%)
+ tree vectorization                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    94k (  1%)
+ tree slp vectorization             :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)   207k (  3%)
+ tree iv optimization               :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    73k (  1%)
+ tree strlen optimization           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ dominance computation              :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ expand                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   106k (  2%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ forward prop                       :   0.02 (  3%)   0.01 (  2%)   0.00 (  0%)  1696  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1752  (  0%)
+ combiner                           :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)    42k (  1%)
+ integrated RA                      :   0.03 (  5%)   0.00 (  0%)   0.04 (  2%)   325k (  5%)
+ LRA rematerialization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ reload CSE regs                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    16k (  0%)
+ if-conversion 2                    :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ peephole 2                         :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)   952  (  0%)
+ scheduling 2                       :   0.01 (  2%)   0.00 (  0%)   0.04 (  2%)    13k (  0%)
+ machine dep reorg                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1040  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7312  (  0%)
+ shorten branches                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    32k (  0%)
+ TOTAL                              :   0.63          0.41          2.26         6425k

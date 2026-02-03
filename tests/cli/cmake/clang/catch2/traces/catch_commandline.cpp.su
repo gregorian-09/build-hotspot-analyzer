@@ -5,7 +5,7 @@ src/catch2/../catch2/internal/catch_clara.hpp:488:_ZN5Catch5Clara6Detail13Parser
 src/catch2/../catch2/internal/catch_clara.hpp:644:_ZN5Catch5Clara6ParserD2Ev	24	static
 src/catch2/../catch2/internal/catch_clara.hpp:568:_ZN5Catch5Clara3OptD2Ev	8	static
 src/catch2/../catch2/internal/catch_clara.hpp:619:_ZN5Catch5Clara7ExeNameD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_commandline.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_commandline.cpp:__clang_call_terminate	8	static
 src/catch2/../catch2/internal/catch_clara.hpp:488:_ZN5Catch5Clara6Detail13ParserRefImplINS0_3ArgEED0Ev	0	static
 src/catch2/../catch2/internal/catch_clara.hpp:470:_ZNK5Catch5Clara6Detail10ParserBase8validateEv	0	static
 src/catch2/../catch2/internal/catch_clara.hpp:543:_ZNK5Catch5Clara6Detail13ParserRefImplINS0_3ArgEE11cardinalityEv	8	static

@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/gzread.c
+# Output: objs/gzread.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/gzread.o ../../../../repos/zlib/gzread.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.04 (  6%)  1819k ( 32%)
+ phase parsing                      :   0.12 ( 50%)   0.16 ( 84%)   0.45 ( 68%)  2106k ( 38%)
+ phase opt and generate             :   0.12 ( 50%)   0.03 ( 16%)   0.16 ( 24%)  1684k ( 30%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    16k (  0%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  5%)   0.02 (  3%)   215k (  4%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)   520  (  0%)
+ df scan insns                      :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   720  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ rebuild jump labels                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.06 ( 25%)   0.08 ( 42%)   0.28 ( 42%)   681k ( 12%)
+ lexical analysis                   :   0.02 (  8%)   0.06 ( 32%)   0.08 ( 12%)     0  (  0%)
+ parser (global)                    :   0.01 (  4%)   0.00 (  0%)   0.08 ( 12%)  1166k ( 21%)
+ parser function body               :   0.02 (  8%)   0.01 (  5%)   0.01 (  2%)   131k (  2%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3264  (  0%)
+ tree gimplify                      :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   191k (  3%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    59k (  1%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    22k (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  5%)   0.01 (  2%)   305k (  5%)
+ integrated RA                      :   0.04 ( 17%)   0.00 (  0%)   0.05 (  8%)   455k (  8%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  3432  (  0%)
+ reload                             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   360  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1560  (  0%)
+ symout                             :   0.01 (  4%)   0.01 (  5%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    38k (  1%)
+ TOTAL                              :   0.24          0.19          0.66         5610k

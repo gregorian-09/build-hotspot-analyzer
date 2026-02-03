@@ -2,7 +2,7 @@ repos/rocksdb/db/multi_scan.cc:12:_ZN7rocksdb9MultiScanC2ERKNS_11ReadOptionsERKN
 repos/rocksdb/db/multi_scan.cc:42:_ZN7rocksdb9MultiScan17MultiScanIteratorppEv	56	static
 repos/rocksdb/include/rocksdb/multi_scan.h:58:_ZN7rocksdb18MultiScanExceptionC2ERNS_6StatusE	72	static
 repos/rocksdb/include/rocksdb/multi_scan.h:56:_ZN7rocksdb18MultiScanExceptionD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/multi_scan.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/multi_scan.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:211:_ZNSt6vectorIN7rocksdb11ScanOptionsESaIS1_EEaSERKS3_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN7rocksdb11ScanOptionsESaIS1_EED2Ev	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:1616:_ZNSt6vectorIN7rocksdb11ScanOptionsESaIS1_EE20_M_allocate_and_copyIN9__gnu_cxx17__normal_iteratorIPKS1_S3_EEEEPS1_mT_SB_	40	static

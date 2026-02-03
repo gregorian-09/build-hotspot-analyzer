@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/src/tool_cb_dbg.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -I../../../../../repos/curl/src -DCURL_STATICLIB -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/src/tool_cb_dbg.c
+# Timestamp: 2026-01-31T00:31:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)  1819k ( 19%)
+ phase parsing                      :   0.30 ( 75%)   0.38 ( 86%)   1.91 ( 92%)  5289k ( 55%)
+ phase opt and generate             :   0.10 ( 25%)   0.05 ( 11%)   0.14 (  7%)  2594k ( 27%)
+ dump files                         :   0.03 (  7%)   0.02 (  5%)   0.01 (  0%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    64k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)   222k (  2%)
+ preprocessing                      :   0.12 ( 30%)   0.22 ( 50%)   1.54 ( 74%)  2256k ( 23%)
+ lexical analysis                   :   0.13 ( 32%)   0.08 ( 18%)   0.19 (  9%)     0  (  0%)
+ parser (global)                    :   0.04 ( 10%)   0.05 ( 11%)   0.12 (  6%)  2282k ( 24%)
+ parser struct body                 :   0.00 (  0%)   0.02 (  5%)   0.02 (  1%)   182k (  2%)
+ parser enumerator list             :   0.01 (  2%)   0.01 (  2%)   0.04 (  2%)   381k (  4%)
+ tree gimplify                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)   146k (  2%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1552  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   198k (  2%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.03 (  1%)  1404k ( 14%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)  3752  (  0%)
+ thread pro- & epilogue             :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)    71k (  1%)
+ machine dep reorg                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5824  (  0%)
+ shorten branches                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   114k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.01 (  2%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   139k (  1%)
+ TOTAL                              :   0.40          0.44          2.07         9703k

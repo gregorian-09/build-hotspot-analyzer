@@ -12,10 +12,10 @@ repos/rocksdb/db/write_batch.cc:197:_ZN7rocksdb10WriteBatchC2EONSt7__cxx1112basi
 repos/rocksdb/db/write_batch.cc:202:_ZN7rocksdb10WriteBatchC2ERKS0_	72	static
 repos/rocksdb/db/write_batch.cc:218:_ZN7rocksdb10WriteBatchC2EOS0_	40	static
 repos/rocksdb/db/write_batch.cc:227:_ZN7rocksdb10WriteBatchaSERKS0_	24	static
-repos/rocksdb/db/write_batch.cc:235:_ZN7rocksdb10WriteBatchaSEOS0_	24	static
+repos/rocksdb/db/write_batch.cc:235:_ZN7rocksdb10WriteBatchaSEOS0_	40	static
 repos/rocksdb/db/write_batch.cc:243:_ZN7rocksdb10WriteBatchD2Ev	40	static
 repos/rocksdb/db/write_batch.cc:243:_ZN7rocksdb10WriteBatchD0Ev	24	static
-repos/rocksdb/db/write_batch.cc:245:_ZN7rocksdb10WriteBatch7HandlerD0Ev	24	static
+repos/rocksdb/db/write_batch.cc:245:_ZN7rocksdb10WriteBatch7HandlerD0Ev	0	static
 repos/rocksdb/db/write_batch.cc:247:_ZN7rocksdb10WriteBatch7Handler7LogDataERKNS_5SliceE	0	static
 repos/rocksdb/db/write_batch.cc:252:_ZN7rocksdb10WriteBatch7Handler8ContinueEv	0	static
 repos/rocksdb/db/write_batch.cc:254:_ZN7rocksdb10WriteBatch5ClearEv	40	static
@@ -143,7 +143,7 @@ repos/rocksdb/include/rocksdb/write_batch.h:347:_ZN7rocksdb10WriteBatch7Handler1
 repos/rocksdb/include/rocksdb/write_batch.h:351:_ZN7rocksdb10WriteBatch7Handler23MarkCommitWithTimestampERKNS_5SliceES4_	56	static
 repos/rocksdb/include/rocksdb/write_batch.h:369:_ZNK7rocksdb10WriteBatch7Handler16WriteAfterCommitEv	0	static
 repos/rocksdb/include/rocksdb/write_batch.h:372:_ZNK7rocksdb10WriteBatch7Handler18WriteBeforePrepareEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/write_batch.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/write_batch.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:316:_ZNSt6vectorIN7rocksdb9SavePointESaIS1_EE13_M_assign_auxIN9__gnu_cxx17__normal_iteratorIPKS1_S3_EEEEvT_SA_St20forward_iterator_tag	72	static
 repos/rocksdb/db/write_batch.cc:97:_ZN7rocksdb12_GLOBAL__N_122BatchContentClassifierD0Ev	0	static

@@ -1,6 +1,6 @@
 repos/yaml-cpp/util/sandbox.cpp:28:main	232	static
 repos/yaml-cpp/include/yaml-cpp/node/impl.h:56:_ZN4YAML4NodeD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/util/sandbox.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/util/sandbox.cpp:__clang_call_terminate	8	static
 repos/yaml-cpp/include/yaml-cpp/node/impl.h:256:_ZN4YAML4Node10AssignNodeERKS0_	24	static
 repos/yaml-cpp/include/yaml-cpp/exceptions.h:233:_ZN4YAML11InvalidNodeC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
 repos/yaml-cpp/include/yaml-cpp/exceptions.h:145:_ZN4YAML8ErrorMsg21INVALID_NODE_WITH_KEYERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	424	static

@@ -1,0 +1,17 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/db_impl/db_impl_debug.cc
+# Output: CMakeFiles/rocksdb.dir/db/db_impl/db_impl_debug.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/db/db_impl/db_impl_debug.cc.o -MF CMakeFiles/rocksdb.dir/db/db_impl/db_impl_debug.cc.o.d -o CMakeFiles/rocksdb.dir/db/db_impl/db_impl_debug.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/db_impl/db_impl_debug.cc
+# Timestamp: 2026-01-30T22:12:49+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (100%)   0.02 ( 67%)   0.07 ( 70%)  2143k ( 78%)
+ phase parsing                      :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 20%)   616k ( 22%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 10%)     0  (  0%)
+ |name lookup                       :   0.01 ( 33%)   0.01 ( 33%)   0.02 ( 20%)   102k (  4%)
+ parser (global)                    :   0.00 (  0%)   0.01 ( 33%)   0.02 ( 20%)   591k ( 21%)
+ TOTAL                              :   0.03          0.03          0.10         2763k

@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/cf-socket.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/cf-socket.c
+# Timestamp: 2026-01-31T00:30:03+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1819k ( 11%)
+ phase parsing                      :   0.34 ( 60%)   0.54 ( 83%)   1.83 ( 82%)  7373k ( 45%)
+ phase opt and generate             :   0.23 ( 40%)   0.11 ( 17%)   0.36 ( 16%)  7311k ( 44%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.02 (  4%)   0.01 (  2%)   0.03 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  2%)   0.01 (  2%)   0.01 (  0%)   153k (  1%)
+ callgraph optimization             :   0.01 (  2%)   0.02 (  3%)   0.01 (  0%)   101k (  1%)
+ callgraph ipa passes               :   0.03 (  5%)   0.02 (  3%)   0.05 (  2%)   670k (  4%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    37k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2912  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ df scan insns                      :   0.02 (  4%)   0.00 (  0%)   0.01 (  0%)  3216  (  0%)
+ df reg dead/unused notes           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    89k (  1%)
+ rebuild jump labels                :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    48  (  0%)
+ preprocessing                      :   0.10 ( 18%)   0.23 ( 35%)   1.23 ( 55%)  2610k ( 16%)
+ lexical analysis                   :   0.14 ( 25%)   0.16 ( 25%)   0.39 ( 18%)     0  (  0%)
+ parser (global)                    :   0.05 (  9%)   0.11 ( 17%)   0.15 (  7%)  3373k ( 20%)
+ parser struct body                 :   0.02 (  4%)   0.03 (  5%)   0.01 (  0%)   398k (  2%)
+ parser enumerator list             :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   358k (  2%)
+ parser function body               :   0.02 (  4%)   0.01 (  2%)   0.02 (  1%)   569k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   687k (  4%)
+ tree eh                            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1664  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   169k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   293k (  2%)
+ out of ssa                         :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)    13k (  0%)
+ expand vars                        :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    85k (  1%)
+ expand                             :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)  1183k (  7%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    76k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   512  (  0%)
+ integrated RA                      :   0.04 (  7%)   0.00 (  0%)   0.05 (  2%)  2622k ( 16%)
+ LRA non-specific                   :   0.02 (  4%)   0.00 (  0%)   0.03 (  1%)    10k (  0%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   131k (  1%)
+ final                              :   0.01 (  2%)   0.01 (  2%)   0.02 (  1%)   277k (  2%)
+ initialize rtl                     :   0.02 (  4%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.01 (  2%)   0.01 (  2%)   0.00 (  0%)  1792  (  0%)
+ rest of compilation                :   0.03 (  5%)   0.02 (  3%)   0.04 (  2%)   279k (  2%)
+ TOTAL                              :   0.57          0.65          2.22           16M

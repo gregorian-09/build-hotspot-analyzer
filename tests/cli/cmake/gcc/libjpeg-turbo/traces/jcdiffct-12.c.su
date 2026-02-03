@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:101:1:start_pass_diff	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:157:1:compress_data	128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:312:1:compress_output	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:256:1:compress_first_pass	144	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:343:1:j12init_c_diff_controller	80	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:101:1:start_pass_diff	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:157:1:compress_data	128	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:312:1:compress_output	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:256:1:compress_first_pass	144	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jcdiffct.c:343:1:j12init_c_diff_controller	80	static

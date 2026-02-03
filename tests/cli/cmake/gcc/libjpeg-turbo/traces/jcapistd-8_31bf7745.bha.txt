@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcapistd-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jcapistd-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jcapistd-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jcapistd-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jcapistd-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcapistd-8.c
+# Timestamp: 2026-01-30T19:04:11+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.04 (  2%)  1819k ( 35%)
+ phase parsing                      :   0.23 ( 61%)   0.25 ( 83%)   1.32 ( 78%)  2607k ( 50%)
+ phase opt and generate             :   0.15 ( 39%)   0.04 ( 13%)   0.21 ( 12%)   790k ( 15%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.13 (  8%)     0  (  0%)
+ dump files                         :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)    17k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   808  (  0%)
+ callgraph functions expansion      :   0.13 ( 34%)   0.03 ( 10%)   0.18 ( 11%)   575k ( 11%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)   132k (  3%)
+ ipa cp                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9984  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2920  (  0%)
+ df reaching defs                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ alias stmt walking                 :   0.02 (  5%)   0.01 (  3%)   0.01 (  1%)  4128  (  0%)
+ rebuild jump labels                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.05 ( 13%)   0.12 ( 40%)   1.02 ( 60%)   751k ( 14%)
+ lexical analysis                   :   0.06 ( 16%)   0.04 ( 13%)   0.17 ( 10%)     0  (  0%)
+ parser (global)                    :   0.07 ( 18%)   0.03 ( 10%)   0.08 (  5%)  1305k ( 25%)
+ parser struct body                 :   0.01 (  3%)   0.03 ( 10%)   0.02 (  1%)   231k (  4%)
+ parser function body               :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    37k (  1%)
+ parser inl. func. body             :   0.04 ( 11%)   0.02 (  7%)   0.03 (  2%)   245k (  5%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    16k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ tree slp vectorization             :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)   145k (  3%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    62k (  1%)
+ CPROP                              :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)    13k (  0%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  9000  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   101k (  2%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   432  (  0%)
+ load CSE after reload              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8328  (  0%)
+ store merging                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    64  (  0%)
+ initialize rtl                     :   0.03 (  8%)   0.00 (  0%)   0.03 (  2%)    12k (  0%)
+ TOTAL                              :   0.38          0.30          1.70         5217k

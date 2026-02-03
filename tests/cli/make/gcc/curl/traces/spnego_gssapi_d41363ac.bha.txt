@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vauth/spnego_gssapi.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vauth/spnego_gssapi.c
+# Timestamp: 2026-01-31T00:30:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  5%)   0.00 (  0%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.17 ( 77%)   0.26 ( 87%)   0.86 ( 89%)  4554k ( 55%)
+ phase opt and generate             :   0.04 ( 18%)   0.04 ( 13%)   0.08 (  8%)  1889k ( 23%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  5%)   0.01 (  3%)   0.03 (  3%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  5%)   0.01 (  3%)   0.02 (  2%)   131k (  2%)
+ preprocessing                      :   0.08 ( 36%)   0.13 ( 43%)   0.61 ( 63%)  1984k ( 24%)
+ lexical analysis                   :   0.02 (  9%)   0.06 ( 20%)   0.17 ( 18%)     0  (  0%)
+ parser (global)                    :   0.05 ( 23%)   0.04 ( 13%)   0.06 (  6%)  2106k ( 25%)
+ parser struct body                 :   0.01 (  5%)   0.01 (  3%)   0.00 (  0%)   112k (  1%)
+ parser enumerator list             :   0.01 (  5%)   0.02 (  7%)   0.01 (  1%)   268k (  3%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1248  (  0%)
+ thread pro- & epilogue             :   0.01 (  5%)   0.01 (  3%)   0.00 (  0%)    64k (  1%)
+ final                              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    79k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ rest of compilation                :   0.01 (  5%)   0.02 (  7%)   0.02 (  2%)   123k (  1%)
+ TOTAL                              :   0.22          0.30          0.97         8264k

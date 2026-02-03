@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: src/nstime.c
+# Output: src/nstime.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/nstime.o src/nstime.c
+# Timestamp: 2026-01-31T02:10:50+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)  1819k (  6%)
+ phase parsing                      :   1.88 ( 95%)   1.89 ( 97%)   5.33 ( 97%)    25M ( 89%)
+ phase opt and generate             :   0.09 (  5%)   0.04 (  2%)   0.16 (  3%)  1509k (  5%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    54k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    33k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   170k (  1%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   288  (  0%)
+ trivially dead code                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  8352  (  0%)
+ preprocessing                      :   0.57 ( 29%)   0.54 ( 28%)   2.63 ( 48%)    13M ( 49%)
+ lexical analysis                   :   0.75 ( 38%)   0.73 ( 38%)   1.46 ( 26%)     0  (  0%)
+ parser (global)                    :   0.24 ( 12%)   0.21 ( 11%)   0.42 (  8%)  5707k ( 20%)
+ parser struct body                 :   0.02 (  1%)   0.00 (  0%)   0.03 (  1%)   254k (  1%)
+ parser enumerator list             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   151k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    79k (  0%)
+ parser inl. func. body             :   0.27 ( 14%)   0.40 ( 21%)   0.74 ( 13%)  5382k ( 19%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    21k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   151k (  1%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ varconst                           :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)  4864  (  0%)
+ integrated RA                      :   0.03 (  2%)   0.00 (  0%)   0.03 (  1%)   707k (  2%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6896  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)    71k (  0%)
+ TOTAL                              :   1.98          1.94          5.52           28M

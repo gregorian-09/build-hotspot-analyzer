@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curl_sspi.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curl_sspi.c
+# Timestamp: 2026-01-31T00:30:13+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1819k ( 22%)
+ phase parsing                      :   0.17 ( 81%)   0.26 ( 87%)   0.82 ( 89%)  4552k ( 55%)
+ phase opt and generate             :   0.04 ( 19%)   0.04 ( 13%)   0.08 (  9%)  1889k ( 23%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  5%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)   131k (  2%)
+ cfg construction                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.09 ( 43%)   0.11 ( 37%)   0.60 ( 65%)  1982k ( 24%)
+ lexical analysis                   :   0.04 ( 19%)   0.07 ( 23%)   0.10 ( 11%)     0  (  0%)
+ parser (global)                    :   0.03 ( 14%)   0.06 ( 20%)   0.10 ( 11%)  2106k ( 25%)
+ parser struct body                 :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.02 (  7%)   0.01 (  1%)   268k (  3%)
+ tree operand scan                  :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    52k (  1%)
+ expand                             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    37k (  0%)
+ loop init                          :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    53k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    64k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.01 (  3%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   123k (  1%)
+ TOTAL                              :   0.21          0.30          0.92         8261k

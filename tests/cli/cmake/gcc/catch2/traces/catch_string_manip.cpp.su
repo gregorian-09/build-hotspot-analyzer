@@ -1,14 +1,14 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:19:10:bool Catch::startsWith(const std::string&, const std::string&)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:22:10:bool Catch::startsWith(StringRef, char)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:25:10:bool Catch::endsWith(const std::string&, const std::string&)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:28:10:bool Catch::endsWith(const std::string&, char)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:31:10:bool Catch::contains(const std::string&, const std::string&)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:34:10:void Catch::toLowerInPlace(std::string&)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:39:17:std::string Catch::toLower(const std::string&)	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:44:10:char Catch::toLower(char)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:48:17:std::string Catch::trim(const std::string&)	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:56:15:Catch::StringRef Catch::trim(StringRef)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:68:10:bool Catch::replaceInPlace(std::string&, const std::string&, const std::string&)	128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:109:19:std::ostream& Catch::operator<<(std::ostream&, const pluralise&)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:19:10:bool Catch::startsWith(const std::string&, const std::string&)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:22:10:bool Catch::startsWith(StringRef, char)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:25:10:bool Catch::endsWith(const std::string&, const std::string&)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:28:10:bool Catch::endsWith(const std::string&, char)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:31:10:bool Catch::contains(const std::string&, const std::string&)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:34:10:void Catch::toLowerInPlace(std::string&)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:39:17:std::string Catch::toLower(const std::string&)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:44:10:char Catch::toLower(char)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:48:17:std::string Catch::trim(const std::string&)	64	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:56:15:Catch::StringRef Catch::trim(StringRef)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:68:10:bool Catch::replaceInPlace(std::string&, const std::string&, const std::string&)	128	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:109:19:std::ostream& Catch::operator<<(std::ostream&, const pluralise&)	48	static
 /usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {Catch::StringRef}; _Tp = Catch::StringRef; _Alloc = std::allocator<Catch::StringRef>]	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_string_manip.cpp:94:28:std::vector<Catch::StringRef> Catch::splitStringRef(StringRef, char)	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_string_manip.cpp:94:28:std::vector<Catch::StringRef> Catch::splitStringRef(StringRef, char)	96	static

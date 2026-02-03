@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/notification.cc
+# Output: CMakeFiles/synchronization.dir/notification.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/notification.cc.o -MF CMakeFiles/synchronization.dir/notification.cc.o.d -o CMakeFiles/synchronization.dir/notification.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/notification.cc
+# Timestamp: 2026-01-30T18:41:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.04 (  1%)   0.06 (  2%)   0.19 (  2%)  1882k (  2%)
+ phase parsing                      :   4.07 ( 92%)   3.00 ( 93%)   9.52 ( 93%)    85M ( 88%)
+ phase lang. deferred               :   0.22 (  5%)   0.13 (  4%)   0.37 (  4%)  9006k (  9%)
+ phase opt and generate             :   0.08 (  2%)   0.04 (  1%)   0.13 (  1%)  1238k (  1%)
+ |name lookup                       :   0.78 ( 18%)   0.41 ( 13%)   1.18 ( 12%)  3312k (  3%)
+ |overload resolution               :   0.27 (  6%)   0.13 (  4%)   0.43 (  4%)  6660k (  7%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)   338k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)  2688  (  0%)
+ callgraph functions expansion      :   0.04 (  1%)   0.03 (  1%)   0.07 (  1%)   475k (  0%)
+ callgraph ipa passes               :   0.02 (  0%)   0.01 (  0%)   0.04 (  0%)   312k (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   1.00 ( 23%)   1.05 ( 33%)   3.98 ( 39%)  6545k (  7%)
+ parser (global)                    :   1.00 ( 23%)   0.95 ( 29%)   2.41 ( 24%)    32M ( 33%)
+ parser struct body                 :   0.47 ( 11%)   0.14 (  4%)   0.71 (  7%)    14M ( 15%)
+ parser enumerator list             :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)   169k (  0%)
+ parser function body               :   0.33 (  7%)   0.17 (  5%)   0.51 (  5%)  3395k (  3%)
+ parser inl. func. body             :   0.34 (  8%)   0.14 (  4%)   0.39 (  4%)  7084k (  7%)
+ parser inl. meth. body             :   0.34 (  8%)   0.23 (  7%)   0.54 (  5%)  7247k (  7%)
+ template instantiation             :   0.71 ( 16%)   0.35 ( 11%)   1.19 ( 12%)    23M ( 24%)
+ constant expression evaluation     :   0.08 (  2%)   0.09 (  3%)   0.12 (  1%)   425k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    62k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4184  (  0%)
+ tree split crit edges              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1568  (  0%)
+ tree forward propagate             :   0.01 (  0%)   0.01 (  0%)   0.00 (  0%)  1864  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    34k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  0%)   0.02 (  0%)   384  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  1912  (  0%)
+ integrated RA                      :   0.01 (  0%)   0.01 (  0%)   0.00 (  0%)   174k (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)    18k (  0%)
+ TOTAL                              :   4.41          3.23         10.21           97M

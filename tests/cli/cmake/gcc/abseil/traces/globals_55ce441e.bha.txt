@@ -1,0 +1,53 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/globals.cc
+# Output: CMakeFiles/log_internal_globals.dir/internal/globals.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/log/CMakeFiles/log_internal_globals.dir/internal/globals.cc.o -MF CMakeFiles/log_internal_globals.dir/internal/globals.cc.o.d -o CMakeFiles/log_internal_globals.dir/internal/globals.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/globals.cc
+# Timestamp: 2026-01-30T18:41:15+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.02 (  0%)   0.06 (  0%)  1882k (  2%)
+ phase parsing                      :   6.94 ( 91%)   4.66 ( 95%)  13.07 ( 93%)    85M ( 87%)
+ phase lang. deferred               :   0.53 (  7%)   0.12 (  2%)   0.69 (  5%) 10143k ( 10%)
+ phase opt and generate             :   0.16 (  2%)   0.07 (  1%)   0.25 (  2%)  1374k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  0%)   0.04 (  0%)     0  (  0%)
+ |name lookup                       :   1.57 ( 21%)   0.91 ( 19%)   2.74 ( 19%)  3272k (  3%)
+ |overload resolution               :   0.69 (  9%)   0.32 (  7%)   1.17 (  8%)  7386k (  7%)
+ dump files                         :   0.03 (  0%)   0.02 (  0%)   0.03 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   344k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  3392  (  0%)
+ callgraph functions expansion      :   0.08 (  1%)   0.06 (  1%)   0.16 (  1%)   623k (  1%)
+ callgraph ipa passes               :   0.06 (  1%)   0.01 (  0%)   0.07 (  0%)   288k (  0%)
+ ipa modref                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1784  (  0%)
+ df scan insns                      :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   600  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ preprocessing                      :   0.61 (  8%)   0.77 ( 16%)   2.01 ( 14%)  6352k (  6%)
+ parser (global)                    :   1.48 ( 19%)   1.21 ( 25%)   2.66 ( 19%)    30M ( 31%)
+ parser struct body                 :   0.99 ( 13%)   0.52 ( 11%)   1.75 ( 12%)    13M ( 14%)
+ parser enumerator list             :   0.02 (  0%)   0.01 (  0%)   0.01 (  0%)   119k (  0%)
+ parser function body               :   0.79 ( 10%)   0.47 ( 10%)   1.37 ( 10%)  3411k (  3%)
+ parser inl. func. body             :   0.71 (  9%)   0.40 (  8%)   1.33 (  9%)  7984k (  8%)
+ parser inl. meth. body             :   0.82 ( 11%)   0.43 (  9%)   1.39 ( 10%)  8019k (  8%)
+ template instantiation             :   1.92 ( 25%)   0.85 ( 17%)   2.88 ( 20%)    25M ( 26%)
+ constant expression evaluation     :   0.10 (  1%)   0.09 (  2%)   0.31 (  2%)   506k (  1%)
+ integration                        :   0.01 (  0%)   0.00 (  0%)   0.03 (  0%)    49k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ tree CCP                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  3928  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  0%)   0.02 (  0%)    15k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   672  (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6240  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1736  (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5128  (  0%)
+ varconst                           :   0.01 (  0%)   0.01 (  0%)   0.03 (  0%)  5528  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    64  (  0%)
+ loop analysis                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ loop init                          :   0.01 (  0%)   0.01 (  0%)   0.00 (  0%)    72k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   552  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)    16k (  0%)
+ symout                             :   0.02 (  0%)   0.02 (  0%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.05 (  1%)   0.02 (  0%)   0.02 (  0%)    31k (  0%)
+ TOTAL                              :   7.64          4.88         14.12           98M

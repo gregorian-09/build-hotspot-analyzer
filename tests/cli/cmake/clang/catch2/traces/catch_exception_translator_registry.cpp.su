@@ -3,4 +3,4 @@ src/catch2/internal/catch_exception_translator_registry.cpp:34:_ZN5Catch27Except
 src/catch2/internal/catch_exception_translator_registry.cpp:36:_ZN5Catch27ExceptionTranslatorRegistry18registerTranslatorEONS_6Detail10unique_ptrINS_20IExceptionTranslatorEEE	72	static
 src/catch2/internal/catch_exception_translator_registry.cpp:41:_ZNK5Catch27ExceptionTranslatorRegistry24translateActiveExceptionB5cxx11Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:641:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_exception_translator_registry.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_exception_translator_registry.cpp:__clang_call_terminate	8	static

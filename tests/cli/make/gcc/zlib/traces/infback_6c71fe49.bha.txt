@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/infback.c
+# Output: objs/infback.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/infback.o ../../../../repos/zlib/infback.c
+# Timestamp: 2026-01-30T19:20:44+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.06 (  3%)  1819k ( 34%)
+ phase parsing                      :   0.21 ( 52%)   0.26 ( 90%)   1.44 ( 80%)  1955k ( 36%)
+ phase opt and generate             :   0.19 ( 48%)   0.02 (  7%)   0.23 ( 13%)  1600k ( 30%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.06 (  3%)     0  (  0%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  3%)   0.04 (  2%)   193k (  4%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   192  (  0%)
+ df live regs                       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    30k (  1%)
+ rebuild jump labels                :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ preprocessing                      :   0.08 ( 20%)   0.11 ( 38%)   1.10 ( 61%)   635k ( 12%)
+ lexical analysis                   :   0.06 ( 15%)   0.08 ( 28%)   0.18 ( 10%)     0  (  0%)
+ parser (global)                    :   0.01 (  3%)   0.03 ( 10%)   0.05 (  3%)   853k ( 16%)
+ parser struct body                 :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    40k (  1%)
+ parser function body               :   0.05 ( 12%)   0.04 ( 14%)   0.10 (  6%)   342k (  6%)
+ tree gimplify                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   211k (  4%)
+ tree CFG construction              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    67k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   104k (  2%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  4592  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   385k (  7%)
+ integrated RA                      :   0.03 (  8%)   0.00 (  0%)   0.06 (  3%)   301k (  6%)
+ LRA non-specific                   :   0.02 (  5%)   0.01 (  3%)   0.02 (  1%)    12k (  0%)
+ LRA virtuals elimination           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    37k (  1%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3312  (  0%)
+ shorten branches                   :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    55k (  1%)
+ initialize rtl                     :   0.02 (  5%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.02 (  5%)   0.00 (  0%)   0.03 (  2%)  1168  (  0%)
+ rest of compilation                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ TOTAL                              :   0.40          0.29          1.79         5376k

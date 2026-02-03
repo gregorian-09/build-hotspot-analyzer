@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-12.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jutils-12.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jutils-12.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jutils-12.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jutils-12.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-12.c
+# Timestamp: 2026-01-30T19:04:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.08 (  4%)  1819k ( 40%)
+ phase parsing                      :   0.23 ( 79%)   0.30 ( 86%)   1.70 ( 85%)  2568k ( 56%)
+ phase opt and generate             :   0.06 ( 21%)   0.04 ( 11%)   0.12 (  6%)   188k (  4%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.10 (  5%)     0  (  0%)
+ callgraph functions expansion      :   0.06 ( 21%)   0.04 ( 11%)   0.12 (  6%)   136k (  3%)
+ preprocessing                      :   0.04 ( 14%)   0.10 ( 29%)   1.31 ( 66%)   745k ( 16%)
+ lexical analysis                   :   0.09 ( 31%)   0.11 ( 31%)   0.18 (  9%)     0  (  0%)
+ parser (global)                    :   0.03 ( 10%)   0.06 ( 17%)   0.13 (  6%)  1304k ( 28%)
+ parser struct body                 :   0.03 ( 10%)   0.02 (  6%)   0.05 (  3%)   231k (  5%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    35k (  1%)
+ parser inl. func. body             :   0.04 ( 14%)   0.00 (  0%)   0.02 (  1%)   245k (  5%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)   144  (  0%)
+ tree PRE                           :   0.01 (  3%)   0.01 (  3%)   0.03 (  1%)  2448  (  0%)
+ tree RPO VN                        :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   280  (  0%)
+ loop unrolling                     :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   520  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.01 (  3%)   0.03 (  2%)    25k (  1%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   152  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3160  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  7%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4640  (  0%)
+ TOTAL                              :   0.29          0.35          2.00         4577k

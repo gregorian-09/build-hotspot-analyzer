@@ -5,7 +5,7 @@ src/catch2/internal/catch_xmlwriter.cpp:181:_ZN5Catch9XmlWriter13ScopedElementC2
 src/catch2/internal/catch_xmlwriter.cpp:186:_ZN5Catch9XmlWriter13ScopedElementC2EOS1_	0	static
 src/catch2/internal/catch_xmlwriter.cpp:193:_ZN5Catch9XmlWriter13ScopedElementaSEOS1_	24	static
 src/catch2/internal/catch_xmlwriter.cpp:257:_ZN5Catch9XmlWriter10endElementENS_13XmlFormattingE	88	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_xmlwriter.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_xmlwriter.cpp:__clang_call_terminate	8	static
 src/catch2/internal/catch_xmlwriter.cpp:205:_ZN5Catch9XmlWriter13ScopedElementD2Ev	8	static
 src/catch2/internal/catch_xmlwriter.cpp:212:_ZN5Catch9XmlWriter13ScopedElement9writeTextENS_9StringRefENS_13XmlFormattingE	8	static
 src/catch2/internal/catch_xmlwriter.cpp:294:_ZN5Catch9XmlWriter9writeTextENS_9StringRefENS_13XmlFormattingE	88	static

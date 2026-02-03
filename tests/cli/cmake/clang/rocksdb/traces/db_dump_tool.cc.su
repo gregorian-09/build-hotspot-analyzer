@@ -3,4 +3,4 @@ repos/rocksdb/include/rocksdb/status.h:594:_ZN7rocksdb6StatusaSEOS0_	24	static
 repos/rocksdb/tools/dump/db_dump_tool.cc:132:_ZN7rocksdb12DbUndumpTool3RunERKNS_13UndumpOptionsENS_7OptionsE	248	static
 repos/rocksdb/include/rocksdb/db.h:145:_ZN7rocksdb2DB4OpenERKNS_7OptionsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPPS0_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:641:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/tools/dump/db_dump_tool.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/tools/dump/db_dump_tool.cc:__clang_call_terminate	8	static

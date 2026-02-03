@@ -1,8 +1,8 @@
-file.c:104:file_setup_connection	40	static
-file.c:384:file_do	520	static
-file.c:118:file_done	40	static
-file.c:136:file_connect	72	static
-file.c:249:file_disconnect	40	static
-file.c:95:file_easy_dtor	40	static
-file.c:85:file_cleanup	24	static
-file.c:264:file_upload	280	static
+../../../../../repos/curl/lib/file.c:104:file_setup_connection	40	static
+../../../../../repos/curl/lib/file.c:384:file_do	520	static
+../../../../../repos/curl/lib/file.c:118:file_done	40	static
+../../../../../repos/curl/lib/file.c:136:file_connect	72	static
+../../../../../repos/curl/lib/file.c:249:file_disconnect	40	static
+../../../../../repos/curl/lib/file.c:95:file_easy_dtor	40	static
+../../../../../repos/curl/lib/file.c:85:file_cleanup	24	static
+../../../../../repos/curl/lib/file.c:264:file_upload	280	static

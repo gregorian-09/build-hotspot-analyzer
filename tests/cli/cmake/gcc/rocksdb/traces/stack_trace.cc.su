@@ -1,4 +1,4 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/port/stack_trace.cc:15:6:void rocksdb::port::InstallStackTraceHandler()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/port/stack_trace.cc:16:6:void rocksdb::port::PrintStack(int)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/port/stack_trace.cc:17:6:void rocksdb::port::PrintAndFreeStack(void*, int)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/port/stack_trace.cc:18:7:void* rocksdb::port::SaveStack(int*, int)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/port/stack_trace.cc:15:6:void rocksdb::port::InstallStackTraceHandler()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/port/stack_trace.cc:16:6:void rocksdb::port::PrintStack(int)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/port/stack_trace.cc:17:6:void rocksdb::port::PrintAndFreeStack(void*, int)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/port/stack_trace.cc:18:7:void* rocksdb::port::SaveStack(int*, int)	8	static

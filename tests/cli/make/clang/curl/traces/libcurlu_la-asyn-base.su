@@ -1,2 +1,2 @@
-asyn-base.c:181:Curl_async_shutdown	24	static
-asyn-base.c:195:Curl_async_destroy	24	static
+../../../../../repos/curl/lib/asyn-base.c:181:Curl_async_shutdown	24	static
+../../../../../repos/curl/lib/asyn-base.c:195:Curl_async_destroy	24	static

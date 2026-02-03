@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/asyn-base.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/asyn-base.c
+# Timestamp: 2026-01-31T00:30:00+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1819k ( 19%)
+ phase parsing                      :   0.39 ( 85%)   0.32 ( 89%)   1.56 ( 92%)  5927k ( 61%)
+ phase lang. deferred               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.06 ( 13%)   0.04 ( 11%)   0.10 (  6%)  2019k ( 21%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)    10k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    56k (  1%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   141k (  1%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   736  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ register information               :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  4160  (  0%)
+ preprocessing                      :   0.20 ( 43%)   0.16 ( 44%)   1.09 ( 64%)  2343k ( 24%)
+ lexical analysis                   :   0.12 ( 26%)   0.11 ( 31%)   0.24 ( 14%)     0  (  0%)
+ parser (global)                    :   0.05 ( 11%)   0.05 ( 14%)   0.17 ( 10%)  2804k ( 29%)
+ parser struct body                 :   0.03 (  7%)   0.00 (  0%)   0.00 (  0%)   344k (  4%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.05 (  3%)   347k (  4%)
+ tree SSA other                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1299k ( 13%)
+ LRA hard reg assignment            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    67k (  1%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    83k (  1%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   128k (  1%)
+ TOTAL                              :   0.46          0.36          1.69         9767k

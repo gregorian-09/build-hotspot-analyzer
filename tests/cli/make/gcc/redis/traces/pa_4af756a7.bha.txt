@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: src/pa.c
+# Output: src/pa.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/pa.o src/pa.c
+# Timestamp: 2026-01-31T02:10:50+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.01 (  1%)   0.04 (  1%)  1819k (  6%)
+ phase parsing                      :   1.71 ( 89%)   1.90 ( 97%)   4.99 ( 95%)    25M ( 84%)
+ phase opt and generate             :   0.20 ( 10%)   0.04 (  2%)   0.24 (  5%)  3117k ( 10%)
+ dump files                         :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   118k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    62k (  0%)
+ callgraph ipa passes               :   0.03 (  2%)   0.01 (  1%)   0.04 (  1%)   612k (  2%)
+ df scan insns                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1920  (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   432  (  0%)
+ preprocessing                      :   0.58 ( 30%)   0.62 ( 32%)   2.56 ( 48%)    13M ( 46%)
+ lexical analysis                   :   0.61 ( 32%)   0.72 ( 37%)   1.29 ( 24%)     0  (  0%)
+ parser (global)                    :   0.16 (  8%)   0.14 (  7%)   0.41 (  8%)  5707k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)   254k (  1%)
+ parser enumerator list             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   151k (  0%)
+ parser function body               :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)    99k (  0%)
+ parser inl. func. body             :   0.33 ( 17%)   0.39 ( 20%)   0.67 ( 13%)  5382k ( 18%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   250k (  1%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   258k (  1%)
+ tree CFG construction              :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)   101k (  0%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    70k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   137k (  0%)
+ dominance computation              :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  5912  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   508k (  2%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)  4224  (  0%)
+ jump                               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.07 (  1%)  1040k (  3%)
+ LRA non-specific                   :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)  9008  (  0%)
+ LRA virtuals elimination           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ reload                             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   960  (  0%)
+ thread pro- & epilogue             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)    63k (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   108k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    99k (  0%)
+ TOTAL                              :   1.92          1.95          5.28           29M

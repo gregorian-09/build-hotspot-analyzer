@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: lazyfree.c
+# Output: lazyfree.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o lazyfree.o -c lazyfree.c
+# Timestamp: 2026-01-31T02:11:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1828k ( 11%)
+ phase parsing                      :   0.75 ( 88%)   0.97 ( 97%)   5.65 ( 97%)    12M ( 82%)
+ phase opt and generate             :   0.09 ( 11%)   0.03 (  3%)   0.12 (  2%)   999k (  6%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   278k (  2%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1200  (  0%)
+ callgraph ipa passes               :   0.08 (  9%)   0.02 (  2%)   0.10 (  2%)   578k (  4%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    35k (  0%)
+ ipa function splitting             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    63k (  0%)
+ ipa lto gimple out                 :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  5712  (  0%)
+ ipa lto decl out                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   264  (  0%)
+ ipa free lang data                 :   0.02 (  2%)   0.00 (  0%)   0.02 (  0%)    83k (  1%)
+ preprocessing                      :   0.22 ( 26%)   0.56 ( 56%)   4.66 ( 80%)  3215k ( 20%)
+ lexical analysis                   :   0.26 ( 31%)   0.21 ( 21%)   0.44 (  8%)     0  (  0%)
+ parser (global)                    :   0.15 ( 18%)   0.12 ( 12%)   0.29 (  5%)  5496k ( 34%)
+ parser struct body                 :   0.04 (  5%)   0.02 (  2%)   0.09 (  2%)   567k (  4%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   172k (  1%)
+ parser function body               :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)   127k (  1%)
+ parser inl. func. body             :   0.04 (  5%)   0.04 (  4%)   0.11 (  2%)   732k (  5%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    37k (  0%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   114k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    26k (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    37k (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1672  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    42k (  0%)
+ varconst                           :   0.02 (  2%)   0.01 (  1%)   0.00 (  0%)  2944  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    24k (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)  2809k ( 18%)
+ uninit var analysis                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   0.85          1.00          5.80           15M

@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: syncio.c
+# Output: syncio.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o syncio.o -c syncio.c
+# Timestamp: 2026-01-31T02:11:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.49 ( 94%)   0.74 ( 97%)   3.95 ( 99%)    12M ( 86%)
+ phase opt and generate             :   0.03 (  6%)   0.01 (  1%)   0.03 (  1%)   315k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.03 (  6%)   0.01 (  1%)   0.03 (  1%)   207k (  1%)
+ ipa icf                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    64  (  0%)
+ ipa free lang data                 :   0.02 (  4%)   0.00 (  0%)   0.01 (  0%)    88k (  1%)
+ preprocessing                      :   0.20 ( 38%)   0.34 ( 45%)   3.20 ( 80%)  3165k ( 21%)
+ lexical analysis                   :   0.15 ( 29%)   0.21 ( 28%)   0.32 (  8%)     0  (  0%)
+ parser (global)                    :   0.08 ( 15%)   0.12 ( 16%)   0.33 (  8%)  5316k ( 36%)
+ parser struct body                 :   0.00 (  0%)   0.03 (  4%)   0.01 (  0%)   553k (  4%)
+ parser enumerator list             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   169k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    26k (  0%)
+ parser inl. func. body             :   0.03 (  6%)   0.03 (  4%)   0.06 (  1%)   721k (  5%)
+ tree Early VRP                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  9824  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  1976  (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ symout                             :   0.02 (  4%)   0.01 (  1%)   0.02 (  0%)  2755k ( 19%)
+ TOTAL                              :   0.52          0.76          4.01           14M

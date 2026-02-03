@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:84:1:start_pass_dpost	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:142:1:post_process_1pass	80	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:176:1:post_process_prepass	96	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:219:1:post_process_2pass	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:266:1:jinit_d_post_controller	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:84:1:start_pass_dpost	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:142:1:post_process_1pass	80	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:176:1:post_process_prepass	96	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:219:1:post_process_2pass	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/../jdpostct.c:266:1:jinit_d_post_controller	48	static

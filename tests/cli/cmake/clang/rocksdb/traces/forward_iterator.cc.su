@@ -8,7 +8,7 @@ repos/rocksdb/db/forward_iterator.cc:704:_ZN7rocksdb15ForwardIterator16RebuildIt
 repos/rocksdb/db/dbformat.h:588:_ZN7rocksdb7IterKeyD2Ev	24	static
 repos/rocksdb/db/forward_iterator.cc:256:_ZN7rocksdb15ForwardIteratorD2Ev	24	static
 repos/rocksdb/db/forward_iterator.cc:318:_ZN7rocksdb15ForwardIterator7CleanupEb	104	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/forward_iterator.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/forward_iterator.cc:__clang_call_terminate	8	static
 repos/rocksdb/db/forward_iterator.cc:256:_ZN7rocksdb15ForwardIteratorD0Ev	24	static
 repos/rocksdb/db/forward_iterator.cc:258:_ZN7rocksdb15ForwardIterator9SVCleanupEPNS_6DBImplEPNS_12SuperVersionEb	712	static
 repos/rocksdb/db/job_context.h:256:_ZN7rocksdb10JobContextC2Eib	616	static
@@ -41,7 +41,7 @@ repos/rocksdb/db/forward_iterator.cc:660:_ZN7rocksdb15ForwardIterator17SetPinned
 repos/rocksdb/db/forward_iterator.cc:666:_ZN7rocksdb15ForwardIterator28UpdateChildrenPinnedItersMgrEv	40	static
 repos/rocksdb/db/forward_iterator.cc:694:_ZNK7rocksdb15ForwardIterator11IsKeyPinnedEv	0	static
 repos/rocksdb/db/forward_iterator.cc:699:_ZNK7rocksdb15ForwardIterator13IsValuePinnedEv	0	static
-repos/rocksdb/db/forward_iterator.cc:872:_ZN7rocksdb15ForwardIterator19BuildLevelIteratorsEPKNS_18VersionStorageInfoEPNS_12SuperVersionE	152	static
+repos/rocksdb/db/forward_iterator.cc:872:_ZN7rocksdb15ForwardIterator19BuildLevelIteratorsEPKNS_18VersionStorageInfoEPNS_12SuperVersionE	136	static
 repos/rocksdb/db/range_del_aggregator.h:381:_ZN7rocksdb22ReadRangeDelAggregatorD2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:211:_ZNSt6vectorIPN7rocksdb20InternalIteratorBaseINS0_5SliceEEESaIS4_EEaSERKS6_	56	static
 repos/rocksdb/db/forward_iterator.cc:69:_ZN7rocksdb20ForwardLevelIterator5ResetEv	936	static

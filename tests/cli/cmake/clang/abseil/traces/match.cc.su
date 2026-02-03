@@ -1,5 +1,5 @@
 repos/abseil/absl/strings/match.cc:31:_ZN4absl16EqualsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/match.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/match.cc:__clang_call_terminate	8	static
 repos/abseil/absl/strings/match.cc:39:_ZN4absl21StrContainsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	40	static
 repos/abseil/absl/strings/match.cc:60:_ZN4absl20StartsWithIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEES3_	8	static
 repos/abseil/absl/strings/match.cc:48:_ZN4absl21StrContainsIgnoreCaseESt17basic_string_viewIcSt11char_traitsIcEEc	56	static

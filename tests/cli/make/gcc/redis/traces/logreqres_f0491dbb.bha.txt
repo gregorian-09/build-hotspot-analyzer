@@ -1,0 +1,27 @@
+# BHA Trace
+# Source: logreqres.c
+# Output: logreqres.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o logreqres.o -c logreqres.c
+# Timestamp: 2026-01-31T02:12:25+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.62 ( 95%)   0.92 ( 99%)   4.95 ( 99%)    12M ( 87%)
+ phase opt and generate             :   0.02 (  3%)   0.00 (  0%)   0.02 (  0%)   116k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    38k (  0%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    66k (  0%)
+ ipa free lang data                 :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    31k (  0%)
+ preprocessing                      :   0.33 ( 51%)   0.48 ( 52%)   4.06 ( 81%)  3206k ( 22%)
+ lexical analysis                   :   0.16 ( 25%)   0.13 ( 14%)   0.41 (  8%)     0  (  0%)
+ parser (global)                    :   0.10 ( 15%)   0.18 ( 19%)   0.34 (  7%)  5356k ( 36%)
+ parser struct body                 :   0.00 (  0%)   0.06 (  6%)   0.02 (  0%)   553k (  4%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   172k (  1%)
+ parser inl. func. body             :   0.01 (  2%)   0.04 (  4%)   0.09 (  2%)   732k (  5%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)  2688  (  0%)
+ symout                             :   0.01 (  2%)   0.02 (  2%)   0.02 (  0%)  2759k ( 19%)
+ TOTAL                              :   0.65          0.93          5.00           14M

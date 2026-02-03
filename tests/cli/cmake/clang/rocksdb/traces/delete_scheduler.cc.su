@@ -10,7 +10,7 @@ repos/rocksdb/file/delete_scheduler.cc:502:_ZN7rocksdb15DeleteScheduler27MaybeCr
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:314:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEN7rocksdb6StatusESt4lessIS5_ESaISt4pairIKS5_S7_EEED2Ev	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:314:_ZNSt3mapIiiSt4lessIiESaISt4pairIKiiEEED2Ev	8	static
 repos/rocksdb/file/delete_scheduler.cc:46:_ZN7rocksdb15DeleteSchedulerD2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/file/delete_scheduler.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/file/delete_scheduler.cc:__clang_call_terminate	8	static
 repos/rocksdb/file/delete_scheduler.cc:60:_ZN7rocksdb15DeleteScheduler10DeleteFileERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_b	56	static
 repos/rocksdb/file/delete_scheduler.cc:108:_ZN7rocksdb15DeleteScheduler21DeleteFileImmediatelyERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb	168	static
 repos/rocksdb/file/delete_scheduler.cc:122:_ZN7rocksdb15DeleteScheduler22AddFileToDeletionQueueERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_St8optionalIiEb	232	static
@@ -18,7 +18,7 @@ repos/rocksdb/file/delete_scheduler.cc:85:_ZN7rocksdb15DeleteScheduler21DeleteUn
 repos/rocksdb/include/rocksdb/file_system.h:100:_ZN7rocksdb9IOOptionsD2Ev	40	static
 repos/rocksdb/file/delete_scheduler.cc:461:_ZN7rocksdb15DeleteScheduler12OnDeleteFileERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb	24	static
 repos/rocksdb/include/rocksdb/status.h:594:_ZN7rocksdb6StatusaSEOS0_	24	static
-repos/rocksdb/file/delete_scheduler.cc:230:_ZN7rocksdb15DeleteScheduler11MarkAsTrashERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEbPS6_	280	static
+repos/rocksdb/file/delete_scheduler.cc:230:_ZN7rocksdb15DeleteScheduler11MarkAsTrashERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEbPS6_	264	static
 repos/rocksdb/file/delete_scheduler.cc:180:_ZN7rocksdb15DeleteScheduler19GetBackgroundErrorsB5cxx11Ev	40	static
 repos/rocksdb/file/delete_scheduler.cc:186:_ZN7rocksdb15DeleteScheduler11IsTrashFileERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	0	static
 repos/rocksdb/file/delete_scheduler.cc:192:_ZN7rocksdb15DeleteScheduler16CleanupDirectoryEPNS_3EnvEPNS_18SstFileManagerImplERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	280	static

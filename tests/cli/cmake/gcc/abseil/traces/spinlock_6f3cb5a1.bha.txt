@@ -1,0 +1,56 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/spinlock.cc
+# Output: CMakeFiles/base.dir/internal/spinlock.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/base.dir/internal/spinlock.cc.o -MF CMakeFiles/base.dir/internal/spinlock.cc.o.d -o CMakeFiles/base.dir/internal/spinlock.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/spinlock.cc
+# Timestamp: 2026-01-30T18:39:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.05 (  1%)   0.06 (  2%)   0.24 (  2%)  1882k (  2%)
+ phase parsing                      :   4.24 ( 90%)   3.38 ( 95%)   9.91 ( 92%)    73M ( 91%)
+ phase lang. deferred               :   0.21 (  4%)   0.09 (  3%)   0.32 (  3%)  4303k (  5%)
+ phase opt and generate             :   0.23 (  5%)   0.04 (  1%)   0.29 (  3%)  1474k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.88 ( 19%)   0.48 ( 13%)   1.45 ( 13%)  2977k (  4%)
+ |overload resolution               :   0.23 (  5%)   0.10 (  3%)   0.43 (  4%)  4234k (  5%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.03 (  1%)   0.01 (  0%)   0.03 (  0%)   277k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  4560  (  0%)
+ callgraph functions expansion      :   0.13 (  3%)   0.03 (  1%)   0.17 (  2%)   606k (  1%)
+ callgraph ipa passes               :   0.07 (  1%)   0.01 (  0%)   0.08 (  1%)   418k (  1%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ preprocessing                      :   0.93 ( 20%)   1.07 ( 30%)   3.86 ( 36%)  2407k (  3%)
+ parser (global)                    :   0.91 ( 19%)   1.11 ( 31%)   2.25 ( 21%)    26M ( 33%)
+ parser struct body                 :   0.61 ( 13%)   0.19 (  5%)   0.90 (  8%)    13M ( 17%)
+ parser enumerator list             :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)   117k (  0%)
+ parser function body               :   0.25 (  5%)   0.19 (  5%)   0.40 (  4%)  2430k (  3%)
+ parser inl. func. body             :   0.31 (  7%)   0.13 (  4%)   0.55 (  5%)  3735k (  5%)
+ parser inl. meth. body             :   0.50 ( 11%)   0.30 (  8%)   0.73 (  7%)    10M ( 13%)
+ template instantiation             :   0.85 ( 18%)   0.45 ( 13%)   1.40 ( 13%)    17M ( 22%)
+ constant expression evaluation     :   0.08 (  2%)   0.02 (  1%)   0.09 (  1%)   248k (  0%)
+ inline parameters                  :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    55k (  0%)
+ integration                        :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    76k (  0%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9760  (  0%)
+ tree VRP                           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    19k (  0%)
+ tree Early VRP                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    35k (  0%)
+ tree PTA                           :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%) 10040  (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)    10k (  0%)
+ dominator optimization             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  8072  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  2160  (  0%)
+ tree CCP                           :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4968  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.03 (  0%)   640  (  0%)
+ loop init                          :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    70k (  0%)
+ combiner                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ if-conversion                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4240  (  0%)
+ integrated RA                      :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)   220k (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  3608  (  0%)
+ LRA virtuals elimination           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ scheduling 2                       :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)  9080  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)    24k (  0%)
+ TOTAL                              :   4.73          3.57         10.77           80M

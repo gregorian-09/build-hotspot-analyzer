@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: cli_commands.c
+# Output: cli_commands.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o cli_commands.o -c cli_commands.c
+# Timestamp: 2026-01-31T02:12:28+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1828k ( 24%)
+ phase parsing                      :   0.27 ( 68%)   0.35 ( 97%)   0.70 ( 81%)  5665k ( 74%)
+ phase opt and generate             :   0.13 ( 32%)   0.01 (  3%)   0.14 ( 16%)   112k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    33k (  0%)
+ callgraph ipa passes               :   0.12 ( 30%)   0.01 (  3%)   0.13 ( 15%)    75k (  1%)
+ lto stream compression             :   0.02 (  5%)   0.00 (  0%)   0.04 (  5%)     0  (  0%)
+ lto stream output                  :   0.03 (  8%)   0.00 (  0%)   0.03 (  3%)     0  (  0%)
+ ipa lto gimple out                 :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   352  (  0%)
+ ipa lto decl out                   :   0.02 (  5%)   0.00 (  0%)   0.02 (  2%)   360  (  0%)
+ ipa lto constructors out           :   0.04 ( 10%)   0.00 (  0%)   0.02 (  2%)    61k (  1%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   784  (  0%)
+ preprocessing                      :   0.06 ( 15%)   0.10 ( 28%)   0.25 ( 29%)  1856k ( 24%)
+ lexical analysis                   :   0.09 ( 23%)   0.09 ( 25%)   0.16 ( 19%)     0  (  0%)
+ parser (global)                    :   0.12 ( 30%)   0.15 ( 42%)   0.29 ( 34%)  3691k ( 49%)
+ backwards jump threading           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    48k (  1%)
+ TOTAL                              :   0.40          0.36          0.86         7606k

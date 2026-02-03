@@ -113,7 +113,7 @@ repos/rocksdb/env/file_system_tracer.h:401:_ZN7rocksdb28FSRandomRWFileTracingWra
 repos/rocksdb/include/rocksdb/file_system.h:1933:_ZNK7rocksdb21FSRandomRWFileWrapper13use_direct_ioEv	0	static
 repos/rocksdb/include/rocksdb/file_system.h:1934:_ZNK7rocksdb21FSRandomRWFileWrapper26GetRequiredBufferAlignmentEv	0	static
 repos/rocksdb/include/rocksdb/file_system.h:1958:_ZNK7rocksdb21FSRandomRWFileWrapper14GetTemperatureEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/env/file_system_tracer.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/env/file_system_tracer.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static

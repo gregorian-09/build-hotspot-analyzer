@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/utf8.cc
+# Output: CMakeFiles/strings_internal.dir/internal/utf8.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings_internal.dir/internal/utf8.cc.o -MF CMakeFiles/strings_internal.dir/internal/utf8.cc.o.d -o CMakeFiles/strings_internal.dir/internal/utf8.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/utf8.cc
+# Timestamp: 2026-01-30T18:39:21+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  9%)   0.03 ( 21%)   0.06 ( 12%)  1882k ( 37%)
+ phase parsing                      :   0.10 ( 43%)   0.09 ( 64%)   0.31 ( 60%)  2593k ( 50%)
+ phase opt and generate             :   0.11 ( 48%)   0.02 ( 14%)   0.14 ( 27%)   675k ( 13%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ |name lookup                       :   0.00 (  0%)   0.03 ( 21%)   0.03 (  6%)   211k (  4%)
+ callgraph construction             :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    78k (  2%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   120  (  0%)
+ callgraph functions expansion      :   0.09 ( 39%)   0.02 ( 14%)   0.12 ( 23%)   463k (  9%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    78k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3960  (  0%)
+ rebuild jump labels                :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.03 ( 13%)   0.06 ( 43%)   0.17 ( 33%)   503k ( 10%)
+ parser (global)                    :   0.02 (  9%)   0.01 (  7%)   0.05 ( 10%)   697k ( 14%)
+ parser struct body                 :   0.04 ( 17%)   0.02 ( 14%)   0.05 ( 10%)   614k ( 12%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)   184k (  4%)
+ parser inl. meth. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   439k (  9%)
+ template instantiation             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    25k (  1%)
+ constant expression evaluation     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    57k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ tree VRP                           :   0.02 (  9%)   0.00 (  0%)   0.01 (  2%)  4544  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5096  (  0%)
+ tree reassociation                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   120  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  8752  (  0%)
+ tree NRV optimization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    48  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)    38k (  1%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  1584  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    43k (  1%)
+ integrated RA                      :   0.02 (  9%)   0.00 (  0%)   0.01 (  2%)    76k (  1%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  3296  (  0%)
+ initialize rtl                     :   0.02 (  9%)   0.01 (  7%)   0.02 (  4%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ TOTAL                              :   0.23          0.14          0.52         5151k

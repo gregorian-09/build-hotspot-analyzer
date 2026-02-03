@@ -1,4 +1,4 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/fse_decompress.c:58:15:FSE_buildDTable_internal	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/fse_decompress.c:298:37:FSE_decompress_wksp_body_bmi2	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/fse_decompress.c:161:8:FSE_buildDTable_wksp	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/fse_decompress.c:304:8:FSE_decompress_wksp_bmi2	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/common/fse_decompress.c:58:15:FSE_buildDTable_internal	56	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/common/fse_decompress.c:298:37:FSE_decompress_wksp_body_bmi2	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/common/fse_decompress.c:161:8:FSE_buildDTable_wksp	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/common/fse_decompress.c:304:8:FSE_decompress_wksp_bmi2	112	static

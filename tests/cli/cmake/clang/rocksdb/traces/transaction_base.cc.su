@@ -7,7 +7,7 @@ repos/rocksdb/utilities/transactions/transaction_base.cc:24:_ZN7rocksdb11Transac
 repos/rocksdb/utilities/transactions/transaction_base.cc:61:_ZN7rocksdb19TransactionBaseImplC2EPNS_2DBERKNS_12WriteOptionsERKNS_18LockTrackerFactoryE	72	static
 repos/rocksdb/utilities/transactions/transaction_base.cc:83:_ZN7rocksdb19TransactionBaseImplD2Ev	72	static
 repos/rocksdb/utilities/transactions/transaction_base.cc:130:_ZN7rocksdb19TransactionBaseImpl19SetSnapshotInternalEPKNS_8SnapshotE	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/transaction_base.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/transaction_base.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/transactions/transaction_base.cc:83:_ZN7rocksdb19TransactionBaseImplD0Ev	0	static
 repos/rocksdb/utilities/transactions/transaction_base.cc:88:_ZN7rocksdb19TransactionBaseImpl5ClearEv	40	static
 repos/rocksdb/utilities/transactions/transaction_base.cc:103:_ZN7rocksdb19TransactionBaseImpl12ReinitializeEPNS_2DBERKNS_12WriteOptionsE	56	static

@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/gzlib.c
+# Output: objs/gzlib.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/gzlib.o ../../../../repos/zlib/gzlib.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.04 (  6%)  1819k ( 35%)
+ phase parsing                      :   0.13 ( 65%)   0.18 ( 86%)   0.51 ( 76%)  2046k ( 39%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.07 ( 35%)   0.02 ( 10%)   0.11 ( 16%)  1331k ( 26%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 (  5%)   0.00 (  0%)   0.01 (  1%)    26k (  1%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ trivially dead code                :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   864  (  0%)
+ preprocessing                      :   0.08 ( 40%)   0.09 ( 43%)   0.36 ( 54%)   682k ( 13%)
+ lexical analysis                   :   0.02 ( 10%)   0.05 ( 24%)   0.07 ( 10%)     0  (  0%)
+ parser (global)                    :   0.02 ( 10%)   0.04 ( 19%)   0.06 (  9%)  1135k ( 22%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    52k (  1%)
+ parser enumerator list             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    66k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)   101k (  2%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dominance computation              :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  5%)   0.01 (  1%)   219k (  4%)
+ loop init                          :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    19k (  0%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   495k ( 10%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3192  (  0%)
+ LRA virtuals elimination           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    28k (  1%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    67k (  1%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.02 (  3%)    12k (  0%)
+ rest of compilation                :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    43k (  1%)
+ TOTAL                              :   0.20          0.21          0.67         5198k

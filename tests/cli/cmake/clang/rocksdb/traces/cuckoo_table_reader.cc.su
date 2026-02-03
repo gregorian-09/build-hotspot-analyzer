@@ -59,7 +59,7 @@ repos/rocksdb/table/internal_iterator.h:191:_ZN7rocksdb20InternalIteratorBaseINS
 repos/rocksdb/table/internal_iterator.h:194:_ZN7rocksdb20InternalIteratorBaseINS_5SliceEE17SetReadaheadStateEPNS_17ReadaheadFileInfoE	0	static
 repos/rocksdb/table/internal_iterator.h:201:_ZNK7rocksdb20InternalIteratorBaseINS_5SliceEE24IsDeleteRangeSentinelKeyEv	0	static
 repos/rocksdb/table/internal_iterator.h:203:_ZN7rocksdb20InternalIteratorBaseINS_5SliceEE7PrepareEPKNS_13MultiScanArgsE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/cuckoo/cuckoo_table_reader.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/cuckoo/cuckoo_table_reader.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1068:_ZNSt14__shared_countILN9__gnu_cxx12_Lock_policyE2EED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static

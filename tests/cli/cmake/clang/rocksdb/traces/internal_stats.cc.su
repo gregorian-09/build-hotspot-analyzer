@@ -107,7 +107,7 @@ repos/rocksdb/db/internal_stats.cc:1002:_ZN7rocksdb13InternalStats14GetIntProper
 repos/rocksdb/db/internal_stats.cc:1011:_ZN7rocksdb13InternalStats24GetIntPropertyOutOfMutexERKNS_14DBPropertyInfoEPNS_7VersionEPm	0	static
 repos/rocksdb/db/internal_stats.cc:1754:_ZN7rocksdb13InternalStats14DumpCFMapStatsEPSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_St4lessIS7_ESaISt4pairIKS7_S7_EEE	536	static
 repos/rocksdb/db/internal_stats.cc:1949:_ZN7rocksdb13InternalStats11DumpCFStatsEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
-repos/rocksdb/db/internal_stats.cc:1954:_ZN7rocksdb13InternalStats26DumpCFStatsNoFileHistogramEbPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	3320	static
+repos/rocksdb/db/internal_stats.cc:1954:_ZN7rocksdb13InternalStats26DumpCFStatsNoFileHistogramEbPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	3352	static
 repos/rocksdb/db/internal_stats.cc:2144:_ZN7rocksdb13InternalStats19DumpCFFileHistogramEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	472	static
 repos/rocksdb/db/internal_stats.cc:1913:_ZN7rocksdb13InternalStats21DumpCFStatsWriteStallEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPm	536	static
 repos/rocksdb/db/internal_stats.cc:1864:_ZN7rocksdb13InternalStats24DumpCFMapStatsWriteStallEPSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_St4lessIS7_ESaISt4pairIKS7_S7_EEE	216	static
@@ -129,7 +129,7 @@ repos/rocksdb/db/internal_stats.cc:1850:_ZN7rocksdb13InternalStats24DumpCFMapSta
 repos/rocksdb/db/internal_stats.cc:94:_ZN7rocksdb12_GLOBAL__N_121PrintLevelStatsHeaderEPcmRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_	200	static
 repos/rocksdb/db/internal_stats.cc:166:_ZN7rocksdb12_GLOBAL__N_115PrintLevelStatsEPcmRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt3mapINS_13LevelStatTypeEdSt4lessISB_ESaISt4pairIKSB_dEEE	392	static
 repos/rocksdb/db/internal_stats.cc:2216:_ZN7rocksdb27CreateIntPropertyAggregatorERKNS_5SliceE	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/internal_stats.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/internal_stats.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:985:_ZNSt8_Rb_treeIN7rocksdb13LevelStatTypeESt4pairIKS1_NS0_9LevelStatEESt10_Select1stIS5_ESt4lessIS1_ESaIS5_EED2Ev	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeIN7rocksdb13LevelStatTypeESt4pairIKS1_NS0_9LevelStatEESt10_Select1stIS5_ESt4lessIS1_ESaIS5_EE8_M_eraseEPSt13_Rb_tree_nodeIS5_E	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:985:_ZNSt8_Rb_treeIN7rocksdb13InternalStats19InternalDBStatsTypeESt4pairIKS2_NS0_10DBStatInfoEESt10_Select1stIS6_ESt4lessIS2_ESaIS6_EED2Ev	8	static

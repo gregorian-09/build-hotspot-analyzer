@@ -3,7 +3,7 @@ repos/rocksdb/db/compaction/compaction_service_job.cc:0:__cxx_global_array_dtor.
 repos/rocksdb/db/compaction/compaction_service_job.cc:0:__cxx_global_array_dtor.27	8	static
 repos/rocksdb/db/compaction/compaction_service_job.cc:0:__cxx_global_array_dtor.35	8	static
 repos/rocksdb/db/compaction/compaction_service_job.cc:0:__cxx_global_array_dtor.38	8	static
-repos/rocksdb/db/compaction/compaction_service_job.cc:23:_ZN7rocksdb13CompactionJob46ProcessKeyValueCompactionWithCompactionServiceEPNS_18SubcompactionStateE	2936	static
+repos/rocksdb/db/compaction/compaction_service_job.cc:23:_ZN7rocksdb13CompactionJob46ProcessKeyValueCompactionWithCompactionServiceEPNS_18SubcompactionStateE	3000	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:211:_ZNSt6vectorImSaImEEaSERKS1_	56	static
 repos/rocksdb/db/compaction/compaction_service_job.cc:1001:_ZN7rocksdb22CompactionServiceInput5WriteEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	136	static
 repos/rocksdb/include/rocksdb/status.h:574:_ZN7rocksdb6StatusaSERKS0_	24	static
@@ -54,7 +54,7 @@ repos/rocksdb/include/rocksdb/convenience.h:34:_ZN7rocksdb13ConfigOptionsD2Ev	24
 repos/rocksdb/db/compaction/compaction_service_job.cc:1030:_ZN7rocksdb23CompactionServiceResult5WriteEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	136	static
 repos/rocksdb/db/compaction/compaction_job.h:689:_ZN7rocksdb30CompactionServiceCompactionJobD2Ev	24	static
 repos/rocksdb/db/compaction/compaction_job.h:689:_ZN7rocksdb30CompactionServiceCompactionJobD0Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/compaction/compaction_service_job.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/compaction/compaction_service_job.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN7rocksdb27CompactionServiceOutputFileESaIS1_EED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:160:_ZNSt12_Destroy_auxILb0EE9__destroyIPN7rocksdb27CompactionServiceOutputFileEEEvT_S5_	24	static
@@ -70,7 +70,7 @@ repos/rocksdb/include/rocksdb/table_properties.h:217:_ZN7rocksdb15TablePropertie
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorIN7rocksdb17CompactionOutputs6OutputESaIS2_EE17_M_realloc_insertIJNS0_12FileMetaDataERKNS0_21InternalKeyComparatorERbSA_RmRKbEEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_	104	static
 repos/rocksdb/db/version_edit.h:195:_ZN7rocksdb12FileMetaDataC2EOS0_	40	static
 repos/rocksdb/db/compaction/compaction_outputs.h:32:_ZN7rocksdb17CompactionOutputs6OutputC2ERKS1_	56	static
-repos/rocksdb/db/version_edit.h:195:_ZN7rocksdb12FileMetaDataC2ERKS0_	72	static
+repos/rocksdb/db/version_edit.h:195:_ZN7rocksdb12FileMetaDataC2ERKS0_	88	static
 repos/rocksdb/db/compaction/compaction_outputs.h:32:_ZN7rocksdb17CompactionOutputs6OutputD2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:133:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EED2Ev	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:608:_ZNSt23_Sp_counted_ptr_inplaceIN7rocksdb15TablePropertiesESaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev	0	static

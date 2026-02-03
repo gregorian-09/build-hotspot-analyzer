@@ -10,5 +10,5 @@ repos/rocksdb/monitoring/instrumented_mutex.cc:58:_ZN7rocksdb19InstrumentedCondV
 repos/rocksdb/monitoring/instrumented_mutex.cc:65:_ZN7rocksdb19InstrumentedCondVar12WaitInternalEv	0	static
 repos/rocksdb/monitoring/instrumented_mutex.cc:72:_ZN7rocksdb19InstrumentedCondVar9TimedWaitEm	120	static
 repos/rocksdb/monitoring/instrumented_mutex.cc:79:_ZN7rocksdb19InstrumentedCondVar17TimedWaitInternalEm	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/instrumented_mutex.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/instrumented_mutex.cc:__clang_call_terminate	8	static
 repos/rocksdb/monitoring/instrumented_mutex.cc:0:_GLOBAL__sub_I_instrumented_mutex.cc	40	static

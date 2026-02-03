@@ -1,2 +1,2 @@
-curlx/timediff.c:34:curlx_mstotv	8	static
-curlx/timediff.c:82:curlx_tvtoms	8	static
+../../../../../repos/curl/lib/curlx/timediff.c:34:curlx_mstotv	8	static
+../../../../../repos/curl/lib/curlx/timediff.c:82:curlx_tvtoms	8	static

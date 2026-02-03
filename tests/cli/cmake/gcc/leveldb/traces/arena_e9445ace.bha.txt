@@ -1,0 +1,68 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/arena.cc
+# Output: CMakeFiles/leveldb.dir/util/arena.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/leveldb/build/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/. -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/include -ftime-report -fstack-usage -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/arena.cc.o -MF CMakeFiles/leveldb.dir/util/arena.cc.o.d -o CMakeFiles/leveldb.dir/util/arena.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/arena.cc
+# Timestamp: 2026-01-30T19:01:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.03 (  3%)   0.07 (  3%)  1880k (  7%)
+ phase parsing                      :   0.95 ( 75%)   0.78 ( 85%)   2.24 ( 80%)    22M ( 83%)
+ phase lang. deferred               :   0.04 (  3%)   0.02 (  2%)   0.07 (  3%)   940k (  3%)
+ phase opt and generate             :   0.27 ( 21%)   0.08 (  9%)   0.38 ( 14%)  1910k (  7%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)     0  (  0%)
+ |name lookup                       :   0.22 ( 17%)   0.14 ( 15%)   0.31 ( 11%)  1253k (  5%)
+ |overload resolution               :   0.02 (  2%)   0.01 (  1%)   0.06 (  2%)   632k (  2%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    87k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)  4416  (  0%)
+ callgraph functions expansion      :   0.16 ( 13%)   0.05 (  5%)   0.23 (  8%)   911k (  3%)
+ callgraph ipa passes               :   0.09 (  7%)   0.02 (  2%)   0.12 (  4%)   690k (  2%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    55k (  0%)
+ ipa SRA                            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ alias stmt walking                 :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2680  (  0%)
+ preprocessing                      :   0.13 ( 10%)   0.23 ( 25%)   0.69 ( 25%)   698k (  3%)
+ parser (global)                    :   0.24 ( 19%)   0.21 ( 23%)   0.57 ( 20%)  7443k ( 27%)
+ parser struct body                 :   0.20 ( 16%)   0.07 (  8%)   0.36 ( 13%)  6942k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ parser function body               :   0.04 (  3%)   0.01 (  1%)   0.05 (  2%)   433k (  2%)
+ parser inl. func. body             :   0.04 (  3%)   0.08 (  9%)   0.13 (  5%)   672k (  2%)
+ parser inl. meth. body             :   0.15 ( 12%)   0.09 ( 10%)   0.21 (  8%)  2743k ( 10%)
+ template instantiation             :   0.17 ( 13%)   0.10 ( 11%)   0.29 ( 10%)  5053k ( 18%)
+ constant expression evaluation     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)    84k (  0%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   197k (  1%)
+ tree gimplify                      :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)   143k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1544  (  0%)
+ tree VRP                           :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)    29k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    63k (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    41k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.02 (  2%)   0.01 (  0%)    39k (  0%)
+ backwards jump threading           :   0.03 (  2%)   0.00 (  0%)   0.01 (  0%)    24k (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9272  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    23k (  0%)
+ tree FRE                           :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)    31k (  0%)
+ tree aggressive DCE                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    64k (  0%)
+ tree SSA uncprop                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   160  (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ dominance computation              :   0.03 (  2%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ expand vars                        :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  8888  (  0%)
+ varconst                           :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   128  (  0%)
+ dead code elimination              :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    76k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9808  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2112  (  0%)
+ combiner                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)   154k (  1%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  5160  (  0%)
+ reload CSE regs                    :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  9728  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9192  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    28k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3376  (  0%)
+ TOTAL                              :   1.27          0.92          2.79           27M

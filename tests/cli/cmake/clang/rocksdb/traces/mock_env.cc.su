@@ -9,7 +9,7 @@ repos/rocksdb/env/mock_env.cc:582:_ZN7rocksdb14MockFileSystemC2ERKSt10shared_ptr
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:314:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPN7rocksdb7MemFileESt4lessIS5_ESaISt4pairIKS5_S8_EEED2Ev	8	static
 repos/rocksdb/env/mock_env.cc:589:_ZN7rocksdb14MockFileSystemD2Ev	40	static
 repos/rocksdb/env/mock_env.cc:124:_ZN7rocksdb7MemFile5UnrefEv	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/env/mock_env.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/env/mock_env.cc:__clang_call_terminate	8	static
 repos/rocksdb/env/mock_env.cc:589:_ZN7rocksdb14MockFileSystemD0Ev	24	static
 repos/rocksdb/env/mock_env.cc:595:_ZN7rocksdb14MockFileSystem14PrepareOptionsERKNS_13ConfigOptionsE	40	static
 repos/rocksdb/env/mock_env.cc:604:_ZN7rocksdb14MockFileSystem15GetAbsolutePathERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_9IOOptionsEPS6_PNS_14IODebugContextE	72	static

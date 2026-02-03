@@ -25,9 +25,10 @@ repos/rocksdb/db/version_builder.cc:1807:_ZNK7rocksdb14VersionBuilder15SaveSaveP
 repos/rocksdb/db/version_builder.cc:1814:_ZN7rocksdb14VersionBuilder26LoadSavePointTableHandlersEPNS_13InternalStatsEibbRKNS_16MutableCFOptionsEmRKNS_11ReadOptionsE	56	static
 repos/rocksdb/db/version_builder.cc:1828:_ZN7rocksdb14VersionBuilder14ClearSavePointEv	24	static
 repos/rocksdb/db/version_builder.cc:1830:_ZN7rocksdb28BaseReferencedVersionBuilderC2EPNS_16ColumnFamilyDataEPNS_18VersionEditHandlerEbb	72	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb14VersionBuilderESt14default_deleteIS1_EED2Ev	40	static
 repos/rocksdb/db/version_builder.cc:1844:_ZN7rocksdb28BaseReferencedVersionBuilderC2EPNS_16ColumnFamilyDataEPNS_7VersionEPNS_18VersionEditHandlerEbb	88	static
-repos/rocksdb/db/version_builder.cc:1857:_ZN7rocksdb28BaseReferencedVersionBuilderD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_builder.cc:__clang_call_terminate	8	static
+repos/rocksdb/db/version_builder.cc:1857:_ZN7rocksdb28BaseReferencedVersionBuilderD2Ev	40	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_builder.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unordered_set.h:104:_ZNSt13unordered_setImSt4hashImESt8equal_toImESaImEED2Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED2Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:314:_ZNSt3mapImN7rocksdb14VersionBuilder3Rep23MutableBlobFileMetaDataESt4lessImESaISt4pairIKmS3_EEED2Ev	8	static
@@ -62,7 +63,7 @@ repos/rocksdb/db/version_builder.cc:664:_ZNK7rocksdb14VersionBuilder3Rep16CheckC
 repos/rocksdb/db/version_builder.cc:738:_ZN7rocksdb14VersionBuilder3Rep21ApplyBlobFileAdditionERKNS_16BlobFileAdditionE	680	static
 repos/rocksdb/db/version_builder.cc:793:_ZN7rocksdb14VersionBuilder3Rep20ApplyBlobFileGarbageERKNS_15BlobFileGarbageE	472	static
 repos/rocksdb/db/version_builder.cc:848:_ZN7rocksdb14VersionBuilder3Rep17ApplyFileDeletionEim	520	static
-repos/rocksdb/db/version_builder.cc:934:_ZN7rocksdb14VersionBuilder3Rep17ApplyFileAdditionEiRKNS_12FileMetaDataE	552	static
+repos/rocksdb/db/version_builder.cc:934:_ZN7rocksdb14VersionBuilder3Rep17ApplyFileAdditionEiRKNS_12FileMetaDataE	568	static
 repos/rocksdb/db/version_builder.cc:1030:_ZN7rocksdb14VersionBuilder3Rep19ApplyCompactCursorsEiRKNS_11InternalKeyE	504	static
 repos/rocksdb/db/version_builder.cc:518:_ZNK7rocksdb14VersionBuilder3Rep23CheckConsistencyDetailsEPKNS_18VersionStorageInfoE	632	static
 repos/rocksdb/db/version_builder.cc:470:_ZNK7rocksdb14VersionBuilder3Rep31CheckConsistencyDetailsForLevelIZNKS1_23CheckConsistencyDetailsEPKNS_18VersionStorageInfoEEUlPKNS_12FileMetaDataES8_E_EENS_6StatusES5_iT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPSt13unordered_mapImSt13unordered_setImSt4hashImESt8equal_toImESaImEESN_SP_SaISt4pairIKmSR_EEE	56	static
@@ -109,7 +110,7 @@ repos/rocksdb/db/version_builder.cc:430:_ZN7rocksdb14VersionBuilder3Rep9UnrefFil
 repos/rocksdb/db/version_builder.cc:152:_ZN7rocksdb14VersionBuilder3Rep21BlobFileMetaDataDelta9UnlinkSstEm	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/hashtable.h:2366:_ZNSt10_HashtableImmSaImENSt8__detail9_IdentityESt8equal_toImESt4hashImENS1_18_Mod_range_hashingENS1_20_Default_ranged_hashENS1_20_Prime_rehash_policyENS1_17_Hashtable_traitsILb0ELb1ELb1EEEE8_M_eraseESt17integral_constantIbLb1EERKm	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_	88	static
-repos/rocksdb/db/version_edit.h:195:_ZN7rocksdb12FileMetaDataC2ERKS0_	72	static
+repos/rocksdb/db/version_edit.h:195:_ZN7rocksdb12FileMetaDataC2ERKS0_	88	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3528:_ZSt12__str_concatINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEET_PKNS6_10value_typeENS6_9size_typeES9_SA_RKNS6_14allocator_typeE	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/hashtable.h:2083:_ZNSt10_HashtableImSt4pairIKmPN7rocksdb12FileMetaDataEESaIS5_ENSt8__detail10_Select1stESt8equal_toImESt4hashImENS7_18_Mod_range_hashingENS7_20_Default_ranged_hashENS7_20_Prime_rehash_policyENS7_17_Hashtable_traitsILb0ELb0ELb1EEEE10_M_emplaceIJRS1_RKS4_EEES0_INS7_14_Node_iteratorIS5_Lb0ELb0EEEbESt17integral_constantIbLb1EEDpOT_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/hashtable.h:2168:_ZNSt10_HashtableImSt4pairIKmPN7rocksdb12FileMetaDataEESaIS5_ENSt8__detail10_Select1stESt8equal_toImESt4hashImENS7_18_Mod_range_hashingENS7_20_Default_ranged_hashENS7_20_Prime_rehash_policyENS7_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS7_10_Hash_nodeIS5_Lb0EEEm	56	static
@@ -168,7 +169,7 @@ repos/rocksdb/db/version_builder.cc:1707:_ZZN7rocksdb14VersionBuilder3Rep17LoadT
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_thread.h:234:_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJSt8functionIFvvEEEEEEED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_thread.h:234:_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJSt8functionIFvvEEEEEEED0Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_thread.h:244:_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJSt8functionIFvvEEEEEEE6_M_runEv	8	static
-repos/rocksdb/db/version_builder.cc:413:_ZN7rocksdb14VersionBuilder3RepD2Ev	72	static
+repos/rocksdb/db/version_builder.cc:413:_ZN7rocksdb14VersionBuilder3RepD2Ev	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/hashtable.h:2522:_ZNSt10_HashtableImSt4pairIKmPN7rocksdb12FileMetaDataEESaIS5_ENSt8__detail10_Select1stESt8equal_toImESt4hashImENS7_18_Mod_range_hashingENS7_20_Default_ranged_hashENS7_20_Prime_rehash_policyENS7_17_Hashtable_traitsILb0ELb0ELb1EEEE5clearEv	40	static
 repos/rocksdb/db/version_builder.cc:1540:_ZNK7rocksdb14VersionBuilder3Rep25MissingL0FilesAreL0SuffixEv	136	static
 repos/rocksdb/db/version_builder.cc:1585:_ZNK7rocksdb14VersionBuilder3Rep36RemainingSstFilesNotMissingBlobFilesEv	56	static

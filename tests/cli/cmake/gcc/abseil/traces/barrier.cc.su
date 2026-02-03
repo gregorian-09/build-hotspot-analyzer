@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/barrier.cc:24:13:bool absl::IsZero(void*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/barrier.cc:28:6:bool absl::Barrier::Block()	80	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/barrier.cc:24:13:bool absl::IsZero(void*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/barrier.cc:28:6:bool absl::Barrier::Block()	80	static

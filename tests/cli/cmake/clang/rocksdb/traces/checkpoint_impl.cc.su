@@ -24,7 +24,7 @@ repos/rocksdb/include/rocksdb/metadata.h:242:_ZN7rocksdb20ColumnFamilyMetaDataD2
 repos/rocksdb/include/rocksdb/utilities/checkpoint.h:62:_ZN7rocksdb10CheckpointD0Ev	0	static
 repos/rocksdb/include/rocksdb/utilities/checkpoint.h:62:_ZN7rocksdb10CheckpointD2Ev	0	static
 repos/rocksdb/utilities/checkpoint/checkpoint_impl.h:16:_ZN7rocksdb14CheckpointImplD0Ev	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/checkpoint/checkpoint_impl.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/checkpoint/checkpoint_impl.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3528:_ZSt12__str_concatINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEET_PKNS6_10value_typeENS6_9size_typeES9_SA_RKNS6_14allocator_typeE	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static

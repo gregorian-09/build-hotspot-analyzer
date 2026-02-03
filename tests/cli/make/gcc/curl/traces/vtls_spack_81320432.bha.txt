@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vtls/vtls_spack.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vtls/vtls_spack.c
+# Timestamp: 2026-01-31T00:30:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.22 ( 81%)   0.20 ( 83%)   0.81 ( 88%)  4553k ( 55%)
+ phase opt and generate             :   0.05 ( 19%)   0.03 ( 12%)   0.09 ( 10%)  1889k ( 23%)
+ dump files                         :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   131k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3936  (  0%)
+ preprocessing                      :   0.11 ( 41%)   0.10 ( 42%)   0.54 ( 59%)  1983k ( 24%)
+ lexical analysis                   :   0.03 ( 11%)   0.04 ( 17%)   0.15 ( 16%)     0  (  0%)
+ parser (global)                    :   0.07 ( 26%)   0.05 ( 21%)   0.08 (  9%)  2106k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   112k (  1%)
+ parser enumerator list             :   0.01 (  4%)   0.01 (  4%)   0.01 (  1%)   268k (  3%)
+ tree eh                            :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    53k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ LRA reload inheritance             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    64k (  1%)
+ shorten branches                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    79k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.02 (  7%)   0.00 (  0%)   0.01 (  1%)   123k (  1%)
+ TOTAL                              :   0.27          0.24          0.92         8262k

@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcmainct-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcmainct-8.c
+# Timestamp: 2026-01-30T19:04:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.00 (  0%)   0.03 (  4%)  1819k ( 36%)
+ phase parsing                      :   0.18 ( 58%)   0.20 ( 87%)   0.60 ( 74%)  2599k ( 51%)
+ phase opt and generate             :   0.12 ( 39%)   0.03 ( 13%)   0.15 ( 19%)   663k ( 13%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.11 ( 35%)   0.01 (  4%)   0.13 ( 16%)   497k ( 10%)
+ callgraph ipa passes               :   0.01 (  3%)   0.02 (  9%)   0.02 (  2%)   108k (  2%)
+ ipa icf                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2952  (  0%)
+ preprocessing                      :   0.05 ( 16%)   0.08 ( 35%)   0.34 ( 42%)   748k ( 15%)
+ lexical analysis                   :   0.09 ( 29%)   0.08 ( 35%)   0.16 ( 20%)     0  (  0%)
+ parser (global)                    :   0.04 ( 13%)   0.01 (  4%)   0.06 (  7%)  1308k ( 26%)
+ parser function body               :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)    28k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 (  9%)   0.02 (  2%)   245k (  5%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  6040  (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  6016  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1096  (  0%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree FRE                           :   0.01 (  3%)   0.01 (  4%)   0.01 (  1%)    16k (  0%)
+ tree conservative DCE              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8352  (  0%)
+ out of ssa                         :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    80  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  1%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    27k (  1%)
+ PRE                                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   776  (  0%)
+ integrated RA                      :   0.02 (  6%)   0.00 (  0%)   0.03 (  4%)    76k (  2%)
+ LRA non-specific                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  2760  (  0%)
+ scheduling 2                       :   0.01 (  3%)   0.01 (  4%)   0.01 (  1%)  9432  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4776  (  0%)
+ initialize rtl                     :   0.02 (  6%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ TOTAL                              :   0.31          0.23          0.81         5082k

@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: src/safety_check.c
+# Output: src/safety_check.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/safety_check.o src/safety_check.c
+# Timestamp: 2026-01-31T02:11:03+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)  1819k (  7%)
+ phase parsing                      :   1.96 ( 97%)   1.78 ( 99%)   4.98 ( 98%)    25M ( 92%)
+ phase opt and generate             :   0.06 (  3%)   0.01 (  1%)   0.06 (  1%)   341k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    53k (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   240  (  0%)
+ preprocessing                      :   0.75 ( 37%)   0.51 ( 28%)   2.29 ( 45%)    13M ( 51%)
+ lexical analysis                   :   0.68 ( 34%)   0.63 ( 35%)   1.54 ( 30%)     0  (  0%)
+ parser (global)                    :   0.16 (  8%)   0.18 ( 10%)   0.36 (  7%)  5680k ( 20%)
+ parser struct body                 :   0.02 (  1%)   0.02 (  1%)   0.04 (  1%)   254k (  1%)
+ parser inl. func. body             :   0.33 ( 16%)   0.44 ( 24%)   0.75 ( 15%)  5382k ( 19%)
+ tree gimplify                      :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ varconst                           :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)  4224  (  0%)
+ LRA virtuals elimination           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  3952  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8792  (  0%)
+ final                              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ initialize rtl                     :   0.03 (  1%)   0.00 (  0%)   0.03 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    12k (  0%)
+ TOTAL                              :   2.02          1.80          5.06           27M

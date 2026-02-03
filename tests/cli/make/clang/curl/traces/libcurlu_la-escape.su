@@ -1,8 +1,8 @@
-escape.c:36:curl_escape	24	static
-escape.c:50:curl_easy_escape	104	static
-escape.c:42:curl_unescape	24	static
-escape.c:163:curl_easy_unescape	88	static
-escape.c:222:Curl_hexbyte	8	static
-escape.c:105:Curl_urldecode	88	static
-escape.c:189:curl_free	24	static
-escape.c:200:Curl_hexencode	8	static
+../../../../../repos/curl/lib/escape.c:36:curl_escape	24	static
+../../../../../repos/curl/lib/escape.c:50:curl_easy_escape	104	static
+../../../../../repos/curl/lib/escape.c:42:curl_unescape	24	static
+../../../../../repos/curl/lib/escape.c:163:curl_easy_unescape	88	static
+../../../../../repos/curl/lib/escape.c:222:Curl_hexbyte	8	static
+../../../../../repos/curl/lib/escape.c:105:Curl_urldecode	88	static
+../../../../../repos/curl/lib/escape.c:189:curl_free	24	static
+../../../../../repos/curl/lib/escape.c:200:Curl_hexencode	8	static

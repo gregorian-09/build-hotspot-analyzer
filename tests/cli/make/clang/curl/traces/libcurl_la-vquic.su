@@ -1,1 +1,1 @@
-vquic/vquic.c:848:Curl_conn_may_http3	8	static
+../../../../../repos/curl/lib/vquic/vquic.c:849:Curl_conn_may_http3	8	static

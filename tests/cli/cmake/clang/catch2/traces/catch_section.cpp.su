@@ -1,5 +1,5 @@
 src/catch2/internal/catch_section.cpp:15:_ZN5Catch7SectionC2EONS_11SectionInfoE	40	static
 src/catch2/internal/catch_section.cpp:26:_ZN5Catch7SectionC2ERKNS_14SourceLineInfoENS_9StringRefEPKc	120	static
 src/catch2/internal/catch_section.cpp:43:_ZN5Catch7SectionD2Ev	120	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_section.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_section.cpp:__clang_call_terminate	8	static
 src/catch2/internal/catch_section.cpp:55:_ZNK5Catch7SectioncvbEv	0	static

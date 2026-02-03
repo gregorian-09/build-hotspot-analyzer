@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curlx/strparse.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curlx/strparse.c
+# Timestamp: 2026-01-31T00:30:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)  1819k ( 19%)
+ phase parsing                      :   0.29 ( 72%)   0.26 ( 81%)   1.16 ( 84%)  4686k ( 49%)
+ phase opt and generate             :   0.10 ( 25%)   0.06 ( 19%)   0.19 ( 14%)  3037k ( 32%)
+ dump files                         :   0.01 (  3%)   0.02 (  6%)   0.07 (  5%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    75k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)   237k (  2%)
+ cfg cleanup                        :   0.01 (  3%)   0.01 (  3%)   0.00 (  0%)    80  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    11k (  0%)
+ preprocessing                      :   0.14 ( 35%)   0.11 ( 34%)   0.85 ( 62%)  1989k ( 21%)
+ lexical analysis                   :   0.09 ( 22%)   0.10 ( 31%)   0.17 ( 12%)     0  (  0%)
+ parser (global)                    :   0.06 ( 15%)   0.03 (  9%)   0.11 (  8%)  2152k ( 23%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.02 (  6%)   0.01 (  1%)   268k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   141k (  1%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    72  (  0%)
+ expand                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   188k (  2%)
+ post expand cleanups               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    26k (  0%)
+ loop fini                          :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ mode switching                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.01 (  3%)   0.02 (  1%)  1767k ( 19%)
+ LRA virtuals elimination           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    96k (  1%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7488  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   130k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   172k (  2%)
+ TOTAL                              :   0.40          0.32          1.38         9543k

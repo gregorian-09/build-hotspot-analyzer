@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/file.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/file.c
+# Timestamp: 2026-01-31T00:30:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)  1819k ( 16%)
+ phase parsing                      :   0.39 ( 76%)   0.46 ( 90%)   1.81 ( 90%)  6855k ( 59%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.11 ( 22%)   0.04 (  8%)   0.17 (  8%)  2883k ( 25%)
+ dump files                         :   0.03 (  6%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    51k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    63k (  1%)
+ callgraph ipa passes               :   0.02 (  4%)   0.01 (  2%)   0.02 (  1%)   260k (  2%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ preprocessing                      :   0.16 ( 31%)   0.17 ( 33%)   1.36 ( 68%)  2520k ( 22%)
+ lexical analysis                   :   0.14 ( 27%)   0.17 ( 33%)   0.28 ( 14%)     0  (  0%)
+ parser (global)                    :   0.05 ( 10%)   0.09 ( 18%)   0.13 (  6%)  3025k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.02 (  4%)   0.03 (  2%)   465k (  4%)
+ parser enumerator list             :   0.03 (  6%)   0.00 (  0%)   0.01 (  0%)   377k (  3%)
+ parser function body               :   0.01 (  2%)   0.01 (  2%)   0.00 (  0%)   456k (  4%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    12k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   158k (  1%)
+ out of ssa                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  3448  (  0%)
+ expand                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   261k (  2%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    25k (  0%)
+ integrated RA                      :   0.02 (  4%)   0.01 (  2%)   0.03 (  2%)  1505k ( 13%)
+ LRA hard reg assignment            :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    77k (  1%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.02 (  4%)   0.02 (  4%)   0.02 (  1%)   146k (  1%)
+ TOTAL                              :   0.51          0.51          2.00           11M

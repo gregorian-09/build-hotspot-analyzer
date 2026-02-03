@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/idn.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/idn.c
+# Timestamp: 2026-01-31T00:30:24+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)  1819k ( 19%)
+ phase parsing                      :   0.23 ( 77%)   0.41 ( 91%)   1.41 ( 92%)  5804k ( 60%)
+ phase lang. deferred               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.06 ( 20%)   0.03 (  7%)   0.10 (  7%)  1986k ( 21%)
+ dump files                         :   0.01 (  3%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6776  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.01 (  2%)   0.01 (  1%)    56k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  2%)   0.01 (  1%)   139k (  1%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.12 ( 40%)   0.20 ( 44%)   1.02 ( 67%)  2320k ( 24%)
+ lexical analysis                   :   0.05 ( 17%)   0.13 ( 29%)   0.20 ( 13%)     0  (  0%)
+ parser (global)                    :   0.05 ( 17%)   0.04 (  9%)   0.17 ( 11%)  2714k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.04 (  9%)   0.01 (  1%)   335k (  3%)
+ parser enumerator list             :   0.02 (  7%)   0.00 (  0%)   0.01 (  1%)   342k (  4%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  2%)   0.01 (  1%)  1299k ( 14%)
+ thread pro- & epilogue             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    67k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)   128k (  1%)
+ TOTAL                              :   0.30          0.45          1.53         9610k

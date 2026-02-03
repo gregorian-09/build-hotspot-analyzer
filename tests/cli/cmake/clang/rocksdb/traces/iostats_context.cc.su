@@ -1,8 +1,8 @@
-repos/rocksdb/monitoring/iostats_context.cc:21:_ZN7rocksdb19get_iostats_contextEv	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/iostats_context.cc:_ZTWN7rocksdb15iostats_contextE	8	static
+repos/rocksdb/monitoring/iostats_context.cc:21:_ZN7rocksdb19get_iostats_contextEv	0	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/iostats_context.cc:_ZTWN7rocksdb15iostats_contextE	0	static
 repos/rocksdb/monitoring/iostats_context.cc:23:_ZN7rocksdb14IOStatsContext5ResetEv	0	static
 repos/rocksdb/monitoring/iostats_context.cc:47:_ZNK7rocksdb14IOStatsContext8ToStringB5cxx11Eb	408	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
-repos/rocksdb/monitoring/iostats_context.cc:0:__tls_init	8	static
+repos/rocksdb/monitoring/iostats_context.cc:0:_ZTHN7rocksdb15iostats_contextE	0	static

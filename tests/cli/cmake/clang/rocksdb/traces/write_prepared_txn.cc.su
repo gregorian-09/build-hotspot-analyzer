@@ -70,7 +70,7 @@ repos/rocksdb/include/rocksdb/utilities/transaction.h:752:_ZN7rocksdb11Transacti
 repos/rocksdb/include/rocksdb/utilities/transaction.h:756:_ZNK7rocksdb11Transaction18GetCommitTimestampEv	0	static
 repos/rocksdb/utilities/transactions/write_prepared_txn.h:87:_ZN7rocksdb16WritePreparedTxn5SetIdEm	0	static
 repos/rocksdb/include/rocksdb/utilities/transaction.h:791:_ZNK7rocksdb11Transaction16GetLastLogNumberEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/write_prepared_txn.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/write_prepared_txn.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/transactions/write_prepared_txn_db.h:854:_ZN7rocksdb28WritePreparedTxnReadCallbackD0Ev	0	static
 repos/rocksdb/utilities/transactions/write_prepared_txn_db.h:861:_ZN7rocksdb28WritePreparedTxnReadCallback18IsVisibleFullCheckEm	24	static
 repos/rocksdb/db/read_callback.h:44:_ZN7rocksdb12ReadCallback7RefreshEm	0	static

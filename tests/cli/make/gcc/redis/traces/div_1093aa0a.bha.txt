@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: src/div.c
+# Output: src/div.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/div.o src/div.c
+# Timestamp: 2026-01-31T02:10:17+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)  1819k ( 15%)
+ phase parsing                      :   0.44 ( 94%)   0.40 (100%)   1.06 ( 95%)  9828k ( 84%)
+ phase opt and generate             :   0.02 (  4%)   0.00 (  0%)   0.03 (  3%)    98k (  1%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7808  (  0%)
+ preprocessing                      :   0.18 ( 38%)   0.21 ( 53%)   0.52 ( 47%)  5813k ( 49%)
+ lexical analysis                   :   0.16 ( 34%)   0.10 ( 25%)   0.39 ( 35%)     0  (  0%)
+ parser (global)                    :   0.09 ( 19%)   0.08 ( 20%)   0.12 ( 11%)  3749k ( 32%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   105k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   109k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    36k (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  3200  (  0%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   376  (  0%)
+ LRA reload inheritance             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.47          0.40          1.11           11M

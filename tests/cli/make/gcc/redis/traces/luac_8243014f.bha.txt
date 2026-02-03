@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: luac.c
+# Output: luac.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o luac.o luac.c
+# Timestamp: 2026-01-31T02:07:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)  1819k ( 24%)
+ phase parsing                      :   0.22 ( 56%)   0.23 ( 88%)   0.56 ( 73%)  4246k ( 56%)
+ phase opt and generate             :   0.17 ( 44%)   0.02 (  8%)   0.20 ( 26%)  1564k ( 21%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    32k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1088  (  0%)
+ callgraph functions expansion      :   0.15 ( 38%)   0.01 (  4%)   0.16 ( 21%)  1136k ( 15%)
+ callgraph ipa passes               :   0.02 (  5%)   0.01 (  4%)   0.03 (  4%)   276k (  4%)
+ cfg construction                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4552  (  0%)
+ df reaching defs                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    17k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ preprocessing                      :   0.12 ( 31%)   0.08 ( 31%)   0.29 ( 38%)  1962k ( 26%)
+ lexical analysis                   :   0.07 ( 18%)   0.07 ( 27%)   0.14 ( 18%)     0  (  0%)
+ parser (global)                    :   0.03 (  8%)   0.05 ( 19%)   0.08 ( 10%)  1871k ( 25%)
+ parser function body               :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)    78k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 (  8%)   0.04 (  5%)   238k (  3%)
+ tree CFG cleanup                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   432  (  0%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    27k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    36k (  0%)
+ backwards jump threading           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  2776  (  0%)
+ tree CCP                           :   0.02 (  5%)   0.00 (  0%)   0.00 (  0%)  6144  (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    30k (  0%)
+ tree FRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    17k (  0%)
+ tree code sinking                  :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    10k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    21k (  0%)
+ tree slp vectorization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   111k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   125k (  2%)
+ dead code elimination              :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ dead store elim1                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  8472  (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9792  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   205k (  3%)
+ final                              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  3256  (  0%)
+ rest of compilation                :   0.03 (  8%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   104  (  0%)
+ TOTAL                              :   0.39          0.26          0.77         7630k

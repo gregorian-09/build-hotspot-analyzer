@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/log_sink.cc
+# Output: CMakeFiles/log_sink.dir/log_sink.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/log/CMakeFiles/log_sink.dir/log_sink.cc.o -MF CMakeFiles/log_sink.dir/log_sink.cc.o.d -o CMakeFiles/log_sink.dir/log_sink.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/log_sink.cc
+# Timestamp: 2026-01-30T18:41:33+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  0%)   0.01 (  0%)   0.07 (  1%)  1882k (  2%)
+ phase parsing                      :   5.10 ( 82%)   3.85 ( 87%)  10.33 ( 83%)    81M ( 88%)
+ phase lang. deferred               :   0.99 ( 16%)   0.53 ( 12%)   1.61 ( 13%)  8728k (  9%)
+ phase opt and generate             :   0.08 (  1%)   0.03 (  1%)   0.13 (  1%)   424k (  0%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  0%)   0.23 (  2%)     0  (  0%)
+ |name lookup                       :   1.13 ( 18%)   0.70 ( 16%)   1.98 ( 16%)  3111k (  3%)
+ |overload resolution               :   0.63 ( 10%)   0.31 (  7%)   0.98 (  8%)  6194k (  7%)
+ dump files                         :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.04 (  1%)   0.01 (  0%)   0.06 (  0%)   296k (  0%)
+ callgraph functions expansion      :   0.04 (  1%)   0.02 (  0%)   0.06 (  0%)   102k (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    17k (  0%)
+ preprocessing                      :   0.91 ( 15%)   1.04 ( 23%)   2.64 ( 21%)  6260k (  7%)
+ parser (global)                    :   1.10 ( 18%)   1.01 ( 23%)   2.43 ( 20%)    29M ( 32%)
+ parser struct body                 :   0.75 ( 12%)   0.40 (  9%)   1.06 (  9%)    14M ( 15%)
+ parser enumerator list             :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)   117k (  0%)
+ parser function body               :   0.52 (  8%)   0.28 (  6%)   0.81 (  7%)  3371k (  4%)
+ parser inl. func. body             :   0.37 (  6%)   0.30 (  7%)   0.64 (  5%)  7379k (  8%)
+ parser inl. meth. body             :   0.48 (  8%)   0.31 (  7%)   1.04 (  8%)  6595k (  7%)
+ template instantiation             :   1.77 ( 29%)   0.89 ( 20%)   2.98 ( 24%)    22M ( 24%)
+ constant expression evaluation     :   0.16 (  3%)   0.11 (  2%)   0.28 (  2%)   355k (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.02 (  0%)   0.03 (  1%)   0.02 (  0%)   384  (  0%)
+ integrated RA                      :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    48k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1848  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ initialize rtl                     :   0.03 (  0%)   0.01 (  0%)   0.03 (  0%)    12k (  0%)
+ TOTAL                              :   6.20          4.43         12.38           91M

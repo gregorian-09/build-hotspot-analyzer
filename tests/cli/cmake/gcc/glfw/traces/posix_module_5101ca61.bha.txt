@@ -1,0 +1,29 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/posix_module.c
+# Output: CMakeFiles/glfw.dir/posix_module.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/glfw/build/src -ftime-report -fstack-usage -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/posix_module.c.o -MF CMakeFiles/glfw.dir/posix_module.c.o.d -o CMakeFiles/glfw.dir/posix_module.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/posix_module.c
+# Timestamp: 2026-01-30T19:44:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.02 (  3%)   0.03 (  1%)  1523k ( 13%)
+ phase parsing                      :   0.57 ( 97%)   0.70 ( 97%)   2.16 ( 96%) 10028k ( 85%)
+ phase opt and generate             :   0.02 (  3%)   0.00 (  0%)   0.04 (  2%)   188k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   240  (  0%)
+ callgraph functions expansion      :   0.02 (  3%)   0.00 (  0%)   0.03 (  1%)   150k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    26k (  0%)
+ preprocessing                      :   0.29 ( 49%)   0.29 ( 40%)   1.35 ( 60%)  4041k ( 34%)
+ lexical analysis                   :   0.15 ( 25%)   0.17 ( 24%)   0.40 ( 18%)     0  (  0%)
+ parser (global)                    :   0.08 ( 14%)   0.19 ( 26%)   0.31 ( 14%)  4957k ( 42%)
+ parser struct body                 :   0.01 (  2%)   0.05 (  7%)   0.04 (  2%)   722k (  6%)
+ parser enumerator list             :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)   135k (  1%)
+ parser inl. func. body             :   0.03 (  5%)   0.00 (  0%)   0.05 (  2%)   167k (  1%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    72k (  1%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   0.59          0.72          2.24           11M

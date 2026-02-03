@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/intel/filter_sse2_intrinsics.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c ../../../../repos/libpng/intel/filter_sse2_intrinsics.c
+# Timestamp: 2026-01-30T19:06:09+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  6%)   0.01 (  5%)   0.07 (  5%)  1819k ( 30%)
+ phase parsing                      :   0.31 ( 94%)   0.20 ( 95%)   1.48 ( 95%)  4282k ( 70%)
+ preprocessing                      :   0.11 ( 33%)   0.11 ( 52%)   1.19 ( 77%)  2239k ( 37%)
+ lexical analysis                   :   0.10 ( 30%)   0.03 ( 14%)   0.15 ( 10%)     0  (  0%)
+ parser (global)                    :   0.10 ( 30%)   0.05 ( 24%)   0.13 (  8%)  1886k ( 31%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    81k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    75k (  1%)
+ TOTAL                              :   0.33          0.21          1.55         6104k

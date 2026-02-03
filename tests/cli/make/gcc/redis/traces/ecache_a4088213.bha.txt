@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: src/ecache.c
+# Output: src/ecache.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/ecache.o src/ecache.c
+# Timestamp: 2026-01-31T02:10:28+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)  1819k (  7%)
+ phase parsing                      :   1.56 ( 97%)   1.71 ( 99%)   4.26 ( 98%)    25M ( 92%)
+ phase opt and generate             :   0.03 (  2%)   0.01 (  1%)   0.04 (  1%)   390k (  1%)
+ phase finalize                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    55k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.50 ( 31%)   0.52 ( 30%)   2.02 ( 47%)    13M ( 51%)
+ lexical analysis                   :   0.62 ( 39%)   0.63 ( 37%)   1.15 ( 26%)     0  (  0%)
+ parser (global)                    :   0.14 (  9%)   0.17 ( 10%)   0.38 (  9%)  5682k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   254k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   151k (  1%)
+ parser inl. func. body             :   0.29 ( 18%)   0.39 ( 23%)   0.65 ( 15%)  5382k ( 19%)
+ tree CFG construction              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    63k (  0%)
+ varconst                           :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)  4224  (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   146k (  1%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    24  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ TOTAL                              :   1.61          1.72          4.34           27M

@@ -1,7 +1,7 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:63:6:bool absl::HaveLeakSanitizer()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:64:6:bool absl::LeakCheckerIsActive()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:65:6:void absl::DoIgnoreLeak(const void*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:66:6:void absl::RegisterLivePointers(const void*, size_t)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:67:6:void absl::UnRegisterLivePointers(const void*, size_t)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:68:1:absl::LeakCheckDisabler::LeakCheckDisabler()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/leak_check.cc:69:1:absl::LeakCheckDisabler::~LeakCheckDisabler()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:63:6:bool absl::HaveLeakSanitizer()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:64:6:bool absl::LeakCheckerIsActive()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:65:6:void absl::DoIgnoreLeak(const void*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:66:6:void absl::RegisterLivePointers(const void*, size_t)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:67:6:void absl::UnRegisterLivePointers(const void*, size_t)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:68:1:absl::LeakCheckDisabler::LeakCheckDisabler()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/leak_check.cc:69:1:absl::LeakCheckDisabler::~LeakCheckDisabler()	8	static

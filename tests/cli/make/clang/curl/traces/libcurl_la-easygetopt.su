@@ -1,4 +1,4 @@
-easygetopt.c:53:curl_easy_option_by_name	24	static
-easygetopt.c:31:lookup	40	static
-easygetopt.c:59:curl_easy_option_by_id	24	static
-easygetopt.c:66:curl_easy_option_next	8	static
+../../../../../repos/curl/lib/easygetopt.c:53:curl_easy_option_by_name	24	static
+../../../../../repos/curl/lib/easygetopt.c:31:lookup	40	static
+../../../../../repos/curl/lib/easygetopt.c:59:curl_easy_option_by_id	24	static
+../../../../../repos/curl/lib/easygetopt.c:66:curl_easy_option_next	8	static

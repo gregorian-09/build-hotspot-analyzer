@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: lolwut6.c
+# Output: lolwut6.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o lolwut6.o -c lolwut6.c
+# Timestamp: 2026-01-31T02:12:06+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1828k ( 12%)
+ phase parsing                      :   0.61 ( 88%)   0.83 ( 99%)   4.65 ( 98%)    12M ( 85%)
+ phase lang. deferred               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.05 (  7%)   0.01 (  1%)   0.07 (  1%)   481k (  3%)
+ phase finalize                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    98k (  1%)
+ callgraph ipa passes               :   0.04 (  6%)   0.01 (  1%)   0.06 (  1%)   285k (  2%)
+ ipa cp                             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ lto stream output                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ ipa free lang data                 :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)    83k (  1%)
+ preprocessing                      :   0.25 ( 36%)   0.60 ( 71%)   3.83 ( 81%)  3168k ( 21%)
+ lexical analysis                   :   0.18 ( 26%)   0.12 ( 14%)   0.38 (  8%)     0  (  0%)
+ parser (global)                    :   0.11 ( 16%)   0.10 ( 12%)   0.28 (  6%)  5326k ( 35%)
+ parser struct body                 :   0.02 (  3%)   0.01 (  1%)   0.02 (  0%)   554k (  4%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)   169k (  1%)
+ parser inl. func. body             :   0.03 (  4%)   0.00 (  0%)   0.11 (  2%)   721k (  5%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    73k (  0%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  2448  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    27k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2688  (  0%)
+ branch prediction                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ symout                             :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)  2762k ( 18%)
+ TOTAL                              :   0.69          0.84          4.74           14M

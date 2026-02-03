@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/benchmark_main.cc
+# Output: CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DBENCHMARK_STATIC_DEFINE -DHAVE_PTHREAD_AFFINITY -DHAVE_STD_REGEX -DHAVE_STEADY_CLOCK -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src -ftime-report -fstack-usage -Wall -Wextra -Wshadow -Wfloat-equal -Wold-style-cast -Wconversion -Wformat=2 -Werror -Wsuggest-override -pedantic -pedantic-errors -fstrict-aliasing -Wno-deprecated-declarations -Wno-deprecated -Wstrict-aliasing -O3 -DNDEBUG -std=c++17 -fvisibility=hidden -fvisibility-inlines-hidden -MD -MT src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o -MF CMakeFiles/benchmark_main.dir/benchmark_main.cc.o.d -o CMakeFiles/benchmark_main.dir/benchmark_main.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/benchmark_main.cc
+# Timestamp: 2026-01-30T18:49:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)  1752k (  2%)
+ phase parsing                      :   1.52 ( 88%)   1.24 ( 92%)   3.64 ( 91%)    78M ( 88%)
+ phase lang. deferred               :   0.18 ( 10%)   0.09 (  7%)   0.28 (  7%)  9269k ( 10%)
+ phase opt and generate             :   0.02 (  1%)   0.01 (  1%)   0.03 (  1%)   486k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.42 ( 24%)   0.28 ( 21%)   0.72 ( 18%)  3606k (  4%)
+ |overload resolution               :   0.18 ( 10%)   0.10 (  7%)   0.32 (  8%)  8514k (  9%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   295k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    32  (  0%)
+ callgraph functions expansion      :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)   140k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ alias analysis                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  4024  (  0%)
+ preprocessing                      :   0.24 ( 14%)   0.28 ( 21%)   1.34 ( 34%)  2239k (  2%)
+ parser (global)                    :   0.34 ( 20%)   0.43 ( 32%)   0.70 ( 18%)    27M ( 30%)
+ parser struct body                 :   0.25 ( 15%)   0.12 (  9%)   0.37 (  9%)    16M ( 18%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    47k (  0%)
+ parser function body               :   0.12 (  7%)   0.06 (  4%)   0.14 (  4%)  1736k (  2%)
+ parser inl. func. body             :   0.09 (  5%)   0.05 (  4%)   0.16 (  4%)  3266k (  4%)
+ parser inl. meth. body             :   0.13 (  8%)   0.08 (  6%)   0.29 (  7%)  8767k ( 10%)
+ template instantiation             :   0.50 ( 29%)   0.28 ( 21%)   0.85 ( 21%)    28M ( 32%)
+ constant expression evaluation     :   0.03 (  2%)   0.01 (  1%)   0.04 (  1%)   218k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  1920  (  0%)
+ varconst                           :   0.00 (  0%)   0.02 (  1%)   0.01 (  0%)  4632  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    50k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ TOTAL                              :   1.72          1.35          3.99           89M

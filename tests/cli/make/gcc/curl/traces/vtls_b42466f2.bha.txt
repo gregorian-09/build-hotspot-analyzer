@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vtls/vtls.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vtls/vtls.c
+# Timestamp: 2026-01-31T00:30:43+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)  1819k ( 16%)
+ phase parsing                      :   0.33 ( 77%)   0.35 ( 90%)   1.55 ( 91%)  6607k ( 57%)
+ phase opt and generate             :   0.09 ( 21%)   0.04 ( 10%)   0.14 (  8%)  3175k ( 27%)
+ dump files                         :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    39k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    68k (  1%)
+ callgraph functions expansion      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)   289k (  2%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  5776  (  0%)
+ trivially dead code                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1872  (  0%)
+ preprocessing                      :   0.09 ( 21%)   0.08 ( 21%)   1.21 ( 71%)  2448k ( 21%)
+ lexical analysis                   :   0.13 ( 30%)   0.15 ( 38%)   0.19 ( 11%)     0  (  0%)
+ parser (global)                    :   0.09 ( 21%)   0.07 ( 18%)   0.10 (  6%)  3030k ( 26%)
+ parser struct body                 :   0.01 (  2%)   0.03 (  8%)   0.03 (  2%)   349k (  3%)
+ parser enumerator list             :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)   345k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   424k (  4%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   191k (  2%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   333k (  3%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    67k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)  1673k ( 14%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   336  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    85k (  1%)
+ shorten branches                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   178k (  2%)
+ TOTAL                              :   0.43          0.39          1.71           11M

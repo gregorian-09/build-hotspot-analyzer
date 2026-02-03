@@ -1,0 +1,64 @@
+# BHA Trace
+# Source: acl.c
+# Output: acl.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o acl.o -c acl.c
+# Timestamp: 2026-01-31T02:12:08+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)  1828k (  8%)
+ phase parsing                      :   0.79 ( 61%)   0.95 ( 88%)   4.96 ( 88%)    13M ( 59%)
+ phase lang. deferred               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.48 ( 37%)   0.13 ( 12%)   0.61 ( 11%)  7951k ( 33%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ dump files                         :   0.03 (  2%)   0.01 (  1%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.01 (  1%)   0.03 (  1%)  2273k (  9%)
+ callgraph optimization             :   0.01 (  1%)   0.02 (  2%)   0.03 (  1%)  3168  (  0%)
+ callgraph ipa passes               :   0.44 ( 34%)   0.11 ( 10%)   0.55 ( 10%)  4099k ( 17%)
+ ipa function summary               :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)   203k (  1%)
+ ipa cp                             :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)   386k (  2%)
+ ipa function splitting             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   161k (  1%)
+ lto stream compression             :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ lto stream output                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ ipa lto gimple out                 :   0.04 (  3%)   0.01 (  1%)   0.02 (  0%)    22k (  0%)
+ ipa lto decl out                   :   0.02 (  2%)   0.01 (  1%)   0.02 (  0%)   312  (  0%)
+ ipa lto constructors out           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   256  (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    38k (  0%)
+ ipa SRA                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    17k (  0%)
+ ipa free lang data                 :   0.02 (  2%)   0.00 (  0%)   0.02 (  0%)    93k (  0%)
+ ipa modref                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   113k (  0%)
+ alias stmt walking                 :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ preprocessing                      :   0.29 ( 22%)   0.51 ( 47%)   3.83 ( 68%)  3309k ( 14%)
+ lexical analysis                   :   0.21 ( 16%)   0.20 ( 19%)   0.54 ( 10%)     0  (  0%)
+ parser (global)                    :   0.18 ( 14%)   0.10 (  9%)   0.30 (  5%)  5617k ( 23%)
+ parser struct body                 :   0.01 (  1%)   0.02 (  2%)   0.04 (  1%)   561k (  2%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   172k (  1%)
+ parser function body               :   0.08 (  6%)   0.06 (  6%)   0.16 (  3%)  1043k (  4%)
+ parser inl. func. body             :   0.02 (  2%)   0.03 (  3%)   0.07 (  1%)   737k (  3%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   216k (  1%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   556k (  2%)
+ tree gimplify                      :   0.02 (  2%)   0.01 (  1%)   0.03 (  1%)  1328k (  6%)
+ tree CFG cleanup                   :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ tree Early VRP                     :   0.07 (  5%)   0.01 (  1%)   0.04 (  1%)   188k (  1%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)   101k (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)   386k (  2%)
+ tree SSA incremental               :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    21k (  0%)
+ tree operand scan                  :   0.02 (  2%)   0.00 (  0%)   0.04 (  1%)   645k (  3%)
+ backwards jump threading           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  7264  (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)    32k (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.05 (  1%)   117k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ tree aggressive DCE                :   0.02 (  2%)   0.00 (  0%)   0.01 (  0%)   133k (  1%)
+ tree modref                        :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)    46k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)   221k (  1%)
+ symout                             :   0.01 (  1%)   0.02 (  2%)   0.01 (  0%)  2800k ( 12%)
+ if to switch conversion            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8456  (  0%)
+ uninit var analysis                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ access analysis                    :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2512  (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    40  (  0%)
+ address taken                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   1.29          1.08          5.61           23M

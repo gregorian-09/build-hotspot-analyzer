@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-16.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jutils-16.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jutils-16.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jutils-16.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jutils-16.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-16.c
+# Timestamp: 2026-01-30T19:04:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.25 ( 13%)  1819k ( 40%)
+ phase parsing                      :   0.31 ( 86%)   0.29 ( 88%)   1.53 ( 78%)  2566k ( 56%)
+ phase opt and generate             :   0.05 ( 14%)   0.03 (  9%)   0.09 (  5%)   188k (  4%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.08 (  4%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   528  (  0%)
+ callgraph functions expansion      :   0.04 ( 11%)   0.02 (  6%)   0.07 (  4%)   136k (  3%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  3%)   0.02 (  1%)    40k (  1%)
+ df scan insns                      :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    48  (  0%)
+ preprocessing                      :   0.13 ( 36%)   0.13 ( 39%)   1.11 ( 57%)   743k ( 16%)
+ lexical analysis                   :   0.10 ( 28%)   0.08 ( 24%)   0.24 ( 12%)     0  (  0%)
+ parser (global)                    :   0.07 ( 19%)   0.07 ( 21%)   0.11 (  6%)  1304k ( 29%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   231k (  5%)
+ parser inl. func. body             :   0.01 (  3%)   0.01 (  3%)   0.05 (  3%)   245k (  5%)
+ backwards jump threading           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ tree PRE                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  2448  (  0%)
+ loop splitting                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   104  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3848  (  0%)
+ tree iv optimization               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop unrolling                     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   520  (  0%)
+ branch prediction                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2352  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.01 (  3%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4640  (  0%)
+ TOTAL                              :   0.36          0.33          1.95         4575k

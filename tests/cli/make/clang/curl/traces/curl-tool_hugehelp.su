@@ -1,4 +1,4 @@
-tool_hugehelp.c:12476:hugehelp	136	static
-tool_hugehelp.c:12461:zalloc_func	24	static
-tool_hugehelp.c:12467:zfree_func	24	static
-tool_hugehelp.c:12514:showhelp	440	static
+tool_hugehelp.c:12497:hugehelp	136	static
+tool_hugehelp.c:12482:zalloc_func	24	static
+tool_hugehelp.c:12488:zfree_func	24	static
+tool_hugehelp.c:12535:showhelp	440	static

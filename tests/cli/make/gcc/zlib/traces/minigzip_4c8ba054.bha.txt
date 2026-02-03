@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/test/minigzip.c
+# Output: minigzip64.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -I. -I../../../../repos/zlib/ -D_FILE_OFFSET_BITS=64 -c -o minigzip64.o ../../../../repos/zlib/test/minigzip.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  8%)   0.04 (  8%)  1819k ( 45%)
+ phase parsing                      :   0.14 ( 70%)   0.10 ( 83%)   0.38 ( 75%)  1521k ( 37%)
+ phase opt and generate             :   0.06 ( 30%)   0.01 (  8%)   0.08 ( 16%)   736k ( 18%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dump files                         :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph ipa passes               :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    99k (  2%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.05 ( 25%)   0.05 ( 42%)   0.25 ( 49%)   530k ( 13%)
+ lexical analysis                   :   0.07 ( 35%)   0.04 ( 33%)   0.08 ( 16%)     0  (  0%)
+ parser (global)                    :   0.01 (  5%)   0.00 (  0%)   0.04 (  8%)   865k ( 21%)
+ parser function body               :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    75k (  2%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    30k (  1%)
+ out of ssa                         :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   928  (  0%)
+ integrated RA                      :   0.01 (  5%)   0.01 (  8%)   0.02 (  4%)   176k (  4%)
+ LRA non-specific                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   976  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    30k (  1%)
+ symout                             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.02 (  4%)    12k (  0%)
+ rest of compilation                :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    16k (  0%)
+ TOTAL                              :   0.20          0.12          0.51         4078k

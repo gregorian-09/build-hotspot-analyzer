@@ -4,11 +4,11 @@ repos/benchmark/src/csv_reporter.cc:57:_ZN9benchmark11CSVReporter10ReportRunsERK
 repos/benchmark/src/csv_reporter.cc:110:_ZN9benchmark11CSVReporter12PrintRunDataERKNS_17BenchmarkReporter3RunE	152	static
 repos/benchmark/src/csv_reporter.cc:33:_ZN9benchmark12_GLOBAL__N_19CsvEscapeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	136	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:558:_ZNKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEN9benchmark7CounterESt4lessIS5_ESaISt4pairIKS5_S7_EEE2atERSB_	56	static
-repos/benchmark/include/benchmark/benchmark.h:1924:_ZN9benchmark17BenchmarkReporter16ReportRunsConfigEdbl	0	static
-repos/benchmark/include/benchmark/benchmark.h:1939:_ZN9benchmark17BenchmarkReporter8FinalizeEv	0	static
-repos/benchmark/include/benchmark/benchmark.h:2012:_ZN9benchmark11CSVReporterD2Ev	8	static
-repos/benchmark/include/benchmark/benchmark.h:2012:_ZN9benchmark11CSVReporterD0Ev	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/csv_reporter.cc:__clang_call_terminate	8	static
+repos/benchmark/include/benchmark/benchmark.h:1942:_ZN9benchmark17BenchmarkReporter16ReportRunsConfigEdbl	0	static
+repos/benchmark/include/benchmark/benchmark.h:1957:_ZN9benchmark17BenchmarkReporter8FinalizeEv	0	static
+repos/benchmark/include/benchmark/benchmark.h:2030:_ZN9benchmark11CSVReporterD2Ev	8	static
+repos/benchmark/include/benchmark/benchmark.h:2030:_ZN9benchmark11CSVReporterD0Ev	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/csv_reporter.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES5_St9_IdentityIS5_ESt4lessIS5_ESaIS5_EE8_M_eraseEPSt13_Rb_tree_nodeIS5_E	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:592:_ZNSt8_Rb_treeINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES5_St9_IdentityIS5_ESt4lessIS5_ESaIS5_EE17_M_construct_nodeIJRKS5_EEEvPSt13_Rb_tree_nodeIS5_EDpOT_	56	static
 repos/benchmark/src/csv_reporter.cc:0:_GLOBAL__sub_I_csv_reporter.cc	8	static

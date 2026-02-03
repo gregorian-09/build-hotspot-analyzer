@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jfdctfst-12.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jfdctfst-12.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jfdctfst-12.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jfdctfst-12.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jfdctfst-12.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jfdctfst-12.c
+# Timestamp: 2026-01-30T19:04:35+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.00 (  0%)   0.04 (  5%)  1819k ( 31%)
+ phase parsing                      :   0.17 ( 50%)   0.17 ( 94%)   0.56 ( 71%)  2635k ( 45%)
+ phase opt and generate             :   0.16 ( 47%)   0.01 (  6%)   0.18 ( 23%)  1388k ( 24%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.15 ( 44%)   0.01 (  6%)   0.17 ( 22%)  1285k ( 22%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    62k (  1%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ df reg dead/unused notes           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    36k (  1%)
+ preprocessing                      :   0.06 ( 18%)   0.05 ( 28%)   0.22 ( 28%)   762k ( 13%)
+ lexical analysis                   :   0.04 ( 12%)   0.07 ( 39%)   0.12 ( 15%)     0  (  0%)
+ parser (global)                    :   0.05 ( 15%)   0.03 ( 17%)   0.10 ( 13%)  1337k ( 23%)
+ parser struct body                 :   0.01 (  3%)   0.00 (  0%)   0.04 (  5%)   231k (  4%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  6%)   0.01 (  1%)    35k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  6%)   0.02 (  3%)    21k (  0%)
+ parser inl. func. body             :   0.01 (  3%)   0.00 (  0%)   0.05 (  6%)   245k (  4%)
+ inline parameters                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1880  (  0%)
+ tree VRP                           :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  6192  (  0%)
+ tree copy propagation              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree SSA incremental               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ dominator optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%) 10168  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   264  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    46k (  1%)
+ tree vectorization                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   138k (  2%)
+ tree iv optimization               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ forward prop                       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  9960  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CPROP                              :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    31k (  1%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    24  (  0%)
+ combiner                           :   0.02 (  6%)   0.00 (  0%)   0.02 (  3%)   141k (  2%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   212k (  4%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    50k (  1%)
+ LRA hard reg assignment            :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.02 (  3%)  6128  (  0%)
+ initialize rtl                     :   0.02 (  6%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.34          0.18          0.79         5843k

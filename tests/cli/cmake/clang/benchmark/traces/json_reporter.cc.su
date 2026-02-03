@@ -6,7 +6,7 @@ repos/benchmark/src/json_reporter.cc:219:_ZN9benchmark12JSONReporter10ReportRuns
 repos/benchmark/src/json_reporter.cc:246:_ZN9benchmark12JSONReporter12PrintRunDataERKNS_17BenchmarkReporter3RunE	184	static
 repos/benchmark/src/json_reporter.cc:241:_ZN9benchmark12JSONReporter8FinalizeEv	0	static
 repos/benchmark/src/json_reporter.cc:94:_ZN9benchmark12_GLOBAL__N_18FormatKVERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEd	472	static
-repos/benchmark/include/benchmark/benchmark.h:1924:_ZN9benchmark17BenchmarkReporter16ReportRunsConfigEdbl	0	static
-repos/benchmark/include/benchmark/benchmark.h:1998:_ZN9benchmark12JSONReporterD0Ev	8	static
+repos/benchmark/include/benchmark/benchmark.h:1942:_ZN9benchmark17BenchmarkReporter16ReportRunsConfigEdbl	0	static
+repos/benchmark/include/benchmark/benchmark.h:2016:_ZN9benchmark12JSONReporterD0Ev	8	static
 repos/benchmark/src/json_reporter.cc:33:_ZN9benchmark12_GLOBAL__N_19StrEscapeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	72	static
 repos/benchmark/src/json_reporter.cc:0:_GLOBAL__sub_I_json_reporter.cc	0	static

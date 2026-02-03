@@ -1,7 +1,7 @@
 repos/rocksdb/logging/event_logger.cc:17:_ZN7rocksdb17EventLoggerStreamC2EPNS_6LoggerE	0	static
 repos/rocksdb/logging/event_logger.cc:23:_ZN7rocksdb17EventLoggerStreamC2EPNS_9LogBufferEm	0	static
 repos/rocksdb/logging/event_logger.cc:30:_ZN7rocksdb17EventLoggerStreamD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/logging/event_logger.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/logging/event_logger.cc:__clang_call_terminate	8	static
 repos/rocksdb/logging/event_logger.cc:49:_ZN7rocksdb11EventLogger3LogEPNS_6LoggerERKNS_10JSONWriterE	56	static
 repos/rocksdb/logging/event_logger.cc:57:_ZN7rocksdb11EventLogger11LogToBufferEPNS_9LogBufferERKNS_10JSONWriterEm	72	static
 repos/rocksdb/logging/event_logger.cc:47:_ZN7rocksdb11EventLogger3LogERKNS_10JSONWriterE	0	static

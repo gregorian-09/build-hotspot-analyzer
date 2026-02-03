@@ -8,7 +8,7 @@ repos/rocksdb/table/plain/plain_table_reader.cc:89:_ZN7rocksdb16PlainTableReader
 repos/rocksdb/table/plain/plain_table_reader.h:44:_ZN7rocksdb24PlainTableReaderFileInfoD2Ev	24	static
 repos/rocksdb/include/rocksdb/comparator.h:24:_ZN7rocksdb16CompareInterfaceD2Ev	0	static
 repos/rocksdb/table/plain/plain_table_reader.cc:109:_ZN7rocksdb16PlainTableReaderD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_reader.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/plain/plain_table_reader.cc:__clang_call_terminate	8	static
 repos/rocksdb/table/plain/plain_table_reader.cc:109:_ZN7rocksdb16PlainTableReaderD0Ev	24	static
 repos/rocksdb/table/plain/plain_table_reader.cc:114:_ZN7rocksdb16PlainTableReader4OpenERKNS_16ImmutableOptionsERKNS_10EnvOptionsERKNS_21InternalKeyComparatorEOSt10unique_ptrINS_22RandomAccessFileReaderESt14default_deleteISB_EEmPSA_INS_11TableReaderESC_ISG_EEidmmbbPKNS_14SliceTransformE	504	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:3651:_ZStplIcSt11char_traitsIcESaIcEENSt7__cxx1112basic_stringIT_T0_T1_EEOS8_S9_	56	static
@@ -17,11 +17,11 @@ repos/rocksdb/table/plain/plain_table_reader.cc:296:_ZN7rocksdb16PlainTableReade
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb15TablePropertiesESt14default_deleteIS1_EED2Ev	24	static
 repos/rocksdb/table/plain/plain_table_reader.cc:195:_ZN7rocksdb16PlainTableReader18SetupForCompactionEv	0	static
 repos/rocksdb/table/plain/plain_table_reader.cc:197:_ZN7rocksdb16PlainTableReader11NewIteratorERKNS_11ReadOptionsEPKNS_14SliceTransformEPNS_5ArenaEbNS_17TableReaderCallerEmb	40	static
-repos/rocksdb/table/plain/plain_table_reader.cc:217:_ZN7rocksdb16PlainTableReader23PopulateIndexRecordListEPNS_22PlainTableIndexBuilderEPSt6vectorIjSaIjEE	584	static
+repos/rocksdb/table/plain/plain_table_reader.cc:217:_ZN7rocksdb16PlainTableReader23PopulateIndexRecordListEPNS_22PlainTableIndexBuilderEPSt6vectorIjSaIjEE	600	static
 repos/rocksdb/table/plain/plain_table_reader.cc:527:_ZNK7rocksdb16PlainTableReader4NextEPNS_20PlainTableKeyDecoderEPjPNS_17ParsedInternalKeyEPNS_5SliceES7_Pb	72	static
 repos/rocksdb/table/plain/plain_table_key_coding.h:141:_ZN7rocksdb20PlainTableKeyDecoderD2Ev	24	static
 repos/rocksdb/table/plain/plain_table_reader.cc:269:_ZN7rocksdb16PlainTableReader13AllocateBloomEiim	0	static
-repos/rocksdb/table/plain/plain_table_reader.cc:279:_ZN7rocksdb16PlainTableReader9FillBloomERKSt6vectorIjSaIjEE	48	static
+repos/rocksdb/table/plain/plain_table_reader.cc:279:_ZN7rocksdb16PlainTableReader9FillBloomERKSt6vectorIjSaIjEE	24	static
 repos/rocksdb/include/rocksdb/file_system.h:100:_ZN7rocksdb9IOOptionsD2Ev	40	static
 repos/rocksdb/table/plain/plain_table_index.h:131:_ZN7rocksdb22PlainTableIndexBuilderC2EPNS_5ArenaERKNS_16ImmutableOptionsEPKNS_14SliceTransformEmdm	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:524:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES5_St4lessIS5_ESaISt4pairIKS5_S5_EEEixEOS5_	88	static

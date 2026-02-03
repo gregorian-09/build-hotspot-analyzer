@@ -1,5 +1,5 @@
-noproxy.c:184:Curl_check_noproxy	104	static
-noproxy.c:118:match_host	56	static
-noproxy.c:148:match_ip	216	static
-noproxy.c:77:Curl_cidr6_match	88	static
-noproxy.c:44:Curl_cidr4_match	56	static
+../../../../../repos/curl/lib/noproxy.c:182:Curl_check_noproxy	104	static
+../../../../../repos/curl/lib/noproxy.c:118:match_host	56	static
+../../../../../repos/curl/lib/noproxy.c:148:match_ip	200	static
+../../../../../repos/curl/lib/noproxy.c:77:Curl_cidr6_match	88	static
+../../../../../repos/curl/lib/noproxy.c:44:Curl_cidr4_match	56	static

@@ -1,0 +1,16 @@
+# BHA Trace
+# Source: tool_ca_embed.c
+# Output: curl-tool_ca_embed.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -I../../../../../repos/curl/src -DCURL_STATICLIB -DUSE_MANUAL -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c -o curl-tool_ca_embed.o tool_ca_embed.c
+# Timestamp: 2026-01-31T00:31:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (100%)   0.02 ( 67%)  1819k ( 92%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   157k (  8%)
+ phase finalize                     :   0.01 (100%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.01 ( 33%)   149k (  8%)
+ TOTAL                              :   0.01          0.01          0.03         1980k

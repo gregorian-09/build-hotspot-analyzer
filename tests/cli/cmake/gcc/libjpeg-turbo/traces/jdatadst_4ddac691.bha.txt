@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdatadst.c
+# Output: CMakeFiles/jpeg-static.dir/src/jdatadst.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/jdatadst.c.o -MF CMakeFiles/jpeg-static.dir/src/jdatadst.c.o.d -o CMakeFiles/jpeg-static.dir/src/jdatadst.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jdatadst.c
+# Timestamp: 2026-01-30T19:04:22+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  4%)   0.02 (  3%)  1819k ( 35%)
+ phase parsing                      :   0.13 ( 57%)   0.20 ( 74%)   0.50 ( 68%)  2377k ( 46%)
+ phase opt and generate             :   0.10 ( 43%)   0.06 ( 22%)   0.18 ( 25%)   929k ( 18%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  4%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1024  (  0%)
+ callgraph functions expansion      :   0.08 ( 35%)   0.05 ( 19%)   0.14 ( 19%)   689k ( 13%)
+ callgraph ipa passes               :   0.02 (  9%)   0.01 (  4%)   0.03 (  4%)   162k (  3%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  2800  (  0%)
+ preprocessing                      :   0.06 ( 26%)   0.06 ( 22%)   0.29 ( 40%)   704k ( 14%)
+ lexical analysis                   :   0.02 (  9%)   0.09 ( 33%)   0.12 ( 16%)     0  (  0%)
+ parser (global)                    :   0.02 (  9%)   0.03 ( 11%)   0.06 (  8%)  1098k ( 21%)
+ parser struct body                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   128k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   165k (  3%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 (  7%)   0.02 (  3%)   245k (  5%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    72  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    17k (  0%)
+ tree Early VRP                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%) 10064  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    12k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    46k (  1%)
+ dominator optimization             :   0.01 (  4%)   0.01 (  4%)   0.00 (  0%)    19k (  0%)
+ backwards jump threading           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   192  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   880  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    19k (  0%)
+ expand                             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    61k (  1%)
+ varconst                           :   0.02 (  9%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ CSE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   768  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6408  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ CPROP                              :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)  9888  (  0%)
+ PRE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1264  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ integrated RA                      :   0.01 (  4%)   0.01 (  4%)   0.00 (  0%)   199k (  4%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9224  (  0%)
+ load CSE after reload              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.01 (  4%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.02 (  9%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ TOTAL                              :   0.23          0.27          0.73         5126k

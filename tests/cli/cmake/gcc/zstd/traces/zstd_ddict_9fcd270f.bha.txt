@@ -1,0 +1,65 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c
+# Output: CMakeFiles/libzstd_shared.dir/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DXXH_NAMESPACE=ZSTD_ -DZSTD_LEGACY_SUPPORT=0 -DZSTD_MULTITHREAD -Dlibzstd_shared_EXPORTS -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/zstd/build/lib -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/build/cmake/lib -ftime-report -fstack-usage -O3 -DNDEBUG -fPIC -DZSTD_DISABLE_ASM -MD -MT lib/CMakeFiles/libzstd_shared.dir/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c.o -MF CMakeFiles/libzstd_shared.dir/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c.o.d -o CMakeFiles/libzstd_shared.dir/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/decompress/zstd_ddict.c
+# Timestamp: 2026-01-30T19:23:02+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.02 (  2%)   0.08 (  2%)  1819k ( 21%)
+ phase parsing                      :   0.56 ( 71%)   0.70 ( 87%)   3.23 ( 88%)  5157k ( 61%)
+ phase lang. deferred               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.21 ( 27%)   0.07 (  9%)   0.34 (  9%)  1540k ( 18%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ dump files                         :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)   896  (  0%)
+ callgraph functions expansion      :   0.19 ( 24%)   0.05 (  6%)   0.29 (  8%)  1087k ( 13%)
+ callgraph ipa passes               :   0.02 (  3%)   0.02 (  3%)   0.05 (  1%)   314k (  4%)
+ ipa modref                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6800  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6520  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   528  (  0%)
+ df live regs                       :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ alias stmt walking                 :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)  7576  (  0%)
+ preprocessing                      :   0.21 ( 27%)   0.34 ( 42%)   2.30 ( 63%)   984k ( 12%)
+ lexical analysis                   :   0.17 ( 22%)   0.21 ( 26%)   0.44 ( 12%)     0  (  0%)
+ parser (global)                    :   0.11 ( 14%)   0.07 (  9%)   0.29 (  8%)  2446k ( 29%)
+ parser struct body                 :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    65k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    50k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    61k (  1%)
+ parser inl. func. body             :   0.07 (  9%)   0.08 ( 10%)   0.16 (  4%)  1547k ( 18%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  3672  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    29k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    22k (  0%)
+ dominator optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    32k (  0%)
+ backwards jump threading           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ tree SRA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%) 10160  (  0%)
+ tree CCP                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  3024  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    25k (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    20k (  0%)
+ PHI merge                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6936  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   125k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   168  (  0%)
+ CSE                                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1800  (  0%)
+ dead store elim2                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8768  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    60k (  1%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    24k (  0%)
+ CSE 2                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1544  (  0%)
+ combiner                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ integrated RA                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   272k (  3%)
+ LRA virtuals elimination           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   912  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ ree                                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    80  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    18k (  0%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1472  (  0%)
+ scheduling 2                       :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%) 10064  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   936  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  1%)   0.07 (  2%)    28k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   0.79          0.80          3.65         8518k

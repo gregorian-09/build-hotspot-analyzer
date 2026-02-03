@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: lstring.c
+# Output: lstring.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o lstring.o lstring.c
+# Timestamp: 2026-01-31T02:07:38+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.03 (  6%)  1819k ( 32%)
+ phase parsing                      :   0.15 ( 56%)   0.11 ( 85%)   0.37 ( 69%)  2903k ( 52%)
+ phase opt and generate             :   0.11 ( 41%)   0.02 ( 15%)   0.14 ( 26%)   902k ( 16%)
+ dump files                         :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)   680  (  0%)
+ callgraph functions expansion      :   0.09 ( 33%)   0.02 ( 15%)   0.12 ( 22%)   691k ( 12%)
+ callgraph ipa passes               :   0.02 (  7%)   0.00 (  0%)   0.02 (  4%)   141k (  3%)
+ ipa free lang data                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)  8064  (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    24k (  0%)
+ preprocessing                      :   0.06 ( 22%)   0.02 ( 15%)   0.17 ( 31%)  1659k ( 29%)
+ lexical analysis                   :   0.05 ( 19%)   0.04 ( 31%)   0.09 ( 17%)     0  (  0%)
+ parser (global)                    :   0.04 ( 15%)   0.04 ( 31%)   0.09 ( 17%)  1111k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    47k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    52k (  1%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7456  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    22k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  5256  (  0%)
+ tree RPO VN                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  1240  (  0%)
+ tree conservative DCE              :   0.01 (  4%)   0.00 (  0%)   0.01 (  2%)    72  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)    12k (  0%)
+ CSE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  1272  (  0%)
+ loop init                          :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    56k (  1%)
+ combiner                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    32k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   101k (  2%)
+ LRA non-specific                   :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)  1864  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.02 (  4%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    13k (  0%)
+ TOTAL                              :   0.27          0.13          0.54         5625k

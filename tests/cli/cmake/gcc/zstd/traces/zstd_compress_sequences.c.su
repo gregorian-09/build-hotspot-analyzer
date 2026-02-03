@@ -1,7 +1,7 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:70:15:ZSTD_NCountCost	688	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:403:1:ZSTD_encodeSequences_bmi2	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:104:8:ZSTD_fseBitCost	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:139:8:ZSTD_crossEntropyCost	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:157:1:ZSTD_selectEncodingType	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:243:1:ZSTD_buildCTable	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_sequences.c:419:8:ZSTD_encodeSequences	72	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:70:15:ZSTD_NCountCost	688	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:403:1:ZSTD_encodeSequences_bmi2	56	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:104:8:ZSTD_fseBitCost	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:139:8:ZSTD_crossEntropyCost	40	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:157:1:ZSTD_selectEncodingType	80	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:243:1:ZSTD_buildCTable	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_sequences.c:419:8:ZSTD_encodeSequences	72	static

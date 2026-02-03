@@ -1,0 +1,41 @@
+# BHA Trace
+# Source: fpconv.c
+# Output: fpconv.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o fpconv.o fpconv.c
+# Timestamp: 2026-01-31T02:07:40+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  6%)   0.02 (  5%)  1819k ( 41%)
+ phase parsing                      :   0.11 ( 52%)   0.12 ( 75%)   0.26 ( 62%)  1842k ( 41%)
+ phase opt and generate             :   0.10 ( 48%)   0.03 ( 19%)   0.14 ( 33%)   782k ( 18%)
+ dump files                         :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)     0  (  0%)
+ callgraph functions expansion      :   0.09 ( 43%)   0.02 ( 12%)   0.11 ( 26%)   548k ( 12%)
+ callgraph ipa passes               :   0.01 (  5%)   0.01 (  6%)   0.03 (  7%)   152k (  3%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    11k (  0%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)   752  (  0%)
+ df live regs                       :   0.01 (  5%)   0.01 (  6%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.05 ( 24%)   0.03 ( 19%)   0.09 ( 21%)   557k ( 13%)
+ lexical analysis                   :   0.04 ( 19%)   0.03 ( 19%)   0.12 ( 29%)     0  (  0%)
+ parser (global)                    :   0.02 ( 10%)   0.03 ( 19%)   0.04 ( 10%)   969k ( 22%)
+ parser function body               :   0.00 (  0%)   0.01 (  6%)   0.01 (  2%)    34k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 ( 12%)   0.00 (  0%)   245k (  6%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    18k (  0%)
+ integration                        :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    36k (  1%)
+ tree CFG cleanup                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  1160  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  7976  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ dominator optimization             :   0.02 ( 10%)   0.00 (  0%)   0.01 (  2%)    21k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  9248  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  5%)   105k (  2%)
+ LRA virtuals elimination           :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  3624  (  0%)
+ reload                             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)    72  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  6304  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)  8464  (  0%)
+ initialize rtl                     :   0.02 ( 10%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ rest of compilation                :   0.01 (  5%)   0.00 (  0%)   0.02 (  5%)    13k (  0%)
+ TOTAL                              :   0.21          0.16          0.42         4444k

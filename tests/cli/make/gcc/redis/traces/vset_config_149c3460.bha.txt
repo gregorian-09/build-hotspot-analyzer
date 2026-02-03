@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ../modules/vector-sets/vset_config.c
+# Output: vset_config.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o vset_config.o -c ../modules/vector-sets/vset_config.c
+# Timestamp: 2026-01-31T02:12:26+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.03 (  1%)  1828k ( 28%)
+ phase parsing                      :   0.25 ( 86%)   0.34 ( 92%)   1.97 ( 96%)  4643k ( 70%)
+ phase opt and generate             :   0.04 ( 14%)   0.02 (  5%)   0.05 (  2%)   114k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.01 (  3%)   0.01 (  0%)    49k (  1%)
+ callgraph ipa passes               :   0.03 ( 10%)   0.01 (  3%)   0.04 (  2%)    53k (  1%)
+ lto stream compression             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ lto stream output                  :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.01 (  3%)   0.02 (  1%)   264  (  0%)
+ ipa free lang data                 :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  5152  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.11 ( 38%)   0.20 ( 54%)   1.61 ( 78%)   845k ( 13%)
+ lexical analysis                   :   0.06 ( 21%)   0.07 ( 19%)   0.20 ( 10%)     0  (  0%)
+ parser (global)                    :   0.05 ( 17%)   0.03 (  8%)   0.08 (  4%)  2331k ( 35%)
+ parser struct body                 :   0.00 (  0%)   0.02 (  5%)   0.01 (  0%)    58k (  1%)
+ parser function body               :   0.02 (  7%)   0.01 (  3%)   0.05 (  2%)   649k ( 10%)
+ parser inl. func. body             :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)   228k (  3%)
+ varconst                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  2688  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   528k (  8%)
+ TOTAL                              :   0.29          0.37          2.06         6586k

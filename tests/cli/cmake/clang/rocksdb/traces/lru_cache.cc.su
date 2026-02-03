@@ -1,6 +1,6 @@
 repos/rocksdb/cache/lru_cache.cc:26:_ZN7rocksdb9lru_cache14LRUHandleTableC2EiPNS_15MemoryAllocatorE	40	static
 repos/rocksdb/cache/lru_cache.cc:34:_ZN7rocksdb9lru_cache14LRUHandleTableD2Ev	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/lru_cache.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/cache/lru_cache.cc:__clang_call_terminate	8	static
 repos/rocksdb/cache/lru_cache.cc:45:_ZN7rocksdb9lru_cache14LRUHandleTable6LookupERKNS_5SliceEj	40	static
 repos/rocksdb/cache/lru_cache.cc:75:_ZN7rocksdb9lru_cache14LRUHandleTable11FindPointerERKNS_5SliceEj	56	static
 repos/rocksdb/cache/lru_cache.cc:49:_ZN7rocksdb9lru_cache14LRUHandleTable6InsertEPNS0_9LRUHandleE	72	static
@@ -80,9 +80,10 @@ repos/rocksdb/include/rocksdb/cache.h:204:_ZN7rocksdb19ShardedCacheOptionsD0Ev	2
 repos/rocksdb/cache/sharded_cache.h:146:_ZN7rocksdb12ShardedCacheINS_9lru_cache13LRUCacheShardEED2Ev	104	static
 repos/rocksdb/cache/sharded_cache.h:146:_ZN7rocksdb12ShardedCacheINS_9lru_cache13LRUCacheShardEED0Ev	0	static
 repos/rocksdb/include/rocksdb/advanced_cache.h:191:_ZN7rocksdb5CacheD2Ev	40	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS0_12ShardedCacheIS2_ED1EvEUlS3_E_E9_M_invokeERKSt9_Any_dataOS3_	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS0_12ShardedCacheIS2_ED1EvEUlS3_E_E9_M_invokeERKSt9_Any_dataOS3_	0	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS0_12ShardedCacheIS2_ED1EvEUlS3_E_E10_M_managerERSt9_Any_dataRKS9_St18_Manager_operation	0	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS1_8LRUCacheC1ERKNS0_15LRUCacheOptionsEE3$_0E9_M_invokeERKSt9_Any_dataOS3_	8	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:60:_ZSt13__invoke_implIvRZN7rocksdb12ShardedCacheINS0_9lru_cache13LRUCacheShardEED1EvEUlPS3_E_JS5_EET_St14__invoke_otherOT0_DpOT1_	56	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS1_8LRUCacheC1ERKNS0_15LRUCacheOptionsEE3$_0E9_M_invokeERKSt9_Any_dataOS3_	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFvPN7rocksdb9lru_cache13LRUCacheShardEEZNS1_8LRUCacheC1ERKNS0_15LRUCacheOptionsEE3$_0E10_M_managerERSt9_Any_dataRKSB_St18_Manager_operation	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:288:_ZNSt17_Function_handlerIFmRN7rocksdb9lru_cache13LRUCacheShardEEZNS1_8LRUCache15TEST_GetLRUSizeEvE3$_0E9_M_invokeERKSt9_Any_dataS3_	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:267:_ZNSt17_Function_handlerIFmRN7rocksdb9lru_cache13LRUCacheShardEEZNS1_8LRUCache15TEST_GetLRUSizeEvE3$_0E10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation	0	static

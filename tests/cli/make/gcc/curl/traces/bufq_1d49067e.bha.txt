@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/bufq.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/bufq.c
+# Timestamp: 2026-01-31T00:30:00+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)  1819k ( 17%)
+ phase parsing                      :   0.26 ( 58%)   0.28 ( 82%)   1.09 ( 79%)  4779k ( 44%)
+ phase opt and generate             :   0.18 ( 40%)   0.06 ( 18%)   0.26 ( 19%)  4145k ( 39%)
+ dump files                         :   0.02 (  4%)   0.00 (  0%)   0.04 (  3%)     0  (  0%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)    96k (  1%)
+ callgraph ipa passes               :   0.03 (  7%)   0.01 (  3%)   0.04 (  3%)   365k (  3%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df scan insns                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  3120  (  0%)
+ df live regs                       :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ rebuild jump labels                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.14 ( 31%)   0.08 ( 24%)   0.75 ( 54%)  1989k ( 19%)
+ lexical analysis                   :   0.07 ( 16%)   0.09 ( 26%)   0.19 ( 14%)     0  (  0%)
+ parser (global)                    :   0.04 (  9%)   0.09 ( 26%)   0.09 (  7%)  2186k ( 20%)
+ parser enumerator list             :   0.01 (  2%)   0.01 (  3%)   0.03 (  2%)   268k (  2%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   210k (  2%)
+ inline parameters                  :   0.01 (  2%)   0.01 (  3%)   0.00 (  0%)    17k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    78k (  1%)
+ tree switch lowering               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  6312  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   356k (  3%)
+ integrated RA                      :   0.02 (  4%)   0.01 (  3%)   0.01 (  1%)  2216k ( 21%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  9896  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   126k (  1%)
+ machine dep reorg                  :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  9464  (  0%)
+ shorten branches                   :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   182k (  2%)
+ symout                             :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.02 (  4%)   0.01 (  3%)   0.02 (  1%)   219k (  2%)
+ TOTAL                              :   0.45          0.34          1.38           10M

@@ -3,6 +3,6 @@ repos/rocksdb/table/persistent_cache_helper.cc:15:_ZN7rocksdb21PersistentCacheHe
 repos/rocksdb/table/persistent_cache_helper.cc:28:_ZN7rocksdb21PersistentCacheHelper18InsertUncompressedERKNS_22PersistentCacheOptionsERKNS_11BlockHandleERKNS_13BlockContentsE	72	static
 repos/rocksdb/table/persistent_cache_helper.cc:45:_ZN7rocksdb21PersistentCacheHelper16LookupSerializedERKNS_22PersistentCacheOptionsERKNS_11BlockHandleEPSt10unique_ptrIA_cSt14default_deleteIS8_EEm	104	static
 repos/rocksdb/table/persistent_cache_helper.cc:75:_ZN7rocksdb21PersistentCacheHelper18LookupUncompressedERKNS_22PersistentCacheOptionsERKNS_11BlockHandleEPNS_13BlockContentsE	104	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/persistent_cache_helper.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/persistent_cache_helper.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static
 repos/rocksdb/table/persistent_cache_helper.cc:0:_GLOBAL__sub_I_persistent_cache_helper.cc	0	static

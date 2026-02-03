@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc
+# Output: CMakeFiles/tracing_internal.dir/internal/tracing.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/tracing_internal.dir/internal/tracing.cc.o -MF CMakeFiles/tracing_internal.dir/internal/tracing.cc.o.d -o CMakeFiles/tracing_internal.dir/internal/tracing.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc
+# Timestamp: 2026-01-30T18:39:20+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 ( 33%)   0.02 ( 25%)   0.06 ( 21%)  1882k ( 58%)
+ phase parsing                      :   0.01 ( 17%)   0.03 ( 38%)   0.13 ( 46%)  1084k ( 33%)
+ phase opt and generate             :   0.03 ( 50%)   0.02 ( 25%)   0.05 ( 18%)   273k (  8%)
+ phase finalize                     :   0.00 (  0%)   0.01 ( 12%)   0.04 ( 14%)     0  (  0%)
+ |name lookup                       :   0.01 ( 17%)   0.01 ( 12%)   0.01 (  4%)   134k (  4%)
+ callgraph functions expansion      :   0.03 ( 50%)   0.01 ( 13%)   0.04 ( 14%)   197k (  6%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    60k (  2%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  5008  (  0%)
+ cfg cleanup                        :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.00 (  0%)   0.03 ( 38%)   0.10 ( 36%)   270k (  8%)
+ parser (global)                    :   0.01 ( 17%)   0.00 (  0%)   0.02 (  7%)   671k ( 21%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    83k (  3%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  3264  (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)  3776  (  0%)
+ dominance computation              :   0.01 ( 17%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    32  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)    96k (  3%)
+ initialize rtl                     :   0.01 ( 17%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)  9728  (  0%)
+ TOTAL                              :   0.06          0.08          0.28         3240k

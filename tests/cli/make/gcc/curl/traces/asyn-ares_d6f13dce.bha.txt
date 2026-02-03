@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/asyn-ares.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/asyn-ares.c
+# Timestamp: 2026-01-31T00:30:00+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.03 (  3%)  1819k ( 22%)
+ phase parsing                      :   0.23 ( 77%)   0.26 ( 84%)   1.03 ( 87%)  4567k ( 55%)
+ phase opt and generate             :   0.07 ( 23%)   0.04 ( 13%)   0.12 ( 10%)  1889k ( 23%)
+ dump files                         :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  6104  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  3%)   0.02 (  2%)   131k (  2%)
+ cfg cleanup                        :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.12 ( 40%)   0.10 ( 32%)   0.79 ( 67%)  1997k ( 24%)
+ lexical analysis                   :   0.08 ( 27%)   0.08 ( 26%)   0.10 (  8%)     0  (  0%)
+ parser (global)                    :   0.03 ( 10%)   0.06 ( 19%)   0.13 ( 11%)  2106k ( 25%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   268k (  3%)
+ inline parameters                  :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%) 10200  (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    50k (  1%)
+ tree eh                            :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)  1250k ( 15%)
+ reload                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1248  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)   123k (  1%)
+ unaccounted late compilation       :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.30          0.31          1.18         8276k

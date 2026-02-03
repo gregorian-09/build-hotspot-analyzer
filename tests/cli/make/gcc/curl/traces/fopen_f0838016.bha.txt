@@ -1,0 +1,35 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curlx/fopen.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curlx/fopen.c
+# Timestamp: 2026-01-31T00:30:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)  1819k ( 22%)
+ phase parsing                      :   0.26 ( 76%)   0.39 ( 91%)   1.70 ( 92%)  4564k ( 55%)
+ phase opt and generate             :   0.07 ( 21%)   0.04 (  9%)   0.12 (  7%)  1934k ( 23%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  7072  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    55k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)   136k (  2%)
+ cfg construction                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.10 ( 29%)   0.19 ( 44%)   1.33 ( 72%)  1990k ( 24%)
+ lexical analysis                   :   0.08 ( 24%)   0.12 ( 28%)   0.14 (  8%)     0  (  0%)
+ parser (global)                    :   0.08 ( 24%)   0.07 ( 16%)   0.20 ( 11%)  2109k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   268k (  3%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dominance computation              :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop fini                          :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  1274k ( 15%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3080  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    82k (  1%)
+ symout                             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  3%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ rest of compilation                :   0.02 (  6%)   0.01 (  2%)   0.02 (  1%)   125k (  2%)
+ TOTAL                              :   0.34          0.43          1.84         8319k

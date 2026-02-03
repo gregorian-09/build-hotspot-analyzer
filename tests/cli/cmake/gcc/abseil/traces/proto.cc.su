@@ -1,8 +1,8 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:40:6:bool absl::log_internal::EncodeVarint(uint64_t, uint64_t, absl::Span<char>*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:53:6:bool absl::log_internal::Encode64Bit(uint64_t, uint64_t, absl::Span<char>*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:69:6:bool absl::log_internal::Encode32Bit(uint64_t, uint32_t, absl::Span<char>*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:85:6:bool absl::log_internal::EncodeBytes(uint64_t, absl::Span<const char>, absl::Span<char>*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:102:6:bool absl::log_internal::EncodeBytesTruncate(uint64_t, absl::Span<const char>, absl::Span<char>*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:126:32:absl::Span<char> absl::log_internal::EncodeMessageStart(uint64_t, uint64_t, absl::Span<char>*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:143:6:void absl::log_internal::EncodeMessageLength(absl::Span<char>, const absl::Span<char>*)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.cc:190:6:bool absl::log_internal::ProtoField::DecodeFrom(absl::Span<const char>*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:40:6:bool absl::log_internal::EncodeVarint(uint64_t, uint64_t, absl::Span<char>*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:53:6:bool absl::log_internal::Encode64Bit(uint64_t, uint64_t, absl::Span<char>*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:69:6:bool absl::log_internal::Encode32Bit(uint64_t, uint32_t, absl::Span<char>*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:85:6:bool absl::log_internal::EncodeBytes(uint64_t, absl::Span<const char>, absl::Span<char>*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:102:6:bool absl::log_internal::EncodeBytesTruncate(uint64_t, absl::Span<const char>, absl::Span<char>*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:126:32:absl::Span<char> absl::log_internal::EncodeMessageStart(uint64_t, uint64_t, absl::Span<char>*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:143:6:void absl::log_internal::EncodeMessageLength(absl::Span<char>, const absl::Span<char>*)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/proto.cc:190:6:bool absl::log_internal::ProtoField::DecodeFrom(absl::Span<const char>*)	8	static

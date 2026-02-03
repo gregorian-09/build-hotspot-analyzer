@@ -1,0 +1,31 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/vauth/ntlm.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/vauth/ntlm.c
+# Timestamp: 2026-01-31T00:30:39+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.22 ( 85%)   0.22 ( 85%)   0.90 ( 90%)  4558k ( 55%)
+ phase opt and generate             :   0.04 ( 15%)   0.04 ( 15%)   0.08 (  8%)  1889k ( 23%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  4%)   0.02 (  2%)   131k (  2%)
+ preprocessing                      :   0.11 ( 42%)   0.09 ( 35%)   0.65 ( 65%)  1988k ( 24%)
+ lexical analysis                   :   0.04 ( 15%)   0.07 ( 27%)   0.18 ( 18%)     0  (  0%)
+ parser (global)                    :   0.04 ( 15%)   0.05 ( 19%)   0.05 (  5%)  2106k ( 25%)
+ parser enumerator list             :   0.01 (  4%)   0.01 (  4%)   0.02 (  2%)   268k (  3%)
+ parser function body               :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    73k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ varconst                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1250k ( 15%)
+ LRA virtuals elimination           :   0.01 (  4%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    79k (  1%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.02 (  8%)   0.01 (  1%)   123k (  1%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.26          0.26          1.00         8267k

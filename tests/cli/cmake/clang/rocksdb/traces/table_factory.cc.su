@@ -2,7 +2,7 @@ repos/rocksdb/table/table_factory.cc:46:_ZN7rocksdb12TableFactory16CreateFromStr
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/mutex:836:_ZZNSt9once_flag18_Prepare_executionC1IZSt9call_onceIZN7rocksdbL22RegisterTableFactoriesERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE3$_0JEEvRS_OT_DpOT0_EUlvE_EERSE_ENUlvE_8__invokeEv	104	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:236:_ZN7rocksdb13ObjectLibrary10AddFactoryINS_12TableFactoryEEERKSt8functionIFPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPSt10unique_ptrIS4_St14default_deleteIS4_EEPSB_EESD_SN_	120	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1524:_ZNSt12__shared_ptrIN7rocksdb13ObjectLibraryELN9__gnu_cxx12_Lock_policyE2EED2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/table_factory.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/table_factory.cc:__clang_call_terminate	8	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:267:_ZN7rocksdb13ObjectLibrary15AddFactoryEntryEPKcOSt10unique_ptrINS0_5EntryESt14default_deleteIS4_EE	88	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:170:_ZN7rocksdb13ObjectLibrary12FactoryEntryINS_12TableFactoryEED2Ev	24	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:170:_ZN7rocksdb13ObjectLibrary12FactoryEntryINS_12TableFactoryEED0Ev	24	static

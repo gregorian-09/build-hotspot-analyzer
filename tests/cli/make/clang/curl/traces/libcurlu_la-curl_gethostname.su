@@ -1,1 +1,1 @@
-curl_gethostname.c:44:Curl_gethostname	56	static
+../../../../../repos/curl/lib/curl_gethostname.c:44:Curl_gethostname	56	static

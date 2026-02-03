@@ -1,5 +1,5 @@
 repos/rocksdb/db/snapshot_impl.cc:11:_ZN7rocksdb15ManagedSnapshotC2EPNS_2DBE	24	static
 repos/rocksdb/db/snapshot_impl.cc:14:_ZN7rocksdb15ManagedSnapshotC2EPNS_2DBEPKNS_8SnapshotE	0	static
 repos/rocksdb/db/snapshot_impl.cc:17:_ZN7rocksdb15ManagedSnapshotD2Ev	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/snapshot_impl.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/snapshot_impl.cc:__clang_call_terminate	8	static
 repos/rocksdb/db/snapshot_impl.cc:23:_ZN7rocksdb15ManagedSnapshot8snapshotEv	0	static

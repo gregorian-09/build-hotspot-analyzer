@@ -1,0 +1,28 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/contrib/tools/png-fix-itxt.c
+# Output: contrib/tools/png-fix-itxt.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c -o contrib/tools/png-fix-itxt.o ../../../../repos/libpng/contrib/tools/png-fix-itxt.c
+# Timestamp: 2026-01-30T19:06:02+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 ( 10%)   0.00 (  0%)   0.02 (  6%)  1819k ( 50%)
+ phase parsing                      :   0.06 ( 60%)   0.08 ( 80%)   0.27 ( 79%)  1408k ( 39%)
+ phase lang. deferred               :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    96  (  0%)
+ phase opt and generate             :   0.03 ( 30%)   0.01 ( 10%)   0.05 ( 15%)   415k ( 11%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    73k (  2%)
+ preprocessing                      :   0.04 ( 40%)   0.01 ( 10%)   0.19 ( 56%)   542k ( 15%)
+ lexical analysis                   :   0.01 ( 10%)   0.03 ( 30%)   0.03 (  9%)     0  (  0%)
+ parser (global)                    :   0.01 ( 10%)   0.05 ( 50%)   0.03 (  9%)   715k ( 20%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    39k (  1%)
+ tree gimplify                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    48k (  1%)
+ expand                             :   0.00 (  0%)   0.01 ( 10%)   0.00 (  0%)    86k (  2%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ integrated RA                      :   0.01 ( 10%)   0.00 (  0%)   0.00 (  0%)    57k (  2%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)   704  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    14k (  0%)
+ initialize rtl                     :   0.01 ( 10%)   0.00 (  0%)   0.02 (  6%)    12k (  0%)
+ TOTAL                              :   0.10          0.10          0.34         3643k

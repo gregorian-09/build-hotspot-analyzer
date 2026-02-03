@@ -1,8 +1,8 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:94:13:wmBaseHandlePing	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:249:13:libdecorReadyCallback	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:235:6:libdecorHandleError	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:213:13:registryHandleGlobalRemove	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:895:6:_glfwTerminateWayland	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:564:5:_glfwInitWayland	64	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:106:13:registryHandleGlobal	80	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c:435:10:_glfwConnectWayland	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:94:13:wmBaseHandlePing	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:249:13:libdecorReadyCallback	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:235:6:libdecorHandleError	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:213:13:registryHandleGlobalRemove	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:895:6:_glfwTerminateWayland	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:564:5:_glfwInitWayland	64	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:106:13:registryHandleGlobal	80	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/wl_init.c:435:10:_glfwConnectWayland	32	static

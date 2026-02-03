@@ -32,7 +32,7 @@ repos/rocksdb/include/rocksdb/customizable.h:66:_ZNK7rocksdb12Customizable5GetId
 repos/rocksdb/include/rocksdb/customizable.h:89:_ZNK7rocksdb12Customizable12IsInstanceOfERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	56	static
 repos/rocksdb/include/rocksdb/customizable.h:222:_ZNK7rocksdb12Customizable8NickNameEv	0	static
 repos/rocksdb/include/rocksdb/slice_transform.h:92:_ZNK7rocksdb14SliceTransform17FullLengthEnabledEPm	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/slice.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/slice.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 repos/rocksdb/util/slice.cc:78:_ZN7rocksdb12_GLOBAL__N_121CappedPrefixTransformD2Ev	40	static

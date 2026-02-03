@@ -1,0 +1,34 @@
+# BHA Trace
+# Source: timeout.c
+# Output: timeout.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o timeout.o -c timeout.c
+# Timestamp: 2026-01-31T02:12:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)  1828k (  9%)
+ phase parsing                      :   0.96 ( 92%)   1.13 ( 98%)   5.65 ( 98%)    17M ( 89%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    96  (  0%)
+ phase opt and generate             :   0.08 (  8%)   0.00 (  0%)   0.08 (  1%)   481k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.02 (  0%)   115k (  1%)
+ callgraph ipa passes               :   0.06 (  6%)   0.00 (  0%)   0.07 (  1%)   288k (  1%)
+ ipa function summary               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ ipa function splitting             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    19k (  0%)
+ lto stream output                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ ipa lto decl out                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   264  (  0%)
+ ipa free lang data                 :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)    63k (  0%)
+ preprocessing                      :   0.36 ( 35%)   0.56 ( 49%)   4.42 ( 76%)  7061k ( 34%)
+ lexical analysis                   :   0.27 ( 26%)   0.23 ( 20%)   0.40 (  7%)     0  (  0%)
+ parser (global)                    :   0.26 ( 25%)   0.24 ( 21%)   0.56 ( 10%)  7009k ( 34%)
+ parser struct body                 :   0.01 (  1%)   0.03 (  3%)   0.03 (  1%)   555k (  3%)
+ parser function body               :   0.00 (  0%)   0.02 (  2%)   0.03 (  1%)    55k (  0%)
+ parser inl. func. body             :   0.01 (  1%)   0.03 (  3%)   0.16 (  3%)   732k (  4%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ varconst                           :   0.02 (  2%)   0.01 (  1%)   0.01 (  0%)  2688  (  0%)
+ symout                             :   0.03 (  3%)   0.01 (  1%)   0.05 (  1%)  2771k ( 13%)
+ access analysis                    :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    48  (  0%)
+ TOTAL                              :   1.04          1.15          5.78           20M

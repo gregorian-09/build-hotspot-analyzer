@@ -1,0 +1,44 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jutils-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jutils-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jutils-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jutils-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jutils-8.c
+# Timestamp: 2026-01-30T19:04:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  5%)   0.01 (  2%)   0.10 (  5%)  1819k ( 37%)
+ phase parsing                      :   0.26 ( 67%)   0.31 ( 72%)   1.66 ( 79%)  2584k ( 53%)
+ phase opt and generate             :   0.11 ( 28%)   0.10 ( 23%)   0.23 ( 11%)   449k (  9%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  2%)   0.10 (  5%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph optimization             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   656  (  0%)
+ callgraph functions expansion      :   0.09 ( 23%)   0.08 ( 19%)   0.18 (  9%)   332k (  7%)
+ callgraph ipa passes               :   0.01 (  3%)   0.02 (  5%)   0.04 (  2%)    86k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    80  (  0%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   240  (  0%)
+ preprocessing                      :   0.07 ( 18%)   0.09 ( 21%)   1.28 ( 61%)   745k ( 15%)
+ lexical analysis                   :   0.11 ( 28%)   0.11 ( 26%)   0.16 (  8%)     0  (  0%)
+ parser (global)                    :   0.03 (  8%)   0.08 ( 19%)   0.11 (  5%)  1314k ( 27%)
+ parser struct body                 :   0.03 (  8%)   0.02 (  5%)   0.07 (  3%)   231k (  5%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ parser inl. func. body             :   0.02 (  5%)   0.01 (  2%)   0.03 (  1%)   245k (  5%)
+ tree CFG construction              :   0.01 (  3%)   0.00 (  0%)   0.01 (  0%)  8392  (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)   144  (  0%)
+ tree PTA                           :   0.01 (  3%)   0.00 (  0%)   0.02 (  1%)  2520  (  0%)
+ dominator optimization             :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)  5184  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  1088  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  7696  (  0%)
+ tree linearize phis                :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)  5360  (  0%)
+ tree DSE                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   608  (  0%)
+ forward prop                       :   0.01 (  3%)   0.01 (  2%)   0.02 (  1%)   216  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6984  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.01 (  2%)   0.01 (  0%)   122k (  3%)
+ thread pro- & epilogue             :   0.01 (  3%)   0.01 (  2%)   0.03 (  1%)  6576  (  0%)
+ machine dep reorg                  :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   520  (  0%)
+ initialize rtl                     :   0.03 (  8%)   0.01 (  2%)   0.03 (  1%)    12k (  0%)
+ tree loop if-conversion            :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)  3200  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ TOTAL                              :   0.39          0.43          2.09         4853k

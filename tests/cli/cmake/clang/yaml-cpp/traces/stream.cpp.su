@@ -14,6 +14,6 @@ repos/yaml-cpp/src/stream.cpp:441:_ZNK4YAML6Stream13StreamInUtf32Ev	24	static
 repos/yaml-cpp/src/stream.cpp:423:_ZNK4YAML6Stream11GetNextByteEv	8	static
 repos/yaml-cpp/src/stream.cpp:161:_ZN4YAML21QueueUnicodeCodepointERSt5dequeIcSaIcEEm	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIcSaIcEE17_M_initialize_mapEm	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/stream.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/stream.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:485:_ZNSt5dequeIcSaIcEE16_M_push_back_auxIJcEEEvDpOT_	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/deque.tcc:932:_ZNSt5dequeIcSaIcEE17_M_reallocate_mapEmb	72	static

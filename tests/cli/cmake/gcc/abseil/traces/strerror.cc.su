@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/strerror.cc:53:13:std::string absl::base_internal::{anonymous}::StrErrorInternal(int)	176	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/strerror.cc:77:13:std::string absl::base_internal::StrError(int)	160	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/strerror.cc:53:13:std::string absl::base_internal::{anonymous}::StrErrorInternal(int)	176	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/strerror.cc:77:13:std::string absl::base_internal::StrError(int)	160	static

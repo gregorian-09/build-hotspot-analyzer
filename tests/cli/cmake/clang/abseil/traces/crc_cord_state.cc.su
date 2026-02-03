@@ -5,7 +5,7 @@ repos/abseil/absl/crc/internal/crc_cord_state.cc:45:_ZN4absl12crc_internal12CrcC
 repos/abseil/absl/crc/internal/crc_cord_state.cc:51:_ZN4absl12crc_internal12CrcCordStateaSERKS1_	40	static
 repos/abseil/absl/crc/internal/crc_cord_state.cc:60:_ZN4absl12crc_internal12CrcCordStateaSEOS1_	40	static
 repos/abseil/absl/crc/internal/crc_cord_state.cc:70:_ZN4absl12crc_internal12CrcCordStateD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_cord_state.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/crc_cord_state.cc:__clang_call_terminate	8	static
 repos/abseil/absl/crc/internal/crc_cord_state.cc:74:_ZNK4absl12crc_internal12CrcCordState8ChecksumEv	0	static
 repos/abseil/absl/crc/internal/crc_cord_state.cc:86:_ZNK4absl12crc_internal12CrcCordState29NormalizedPrefixCrcAtNthChunkEm	8	static
 repos/abseil/absl/crc/internal/crc_cord_state.cc:98:_ZN4absl12crc_internal12CrcCordState9NormalizeEv	56	static

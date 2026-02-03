@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curlx/winapi.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curlx/winapi.c
+# Timestamp: 2026-01-31T00:30:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.03 (  3%)  1819k ( 22%)
+ phase parsing                      :   0.19 ( 79%)   0.25 ( 89%)   0.95 ( 90%)  4550k ( 55%)
+ phase opt and generate             :   0.04 ( 17%)   0.03 ( 11%)   0.08 (  8%)  1889k ( 23%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  6104  (  0%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   131k (  2%)
+ rebuild jump labels                :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.07 ( 29%)   0.11 ( 39%)   0.72 ( 68%)  1980k ( 24%)
+ lexical analysis                   :   0.06 ( 25%)   0.09 ( 32%)   0.17 ( 16%)     0  (  0%)
+ parser (global)                    :   0.05 ( 21%)   0.03 ( 11%)   0.05 (  5%)  2106k ( 26%)
+ parser struct body                 :   0.01 (  4%)   0.01 (  4%)   0.00 (  0%)   112k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    73k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%) 10200  (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    50k (  1%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1250k ( 15%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    64k (  1%)
+ final                              :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    79k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)   123k (  1%)
+ TOTAL                              :   0.24          0.28          1.06         8260k

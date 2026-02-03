@@ -54,7 +54,7 @@ repos/abseil/absl/synchronization/mutex.cc:2792:_ZN4absl9Condition19CallVoidPtrF
 repos/abseil/absl/synchronization/mutex.cc:2799:_ZN4absl9ConditionC2EPKb	0	static
 repos/abseil/absl/synchronization/mutex.cc:2775:_ZN4abslL11DereferenceEPv	0	static
 repos/abseil/absl/synchronization/mutex.cc:2810:_ZN4absl9Condition15GuaranteedEqualEPKS0_S2_	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/mutex.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/mutex.cc:__clang_call_terminate	8	static
 repos/abseil/absl/base/internal/atomic_hook.h:135:_ZN4absl13base_internal10AtomicHookIPFvlEE13DummyFunctionEl	0	static
 repos/abseil/absl/base/internal/atomic_hook.h:135:_ZN4absl13base_internal10AtomicHookIPFvPKcPKvlEE13DummyFunctionES3_S5_l	0	static
 repos/abseil/absl/base/internal/atomic_hook.h:135:_ZN4absl13base_internal10AtomicHookIPFvPKcPKvEE13DummyFunctionES3_S5_	0	static

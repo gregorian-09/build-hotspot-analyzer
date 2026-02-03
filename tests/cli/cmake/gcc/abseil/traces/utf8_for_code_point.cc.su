@@ -1,1 +1,1 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/debugging/internal/utf8_for_code_point.cc:35:1:absl::debugging_internal::Utf8ForCodePoint::Utf8ForCodePoint(uint64_t)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/debugging/internal/utf8_for_code_point.cc:35:1:absl::debugging_internal::Utf8ForCodePoint::Utf8ForCodePoint(uint64_t)	8	static

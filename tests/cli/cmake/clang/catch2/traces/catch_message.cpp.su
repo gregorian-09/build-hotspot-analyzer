@@ -1,7 +1,7 @@
 src/catch2/catch_message.cpp:21:_ZN5Catch13ScopedMessageC2EONS_14MessageBuilderE	136	static
 src/catch2/catch_message.cpp:28:_ZN5Catch13ScopedMessageC2EOS0_	0	static
 src/catch2/catch_message.cpp:33:_ZN5Catch13ScopedMessageD2Ev	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/catch_message.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:__clang_call_terminate	8	static
 src/catch2/catch_message.cpp:38:_ZN5Catch8CapturerC2ENS_9StringRefERKNS_14SourceLineInfoENS_9ResultWas6OfTypeES1_b	248	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_stack.h:99:_ZNSt5stackIcSt5dequeIcSaIcEEED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN5Catch11MessageInfoESaIS1_EED2Ev	24	static

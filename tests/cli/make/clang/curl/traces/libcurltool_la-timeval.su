@@ -1,8 +1,0 @@
-../lib/curlx/timeval.c:53:curlx_pnow	56	static
-../lib/curlx/timeval.c:174:curlx_now	24	static
-../lib/curlx/timeval.c:187:curlx_ptimediff_ms	8	static
-../lib/curlx/timeval.c:199:curlx_timediff_ms	40	static
-../lib/curlx/timeval.c:208:curlx_timediff_ceil_ms	8	static
-../lib/curlx/timeval.c:223:curlx_ptimediff_us	8	static
-../lib/curlx/timeval.c:234:curlx_timediff_us	40	static
-../lib/curlx/timeval.c:252:curlx_gmtime	40	static

@@ -1,0 +1,64 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/vulkan.c
+# Output: CMakeFiles/glfw.dir/vulkan.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/glfw/build/src -ftime-report -fstack-usage -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/vulkan.c.o -MF CMakeFiles/glfw.dir/vulkan.c.o.d -o CMakeFiles/glfw.dir/vulkan.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/vulkan.c
+# Timestamp: 2026-01-30T19:44:04+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.03 (  1%)  1523k ( 11%)
+ phase parsing                      :   0.83 ( 78%)   0.94 ( 94%)   2.78 ( 89%)    10M ( 79%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    96  (  0%)
+ phase opt and generate             :   0.22 ( 21%)   0.06 (  6%)   0.29 (  9%)  1251k (  9%)
+ phase finalize                     :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1360  (  0%)
+ callgraph functions expansion      :   0.17 ( 16%)   0.06 (  6%)   0.24 (  8%)   864k (  6%)
+ callgraph ipa passes               :   0.04 (  4%)   0.00 (  0%)   0.05 (  2%)   261k (  2%)
+ cfg cleanup                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8456  (  0%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ alias analysis                     :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    26k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    78k (  1%)
+ register scan                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    64  (  0%)
+ preprocessing                      :   0.23 ( 21%)   0.46 ( 46%)   1.70 ( 54%)  4157k ( 31%)
+ lexical analysis                   :   0.36 ( 34%)   0.26 ( 26%)   0.58 ( 19%)     0  (  0%)
+ parser (global)                    :   0.15 ( 14%)   0.16 ( 16%)   0.34 ( 11%)  5347k ( 40%)
+ parser struct body                 :   0.04 (  4%)   0.05 (  5%)   0.10 (  3%)   725k (  5%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   135k (  1%)
+ parser function body               :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)    84k (  1%)
+ parser inl. func. body             :   0.04 (  4%)   0.01 (  1%)   0.02 (  1%)   231k (  2%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    70k (  1%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)  2336  (  0%)
+ tree VRP                           :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)    22k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    11k (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ dominator optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3200  (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    33k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   200  (  0%)
+ tree slp vectorization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ out of ssa                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1592  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  3520  (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    47k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    17k (  0%)
+ CSE 2                              :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)  2320  (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ integrated RA                      :   0.03 (  3%)   0.00 (  0%)   0.00 (  0%)   228k (  2%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9608  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    21k (  0%)
+ combine stack adjustments          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ hard reg cprop                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   144  (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  3328  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)    22k (  0%)
+ TOTAL                              :   1.07          1.00          3.13           13M

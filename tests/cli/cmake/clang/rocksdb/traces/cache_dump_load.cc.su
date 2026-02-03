@@ -9,7 +9,7 @@ repos/rocksdb/utilities/cache_dump_load.cc:32:_ZN7rocksdb26NewFromFileCacheDumpR
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb22RandomAccessFileReaderESt14default_deleteIS1_EED2Ev	24	static
 repos/rocksdb/utilities/cache_dump_load.cc:46:_ZN7rocksdb21NewDefaultCacheDumperERKNS_16CacheDumpOptionsERKSt10shared_ptrINS_5CacheEEOSt10unique_ptrINS_15CacheDumpWriterESt14default_deleteIS9_EEPS8_INS_11CacheDumperESA_ISE_EE	56	static
 repos/rocksdb/utilities/cache_dump_load.cc:55:_ZN7rocksdb27NewDefaultCacheDumpedLoaderERKNS_16CacheDumpOptionsERKNS_22BlockBasedTableOptionsERKSt10shared_ptrINS_14SecondaryCacheEEOSt10unique_ptrINS_15CacheDumpReaderESt14default_deleteISC_EEPSB_INS_17CacheDumpedLoaderESD_ISH_EE	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/cache_dump_load.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/cache_dump_load.cc:__clang_call_terminate	8	static
 repos/rocksdb/utilities/cache_dump_load_impl.h:165:_ZN7rocksdb21ToFileCacheDumpWriterD2Ev	40	static
 repos/rocksdb/utilities/cache_dump_load_impl.h:165:_ZN7rocksdb21ToFileCacheDumpWriterD0Ev	40	static
 repos/rocksdb/utilities/cache_dump_load_impl.h:168:_ZN7rocksdb21ToFileCacheDumpWriter13WriteMetadataERKNS_5SliceE	184	static

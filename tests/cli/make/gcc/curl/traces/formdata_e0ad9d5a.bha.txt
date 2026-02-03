@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/formdata.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/formdata.c
+# Timestamp: 2026-01-31T00:30:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)  1819k ( 15%)
+ phase parsing                      :   0.35 ( 73%)   0.40 ( 83%)   1.55 ( 87%)  5963k ( 50%)
+ phase opt and generate             :   0.13 ( 27%)   0.07 ( 15%)   0.22 ( 12%)  4174k ( 35%)
+ dump files                         :   0.00 (  0%)   0.02 (  4%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   322k (  3%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    71k (  1%)
+ callgraph ipa passes               :   0.02 (  4%)   0.01 (  2%)   0.02 (  1%)   373k (  3%)
+ alias analysis                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    19k (  0%)
+ preprocessing                      :   0.16 ( 33%)   0.17 ( 35%)   1.04 ( 58%)  2332k ( 20%)
+ lexical analysis                   :   0.07 ( 15%)   0.14 ( 29%)   0.22 ( 12%)     0  (  0%)
+ parser (global)                    :   0.05 ( 10%)   0.08 ( 17%)   0.19 ( 11%)  2730k ( 23%)
+ parser struct body                 :   0.02 (  4%)   0.00 (  0%)   0.06 (  3%)   335k (  3%)
+ parser enumerator list             :   0.03 (  6%)   0.01 (  2%)   0.03 (  2%)   342k (  3%)
+ parser function body               :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)   214k (  2%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   264k (  2%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   216  (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   115k (  1%)
+ dominance computation              :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  6528  (  0%)
+ expand                             :   0.02 (  4%)   0.00 (  0%)   0.02 (  1%)   479k (  4%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ mode switching                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.05 (  3%)  1739k ( 15%)
+ LRA non-specific                   :   0.01 (  2%)   0.01 (  2%)   0.02 (  1%)  7040  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)   186k (  2%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.03 (  6%)   0.01 (  2%)   0.03 (  2%)   256k (  2%)
+ TOTAL                              :   0.48          0.48          1.79           11M

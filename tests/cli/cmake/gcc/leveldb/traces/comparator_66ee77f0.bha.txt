@@ -1,0 +1,57 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/comparator.cc
+# Output: CMakeFiles/leveldb.dir/util/comparator.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/leveldb/build/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/. -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/include -ftime-report -fstack-usage -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/comparator.cc.o -MF CMakeFiles/leveldb.dir/util/comparator.cc.o.d -o CMakeFiles/leveldb.dir/util/comparator.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/comparator.cc
+# Timestamp: 2026-01-30T19:01:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.02 (  1%)   0.04 (  1%)  1880k (  4%)
+ phase parsing                      :   1.93 ( 86%)   1.40 ( 92%)   4.62 ( 91%)    44M ( 86%)
+ phase lang. deferred               :   0.15 (  7%)   0.09 (  6%)   0.25 (  5%)  4388k (  8%)
+ phase opt and generate             :   0.15 (  7%)   0.01 (  1%)   0.17 (  3%)  1237k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   0.40 ( 18%)   0.21 ( 14%)   0.60 ( 12%)  2177k (  4%)
+ |overload resolution               :   0.09 (  4%)   0.07 (  5%)   0.17 (  3%)  2697k (  5%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   240k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.01 (  1%)   0.00 (  0%)  1816  (  0%)
+ callgraph functions expansion      :   0.10 (  4%)   0.00 (  0%)   0.10 (  2%)   626k (  1%)
+ callgraph ipa passes               :   0.03 (  1%)   0.01 (  1%)   0.05 (  1%)   267k (  1%)
+ ipa inlining heuristics            :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  9072  (  0%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ cfg construction                   :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   696  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1664  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4176  (  0%)
+ preprocessing                      :   0.36 ( 16%)   0.50 ( 33%)   1.80 ( 35%)  2098k (  4%)
+ parser (global)                    :   0.47 ( 21%)   0.39 ( 26%)   1.09 ( 21%)    17M ( 33%)
+ parser struct body                 :   0.26 ( 12%)   0.13 (  9%)   0.50 ( 10%)  9511k ( 18%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   105k (  0%)
+ parser function body               :   0.11 (  5%)   0.03 (  2%)   0.10 (  2%)   842k (  2%)
+ parser inl. func. body             :   0.10 (  4%)   0.09 (  6%)   0.36 (  7%)  3421k (  6%)
+ parser inl. meth. body             :   0.19 (  8%)   0.11 (  7%)   0.32 (  6%)  4038k (  8%)
+ template instantiation             :   0.51 ( 23%)   0.24 ( 16%)   0.63 ( 12%)    11M ( 23%)
+ constant expression evaluation     :   0.07 (  3%)   0.00 (  0%)   0.06 (  1%)   174k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    33k (  0%)
+ tree gimplify                      :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    64k (  0%)
+ tree VRP                           :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)    25k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ tree copy propagation              :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   488  (  0%)
+ tree PTA                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  6744  (  0%)
+ tree SSA incremental               :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  2600  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6320  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    29k (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ varconst                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   128  (  0%)
+ dead code elimination              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ PRE                                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   112  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   480  (  0%)
+ scheduling 2                       :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  4520  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ remove unused locals               :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   2.24          1.52          5.10           51M

@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/env.h:352:10:virtual leveldb::Status leveldb::EnvWrapper::NewWritableFile(const std::string&, leveldb::WritableFile**)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/builder.cc:17:8:leveldb::Status leveldb::BuildTable(const std::string&, Env*, const Options&, TableCache*, Iterator*, FileMetaData*)	192	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/include/leveldb/env.h:352:10:virtual leveldb::Status leveldb::EnvWrapper::NewWritableFile(const std::string&, leveldb::WritableFile**)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/db/builder.cc:17:8:leveldb::Status leveldb::BuildTable(const std::string&, Env*, const Options&, TableCache*, Iterator*, FileMetaData*)	192	static

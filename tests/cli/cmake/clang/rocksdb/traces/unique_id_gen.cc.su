@@ -4,4 +4,4 @@ repos/rocksdb/env/unique_id_gen.cc:164:_ZN7rocksdb25SemiStructuredUniqueIdGen12G
 repos/rocksdb/env/unique_id_gen.cc:178:_ZN7rocksdb24UnpredictableUniqueIdGen5ResetEv	56	static
 repos/rocksdb/env/unique_id_gen.cc:188:_ZN7rocksdb24UnpredictableUniqueIdGen12GenerateNextEPmS1_	72	static
 repos/rocksdb/env/unique_id_gen.cc:201:_ZN7rocksdb24UnpredictableUniqueIdGen23GenerateNextWithEntropyEPmS1_m	72	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/env/unique_id_gen.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/env/unique_id_gen.cc:__clang_call_terminate	8	static

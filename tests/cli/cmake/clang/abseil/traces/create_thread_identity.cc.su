@@ -1,4 +1,4 @@
 repos/abseil/absl/synchronization/internal/create_thread_identity.cc:75:_ZN4absl24synchronization_internal25OneTimeInitThreadIdentityEPNS_13base_internal14ThreadIdentityE	8	static
 repos/abseil/absl/synchronization/internal/create_thread_identity.cc:141:_ZN4absl24synchronization_internal20CreateThreadIdentityEv	8	static
 repos/abseil/absl/synchronization/internal/create_thread_identity.cc:44:_ZN4absl24synchronization_internalL21ReclaimThreadIdentityEPv	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/create_thread_identity.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/create_thread_identity.cc:__clang_call_terminate	8	static

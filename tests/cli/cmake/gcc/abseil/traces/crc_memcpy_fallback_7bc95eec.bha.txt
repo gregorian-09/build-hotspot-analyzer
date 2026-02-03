@@ -1,0 +1,63 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/crc_memcpy_fallback.cc
+# Output: CMakeFiles/crc32c.dir/internal/crc_memcpy_fallback.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/crc/CMakeFiles/crc32c.dir/internal/crc_memcpy_fallback.cc.o -MF CMakeFiles/crc32c.dir/internal/crc_memcpy_fallback.cc.o.d -o CMakeFiles/crc32c.dir/internal/crc_memcpy_fallback.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/crc/internal/crc_memcpy_fallback.cc
+# Timestamp: 2026-01-30T18:41:28+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  0%)   0.01 (  0%)   0.06 (  0%)  1882k (  2%)
+ phase parsing                      :   6.49 ( 88%)   4.89 ( 94%)  15.46 ( 92%)    98M ( 87%)
+ phase lang. deferred               :   0.63 (  9%)   0.24 (  5%)   0.92 (  5%)    11M ( 10%)
+ phase opt and generate             :   0.21 (  3%)   0.05 (  1%)   0.31 (  2%)  1635k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   1.27 ( 17%)   0.59 ( 11%)   2.02 ( 12%)  3630k (  3%)
+ |overload resolution               :   0.70 ( 10%)   0.30 (  6%)   1.00 (  6%)    13M ( 12%)
+ dump files                         :   0.03 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.03 (  0%)   0.00 (  0%)   0.02 (  0%)   474k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.01 (  0%)   0.03 (  0%)  5600  (  0%)
+ callgraph functions expansion      :   0.09 (  1%)   0.02 (  0%)   0.15 (  1%)   429k (  0%)
+ callgraph ipa passes               :   0.08 (  1%)   0.03 (  1%)   0.12 (  1%)   531k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1120  (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   1.50 ( 20%)   1.97 ( 38%)   6.63 ( 40%)  6416k (  6%)
+ parser (global)                    :   1.56 ( 21%)   1.32 ( 25%)   3.38 ( 20%)    30M ( 27%)
+ parser struct body                 :   0.72 ( 10%)   0.27 (  5%)   1.04 (  6%)    18M ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.05 (  0%)   145k (  0%)
+ parser function body               :   0.57 (  8%)   0.34 (  7%)   0.92 (  5%)  4088k (  4%)
+ parser inl. func. body             :   0.55 (  7%)   0.20 (  4%)   0.91 (  5%)    10M (  9%)
+ parser inl. meth. body             :   0.63 (  9%)   0.32 (  6%)   0.93 (  6%)  9086k (  8%)
+ template instantiation             :   1.37 ( 19%)   0.63 ( 12%)   2.34 ( 14%)    29M ( 26%)
+ constant expression evaluation     :   0.21 (  3%)   0.08 (  2%)   0.12 (  1%)   727k (  1%)
+ early inlining heuristics          :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  7272  (  0%)
+ integration                        :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   103k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   106k (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    19k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    56k (  0%)
+ tree copy propagation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   272  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ tree SSA incremental               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    10k (  0%)
+ tree CCP                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  4064  (  0%)
+ tree PRE                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ tree FRE                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1160  (  0%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ control dependences                :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    27k (  0%)
+ varconst                           :   0.01 (  0%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   552  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1408  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    64k (  0%)
+ loop fini                          :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ PRE                                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   656  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)   146k (  0%)
+ LRA rematerialization              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ load CSE after reload              :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.03 (  0%)   0.00 (  0%)   0.05 (  0%)    16k (  0%)
+ remove unused locals               :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   7.36          5.19         16.77          113M

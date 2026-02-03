@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/internal/commandlineflag.cc
+# Output: CMakeFiles/flags_commandlineflag_internal.dir/internal/commandlineflag.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/flags/CMakeFiles/flags_commandlineflag_internal.dir/internal/commandlineflag.cc.o -MF CMakeFiles/flags_commandlineflag_internal.dir/internal/commandlineflag.cc.o.d -o CMakeFiles/flags_commandlineflag_internal.dir/internal/commandlineflag.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/internal/commandlineflag.cc
+# Timestamp: 2026-01-30T18:38:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  9%)   0.05 ( 14%)   0.19 ( 14%)  1882k ( 31%)
+ phase parsing                      :   0.25 ( 78%)   0.28 ( 76%)   1.01 ( 77%)  4098k ( 67%)
+ phase opt and generate             :   0.04 ( 12%)   0.03 (  8%)   0.08 (  6%)   140k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  3%)   0.04 (  3%)     0  (  0%)
+ |name lookup                       :   0.05 ( 16%)   0.04 ( 11%)   0.13 ( 10%)   447k (  7%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.04 ( 12%)   0.02 (  5%)   0.07 (  5%)   103k (  2%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    23k (  0%)
+ preprocessing                      :   0.10 ( 31%)   0.14 ( 38%)   0.62 ( 47%)   331k (  5%)
+ parser (global)                    :   0.06 ( 19%)   0.06 ( 16%)   0.10 (  8%)  1568k ( 26%)
+ parser struct body                 :   0.04 ( 13%)   0.04 ( 11%)   0.10 (  8%)  1284k ( 21%)
+ parser inl. func. body             :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   106k (  2%)
+ parser inl. meth. body             :   0.00 (  0%)   0.01 (  3%)   0.05 (  4%)   102k (  2%)
+ template instantiation             :   0.04 ( 12%)   0.03 (  8%)   0.10 (  8%)   702k ( 11%)
+ constant expression evaluation     :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)   584  (  0%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  2592  (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2328  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  1%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  1944  (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.03 (  9%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)  4968  (  0%)
+ TOTAL                              :   0.32          0.37          1.32         6125k

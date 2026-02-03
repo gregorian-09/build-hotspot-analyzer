@@ -11,4 +11,4 @@ src/catch2/../catch2/internal/catch_reusable_string_stream.hpp:45:_ZN5Catch20Reu
 src/catch2/catch_approx.cpp:73:_ZN5Catch8literalsli2_aEe	0	static
 src/catch2/catch_approx.cpp:76:_ZN5Catch8literalsli2_aEy	0	static
 src/catch2/catch_approx.cpp:81:_ZN5Catch11StringMakerINS_6ApproxEvE7convertB5cxx11ERKS1_	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/catch_approx.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_approx.cpp:__clang_call_terminate	8	static

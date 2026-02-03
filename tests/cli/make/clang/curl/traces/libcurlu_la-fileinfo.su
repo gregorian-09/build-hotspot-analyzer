@@ -1,2 +1,2 @@
-fileinfo.c:30:Curl_fileinfo_alloc	8	static
-fileinfo.c:35:Curl_fileinfo_cleanup	24	static
+../../../../../repos/curl/lib/fileinfo.c:30:Curl_fileinfo_alloc	8	static
+../../../../../repos/curl/lib/fileinfo.c:35:Curl_fileinfo_cleanup	24	static

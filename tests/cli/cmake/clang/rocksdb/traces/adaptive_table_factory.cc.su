@@ -22,7 +22,7 @@ repos/rocksdb/include/rocksdb/customizable.h:222:_ZNK7rocksdb12Customizable8Nick
 repos/rocksdb/include/rocksdb/table.h:957:_ZNK7rocksdb12TableFactory14NewTableReaderERKNS_18TableReaderOptionsEOSt10unique_ptrINS_22RandomAccessFileReaderESt14default_deleteIS5_EEmPS4_INS_11TableReaderES6_ISA_EEb	200	static
 repos/rocksdb/table/adaptive/adaptive_table_factory.h:48:_ZNK7rocksdb20AdaptiveTableFactory5CloneEv	40	static
 repos/rocksdb/include/rocksdb/table.h:1003:_ZNK7rocksdb12TableFactory22IsDeleteRangeSupportedEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/adaptive/adaptive_table_factory.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/adaptive/adaptive_table_factory.cc:__clang_call_terminate	8	static
 repos/rocksdb/include/rocksdb/configurable.h:59:_ZN7rocksdb12ConfigurableD2Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeIN7rocksdb14CacheEntryRoleESt4pairIKS1_NS0_21CacheEntryRoleOptionsEESt10_Select1stIS5_ESt4lessIS1_ESaIS5_EE8_M_eraseEPSt13_Rb_tree_nodeIS5_E	40	static

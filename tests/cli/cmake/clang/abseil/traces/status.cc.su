@@ -44,5 +44,5 @@ repos/abseil/absl/status/status.cc:260:_ZN4absl9IsUnknownERKNS_6StatusE	8	static
 repos/abseil/absl/status/status.cc:264:_ZN4absl17ErrnoToStatusCodeEi	0	static
 repos/abseil/absl/status/status.cc:408:_ZN4absl13ErrnoToStatusEiSt17basic_string_viewIcSt11char_traitsIcEE	248	static
 repos/abseil/absl/status/status.cc:413:_ZN4absl19StatusMessageAsCStrERKNS_6StatusE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/status/status.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/status/status.cc:__clang_call_terminate	8	static
 repos/abseil/absl/container/internal/inlined_vector.h:569:_ZN4absl23inlined_vector_internal7StorageINS_15status_internal7PayloadELm1ESaIS3_EE15DestroyContentsEv	40	static

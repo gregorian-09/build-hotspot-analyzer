@@ -1,1 +1,1 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/structured_proto.cc:107:6:bool absl::log_internal::EncodeStructuredProtoField(StructuredProtoField, absl::Span<char>&)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/structured_proto.cc:107:6:bool absl::log_internal::EncodeStructuredProtoField(StructuredProtoField, absl::Span<char>&)	8	static

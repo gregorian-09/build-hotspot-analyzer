@@ -1,0 +1,66 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/osmesa_context.c
+# Output: CMakeFiles/glfw.dir/osmesa_context.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/glfw/build/src -ftime-report -fstack-usage -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/osmesa_context.c.o -MF CMakeFiles/glfw.dir/osmesa_context.c.o.d -o CMakeFiles/glfw.dir/osmesa_context.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/osmesa_context.c
+# Timestamp: 2026-01-30T19:44:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1523k ( 11%)
+ phase parsing                      :   0.74 ( 73%)   0.74 ( 92%)   2.31 ( 87%)    10M ( 77%)
+ phase opt and generate             :   0.27 ( 26%)   0.06 (  8%)   0.34 ( 13%)  1703k ( 12%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1296  (  0%)
+ callgraph functions expansion      :   0.22 ( 22%)   0.05 (  6%)   0.29 ( 11%)  1233k (  9%)
+ callgraph ipa passes               :   0.04 (  4%)   0.01 (  1%)   0.05 (  2%)   323k (  2%)
+ ipa pure const                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1072  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5624  (  0%)
+ df reaching defs                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias analysis                     :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)    45k (  0%)
+ preprocessing                      :   0.22 ( 22%)   0.35 ( 44%)   1.30 ( 49%)  4162k ( 30%)
+ lexical analysis                   :   0.34 ( 33%)   0.20 ( 25%)   0.58 ( 22%)     0  (  0%)
+ parser (global)                    :   0.14 ( 14%)   0.13 ( 16%)   0.29 ( 11%)  5351k ( 38%)
+ parser struct body                 :   0.03 (  3%)   0.03 (  4%)   0.08 (  3%)   725k (  5%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    82k (  1%)
+ parser inl. func. body             :   0.01 (  1%)   0.03 (  4%)   0.02 (  1%)   231k (  2%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.02 (  3%)   0.00 (  0%)  1136  (  0%)
+ tree tail merge                    :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1864  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    27k (  0%)
+ tree Early VRP                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ tree operand scan                  :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    52k (  0%)
+ dominator optimization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    34k (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    38k (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    27k (  0%)
+ tree forward propagate             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1616  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    29k (  0%)
+ tree canonical iv                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   352  (  0%)
+ tree slp vectorization             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   111k (  1%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  6792  (  0%)
+ dead store elim2                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    14k (  0%)
+ loop init                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    66k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    26k (  0%)
+ CSE 2                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  4672  (  0%)
+ integrated RA                      :   0.03 (  3%)   0.00 (  0%)   0.02 (  1%)   356k (  3%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4464  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    15k (  0%)
+ ree                                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   480  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    21k (  0%)
+ hard reg cprop                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   168  (  0%)
+ scheduling 2                       :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)    19k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1248  (  0%)
+ final                              :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    43k (  0%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  1%)   0.04 (  1%)    31k (  0%)
+ repair loop structures             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    56  (  0%)
+ TOTAL                              :   1.02          0.80          2.67           13M

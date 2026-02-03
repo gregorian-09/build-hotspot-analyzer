@@ -7,7 +7,7 @@ repos/rocksdb/db/log_writer.cc:23:_ZN7rocksdb3log6WriterC2EOSt10unique_ptrINS_18
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unordered_map.h:109:_ZNSt13unordered_mapIjmSt4hashIjESt8equal_toIjESaISt4pairIKjmEEED2Ev	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb18WritableFileWriterESt14default_deleteIS1_EED2Ev	24	static
 repos/rocksdb/db/log_writer.cc:43:_ZN7rocksdb3log6WriterD2Ev	88	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/log_writer.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/log_writer.cc:__clang_call_terminate	8	static
 repos/rocksdb/db/log_writer.cc:56:_ZN7rocksdb3log6Writer11WriteBufferERKNS_12WriteOptionsE	152	static
 repos/rocksdb/db/log_writer.cc:364:_ZN7rocksdb3log6Writer30MaybeHandleSeenFileWriterErrorEv	24	static
 repos/rocksdb/include/rocksdb/io_status.h:202:_ZN7rocksdb8IOStatusaSEOS0_	24	static

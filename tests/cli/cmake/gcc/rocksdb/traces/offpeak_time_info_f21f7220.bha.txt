@@ -1,0 +1,57 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/options/offpeak_time_info.cc
+# Output: CMakeFiles/rocksdb.dir/options/offpeak_time_info.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/options/offpeak_time_info.cc.o -MF CMakeFiles/rocksdb.dir/options/offpeak_time_info.cc.o.d -o CMakeFiles/rocksdb.dir/options/offpeak_time_info.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/options/offpeak_time_info.cc
+# Timestamp: 2026-01-30T22:32:42+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  0%)   0.01 (  0%)   0.06 (  0%)  2143k (  1%)
+ phase parsing                      :   6.06 ( 79%)   3.72 ( 89%)  10.29 ( 83%)   121M ( 77%)
+ phase lang. deferred               :   1.32 ( 17%)   0.43 ( 10%)   1.78 ( 14%)    28M ( 18%)
+ phase opt and generate             :   0.24 (  3%)   0.04 (  1%)   0.28 (  2%)  6700k (  4%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   1.67 ( 22%)   0.80 ( 19%)   2.45 ( 20%)  5161k (  3%)
+ |overload resolution               :   1.44 ( 19%)   0.44 ( 10%)   2.03 ( 16%)    24M ( 15%)
+ dump files                         :   0.04 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.04 (  1%)   0.01 (  0%)   0.05 (  0%)   739k (  0%)
+ callgraph optimization             :   0.03 (  0%)   0.02 (  0%)   0.03 (  0%)  3960  (  0%)
+ callgraph functions expansion      :   0.12 (  2%)   0.01 (  0%)   0.13 (  1%)  5060k (  3%)
+ callgraph ipa passes               :   0.07 (  1%)   0.02 (  0%)   0.10 (  1%)   634k (  0%)
+ ipa function summary               :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    17k (  0%)
+ ipa pure const                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df live regs                       :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  3192  (  0%)
+ preprocessing                      :   0.67 (  9%)   1.00 ( 24%)   2.11 ( 17%)  2974k (  2%)
+ parser (global)                    :   1.07 ( 14%)   0.81 ( 19%)   1.98 ( 16%)    32M ( 20%)
+ parser struct body                 :   0.80 ( 10%)   0.35 (  8%)   1.10 (  9%)    22M ( 14%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.03 (  0%)   223k (  0%)
+ parser function body               :   0.25 (  3%)   0.11 (  3%)   0.38 (  3%)  2535k (  2%)
+ parser inl. func. body             :   0.53 (  7%)   0.20 (  5%)   0.77 (  6%)  8916k (  5%)
+ parser inl. meth. body             :   0.95 ( 12%)   0.45 ( 11%)   1.50 ( 12%)    17M ( 11%)
+ template instantiation             :   2.67 ( 35%)   1.11 ( 26%)   3.62 ( 29%)    58M ( 37%)
+ constant expression evaluation     :   0.18 (  2%)   0.07 (  2%)   0.33 (  3%)  1302k (  1%)
+ constraint normalization           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   519k (  0%)
+ constraint satisfaction            :   0.14 (  2%)   0.04 (  1%)   0.23 (  2%)  2720k (  2%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  4353k (  3%)
+ tree CFG cleanup                   :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  1560  (  0%)
+ backwards jump threading           :   0.04 (  1%)   0.00 (  0%)   0.01 (  0%)    25k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  6904  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    62k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)    72k (  0%)
+ varconst                           :   0.09 (  1%)   0.01 (  0%)   0.01 (  0%)  4312  (  0%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ combiner                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    42k (  0%)
+ integrated RA                      :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)   126k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8008  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ shorten branches                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ symout                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)    18k (  0%)
+ TOTAL                              :   7.64          4.20         12.42          158M

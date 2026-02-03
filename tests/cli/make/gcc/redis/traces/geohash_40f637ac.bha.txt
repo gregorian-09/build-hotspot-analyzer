@@ -1,0 +1,30 @@
+# BHA Trace
+# Source: geohash.c
+# Output: geohash.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o geohash.o -c geohash.c
+# Timestamp: 2026-01-31T02:11:56+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 ( 14%)   0.00 (  0%)   0.04 (  4%)  1828k ( 58%)
+ phase parsing                      :   0.02 ( 29%)   0.11 ( 85%)   0.93 ( 90%)   670k ( 21%)
+ phase opt and generate             :   0.04 ( 57%)   0.02 ( 15%)   0.05 (  5%)   666k ( 21%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.01 ( 14%)   0.01 (  8%)   0.00 (  0%)    85k (  3%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   288  (  0%)
+ callgraph ipa passes               :   0.03 ( 43%)   0.01 (  8%)   0.05 (  5%)   371k ( 12%)
+ ipa cp                             :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ ipa free lang data                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4816  (  0%)
+ ipa modref                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6352  (  0%)
+ preprocessing                      :   0.01 ( 14%)   0.10 ( 77%)   0.84 ( 82%)   172k (  5%)
+ lexical analysis                   :   0.00 (  0%)   0.01 (  8%)   0.04 (  4%)     0  (  0%)
+ parser (global)                    :   0.00 (  0%)   0.00 (  0%)   0.04 (  4%)   239k (  8%)
+ parser function body               :   0.01 ( 14%)   0.00 (  0%)   0.01 (  1%)   112k (  4%)
+ tree SRA                           :   0.01 ( 14%)   0.00 (  0%)   0.00 (  0%)  3264  (  0%)
+ tree CCP                           :   0.00 (  0%)   0.01 (  8%)   0.00 (  0%)  6664  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8768  (  0%)
+ remove unused locals               :   0.01 ( 14%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.07          0.13          1.03         3165k

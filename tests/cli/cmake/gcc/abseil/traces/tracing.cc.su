@@ -1,4 +1,4 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/tracing.cc:26:26:void absl::base_internal::AbslInternalTraceWait(const void*, ObjectKind)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/tracing.cc:28:26:void absl::base_internal::AbslInternalTraceContinue(const void*, ObjectKind)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/tracing.cc:30:26:void absl::base_internal::AbslInternalTraceSignal(const void*, ObjectKind)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/tracing.cc:32:26:void absl::base_internal::AbslInternalTraceObserved(const void*, ObjectKind)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc:26:26:void absl::base_internal::AbslInternalTraceWait(const void*, ObjectKind)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc:28:26:void absl::base_internal::AbslInternalTraceContinue(const void*, ObjectKind)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc:30:26:void absl::base_internal::AbslInternalTraceSignal(const void*, ObjectKind)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/tracing.cc:32:26:void absl::base_internal::AbslInternalTraceObserved(const void*, ObjectKind)	8	static

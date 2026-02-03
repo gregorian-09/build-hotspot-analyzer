@@ -3,7 +3,7 @@ repos/rocksdb/memory/arena.cc:36:_ZN7rocksdb5ArenaC2EmPNS_12AllocTrackerEm	56	st
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1027:_ZNSt5dequeIN7rocksdb10MemMappingESaIS1_EED2Ev	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:1027:_ZNSt5dequeISt10unique_ptrIA_cSt14default_deleteIS1_EESaIS4_EED2Ev	104	static
 repos/rocksdb/memory/arena.cc:56:_ZN7rocksdb5ArenaD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/memory/arena.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/memory/arena.cc:__clang_call_terminate	8	static
 repos/rocksdb/memory/arena.cc:56:_ZN7rocksdb5ArenaD0Ev	24	static
 repos/rocksdb/memory/arena.cc:63:_ZN7rocksdb5Arena16AllocateFallbackEmb	56	static
 repos/rocksdb/memory/arena.cc:145:_ZN7rocksdb5Arena16AllocateNewBlockEm	40	static

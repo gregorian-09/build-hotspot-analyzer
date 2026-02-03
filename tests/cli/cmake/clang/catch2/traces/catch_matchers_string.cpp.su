@@ -28,7 +28,7 @@ src/catch2/../catch2/matchers/catch_matchers_string.hpp:29:_ZN5Catch8Matchers17S
 src/catch2/../catch2/matchers/catch_matchers_string.hpp:55:_ZN5Catch8Matchers15EndsWithMatcherD0Ev	8	static
 src/catch2/../catch2/matchers/catch_matchers_string.hpp:61:_ZN5Catch8Matchers12RegexMatcherD2Ev	8	static
 src/catch2/../catch2/matchers/catch_matchers_string.hpp:61:_ZN5Catch8Matchers12RegexMatcherD0Ev	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/matchers/catch_matchers_string.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/matchers/catch_matchers_string.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/regex.h:806:_ZNSt7__cxx1111basic_regexIcNS_12regex_traitsIcEEE10_M_compileEPKcS5_NSt15regex_constants18syntax_option_typeE	440	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1524:_ZNSt12__shared_ptrIKNSt8__detail4_NFAINSt7__cxx1112regex_traitsIcEEEELN9__gnu_cxx12_Lock_policyE2EED2Ev	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/regex_compiler.tcc:66:_ZNSt8__detail9_CompilerINSt7__cxx1112regex_traitsIcEEEC2EPKcS6_RKSt6localeNSt15regex_constants18syntax_option_typeE	104	static

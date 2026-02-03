@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/zutil.c
+# Output: objs/zutil.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/zutil.o ../../../../repos/zlib/zutil.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 ( 11%)   0.01 (  6%)   0.04 (  5%)  1819k ( 45%)
+ phase parsing                      :   0.14 ( 74%)   0.15 ( 94%)   0.68 ( 89%)  1974k ( 49%)
+ phase opt and generate             :   0.03 ( 16%)   0.00 (  0%)   0.04 (  5%)   238k (  6%)
+ callgraph construction             :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  5736  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    17k (  0%)
+ preprocessing                      :   0.07 ( 37%)   0.07 ( 44%)   0.51 ( 67%)   693k ( 17%)
+ lexical analysis                   :   0.02 ( 11%)   0.04 ( 25%)   0.09 ( 12%)     0  (  0%)
+ parser (global)                    :   0.05 ( 26%)   0.03 ( 19%)   0.08 ( 11%)  1135k ( 28%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  6%)   0.00 (  0%)    52k (  1%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1248  (  0%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)   121k (  3%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ reg stack                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ TOTAL                              :   0.19          0.16          0.76         4032k

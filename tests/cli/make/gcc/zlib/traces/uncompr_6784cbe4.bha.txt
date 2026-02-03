@@ -1,0 +1,26 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/uncompr.c
+# Output: objs/uncompr.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/uncompr.o ../../../../repos/zlib/uncompr.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  9%)   0.00 (  0%)   0.03 (  9%)  1819k ( 60%)
+ phase parsing                      :   0.08 ( 73%)   0.06 ( 75%)   0.26 ( 76%)  1028k ( 34%)
+ phase opt and generate             :   0.02 ( 18%)   0.02 ( 25%)   0.04 ( 12%)   201k (  7%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 13%)   0.01 (  3%)    24k (  1%)
+ preprocessing                      :   0.04 ( 36%)   0.02 ( 25%)   0.14 ( 41%)   352k ( 12%)
+ lexical analysis                   :   0.02 ( 18%)   0.02 ( 25%)   0.07 ( 21%)     0  (  0%)
+ parser (global)                    :   0.02 ( 18%)   0.02 ( 25%)   0.04 ( 12%)   521k ( 17%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    66k (  2%)
+ inline parameters                  :   0.00 (  0%)   0.01 ( 13%)   0.00 (  0%)   720  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  3%)    11k (  0%)
+ LRA non-specific                   :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)   480  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.01 ( 12%)   0.01 (  3%)  3240  (  0%)
+ initialize rtl                     :   0.01 (  9%)   0.00 (  0%)   0.02 (  6%)    12k (  0%)
+ TOTAL                              :   0.11          0.08          0.34         3049k

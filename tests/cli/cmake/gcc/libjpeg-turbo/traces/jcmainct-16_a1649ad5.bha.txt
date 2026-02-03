@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcmainct-16.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-16.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-16.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-16.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jcmainct-16.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcmainct-16.c
+# Timestamp: 2026-01-30T19:04:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.03 (  4%)  1819k ( 36%)
+ phase parsing                      :   0.15 ( 58%)   0.17 ( 85%)   0.57 ( 75%)  2597k ( 51%)
+ phase opt and generate             :   0.10 ( 38%)   0.03 ( 15%)   0.14 ( 18%)   663k ( 13%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.09 ( 35%)   0.02 ( 10%)   0.12 ( 16%)   498k ( 10%)
+ callgraph ipa passes               :   0.01 (  4%)   0.01 (  5%)   0.02 (  3%)   108k (  2%)
+ df scan insns                      :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)   144  (  0%)
+ alias stmt walking                 :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  2096  (  0%)
+ preprocessing                      :   0.06 ( 23%)   0.04 ( 20%)   0.37 ( 49%)   746k ( 15%)
+ lexical analysis                   :   0.03 ( 12%)   0.09 ( 45%)   0.11 ( 14%)     0  (  0%)
+ parser (global)                    :   0.04 ( 15%)   0.01 (  5%)   0.07 (  9%)  1308k ( 26%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   233k (  5%)
+ parser function body               :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)    28k (  1%)
+ parser inl. func. body             :   0.01 (  4%)   0.02 ( 10%)   0.00 (  0%)   245k (  5%)
+ inline parameters                  :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  9248  (  0%)
+ tree VRP                           :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  8720  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 (  5%)   0.01 (  1%)  6088  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  6016  (  0%)
+ tree CCP                           :   0.01 (  4%)   0.01 (  5%)   0.00 (  0%)   456  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    15k (  0%)
+ varconst                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   512  (  0%)
+ dead store elim2                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  8912  (  0%)
+ PRE                                :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   776  (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1144  (  0%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  2760  (  0%)
+ LRA rematerialization              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.01 (  5%)   0.01 (  1%)  9432  (  0%)
+ if to switch conversion            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.02 (  8%)   0.00 (  0%)   0.02 (  3%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ TOTAL                              :   0.26          0.20          0.76         5080k

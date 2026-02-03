@@ -40,7 +40,7 @@ repos/rocksdb/include/rocksdb/comparator.h:83:_ZNK7rocksdb10Comparator5EqualERKN
 repos/rocksdb/include/rocksdb/comparator.h:106:_ZNK7rocksdb10Comparator30IsSameLengthImmediateSuccessorERKNS_5SliceES3_	0	static
 repos/rocksdb/include/rocksdb/comparator.h:115:_ZNK7rocksdb10Comparator39CanKeysWithDifferentByteContentsBeEqualEv	0	static
 repos/rocksdb/include/rocksdb/comparator.h:173:_ZNK7rocksdb10Comparator21EqualWithoutTimestampERKNS_5SliceES3_	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/comparator.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/comparator.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 repos/rocksdb/include/rocksdb/comparator.h:59:_ZN7rocksdb10ComparatorD2Ev	40	static
 repos/rocksdb/util/comparator.cc:150:_ZN7rocksdb12_GLOBAL__N_129ReverseBytewiseComparatorImplD0Ev	40	static

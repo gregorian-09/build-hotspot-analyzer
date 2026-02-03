@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: src/san_bump.c
+# Output: src/san_bump.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/san_bump.o src/san_bump.c
+# Timestamp: 2026-01-31T02:10:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)  1819k (  6%)
+ phase parsing                      :   1.59 ( 94%)   1.56 ( 98%)   4.16 ( 97%)    25M ( 87%)
+ phase opt and generate             :   0.10 (  6%)   0.03 (  2%)   0.13 (  3%)  2155k (  7%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    32k (  0%)
+ callgraph ipa passes               :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)   545k (  2%)
+ trivially dead code                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   864  (  0%)
+ preprocessing                      :   0.48 ( 28%)   0.64 ( 40%)   1.93 ( 45%)    13M ( 48%)
+ lexical analysis                   :   0.62 ( 36%)   0.48 ( 30%)   1.30 ( 30%)     0  (  0%)
+ parser (global)                    :   0.09 (  5%)   0.13 (  8%)   0.30 (  7%)  5682k ( 19%)
+ parser struct body                 :   0.04 (  2%)   0.02 (  1%)   0.00 (  0%)   254k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   151k (  1%)
+ parser inl. func. body             :   0.34 ( 20%)   0.28 ( 17%)   0.62 ( 14%)  5382k ( 18%)
+ integration                        :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   266k (  1%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   198k (  1%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    46k (  0%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   402k (  1%)
+ varconst                           :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)  4224  (  0%)
+ integrated RA                      :   0.02 (  1%)   0.02 (  1%)   0.01 (  0%)   550k (  2%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  3568  (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    45k (  0%)
+ TOTAL                              :   1.70          1.60          4.31           28M

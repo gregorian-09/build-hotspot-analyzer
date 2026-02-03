@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/socketpair.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/socketpair.c
+# Timestamp: 2026-01-31T00:30:27+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)  1819k ( 19%)
+ phase parsing                      :   0.32 ( 78%)   0.41 ( 93%)   1.56 ( 91%)  5839k ( 59%)
+ phase opt and generate             :   0.08 ( 20%)   0.03 (  7%)   0.11 (  6%)  2171k ( 22%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    59k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)   154k (  2%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.12 ( 29%)   0.15 ( 34%)   1.22 ( 71%)  2317k ( 24%)
+ lexical analysis                   :   0.13 ( 32%)   0.16 ( 36%)   0.17 ( 10%)     0  (  0%)
+ parser (global)                    :   0.04 ( 10%)   0.04 (  9%)   0.13 (  8%)  2737k ( 28%)
+ parser struct body                 :   0.02 (  5%)   0.04 (  9%)   0.02 (  1%)   335k (  3%)
+ parser enumerator list             :   0.01 (  2%)   0.01 (  2%)   0.02 (  1%)   343k (  3%)
+ tree CFG construction              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    61k (  1%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ expand vars                        :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  2384  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    71k (  1%)
+ varconst                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1373k ( 14%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5928  (  0%)
+ shorten branches                   :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    94k (  1%)
+ initialize rtl                     :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)   135k (  1%)
+ TOTAL                              :   0.41          0.44          1.71         9830k

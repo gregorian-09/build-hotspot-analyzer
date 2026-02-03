@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/easygetopt.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/easygetopt.c
+# Timestamp: 2026-01-31T00:30:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.01 (  3%)   0.03 (  2%)  1819k ( 21%)
+ phase parsing                      :   0.32 ( 76%)   0.34 ( 92%)   1.45 ( 91%)  4566k ( 54%)
+ phase opt and generate             :   0.09 ( 21%)   0.02 (  5%)   0.12 (  8%)  2092k ( 25%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    58k (  1%)
+ callgraph ipa passes               :   0.02 (  5%)   0.00 (  0%)   0.02 (  1%)   147k (  2%)
+ cfg construction                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   704  (  0%)
+ preprocessing                      :   0.16 ( 38%)   0.16 ( 43%)   1.08 ( 68%)  1980k ( 23%)
+ lexical analysis                   :   0.06 ( 14%)   0.12 ( 32%)   0.16 ( 10%)     0  (  0%)
+ parser (global)                    :   0.08 ( 19%)   0.04 ( 11%)   0.18 ( 11%)  2110k ( 25%)
+ parser struct body                 :   0.02 (  5%)   0.02 (  5%)   0.00 (  0%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   268k (  3%)
+ inline parameters                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    65k (  1%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    58k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ jump                               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  2%)   0.01 (  3%)   0.03 (  2%)  1348k ( 16%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    70k (  1%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    90k (  1%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ rest of compilation                :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)   133k (  2%)
+ TOTAL                              :   0.42          0.37          1.60         8478k

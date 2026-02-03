@@ -1,0 +1,38 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/gzwrite.c
+# Output: objs/gzwrite.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/gzwrite.o ../../../../repos/zlib/gzwrite.c
+# Timestamp: 2026-01-30T19:20:45+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.03 (  4%)  1819k ( 33%)
+ phase parsing                      :   0.15 ( 56%)   0.15 ( 88%)   0.50 ( 75%)  2097k ( 38%)
+ phase opt and generate             :   0.11 ( 41%)   0.02 ( 12%)   0.13 ( 19%)  1534k ( 28%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)   184k (  3%)
+ ipa inlining heuristics            :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.07 ( 26%)   0.04 ( 24%)   0.30 ( 45%)   683k ( 13%)
+ lexical analysis                   :   0.04 ( 15%)   0.06 ( 35%)   0.06 (  9%)     0  (  0%)
+ parser (global)                    :   0.03 ( 11%)   0.04 ( 24%)   0.09 ( 13%)  1167k ( 21%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    52k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  6%)   0.01 (  1%)    66k (  1%)
+ parser function body               :   0.01 (  4%)   0.00 (  0%)   0.03 (  4%)   119k (  2%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   169k (  3%)
+ tree CFG cleanup                   :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    52k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand vars                        :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)    18k (  0%)
+ expand                             :   0.02 (  7%)   0.00 (  0%)   0.01 (  1%)   299k (  5%)
+ integrated RA                      :   0.01 (  4%)   0.00 (  0%)   0.02 (  3%)   407k (  7%)
+ LRA non-specific                   :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  2888  (  0%)
+ final                              :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    63k (  1%)
+ initialize rtl                     :   0.01 (  4%)   0.01 (  6%)   0.02 (  3%)    12k (  0%)
+ access analysis                    :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  4232  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  6%)   0.01 (  1%)    32k (  1%)
+ TOTAL                              :   0.27          0.17          0.67         5451k

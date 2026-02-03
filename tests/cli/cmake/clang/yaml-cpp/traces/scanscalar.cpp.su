@@ -2,7 +2,7 @@ repos/yaml-cpp/src/scanscalar.cpp:21:_ZN4YAML10ScanScalarB5cxx11ERNS_6StreamERNS
 repos/yaml-cpp/src/exp.h:39:_ZN4YAML3Exp5BreakEv	184	static
 repos/yaml-cpp/src/exp.h:35:_ZN4YAML3Exp5BlankEv	8	static
 repos/yaml-cpp/src/regex_yaml.h:37:_ZN4YAML5RegExD2Ev	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanscalar.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/scanscalar.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:182:_ZSt8_DestroyIPN4YAML5RegExEEvT_S3_	24	static
 repos/yaml-cpp/src/exp.h:84:_ZN4YAML3Exp8DocStartEv	152	static
 repos/yaml-cpp/src/exp.h:88:_ZN4YAML3Exp6DocEndEv	152	static

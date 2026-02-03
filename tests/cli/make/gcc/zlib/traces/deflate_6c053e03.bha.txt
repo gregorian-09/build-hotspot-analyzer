@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: ../../../../repos/zlib/deflate.c
+# Output: objs/deflate.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -fPIC -D_LARGEFILE64_SOURCE=1 -I. -include zconf.h -DPIC -c -o objs/deflate.o ../../../../repos/zlib/deflate.c
+# Timestamp: 2026-01-30T19:20:44+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)  1819k ( 18%)
+ phase parsing                      :   0.32 ( 36%)   0.30 ( 73%)   1.00 ( 53%)  2650k ( 26%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    96  (  0%)
+ phase opt and generate             :   0.56 ( 64%)   0.11 ( 27%)   0.79 ( 42%)  5810k ( 57%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.06 (  3%)     0  (  0%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.02 (  2%)   0.00 (  0%)   0.01 (  1%)    82k (  1%)
+ callgraph optimization             :   0.01 (  1%)   0.00 (  0%)   0.03 (  2%)    30k (  0%)
+ callgraph ipa passes               :   0.06 (  7%)   0.03 (  7%)   0.08 (  4%)   667k (  6%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   680  (  0%)
+ trivially dead code                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1344  (  0%)
+ df live regs                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df reg dead/unused notes           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   127k (  1%)
+ register information               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.10 ( 11%)   0.12 ( 29%)   0.52 ( 28%)   700k (  7%)
+ lexical analysis                   :   0.11 ( 13%)   0.11 ( 27%)   0.23 ( 12%)     0  (  0%)
+ parser (global)                    :   0.04 (  5%)   0.00 (  0%)   0.10 (  5%)   902k (  9%)
+ parser struct body                 :   0.02 (  2%)   0.00 (  0%)   0.03 (  2%)    49k (  0%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)    67k (  1%)
+ parser function body               :   0.04 (  5%)   0.07 ( 17%)   0.11 (  6%)   920k (  9%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  5552  (  0%)
+ tree gimplify                      :   0.04 (  5%)   0.01 (  2%)   0.06 (  3%)   973k (  9%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   112  (  0%)
+ tree SSA rewrite                   :   0.02 (  2%)   0.01 (  2%)   0.01 (  1%)   197k (  2%)
+ tree operand scan                  :   0.01 (  1%)   0.02 (  5%)   0.02 (  1%)   376k (  4%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ expand vars                        :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   179k (  2%)
+ expand                             :   0.03 (  3%)   0.02 (  5%)   0.03 (  2%)  1487k ( 14%)
+ post expand cleanups               :   0.02 (  2%)   0.00 (  0%)   0.03 (  2%)    15k (  0%)
+ integrated RA                      :   0.12 ( 14%)   0.03 (  7%)   0.15 (  8%)  1467k ( 14%)
+ LRA non-specific                   :   0.05 (  6%)   0.00 (  0%)   0.06 (  3%)    23k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)  4176  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ thread pro- & epilogue             :   0.03 (  3%)   0.00 (  0%)   0.09 (  5%)    45k (  0%)
+ shorten branches                   :   0.02 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ final                              :   0.03 (  3%)   0.00 (  0%)   0.01 (  1%)   185k (  2%)
+ initialize rtl                     :   0.03 (  3%)   0.00 (  0%)   0.04 (  2%)    12k (  0%)
+ rest of compilation                :   0.05 (  6%)   0.01 (  2%)   0.12 (  6%)    90k (  1%)
+ TOTAL                              :   0.88          0.41          1.89           10M

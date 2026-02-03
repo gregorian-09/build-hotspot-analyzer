@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/mips/filter_msa_intrinsics.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c ../../../../repos/libpng/mips/filter_msa_intrinsics.c
+# Timestamp: 2026-01-30T19:06:09+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.01 (  2%)   0.14 (  5%)  1819k ( 27%)
+ phase parsing                      :   0.43 ( 98%)   0.48 ( 96%)   2.44 ( 95%)  4945k ( 73%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.27 ( 61%)   0.26 ( 52%)   1.86 ( 72%)  2414k ( 36%)
+ lexical analysis                   :   0.07 ( 16%)   0.10 ( 20%)   0.21 (  8%)     0  (  0%)
+ parser (global)                    :   0.09 ( 20%)   0.11 ( 22%)   0.31 ( 12%)  2344k ( 35%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)   103k (  2%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.04 (  2%)     0  (  0%)
+ TOTAL                              :   0.44          0.50          2.58         6768k

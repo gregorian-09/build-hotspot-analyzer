@@ -1,70 +1,70 @@
 /usr/include/c++/13/optional:104:17:virtual const char* std::bad_optional_access::what() const	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
 /usr/include/c++/13/optional:102:13:std::bad_optional_access::~bad_optional_access()	8	static
 /usr/include/c++/13/optional:102:13:virtual std::bad_optional_access::~bad_optional_access()	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
 /usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = rocksdb::Slice; _Alloc = std::allocator<rocksdb::Slice>]	8	static
 /usr/include/c++/13/bits/basic_string.h:853:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator=(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/status.h:594:16:rocksdb::Status& rocksdb::Status::operator=(rocksdb::Status&&)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:38:22:void __tcf_0(void*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:63:27:void __tcf_1(void*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:103:26:void __tcf_3(void*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include/rocksdb/status.h:594:16:rocksdb::Status& rocksdb::Status::operator=(rocksdb::Status&&)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/thread_operation.h:38:22:void __tcf_0(void*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/thread_operation.h:63:27:void __tcf_1(void*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/thread_operation.h:103:26:void __tcf_3(void*)	32	static
 /usr/include/c++/13/bits/basic_string.h:641:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:112:26:void __tcf_4(void*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/thread_operation.h:93:18:void __tcf_2(void*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/thread_operation.h:112:26:void __tcf_4(void*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/thread_operation.h:93:18:void __tcf_2(void*)	16	static
 /usr/include/c++/13/bits/stl_tree.h:1930:5:void std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_erase(_Link_type) [with _Key = std::pair<int, long unsigned int>; _Val = std::pair<int, long unsigned int>; _KeyOfValue = std::_Identity<std::pair<int, long unsigned int> >; _Compare = std::less<std::pair<int, long unsigned int> >; _Alloc = std::allocator<std::pair<int, long unsigned int> >]	96	static
 /usr/include/c++/13/bits/basic_string.h:4162:3:std::string std::__cxx11::to_string(int)	256	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/include/rocksdb/status.h:554:8:rocksdb::Status::Status(const rocksdb::Status&)	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:284:13:bool rocksdb::GetVarint32(Slice*, uint32_t*)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:320:13:bool rocksdb::GetLengthPrefixedSlice(Slice*, Slice*)	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:195:8:constexpr rocksdb::FileMetaData::~FileMetaData()	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:25:10:uint64_t rocksdb::PackFileNumberAndPathId(uint64_t, uint64_t)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:322:6:static bool rocksdb::VersionEdit::GetLevel(rocksdb::Slice*, int*, int&)	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1424:6:void rocksdb::SubcompactionProgressBuilder::Clear()	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include/rocksdb/status.h:554:8:rocksdb::Status::Status(const rocksdb::Status&)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:284:13:bool rocksdb::GetVarint32(Slice*, uint32_t*)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:320:13:bool rocksdb::GetLengthPrefixedSlice(Slice*, Slice*)	64	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:195:8:constexpr rocksdb::FileMetaData::~FileMetaData()	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:25:10:uint64_t rocksdb::PackFileNumberAndPathId(uint64_t, uint64_t)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:540:8:rocksdb::SubcompactionProgress::~SubcompactionProgress()	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:646:7:rocksdb::VersionEdit::~VersionEdit()	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:331:6:static bool rocksdb::VersionEdit::GetLevel(rocksdb::Slice*, int*, int&)	64	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1439:6:void rocksdb::SubcompactionProgressBuilder::Clear()	48	static
 /usr/include/c++/13/bits/basic_string.h:677:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
 /usr/include/c++/13/bits/stl_vector.h:733:7:constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = std::pair<int, rocksdb::FileMetaData>; _Alloc = std::allocator<std::pair<int, rocksdb::FileMetaData> >]	48	static
 /usr/include/c++/13/bits/basic_string.h:280:7:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_dispose() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:279:3:rocksdb::FileMetaData::FileMetaData()	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/logging/event_logger.h:105:15:rocksdb::JSONWriter& rocksdb::JSONWriter::operator<<(const char*)	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:527:8:rocksdb::SubcompactionProgress::~SubcompactionProgress()	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:633:7:rocksdb::VersionEdit::~VersionEdit()	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h:383:23:rocksdb::autovector<T, kSize>& rocksdb::autovector<T, kSize>::operator=(rocksdb::autovector<T, kSize>&&) [with T = rocksdb::FileMetaData; long unsigned int kSize = 8]	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:152:13:void rocksdb::PutVarint32(std::string*, uint32_t)	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:287:3:rocksdb::FileMetaData::FileMetaData()	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/logging/event_logger.h:105:15:rocksdb::JSONWriter& rocksdb::JSONWriter::operator<<(const char*)	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/autovector.h:383:23:rocksdb::autovector<T, kSize>& rocksdb::autovector<T, kSize>::operator=(rocksdb::autovector<T, kSize>&&) [with T = rocksdb::FileMetaData; long unsigned int kSize = 8]	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:152:13:void rocksdb::PutVarint32(std::string*, uint32_t)	96	static
 /usr/include/c++/13/bits/basic_string.h:1455:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::append(const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:185:13:void rocksdb::PutVarint64(std::string*, uint64_t)	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:185:13:void rocksdb::PutVarint64(std::string*, uint64_t)	112	static
 /usr/include/c++/13/bits/basic_string.h:1469:7:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::append(const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:221:13:void rocksdb::PutLengthPrefixedSlice(std::string*, const Slice&)	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:463:6:static void rocksdb::VersionEdit::EncodeFileBoundaries(std::string*, const rocksdb::FileMetaData&, size_t)	192	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:187:6:static void rocksdb::VersionEdit::EncodeToNewFile4(const rocksdb::FileMetaData&, int, size_t, bool, uint64_t, bool&, std::string*)	352	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1214:6:void rocksdb::SubcompactionProgressPerLevel::EncodeOutputFiles(std::string*) const	240	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1140:6:void rocksdb::SubcompactionProgressPerLevel::EncodeTo(std::string*) const	128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1283:6:void rocksdb::SubcompactionProgress::EncodeTo(std::string*) const	192	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/coding.h:205:13:void rocksdb::PutVarint32Varint64(std::string*, uint32_t, uint64_t)	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:62:6:void rocksdb::VersionEdit::Clear()	5760	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:221:13:void rocksdb::PutLengthPrefixedSlice(std::string*, const Slice&)	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:478:6:static void rocksdb::VersionEdit::EncodeFileBoundaries(std::string*, const rocksdb::FileMetaData&, size_t)	192	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:187:6:static void rocksdb::VersionEdit::EncodeToNewFile4(const rocksdb::FileMetaData&, int, size_t, bool, uint64_t, bool&, std::string*)	352	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1229:6:void rocksdb::SubcompactionProgressPerLevel::EncodeOutputFiles(std::string*) const	240	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1155:6:void rocksdb::SubcompactionProgressPerLevel::EncodeTo(std::string*) const	128	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1298:6:void rocksdb::SubcompactionProgress::EncodeTo(std::string*) const	192	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/coding.h:205:13:void rocksdb::PutVarint32Varint64(std::string*, uint32_t, uint64_t)	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:62:6:void rocksdb::VersionEdit::Clear()	6784	static
 /usr/include/c++/13/bits/basic_string.tcc:511:5:constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:30:8:rocksdb::Status rocksdb::FileMetaData::UpdateBoundaries(const rocksdb::Slice&, const rocksdb::Slice&, rocksdb::SequenceNumber, rocksdb::ValueType)	320	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/dbformat.h:519:15:rocksdb::Status rocksdb::ParseInternalKey(const Slice&, ParsedInternalKey*, bool)	192	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:312:13:bool rocksdb::GetInternalKey(Slice*, InternalKey*)	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:64:6:bool rocksdb::VersionEdit::EncodeTo(std::string*, std::optional<long unsigned int>) const	384	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:30:8:rocksdb::Status rocksdb::FileMetaData::UpdateBoundaries(const rocksdb::Slice&, const rocksdb::Slice&, rocksdb::SequenceNumber, rocksdb::ValueType)	320	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:519:15:rocksdb::Status rocksdb::ParseInternalKey(const Slice&, ParsedInternalKey*, bool)	192	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:321:13:bool rocksdb::GetInternalKey(Slice*, InternalKey*)	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:64:6:bool rocksdb::VersionEdit::EncodeTo(std::string*, std::optional<long unsigned int>) const	384	dynamic,bounded
 /usr/include/c++/13/bits/stl_tree.h:2162:5:std::pair<std::_Rb_tree_iterator<_Val>, bool> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_insert_unique(_Arg&&) [with _Arg = std::pair<int, long unsigned int>; _Key = std::pair<int, long unsigned int>; _Val = std::pair<int, long unsigned int>; _KeyOfValue = std::_Identity<std::pair<int, long unsigned int> >; _Compare = std::less<std::pair<int, long unsigned int> >; _Alloc = std::allocator<std::pair<int, long unsigned int> >]	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:195:8:rocksdb::FileMetaData::FileMetaData(const rocksdb::FileMetaData&)	64	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:195:8:rocksdb::FileMetaData::FileMetaData(const rocksdb::FileMetaData&)	64	static
 /usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {int&, rocksdb::FileMetaData&}; _Tp = std::pair<int, rocksdb::FileMetaData>; _Alloc = std::allocator<std::pair<int, rocksdb::FileMetaData> >]	128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:335:13:static const char* rocksdb::VersionEdit::DecodeNewFile4From(rocksdb::Slice*, int&, uint64_t&, bool&, NewFiles&, rocksdb::FileMetaData&)	256	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/logging/event_logger.h:47:8:void rocksdb::JSONWriter::AddValue(const T&) [with T = long unsigned int]	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:344:13:static const char* rocksdb::VersionEdit::DecodeNewFile4From(rocksdb::Slice*, int&, uint64_t&, bool&, NewFiles&, rocksdb::FileMetaData&)	256	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/logging/event_logger.h:47:8:void rocksdb::JSONWriter::AddValue(const T&) [with T = long unsigned int]	48	static
 /usr/include/c++/13/bits/basic_string.tcc:277:5:constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_assign(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1409:6:void rocksdb::SubcompactionProgressBuilder::MaybeMergeDeltaProgressPerLevel(rocksdb::SubcompactionProgressPerLevel&, const rocksdb::SubcompactionProgressPerLevel&)	128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1392:6:void rocksdb::SubcompactionProgressBuilder::MergeDeltaProgress(const rocksdb::SubcompactionProgress&)	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1378:6:bool rocksdb::SubcompactionProgressBuilder::ProcessVersionEdit(const rocksdb::VersionEdit&)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h:366:23:rocksdb::autovector<T, kSize>& rocksdb::autovector<T, kSize>::assign(const rocksdb::autovector<T, kSize>&) [with T = rocksdb::FileMetaData; long unsigned int kSize = 8]	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.h:549:15:std::string rocksdb::SubcompactionProgress::ToString() const	1024	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:843:13:std::string rocksdb::VersionEdit::DebugString(bool) const	416	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:986:13:std::string rocksdb::VersionEdit::DebugJSON(int, bool) const	576	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1424:6:void rocksdb::SubcompactionProgressBuilder::MaybeMergeDeltaProgressPerLevel(rocksdb::SubcompactionProgressPerLevel&, const rocksdb::SubcompactionProgressPerLevel&)	128	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1407:6:void rocksdb::SubcompactionProgressBuilder::MergeDeltaProgress(const rocksdb::SubcompactionProgress&)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1393:6:bool rocksdb::SubcompactionProgressBuilder::ProcessVersionEdit(const rocksdb::VersionEdit&)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/autovector.h:366:23:rocksdb::autovector<T, kSize>& rocksdb::autovector<T, kSize>::assign(const rocksdb::autovector<T, kSize>&) [with T = rocksdb::FileMetaData; long unsigned int kSize = 8]	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.h:562:15:std::string rocksdb::SubcompactionProgress::ToString() const	992	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:858:13:std::string rocksdb::VersionEdit::DebugString(bool) const	416	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1001:13:std::string rocksdb::VersionEdit::DebugJSON(int, bool) const	560	static
 /usr/include/c++/13/bits/stl_uninitialized.h:113:5:constexpr _ForwardIterator std::__do_uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const pair<int, rocksdb::FileMetaData>*; _ForwardIterator = pair<int, rocksdb::FileMetaData>*]	96	static
 /usr/include/c++/13/bits/vector.tcc:111:7:) [with _Args = {std::pair<int, rocksdb::FileMetaData>}; _Tp = std::pair<int, rocksdb::FileMetaData>; _Alloc = std::allocator<std::pair<int, rocksdb::FileMetaData> >]	96	static
 /usr/include/c++/13/bits/stl_uninitialized.h:113:5:constexpr _ForwardIterator std::__do_uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const rocksdb::FileMetaData*; _ForwardIterator = rocksdb::FileMetaData*]	96	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1238:8:rocksdb::Status rocksdb::SubcompactionProgressPerLevel::DecodeOutputFiles(rocksdb::Slice*, rocksdb::autovector<rocksdb::FileMetaData>&)	608	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1161:8:rocksdb::Status rocksdb::SubcompactionProgressPerLevel::DecodeFrom(rocksdb::Slice*)	160	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1314:8:rocksdb::Status rocksdb::SubcompactionProgress::DecodeFrom(rocksdb::Slice*)	192	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:478:8:rocksdb::Status rocksdb::VersionEdit::DecodeFrom(const rocksdb::Slice&)	5888	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/version_edit.cc:1428:1:cc)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1253:8:rocksdb::Status rocksdb::SubcompactionProgressPerLevel::DecodeOutputFiles(rocksdb::Slice*, rocksdb::autovector<rocksdb::FileMetaData>&)	640	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1176:8:rocksdb::Status rocksdb::SubcompactionProgressPerLevel::DecodeFrom(rocksdb::Slice*)	160	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1329:8:rocksdb::Status rocksdb::SubcompactionProgress::DecodeFrom(rocksdb::Slice*)	192	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:493:8:rocksdb::Status rocksdb::VersionEdit::DecodeFrom(const rocksdb::Slice&)	7008	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/version_edit.cc:1443:1:cc)	48	static

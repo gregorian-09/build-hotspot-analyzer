@@ -1,0 +1,32 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curl_gethostname.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curl_gethostname.c
+# Timestamp: 2026-01-31T00:30:12+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)  1819k ( 22%)
+ phase parsing                      :   0.21 ( 81%)   0.21 ( 84%)   0.92 ( 90%)  4559k ( 55%)
+ phase opt and generate             :   0.04 ( 15%)   0.04 ( 16%)   0.08 (  8%)  1947k ( 23%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    55k (  1%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)   137k (  2%)
+ df scan insns                      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  1296  (  0%)
+ preprocessing                      :   0.08 ( 31%)   0.10 ( 40%)   0.68 ( 67%)  1980k ( 24%)
+ lexical analysis                   :   0.07 ( 27%)   0.05 ( 20%)   0.17 ( 17%)     0  (  0%)
+ parser (global)                    :   0.06 ( 23%)   0.04 ( 16%)   0.06 (  6%)  2110k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   112k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   268k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)    54k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  1%)
+ integrated RA                      :   0.01 (  4%)   0.01 (  4%)   0.00 (  0%)  1275k ( 15%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   672  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   176  (  0%)
+ rest of compilation                :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)   125k (  2%)
+ TOTAL                              :   0.26          0.25          1.02         8327k

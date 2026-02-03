@@ -33,7 +33,7 @@ repos/rocksdb/include/rocksdb/utilities/object_registry.h:296:_ZN7rocksdb14Objec
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:71:_ZN7rocksdb13ObjectLibrary12PatternEntryD2Ev	40	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:71:_ZN7rocksdb13ObjectLibrary12PatternEntryD0Ev	40	static
 repos/rocksdb/include/rocksdb/utilities/object_registry.h:149:_ZNK7rocksdb13ObjectLibrary12PatternEntry4NameEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/object_registry.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/object_registry.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_	88	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorISt10shared_ptrIN7rocksdb13ObjectLibraryEESaIS3_EE17_M_realloc_insertIJRKS3_EEEvN9__gnu_cxx17__normal_iteratorIPS3_S5_EEDpOT_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static

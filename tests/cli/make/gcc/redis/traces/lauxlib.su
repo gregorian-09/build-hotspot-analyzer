@@ -8,7 +8,6 @@ lauxlib.c:73:17:luaL_where	160	static
 lauxlib.c:86:16:luaL_error	240	static
 lauxlib.c:43:16:luaL_argerror	176	static
 lauxlib.c:61:16:luaL_typerror	32	static
-lauxlib.c:99:16:luaL_checkoption	48	static
 lauxlib.c:112:16:luaL_newmetatable	32	static
 lauxlib.c:124:18:luaL_checkudata	48	static
 lauxlib.c:140:17:luaL_checkstack	32	static
@@ -16,13 +15,13 @@ lauxlib.c:146:17:luaL_checktype	32	static
 lauxlib.c:152:17:luaL_checkany	32	static
 lauxlib.c:158:24:luaL_checklstring	32	static
 lauxlib.c:165:24:luaL_optlstring	48	static
+lauxlib.c:99:16:luaL_checkoption	48	static
 lauxlib.c:176:23:luaL_checknumber	48	static
 lauxlib.c:184:23:luaL_optnumber	32	static
 lauxlib.c:189:24:luaL_checkinteger	32	static
 lauxlib.c:197:24:luaL_optinteger	32	static
 lauxlib.c:203:16:luaL_getmetafield	32	static
 lauxlib.c:219:16:luaL_callmeta	48	static
-lauxlib.c:340:24:luaL_gsub	8336	static
 lauxlib.c:357:24:luaL_findtable	64	static
 lauxlib.c:242:17:luaL_openlib	80	static
 lauxlib.c:229:18:luaL_register	8	static
@@ -32,9 +31,10 @@ lauxlib.c:442:17:luaL_addstring	32	static
 lauxlib.c:447:17:luaL_pushresult	32	static
 lauxlib.c:454:17:luaL_addvalue	48	static
 lauxlib.c:472:17:luaL_buffinit	8	static
+lauxlib.c:340:24:luaL_gsub	8304	static
 lauxlib.c:481:16:luaL_ref	48	static
 lauxlib.c:504:17:luaL_unref	32	static
 lauxlib.c:552:16:luaL_loadfile	8272	static
 lauxlib.c:609:16:luaL_loadbuffer	48	static
-lauxlib.c:618:17:luaL_loadstring	64	static
+lauxlib.c:618:17:luaL_loadstring	32	static
 lauxlib.c:647:23:luaL_newstate	16	static

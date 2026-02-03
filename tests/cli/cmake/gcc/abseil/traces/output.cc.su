@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/output.cc:34:6:void absl::str_format_internal::BufferRawSink::Write(std::string_view)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/output.cc:44:6:void absl::str_format_internal::FILERawSink::Write(std::string_view)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/str_format/output.cc:34:6:void absl::str_format_internal::BufferRawSink::Write(std::string_view)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/str_format/output.cc:44:6:void absl::str_format_internal::FILERawSink::Write(std::string_view)	48	static

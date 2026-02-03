@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: src/pages.c
+# Output: src/pages.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/pages.o src/pages.c
+# Timestamp: 2026-01-31T02:10:53+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)  1819k (  6%)
+ phase parsing                      :   1.63 ( 92%)   1.74 ( 97%)   4.38 ( 95%)    25M ( 86%)
+ phase opt and generate             :   0.15 (  8%)   0.04 (  2%)   0.19 (  4%)  2555k (  8%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   129k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    36k (  0%)
+ callgraph ipa passes               :   0.02 (  1%)   0.01 (  1%)   0.02 (  0%)   315k (  1%)
+ df scan insns                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  1584  (  0%)
+ preprocessing                      :   0.52 ( 29%)   0.55 ( 31%)   1.90 ( 41%)    13M ( 47%)
+ lexical analysis                   :   0.59 ( 33%)   0.67 ( 37%)   1.42 ( 31%)     0  (  0%)
+ parser (global)                    :   0.16 (  9%)   0.17 (  9%)   0.32 (  7%)  5714k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  1%)   0.03 (  1%)   254k (  1%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   151k (  0%)
+ parser function body               :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)   237k (  1%)
+ parser inl. func. body             :   0.31 ( 17%)   0.33 ( 18%)   0.68 ( 15%)  5382k ( 18%)
+ inline parameters                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  7208  (  0%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   343k (  1%)
+ tree eh                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2288  (  0%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    59k (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ expand vars                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    42k (  0%)
+ expand                             :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)   423k (  1%)
+ varconst                           :   0.03 (  2%)   0.00 (  0%)   0.00 (  0%)  4760  (  0%)
+ integrated RA                      :   0.01 (  1%)   0.01 (  1%)   0.05 (  1%)   836k (  3%)
+ LRA non-specific                   :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)  7200  (  0%)
+ LRA virtuals elimination           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ final                              :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)   113k (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   152  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    82k (  0%)
+ TOTAL                              :   1.78          1.79          4.61           29M

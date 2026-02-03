@@ -1,0 +1,49 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/cfilters.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/cfilters.c
+# Timestamp: 2026-01-31T00:30:03+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.01 (  1%)  1819k ( 12%)
+ phase parsing                      :   0.39 ( 62%)   0.38 ( 83%)   1.62 ( 82%)  6837k ( 45%)
+ phase opt and generate             :   0.24 ( 38%)   0.07 ( 15%)   0.33 ( 17%)  6490k ( 43%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.02 (  4%)   0.04 (  2%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    94k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   132k (  1%)
+ callgraph ipa passes               :   0.02 (  3%)   0.02 (  4%)   0.05 (  3%)   566k (  4%)
+ ipa comdats                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  1256  (  0%)
+ df scan insns                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  4656  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    54k (  0%)
+ alias analysis                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.16 ( 25%)   0.20 ( 43%)   1.17 ( 59%)  2411k ( 16%)
+ lexical analysis                   :   0.13 ( 21%)   0.09 ( 20%)   0.26 ( 13%)     0  (  0%)
+ parser (global)                    :   0.07 ( 11%)   0.06 ( 13%)   0.10 (  5%)  3077k ( 20%)
+ parser struct body                 :   0.02 (  3%)   0.01 (  2%)   0.04 (  2%)   347k (  2%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  2%)   0.03 (  2%)   344k (  2%)
+ parser function body               :   0.01 (  2%)   0.01 (  2%)   0.01 (  1%)   648k (  4%)
+ tree gimplify                      :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%)   446k (  3%)
+ tree eh                            :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  8384  (  0%)
+ tree SSA rewrite                   :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)   155k (  1%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   211k (  1%)
+ dominance computation              :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16k (  0%)
+ expand                             :   0.02 (  3%)   0.00 (  0%)   0.03 (  2%)   819k (  5%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.02 (  3%)   0.02 (  4%)   0.05 (  3%)  3061k ( 20%)
+ LRA non-specific                   :   0.02 (  3%)   0.00 (  0%)   0.02 (  1%)    14k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   768  (  0%)
+ reload                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2952  (  0%)
+ final                              :   0.01 (  2%)   0.01 (  2%)   0.03 (  2%)   298k (  2%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   208  (  0%)
+ rest of compilation                :   0.06 ( 10%)   0.00 (  0%)   0.02 (  1%)   307k (  2%)
+ TOTAL                              :   0.63          0.46          1.97           14M

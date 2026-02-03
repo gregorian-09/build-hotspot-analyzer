@@ -1,0 +1,61 @@
+# BHA Trace
+# Source: lobject.c
+# Output: lobject.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o lobject.o lobject.c
+# Timestamp: 2026-01-31T02:07:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 24%)
+ phase parsing                      :   0.29 ( 58%)   0.19 ( 76%)   0.59 ( 66%)  4196k ( 55%)
+ phase opt and generate             :   0.21 ( 42%)   0.06 ( 24%)   0.29 ( 32%)  1601k ( 21%)
+ dump files                         :   0.00 (  0%)   0.01 (  4%)   0.03 (  3%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    29k (  0%)
+ callgraph functions expansion      :   0.19 ( 38%)   0.03 ( 12%)   0.22 ( 24%)  1193k ( 16%)
+ callgraph ipa passes               :   0.02 (  4%)   0.02 (  8%)   0.06 (  7%)   268k (  4%)
+ ipa function summary               :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)    15k (  0%)
+ trivially dead code                :   0.01 (  2%)   0.01 (  4%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)   432  (  0%)
+ df reaching defs                   :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ df reg dead/unused notes           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    19k (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  5896  (  0%)
+ preprocessing                      :   0.16 ( 32%)   0.06 ( 24%)   0.26 ( 29%)  1927k ( 25%)
+ lexical analysis                   :   0.05 ( 10%)   0.05 ( 20%)   0.17 ( 19%)     0  (  0%)
+ parser (global)                    :   0.04 (  8%)   0.05 ( 20%)   0.11 ( 12%)  1915k ( 25%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)    75k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    88k (  1%)
+ parser inl. func. body             :   0.03 (  6%)   0.02 (  8%)   0.02 (  2%)   179k (  2%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  2552  (  0%)
+ tree Early VRP                     :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    21k (  0%)
+ tree copy propagation              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   832  (  0%)
+ tree PTA                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    24k (  0%)
+ dominator optimization             :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    30k (  0%)
+ tree reassociation                 :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  1440  (  0%)
+ tree FRE                           :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ tree conservative DCE              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree DSE                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  2984  (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    85k (  1%)
+ predictive commoning               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   360  (  0%)
+ tree modref                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  8672  (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   144  (  0%)
+ forward prop                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1168  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ dead store elim2                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ loop invariant motion              :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   536  (  0%)
+ loop fini                          :   0.01 (  2%)   0.01 (  4%)   0.01 (  1%)    40  (  0%)
+ integrated RA                      :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)   255k (  3%)
+ LRA reload inheritance             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   200  (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    16k (  0%)
+ peephole 2                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2544  (  0%)
+ scheduling 2                       :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ final                              :   0.02 (  4%)   0.00 (  0%)   0.00 (  0%)    43k (  1%)
+ straight-line strength reduction   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   200  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    70k (  1%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.50          0.25          0.90         7617k

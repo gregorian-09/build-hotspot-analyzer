@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/stringify_sink.cc
+# Output: CMakeFiles/strings.dir/internal/stringify_sink.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings.dir/internal/stringify_sink.cc.o -MF CMakeFiles/strings.dir/internal/stringify_sink.cc.o.d -o CMakeFiles/strings.dir/internal/stringify_sink.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/stringify_sink.cc
+# Timestamp: 2026-01-30T18:39:59+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  1%)   0.06 (  3%)   0.15 (  2%)  1882k (  6%)
+ phase parsing                      :   2.15 ( 87%)   1.86 ( 93%)   5.50 ( 90%)    26M ( 83%)
+ phase lang. deferred               :   0.22 (  9%)   0.05 (  2%)   0.28 (  5%)  3222k ( 10%)
+ phase opt and generate             :   0.08 (  3%)   0.02 (  1%)   0.12 (  2%)   384k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.02 (  1%)   0.04 (  1%)     0  (  0%)
+ |name lookup                       :   0.40 ( 16%)   0.18 (  9%)   0.56 (  9%)  1410k (  4%)
+ |overload resolution               :   0.14 (  6%)   0.06 (  3%)   0.19 (  3%)  1966k (  6%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.01 (  0%)   0.03 (  0%)    76k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1440  (  0%)
+ callgraph functions expansion      :   0.05 (  2%)   0.00 (  0%)   0.06 (  1%)   142k (  0%)
+ callgraph ipa passes               :   0.02 (  1%)   0.01 (  0%)   0.03 (  0%)   119k (  0%)
+ preprocessing                      :   0.50 ( 20%)   0.78 ( 39%)   2.56 ( 42%)  1727k (  5%)
+ parser (global)                    :   0.56 ( 23%)   0.62 ( 31%)   1.48 ( 24%)  9467k ( 29%)
+ parser struct body                 :   0.26 ( 10%)   0.12 (  6%)   0.46 (  8%)  5721k ( 17%)
+ parser function body               :   0.07 (  3%)   0.01 (  0%)   0.06 (  1%)   315k (  1%)
+ parser inl. func. body             :   0.21 (  8%)   0.05 (  2%)   0.23 (  4%)  2583k (  8%)
+ parser inl. meth. body             :   0.19 (  8%)   0.11 (  5%)   0.19 (  3%)  2162k (  7%)
+ template instantiation             :   0.53 ( 21%)   0.21 ( 10%)   0.72 ( 12%)  8131k ( 25%)
+ constant expression evaluation     :   0.05 (  2%)   0.01 (  0%)   0.06 (  1%)   132k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    20k (  0%)
+ tree VRP                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  4440  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  2832  (  0%)
+ tree SSA rewrite                   :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  7768  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)  5368  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ combiner                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1976  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3728  (  0%)
+ initialize rtl                     :   0.02 (  1%)   0.00 (  0%)   0.03 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  5208  (  0%)
+ TOTAL                              :   2.48          2.01          6.09           32M

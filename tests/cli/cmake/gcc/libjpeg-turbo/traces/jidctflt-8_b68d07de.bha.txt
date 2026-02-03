@@ -1,0 +1,50 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jidctflt-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jidctflt-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jidctflt-8.c
+# Timestamp: 2026-01-30T19:04:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  3%)   0.01 (  4%)   0.04 (  4%)  1819k ( 34%)
+ phase parsing                      :   0.19 ( 51%)   0.17 ( 74%)   0.64 ( 69%)  2648k ( 49%)
+ phase opt and generate             :   0.17 ( 46%)   0.04 ( 17%)   0.23 ( 25%)   926k ( 17%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  4%)   0.02 (  2%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)   744  (  0%)
+ callgraph functions expansion      :   0.14 ( 38%)   0.03 ( 13%)   0.20 ( 22%)   762k ( 14%)
+ callgraph ipa passes               :   0.03 (  8%)   0.00 (  0%)   0.03 (  3%)    94k (  2%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  4%)   0.00 (  0%)  5208  (  0%)
+ register information               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48k (  1%)
+ alias stmt walking                 :   0.01 (  3%)   0.01 (  4%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.09 ( 24%)   0.06 ( 26%)   0.40 ( 43%)   760k ( 14%)
+ lexical analysis                   :   0.05 ( 14%)   0.08 ( 35%)   0.14 ( 15%)     0  (  0%)
+ parser (global)                    :   0.04 ( 11%)   0.02 (  9%)   0.08 (  9%)  1339k ( 25%)
+ parser struct body                 :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   231k (  4%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  4%)   0.01 (  1%)   245k (  5%)
+ tree tail merge                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2088  (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8208  (  0%)
+ tree PTA                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3736  (  0%)
+ tree SSA rewrite                   :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    15k (  0%)
+ tree operand scan                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    37k (  1%)
+ tree CCP                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  9536  (  0%)
+ tree buildin call DCE              :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ tree vectorization                 :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    77k (  1%)
+ tree iv optimization               :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    48k (  1%)
+ CSE                                :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)  2016  (  0%)
+ loop init                          :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1104  (  0%)
+ combiner                           :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    38k (  1%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)   107k (  2%)
+ reload CSE regs                    :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)    13k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3904  (  0%)
+ scheduling 2                       :   0.01 (  3%)   0.00 (  0%)   0.02 (  2%)  5592  (  0%)
+ initialize rtl                     :   0.02 (  5%)   0.01 (  4%)   0.03 (  3%)    12k (  0%)
+ rest of compilation                :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  8248  (  0%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.37          0.23          0.93         5395k

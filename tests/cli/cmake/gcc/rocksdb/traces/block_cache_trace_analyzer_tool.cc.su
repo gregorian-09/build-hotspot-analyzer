@@ -1,1 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc:8:5:int main()	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:400:11:rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:400:11:virtual rocksdb::InternalKeyComparator::~InternalKeyComparator()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/dbformat.h:1085:12:virtual int rocksdb::InternalKeyComparator::Compare(const rocksdb::Slice&, const rocksdb::Slice&) const	96	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc:14:5:int main(int, char**)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/tools/block_cache_analyzer/block_cache_trace_analyzer_tool.cc:16:1:cc)	8	static

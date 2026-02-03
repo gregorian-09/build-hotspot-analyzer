@@ -4,7 +4,7 @@ repos/rocksdb/table/external_table.cc:0:__cxx_global_array_dtor.27	8	static
 repos/rocksdb/table/external_table.cc:0:__cxx_global_array_dtor.35	8	static
 repos/rocksdb/table/external_table.cc:0:__cxx_global_array_dtor.38	8	static
 repos/rocksdb/table/external_table.cc:480:_ZN7rocksdb23NewExternalTableFactoryESt10shared_ptrINS_20ExternalTableFactoryEE	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/external_table.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/external_table.cc:__clang_call_terminate	8	static
 repos/rocksdb/table/external_table.cc:381:_ZN7rocksdb12_GLOBAL__N_127ExternalTableFactoryAdapterD2Ev	40	static
 repos/rocksdb/table/external_table.cc:381:_ZN7rocksdb12_GLOBAL__N_127ExternalTableFactoryAdapterD0Ev	40	static
 repos/rocksdb/include/rocksdb/configurable.h:219:_ZNK7rocksdb12Configurable19GetPrintableOptionsB5cxx11Ev	0	static

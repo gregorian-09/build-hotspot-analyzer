@@ -1,0 +1,43 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curlx/dynbuf.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curlx/dynbuf.c
+# Timestamp: 2026-01-31T00:30:46+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1819k ( 20%)
+ phase parsing                      :   0.35 ( 74%)   0.40 ( 89%)   1.69 ( 89%)  4658k ( 51%)
+ phase opt and generate             :   0.12 ( 26%)   0.05 ( 11%)   0.18 (  9%)  2604k ( 29%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.01 (  2%)   0.03 (  2%)     0  (  0%)
+ callgraph construction             :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    18k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    69k (  1%)
+ callgraph ipa passes               :   0.02 (  4%)   0.01 (  2%)   0.03 (  2%)   193k (  2%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df live regs                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8600  (  0%)
+ preprocessing                      :   0.14 ( 30%)   0.18 ( 40%)   1.22 ( 64%)  1990k ( 22%)
+ lexical analysis                   :   0.10 ( 21%)   0.09 ( 20%)   0.25 ( 13%)     0  (  0%)
+ parser (global)                    :   0.06 ( 13%)   0.11 ( 24%)   0.15 (  8%)  2145k ( 24%)
+ parser struct body                 :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   113k (  1%)
+ parser enumerator list             :   0.02 (  4%)   0.01 (  2%)   0.03 (  2%)   268k (  3%)
+ parser function body               :   0.01 (  2%)   0.01 (  2%)   0.01 (  1%)   132k (  1%)
+ inline parameters                  :   0.01 (  2%)   0.01 (  2%)   0.00 (  0%)    13k (  0%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    72  (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    28k (  0%)
+ tree switch lowering               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    25k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)  1595k ( 18%)
+ LRA non-specific                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  5296  (  0%)
+ LRA virtuals elimination           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8688  (  0%)
+ machine dep reorg                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  6864  (  0%)
+ symout                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ rest of compilation                :   0.03 (  6%)   0.02 (  4%)   0.02 (  1%)   157k (  2%)
+ TOTAL                              :   0.47          0.45          1.90         9083k

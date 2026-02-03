@@ -14,5 +14,5 @@ src/catch2/reporters/catch_reporter_helpers.cpp:265:_ZNO5Catch12_GLOBAL__N_113Su
 src/catch2/reporters/catch_reporter_helpers.cpp:260:_ZN5Catch12_GLOBAL__N_113SummaryColumnD2Ev	24	static
 src/catch2/reporters/catch_reporter_helpers.cpp:293:_ZN5Catch12_GLOBAL__N_115printSummaryRowERSoRNS_10ColourImplENS_9StringRefERKSt6vectorINS0_13SummaryColumnESaIS6_EEm	120	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorIN5Catch12_GLOBAL__N_113SummaryColumnESaIS2_EED2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/reporters/catch_reporter_helpers.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/reporters/catch_reporter_helpers.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRKS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_	104	static

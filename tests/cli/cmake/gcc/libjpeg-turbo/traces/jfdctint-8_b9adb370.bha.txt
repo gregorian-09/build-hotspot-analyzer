@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jfdctint-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jfdctint-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jfdctint-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jfdctint-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jfdctint-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jfdctint-8.c
+# Timestamp: 2026-01-30T19:04:36+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)  1819k ( 33%)
+ phase parsing                      :   0.17 ( 61%)   0.19 ( 90%)   0.53 ( 75%)  2656k ( 47%)
+ phase opt and generate             :   0.11 ( 39%)   0.02 ( 10%)   0.14 ( 20%)  1118k ( 20%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)     0  (  0%)
+ callgraph functions expansion      :   0.10 ( 36%)   0.02 ( 10%)   0.13 ( 18%)   984k ( 18%)
+ callgraph ipa passes               :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    77k (  1%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.09 ( 32%)   0.08 ( 38%)   0.29 ( 41%)   779k ( 14%)
+ lexical analysis                   :   0.03 ( 11%)   0.08 ( 38%)   0.08 ( 11%)     0  (  0%)
+ parser (global)                    :   0.04 ( 14%)   0.03 ( 14%)   0.10 ( 14%)  1338k ( 24%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  3%)    24k (  0%)
+ parser inl. func. body             :   0.01 (  4%)   0.00 (  0%)   0.03 (  4%)   245k (  4%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  5%)   0.00 (  0%)  8032  (  0%)
+ dominator optimization             :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)  6384  (  0%)
+ tree PRE                           :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    48k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3872  (  0%)
+ tree forward propagate             :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)  5584  (  0%)
+ tree vectorization                 :   0.00 (  0%)   0.01 (  5%)   0.02 (  3%)   272k (  5%)
+ tree slp vectorization             :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)   135k (  2%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   512  (  0%)
+ combiner                           :   0.03 ( 11%)   0.00 (  0%)   0.03 (  4%)   144k (  3%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   102k (  2%)
+ reload CSE regs                    :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  9536  (  0%)
+ hard reg cprop                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    48  (  0%)
+ scheduling 2                       :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  4392  (  0%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ address taken                      :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.28          0.21          0.71         5594k

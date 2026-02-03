@@ -1,7 +1,7 @@
-bufref.c:37:Curl_bufref_init	8	static
-bufref.c:54:Curl_bufref_free	24	static
-bufref.c:72:Curl_bufref_set	40	static
-bufref.c:87:Curl_bufref_uptr	8	static
-bufref.c:99:Curl_bufref_ptr	8	static
-bufref.c:111:Curl_bufref_len	8	static
-bufref.c:120:Curl_bufref_memdup0	56	static
+../../../../../repos/curl/lib/bufref.c:37:Curl_bufref_init	8	static
+../../../../../repos/curl/lib/bufref.c:54:Curl_bufref_free	24	static
+../../../../../repos/curl/lib/bufref.c:72:Curl_bufref_set	40	static
+../../../../../repos/curl/lib/bufref.c:87:Curl_bufref_uptr	8	static
+../../../../../repos/curl/lib/bufref.c:99:Curl_bufref_ptr	8	static
+../../../../../repos/curl/lib/bufref.c:111:Curl_bufref_len	8	static
+../../../../../repos/curl/lib/bufref.c:120:Curl_bufref_memdup0	56	static

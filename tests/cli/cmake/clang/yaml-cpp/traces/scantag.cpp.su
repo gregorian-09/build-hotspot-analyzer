@@ -7,7 +7,7 @@ repos/yaml-cpp/src/scantag.cpp:65:_ZN4YAML13ScanTagSuffixB5cxx11ERNS_6StreamE	10
 repos/yaml-cpp/src/exp.h:63:_ZN4YAML3Exp3HexEv	104	static
 repos/yaml-cpp/src/regex_yaml.h:37:_ZN4YAML5RegExD2Ev	8	static
 repos/yaml-cpp/src/exp.h:47:_ZN4YAML3Exp5DigitEv	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scantag.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/scantag.cpp:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:182:_ZSt8_DestroyIPN4YAML5RegExEEvT_S3_	24	static
 repos/yaml-cpp/src/regeximpl.h:72:_ZNK4YAML5RegEx5MatchINS_16StreamCharSourceEEEiRKT_	24	static
 repos/yaml-cpp/src/regeximpl.h:77:_ZNK4YAML5RegEx14MatchUncheckedINS_16StreamCharSourceEEEiRKT_	72	static

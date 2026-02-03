@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_superblock.c:263:15:ZSTD_compressSubBlock.constprop	192	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/zstd_compress_superblock.c:665:8:ZSTD_compressSuperBlock	800	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_superblock.c:263:15:ZSTD_compressSubBlock.constprop	192	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/compress/zstd_compress_superblock.c:665:8:ZSTD_compressSuperBlock	800	dynamic,bounded

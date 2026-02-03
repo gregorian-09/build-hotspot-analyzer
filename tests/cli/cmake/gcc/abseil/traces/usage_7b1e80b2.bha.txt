@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/usage.cc
+# Output: CMakeFiles/flags_usage.dir/usage.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/flags/CMakeFiles/flags_usage.dir/usage.cc.o -MF CMakeFiles/flags_usage.dir/usage.cc.o.d -o CMakeFiles/flags_usage.dir/usage.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/usage.cc
+# Timestamp: 2026-01-30T18:44:18+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  1882k (  2%)
+ phase parsing                      :   3.23 ( 90%)   1.99 ( 95%)   5.95 ( 92%)    90M ( 88%)
+ phase lang. deferred               :   0.23 (  6%)   0.09 (  4%)   0.34 (  5%)  9364k (  9%)
+ phase opt and generate             :   0.12 (  3%)   0.01 (  0%)   0.14 (  2%)  1858k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.89 ( 25%)   0.38 ( 18%)   1.21 ( 19%)  3551k (  3%)
+ |overload resolution               :   0.28 (  8%)   0.18 (  9%)   0.46 (  7%)  6883k (  7%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)   372k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  5224  (  0%)
+ callgraph functions expansion      :   0.05 (  1%)   0.00 (  0%)   0.05 (  1%)   535k (  1%)
+ callgraph ipa passes               :   0.06 (  2%)   0.01 (  0%)   0.07 (  1%)   710k (  1%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1936  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.23 (  6%)   0.46 ( 22%)   1.18 ( 18%)  6587k (  6%)
+ parser (global)                    :   0.66 ( 18%)   0.49 ( 23%)   1.25 ( 19%)    31M ( 30%)
+ parser struct body                 :   0.56 ( 16%)   0.16 (  8%)   0.76 ( 12%)    16M ( 16%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)   171k (  0%)
+ parser function body               :   0.34 (  9%)   0.20 ( 10%)   0.51 (  8%)  3427k (  3%)
+ parser inl. func. body             :   0.25 (  7%)   0.14 (  7%)   0.52 (  8%)  6713k (  6%)
+ parser inl. meth. body             :   0.48 ( 13%)   0.23 ( 11%)   0.73 ( 11%)    10M ( 10%)
+ template instantiation             :   0.86 ( 24%)   0.33 ( 16%)   1.17 ( 18%)    24M ( 24%)
+ constant expression evaluation     :   0.06 (  2%)   0.05 (  2%)   0.14 (  2%)   397k (  0%)
+ early inlining heuristics          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ inline parameters                  :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    92k (  0%)
+ tree copy propagation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ tree PTA                           :   0.01 (  0%)   0.01 (  0%)   0.00 (  0%)    16k (  0%)
+ tree SSA incremental               :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ backwards jump threading           :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  3544  (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    68k (  0%)
+ dominance frontiers                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   112  (  0%)
+ varconst                           :   0.02 (  1%)   0.01 (  0%)   0.02 (  0%)  5016  (  0%)
+ CSE                                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   816  (  0%)
+ integrated RA                      :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   127k (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    11k (  0%)
+ repair loop structures             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   3.59          2.09          6.47          103M

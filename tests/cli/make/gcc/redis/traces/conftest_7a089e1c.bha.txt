@@ -1,0 +1,90 @@
+# BHA Trace
+# Source: conftest.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -c -std=gnu11 -Wall -Wextra -Wsign-compare -Wundef -Wno-format-zero-length -Wpointer-arith -Wno-missing-braces -Wno-missing-field-initializers -Wno-missing-attributes -pipe -g3 -fvisibility=hidden -Wimplicit-fallthrough -O3 -funroll-loops -fPIC -ftime-report -fstack-usage -D_GNU_SOURCE -D_REENTRANT conftest.c
+# Timestamp: 2026-01-31T02:09:05+01:00
+# Exit code: 0
+# ---
+
+conftest.c:154:18: warning: "__cplusplus" is not defined, evaluates to 0 [-Wundef]
+  154 |              #if __cplusplus < 201103
+      |                  ^~~~~~~~~~~
+conftest.c: In function 'main':
+conftest.c:187:14: warning: the address of 's' will always evaluate as 'true' [-Waddress]
+  187 |              bool ps = &s;
+      |              ^~~~
+conftest.c:192:16: warning: the address of 't' will always evaluate as 'true' [-Waddress]
+  192 |                _Bool pt = &t;
+      |                ^~~~~
+conftest.c:199:22: warning: the address of 'a' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                      ^
+conftest.c:199:27: warning: the address of 'b' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                           ^
+conftest.c:199:32: warning: the address of 'c' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                                ^
+conftest.c:199:37: warning: the address of 'd' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                                     ^
+conftest.c:199:62: warning: the address of 'i' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                                                              ^
+conftest.c:199:67: warning: the address of 'j' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                                                                   ^
+conftest.c:199:72: warning: the address of 'k' will always evaluate as 'true' [-Waddress]
+  199 |              return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !j + !k
+      |                                                                        ^
+conftest.c:200:24: warning: the address of 'l' will always evaluate as 'true' [-Waddress]
+  200 |                      + !l + !m + !n + !o + !p + !pp + !ps
+      |                        ^
+conftest.c:200:29: warning: the address of 'm' will always evaluate as 'true' [-Waddress]
+  200 |                      + !l + !m + !n + !o + !p + !pp + !ps
+      |                             ^
+conftest.c:200:34: warning: the address of 'n' will always evaluate as 'true' [-Waddress]
+  200 |                      + !l + !m + !n + !o + !p + !pp + !ps
+      |                                  ^
+conftest.c:200:39: warning: the address of 'o' will always evaluate as 'true' [-Waddress]
+  200 |                      + !l + !m + !n + !o + !p + !pp + !ps
+      |                                       ^
+conftest.c:202:24: warning: the address of 'q' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                        ^
+conftest.c:202:29: warning: the address of 'r' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                             ^
+conftest.c:202:34: warning: the address of 'u' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                                  ^
+conftest.c:202:39: warning: the address of 'v' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                                       ^
+conftest.c:202:44: warning: the address of 'w' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                                            ^
+conftest.c:202:49: warning: the address of 'x' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                                                 ^
+conftest.c:202:54: warning: the address of 'y' will always evaluate as 'true' [-Waddress]
+  202 |                      + !q + !r + !u + !v + !w + !x + !y + !z + !pt
+      |                                                      ^
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)  1830k ( 76%)
+ phase parsing                      :   0.01 ( 25%)   0.01 ( 50%)   0.03 ( 43%)   283k ( 12%)
+ phase opt and generate             :   0.03 ( 75%)   0.00 (  0%)   0.02 ( 29%)   225k (  9%)
+ phase last asm                     :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)    61k (  3%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)     0  (  0%)
+ callgraph functions expansion      :   0.02 ( 50%)   0.00 (  0%)   0.02 ( 29%)   173k (  7%)
+ callgraph ipa passes               :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)    23k (  1%)
+ alias analysis                     :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)  4840  (  0%)
+ alias stmt walking                 :   0.00 (  0%)   0.00 (  0%)   0.01 ( 14%)  1264  (  0%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.02 ( 29%)     0  (  0%)
+ parser (global)                    :   0.01 ( 25%)   0.01 ( 50%)   0.01 ( 14%)   228k (  9%)
+ tree CCP                           :   0.01 ( 25%)   0.00 (  0%)   0.00 (  0%)   872  (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 50%)   0.00 (  0%)    79k (  3%)
+ initialize rtl                     :   0.01 ( 25%)   0.00 (  0%)   0.01 ( 14%)    12k (  1%)
+ TOTAL                              :   0.04          0.02          0.07         2400k

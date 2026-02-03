@@ -13,7 +13,7 @@ repos/abseil/absl/flags/reflection.cc:201:_ZN4absl14flags_internal16FinalizeRegi
 repos/abseil/absl/flags/reflection.cc:296:_ZN4absl14flags_internal6RetireEPKcNS_14FastTypeIdTypeEPh	8	static
 repos/abseil/absl/flags/reflection.cc:337:_ZN4absl9FlagSaverC2Ev	40	static
 repos/abseil/absl/flags/reflection.cc:341:_ZN4absl9FlagSaverD2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/flags/reflection.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/reflection.cc:__clang_call_terminate	8	static
 repos/abseil/absl/flags/reflection.cc:350:_ZN4absl19FindCommandLineFlagESt17basic_string_viewIcSt11char_traitsIcEE	24	static
 repos/abseil/absl/flags/reflection.cc:359:_ZN4absl11GetAllFlagsEv	56	static
 repos/abseil/absl/container/internal/raw_hash_set.h:2294:_ZN4absl18container_internal12raw_hash_setINS0_17FlatHashMapPolicyISt17basic_string_viewIcSt11char_traitsIcEEPNS_15CommandLineFlagEEEJEED2Ev	8	static

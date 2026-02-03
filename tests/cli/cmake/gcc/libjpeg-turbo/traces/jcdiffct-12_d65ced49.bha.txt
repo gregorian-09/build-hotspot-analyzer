@@ -1,0 +1,63 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcdiffct-12.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jcdiffct-12.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jcdiffct-12.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jcdiffct-12.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jcdiffct-12.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jcdiffct-12.c
+# Timestamp: 2026-01-30T19:04:15+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)  1819k ( 28%)
+ phase parsing                      :   0.19 ( 42%)   0.21 ( 72%)   0.63 ( 62%)  2672k ( 41%)
+ phase opt and generate             :   0.26 ( 58%)   0.07 ( 24%)   0.35 ( 34%)  1981k ( 31%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)     0  (  0%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph functions expansion      :   0.22 ( 49%)   0.06 ( 21%)   0.30 ( 29%)  1542k ( 24%)
+ callgraph ipa passes               :   0.04 (  9%)   0.01 (  3%)   0.05 (  5%)   297k (  5%)
+ ipa pure const                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2688  (  0%)
+ ipa SRA                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3088  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   240  (  0%)
+ df live regs                       :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df use-def / def-use chains        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  2%)   0.01 (  3%)   0.01 (  1%)    18k (  0%)
+ preprocessing                      :   0.05 ( 11%)   0.07 ( 24%)   0.34 ( 33%)   758k ( 12%)
+ lexical analysis                   :   0.04 (  9%)   0.06 ( 21%)   0.13 ( 13%)     0  (  0%)
+ parser (global)                    :   0.04 (  9%)   0.04 ( 14%)   0.08 (  8%)  1320k ( 20%)
+ parser struct body                 :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   240k (  4%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    71k (  1%)
+ parser inl. func. body             :   0.03 (  7%)   0.04 ( 14%)   0.05 (  5%)   245k (  4%)
+ integration                        :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    28k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  3096  (  0%)
+ tree Early VRP                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    21k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    28k (  0%)
+ dominator optimization             :   0.04 (  9%)   0.00 (  0%)   0.01 (  1%)    43k (  1%)
+ backwards jump threading           :   0.00 (  0%)   0.00 (  0%)   0.03 (  3%)  3720  (  0%)
+ tree PRE                           :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)    54k (  1%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    25k (  0%)
+ scev constant prop                 :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   288  (  0%)
+ tree loop unswitching              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4976  (  0%)
+ complete unrolling                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    29k (  0%)
+ tree slp vectorization             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   162k (  3%)
+ tree iv optimization               :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)    89k (  1%)
+ tree copy headers                  :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    11k (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1160  (  0%)
+ expand                             :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   152k (  2%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  9096  (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   512  (  0%)
+ forward prop                       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   584  (  0%)
+ CSE                                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  4368  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    19k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    15k (  0%)
+ CSE 2                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2736  (  0%)
+ branch prediction                  :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    13k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    29k (  0%)
+ integrated RA                      :   0.03 (  7%)   0.01 (  3%)   0.02 (  2%)   212k (  3%)
+ load CSE after reload              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   704  (  0%)
+ scheduling 2                       :   0.03 (  7%)   0.00 (  0%)   0.02 (  2%)    20k (  0%)
+ initialize rtl                     :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   640  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ remove unused locals               :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.45          0.29          1.02         6473k

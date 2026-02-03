@@ -1,3 +1,3 @@
-strdup.c:84:Curl_memdup	40	static
-strdup.c:105:Curl_memdup0	56	static
-strdup.c:132:Curl_saferealloc	40	static
+../../../../../repos/curl/lib/strdup.c:84:Curl_memdup	40	static
+../../../../../repos/curl/lib/strdup.c:105:Curl_memdup0	56	static
+../../../../../repos/curl/lib/strdup.c:132:Curl_saferealloc	40	static

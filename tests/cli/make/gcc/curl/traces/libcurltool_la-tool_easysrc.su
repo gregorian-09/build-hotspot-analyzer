@@ -1,7 +1,0 @@
-tool_easysrc.c:91:easysrc_add	40	static
-tool_easysrc.c:76:easysrc_free	8	static
-tool_easysrc.c:104:easysrc_addf	248	static
-tool_easysrc.c:122:easysrc_init	8	static
-tool_easysrc.c:127:easysrc_perform	40	static
-tool_easysrc.c:162:easysrc_cleanup	24	static
-tool_easysrc.c:171:dumpeasysrc	56	static

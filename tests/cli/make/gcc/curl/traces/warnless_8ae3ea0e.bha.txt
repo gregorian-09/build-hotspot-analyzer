@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/curlx/warnless.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/curlx/warnless.c
+# Timestamp: 2026-01-31T00:30:48+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  4%)   0.00 (  0%)   0.02 (  2%)  1819k ( 20%)
+ phase parsing                      :   0.20 ( 71%)   0.27 ( 90%)   1.01 ( 89%)  4614k ( 51%)
+ phase opt and generate             :   0.07 ( 25%)   0.03 ( 10%)   0.11 ( 10%)  2629k ( 29%)
+ dump files                         :   0.02 (  7%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    73k (  1%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  3%)   0.01 (  1%)   184k (  2%)
+ ipa inlining heuristics            :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ alias analysis                     :   0.01 (  4%)   0.00 (  0%)   0.00 (  0%)  5600  (  0%)
+ preprocessing                      :   0.10 ( 36%)   0.15 ( 50%)   0.75 ( 66%)  1984k ( 22%)
+ lexical analysis                   :   0.06 ( 21%)   0.07 ( 23%)   0.14 ( 12%)     0  (  0%)
+ parser (global)                    :   0.04 ( 14%)   0.03 ( 10%)   0.09 (  8%)  2122k ( 23%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   112k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)   117k (  1%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3472  (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    24k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    72k (  1%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.00 (  0%)  1686k ( 19%)
+ LRA non-specific                   :   0.02 (  7%)   0.00 (  0%)   0.00 (  0%)  5768  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  3%)   0.03 (  3%)   111k (  1%)
+ initialize rtl                     :   0.01 (  4%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)   167k (  2%)
+ TOTAL                              :   0.28          0.30          1.14         9063k

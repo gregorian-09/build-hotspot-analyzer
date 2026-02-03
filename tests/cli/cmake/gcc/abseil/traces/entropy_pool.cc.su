@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/entropy_pool.cc:155:6:void absl::random_internal::{anonymous}::InitPoolURBG()	2128	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/entropy_pool.cc:178:6:void absl::random_internal::GetEntropyFromRandenPool(void*, size_t)	64	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/entropy_pool.cc:155:6:void absl::random_internal::{anonymous}::InitPoolURBG()	2128	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/internal/entropy_pool.cc:178:6:void absl::random_internal::GetEntropyFromRandenPool(void*, size_t)	64	static

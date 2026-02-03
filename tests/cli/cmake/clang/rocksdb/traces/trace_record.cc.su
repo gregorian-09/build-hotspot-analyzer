@@ -6,7 +6,7 @@ repos/rocksdb/trace_replay/trace_record.cc:34:_ZN7rocksdb21WriteQueryTraceRecord
 repos/rocksdb/trace_replay/trace_record.cc:38:_ZN7rocksdb21WriteQueryTraceRecordC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEm	40	static
 repos/rocksdb/include/rocksdb/slice.h:179:_ZN7rocksdb13PinnableSliceD2Ev	24	static
 repos/rocksdb/trace_replay/trace_record.cc:44:_ZN7rocksdb21WriteQueryTraceRecordD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/trace_replay/trace_record.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/trace_replay/trace_record.cc:__clang_call_terminate	8	static
 repos/rocksdb/trace_replay/trace_record.cc:44:_ZN7rocksdb21WriteQueryTraceRecordD0Ev	24	static
 repos/rocksdb/trace_replay/trace_record.cc:46:_ZNK7rocksdb21WriteQueryTraceRecord16GetWriteBatchRepEv	0	static
 repos/rocksdb/trace_replay/trace_record.cc:48:_ZN7rocksdb21WriteQueryTraceRecord6AcceptEPNS_11TraceRecord7HandlerEPSt10unique_ptrINS_17TraceRecordResultESt14default_deleteIS5_EE	24	static

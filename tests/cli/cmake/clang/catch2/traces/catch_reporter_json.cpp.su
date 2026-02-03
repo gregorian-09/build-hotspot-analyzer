@@ -3,7 +3,7 @@ src/catch2/../catch2/internal/catch_jsonwriter.hpp:29:_ZN5Catch15JsonValueWriter
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_stack.h:99:_ZNSt5stackIN5Catch12JsonReporter6WriterESt5dequeIS2_SaIS2_EEED2Ev	24	static
 src/catch2/reporters/catch_reporter_json.cpp:76:_ZN5Catch12JsonReporterD2Ev	40	static
 src/catch2/reporters/catch_reporter_json.cpp:129:_ZN5Catch12JsonReporter10endListingEv	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/reporters/catch_reporter_json.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/reporters/catch_reporter_json.cpp:__clang_call_terminate	8	static
 src/catch2/reporters/catch_reporter_json.cpp:110:_ZN5Catch12JsonReporter9endObjectEv	8	static
 src/catch2/reporters/catch_reporter_json.cpp:76:_ZN5Catch12JsonReporterD0Ev	8	static
 src/catch2/reporters/catch_reporter_json.cpp:86:_ZN5Catch12JsonReporter10startArrayEv	40	static

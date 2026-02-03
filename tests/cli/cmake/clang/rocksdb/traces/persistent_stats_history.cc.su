@@ -20,7 +20,7 @@ repos/rocksdb/monitoring/persistent_stats_history.cc:93:_ZNK7rocksdb30Persistent
 repos/rocksdb/monitoring/persistent_stats_history.cc:97:_ZN7rocksdb8parseKeyB5cxx11ERKNS_5SliceEm	136	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_map.h:504:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEmSt4lessIS5_ESaISt4pairIKS5_mEEEixERS9_	88	static
 repos/rocksdb/include/rocksdb/stats_history.h:57:_ZNK7rocksdb20StatsHistoryIterator16GetFormatVersionEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/persistent_stats_history.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/persistent_stats_history.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static
 repos/rocksdb/include/rocksdb/slice.h:179:_ZN7rocksdb13PinnableSliceD2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static

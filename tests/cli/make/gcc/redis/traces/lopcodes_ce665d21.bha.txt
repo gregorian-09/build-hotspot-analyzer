@@ -1,0 +1,19 @@
+# BHA Trace
+# Source: lopcodes.c
+# Output: lopcodes.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC= -DLUA_USE_MKSTEMP -fPIC -ftime-report -fstack-usage -O2 -c -o lopcodes.o lopcodes.c
+# Timestamp: 2026-01-31T02:07:37+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 ( 12%)   0.02 (  8%)  1819k ( 43%)
+ phase parsing                      :   0.11 (100%)   0.07 ( 88%)   0.23 ( 92%)  2386k ( 57%)
+ preprocessing                      :   0.05 ( 45%)   0.03 ( 38%)   0.12 ( 48%)  1530k ( 36%)
+ lexical analysis                   :   0.03 ( 27%)   0.04 ( 50%)   0.06 ( 24%)     0  (  0%)
+ parser (global)                    :   0.02 ( 18%)   0.00 (  0%)   0.04 ( 16%)   837k ( 20%)
+ parser struct body                 :   0.01 (  9%)   0.00 (  0%)   0.00 (  0%)  6376  (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   272  (  0%)
+ TOTAL                              :   0.11          0.08          0.25         4221k

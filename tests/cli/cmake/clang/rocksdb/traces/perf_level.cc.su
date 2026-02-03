@@ -1,3 +1,3 @@
-repos/rocksdb/monitoring/perf_level.cc:15:_ZN7rocksdb12SetPerfLevelENS_9PerfLevelE	24	static
-repos/rocksdb/monitoring/perf_level.cc:21:_ZN7rocksdb12GetPerfLevelEv	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/monitoring/perf_level.cc:_ZTWN7rocksdb10perf_levelE	8	static
+repos/rocksdb/monitoring/perf_level.cc:15:_ZN7rocksdb12SetPerfLevelENS_9PerfLevelE	0	static
+repos/rocksdb/monitoring/perf_level.cc:21:_ZN7rocksdb12GetPerfLevelEv	0	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/perf_level.cc:_ZTWN7rocksdb10perf_levelE	0	static

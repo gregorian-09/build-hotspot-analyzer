@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/contrib/libtests/timepng.c
+# Output: contrib/libtests/timepng.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c -o contrib/libtests/timepng.o ../../../../repos/libpng/contrib/libtests/timepng.c
+# Timestamp: 2026-01-30T19:06:10+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  7%)   0.03 (  6%)  1819k ( 36%)
+ phase parsing                      :   0.13 ( 62%)   0.11 ( 79%)   0.35 ( 70%)  2073k ( 41%)
+ phase lang. deferred               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    96  (  0%)
+ phase opt and generate             :   0.08 ( 38%)   0.02 ( 14%)   0.10 ( 20%)  1120k ( 22%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ callgraph optimization             :   0.02 ( 10%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ callgraph ipa passes               :   0.02 ( 10%)   0.00 (  0%)   0.02 (  4%)   158k (  3%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)     0  (  0%)
+ preprocessing                      :   0.05 ( 24%)   0.06 ( 43%)   0.21 ( 42%)   897k ( 18%)
+ lexical analysis                   :   0.04 ( 19%)   0.02 ( 14%)   0.07 ( 14%)     0  (  0%)
+ parser (global)                    :   0.01 (  5%)   0.02 ( 14%)   0.07 ( 14%)  1018k ( 20%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    26k (  1%)
+ parser function body               :   0.03 ( 14%)   0.01 (  7%)   0.00 (  0%)   131k (  3%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)    46k (  1%)
+ out of ssa                         :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  2192  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  7%)   0.00 (  0%)   258k (  5%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    13k (  0%)
+ integrated RA                      :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)   255k (  5%)
+ LRA non-specific                   :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  1464  (  0%)
+ machine dep reorg                  :   0.01 (  5%)   0.00 (  0%)   0.00 (  0%)  1040  (  0%)
+ shorten branches                   :   0.01 (  5%)   0.01 (  7%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  5%)   0.00 (  0%)   0.01 (  2%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.02 (  4%)  5400  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.01 (  2%)    23k (  0%)
+ TOTAL                              :   0.21          0.14          0.50         5014k

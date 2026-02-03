@@ -1,3 +1,3 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/log_severity.cc:25:15:std::ostream& absl::operator<<(std::ostream&, LogSeverity)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/log_severity.cc:30:15:std::ostream& absl::operator<<(std::ostream&, LogSeverityAtLeast)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/log_severity.cc:43:15:std::ostream& absl::operator<<(std::ostream&, LogSeverityAtMost)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/log_severity.cc:25:15:std::ostream& absl::operator<<(std::ostream&, LogSeverity)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/log_severity.cc:30:15:std::ostream& absl::operator<<(std::ostream&, LogSeverityAtLeast)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/log_severity.cc:43:15:std::ostream& absl::operator<<(std::ostream&, LogSeverityAtMost)	32	static

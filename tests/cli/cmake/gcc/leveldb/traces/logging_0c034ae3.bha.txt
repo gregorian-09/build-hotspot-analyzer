@@ -1,0 +1,54 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/logging.cc
+# Output: CMakeFiles/leveldb.dir/util/logging.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DLEVELDB_COMPILE_LIBRARY -DLEVELDB_PLATFORM_POSIX=1 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/leveldb/build/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/. -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/include -ftime-report -fstack-usage -fno-exceptions -fno-rtti -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/leveldb.dir/util/logging.cc.o -MF CMakeFiles/leveldb.dir/util/logging.cc.o.d -o CMakeFiles/leveldb.dir/util/logging.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/logging.cc
+# Timestamp: 2026-01-30T19:01:49+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.02 (  1%)   0.04 (  1%)  1880k (  3%)
+ phase parsing                      :   1.90 ( 86%)   1.51 ( 91%)   4.79 ( 90%)    47M ( 86%)
+ phase lang. deferred               :   0.16 (  7%)   0.09 (  5%)   0.27 (  5%)  4340k (  8%)
+ phase opt and generate             :   0.14 (  6%)   0.04 (  2%)   0.20 (  4%)  1368k (  2%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   0.36 ( 16%)   0.24 ( 14%)   0.68 ( 13%)  2363k (  4%)
+ |overload resolution               :   0.08 (  4%)   0.06 (  4%)   0.18 (  3%)  2974k (  5%)
+ dump files                         :   0.02 (  1%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ callgraph construction             :   0.02 (  1%)   0.00 (  0%)   0.03 (  1%)   264k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)  3712  (  0%)
+ callgraph functions expansion      :   0.07 (  3%)   0.03 (  2%)   0.11 (  2%)   556k (  1%)
+ callgraph ipa passes               :   0.05 (  2%)   0.01 (  1%)   0.06 (  1%)   410k (  1%)
+ ipa function summary               :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    11k (  0%)
+ ipa SRA                            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4056  (  0%)
+ cfg cleanup                        :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)  3432  (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.39 ( 18%)   0.50 ( 30%)   2.17 ( 41%)  2134k (  4%)
+ parser (global)                    :   0.51 ( 23%)   0.45 ( 27%)   0.98 ( 18%)    17M ( 33%)
+ parser struct body                 :   0.25 ( 11%)   0.16 ( 10%)   0.34 (  6%)  9858k ( 18%)
+ parser function body               :   0.07 (  3%)   0.02 (  1%)   0.16 (  3%)  1185k (  2%)
+ parser inl. func. body             :   0.20 (  9%)   0.12 (  7%)   0.28 (  5%)  3714k (  7%)
+ parser inl. meth. body             :   0.23 ( 10%)   0.09 (  5%)   0.37 (  7%)  4955k (  9%)
+ template instantiation             :   0.38 ( 17%)   0.22 ( 13%)   0.70 ( 13%)    12M ( 22%)
+ constant expression evaluation     :   0.02 (  1%)   0.03 (  2%)   0.05 (  1%)   244k (  0%)
+ integration                        :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    95k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    40  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    15k (  0%)
+ tree Early VRP                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    44k (  0%)
+ tree PRE                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    14k (  0%)
+ tree aggressive DCE                :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)    47k (  0%)
+ scev constant prop                 :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    47k (  0%)
+ varconst                           :   0.01 (  0%)   0.01 (  1%)   0.01 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    68k (  0%)
+ integrated RA                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   125k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   264  (  0%)
+ scheduling 2                       :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  8808  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3672  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   328  (  0%)
+ rest of compilation                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    16k (  0%)
+ TOTAL                              :   2.21          1.66          5.31           54M

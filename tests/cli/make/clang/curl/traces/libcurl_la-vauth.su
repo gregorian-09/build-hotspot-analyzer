@@ -1,3 +1,3 @@
-vauth/vauth.c:48:Curl_auth_build_spn	40	static
-vauth/vauth.c:114:Curl_auth_user_contains_domain	56	static
-vauth/vauth.c:138:Curl_auth_allowed_to_host	40	static
+../../../../../repos/curl/lib/vauth/vauth.c:48:Curl_auth_build_spn	40	static
+../../../../../repos/curl/lib/vauth/vauth.c:114:Curl_auth_user_contains_domain	56	static
+../../../../../repos/curl/lib/vauth/vauth.c:138:Curl_auth_allowed_to_host	40	static

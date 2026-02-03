@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/barrier.cc
+# Output: CMakeFiles/synchronization.dir/barrier.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/barrier.cc.o -MF CMakeFiles/synchronization.dir/barrier.cc.o.d -o CMakeFiles/synchronization.dir/barrier.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/barrier.cc
+# Timestamp: 2026-01-30T18:41:44+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.04 (  1%)   0.06 (  0%)  1882k (  2%)
+ phase parsing                      :   7.99 ( 93%)   5.41 ( 96%)  15.40 ( 94%)    85M ( 88%)
+ phase lang. deferred               :   0.50 (  6%)   0.17 (  3%)   0.70 (  4%)  9082k (  9%)
+ phase opt and generate             :   0.08 (  1%)   0.01 (  0%)   0.10 (  1%)   580k (  1%)
+ phase last asm                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   816  (  0%)
+ phase finalize                     :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   2.01 ( 23%)   1.13 ( 20%)   2.86 ( 18%)  3309k (  3%)
+ |overload resolution               :   0.77 (  9%)   0.35 (  6%)   1.17 (  7%)  6664k (  7%)
+ callgraph construction             :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)   315k (  0%)
+ callgraph functions expansion      :   0.05 (  1%)   0.00 (  0%)   0.06 (  0%)   168k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)    66k (  0%)
+ ipa icf                            :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ df scan insns                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    96  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1088  (  0%)
+ rebuild jump labels                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.97 ( 11%)   1.12 ( 20%)   3.24 ( 20%)  6547k (  7%)
+ parser (global)                    :   1.66 ( 19%)   1.38 ( 24%)   3.23 ( 20%)    32M ( 33%)
+ parser struct body                 :   1.07 ( 12%)   0.54 ( 10%)   1.76 ( 11%)    15M ( 16%)
+ parser enumerator list             :   0.01 (  0%)   0.01 (  0%)   0.07 (  0%)   169k (  0%)
+ parser function body               :   0.78 (  9%)   0.45 (  8%)   1.38 (  8%)  3397k (  3%)
+ parser inl. func. body             :   0.80 (  9%)   0.44 (  8%)   1.49 (  9%)  6087k (  6%)
+ parser inl. meth. body             :   0.89 ( 10%)   0.50 (  9%)   1.43 (  9%)  7231k (  7%)
+ template instantiation             :   2.07 ( 24%)   1.03 ( 18%)   3.18 ( 20%)    23M ( 24%)
+ constant expression evaluation     :   0.21 (  2%)   0.08 (  1%)   0.23 (  1%)   449k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8304  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4848  (  0%)
+ varconst                           :   0.03 (  0%)   0.02 (  0%)   0.08 (  0%)   384  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ integrated RA                      :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    50k (  0%)
+ reload CSE regs                    :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1224  (  0%)
+ symout                             :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ TOTAL                              :   8.59          5.64         16.30           97M

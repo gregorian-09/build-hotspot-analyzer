@@ -58,7 +58,7 @@ repos/abseil/absl/log/internal/log_message.cc:580:_ZN4absl12log_internal10LogMes
 repos/abseil/absl/log/internal/log_message.cc:500:_ZN4absl12log_internal10LogMessage14SetFailQuietlyEv	0	static
 repos/abseil/absl/log/internal/log_message.cc:502:_ZN4absl12log_internal10LogMessage11OstreamViewC2ERNS1_14LogMessageDataE	40	static
 repos/abseil/absl/log/internal/log_message.cc:521:_ZN4absl12log_internal10LogMessage11OstreamViewD2Ev	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/log_message.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/log/internal/log_message.cc:__clang_call_terminate	8	static
 repos/abseil/absl/log/internal/log_message.cc:521:_ZN4absl12log_internal10LogMessage11OstreamViewD0Ev	8	static
 repos/abseil/absl/log/internal/log_message.cc:541:_ZNK4absl12log_internal10LogMessage7IsFatalEv	0	static
 repos/abseil/absl/log/internal/log_message.cc:546:_ZN4absl12log_internal10LogMessage12PrepareToDieEv	24	static

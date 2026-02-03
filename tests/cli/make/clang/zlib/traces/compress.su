@@ -1,3 +1,3 @@
-compress.c:22:compress2	200	static
-compress.c:63:compress	40	static
-compress.c:72:compressBound	8	static
+../../../../repos/zlib/compress.c:22:compress2	200	static
+../../../../repos/zlib/compress.c:63:compress	40	static
+../../../../repos/zlib/compress.c:72:compressBound	8	static

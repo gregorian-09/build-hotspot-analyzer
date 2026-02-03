@@ -1,0 +1,25 @@
+# BHA Trace
+# Source: crc64.c
+# Output: crc64.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -pedantic -DREDIS_STATIC= -std=gnu11 -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes -O3 -flto=auto -fno-omit-frame-pointer -g -ggdb -fPIC -ftime-report -fstack-usage -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -I../deps/hdr_histogram -I../deps/fpconv -I../deps/fast_float -I../deps/xxhash -DUSE_JEMALLOC -I../deps/jemalloc/include -DINCLUDE_VEC_SETS=1 -MMD -o crc64.o -c crc64.c
+# Timestamp: 2026-01-31T02:11:52+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  7%)   0.01 (  3%)   0.02 (  1%)  1828k ( 41%)
+ phase parsing                      :   0.12 ( 80%)   0.33 ( 97%)   2.26 ( 98%)  2488k ( 56%)
+ phase opt and generate             :   0.02 ( 13%)   0.00 (  0%)   0.02 (  1%)   140k (  3%)
+ callgraph ipa passes               :   0.02 ( 13%)   0.00 (  0%)   0.02 (  1%)    87k (  2%)
+ lto stream compression             :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ lto stream output                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ alias stmt walking                 :   0.01 (  7%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.05 ( 33%)   0.21 ( 62%)   2.10 ( 91%)   729k ( 16%)
+ lexical analysis                   :   0.04 ( 27%)   0.07 ( 21%)   0.09 (  4%)     0  (  0%)
+ parser (global)                    :   0.03 ( 20%)   0.03 (  9%)   0.06 (  3%)   946k ( 21%)
+ parser struct body                 :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)    75k (  2%)
+ parser inl. func. body             :   0.00 (  0%)   0.01 (  3%)   0.01 (  0%)   247k (  6%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1912  (  0%)
+ TOTAL                              :   0.15          0.34          2.30         4457k

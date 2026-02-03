@@ -1,0 +1,42 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/data_structure.cc
+# Output: CMakeFiles/rocksdb.dir/util/data_structure.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/util/data_structure.cc.o -MF CMakeFiles/rocksdb.dir/util/data_structure.cc.o.d -o CMakeFiles/rocksdb.dir/util/data_structure.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/data_structure.cc
+# Timestamp: 2026-01-30T22:46:57+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.02 (  0%)   0.05 (  0%)  2143k (  1%)
+ phase parsing                      :   8.20 ( 93%)   5.00 ( 96%)  15.33 ( 94%)   169M ( 93%)
+ phase lang. deferred               :   0.52 (  6%)   0.19 (  4%)   0.78 (  5%) 10156k (  5%)
+ phase opt and generate             :   0.07 (  1%)   0.02 (  0%)   0.10 (  1%)   516k (  0%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   1.72 ( 20%)   0.86 ( 16%)   2.89 ( 18%)  5304k (  3%)
+ |overload resolution               :   0.71 (  8%)   0.28 (  5%)   0.99 (  6%)    10M (  6%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.03 (  0%)   0.01 (  0%)   0.03 (  0%)   350k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    32  (  0%)
+ callgraph functions expansion      :   0.02 (  0%)   0.01 (  0%)   0.04 (  0%)   108k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    34k (  0%)
+ ipa inheritance graph              :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)  3064  (  0%)
+ preprocessing                      :   1.02 ( 12%)   1.19 ( 23%)   3.18 ( 20%)  4052k (  2%)
+ parser (global)                    :   2.50 ( 28%)   1.64 ( 31%)   4.52 ( 28%)    64M ( 35%)
+ parser struct body                 :   0.75 (  9%)   0.29 (  6%)   1.17 (  7%)    19M ( 11%)
+ parser enumerator list             :   0.02 (  0%)   0.00 (  0%)   0.03 (  0%)   230k (  0%)
+ parser function body               :   0.19 (  2%)   0.08 (  2%)   0.32 (  2%)  2659k (  1%)
+ parser inl. func. body             :   1.64 ( 19%)   0.69 ( 13%)   2.75 ( 17%)    43M ( 24%)
+ parser inl. meth. body             :   0.79 (  9%)   0.37 (  7%)   1.27 (  8%)    12M (  7%)
+ template instantiation             :   1.66 ( 19%)   0.79 ( 15%)   2.60 ( 16%)    32M ( 18%)
+ constant expression evaluation     :   0.11 (  1%)   0.10 (  2%)   0.22 (  1%)   548k (  0%)
+ constraint normalization           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   153k (  0%)
+ constraint satisfaction            :   0.01 (  0%)   0.02 (  0%)   0.01 (  0%)   433k (  0%)
+ varconst                           :   0.02 (  0%)   0.02 (  0%)   0.02 (  0%)  4440  (  0%)
+ loop analysis                      :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    48k (  0%)
+ symout                             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ early local passes                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ TOTAL                              :   8.80          5.23         16.28          182M

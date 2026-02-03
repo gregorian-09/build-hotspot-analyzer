@@ -1,0 +1,17 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/win32_waiter.cc
+# Output: CMakeFiles/synchronization.dir/internal/win32_waiter.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/synchronization/CMakeFiles/synchronization.dir/internal/win32_waiter.cc.o -MF CMakeFiles/synchronization.dir/internal/win32_waiter.cc.o.d -o CMakeFiles/synchronization.dir/internal/win32_waiter.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/synchronization/internal/win32_waiter.cc
+# Timestamp: 2026-01-30T18:41:53+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.05 (100%)   0.07 (100%)   0.25 ( 57%)  1882k ( 76%)
+ phase parsing                      :   0.00 (  0%)   0.00 (  0%)   0.05 ( 11%)   595k ( 24%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.14 ( 32%)     0  (  0%)
+ |name lookup                       :   0.03 ( 60%)   0.01 ( 14%)   0.04 (  9%)   102k (  4%)
+ preprocessing                      :   0.00 (  0%)   0.00 (  0%)   0.05 ( 11%)    16k (  1%)
+ TOTAL                              :   0.05          0.07          0.44         2481k

@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: src/sc.c
+# Output: src/sc.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/sc.o src/sc.c
+# Timestamp: 2026-01-31T02:11:00+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 14%)
+ phase parsing                      :   0.40 ( 87%)   0.44 ( 96%)   1.12 ( 91%)    10M ( 78%)
+ phase opt and generate             :   0.06 ( 13%)   0.02 (  4%)   0.09 (  7%)  1080k (  8%)
+ dump files                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ callgraph ipa passes               :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)   132k (  1%)
+ rebuild jump labels                :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.11 ( 24%)   0.16 ( 35%)   0.52 ( 42%)  6043k ( 46%)
+ lexical analysis                   :   0.18 ( 39%)   0.15 ( 33%)   0.31 ( 25%)     0  (  0%)
+ parser (global)                    :   0.10 ( 22%)   0.10 ( 22%)   0.23 ( 19%)  3815k ( 29%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   110k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   111k (  1%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)    92k (  1%)
+ parser inl. func. body             :   0.00 (  0%)   0.02 (  4%)   0.02 (  2%)   165k (  1%)
+ integration                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  4064  (  0%)
+ tree CFG construction              :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    41k (  0%)
+ tree SSA rewrite                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    40k (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   201k (  2%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  3584  (  0%)
+ integrated RA                      :   0.01 (  2%)   0.01 (  2%)   0.01 (  1%)   377k (  3%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  7240  (  0%)
+ final                              :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)    37k (  0%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.02 (  2%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   336  (  0%)
+ TOTAL                              :   0.46          0.46          1.23           12M

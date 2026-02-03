@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc:110:25:void benchmark::{anonymous}::DiagnoseAndExit(const char*)	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc:118:8:double benchmark::ProcessCPUUsage()	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc:158:8:double benchmark::ThreadCPUUsage()	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc:213:13:std::string benchmark::LocalDateTimeString()	336	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc:288:1:cc)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/timers.cc:110:25:void benchmark::{anonymous}::DiagnoseAndExit(const char*)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/timers.cc:118:8:double benchmark::ProcessCPUUsage()	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/timers.cc:158:8:double benchmark::ThreadCPUUsage()	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/timers.cc:213:13:std::string benchmark::LocalDateTimeString()	336	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/timers.cc:288:1:cc)	8	static

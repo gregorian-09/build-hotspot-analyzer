@@ -1,0 +1,56 @@
+# BHA Trace
+# Source: src/psset.c
+# Output: src/psset.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/psset.o src/psset.c
+# Timestamp: 2026-01-31T02:11:03+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  1%)   0.01 (  1%)   0.03 (  1%)  1819k (  5%)
+ phase parsing                      :   1.63 ( 84%)   1.72 ( 95%)   5.12 ( 93%)    25M ( 77%)
+ phase opt and generate             :   0.30 ( 15%)   0.08 (  4%)   0.38 (  7%)  5728k ( 17%)
+ dump files                         :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   176k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    82k (  0%)
+ callgraph ipa passes               :   0.05 (  3%)   0.02 (  1%)   0.08 (  1%)  1208k (  4%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1840  (  0%)
+ df scan insns                      :   0.02 (  1%)   0.01 (  1%)   0.02 (  0%)  3264  (  0%)
+ rebuild jump labels                :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.48 ( 25%)   0.52 ( 29%)   2.59 ( 47%)    13M ( 42%)
+ lexical analysis                   :   0.58 ( 30%)   0.59 ( 33%)   1.41 ( 25%)     0  (  0%)
+ parser (global)                    :   0.15 (  8%)   0.17 (  9%)   0.35 (  6%)  5702k ( 17%)
+ parser struct body                 :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   254k (  1%)
+ parser enumerator list             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   151k (  0%)
+ parser function body               :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)   131k (  0%)
+ parser inl. func. body             :   0.39 ( 20%)   0.42 ( 23%)   0.72 ( 13%)  5405k ( 16%)
+ integration                        :   0.02 (  1%)   0.01 (  1%)   0.03 (  1%)   529k (  2%)
+ tree gimplify                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   433k (  1%)
+ tree CFG construction              :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   149k (  0%)
+ tree CFG cleanup                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)     0  (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    96k (  0%)
+ tree operand scan                  :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)   330k (  1%)
+ dominance computation              :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  9008  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.02 (  0%)   902k (  3%)
+ post expand cleanups               :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    38k (  0%)
+ varconst                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4224  (  0%)
+ loop init                          :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)    89k (  0%)
+ loop fini                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ integrated RA                      :   0.04 (  2%)   0.01 (  1%)   0.06 (  1%)  1984k (  6%)
+ LRA non-specific                   :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)    23k (  0%)
+ LRA virtuals elimination           :   0.02 (  1%)   0.00 (  0%)   0.00 (  0%)    67k (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3624  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)   108k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  2496  (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)   206k (  1%)
+ symout                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   576  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)   178k (  1%)
+ TOTAL                              :   1.94          1.81          5.53           32M

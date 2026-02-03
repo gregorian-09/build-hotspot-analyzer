@@ -1,7 +1,7 @@
 src/catch2/internal/catch_reusable_string_stream.cpp:50:_ZN5Catch20ReusableStringStreamC2Ev	24	static
 src/catch2/internal/catch_reusable_string_stream.cpp:27:_ZN5Catch13StringStreams3addB5cxx11Ev	72	static
 src/catch2/internal/catch_reusable_string_stream.cpp:55:_ZN5Catch20ReusableStringStreamD2Ev	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_reusable_string_stream.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_reusable_string_stream.cpp:__clang_call_terminate	8	static
 src/catch2/internal/catch_reusable_string_stream.cpp:40:_ZN5Catch13StringStreams7releaseEmPSo	56	static
 src/catch2/internal/catch_reusable_string_stream.cpp:61:_ZNK5Catch20ReusableStringStream3strB5cxx11Ev	24	static
 src/catch2/internal/catch_reusable_string_stream.cpp:65:_ZN5Catch20ReusableStringStream3strERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static

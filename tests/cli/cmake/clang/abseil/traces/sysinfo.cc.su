@@ -3,7 +3,7 @@ repos/abseil/absl/base/internal/sysinfo.cc:381:_ZN4absl13base_internal19NominalC
 repos/abseil/absl/base/internal/sysinfo.cc:400:_ZN4absl13base_internal6GetTIDEv	0	static
 repos/abseil/absl/base/internal/sysinfo.cc:483:_ZN4absl13base_internal12GetCachedTIDEv	8	static
 repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIZNS0_7NumCPUsEvE3$_0JEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/sysinfo.cc:__clang_call_terminate	8	static
 repos/abseil/absl/base/call_once.h:153:_ZN4absl13base_internal12CallOnceImplIZNS0_19NominalCPUFrequencyEvE3$_0JEEEvPSt6atomicIjENS0_14SchedulingModeEOT_DpOT0_	1080	static
 repos/abseil/absl/base/internal/sysinfo.cc:268:_ZN4absl13base_internalL14GetTimeTscPairEv	56	static
 repos/abseil/absl/base/internal/sysinfo.cc:239:_ZN4absl13base_internalL23ReadMonotonicClockNanosEv	120	static

@@ -1,0 +1,39 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/seed_gen_exception.cc
+# Output: CMakeFiles/random_seed_gen_exception.dir/seed_gen_exception.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/random/CMakeFiles/random_seed_gen_exception.dir/seed_gen_exception.cc.o -MF CMakeFiles/random_seed_gen_exception.dir/seed_gen_exception.cc.o.d -o CMakeFiles/random_seed_gen_exception.dir/seed_gen_exception.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/random/seed_gen_exception.cc
+# Timestamp: 2026-01-30T18:39:19+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  1%)   0.03 (  2%)   0.06 (  1%)  1882k (  4%)
+ phase parsing                      :   2.24 ( 92%)   1.76 ( 94%)   4.55 ( 93%)    42M ( 88%)
+ phase lang. deferred               :   0.12 (  5%)   0.07 (  4%)   0.21 (  4%)  3771k (  8%)
+ phase opt and generate             :   0.06 (  2%)   0.01 (  1%)   0.07 (  1%)   415k (  1%)
+ phase finalize                     :   0.00 (  0%)   0.01 (  1%)   0.02 (  0%)     0  (  0%)
+ |name lookup                       :   0.56 ( 23%)   0.24 ( 13%)   0.88 ( 18%)  1908k (  4%)
+ |overload resolution               :   0.12 (  5%)   0.07 (  4%)   0.25 (  5%)  2488k (  5%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   120k (  0%)
+ callgraph functions expansion      :   0.04 (  2%)   0.01 (  1%)   0.05 (  1%)   211k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    59k (  0%)
+ df reaching defs                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   0.45 ( 18%)   0.49 ( 26%)   1.25 ( 25%)  2054k (  4%)
+ parser (global)                    :   0.46 ( 19%)   0.60 ( 32%)   1.16 ( 24%)    14M ( 30%)
+ parser struct body                 :   0.43 ( 18%)   0.17 (  9%)   0.57 ( 12%)    10M ( 21%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   109k (  0%)
+ parser function body               :   0.10 (  4%)   0.04 (  2%)   0.17 (  3%)   974k (  2%)
+ parser inl. func. body             :   0.20 (  8%)   0.09 (  5%)   0.32 (  7%)  3307k (  7%)
+ parser inl. meth. body             :   0.17 (  7%)   0.10 (  5%)   0.40 (  8%)  3749k (  7%)
+ template instantiation             :   0.50 ( 20%)   0.33 ( 18%)   0.77 ( 16%)    11M ( 24%)
+ constant expression evaluation     :   0.05 (  2%)   0.01 (  1%)   0.11 (  2%)    75k (  0%)
+ backwards jump threading           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4480  (  0%)
+ expand                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  9984  (  0%)
+ reload                             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    96  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.01 (  1%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  9992  (  0%)
+ TOTAL                              :   2.44          1.88          4.91           48M

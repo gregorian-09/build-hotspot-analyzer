@@ -1,0 +1,46 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/memutil.cc
+# Output: CMakeFiles/strings.dir/internal/memutil.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/strings.dir/internal/memutil.cc.o -MF CMakeFiles/strings.dir/internal/memutil.cc.o.d -o CMakeFiles/strings.dir/internal/memutil.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/memutil.cc
+# Timestamp: 2026-01-30T18:40:02+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  1%)   0.11 (  3%)   0.41 (  4%)  1882k (  3%)
+ phase parsing                      :   3.84 ( 90%)   2.93 ( 92%)   9.17 ( 90%)    47M ( 88%)
+ phase lang. deferred               :   0.27 (  6%)   0.12 (  4%)   0.41 (  4%)  4300k (  8%)
+ phase opt and generate             :   0.10 (  2%)   0.01 (  0%)   0.14 (  1%)   298k (  1%)
+ phase finalize                     :   0.02 (  0%)   0.00 (  0%)   0.07 (  1%)     0  (  0%)
+ |name lookup                       :   0.81 ( 19%)   0.40 ( 13%)   1.52 ( 15%)  2320k (  4%)
+ |overload resolution               :   0.25 (  6%)   0.09 (  3%)   0.44 (  4%)  3502k (  6%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   114k (  0%)
+ callgraph optimization             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    64  (  0%)
+ callgraph functions expansion      :   0.08 (  2%)   0.01 (  0%)   0.12 (  1%)   139k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    30k (  0%)
+ cfg cleanup                        :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  2352  (  0%)
+ df live regs                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ df live&initialized regs           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.75 ( 18%)   1.16 ( 37%)   3.78 ( 37%)  1987k (  4%)
+ parser (global)                    :   0.80 ( 19%)   0.86 ( 27%)   1.90 ( 19%)    17M ( 32%)
+ parser struct body                 :   0.69 ( 16%)   0.17 (  5%)   0.76 (  7%)  9500k ( 17%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    23k (  0%)
+ parser function body               :   0.24 (  6%)   0.14 (  4%)   0.48 (  5%)  1559k (  3%)
+ parser inl. func. body             :   0.29 (  7%)   0.14 (  4%)   0.48 (  5%)  3075k (  6%)
+ parser inl. meth. body             :   0.35 (  8%)   0.27 (  9%)   0.78 (  8%)  5537k ( 10%)
+ template instantiation             :   0.93 ( 22%)   0.29 (  9%)   1.26 ( 12%)    13M ( 24%)
+ constant expression evaluation     :   0.04 (  1%)   0.01 (  0%)   0.11 (  1%)   122k (  0%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  8096  (  0%)
+ tree VRP                           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  6288  (  0%)
+ dominator optimization             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  4040  (  0%)
+ tree FRE                           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   832  (  0%)
+ varconst                           :   0.01 (  0%)   0.01 (  0%)   0.02 (  0%)  4240  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    13k (  0%)
+ combiner                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    11k (  0%)
+ integrated RA                      :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)    25k (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   960  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  2264  (  0%)
+ initialize rtl                     :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ TOTAL                              :   4.26          3.17         10.20           53M

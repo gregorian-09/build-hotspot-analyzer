@@ -1,6 +1,6 @@
-tool_progress.c:32:max5data	72	static
-tool_progress.c:64:xferinfo_cb	72	static
-tool_progress.c:89:time2str	88	static
-tool_progress.c:152:progress_meter	472	static
-tool_progress.c:139:add_offt	8	static
-tool_progress.c:304:progress_finalize	24	static
+../../../../../repos/curl/src/tool_progress.c:32:max5data	72	static
+../../../../../repos/curl/src/tool_progress.c:64:xferinfo_cb	72	static
+../../../../../repos/curl/src/tool_progress.c:89:time2str	88	static
+../../../../../repos/curl/src/tool_progress.c:152:progress_meter	472	static
+../../../../../repos/curl/src/tool_progress.c:139:add_offt	8	static
+../../../../../repos/curl/src/tool_progress.c:304:progress_finalize	24	static

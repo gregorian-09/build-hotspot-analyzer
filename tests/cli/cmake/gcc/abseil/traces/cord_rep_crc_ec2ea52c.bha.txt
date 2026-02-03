@@ -1,0 +1,47 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/cord_rep_crc.cc
+# Output: CMakeFiles/cord_internal.dir/internal/cord_rep_crc.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/strings/CMakeFiles/cord_internal.dir/internal/cord_rep_crc.cc.o -MF CMakeFiles/cord_internal.dir/internal/cord_rep_crc.cc.o.d -o CMakeFiles/cord_internal.dir/internal/cord_rep_crc.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/internal/cord_rep_crc.cc
+# Timestamp: 2026-01-30T18:42:41+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.03 (  0%)   0.01 (  0%)   0.06 (  0%)  1882k (  1%)
+ phase parsing                      :  10.32 ( 93%)   7.11 ( 97%)  19.72 ( 95%)   151M ( 89%)
+ phase lang. deferred               :   0.58 (  5%)   0.19 (  3%)   0.81 (  4%)    16M ( 10%)
+ phase opt and generate             :   0.11 (  1%)   0.01 (  0%)   0.13 (  1%)  1103k (  1%)
+ phase finalize                     :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ |name lookup                       :   2.50 ( 23%)   1.46 ( 20%)   4.21 ( 20%)  5258k (  3%)
+ |overload resolution               :   1.07 ( 10%)   0.41 (  6%)   1.78 (  9%)    17M ( 10%)
+ callgraph construction             :   0.04 (  0%)   0.00 (  0%)   0.03 (  0%)   575k (  0%)
+ callgraph functions expansion      :   0.05 (  0%)   0.00 (  0%)   0.06 (  0%)   239k (  0%)
+ callgraph ipa passes               :   0.02 (  0%)   0.01 (  0%)   0.03 (  0%)   197k (  0%)
+ ipa inheritance graph              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7112  (  0%)
+ preprocessing                      :   1.19 ( 11%)   1.30 ( 18%)   3.86 ( 19%)  6943k (  4%)
+ parser (global)                    :   2.03 ( 18%)   1.71 ( 23%)   3.85 ( 19%)    51M ( 30%)
+ parser struct body                 :   1.44 ( 13%)   0.94 ( 13%)   2.37 ( 11%)    30M ( 18%)
+ parser enumerator list             :   0.04 (  0%)   0.00 (  0%)   0.03 (  0%)   165k (  0%)
+ parser function body               :   0.85 (  8%)   0.70 ( 10%)   1.82 (  9%)  5814k (  3%)
+ parser inl. func. body             :   0.99 (  9%)   0.46 (  6%)   1.49 (  7%)    12M (  7%)
+ parser inl. meth. body             :   1.37 ( 12%)   0.79 ( 11%)   2.30 ( 11%)    15M (  9%)
+ template instantiation             :   2.76 ( 25%)   1.33 ( 18%)   4.41 ( 21%)    45M ( 26%)
+ constant expression evaluation     :   0.19 (  2%)   0.06 (  1%)   0.32 (  2%)   743k (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    16k (  0%)
+ backwards jump threading           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  8568  (  0%)
+ isolate eroneous paths             :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ tree CCP                           :   0.01 (  0%)   0.01 (  0%)   0.01 (  0%)  1072  (  0%)
+ tree PRE                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  6672  (  0%)
+ tree FRE                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5432  (  0%)
+ expand                             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    24k (  0%)
+ varconst                           :   0.04 (  0%)   0.01 (  0%)   0.08 (  0%)  4368  (  0%)
+ CSE                                :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  1440  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    21k (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3864  (  0%)
+ integrated RA                      :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    49k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5608  (  0%)
+ reorder blocks                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1856  (  0%)
+ initialize rtl                     :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ TOTAL                              :  11.05          7.32         20.74          171M

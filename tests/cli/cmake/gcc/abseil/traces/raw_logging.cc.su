@@ -1,11 +1,11 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/atomic_hook.h:135:21:) [with ReturnType = void; Args = {const char*, int, const char*, const char*, const char*}]	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:122:6:)	240	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:134:6:bool absl::raw_log_internal::{anonymous}::DefaultLogFilterAndPrefix(absl::LogSeverity, const char*, int, char**, int*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:148:6:void absl::raw_log_internal::{anonymous}::RawLogVA(absl::LogSeverity, const char*, int, const char*, __va_list_tag*)	3120	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:205:6:void absl::raw_log_internal::AsyncSignalSafeWriteError(const char*, size_t)	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:247:6:)	224	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:197:6:void absl::raw_log_internal::{anonymous}::DefaultInternalLog(absl::LogSeverity, const char*, int, const std::string&)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:255:6:bool absl::raw_log_internal::RawLoggingFullySupported()	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:267:6:void absl::raw_log_internal::RegisterLogFilterAndPrefixHook(LogFilterAndPrefixHook)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:271:6:void absl::raw_log_internal::RegisterAbortHook(AbortHook)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/raw_logging.cc:273:6:void absl::raw_log_internal::RegisterInternalLogFunction(InternalLogFunction)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/atomic_hook.h:135:21:) [with ReturnType = void; Args = {const char*, int, const char*, const char*, const char*}]	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:122:6:)	240	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:134:6:bool absl::raw_log_internal::{anonymous}::DefaultLogFilterAndPrefix(absl::LogSeverity, const char*, int, char**, int*)	16	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:148:6:void absl::raw_log_internal::{anonymous}::RawLogVA(absl::LogSeverity, const char*, int, const char*, __va_list_tag*)	3120	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:205:6:void absl::raw_log_internal::AsyncSignalSafeWriteError(const char*, size_t)	48	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:247:6:)	224	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:197:6:void absl::raw_log_internal::{anonymous}::DefaultInternalLog(absl::LogSeverity, const char*, int, const std::string&)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:255:6:bool absl::raw_log_internal::RawLoggingFullySupported()	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:267:6:void absl::raw_log_internal::RegisterLogFilterAndPrefixHook(LogFilterAndPrefixHook)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:271:6:void absl::raw_log_internal::RegisterAbortHook(AbortHook)	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/internal/raw_logging.cc:273:6:void absl::raw_log_internal::RegisterInternalLogFunction(InternalLogFunction)	8	static

@@ -1,4 +1,0 @@
-repos/mimalloc/test/test-stress.c:279:main	72	static
-repos/mimalloc/test/test-stress.c:158:stress	104	static
-repos/mimalloc/test/test-stress.c:395:thread_entry	8	static
-repos/mimalloc/test/test-stress.c:114:alloc_items	24	static

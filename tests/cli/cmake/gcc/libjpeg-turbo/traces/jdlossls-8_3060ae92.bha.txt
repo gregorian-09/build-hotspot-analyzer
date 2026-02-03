@@ -1,0 +1,68 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jdlossls-8.c
+# Output: CMakeFiles/jpeg-static.dir/src/wrapper/jdlossls-8.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/wrapper/jdlossls-8.c.o -MF CMakeFiles/jpeg-static.dir/src/wrapper/jdlossls-8.c.o.d -o CMakeFiles/jpeg-static.dir/src/wrapper/jdlossls-8.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/wrapper/jdlossls-8.c
+# Timestamp: 2026-01-30T19:04:30+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.02 (  5%)   0.06 (  3%)  1819k ( 26%)
+ phase parsing                      :   0.27 ( 40%)   0.35 ( 81%)   1.21 ( 68%)  2676k ( 38%)
+ phase opt and generate             :   0.41 ( 60%)   0.06 ( 14%)   0.50 ( 28%)  2599k ( 37%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ dump files                         :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   608  (  0%)
+ callgraph functions expansion      :   0.36 ( 53%)   0.05 ( 12%)   0.43 ( 24%)  2183k ( 31%)
+ callgraph ipa passes               :   0.04 (  6%)   0.01 (  2%)   0.06 (  3%)   302k (  4%)
+ ipa SRA                            :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  4112  (  0%)
+ ipa modref                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    20k (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    19k (  0%)
+ trivially dead code                :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ df scan insns                      :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)   576  (  0%)
+ df live regs                       :   0.02 (  3%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ alias analysis                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    74k (  1%)
+ alias stmt walking                 :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8200  (  0%)
+ preprocessing                      :   0.10 ( 15%)   0.11 ( 26%)   0.72 ( 40%)   770k ( 11%)
+ lexical analysis                   :   0.04 (  6%)   0.05 ( 12%)   0.13 (  7%)     0  (  0%)
+ parser (global)                    :   0.11 ( 16%)   0.14 ( 33%)   0.31 ( 17%)  1329k ( 19%)
+ parser struct body                 :   0.00 (  0%)   0.03 (  7%)   0.03 (  2%)   237k (  3%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    57k (  1%)
+ parser inl. func. body             :   0.02 (  3%)   0.02 (  5%)   0.01 (  1%)   245k (  3%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    77k (  1%)
+ tree CFG construction              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)  2576  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)    53k (  1%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    26k (  0%)
+ tree PTA                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    13k (  0%)
+ backwards jump threading           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  1008  (  0%)
+ tree FRE                           :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    19k (  0%)
+ tree RPO VN                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  3856  (  0%)
+ tree loop invariant motion         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)   160  (  0%)
+ tree loop unswitching              :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)    10k (  0%)
+ complete unrolling                 :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)    83k (  1%)
+ tree vectorization                 :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)   147k (  2%)
+ tree loop distribution             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    10k (  0%)
+ tree iv optimization               :   0.01 (  1%)   0.00 (  0%)   0.03 (  2%)   154k (  2%)
+ tree modref                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    37k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)     0  (  0%)
+ expand                             :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)   144k (  2%)
+ CSE                                :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)  5496  (  0%)
+ dead store elim1                   :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    23k (  0%)
+ loop analysis                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ loop fini                          :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ CSE 2                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  2048  (  0%)
+ branch prediction                  :   0.01 (  1%)   0.00 (  0%)   0.01 (  1%)    22k (  0%)
+ combiner                           :   0.04 (  6%)   0.00 (  0%)   0.02 (  1%)   155k (  2%)
+ integrated RA                      :   0.02 (  3%)   0.00 (  0%)   0.03 (  2%)   352k (  5%)
+ LRA non-specific                   :   0.01 (  1%)   0.00 (  0%)   0.02 (  1%)  9448  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    13k (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  8464  (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1248  (  0%)
+ if to switch conversion            :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.05 (  7%)   0.00 (  0%)   0.06 (  3%)    48k (  1%)
+ remove unused locals               :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.68          0.43          1.79         7096k

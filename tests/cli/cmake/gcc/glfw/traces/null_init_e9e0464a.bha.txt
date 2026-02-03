@@ -1,0 +1,40 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/null_init.c
+# Output: CMakeFiles/glfw.dir/null_init.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_MEMFD_CREATE -D_DEFAULT_SOURCE -D_GLFW_WAYLAND -D_GLFW_X11 -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/include -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/glfw/build/src -ftime-report -fstack-usage -O3 -DNDEBUG -std=c99 -fPIC -Wall -MD -MT src/CMakeFiles/glfw.dir/null_init.c.o -MF CMakeFiles/glfw.dir/null_init.c.o.d -o CMakeFiles/glfw.dir/null_init.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/null_init.c
+# Timestamp: 2026-01-30T19:44:07+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)  1523k ( 12%)
+ phase parsing                      :   0.64 ( 79%)   0.81 ( 99%)   2.26 ( 91%)    10M ( 82%)
+ phase opt and generate             :   0.17 ( 21%)   0.01 (  1%)   0.18 (  7%)   822k (  6%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)     0  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   192  (  0%)
+ callgraph functions expansion      :   0.13 ( 16%)   0.01 (  1%)   0.13 (  5%)   579k (  4%)
+ callgraph ipa passes               :   0.04 (  5%)   0.00 (  0%)   0.05 (  2%)   179k (  1%)
+ alias stmt walking                 :   0.02 (  2%)   0.00 (  0%)   0.03 (  1%)  2992  (  0%)
+ preprocessing                      :   0.26 ( 32%)   0.32 ( 39%)   1.44 ( 58%)  4152k ( 32%)
+ lexical analysis                   :   0.20 ( 25%)   0.27 ( 33%)   0.42 ( 17%)     0  (  0%)
+ parser (global)                    :   0.11 ( 14%)   0.15 ( 18%)   0.29 ( 12%)  5341k ( 41%)
+ parser struct body                 :   0.03 (  4%)   0.04 (  5%)   0.05 (  2%)   725k (  6%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   135k (  1%)
+ parser function body               :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    62k (  0%)
+ parser inl. func. body             :   0.04 (  5%)   0.02 (  2%)   0.05 (  2%)   231k (  2%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5744  (  0%)
+ tree VRP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7744  (  0%)
+ tree PRE                           :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    33k (  0%)
+ tree DSE                           :   0.06 (  7%)   0.00 (  0%)   0.05 (  2%)    65k (  1%)
+ tree slp vectorization             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   158k (  1%)
+ CSE                                :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)  5800  (  0%)
+ integrated RA                      :   0.02 (  2%)   0.00 (  0%)   0.02 (  1%)    75k (  1%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  4424  (  0%)
+ scheduling 2                       :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  6552  (  0%)
+ final                              :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  5520  (  0%)
+ initialize rtl                     :   0.02 (  2%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)  8800  (  0%)
+ address taken                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.81          0.82          2.48           12M

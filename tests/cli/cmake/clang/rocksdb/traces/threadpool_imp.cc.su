@@ -37,8 +37,8 @@ repos/rocksdb/util/threadpool_imp.cc:524:_ZNK7rocksdb14ThreadPoolImpl17GetThread
 repos/rocksdb/util/threadpool_imp.cc:529:_ZN7rocksdb14ThreadPoolImpl17SetThreadPriorityENS_3Env8PriorityE	0	static
 repos/rocksdb/util/threadpool_imp.cc:535:_ZN7rocksdb14ThreadPoolImpl14ReserveThreadsEi	40	static
 repos/rocksdb/util/threadpool_imp.cc:540:_ZN7rocksdb14ThreadPoolImpl14ReleaseThreadsEi	40	static
-repos/rocksdb/util/threadpool_imp.cc:544:_ZN7rocksdb13NewThreadPoolEi	24	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/threadpool_imp.cc:__clang_call_terminate	8	static
+repos/rocksdb/util/threadpool_imp.cc:544:_ZN7rocksdb13NewThreadPoolEi	40	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/threadpool_imp.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorISt8functionIFvvEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_	72	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_deque.h:639:_ZNSt11_Deque_baseIN7rocksdb14ThreadPoolImpl4Impl6BGItemESaIS3_EE17_M_initialize_mapEm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_thread.h:143:_ZNSt6thread24_M_thread_deps_never_runEv	0	static

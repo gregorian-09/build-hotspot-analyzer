@@ -28,6 +28,6 @@ repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode
 repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode.cc:408:_ZNK4toku8treenode15left_imbalancedEi	0	static
 repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode.cc:414:_ZNK4toku8treenode16right_imbalancedEi	0	static
 repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode.cc:425:_ZN4toku8treenode15maybe_rebalanceEv	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/lock/range/range_tree/lib/locktree/treenode.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeImmSt9_IdentityImESt4lessImESaImEE8_M_eraseEPSt13_Rb_tree_nodeImE	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:2517:_ZNSt8_Rb_treeImmSt9_IdentityImESt4lessImESaImEE5eraseERKm	56	static

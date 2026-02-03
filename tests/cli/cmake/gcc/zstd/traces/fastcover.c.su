@@ -1,5 +1,5 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/fastcover.c:395:1:FASTCOVER_buildDictionary.isra	160	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/fastcover.c:471:13:FASTCOVER_tryParameters	288	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/fastcover.c:306:1:FASTCOVER_ctx_init	112	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/fastcover.c:548:1:ZDICT_trainFromBuffer_fastCover	272	dynamic,bounded
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/dictBuilder/fastcover.c:616:1:ZDICT_optimizeTrainFromBuffer_fastCover	544	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/dictBuilder/fastcover.c:395:1:FASTCOVER_buildDictionary.isra	160	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/dictBuilder/fastcover.c:471:13:FASTCOVER_tryParameters	288	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/dictBuilder/fastcover.c:306:1:FASTCOVER_ctx_init	112	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/dictBuilder/fastcover.c:548:1:ZDICT_trainFromBuffer_fastCover	272	dynamic,bounded
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/zstd/lib/dictBuilder/fastcover.c:616:1:ZDICT_optimizeTrainFromBuffer_fastCover	544	dynamic,bounded

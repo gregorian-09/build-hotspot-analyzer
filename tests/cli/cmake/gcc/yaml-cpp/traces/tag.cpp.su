@@ -1,2 +1,2 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/tag.cpp:9:1:YAML::Tag::Tag(const YAML::Token&)	32	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/tag.cpp:32:13:std::string YAML::Tag::Translate(const YAML::Directives&)	208	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/tag.cpp:9:1:YAML::Tag::Tag(const YAML::Token&)	32	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/yaml-cpp/src/tag.cpp:32:13:std::string YAML::Tag::Translate(const YAML::Directives&)	208	static

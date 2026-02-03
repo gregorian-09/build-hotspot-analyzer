@@ -1,5 +1,5 @@
 repos/rocksdb/table/plain/plain_table_bloom.cc:32:_ZN7rocksdb17PlainTableBloomV1C2Ej	0	static
 repos/rocksdb/table/plain/plain_table_bloom.cc:35:_ZN7rocksdb17PlainTableBloomV110SetRawDataEPcjj	0	static
 repos/rocksdb/table/plain/plain_table_bloom.cc:42:_ZN7rocksdb17PlainTableBloomV112SetTotalBitsEPNS_9AllocatorEjjmPNS_6LoggerE	40	static
-repos/rocksdb/table/plain/plain_table_bloom.cc:68:_ZN7rocksdb17BloomBlockBuilder13AddKeysHashesERKSt6vectorIjSaIjEE	48	static
+repos/rocksdb/table/plain/plain_table_bloom.cc:68:_ZN7rocksdb17BloomBlockBuilder13AddKeysHashesERKSt6vectorIjSaIjEE	24	static
 repos/rocksdb/table/plain/plain_table_bloom.cc:75:_ZN7rocksdb17BloomBlockBuilder6FinishEv	0	static

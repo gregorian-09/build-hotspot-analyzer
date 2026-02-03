@@ -1,6 +1,6 @@
-netrc.c:369:Curl_netrc_strerror	8	static
-netrc.c:392:Curl_parsenetrc	1176	static
-netrc.c:109:parsenetrc	232	static
-netrc.c:467:Curl_netrc_init	24	static
-netrc.c:472:Curl_netrc_cleanup	24	static
-netrc.c:71:file2memory	88	static
+../../../../../repos/curl/lib/netrc.c:369:Curl_netrc_strerror	8	static
+../../../../../repos/curl/lib/netrc.c:392:Curl_parsenetrc	1176	static
+../../../../../repos/curl/lib/netrc.c:109:parsenetrc	232	static
+../../../../../repos/curl/lib/netrc.c:467:Curl_netrc_init	24	static
+../../../../../repos/curl/lib/netrc.c:472:Curl_netrc_cleanup	24	static
+../../../../../repos/curl/lib/netrc.c:71:file2memory	88	static

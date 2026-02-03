@@ -1,6 +1,6 @@
-test/minigzip.c:487:main	88	static
-test/minigzip.c:298:error	24	static
-test/minigzip.c:369:gz_uncompress	16424	static
-test/minigzip.c:341:gz_compress	16424	static
-test/minigzip.c:429:file_uncompress	1096	static
-test/minigzip.c:393:file_compress	1064	static
+../../../../repos/zlib/test/minigzip.c:487:main	88	static
+../../../../repos/zlib/test/minigzip.c:298:error	24	static
+../../../../repos/zlib/test/minigzip.c:369:gz_uncompress	16424	static
+../../../../repos/zlib/test/minigzip.c:341:gz_compress	16424	static
+../../../../repos/zlib/test/minigzip.c:429:file_uncompress	1096	static
+../../../../repos/zlib/test/minigzip.c:393:file_compress	1064	static

@@ -92,7 +92,7 @@ repos/rocksdb/include/rocksdb/db.h:2263:_ZN7rocksdb2DB21TryCatchUpWithPrimaryEv	
 repos/rocksdb/db/db_impl/db_impl.h:728:_ZNK7rocksdb6DBImpl24GetLastPublishedSequenceEv	0	static
 repos/rocksdb/db/db_impl/compacted_db_impl.h:132:_ZN7rocksdb15CompactedDBImpl20FlushForGetLiveFilesEv	0	static
 repos/rocksdb/db/db_impl/db_impl.h:1649:_ZNK7rocksdb6DBImpl16OwnTablesAndLogsEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/db_impl/compacted_db_impl.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/db_impl/compacted_db_impl.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:512:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm	56	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:326:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEmmPKcm	104	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.tcc:278:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_	72	static

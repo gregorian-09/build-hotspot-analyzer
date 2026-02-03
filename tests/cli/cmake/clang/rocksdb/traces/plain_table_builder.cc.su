@@ -11,7 +11,7 @@ repos/rocksdb/table/plain/plain_table_key_coding.h:27:_ZN7rocksdb20PlainTableKey
 repos/rocksdb/include/rocksdb/table_properties.h:217:_ZN7rocksdb15TablePropertiesD2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:733:_ZNSt6vectorISt10unique_ptrIN7rocksdb19InternalTblPropCollESt14default_deleteIS2_EESaIS5_EED2Ev	40	static
 repos/rocksdb/table/plain/plain_table_builder.cc:130:_ZN7rocksdb17PlainTableBuilderD2Ev	40	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/plain/plain_table_builder.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/plain/plain_table_builder.cc:__clang_call_terminate	8	static
 repos/rocksdb/table/plain/plain_table_builder.cc:130:_ZN7rocksdb17PlainTableBuilderD0Ev	24	static
 repos/rocksdb/table/plain/plain_table_builder.cc:137:_ZN7rocksdb17PlainTableBuilder3AddERKNS_5SliceES3_	280	static
 repos/rocksdb/db/dbformat.h:519:_ZN7rocksdb16ParseInternalKeyERKNS_5SliceEPNS_17ParsedInternalKeyEb	184	static

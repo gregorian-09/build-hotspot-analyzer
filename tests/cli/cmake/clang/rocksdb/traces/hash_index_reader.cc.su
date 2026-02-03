@@ -14,7 +14,7 @@ repos/rocksdb/table/block_based/hash_index_reader.h:16:_ZN7rocksdb15HashIndexRea
 repos/rocksdb/table/block_based/hash_index_reader.h:16:_ZN7rocksdb15HashIndexReaderD0Ev	24	static
 repos/rocksdb/table/block_based/hash_index_reader.h:30:_ZNK7rocksdb15HashIndexReader22ApproximateMemoryUsageEv	24	static
 repos/rocksdb/table/block_based/block_based_table_reader.h:252:_ZN7rocksdb15BlockBasedTable11IndexReader17CacheDependenciesERKNS_11ReadOptionsEbPNS_18FilePrefetchBufferE	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/table/block_based/hash_index_reader.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/table/block_based/hash_index_reader.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIvSt8functionIFvPvEEED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:670:_ZNSt10unique_ptrIA_cN7rocksdb22CacheAllocationDeleterEED2Ev	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:398:_ZNSt10unique_ptrIN7rocksdb16BlockPrefixIndexESt14default_deleteIS1_EED2Ev	40	static

@@ -1,0 +1,33 @@
+# BHA Trace
+# Source: alloc.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -std=c99 -c -O3 -fPIC -fPIC -ftime-report -fstack-usage -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wno-missing-field-initializers -g -ggdb -fPIC -ftime-report -fstack-usage -pedantic alloc.c
+# Timestamp: 2026-01-31T02:07:31+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  8%)   0.00 (  0%)   0.03 ( 12%)  1532k ( 51%)
+ phase parsing                      :   0.07 ( 58%)   0.07 ( 88%)   0.16 ( 64%)  1226k ( 41%)
+ phase opt and generate             :   0.04 ( 33%)   0.01 ( 12%)   0.05 ( 20%)   229k (  8%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ dump files                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ callgraph functions expansion      :   0.04 ( 33%)   0.00 (  0%)   0.04 ( 16%)   176k (  6%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 ( 12%)   0.01 (  4%)    33k (  1%)
+ ipa reference                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ alias analysis                     :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  5296  (  0%)
+ preprocessing                      :   0.05 ( 42%)   0.03 ( 38%)   0.07 ( 28%)   427k ( 14%)
+ lexical analysis                   :   0.00 (  0%)   0.00 (  0%)   0.06 ( 24%)     0  (  0%)
+ parser (global)                    :   0.01 (  8%)   0.03 ( 38%)   0.00 (  0%)   464k ( 16%)
+ parser struct body                 :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)    22k (  1%)
+ parser inl. func. body             :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)   126k (  4%)
+ tree Early VRP                     :   0.00 (  0%)   0.01 ( 12%)   0.00 (  0%)  2144  (  0%)
+ tree split crit edges              :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)     0  (  0%)
+ tree backward propagate            :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ CSE                                :   0.00 (  0%)   0.00 (  0%)   0.01 (  4%)   648  (  0%)
+ loop init                          :   0.01 (  8%)   0.00 (  0%)   0.00 (  0%)  9680  (  0%)
+ symout                             :   0.00 (  0%)   0.01 ( 12%)   0.01 (  4%)   194k (  6%)
+ initialize rtl                     :   0.01 (  8%)   0.00 (  0%)   0.01 (  4%)    12k (  0%)
+ TOTAL                              :   0.12          0.08          0.25         2991k

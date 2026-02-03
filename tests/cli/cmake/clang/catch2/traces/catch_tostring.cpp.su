@@ -26,4 +26,4 @@ src/catch2/catch_tostring.cpp:278:_ZN5Catch11StringMakerIhvE7convertB5cxx11Eh	24
 src/catch2/../catch2/catch_tostring.hpp:143:_ZN5Catch6Detail9stringifyIcEENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKT_	24	static
 src/catch2/catch_tostring.cpp:284:_ZN5Catch11StringMakerIfvE7convertB5cxx11Ef	136	static
 src/catch2/catch_tostring.cpp:290:_ZN5Catch11StringMakerIdvE7convertB5cxx11Ed	104	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/catch_tostring.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_tostring.cpp:__clang_call_terminate	8	static

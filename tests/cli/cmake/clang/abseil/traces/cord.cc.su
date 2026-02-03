@@ -68,7 +68,7 @@ repos/abseil/absl/strings/cord.cc:1567:_ZN4absl16strings_internal14CordTestAcces
 repos/abseil/absl/strings/cord.cc:1570:_ZN4absl16strings_internal14CordTestAccess11LengthToTagEm	184	static
 repos/abseil/absl/strings/cord.cc:1574:_ZN4absl16strings_internal14CordTestAccess21SizeofCordRepExternalEv	0	static
 repos/abseil/absl/strings/cord.cc:1577:_ZN4absl16strings_internal14CordTestAccess22SizeofCordRepSubstringEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/cord.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/cord.cc:__clang_call_terminate	8	static
 repos/abseil/absl/strings/internal/cord_internal.h:391:_ZN4absl13cord_internal19CordRepExternalImplIZNS_L17CordRepFromStringEONSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE14StringReleaserE7ReleaseEPNS0_15CordRepExternalE	8	static
 repos/abseil/absl/strings/internal/cord_rep_btree.h:856:_ZN4absl13cord_internal12CordRepBtree15GetAppendBufferEm	24	static
 repos/abseil/absl/strings/cord.h:1539:_ZN4absl4Cord13ChunkIterator17AdvanceBytesBtreeEm	8	static

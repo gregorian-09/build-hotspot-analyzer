@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: ../../../../repos/libpng/pngtrans.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I. -I../../../../repos/libpng -fPIC -ftime-report -fstack-usage -c ../../../../repos/libpng/pngtrans.c
+# Timestamp: 2026-01-30T19:06:05+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.00 (  0%)   0.02 (  2%)  1819k ( 23%)
+ phase parsing                      :   0.20 ( 69%)   0.31 ( 77%)   0.94 ( 81%)  4490k ( 57%)
+ phase opt and generate             :   0.09 ( 31%)   0.09 ( 23%)   0.19 ( 16%)  1576k ( 20%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  3%)   0.02 (  5%)   0.01 (  1%)     0  (  0%)
+ callgraph ipa passes               :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)   169k (  2%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  1272  (  0%)
+ df scan insns                      :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)  1008  (  0%)
+ df live regs                       :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.09 ( 31%)   0.14 ( 35%)   0.63 ( 54%)  2241k ( 28%)
+ lexical analysis                   :   0.06 ( 21%)   0.10 ( 25%)   0.16 ( 14%)     0  (  0%)
+ parser (global)                    :   0.05 ( 17%)   0.06 ( 15%)   0.12 ( 10%)  1970k ( 25%)
+ parser function body               :   0.00 (  0%)   0.01 (  2%)   0.03 (  3%)   122k (  2%)
+ tree gimplify                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)   140k (  2%)
+ tree eh                            :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)     0  (  0%)
+ dominance computation              :   0.00 (  0%)   0.01 (  3%)   0.02 (  2%)     0  (  0%)
+ expand                             :   0.02 (  7%)   0.00 (  0%)   0.02 (  2%)   248k (  3%)
+ loop init                          :   0.01 (  3%)   0.01 (  3%)   0.01 (  1%)    40k (  1%)
+ loop fini                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.01 (  2%)   0.02 (  2%)   599k (  8%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    33k (  0%)
+ machine dep reorg                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  2184  (  0%)
+ initialize rtl                     :   0.02 (  7%)   0.01 (  3%)   0.04 (  3%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.01 (  3%)   0.00 (  0%)   744  (  0%)
+ TOTAL                              :   0.29          0.40          1.16         7886k

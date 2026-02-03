@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/cache/secondary_cache.cc
+# Output: CMakeFiles/rocksdb.dir/cache/secondary_cache.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -DGFLAGS=1 -DGFLAGS_IS_A_DLL=0 -DOS_LINUX -DROCKSDB_AUXV_GETAUXVAL_PRESENT -DROCKSDB_FALLOCATE_PRESENT -DROCKSDB_LIB_IO_POSIX -DROCKSDB_MALLOC_USABLE_SIZE -DROCKSDB_NO_DYNAMIC_EXTENSION -DROCKSDB_PLATFORM_POSIX -DROCKSDB_PTHREAD_ADAPTIVE_MUTEX -DROCKSDB_RANGESYNC_PRESENT -DROCKSDB_SCHED_GETCPU_PRESENT -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/include -ftime-report -fstack-usage -W -Wextra -Wall -pthread -Wsign-compare -Wshadow -Wno-unused-parameter -Wno-unused-variable -Woverloaded-virtual -Wnon-virtual-dtor -Wno-missing-field-initializers -Wno-strict-aliasing -Wno-invalid-offsetof -fno-omit-frame-pointer -momit-leaf-frame-pointer -march=native -fno-builtin-memcmp -O3 -DNDEBUG -fno-rtti -std=gnu++20 -MD -MT CMakeFiles/rocksdb.dir/cache/secondary_cache.cc.o -MF CMakeFiles/rocksdb.dir/cache/secondary_cache.cc.o.d -o CMakeFiles/rocksdb.dir/cache/secondary_cache.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/cache/secondary_cache.cc
+# Timestamp: 2026-01-30T22:00:55+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  0%)   0.06 (  1%)   0.11 (  0%)  2143k (  1%)
+ phase parsing                      :  12.46 ( 79%)   8.83 ( 87%)  27.47 ( 84%)   185M ( 79%)
+ phase lang. deferred               :   3.22 ( 20%)   1.21 ( 12%)   4.89 ( 15%)    45M ( 19%)
+ phase opt and generate             :   0.14 (  1%)   0.01 (  0%)   0.17 (  1%)  1173k (  0%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ |name lookup                       :   3.07 ( 19%)   1.51 ( 15%)   5.72 ( 18%)  7179k (  3%)
+ |overload resolution               :   3.32 ( 21%)   1.26 ( 12%)   5.07 ( 16%)    38M ( 17%)
+ dump files                         :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.13 (  1%)   0.01 (  0%)   0.16 (  0%)  1157k (  0%)
+ callgraph ipa passes               :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)  3024  (  0%)
+ ipa reference                      :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ preprocessing                      :   1.70 ( 11%)   2.27 ( 22%)   7.83 ( 24%)  3283k (  1%)
+ parser (global)                    :   2.26 ( 14%)   2.47 ( 24%)   5.05 ( 15%)    52M ( 22%)
+ parser struct body                 :   1.40 (  9%)   0.73 (  7%)   2.69 (  8%)    30M ( 13%)
+ parser enumerator list             :   0.03 (  0%)   0.00 (  0%)   0.04 (  0%)   429k (  0%)
+ parser function body               :   0.41 (  3%)   0.16 (  2%)   0.71 (  2%)  3408k (  1%)
+ parser inl. func. body             :   0.74 (  5%)   0.44 (  4%)   1.37 (  4%)  7956k (  3%)
+ parser inl. meth. body             :   2.09 ( 13%)   0.87 (  9%)   3.27 ( 10%)    26M ( 11%)
+ template instantiation             :   6.46 ( 41%)   2.75 ( 27%)  10.13 ( 31%)   101M ( 43%)
+ constant expression evaluation     :   0.34 (  2%)   0.16 (  2%)   0.60 (  2%)  1633k (  1%)
+ constraint normalization           :   0.00 (  0%)   0.01 (  0%)   0.02 (  0%)   520k (  0%)
+ constraint satisfaction            :   0.17 (  1%)   0.15 (  1%)   0.41 (  1%)  3055k (  1%)
+ varconst                           :   0.06 (  0%)   0.01 (  0%)   0.19 (  1%)   896  (  0%)
+ symout                             :   0.02 (  0%)   0.02 (  0%)   0.05 (  0%)     0  (  0%)
+ TOTAL                              :  15.83         10.11         32.67          234M

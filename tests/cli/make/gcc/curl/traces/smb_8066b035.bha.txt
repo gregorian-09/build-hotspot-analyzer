@@ -1,0 +1,36 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/smb.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/smb.c
+# Timestamp: 2026-01-31T00:30:25+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)  1819k ( 19%)
+ phase parsing                      :   0.31 ( 82%)   0.44 ( 94%)   1.54 ( 93%)  5805k ( 61%)
+ phase opt and generate             :   0.07 ( 18%)   0.02 (  4%)   0.10 (  6%)  1891k ( 20%)
+ dump files                         :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)  8392  (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    54k (  1%)
+ callgraph ipa passes               :   0.01 (  3%)   0.01 (  2%)   0.01 (  1%)   131k (  1%)
+ ipa inlining heuristics            :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ preprocessing                      :   0.16 ( 42%)   0.26 ( 55%)   1.08 ( 65%)  2331k ( 24%)
+ lexical analysis                   :   0.11 ( 29%)   0.12 ( 26%)   0.26 ( 16%)     0  (  0%)
+ parser (global)                    :   0.04 ( 11%)   0.02 (  4%)   0.14 (  8%)  2713k ( 29%)
+ parser struct body                 :   0.00 (  0%)   0.03 (  6%)   0.03 (  2%)   335k (  4%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.03 (  2%)   342k (  4%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    49k (  1%)
+ dominance computation              :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ expand                             :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    37k (  0%)
+ post expand cleanups               :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    15k (  0%)
+ varconst                           :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   272  (  0%)
+ integrated RA                      :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)  1250k ( 13%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)    64k (  1%)
+ final                              :   0.01 (  3%)   0.00 (  0%)   0.00 (  0%)    79k (  1%)
+ initialize rtl                     :   0.01 (  3%)   0.00 (  0%)   0.01 (  1%)    12k (  0%)
+ rest of compilation                :   0.02 (  5%)   0.00 (  0%)   0.01 (  1%)   123k (  1%)
+ repair loop structures             :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ TOTAL                              :   0.38          0.47          1.66         9517k

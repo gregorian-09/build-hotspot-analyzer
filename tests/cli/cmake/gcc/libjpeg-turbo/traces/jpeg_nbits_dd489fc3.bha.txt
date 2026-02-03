@@ -1,0 +1,20 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jpeg_nbits.c
+# Output: CMakeFiles/jpeg-static.dir/src/jpeg_nbits.c.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/cmake/gcc/libjpeg-turbo/build -ftime-report -fstack-usage -O3 -DNDEBUG -MD -MT CMakeFiles/jpeg-static.dir/src/jpeg_nbits.c.o -MF CMakeFiles/jpeg-static.dir/src/jpeg_nbits.c.o.d -o CMakeFiles/jpeg-static.dir/src/jpeg_nbits.c.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/libjpeg-turbo/src/jpeg_nbits.c
+# Timestamp: 2026-01-30T19:04:34+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  1%)   0.01 (  1%)   0.05 (  1%)  1819k ( 19%)
+ phase parsing                      :   1.58 ( 98%)   1.55 ( 98%)   3.37 ( 94%)  7943k ( 81%)
+ phase opt and generate             :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)  3264  (  0%)
+ phase finalize                     :   0.01 (  1%)   0.01 (  1%)   0.13 (  4%)     0  (  0%)
+ preprocessing                      :   0.39 ( 24%)   0.28 ( 18%)   0.83 ( 23%)    14k (  0%)
+ lexical analysis                   :   0.57 ( 35%)   0.71 ( 45%)   1.23 ( 34%)     0  (  0%)
+ parser (global)                    :   0.62 ( 38%)   0.56 ( 35%)   1.31 ( 37%)  7928k ( 81%)
+ variable output                    :   0.01 (  1%)   0.01 (  1%)   0.02 (  1%)    88  (  0%)
+ TOTAL                              :   1.62          1.58          3.57         9766k

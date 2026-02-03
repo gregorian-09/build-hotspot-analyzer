@@ -173,7 +173,7 @@ repos/rocksdb/include/rocksdb/utilities/stackable_db.h:47:_ZN7rocksdb11Stackable
 repos/rocksdb/include/rocksdb/db.h:2247:_ZN7rocksdb2DB15GetStatsHistoryEmmPSt10unique_ptrINS_20StatsHistoryIteratorESt14default_deleteIS2_EE	56	static
 repos/rocksdb/include/rocksdb/utilities/stackable_db.h:608:_ZN7rocksdb11StackableDB21TryCatchUpWithPrimaryEv	24	static
 repos/rocksdb/include/rocksdb/utilities/stackable_db.h:45:_ZN7rocksdb11StackableDB9GetBaseDBEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/utilities/transactions/optimistic_transaction_db_impl.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/utilities/transactions/optimistic_transaction_db_impl.cc:__clang_call_terminate	8	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:198:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/vector.tcc:446:_ZNSt6vectorIN7rocksdb22ColumnFamilyDescriptorESaIS1_EE17_M_realloc_insertIJRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERNS0_19ColumnFamilyOptionsEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_	104	static
 repos/rocksdb/include/rocksdb/db.h:69:_ZN7rocksdb22ColumnFamilyDescriptorC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_19ColumnFamilyOptionsE	56	static

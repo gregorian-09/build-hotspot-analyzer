@@ -1,0 +1,53 @@
+# BHA Trace
+# Source: /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/casts.cc
+# Output: CMakeFiles/base.dir/casts.cc.o
+# Compiler: /usr/bin/g++
+# Command: /usr/bin/g++ -I/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil -ftime-report -fstack-usage -O3 -DNDEBUG -Wall -Wextra -Wcast-qual -Wconversion-null -Wformat-security -Wmissing-declarations -Wnon-virtual-dtor -Woverlength-strings -Wpointer-arith -Wundef -Wunused-local-typedefs -Wunused-result -Wvarargs -Wvla -Wwrite-strings -DNOMINMAX -MD -MT absl/base/CMakeFiles/base.dir/casts.cc.o -MF CMakeFiles/base.dir/casts.cc.o.d -o CMakeFiles/base.dir/casts.cc.o -c /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/base/casts.cc
+# Timestamp: 2026-01-30T18:39:16+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.02 (  0%)   0.01 (  0%)   0.05 (  0%)  1882k (  2%)
+ phase parsing                      :   4.86 ( 93%)   4.20 ( 97%)  12.91 ( 96%)    71M ( 91%)
+ phase lang. deferred               :   0.20 (  4%)   0.09 (  2%)   0.30 (  2%)  4193k (  5%)
+ phase opt and generate             :   0.16 (  3%)   0.03 (  1%)   0.21 (  2%)   961k (  1%)
+ phase finalize                     :   0.01 (  0%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ |name lookup                       :   0.86 ( 16%)   0.45 ( 10%)   1.38 ( 10%)  2929k (  4%)
+ |overload resolution               :   0.25 (  5%)   0.07 (  2%)   0.42 (  3%)  4012k (  5%)
+ dump files                         :   0.04 (  1%)   0.00 (  0%)   0.03 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  0%)   0.00 (  0%)   0.04 (  0%)   171k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  3264  (  0%)
+ callgraph functions expansion      :   0.08 (  2%)   0.02 (  0%)   0.11 (  1%)   277k (  0%)
+ callgraph ipa passes               :   0.06 (  1%)   0.01 (  0%)   0.08 (  1%)   381k (  0%)
+ preprocessing                      :   1.21 ( 23%)   1.58 ( 36%)   6.31 ( 47%)  2361k (  3%)
+ parser (global)                    :   1.20 ( 23%)   1.47 ( 34%)   2.84 ( 21%)    26M ( 34%)
+ parser struct body                 :   0.64 ( 12%)   0.28 (  6%)   0.85 (  6%)    14M ( 18%)
+ parser enumerator list             :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)   122k (  0%)
+ parser function body               :   0.28 (  5%)   0.23 (  5%)   0.49 (  4%)  5264k (  7%)
+ parser inl. func. body             :   0.30 (  6%)   0.15 (  3%)   0.44 (  3%)  3956k (  5%)
+ parser inl. meth. body             :   0.47 (  9%)   0.21 (  5%)   0.78 (  6%)  6804k (  9%)
+ template instantiation             :   0.83 ( 16%)   0.34 (  8%)   1.32 ( 10%)    16M ( 21%)
+ constant expression evaluation     :   0.07 (  1%)   0.02 (  0%)   0.14 (  1%)   273k (  0%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    55k (  0%)
+ tree CFG construction              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    46k (  0%)
+ tree CFG cleanup                   :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)    40  (  0%)
+ tree PTA                           :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)  8904  (  0%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  0%)   0.00 (  0%)    23k (  0%)
+ tree CCP                           :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1696  (  0%)
+ tree PRE                           :   0.02 (  0%)   0.00 (  0%)   0.00 (  0%)  7264  (  0%)
+ tree forward propagate             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   928  (  0%)
+ dominance computation              :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ expand                             :   0.00 (  0%)   0.01 (  0%)   0.02 (  0%)    27k (  0%)
+ varconst                           :   0.03 (  1%)   0.01 (  0%)   0.02 (  0%)   128  (  0%)
+ CPROP                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  3512  (  0%)
+ integrated RA                      :   0.02 (  0%)   0.00 (  0%)   0.00 (  0%)    76k (  0%)
+ reload CSE regs                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1248  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  9400  (  0%)
+ scheduling 2                       :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  7432  (  0%)
+ machine dep reorg                  :   0.01 (  0%)   0.00 (  0%)   0.00 (  0%)   416  (  0%)
+ symout                             :   0.02 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ initialize rtl                     :   0.02 (  0%)   0.00 (  0%)   0.02 (  0%)    12k (  0%)
+ rest of compilation                :   0.00 (  0%)   0.01 (  0%)   0.01 (  0%)  9704  (  0%)
+ TOTAL                              :   5.25          4.34         13.50           78M

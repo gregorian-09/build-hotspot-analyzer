@@ -3,7 +3,7 @@ src/catch2/internal/catch_run_context.cpp:276:_ZN5Catch10RunContextC2EPKNS_7ICon
 src/catch2/../catch2/internal/catch_optional.hpp:22:_ZN5Catch8OptionalINS_15AssertionResultEED2Ev	24	static
 src/catch2/internal/catch_run_context.cpp:297:_ZN5Catch10RunContextD2Ev	120	static
 src/catch2/internal/catch_run_context.cpp:667:_ZN5Catch10RunContext23updateTotalsFromAtomicsEv	0	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/catch2/src/catch2/internal/catch_run_context.cpp:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_run_context.cpp:__clang_call_terminate	8	static
 src/catch2/internal/catch_run_context.cpp:676:_ZNK5Catch10RunContext8abortingEv	0	static
 src/catch2/internal/catch_run_context.cpp:297:_ZN5Catch10RunContextD0Ev	8	static
 src/catch2/internal/catch_run_context.cpp:302:_ZN5Catch10RunContext7runTestERKNS_14TestCaseHandleE	552	static

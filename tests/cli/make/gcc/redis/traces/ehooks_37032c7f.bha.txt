@@ -1,0 +1,51 @@
+# BHA Trace
+# Source: src/ehooks.c
+# Output: src/ehooks.o
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -fPIC -ftime-report -fstack-usage -c -D_GNU_SOURCE -D_REENTRANT -Iinclude -Iinclude -o src/ehooks.o src/ehooks.c
+# Timestamp: 2026-01-31T02:10:33+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)  1819k (  6%)
+ phase parsing                      :   1.77 ( 88%)   1.90 ( 96%)   5.21 ( 94%)    25M ( 80%)
+ phase opt and generate             :   0.23 ( 12%)   0.07 (  4%)   0.30 (  5%)  4704k ( 15%)
+ dump files                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ callgraph construction             :   0.01 (  1%)   0.01 (  1%)   0.00 (  0%)   176k (  1%)
+ callgraph optimization             :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    71k (  0%)
+ callgraph ipa passes               :   0.05 (  3%)   0.02 (  1%)   0.08 (  1%)  1789k (  6%)
+ cfg cleanup                        :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1520  (  0%)
+ df scan insns                      :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  1440  (  0%)
+ alias analysis                     :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    22k (  0%)
+ rebuild jump labels                :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   192  (  0%)
+ preprocessing                      :   0.58 ( 29%)   0.67 ( 34%)   2.69 ( 49%)    13M ( 44%)
+ lexical analysis                   :   0.58 ( 29%)   0.56 ( 28%)   1.38 ( 25%)     0  (  0%)
+ parser (global)                    :   0.18 (  9%)   0.23 ( 12%)   0.35 (  6%)  5715k ( 18%)
+ parser struct body                 :   0.03 (  2%)   0.02 (  1%)   0.05 (  1%)   254k (  1%)
+ parser enumerator list             :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   151k (  0%)
+ parser function body               :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)    95k (  0%)
+ parser inl. func. body             :   0.40 ( 20%)   0.41 ( 21%)   0.71 ( 13%)  5382k ( 17%)
+ inline parameters                  :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ integration                        :   0.03 (  2%)   0.01 (  1%)   0.01 (  0%)  1165k (  4%)
+ tree gimplify                      :   0.00 (  0%)   0.01 (  1%)   0.01 (  0%)   360k (  1%)
+ tree CFG construction              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   137k (  0%)
+ tree CFG cleanup                   :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)    40  (  0%)
+ tree SSA rewrite                   :   0.01 (  1%)   0.00 (  0%)   0.01 (  0%)    77k (  0%)
+ tree operand scan                  :   0.01 (  1%)   0.00 (  0%)   0.04 (  1%)   303k (  1%)
+ out of ssa                         :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)  8120  (  0%)
+ expand                             :   0.01 (  1%)   0.01 (  1%)   0.02 (  0%)   714k (  2%)
+ post expand cleanups               :   0.00 (  0%)   0.01 (  1%)   0.00 (  0%)    28k (  0%)
+ integrated RA                      :   0.04 (  2%)   0.00 (  0%)   0.05 (  1%)  1001k (  3%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.02 (  0%)  8696  (  0%)
+ LRA virtuals elimination           :   0.01 (  0%)   0.00 (  0%)   0.01 (  0%)    43k (  0%)
+ LRA reload inheritance             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ LRA create live ranges             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  1296  (  0%)
+ thread pro- & epilogue             :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)    47k (  0%)
+ shorten branches                   :   0.01 (  1%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   139k (  0%)
+ initialize rtl                     :   0.02 (  1%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ access analysis                    :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)   720  (  0%)
+ rest of compilation                :   0.01 (  1%)   0.01 (  1%)   0.01 (  0%)    84k (  0%)
+ TOTAL                              :   2.00          1.98          5.52           31M

@@ -20,7 +20,7 @@ repos/rocksdb/util/core_local.h:24:_ZN7rocksdb14CoreLocalArrayISt6atomicISt10sha
 repos/rocksdb/memory/concurrent_arena.h:42:_ZN7rocksdb15ConcurrentArenaD2Ev	24	static
 repos/rocksdb/db/memtable.h:538:_ZN7rocksdb8MemTable13KeyComparatorD2Ev	0	static
 repos/rocksdb/db/memtable.cc:171:_ZN7rocksdb8MemTableD2Ev	56	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/memtable.cc:__clang_call_terminate	8	static
+/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/memtable.cc:__clang_call_terminate	8	static
 repos/rocksdb/db/memtable.cc:171:_ZN7rocksdb8MemTableD0Ev	24	static
 repos/rocksdb/db/memtable.cc:176:_ZN7rocksdb8MemTable22ApproximateMemoryUsageEv	200	static
 repos/rocksdb/db/memtable.cc:195:_ZN7rocksdb8MemTable14ShouldFlushNowEv	40	static
@@ -106,11 +106,13 @@ repos/rocksdb/db/memtable.h:770:_ZN7rocksdb8MemTable13MarkImmutableEv	24	static
 repos/rocksdb/db/memtable.h:775:_ZN7rocksdb8MemTable11MarkFlushedEv	0	static
 repos/rocksdb/db/memtable.h:802:_ZNK7rocksdb8MemTable24ApproximateOldestKeyTimeEv	0	static
 repos/rocksdb/db/memtable.h:816:_ZNK7rocksdb8MemTable38IsFragmentedRangeTombstonesConstructedEv	0	static
-repos/rocksdb/db/version_edit.h:633:_ZN7rocksdb11VersionEditD2Ev	40	static
+repos/rocksdb/db/version_edit.h:646:_ZN7rocksdb11VersionEditD2Ev	40	static
 repos/rocksdb/db/memtable.h:110:_ZN7rocksdb16ReadOnlyMemTableD2Ev	24	static
 repos/rocksdb/db/memtable.h:110:_ZN7rocksdb16ReadOnlyMemTableD0Ev	0	static
-repos/rocksdb/util/autovector.h:179:_ZN7rocksdb10autovectorINS_12FileMetaDataELm8EED2Ev	40	static
+repos/rocksdb/db/version_edit.h:540:_ZN7rocksdb21SubcompactionProgressD2Ev	24	static
 repos/rocksdb/util/autovector.h:317:_ZN7rocksdb10autovectorINS_12FileMetaDataELm8EE5clearEv	40	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:160:_ZNSt12_Destroy_auxILb0EE9__destroyIPN7rocksdb12FileMetaDataEEEvT_S5_	24	static
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:160:_ZNSt12_Destroy_auxILb0EE9__destroyIPSt4pairIiN7rocksdb12FileMetaDataEEEEvT_S7_	24	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_tree.h:1931:_ZNSt8_Rb_treeISt4pairIimES1_St9_IdentityIS1_ESt4lessIS1_ESaIS1_EE8_M_eraseEPSt13_Rb_tree_nodeIS1_E	40	static
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:93:_ZNKSt14default_deleteIN7rocksdb12FlushJobInfoEEclEPS1_	40	static
 repos/rocksdb/include/rocksdb/table_properties.h:217:_ZN7rocksdb15TablePropertiesD2Ev	24	static

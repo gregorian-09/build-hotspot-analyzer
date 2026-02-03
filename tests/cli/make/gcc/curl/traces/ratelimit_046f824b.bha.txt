@@ -1,0 +1,37 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/ratelimit.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/ratelimit.c
+# Timestamp: 2026-01-31T00:30:23+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)  1819k ( 17%)
+ phase parsing                      :   0.33 ( 69%)   0.41 ( 89%)   1.66 ( 88%)  5927k ( 57%)
+ phase opt and generate             :   0.14 ( 29%)   0.05 ( 11%)   0.19 ( 10%)  2667k ( 26%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ dump files                         :   0.01 (  2%)   0.01 (  2%)   0.05 (  3%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)    12k (  0%)
+ callgraph optimization             :   0.00 (  0%)   0.01 (  2%)   0.01 (  1%)    67k (  1%)
+ callgraph ipa passes               :   0.01 (  2%)   0.01 (  2%)   0.04 (  2%)   198k (  2%)
+ preprocessing                      :   0.13 ( 27%)   0.22 ( 48%)   1.15 ( 61%)  2340k ( 22%)
+ lexical analysis                   :   0.11 ( 23%)   0.12 ( 26%)   0.30 ( 16%)     0  (  0%)
+ parser (global)                    :   0.07 ( 15%)   0.05 ( 11%)   0.14 (  7%)  2762k ( 27%)
+ parser struct body                 :   0.01 (  2%)   0.00 (  0%)   0.03 (  2%)   335k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.02 (  4%)   0.02 (  1%)   344k (  3%)
+ parser function body               :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)   135k (  1%)
+ tree CFG cleanup                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ dominance computation              :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ out of ssa                         :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)  1680  (  0%)
+ jump                               :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)     0  (  0%)
+ loop init                          :   0.00 (  0%)   0.01 (  2%)   0.02 (  1%)    66k (  1%)
+ integrated RA                      :   0.04 (  8%)   0.00 (  0%)   0.05 (  3%)  1573k ( 15%)
+ LRA non-specific                   :   0.01 (  2%)   0.00 (  0%)   0.01 (  1%)  9592  (  0%)
+ shorten branches                   :   0.02 (  4%)   0.00 (  0%)   0.01 (  1%)     0  (  0%)
+ initialize rtl                     :   0.02 (  4%)   0.00 (  0%)   0.02 (  1%)    12k (  0%)
+ access analysis                    :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   168  (  0%)
+ rest of compilation                :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)   162k (  2%)
+ TOTAL                              :   0.48          0.46          1.88           10M

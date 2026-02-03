@@ -1,2 +1,0 @@
-repos/mimalloc/test/test-api-fill.c:24:main	40	static
-repos/mimalloc/test/test-api-fill.c:301:check_zero_init	0	static

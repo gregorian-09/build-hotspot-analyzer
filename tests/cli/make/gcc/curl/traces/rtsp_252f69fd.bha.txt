@@ -1,0 +1,45 @@
+# BHA Trace
+# Source: ../../../../../repos/curl/lib/rtsp.c
+# Output: 
+# Compiler: /usr/bin/gcc
+# Command: /usr/bin/gcc -DHAVE_CONFIG_H -I../../../../../repos/curl/include -I../lib -I../../../../../repos/curl/lib -DBUILDING_LIBCURL -DCURL_STATICLIB -DUNITTESTS -D_GNU_SOURCE -fPIC -ftime-report -fstack-usage -c ../../../../../repos/curl/lib/rtsp.c
+# Timestamp: 2026-01-31T00:30:24+01:00
+# Exit code: 0
+# ---
+
+
+Time variable                                   usr           sys          wall           GGC
+ phase setup                        :   0.01 (  2%)   0.00 (  0%)   0.02 (  1%)  1819k ( 14%)
+ phase parsing                      :   0.48 ( 73%)   0.56 ( 92%)   2.37 ( 90%)  6891k ( 54%)
+ phase opt and generate             :   0.17 ( 26%)   0.05 (  8%)   0.23 (  9%)  4069k ( 32%)
+ phase finalize                     :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ dump files                         :   0.01 (  2%)   0.01 (  2%)   0.01 (  0%)     0  (  0%)
+ callgraph construction             :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    84k (  1%)
+ callgraph optimization             :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    73k (  1%)
+ callgraph ipa passes               :   0.02 (  3%)   0.01 (  2%)   0.03 (  1%)   384k (  3%)
+ df reg dead/unused notes           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)    38k (  0%)
+ register information               :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ preprocessing                      :   0.21 ( 32%)   0.36 ( 59%)   1.83 ( 70%)  2426k ( 19%)
+ lexical analysis                   :   0.13 ( 20%)   0.13 ( 21%)   0.32 ( 12%)     0  (  0%)
+ parser (global)                    :   0.09 ( 14%)   0.06 ( 10%)   0.15 (  6%)  3388k ( 27%)
+ parser struct body                 :   0.02 (  3%)   0.00 (  0%)   0.00 (  0%)   365k (  3%)
+ parser enumerator list             :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)   349k (  3%)
+ parser function body               :   0.02 (  3%)   0.01 (  2%)   0.04 (  2%)   352k (  3%)
+ tree gimplify                      :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   313k (  2%)
+ tree SSA rewrite                   :   0.00 (  0%)   0.01 (  2%)   0.01 (  0%)   113k (  1%)
+ dominance computation              :   0.02 (  3%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ out of ssa                         :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)  5560  (  0%)
+ expand                             :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)   553k (  4%)
+ post expand cleanups               :   0.00 (  0%)   0.00 (  0%)   0.02 (  1%)    34k (  0%)
+ varconst                           :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)   256  (  0%)
+ loop init                          :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    78k (  1%)
+ integrated RA                      :   0.03 (  5%)   0.01 (  2%)   0.04 (  2%)  1838k ( 14%)
+ LRA non-specific                   :   0.00 (  0%)   0.00 (  0%)   0.03 (  1%)  7712  (  0%)
+ LRA hard reg assignment            :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)     0  (  0%)
+ thread pro- & epilogue             :   0.00 (  0%)   0.00 (  0%)   0.01 (  0%)    90k (  1%)
+ shorten branches                   :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ final                              :   0.00 (  0%)   0.01 (  2%)   0.00 (  0%)   185k (  1%)
+ initialize rtl                     :   0.01 (  2%)   0.00 (  0%)   0.01 (  0%)    12k (  0%)
+ rest of compilation                :   0.03 (  5%)   0.01 (  2%)   0.02 (  1%)   171k (  1%)
+ unaccounted late compilation       :   0.01 (  2%)   0.00 (  0%)   0.00 (  0%)     0  (  0%)
+ TOTAL                              :   0.66          0.61          2.63           12M
