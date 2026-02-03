@@ -206,6 +206,10 @@ namespace bha::build_systems
     void register_make_adapter();
     void register_msbuild_adapter();
     void register_meson_adapter();
+    void register_bazel_adapter();
+    void register_buck2_adapter();
+    void register_scons_adapter();
+    void register_xcode_adapter();
 
     // Register all built-in adapters
     inline void register_all_adapters() {
@@ -214,6 +218,10 @@ namespace bha::build_systems
         register_make_adapter();
         register_msbuild_adapter();
         register_meson_adapter();
+        register_bazel_adapter();
+        register_buck2_adapter();
+        register_scons_adapter();
+        register_xcode_adapter();
     }
 
 } // namespace bha::build_systems

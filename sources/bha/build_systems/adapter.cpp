@@ -8,9 +8,12 @@
 #include <array>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <tuple>
 
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -21,56 +24,167 @@ namespace bha::build_systems
 {
     namespace {
 
-        enum class CompilerFamily { GCC, Clang, MSVC, Unknown };
-
         struct CompilerInfo {
-            CompilerFamily family = CompilerFamily::Unknown;
+            CompilerType type = CompilerType::Unknown;
             std::string c_compiler;
             std::string cxx_compiler;
+        };
 
-            static CompilerInfo from_name(const std::string& compiler) {
-                CompilerInfo info;
-                if (compiler.empty()) {
-                    info.family = CompilerFamily::GCC;
-                    info.c_compiler = "gcc";
-                    info.cxx_compiler = "g++";
-                } else if (compiler.find("clang") != std::string::npos) {
-                    info.family = CompilerFamily::Clang;
-                    info.c_compiler = compiler;
-                    info.cxx_compiler = (compiler == "clang") ? "clang++" : compiler;
-                } else if (compiler.find("gcc") != std::string::npos ||
-                           compiler.find("g++") != std::string::npos) {
-                    info.family = CompilerFamily::GCC;
-                    info.c_compiler = (compiler == "g++") ? "gcc" : compiler;
-                    info.cxx_compiler = (compiler == "gcc") ? "g++" : compiler;
-                } else if (compiler.find("cl") != std::string::npos ||
-                           compiler.find("msvc") != std::string::npos) {
-                    info.family = CompilerFamily::MSVC;
+        std::pair<int, std::string> execute_command(
+            const std::string& command,
+            const fs::path& working_dir = fs::path()
+        );
+
+        fs::path find_compiler_path(const std::string& compiler_name) {
+            if (compiler_name.empty()) return {};
+
+            if (fs::path p(compiler_name); p.is_absolute() && fs::exists(p)) {
+                return p;
+            }
+
+            std::string cmd;
+#ifdef _WIN32
+            cmd = "where " + compiler_name + " 2>nul";
+#else
+            cmd = "which " + compiler_name + " 2>/dev/null";
+#endif
+            if (auto [exit_code, output] = execute_command(cmd); exit_code == 0 && !output.empty()) {
+                std::istringstream iss(output);
+                std::string first_line;
+                std::getline(iss, first_line);
+                while (!first_line.empty() && (first_line.back() == '\r' || first_line.back() == '\n')) {
+                    first_line.pop_back();
+                }
+                if (!first_line.empty() && fs::exists(first_line)) {
+                    return first_line;
+                }
+            }
+
+            return {};
+        }
+
+        CompilerType detect_compiler_type(const std::string& compiler) {
+            if (compiler.empty()) return CompilerType::GCC;
+
+            std::string lower = compiler;
+            std::ranges::transform(lower, lower.begin(),
+                [](const unsigned char c) { return std::tolower(c); });
+
+            if (lower.find("apple") != std::string::npos && lower.find("clang") != std::string::npos) {
+                return CompilerType::AppleClang;
+            }
+            if (lower.find("armclang") != std::string::npos) {
+                return CompilerType::ArmClang;
+            }
+            if (lower.find("icx") != std::string::npos || lower.find("icpx") != std::string::npos) {
+                return CompilerType::IntelOneAPI;
+            }
+            if (lower.find("icc") != std::string::npos || lower.find("icpc") != std::string::npos) {
+                return CompilerType::IntelClassic;
+            }
+            if (lower.find("nvcc") != std::string::npos) {
+                return CompilerType::NVCC;
+            }
+            if (lower.find("clang") != std::string::npos) {
+                return CompilerType::Clang;
+            }
+            if (lower.find("gcc") != std::string::npos || lower.find("g++") != std::string::npos) {
+                return CompilerType::GCC;
+            }
+            if (lower.find("cl.exe") != std::string::npos || lower.find("msvc") != std::string::npos ||
+                (lower == "cl")) {
+                return CompilerType::MSVC;
+            }
+
+            return CompilerType::Unknown;
+        }
+
+        std::pair<std::string, std::string> resolve_compiler_pair(
+            const std::string& c_name,
+            const std::string& cxx_name
+        ) {
+            const auto c_path = find_compiler_path(c_name);
+            const auto cxx_path = find_compiler_path(cxx_name);
+            return {c_path.string(), cxx_path.string()};
+        }
+
+        CompilerInfo get_compiler_info(const std::string& compiler) {
+            CompilerInfo info;
+            info.type = detect_compiler_type(compiler);
+
+            switch (info.type) {
+                case CompilerType::Clang: {
+                    const std::string c_name = compiler.empty() ? "clang" : compiler;
+                    const std::string cxx_name = (compiler.empty() || compiler == "clang") ? "clang++" : compiler;
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
+                    break;
+                }
+                case CompilerType::AppleClang:
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("clang", "clang++");
+                    break;
+                case CompilerType::ArmClang:
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("armclang", "armclang++");
+                    break;
+                case CompilerType::GCC: {
+                    const std::string c_name = (compiler.empty() || compiler == "g++") ? "gcc" : compiler;
+                    const std::string cxx_name = (compiler.empty() || compiler == "gcc") ? "g++" : compiler;
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
+                    break;
+                }
+                case CompilerType::MSVC:
                     info.c_compiler = "cl";
                     info.cxx_compiler = "cl";
-                } else {
-                    info.family = CompilerFamily::GCC;
-                    info.c_compiler = compiler;
-                    info.cxx_compiler = compiler;
+                    break;
+                case CompilerType::IntelClassic:
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("icc", "icpc");
+                    break;
+                case CompilerType::IntelOneAPI:
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("icx", "icpx");
+                    break;
+                case CompilerType::NVCC:
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("nvcc", "nvcc");
+                    break;
+                case CompilerType::Unknown:
+                default: {
+                    const std::string c_name = compiler.empty() ? "gcc" : compiler;
+                    const std::string cxx_name = compiler.empty() ? "g++" : compiler;
+                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
+                    info.type = CompilerType::GCC;
+                    break;
                 }
-                return info;
             }
-        };
+
+            return info;
+        }
 
         struct CompilerFlags {
             std::string tracing_flags;
             std::string memory_flags;
 
-            static CompilerFlags for_compiler(const CompilerFamily family, const bool tracing, const bool memory) {
+            static CompilerFlags for_compiler(const CompilerType type, const bool tracing, const bool memory) {
                 CompilerFlags flags;
 
                 if (tracing) {
-                    switch (family) {
-                        case CompilerFamily::Clang:
+                    switch (type) {
+                        case CompilerType::Clang:
+                        case CompilerType::AppleClang:
+                        case CompilerType::ArmClang:
                             flags.tracing_flags = "-ftime-trace";
                             break;
-                        case CompilerFamily::GCC:
+                        case CompilerType::GCC:
                             flags.tracing_flags = "-ftime-report";
+                            break;
+                        case CompilerType::MSVC:
+                            flags.tracing_flags = "/Bt+ /d1reportTime";
+                            break;
+                        case CompilerType::IntelClassic:
+                            flags.tracing_flags = "-qopt-report=5";
+                            break;
+                        case CompilerType::IntelOneAPI:
+                            flags.tracing_flags = "-ftime-trace";
+                            break;
+                        case CompilerType::NVCC:
+                            flags.tracing_flags = "--time";
                             break;
                         default:
                             break;
@@ -78,15 +192,20 @@ namespace bha::build_systems
                 }
 
                 if (memory) {
-                    switch (family) {
-                    case CompilerFamily::GCC:
-                    case CompilerFamily::Clang:
-                        flags.memory_flags = "-fstack-usage";
-                        break;
-                    default:
-                        break;
+                    switch (type) {
+                        case CompilerType::GCC:
+                        case CompilerType::Clang:
+                        case CompilerType::AppleClang:
+                        case CompilerType::ArmClang:
+                        case CompilerType::IntelOneAPI:
+                            flags.memory_flags = "-fstack-usage";
+                            break;
+                        case CompilerType::MSVC:
+                            flags.memory_flags = "/FAcs";
+                            break;
+                        default:
+                            break;
                     }
-
                 }
 
                 return flags;
@@ -103,21 +222,73 @@ namespace bha::build_systems
             }
         };
 
+        bool needs_capture_script(const CompilerType type) {
+            return type == CompilerType::GCC ||
+                   type == CompilerType::IntelClassic ||
+                       type == CompilerType::MSVC ||
+                   type == CompilerType::NVCC;
+        }
+
+        fs::path get_executable_path() {
+#ifdef _WIN32
+            char path[MAX_PATH];
+            if (GetModuleFileNameA(nullptr, path, MAX_PATH) > 0) {
+                return fs::path(path).parent_path();
+            }
+#elif defined(__APPLE__)
+            char path[1024];
+            uint32_t size = sizeof(path);
+            extern int _NSGetExecutablePath(char*, uint32_t*);
+            if (_NSGetExecutablePath(path, &size) == 0) {
+                return fs::canonical(fs::path(path)).parent_path();
+            }
+#else
+            std::error_code ec;
+            if (auto exe_path = fs::read_symlink("/proc/self/exe", ec); !ec) {
+                return exe_path.parent_path();
+            }
+#endif
+            return {};
+        }
+
         fs::path find_capture_script(const fs::path& project_path) {
 #ifdef _WIN32
             auto script_name = "bha-capture.bat";
 #else
             const char* script_name = "bha-capture.sh";
 #endif
-            const std::vector search_paths = {
+            std::vector search_paths = {
                 project_path / "cmake" / script_name,
                 fs::current_path() / "cmake" / script_name,
                 fs::current_path().parent_path() / "cmake" / script_name
             };
 
+            if (const auto exe_dir = get_executable_path(); !exe_dir.empty()) {
+                search_paths.push_back(exe_dir / "cmake" / script_name);
+                search_paths.push_back(exe_dir.parent_path() / "cmake" / script_name);
+                search_paths.push_back(exe_dir / ".." / "cmake" / script_name);
+            }
+
+            // BHA_SCRIPT_DIR environment variable as fallback
+#ifdef _WIN32
+            char* script_dir = nullptr;
+            size_t len = 0;
+            if (_dupenv_s(&script_dir, &len, "BHA_SCRIPT_DIR") == 0 && script_dir) {
+                search_paths.insert(search_paths.begin(),
+                    fs::path(script_dir) / script_name);
+                free(script_dir);
+            }
+#else
+            if (const char* script_dir = std::getenv("BHA_SCRIPT_DIR")) {
+                search_paths.insert(search_paths.begin(),
+                    fs::path(script_dir) / script_name);
+            }
+#endif
+
+
             for (const auto& path : search_paths) {
-                if (fs::exists(path)) {
-                    return fs::absolute(path);
+                if (std::error_code ec; fs::exists(path, ec) && !ec) {
+                    return fs::absolute(path, ec);
                 }
             }
             return {};
@@ -165,7 +336,7 @@ namespace bha::build_systems
 
         std::pair<int, std::string> execute_command(
             const std::string& command,
-            const fs::path& working_dir = fs::path()
+            const fs::path& working_dir
         ) {
             std::string output;
             int exit_code = -1;
@@ -192,10 +363,10 @@ namespace bha::build_systems
 
             PROCESS_INFORMATION pi = {};
 
-            std::string cmd_line = "cmd /c " + command;
-            std::string work_dir = working_dir.empty() ? "" : working_dir.string();
+            const std::string cmd_line = "cmd /c " + command;
+            const std::string work_dir = working_dir.empty() ? "" : working_dir.string();
 
-            BOOL process_created = CreateProcessA(
+            const BOOL process_created = CreateProcessA(
                 nullptr,
                 const_cast<char*>(cmd_line.c_str()),
                 nullptr, nullptr, TRUE, 0, nullptr,
@@ -253,8 +424,7 @@ namespace bha::build_systems
                 return traces;
             }
 
-            std::error_code ec;
-            for (const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
+            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
                 if (ec) break;
                 if (!entry.is_regular_file()) continue;
 
@@ -267,6 +437,11 @@ namespace bha::build_systems
                         stem.ends_with(".C") || stem.ends_with(".c++") ||
                         stem.ends_with(".m") || stem.ends_with(".mm")) {
                         traces.push_back(entry.path());
+                    } else {
+                        if (fs::path parent = entry.path().parent_path(); fs::exists(parent / (stem + ".o")) ||
+                            fs::exists(parent / (stem + ".obj"))) {
+                            traces.push_back(entry.path());
+                        }
                     }
                 }
 
@@ -459,8 +634,8 @@ namespace bha::build_systems
             fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
             fs::create_directories(build_dir);
 
-            auto compiler = CompilerInfo::from_name(options.compiler);
-            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             std::ostringstream cmd;
             cmd << "cmake";
@@ -469,21 +644,26 @@ namespace bha::build_systems
             cmd << " -DCMAKE_BUILD_TYPE=" << options.build_type;
             cmd << " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON";
 
-            if (!options.compiler.empty()) {
-                cmd << " -DCMAKE_C_COMPILER=" << compiler.c_compiler;
-                cmd << " -DCMAKE_CXX_COMPILER=" << compiler.cxx_compiler;
+            if (!c_compiler.empty() && !cxx_compiler.empty()) {
+                cmd << " -DCMAKE_C_COMPILER=\"" << c_compiler << "\"";
+                cmd << " -DCMAKE_CXX_COMPILER=\"" << cxx_compiler << "\"";
             }
 
-            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
+            if (options.enable_tracing && needs_capture_script(type)) {
                 if (auto script = find_capture_script(project_path); !script.empty()) {
                     cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << script.string() << "\"";
                     cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << script.string() << "\"";
+                } else {
+                    std::cerr << "Warning: bha-capture script not found. "
+                              << "GCC/Intel/NVCC tracing requires this script.\n"
+                              << "Set BHA_SCRIPT_DIR to the directory containing bha-capture.sh\n";
                 }
             }
 
             if (!flags.empty()) {
-                cmd << " -DCMAKE_CXX_FLAGS=\"" << flags.combined() << "\"";
-                cmd << " -DCMAKE_C_FLAGS=\"" << flags.combined() << "\"";
+                std::string combined = flags.combined();
+                cmd << " \"-DCMAKE_CXX_FLAGS=" << combined << "\"";
+                cmd << " \"-DCMAKE_C_FLAGS=" << combined << "\"";
             }
 
             for (const auto& arg : options.extra_args) {
@@ -510,6 +690,12 @@ namespace bha::build_systems
             fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? build_dir / "traces" : options.trace_output_dir;
 
+            // For clean builds, build directory should be removed to ensure fresh configuration
+            if (options.clean_first && fs::exists(build_dir)) {
+                std::error_code ec;
+                fs::remove_all(build_dir, ec);
+            }
+
             if (!fs::exists(build_dir / "CMakeCache.txt")) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
                     result.error_message = config_result.error().message();
@@ -517,18 +703,15 @@ namespace bha::build_systems
                 }
             }
 
-            if (options.clean_first) {
-                clean(project_path, options);
-            }
-
-            auto compiler = CompilerInfo::from_name(options.compiler);
+            auto compiler = get_compiler_info(options.compiler);
 
             std::ostringstream cmd;
-            if (options.enable_tracing && !trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
+            if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(compiler.type)) {
+                fs::create_directories(trace_output_dir);
 #ifdef _WIN32
-                cmd << "set BHA_TRACE_DIR=" << trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
 #else
-                cmd << "BHA_TRACE_DIR=\"" << trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
 #endif
             }
 
@@ -550,7 +733,7 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(build_dir);
-            if (!trace_output_dir.empty()) {
+            if (needs_capture_script(compiler.type) && !trace_output_dir.empty()) {
                 auto trace_dir_files = find_trace_files(trace_output_dir);
                 result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
             }
@@ -628,7 +811,7 @@ namespace bha::build_systems
             if (fs::exists(project_path / "build.ninja")) {
                 return 0.95;
             }
-            // Check in common build directories
+            // Common build directories
             for (const auto& dir : {"build", "out", "cmake-build-debug", "cmake-build-release"}) {
                 if (fs::exists(project_path / dir / "build.ninja")) {
                     return 0.8;
@@ -649,23 +832,36 @@ namespace bha::build_systems
                 fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
                 fs::create_directories(build_dir);
 
-                auto compiler = CompilerInfo::from_name(options.compiler);
-                auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
+                auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+                auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
                 std::ostringstream cmd;
                 cmd << "cmake -G Ninja";
                 cmd << " -S \"" << project_path.string() << "\"";
                 cmd << " -B \"" << build_dir.string() << "\"";
                 cmd << " -DCMAKE_BUILD_TYPE=" << options.build_type;
+                cmd << " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON";
 
-                if (!options.compiler.empty()) {
-                    cmd << " -DCMAKE_C_COMPILER=" << compiler.c_compiler;
-                    cmd << " -DCMAKE_CXX_COMPILER=" << compiler.cxx_compiler;
+                if (!c_compiler.empty() && !cxx_compiler.empty()) {
+                    cmd << " -DCMAKE_C_COMPILER=\"" << c_compiler << "\"";
+                    cmd << " -DCMAKE_CXX_COMPILER=\"" << cxx_compiler << "\"";
+                }
+
+                if (options.enable_tracing && needs_capture_script(type)) {
+                    if (auto script = find_capture_script(project_path); !script.empty()) {
+                        cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << script.string() << "\"";
+                        cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << script.string() << "\"";
+                    } else {
+                        std::cerr << "Warning: bha-capture script not found. "
+                                  << "GCC/Intel/NVCC tracing requires this script.\n"
+                                  << "Set BHA_SCRIPT_DIR to the directory containing bha-capture.sh\n";
+                    }
                 }
 
                 if (!flags.empty()) {
-                    cmd << " -DCMAKE_CXX_FLAGS=\"" << flags.combined() << "\"";
-                    cmd << " -DCMAKE_C_FLAGS=\"" << flags.combined() << "\"";
+                    std::string combined = flags.combined();
+                    cmd << " \"-DCMAKE_CXX_FLAGS=" << combined << "\"";
+                    cmd << " \"-DCMAKE_C_FLAGS=" << combined << "\"";
                 }
 
                 if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
@@ -690,15 +886,16 @@ namespace bha::build_systems
                 build_dir = fs::exists(project_path / "build.ninja") ? project_path : project_path / "build";
             }
 
+            if (options.clean_first && fs::exists(build_dir) && build_dir != project_path) {
+                std::error_code ec;
+                fs::remove_all(build_dir, ec);
+            }
+
             if (!fs::exists(build_dir / "build.ninja")) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
                     result.error_message = config_result.error().message();
                     return Result<BuildResult, Error>::success(result);
                 }
-            }
-
-            if (options.clean_first) {
-                clean(project_path, options);
             }
 
             std::ostringstream cmd;
@@ -776,7 +973,6 @@ namespace bha::build_systems
                 return Result<fs::path, Error>::success(compile_commands);
             }
 
-            // Try to generate with ninja
             const std::string cmd = "ninja -C \"" + build_dir.string() +
                               "\" -t compdb > compile_commands.json";
 
@@ -794,24 +990,174 @@ namespace bha::build_systems
     // Make Adapter
     // --------------------------------------------------------------------------
 
+    namespace {
+        struct AutotoolsInfo {
+            bool has_makefile = false;
+            bool has_configure = false;
+            bool has_configure_ac = false;
+            bool has_makefile_am = false;
+            bool has_makefile_in = false;
+            bool is_autotools = false;
+            std::string bootstrap_script;
+
+            static AutotoolsInfo detect(const fs::path& project_path) {
+                AutotoolsInfo info;
+
+                info.has_makefile = fs::exists(project_path / "Makefile") ||
+                                    fs::exists(project_path / "makefile") ||
+                                    fs::exists(project_path / "GNUmakefile");
+                info.has_configure = fs::exists(project_path / "configure");
+                info.has_configure_ac = fs::exists(project_path / "configure.ac") ||
+                                        fs::exists(project_path / "configure.in");
+                info.has_makefile_am = fs::exists(project_path / "Makefile.am");
+                info.has_makefile_in = fs::exists(project_path / "Makefile.in");
+
+                info.is_autotools = info.has_configure_ac || info.has_makefile_am ||
+                                    (info.has_configure && info.has_makefile_in);
+
+                static const std::vector<std::string> bootstrap_scripts = {
+                    "autogen.sh", "bootstrap.sh", "bootstrap", "buildconf",
+                    "autogen", "buildconf.sh", "genconfig.sh", "prebuild.sh"
+                };
+
+                for (const auto& script : bootstrap_scripts) {
+                    if (fs::exists(project_path / script)) {
+                        info.bootstrap_script = script;
+                        break;
+                    }
+                }
+
+                return info;
+            }
+        };
+
+        enum class BuildErrorType {
+            Unknown,
+            MissingDependency,
+            MissingTool,
+            ConfigurationFailure,
+            CompilationError,
+            LinkError
+        };
+
+        struct BuildErrorInfo {
+            BuildErrorType type = BuildErrorType::Unknown;
+            std::string summary;
+            std::vector<std::string> missing_packages;
+        };
+
+        BuildErrorInfo classify_build_error(const std::string& output) {
+            BuildErrorInfo info;
+            std::istringstream stream(output);
+            std::string line;
+            std::vector<std::string> error_lines;
+
+            while (std::getline(stream, line)) {
+                std::string lower = line;
+                std::ranges::transform(lower, lower.begin(),
+                    [](unsigned char c) { return std::tolower(c); });
+
+                if (lower.find("pkg-config") != std::string::npos &&
+                    (lower.find("not found") != std::string::npos ||
+                     lower.find("missing") != std::string::npos)) {
+                    info.type = BuildErrorType::MissingTool;
+                    info.missing_packages.emplace_back("pkg-config");
+                    error_lines.push_back(line);
+                }
+                else if (lower.find("could not find") != std::string::npos ||
+                         lower.find("package '") != std::string::npos ||
+                         lower.find("no package '") != std::string::npos) {
+                    info.type = BuildErrorType::MissingDependency;
+                    if (auto pos = lower.find("package '"); pos != std::string::npos) {
+                        auto start = pos + 9;
+                        if (auto end = lower.find('\'', start); end != std::string::npos) {
+                            info.missing_packages.push_back(line.substr(start, end - start));
+                        }
+                    }
+                    error_lines.push_back(line);
+                }
+                else if (lower.find("configure: error") != std::string::npos ||
+                         lower.find("configuration failed") != std::string::npos) {
+                    if (info.type == BuildErrorType::Unknown) {
+                        info.type = BuildErrorType::ConfigurationFailure;
+                    }
+                    error_lines.push_back(line);
+                }
+                else if (lower.find("undefined reference") != std::string::npos ||
+                         lower.find("cannot find -l") != std::string::npos) {
+                    info.type = BuildErrorType::LinkError;
+                    error_lines.push_back(line);
+                }
+                else if (lower.find("error:") != std::string::npos ||
+                         lower.find("fatal error") != std::string::npos) {
+                    if (info.type == BuildErrorType::Unknown) {
+                        info.type = BuildErrorType::CompilationError;
+                    }
+                    error_lines.push_back(line);
+                }
+                else if (lower.find("autoreconf") != std::string::npos ||
+                         lower.find("aclocal") != std::string::npos ||
+                         lower.find("automake") != std::string::npos ||
+                         lower.find("autoconf") != std::string::npos) {
+                    if (lower.find("not found") != std::string::npos ||
+                        lower.find("missing") != std::string::npos ||
+                        lower.find("command not found") != std::string::npos) {
+                        info.type = BuildErrorType::MissingTool;
+                        error_lines.push_back(line);
+                    }
+                }
+            }
+
+            std::ostringstream summary;
+            size_t count = std::min(error_lines.size(), static_cast<size_t>(20));
+            for (size_t i = 0; i < count; ++i) {
+                summary << error_lines[i] << "\n";
+            }
+            if (error_lines.size() > 20) {
+                summary << "... (" << (error_lines.size() - 20) << " more errors)\n";
+            }
+
+            if (!info.missing_packages.empty()) {
+                summary << "\nMissing packages: ";
+                for (size_t i = 0; i < info.missing_packages.size(); ++i) {
+                    if (i > 0) summary << ", ";
+                    summary << info.missing_packages[i];
+                }
+                summary << "\n";
+            }
+
+            info.summary = summary.str();
+            return info;
+        }
+    }
+
     class MakeAdapter final : public IBuildSystemAdapter {
     public:
         [[nodiscard]] std::string name() const override { return "Make"; }
 
         [[nodiscard]] std::string description() const override {
-            return "GNU Make build system adapter";
+            return "GNU Make / Autotools build system adapter";
         }
 
         [[nodiscard]] double detect(const fs::path& project_path) const override {
-            if (fs::exists(project_path / "Makefile")) {
-                return 0.7;
-            }
-            if (fs::exists(project_path / "makefile")) {
+            auto [has_makefile, has_configure, has_configure_ac, has_makefile_am, has_makefile_in, is_autotools, bootstrap_script] = AutotoolsInfo::detect(project_path);
+
+            if (has_makefile && !is_autotools) {
                 return 0.7;
             }
             if (fs::exists(project_path / "GNUmakefile")) {
                 return 0.75;
             }
+            if (has_configure && has_makefile_in) {
+                return 0.8;
+            }
+            if (has_configure_ac || has_makefile_am) {
+                return 0.85;
+            }
+            if (!bootstrap_script.empty()) {
+                return 0.8;
+            }
+
             return 0.0;
         }
 
@@ -819,37 +1165,130 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            if (!fs::exists(project_path / "configure")) {
-                return Result<void, Error>::success();
-            }
+            auto info = AutotoolsInfo::detect(project_path);
+            fs::path work_dir = project_path;
+            fs::path configure_script = project_path / "configure";
 
-            auto compiler = CompilerInfo::from_name(options.compiler);
-            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
+            if (!fs::exists(configure_script) && info.is_autotools) {
+                if (!info.bootstrap_script.empty()) {
+                    std::string cmd;
+                    if (info.bootstrap_script == "buildconf") {
+                        cmd = "sh buildconf";
+                    } else {
+                        cmd = "./" + info.bootstrap_script;
+                    }
+                    if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code != 0) {
+                        if (auto error_info = classify_build_error(output); error_info.type == BuildErrorType::MissingTool) {
+                            return Result<void, Error>::failure(
+                                Error(ErrorCode::NotFound,
+                                    "Bootstrap failed - missing tools: " + error_info.summary)
+                            );
+                        }
+                        return Result<void, Error>::failure(
+                            Error(ErrorCode::InternalError,
+                                info.bootstrap_script + " failed: " + output)
+                        );
+                    }
+                }
 
-            std::string capture_launcher;
-            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
-                if (auto script = find_capture_script(project_path); !script.empty()) {
-                    capture_launcher = script.string() + " ";
+                if (!fs::exists(configure_script) && info.has_configure_ac) {
+                    if (auto [exit_code, output] = execute_command("autoreconf -fi", project_path); exit_code != 0) {
+                        if (auto error_info = classify_build_error(output); error_info.type == BuildErrorType::MissingTool) {
+                            return Result<void, Error>::failure(
+                                Error(ErrorCode::NotFound,
+                                    "autoreconf failed - missing autotools: " + error_info.summary)
+                            );
+                        }
+                        return Result<void, Error>::failure(
+                            Error(ErrorCode::InternalError, "autoreconf failed: " + output)
+                        );
+                    }
                 }
             }
 
-            std::ostringstream cmd;
-            cmd << "CC=\"" << capture_launcher << compiler.c_compiler << "\" ";
-            cmd << "CXX=\"" << capture_launcher << compiler.cxx_compiler << "\" ";
-
-            if (!flags.empty()) {
-                cmd << "CFLAGS=\"" << flags.combined() << "\" ";
-                cmd << "CXXFLAGS=\"" << flags.combined() << "\" ";
+            if (!fs::exists(configure_script)) {
+                if (info.has_makefile) {
+                    return Result<void, Error>::success();
+                }
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::NotFound,
+                        "No configure script found and could not generate one")
+                );
             }
 
-            cmd << "./configure";
+            fs::path build_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path;
+
+            if (use_vpath) {
+                std::error_code ec;
+                fs::create_directories(build_dir, ec);
+                if (ec) {
+                    return Result<void, Error>::failure(
+                        Error(ErrorCode::InternalError,
+                            "Failed to create build directory: " + ec.message())
+                    );
+                }
+                work_dir = build_dir;
+                configure_script = fs::relative(project_path / "configure", build_dir);
+                if (configure_script.empty() || configure_script.string().find("..") == std::string::npos) {
+                    configure_script = fs::absolute(project_path / "configure");
+                }
+            }
+
+            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
+
+            std::ostringstream cmd;
+            cmd << "CC=\"" << c_compiler << "\" ";
+            cmd << "CXX=\"" << cxx_compiler << "\" ";
+
+            std::string base_flags = "-fPIC";
+            if (!flags.empty()) {
+                base_flags += " " + flags.combined();
+            }
+            cmd << "CFLAGS=\"" << base_flags << "\" ";
+            cmd << "CXXFLAGS=\"" << base_flags << "\" ";
+
+            if (use_vpath) {
+                cmd << "\"" << configure_script.string() << "\"";
+            } else {
+                cmd << "./configure";
+            }
+
             for (const auto& arg : options.extra_args) {
                 cmd << " " << arg;
             }
 
-            if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
+            if (auto [exit_code, output] = execute_command(cmd.str(), work_dir); exit_code != 0) {
+                auto error_info = classify_build_error(output);
+                std::string error_msg;
+                switch (error_info.type) {
+                    case BuildErrorType::MissingDependency:
+                        error_msg = "Configure failed - missing dependencies:\n" + error_info.summary;
+                        return Result<void, Error>::failure(
+                            Error(ErrorCode::NotFound, error_msg)
+                        );
+                    case BuildErrorType::MissingTool:
+                        error_msg = "Configure failed - missing tools:\n" + error_info.summary;
+                        return Result<void, Error>::failure(
+                            Error(ErrorCode::NotFound, error_msg)
+                        );
+                    default:
+                        error_msg = "Configure failed:\n" +
+                            (error_info.summary.empty() ? output : error_info.summary);
+                        return Result<void, Error>::failure(
+                            Error(ErrorCode::InternalError, error_msg)
+                        );
+                }
+            }
+
+            bool makefile_created = fs::exists(work_dir / "Makefile") ||
+                                    fs::exists(work_dir / "makefile") ||
+                                    fs::exists(work_dir / "GNUmakefile");
+            if (!makefile_created) {
                 return Result<void, Error>::failure(
-                    Error(ErrorCode::InternalError, "Configure failed: " + output)
+                    Error(ErrorCode::InternalError,
+                        "Configure completed but did not generate a Makefile")
                 );
             }
 
@@ -863,70 +1302,145 @@ namespace bha::build_systems
             BuildResult result;
             const auto start = std::chrono::steady_clock::now();
 
-            if (fs::exists(project_path / "configure") && !fs::exists(project_path / "Makefile")) {
+            auto info = AutotoolsInfo::detect(project_path);
+
+            bool needs_configure = info.is_autotools ||
+                                   info.has_configure ||
+                                   !info.bootstrap_script.empty();
+
+            fs::path work_dir = project_path;
+            fs::path build_dir = options.build_dir.empty() ? project_path : options.build_dir;
+
+            if (bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path) {
+                work_dir = build_dir;
+            }
+
+            bool has_makefile_in_work_dir = fs::exists(work_dir / "Makefile") ||
+                                            fs::exists(work_dir / "makefile") ||
+                                            fs::exists(work_dir / "GNUmakefile");
+
+            if (options.clean_first && has_makefile_in_work_dir) {
+                clean(project_path, options);
+                has_makefile_in_work_dir = false;
+            }
+
+            if (needs_configure && !has_makefile_in_work_dir) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
-                    result.error_message = config_result.error().message();
+                    auto& err = config_result.error();
+                    result.error_message = err.message();
                     return Result<BuildResult, Error>::success(result);
                 }
             }
 
-            if (options.clean_first) {
-                clean(project_path, options);
+            has_makefile_in_work_dir = fs::exists(work_dir / "Makefile") ||
+                                       fs::exists(work_dir / "makefile") ||
+                                       fs::exists(work_dir / "GNUmakefile");
+
+            if (!has_makefile_in_work_dir && !info.has_makefile) {
+                result.error_message = "No Makefile found. ";
+                if (info.is_autotools) {
+                    result.error_message += "This is an autotools project - configure may have failed.";
+                } else if (!info.bootstrap_script.empty()) {
+                    result.error_message += "Try running '" + info.bootstrap_script + "' first.";
+                } else {
+                    result.error_message += "This project may require manual configuration.";
+                }
+                return Result<BuildResult, Error>::success(result);
             }
 
-            auto compiler = CompilerInfo::from_name(options.compiler);
-            auto flags = CompilerFlags::for_compiler(compiler.family, options.enable_tracing, options.enable_memory_profiling);
+            if (!has_makefile_in_work_dir && info.has_makefile) {
+                work_dir = project_path;
+            }
+
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
+
+            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+                ? work_dir / "traces" : options.trace_output_dir;
 
             std::ostringstream cmd;
 
-            if (options.enable_tracing && !options.trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
+            if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(type)) {
+                std::error_code ec;
+                fs::create_directories(trace_output_dir, ec);
 #ifdef _WIN32
-                cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
 #else
-                cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
 #endif
             }
 
-            cmd << "make -j" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
+            cmd << "make";
+            cmd << " -j" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
 
-            std::string capture_launcher;
-            if (options.enable_tracing && compiler.family == CompilerFamily::GCC) {
-                if (auto script = find_capture_script(project_path); !script.empty()) {
-                    capture_launcher = script.string() + " ";
-                }
-            }
-
-            cmd << " CC=\"" << capture_launcher << compiler.c_compiler << "\"";
-            cmd << " CXX=\"" << capture_launcher << compiler.cxx_compiler << "\"";
-
+            std::string base_cflags = "-fPIC";
+            std::string base_cxxflags = "-fPIC";
             if (!flags.empty()) {
-                cmd << " CFLAGS=\"" << flags.combined() << "\"";
-                cmd << " CXXFLAGS=\"" << flags.combined() << "\"";
+                base_cflags += " " + flags.combined();
+                base_cxxflags += " " + flags.combined();
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            if (options.enable_tracing && needs_capture_script(type)) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    cmd << " CC=\"" << script.string() << " " << c_compiler << "\"";
+                    cmd << " CXX=\"" << script.string() << " " << cxx_compiler << "\"";
+                } else {
+                    cmd << " CC=\"" << c_compiler << "\"";
+                    cmd << " CXX=\"" << cxx_compiler << "\"";
+                }
+            } else {
+                cmd << " CC=\"" << c_compiler << "\"";
+                cmd << " CXX=\"" << cxx_compiler << "\"";
+            }
+
+            cmd << " CFLAGS=\"" << base_cflags << "\"";
+            cmd << " CXXFLAGS=\"" << base_cxxflags << "\"";
+
+            if (options.verbose) {
+                cmd << " V=1";
+            }
+
+            auto [exit_code, output] = execute_command(cmd.str(), work_dir);
 
             result.output = output;
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
-                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
+                if (auto error_info = classify_build_error(output); !error_info.summary.empty()) {
+                    result.error_message = error_info.summary;
+                } else {
+                    result.error_message = extract_error_summary(output);
+                    if (result.error_message.empty()) {
+                        result.error_message = "Build failed";
+                    }
+                }
             }
 
-            result.trace_files = find_trace_files(project_path);
-            if (!options.trace_output_dir.empty()) {
-                auto trace_dir_files = find_trace_files(options.trace_output_dir);
-                result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
+            result.trace_files = find_trace_files(work_dir);
+            if (work_dir != project_path) {
+                auto src_traces = find_trace_files(project_path);
+                result.trace_files.insert(result.trace_files.end(),
+                    src_traces.begin(), src_traces.end());
+            }
+            if (needs_capture_script(type) && !trace_output_dir.empty() && trace_output_dir != work_dir) {
+                auto trace_dir_files = find_trace_files(trace_output_dir);
+                result.trace_files.insert(result.trace_files.end(),
+                    trace_dir_files.begin(), trace_dir_files.end());
             }
 
             if (options.enable_memory_profiling) {
-                result.memory_files = find_memory_files(project_path);
+                result.memory_files = find_memory_files(work_dir);
+                if (work_dir != project_path) {
+                    auto src_mem = find_memory_files(project_path);
+                    result.memory_files.insert(result.memory_files.end(),
+                        src_mem.begin(), src_mem.end());
+                }
             }
 
-            copy_trace_files(project_path, options.trace_output_dir, result.trace_files, result.memory_files);
+            copy_trace_files(work_dir, trace_output_dir, result.trace_files, result.memory_files);
 
-            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            result.build_time = std::chrono::duration_cast<Duration>(
+                std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);
         }
 
@@ -934,11 +1448,42 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            (void)options;
-            const std::string cmd = "make clean";
+            fs::path work_dir = options.build_dir.empty() ? project_path : options.build_dir;
 
-            if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code != 0) {
-                execute_command("make distclean", project_path);
+            bool has_makefile = fs::exists(work_dir / "Makefile") ||
+                                fs::exists(work_dir / "makefile") ||
+                                fs::exists(work_dir / "GNUmakefile");
+
+            if (!has_makefile) {
+                work_dir = project_path;
+                has_makefile = fs::exists(work_dir / "Makefile") ||
+                               fs::exists(work_dir / "makefile") ||
+                               fs::exists(work_dir / "GNUmakefile");
+            }
+
+            if (!has_makefile) {
+                return Result<void, Error>::success();
+            }
+
+            execute_command("make clean", work_dir);
+
+            // Remove cached compiler settings files that may persist between builds
+            // These files cache CFLAGS and compiler choices, causing issues when switching compilers
+            std::error_code ec;
+            for (const auto& settings_file : {".make-settings", ".make-prerequisites"}) {
+                fs::remove(work_dir / settings_file, ec);
+                if (work_dir != project_path) {
+                    fs::remove(project_path / settings_file, ec);
+                }
+            }
+
+            // Also check common subdirectories for these files
+            for (const auto& subdir : {"src", "deps"}) {
+                if (fs::path subdir_path = project_path / subdir; fs::exists(subdir_path)) {
+                    for (const auto& settings_file : {".make-settings", ".make-prerequisites", ".make-*"}) {
+                        fs::remove(subdir_path / settings_file, ec);
+                    }
+                }
             }
 
             return Result<void, Error>::success();
@@ -948,24 +1493,27 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            (void)options;
-            // Make doesn't generate compile_commands.json natively
-            // Use Bear or compiledb if available
-            const fs::path compile_commands = project_path / "compile_commands.json";
+            const fs::path work_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            fs::path compile_commands = work_dir / "compile_commands.json";
 
             if (fs::exists(compile_commands)) {
                 return Result<fs::path, Error>::success(compile_commands);
             }
 
-            const std::string cmd = "bear -- make -j" + std::to_string(get_cpu_count());
-
-            if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code == 0 && fs::exists(compile_commands)) {
+            compile_commands = project_path / "compile_commands.json";
+            if (fs::exists(compile_commands)) {
                 return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            const std::string cmd = "bear -- make -j" + std::to_string(get_cpu_count());
+            if (auto [exit_code, output] = execute_command(cmd, work_dir);
+                exit_code == 0 && fs::exists(work_dir / "compile_commands.json")) {
+                return Result<fs::path, Error>::success(work_dir / "compile_commands.json");
             }
 
             return Result<fs::path, Error>::failure(
                 Error(ErrorCode::NotFound,
-                      "compile_commands.json not found. Install 'bear' to generate it.")
+                    "compile_commands.json not found. Install 'bear' to generate it.")
             );
         }
     };
@@ -1165,13 +1713,17 @@ namespace bha::build_systems
 
             fs::create_directories(build_dir);
 
-            auto [family, c_compiler, cxx_compiler] = CompilerInfo::from_name(options.compiler);
-            auto flags = CompilerFlags::for_compiler(family, options.enable_tracing, options.enable_memory_profiling);
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             std::string capture_launcher;
-            if (options.enable_tracing && family == CompilerFamily::GCC) {
+            if (options.enable_tracing && needs_capture_script(type)) {
                 if (auto script = find_capture_script(project_path); !script.empty()) {
                     capture_launcher = script.string() + " ";
+                } else {
+                    std::cerr << "Warning: bha-capture script not found. "
+                              << "GCC/Intel/NVCC tracing requires this script.\n"
+                              << "Set BHA_SCRIPT_DIR to the directory containing bha-capture.sh\n";
                 }
             }
 
@@ -1212,6 +1764,12 @@ namespace bha::build_systems
 
             fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
 
+            // For clean builds, remove the build directory to ensure fresh configuration
+            if (options.clean_first && fs::exists(build_dir)) {
+                std::error_code ec;
+                fs::remove_all(build_dir, ec);
+            }
+
             if (!fs::exists(build_dir / "build.ninja") && !fs::exists(build_dir / "meson-private")) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
                     result.error_message = config_result.error().message();
@@ -1219,18 +1777,18 @@ namespace bha::build_systems
                 }
             }
 
-            if (options.clean_first) {
-                clean(project_path, options);
-            }
+            auto compiler = get_compiler_info(options.compiler);
 
-            auto compiler = CompilerInfo::from_name(options.compiler);
+            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+                ? build_dir / "traces" : options.trace_output_dir;
 
             std::ostringstream cmd;
-            if (options.enable_tracing && !options.trace_output_dir.empty() && compiler.family == CompilerFamily::GCC) {
+            if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(compiler.type)) {
+                fs::create_directories(trace_output_dir);
 #ifdef _WIN32
-                cmd << "set BHA_TRACE_DIR=" << options.trace_output_dir.string() << " && ";
+                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
 #else
-                cmd << "BHA_TRACE_DIR=\"" << options.trace_output_dir.string() << "\" ";
+                cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
 #endif
             }
 
@@ -1252,8 +1810,8 @@ namespace bha::build_systems
             }
 
             result.trace_files = find_trace_files(build_dir);
-            if (!options.trace_output_dir.empty()) {
-                auto trace_dir_files = find_trace_files(options.trace_output_dir);
+            if (needs_capture_script(compiler.type) && !trace_output_dir.empty()) {
+                auto trace_dir_files = find_trace_files(trace_output_dir);
                 result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
             }
 
@@ -1261,7 +1819,7 @@ namespace bha::build_systems
                 result.memory_files = find_memory_files(build_dir);
             }
 
-            copy_trace_files(build_dir, options.trace_output_dir, result.trace_files, result.memory_files);
+            copy_trace_files(build_dir, trace_output_dir, result.trace_files, result.memory_files);
 
             result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);
@@ -1323,6 +1881,583 @@ namespace bha::build_systems
     };
 
     // --------------------------------------------------------------------------
+    // Bazel Adapter
+    // --------------------------------------------------------------------------
+
+    class BazelAdapter final : public IBuildSystemAdapter {
+    public:
+        [[nodiscard]] std::string name() const override { return "Bazel"; }
+
+        [[nodiscard]] std::string description() const override {
+            return "Bazel build system adapter";
+        }
+
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
+            if (fs::exists(project_path / "WORKSPACE") || fs::exists(project_path / "WORKSPACE.bazel")) {
+                return 0.95;
+            }
+            if (fs::exists(project_path / "MODULE.bazel")) {
+                return 0.95;
+            }
+            return 0.0;
+        }
+
+        Result<void, Error> configure(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)project_path;
+            (void)options;
+            return Result<void, Error>::success();
+        }
+
+        Result<BuildResult, Error> build(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            BuildResult result;
+            auto start = std::chrono::steady_clock::now();
+
+            if (options.clean_first) {
+                clean(project_path, options);
+            }
+
+            auto compiler = get_compiler_info(options.compiler);
+
+            std::ostringstream cmd;
+            cmd << "bazel build //...";
+            cmd << " --jobs=" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
+
+            if (options.build_type == "Debug") {
+                cmd << " -c dbg";
+            } else {
+                cmd << " -c opt";
+            }
+
+            fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
+            fs::path profile_path = trace_output_dir / "bazel_profile.json";
+
+            if (options.enable_tracing) {
+                std::error_code ec;
+                fs::create_directories(trace_output_dir, ec);
+                cmd << " --profile=" << fs::absolute(profile_path).string();
+                cmd << " --generate_json_trace_profile";
+                if (auto flags = CompilerFlags::for_compiler(compiler.type, true, options.enable_memory_profiling); !flags.empty()) {
+                    for (const auto& flag : {flags.tracing_flags, flags.memory_flags}) {
+                        if (!flag.empty()) {
+                            std::istringstream iss(flag);
+                            std::string f;
+                            while (iss >> f) {
+                                cmd << " --copt=" << f;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (options.verbose) {
+                cmd << " --verbose_failures";
+            }
+
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
+
+            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+
+            result.output = output;
+            result.success = (exit_code == 0);
+
+            if (!result.success) {
+                std::string error_summary = extract_error_summary(output);
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
+            }
+
+            if (options.enable_tracing && fs::exists(profile_path)) {
+                result.trace_files.push_back(profile_path);
+            }
+
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(project_path);
+            }
+
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<BuildResult, Error>::success(result);
+        }
+
+        Result<void, Error> clean(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const std::string cmd = "bazel clean";
+
+            if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code != 0) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::InternalError, "Clean failed: " + output)
+                );
+            }
+
+            return Result<void, Error>::success();
+        }
+
+        Result<fs::path, Error> get_compile_commands(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const fs::path compile_commands = project_path / "compile_commands.json";
+
+            if (fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            const std::string cmd = "bazel run @hedron_compile_commands//:refresh_all 2>/dev/null || "
+                                   "bazel run //:refresh_compile_commands 2>/dev/null";
+
+            if (auto [exit_code, output] = execute_command(cmd, project_path);
+                exit_code == 0 && fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            return Result<fs::path, Error>::failure(
+                Error(ErrorCode::NotFound,
+                      "compile_commands.json not found. Use hedron_compile_commands or similar.")
+            );
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // Buck2 Adapter
+    // --------------------------------------------------------------------------
+
+    class Buck2Adapter final : public IBuildSystemAdapter {
+    public:
+        [[nodiscard]] std::string name() const override { return "Buck2"; }
+
+        [[nodiscard]] std::string description() const override {
+            return "Buck2 build system adapter";
+        }
+
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
+            if (fs::exists(project_path / ".buckconfig")) {
+                return 0.9;
+            }
+            if (fs::exists(project_path / "BUCK") || fs::exists(project_path / "TARGETS")) {
+                return 0.85;
+            }
+            return 0.0;
+        }
+
+        Result<void, Error> configure(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)project_path;
+            (void)options;
+            return Result<void, Error>::success();
+        }
+
+        Result<BuildResult, Error> build(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            BuildResult result;
+            auto start = std::chrono::steady_clock::now();
+
+            if (options.clean_first) {
+                clean(project_path, options);
+            }
+
+            fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
+            fs::path profile_path = trace_output_dir / "buck2_profile.json";
+
+            std::ostringstream cmd;
+            cmd << "buck2 build //...";
+            cmd << " --num-threads=" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
+
+            if (options.build_type == "Debug") {
+                cmd << " --config=cxx.default_flavor=debug";
+            }
+
+            if (options.enable_tracing) {
+                std::error_code ec;
+                fs::create_directories(trace_output_dir, ec);
+                cmd << " --profile-output=" << fs::absolute(profile_path).string();
+            }
+
+            if (options.verbose) {
+                cmd << " -v 2";
+            }
+
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
+
+            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+
+            result.output = output;
+            result.success = (exit_code == 0);
+
+            if (!result.success) {
+                std::string error_summary = extract_error_summary(output);
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
+            }
+
+            if (options.enable_tracing && fs::exists(profile_path)) {
+                result.trace_files.push_back(profile_path);
+            }
+
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<BuildResult, Error>::success(result);
+        }
+
+        Result<void, Error> clean(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const std::string cmd = "buck2 clean";
+
+            if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code != 0) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::InternalError, "Clean failed: " + output)
+                );
+            }
+
+            return Result<void, Error>::success();
+        }
+
+        Result<fs::path, Error> get_compile_commands(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+
+            if (const fs::path compile_commands = project_path / "compile_commands.json"; fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            return Result<fs::path, Error>::failure(
+                Error(ErrorCode::NotFound,
+                      "compile_commands.json not found. Buck2 doesn't generate it natively.")
+            );
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // SCons Adapter
+    // --------------------------------------------------------------------------
+
+    class SConsAdapter final : public IBuildSystemAdapter {
+    public:
+        [[nodiscard]] std::string name() const override { return "SCons"; }
+
+        [[nodiscard]] std::string description() const override {
+            return "SCons build system adapter";
+        }
+
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
+            if (fs::exists(project_path / "SConstruct")) {
+                return 0.9;
+            }
+            if (fs::exists(project_path / "sconstruct")) {
+                return 0.9;
+            }
+            if (fs::exists(project_path / "SConscript")) {
+                return 0.7;
+            }
+            return 0.0;
+        }
+
+        Result<void, Error> configure(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)project_path;
+            (void)options;
+            return Result<void, Error>::success();
+        }
+
+        Result<BuildResult, Error> build(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            BuildResult result;
+            auto start = std::chrono::steady_clock::now();
+
+            if (options.clean_first) {
+                clean(project_path, options);
+            }
+
+            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
+
+            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+                ? project_path / "traces" : options.trace_output_dir;
+
+            std::ostringstream cmd;
+
+            if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(type)) {
+                fs::create_directories(trace_output_dir);
+#ifdef _WIN32
+                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
+#else
+                cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
+#endif
+            }
+
+            cmd << "scons";
+            cmd << " -j" << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
+
+            if (options.enable_tracing && needs_capture_script(type)) {
+                if (auto script = find_capture_script(project_path); !script.empty()) {
+                    cmd << " CC=\"" << script.string() << " " << c_compiler << "\"";
+                    cmd << " CXX=\"" << script.string() << " " << cxx_compiler << "\"";
+                } else if (!c_compiler.empty()) {
+                    cmd << " CC=\"" << c_compiler << "\"";
+                    cmd << " CXX=\"" << cxx_compiler << "\"";
+                }
+            } else if (!c_compiler.empty()) {
+                cmd << " CC=\"" << c_compiler << "\"";
+                cmd << " CXX=\"" << cxx_compiler << "\"";
+            }
+
+            std::string base_flags = "-fPIC";
+            if (!flags.empty()) {
+                base_flags += " " + flags.combined();
+            }
+            cmd << " CFLAGS=\"" << base_flags << "\"";
+            cmd << " CXXFLAGS=\"" << base_flags << "\"";
+
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
+
+            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+
+            result.output = output;
+            result.success = (exit_code == 0);
+
+            if (!result.success) {
+                std::string error_summary = extract_error_summary(output);
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
+            }
+
+            result.trace_files = find_trace_files(project_path);
+            if (needs_capture_script(type) && !trace_output_dir.empty()) {
+                auto trace_dir_files = find_trace_files(trace_output_dir);
+                result.trace_files.insert(result.trace_files.end(), trace_dir_files.begin(), trace_dir_files.end());
+            }
+
+            if (options.enable_memory_profiling) {
+                result.memory_files = find_memory_files(project_path);
+            }
+
+            copy_trace_files(project_path, trace_output_dir, result.trace_files, result.memory_files);
+
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<BuildResult, Error>::success(result);
+        }
+
+        Result<void, Error> clean(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const std::string cmd = "scons -c";
+
+            if (auto [exit_code, output] = execute_command(cmd, project_path); exit_code != 0) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::InternalError, "Clean failed: " + output)
+                );
+            }
+
+            return Result<void, Error>::success();
+        }
+
+        Result<fs::path, Error> get_compile_commands(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const fs::path compile_commands = project_path / "compile_commands.json";
+
+            if (fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            const std::string cmd = "bear -- scons -j" + std::to_string(get_cpu_count());
+
+            if (auto [exit_code, output] = execute_command(cmd, project_path);
+                exit_code == 0 && fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            return Result<fs::path, Error>::failure(
+                Error(ErrorCode::NotFound,
+                      "compile_commands.json not found. Install 'bear' or use scons-compiledb.")
+            );
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // XCode Adapter
+    // --------------------------------------------------------------------------
+
+    class XCodeAdapter final : public IBuildSystemAdapter {
+    public:
+        [[nodiscard]] std::string name() const override { return "XCode"; }
+
+        [[nodiscard]] std::string description() const override {
+            return "Apple Xcode build system adapter";
+        }
+
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
+            for (const auto& entry : fs::directory_iterator(project_path)) {
+                if (entry.path().extension() == ".xcodeproj") {
+                    return 0.95;
+                }
+                if (entry.path().extension() == ".xcworkspace") {
+                    return 0.95;
+                }
+            }
+            return 0.0;
+        }
+
+        Result<void, Error> configure(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)project_path;
+            (void)options;
+            return Result<void, Error>::success();
+        }
+
+        Result<BuildResult, Error> build(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            BuildResult result;
+            auto start = std::chrono::steady_clock::now();
+
+            fs::path project_file;
+            fs::path workspace_file;
+            for (const auto& entry : fs::directory_iterator(project_path)) {
+                if (entry.path().extension() == ".xcworkspace") {
+                    workspace_file = entry.path();
+                    break;
+                }
+                if (entry.path().extension() == ".xcodeproj") {
+                    project_file = entry.path();
+                }
+            }
+
+            if (workspace_file.empty() && project_file.empty()) {
+                result.error_message = "No Xcode project or workspace found";
+                return Result<BuildResult, Error>::success(result);
+            }
+
+            if (options.clean_first) {
+                clean(project_path, options);
+            }
+
+            std::ostringstream cmd;
+            cmd << "xcodebuild";
+
+            if (!workspace_file.empty()) {
+                cmd << " -workspace \"" << workspace_file.string() << "\"";
+                cmd << " -scheme \"" << workspace_file.stem().string() << "\"";
+            } else {
+                cmd << " -project \"" << project_file.string() << "\"";
+            }
+
+            cmd << " -configuration " << options.build_type;
+            cmd << " -jobs " << (options.parallel_jobs > 0 ? options.parallel_jobs : get_cpu_count());
+
+            if (options.enable_tracing) {
+                cmd << " -enableBuildTimingTracing YES";
+            }
+
+            if (!options.verbose) {
+                cmd << " -quiet";
+            }
+
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
+
+            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+
+            result.output = output;
+            result.success = (exit_code == 0);
+
+            if (!result.success) {
+                std::string error_summary = extract_error_summary(output);
+                result.error_message = error_summary.empty() ? "Build failed" : error_summary;
+            }
+
+            result.trace_files = find_trace_files(project_path / "build");
+
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<BuildResult, Error>::success(result);
+        }
+
+        Result<void, Error> clean(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            fs::path project_file;
+            fs::path workspace_file;
+            for (const auto& entry : fs::directory_iterator(project_path)) {
+                if (entry.path().extension() == ".xcworkspace") {
+                    workspace_file = entry.path();
+                    break;
+                }
+                if (entry.path().extension() == ".xcodeproj") {
+                    project_file = entry.path();
+                }
+            }
+
+            std::ostringstream cmd;
+            cmd << "xcodebuild clean";
+
+            if (!workspace_file.empty()) {
+                cmd << " -workspace \"" << workspace_file.string() << "\"";
+                cmd << " -scheme \"" << workspace_file.stem().string() << "\"";
+            } else if (!project_file.empty()) {
+                cmd << " -project \"" << project_file.string() << "\"";
+            }
+
+            cmd << " -configuration " << options.build_type;
+
+            if (auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::InternalError, "Clean failed: " + output)
+                );
+            }
+
+            return Result<void, Error>::success();
+        }
+
+        Result<fs::path, Error> get_compile_commands(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+
+            if (const fs::path compile_commands = project_path / "compile_commands.json"; fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+
+            return Result<fs::path, Error>::failure(
+                Error(ErrorCode::NotFound,
+                      "compile_commands.json not found. Use xcpretty or XcodeGen to generate it.")
+            );
+        }
+    };
+
+    // --------------------------------------------------------------------------
     // Registration functions
     // --------------------------------------------------------------------------
 
@@ -1353,6 +2488,30 @@ namespace bha::build_systems
     void register_meson_adapter() {
         BuildSystemRegistry::instance().register_adapter(
             std::make_unique<MesonAdapter>()
+        );
+    }
+
+    void register_bazel_adapter() {
+        BuildSystemRegistry::instance().register_adapter(
+            std::make_unique<BazelAdapter>()
+        );
+    }
+
+    void register_buck2_adapter() {
+        BuildSystemRegistry::instance().register_adapter(
+            std::make_unique<Buck2Adapter>()
+        );
+    }
+
+    void register_scons_adapter() {
+        BuildSystemRegistry::instance().register_adapter(
+            std::make_unique<SConsAdapter>()
+        );
+    }
+
+    void register_xcode_adapter() {
+        BuildSystemRegistry::instance().register_adapter(
+            std::make_unique<XCodeAdapter>()
         );
     }
 
