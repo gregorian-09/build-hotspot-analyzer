@@ -1,4 +1,0 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/threadpool.c:49:8:TPool_create	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/threadpool.c:55:6:TPool_free	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/threadpool.c:60:6:TPool_submitJob	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/threadpool.c:65:6:TPool_jobsCompleted	8	static

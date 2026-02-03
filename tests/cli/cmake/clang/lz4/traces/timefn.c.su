@@ -1,5 +1,0 @@
-repos/lz4/programs/timefn.c:88:TIME_getTime	24	static
-repos/lz4/programs/timefn.c:148:TIME_span_ns	0	static
-repos/lz4/programs/timefn.c:153:TIME_clockSpan_ns	24	static
-repos/lz4/programs/timefn.c:159:TIME_waitForNextTick	40	static
-repos/lz4/programs/timefn.c:168:TIME_support_MT_measurements	0	static

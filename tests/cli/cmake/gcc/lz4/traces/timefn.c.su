@@ -1,5 +1,0 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/timefn.c:88:8:TIME_getTime	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/timefn.c:148:13:TIME_span_ns	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/timefn.c:153:13:TIME_clockSpan_ns	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/timefn.c:159:6:TIME_waitForNextTick	80	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/timefn.c:168:5:TIME_support_MT_measurements	8	static

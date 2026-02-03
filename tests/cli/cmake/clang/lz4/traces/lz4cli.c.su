@@ -1,9 +1,0 @@
-repos/lz4/programs/lz4cli.c:393:main	360	static
-repos/lz4/programs/lz4cli.c:145:usage_advanced	40	static
-repos/lz4/programs/lz4cli.c:340:longCommandWArg	40	static
-repos/lz4/programs/lz4cli.c:289:readU32FromChar	0	static
-repos/lz4/programs/lz4cli.c:104:errorOut	8	static
-repos/lz4/programs/lz4cli.c:253:badusage	8	static
-repos/lz4/programs/lz4cli.c:189:usage_longhelp	24	static
-repos/lz4/programs/lz4cli.c:124:usage	24	static
-repos/lz4/programs/util.h:433:UTIL_prepareFileList	264	static

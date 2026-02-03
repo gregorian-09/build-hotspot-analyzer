@@ -1,4 +1,0 @@
-repos/lz4/programs/threadpool.c:49:TPool_create	0	static
-repos/lz4/programs/threadpool.c:55:TPool_free	0	static
-repos/lz4/programs/threadpool.c:60:TPool_submitJob	0	static
-repos/lz4/programs/threadpool.c:65:TPool_jobsCompleted	0	static

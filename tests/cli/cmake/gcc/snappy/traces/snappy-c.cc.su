@@ -1,5 +1,0 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-c.cc:34:15:snappy_status snappy_compress(const char*, size_t, char*, size_t*)	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-c.cc:45:15:snappy_status snappy_uncompress(const char*, size_t, char*, size_t*)	64	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-c.cc:65:8:size_t snappy_max_compressed_length(size_t)	8	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-c.cc:69:15:snappy_status snappy_uncompressed_length(const char*, size_t, size_t*)	16	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/snappy/snappy-c.cc:81:15:snappy_status snappy_validate_compressed_buffer(const char*, size_t)	16	static

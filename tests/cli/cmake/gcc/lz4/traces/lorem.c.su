@@ -1,3 +1,0 @@
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lorem.c:258:13:generateWord	48	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lorem.c:337:1:LOREM_genBlock	144	static
-/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/lz4/programs/lorem.c:363:6:LOREM_genBuffer	8	static
