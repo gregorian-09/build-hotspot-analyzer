@@ -24,7 +24,7 @@
 set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_ROOT="${TEST_ROOT:-${SCRIPT_DIR}/temp}"
+TEST_ROOT="${TEST_ROOT:-${SCRIPT_DIR}/cli}"
 BHA_BINARY="${BHA_BINARY:-${SCRIPT_DIR}/../build/bha}"
 REPO_CACHE="${REPO_CACHE:-${TEST_ROOT}/repos}"
 
@@ -42,21 +42,10 @@ NC='\033[0m'
 
 declare -A PROJECT_BUILD_SYSTEM=(
     ["benchmark"]="cmake"
-    ["cli11"]="cmake"
-    ["simdjson"]="cmake"
-    ["lz4"]="cmake"
-    ["args"]="cmake"
     ["mimalloc"]="cmake"
-    ["googletest"]="cmake"
     ["rocksdb"]="cmake"
-    ["snappy"]="cmake"
-    ["fmt"]="cmake"
-    ["cxxopts"]="cmake"
-    ["tinyxml2"]="cmake"
     ["zstd"]="cmake"
     ["abseil"]="cmake"
-    ["spdlog"]="cmake"
-    ["taskflow"]="cmake"
     ["catch2"]="cmake"
     ["leveldb"]="cmake"
     ["yaml-cpp"]="cmake"
@@ -70,31 +59,20 @@ declare -A PROJECT_BUILD_SYSTEM=(
 )
 
 declare -A PROJECT_CMAKE_SUBDIR=(
-    ["lz4"]="build/cmake"
     ["zstd"]="build/cmake"
 )
 
 declare -A PROJECT_CMAKE_FLAGS=(
     ["benchmark"]="-DBENCHMARK_ENABLE_TESTING=OFF -DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
-    ["cli11"]="-DCLI11_BUILD_TESTS=OFF -DCLI11_BUILD_EXAMPLES=OFF"
-    ["lz4"]="-DLZ4_BUILD_CLI=OFF -DLZ4_BUILD_LEGACY_LZ4C=OFF"
-    ["args"]="-DARGS_BUILD_EXAMPLE=OFF -DARGS_BUILD_UNITTESTS=OFF"
     ["mimalloc"]="-DMI_BUILD_TESTS=OFF"
     ["rocksdb"]="-DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DWITH_BENCHMARK_TOOLS=OFF -DFAIL_ON_WARNINGS=OFF"
-    ["snappy"]="-DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF"
-    ["fmt"]="-DFMT_TEST=OFF -DFMT_DOC=OFF"
-    ["cxxopts"]="-DCXXOPTS_BUILD_EXAMPLES=OFF -DCXXOPTS_BUILD_TESTS=OFF"
-    ["tinyxml2"]="-DBUILD_TESTING=OFF"
     ["zstd"]="-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_BUILD_CONTRIB=OFF -DZSTD_BUILD_TESTS=OFF"
     ["abseil"]="-DABSL_BUILD_TESTING=OFF -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_BUILD_TEST_HELPERS=OFF"
-    ["spdlog"]="-DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF"
-    ["taskflow"]="-DTF_BUILD_TESTS=OFF -DTF_BUILD_EXAMPLES=OFF"
     ["catch2"]="-DCATCH_BUILD_TESTING=OFF -DCATCH_INSTALL_DOCS=OFF"
     ["leveldb"]="-DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF -DHAVE_SNAPPY=OFF -DCMAKE_CXX_STANDARD=17"
     ["yaml-cpp"]="-DYAML_BUILD_SHARED_LIBS=OFF -DYAML_CPP_BUILD_TESTS=OFF"
     ["libjpeg-turbo"]="-DENABLE_SHARED=OFF -DWITH_TURBOJPEG=OFF"
     ["glfw"]="-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF"
-    ["googletest"]="-DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF"
 )
 
 declare -A PROJECT_MAKE_FLAGS=(
