@@ -4,10 +4,12 @@
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/suggestions/all_suggesters.hpp"
 #include "bha/suggestions/consolidator.hpp"
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
+#include <unordered_map>
 
 namespace bha::lsp
 {
@@ -22,6 +24,9 @@ namespace bha::lsp
         while (config_.max_backups > 0 && backups_.size() > config_.max_backups && !backup_lru_.empty()) {
             const auto oldest_id = backup_lru_.front();
             backup_lru_.pop_front();
+            if (config_.use_disk_backups && !config_.workspace_root.empty()) {
+                cleanup_disk_backup(oldest_id);
+            }
             backups_.erase(oldest_id);
         }
 
@@ -29,6 +34,9 @@ namespace bha::lsp
         while (config_.max_backup_bytes > 0 && calculate_backup_size() > config_.max_backup_bytes && !backup_lru_.empty()) {
             const auto oldest_id = backup_lru_.front();
             backup_lru_.pop_front();
+            if (config_.use_disk_backups && !config_.workspace_root.empty()) {
+                cleanup_disk_backup(oldest_id);
+            }
             backups_.erase(oldest_id);
         }
     }
@@ -323,18 +331,38 @@ namespace bha::lsp
     bool SuggestionManager::revert_changes(const std::string& backup_id) {
         const auto it = backups_.find(backup_id);
         if (it == backups_.end()) {
+            if (config_.use_disk_backups && !config_.workspace_root.empty()) {
+                if (restore_disk_backup(backup_id)) {
+                    if (!config_.keep_backups) {
+                        cleanup_disk_backup(backup_id);
+                    }
+                    return true;
+                }
+            }
             return false;
         }
 
-        for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
-            try {
-                std::ofstream out(path, std::ios::binary);
-                if (!out) {
+        const bool is_disk_backup = config_.use_disk_backups && !config_.workspace_root.empty() &&
+                              fs::exists(get_backup_path(backup_id));
+
+        if (is_disk_backup) {
+            if (!restore_disk_backup(backup_id)) {
+                return false;
+            }
+            if (!config_.keep_backups) {
+                cleanup_disk_backup(backup_id);
+            }
+        } else {
+            for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
+                try {
+                    std::ofstream out(path, std::ios::binary);
+                    if (!out) {
+                        return false;
+                    }
+                    out << content;
+                } catch (...) {
                     return false;
                 }
-                out << content;
-            } catch (...) {
-                return false;
             }
         }
 
@@ -344,6 +372,10 @@ namespace bha::lsp
     }
 
     std::string SuggestionManager::create_backup(const std::vector<fs::path>& files) {
+        if (config_.use_disk_backups && !config_.workspace_root.empty()) {
+            return create_disk_backup(files);
+        }
+
         Backup backup;
         backup.id = generate_backup_id();
         backup.timestamp = std::chrono::system_clock::now();
@@ -370,13 +402,289 @@ namespace bha::lsp
         return backup.id;
     }
 
+    fs::path SuggestionManager::get_backup_path(const std::string& backup_id) const {
+        const fs::path backup_dir = config_.workspace_root / config_.backup_directory;
+        return backup_dir / backup_id;
+    }
+
+    std::string SuggestionManager::create_disk_backup(const std::vector<fs::path>& files) {
+        auto now = std::chrono::system_clock::now();
+        auto time_t = std::chrono::system_clock::to_time_t(now);
+        std::tm tm_buf{};
+#ifdef _WIN32
+        localtime_s(&tm_buf, &time_t);
+#else
+        localtime_r(&time_t, &tm_buf);
+#endif
+        std::ostringstream timestamp_ss;
+        timestamp_ss << std::put_time(&tm_buf, "%Y%m%d-%H%M%S");
+
+        std::string backup_id = timestamp_ss.str() + "-" + std::to_string(++backup_counter_);
+        fs::path backup_path = get_backup_path(backup_id);
+
+        fs::create_directories(backup_path);
+
+        Backup backup;
+        backup.id = backup_id;
+        backup.timestamp = now;
+
+        for (const auto& file : files) {
+            if (!fs::exists(file)) continue;
+
+            FileBackup file_backup;
+            file_backup.path = file;
+
+            fs::path relative = fs::relative(file, config_.workspace_root);
+            fs::path dest = backup_path / "files" / relative;
+            fs::create_directories(dest.parent_path());
+
+            try {
+                fs::copy_file(file, dest, fs::copy_options::overwrite_existing);
+                backup.files.push_back(std::move(file_backup));
+            } catch (const std::exception&) {
+                fs::remove_all(backup_path);
+                return create_backup(files);
+            }
+        }
+
+        if (!write_backup_metadata(backup_path, backup)) {
+            fs::remove_all(backup_path);
+            return create_backup(files);
+        }
+
+        backups_[backup_id] = std::move(backup);
+        backup_lru_.push_back(backup_id);
+        evict_old_backups();
+
+        return backup_id;
+    }
+
+    bool SuggestionManager::write_backup_metadata(const fs::path& backup_dir, const Backup& backup) {
+        const fs::path meta_path = backup_dir / "metadata.txt";
+        std::ofstream out(meta_path);
+        if (!out) return false;
+
+        const auto time_t = std::chrono::system_clock::to_time_t(backup.timestamp);
+        out << "id=" << backup.id << "\n";
+        out << "timestamp=" << time_t << "\n";
+        out << "file_count=" << backup.files.size() << "\n";
+
+        for (const auto& [path, content] : backup.files) {
+            out << "file=" << path.string() << "\n";
+        }
+
+        return out.good();
+    }
+
+    std::optional<Backup> SuggestionManager::read_backup_metadata(const fs::path& backup_dir) {
+        fs::path meta_path = backup_dir / "metadata.txt";
+        std::ifstream in(meta_path);
+        if (!in) return std::nullopt;
+
+        Backup backup;
+        std::string line;
+        while (std::getline(in, line)) {
+            auto eq_pos = line.find('=');
+            if (eq_pos == std::string::npos) continue;
+
+            std::string key = line.substr(0, eq_pos);
+            std::string value = line.substr(eq_pos + 1);
+
+            if (key == "id") {
+                backup.id = value;
+            } else if (key == "timestamp") {
+                auto time_t = std::stoll(value);
+                backup.timestamp = std::chrono::system_clock::from_time_t(time_t);
+            } else if (key == "file") {
+                FileBackup fb;
+                fb.path = value;
+                backup.files.push_back(std::move(fb));
+            }
+        }
+
+        return backup.id.empty() ? std::nullopt : std::make_optional(std::move(backup));
+    }
+
+    bool SuggestionManager::restore_disk_backup(const std::string& backup_id) const
+    {
+        const fs::path backup_path = get_backup_path(backup_id);
+        if (!fs::exists(backup_path)) return false;
+
+        auto metadata = read_backup_metadata(backup_path);
+        if (!metadata) return false;
+
+        for (const auto& [path, content] : metadata->files) {
+            fs::path relative = fs::relative(path, config_.workspace_root);
+            fs::path src = backup_path / "files" / relative;
+
+            if (!fs::exists(src)) continue;
+
+            try {
+                fs::create_directories(path.parent_path());
+                fs::copy_file(src, path, fs::copy_options::overwrite_existing);
+            } catch (const std::exception&) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void SuggestionManager::cleanup_disk_backup(const std::string& backup_id) const
+    {
+        if (const fs::path backup_path = get_backup_path(backup_id); fs::exists(backup_path)) {
+            std::error_code ec;
+            fs::remove_all(backup_path, ec);
+        }
+    }
+
     bool SuggestionManager::validate_files_exist(const std::vector<fs::path>& files) {
         return std::ranges::all_of(files, [](const auto& file) {
             return fs::exists(file);
         });
     }
 
+    namespace {
+        /**
+         * Converts a 0-based line and column position to a byte offset in the content.
+         * Handles both Unix (LF) and Windows (CRLF) line endings.
+         */
+        std::optional<std::size_t> line_col_to_offset(
+            const std::string& content,
+            const std::size_t line,
+            const std::size_t col
+        ) {
+            std::size_t current_line = 0;
+            std::size_t line_start = 0;
+
+            for (std::size_t i = 0; i < content.size(); ++i) {
+                if (current_line == line) {
+                    std::size_t col_offset = 0;
+                    std::size_t pos = line_start;
+                    while (col_offset < col && pos < content.size() && content[pos] != '\n') {
+                        ++col_offset;
+                        ++pos;
+                    }
+                    return line_start + col;
+                }
+                if (content[i] == '\n') {
+                    ++current_line;
+                    line_start = i + 1;
+                }
+            }
+
+            // Handle last line (no trailing newline)
+            if (current_line == line) {
+                return std::min(line_start + col, content.size());
+            }
+
+            if (line > current_line) {
+                return content.size();
+            }
+
+            return std::nullopt;
+        }
+
+        /**
+         * Applies a single TextEdit to the content string.
+         * TextEdit uses 0-based line and column numbers.
+         */
+        bool apply_single_edit(std::string& content, const bha::TextEdit& edit) {
+            auto start_offset = line_col_to_offset(content, edit.start_line, edit.start_col);
+            auto end_offset = line_col_to_offset(content, edit.end_line, edit.end_col);
+
+            if (!start_offset || !end_offset) {
+                return false;
+            }
+
+            // Ensure start <= end
+            if (*start_offset > *end_offset) {
+                std::swap(start_offset, end_offset);
+            }
+
+            // Clamp to content bounds
+            *start_offset = std::min(*start_offset, content.size());
+            *end_offset = std::min(*end_offset, content.size());
+
+            // Replace the range with new text
+            content.replace(*start_offset, *end_offset - *start_offset, edit.new_text);
+            return true;
+        }
+
+        /**
+         * Applies multiple TextEdits to a file.
+         * Edits are sorted in reverse order (by position) to avoid offset shifts.
+         */
+        bool apply_edits_to_file(const fs::path& file_path, std::vector<bha::TextEdit> edits) {
+            if (edits.empty()) {
+                return true;
+            }
+
+            std::ifstream in(file_path);
+            if (!in) {
+                return false;
+            }
+            std::string content(
+                (std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>()
+            );
+            in.close();
+
+            // Sort edits in reverse order (later positions first)
+            // This ensures applying one edit doesn't shift positions of subsequent edits
+            std::ranges::sort(edits, [](const bha::TextEdit& a, const bha::TextEdit& b) {
+                if (a.start_line != b.start_line) {
+                    return a.start_line > b.start_line;  // Later lines first
+                }
+                return a.start_col > b.start_col;  // Later columns first
+            });
+
+            for (const auto& edit : edits) {
+                if (!apply_single_edit(content, edit)) {
+                    return false;
+                }
+            }
+
+            std::ofstream out(file_path);
+            if (!out) {
+                return false;
+            }
+            out << content;
+            return out.good();
+        }
+    }  // namespace
+
     bool SuggestionManager::apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files) {
+        if (!suggestion.edits.empty()) {
+            std::unordered_map<std::string, std::vector<bha::TextEdit>> edits_by_file;
+            for (const auto& edit : suggestion.edits) {
+                edits_by_file[edit.file.string()].push_back(edit);
+            }
+
+            for (auto& [file_path_str, file_edits] : edits_by_file) {
+                fs::path file_path(file_path_str);
+
+                // For new files, create them first
+                if (!fs::exists(file_path)) {
+                    fs::create_directories(file_path.parent_path());
+                    std::ofstream out(file_path);
+                    if (!out) {
+                        return false;
+                    }
+                    // Write empty file, edits will add content
+                    out.close();
+                }
+
+                if (!apply_edits_to_file(file_path, std::move(file_edits))) {
+                    return false;
+                }
+                changed_files.push_back(file_path);
+            }
+
+            return true;
+        }
+
+        // Fallback: apply using FileTarget actions (for suggestions without precise edits)
         auto apply_file_target = [&](const FileTarget& target) -> bool {
             try {
                 if (target.action == FileAction::Create) {
@@ -415,9 +723,10 @@ namespace bha::lsp
                         return false;
                     }
                     std::string content(
-                        (std::istreambuf_iterator<char>(in)),
+                        (std::istreambuf_iterator(in)),
                         std::istreambuf_iterator<char>()
                     );
+                    in.close();
 
                     if (target.note && !target.note->empty()) {
                         if (size_t first_include = content.find("#include"); first_include != std::string::npos) {
@@ -723,9 +1032,13 @@ namespace bha::lsp
 
     RevertResult SuggestionManager::revert_changes_detailed(const std::string& backup_id) {
         RevertResult result;
+        result.success = true;
 
         const auto it = backups_.find(backup_id);
-        if (it == backups_.end()) {
+        bool is_disk_backup = config_.use_disk_backups && !config_.workspace_root.empty() &&
+                              fs::exists(get_backup_path(backup_id));
+
+        if (it == backups_.end() && !is_disk_backup) {
             result.success = false;
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
@@ -734,29 +1047,70 @@ namespace bha::lsp
             return result;
         }
 
-        result.success = true;
-        for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
-            try {
-                if (std::ofstream out(path, std::ios::binary); !out) {
-                    result.success = false;
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.message = "Failed to restore file: " + path.string();
-                    result.errors.push_back(diag);
-                } else {
-                    out << content;
-                    result.restored_files.push_back(path.string());
-                }
-            } catch (const std::exception& e) {
+        if (is_disk_backup) {
+            fs::path backup_path = get_backup_path(backup_id);
+            auto metadata = read_backup_metadata(backup_path);
+            if (!metadata) {
                 result.success = false;
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
-                diag.message = "Error restoring " + path.string() + ": " + e.what();
+                diag.message = "Failed to read backup metadata";
                 result.errors.push_back(diag);
+                return result;
+            }
+
+            for (const auto& file : metadata->files) {
+                fs::path relative = fs::relative(file.path, config_.workspace_root);
+                fs::path src = backup_path / "files" / relative;
+
+                try {
+                    if (!fs::exists(src)) {
+                        result.success = false;
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.message = "Backup file not found: " + src.string();
+                        result.errors.push_back(diag);
+                        continue;
+                    }
+                    fs::create_directories(file.path.parent_path());
+                    fs::copy_file(src, file.path, fs::copy_options::overwrite_existing);
+                    result.restored_files.push_back(file.path.string());
+                } catch (const std::exception& e) {
+                    result.success = false;
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.message = "Error restoring " + file.path.string() + ": " + e.what();
+                    result.errors.push_back(diag);
+                }
+            }
+
+            if (result.success && !config_.keep_backups) {
+                cleanup_disk_backup(backup_id);
+            }
+        } else if (it != backups_.end()) {
+            for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
+                try {
+                    if (std::ofstream out(path, std::ios::binary); !out) {
+                        result.success = false;
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.message = "Failed to restore file: " + path.string();
+                        result.errors.push_back(diag);
+                    } else {
+                        out << content;
+                        result.restored_files.push_back(path.string());
+                    }
+                } catch (const std::exception& e) {
+                    result.success = false;
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.message = "Error restoring " + path.string() + ": " + e.what();
+                    result.errors.push_back(diag);
+                }
             }
         }
 
-        if (result.success) {
+        if (result.success && it != backups_.end()) {
             backups_.erase(it);
             backup_lru_.remove(backup_id);
         }

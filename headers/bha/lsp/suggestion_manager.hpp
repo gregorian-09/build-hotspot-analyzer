@@ -39,6 +39,18 @@ namespace bha::lsp
         /// Maximum number of suggestions to store (0 = unlimited)
         std::size_t max_suggestions = 1000;
 
+        /// Enable disk-based backups (recommended for safety)
+        bool use_disk_backups = true;
+
+        /// Directory for disk-based backups (relative to workspace root)
+        fs::path backup_directory = ".lsp-optimization-backup";
+
+        /// Keep backups after successful validation
+        bool keep_backups = false;
+
+        /// Workspace root for resolving backup directory
+        fs::path workspace_root;
+
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
         }
@@ -158,6 +170,13 @@ namespace bha::lsp
         std::string create_backup(const std::vector<fs::path>& files);
         static bool validate_files_exist(const std::vector<fs::path>& files);
         static bool apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files);
+
+        std::string create_disk_backup(const std::vector<fs::path>& files);
+        bool restore_disk_backup(const std::string& backup_id) const;
+        void cleanup_disk_backup(const std::string& backup_id) const;
+        [[nodiscard]] fs::path get_backup_path(const std::string& backup_id) const;
+        static bool write_backup_metadata(const fs::path& backup_dir, const Backup& backup);
+        static std::optional<Backup> read_backup_metadata(const fs::path& backup_dir);
 
         /// Evicts oldest backups until under limit
         void evict_old_backups();
