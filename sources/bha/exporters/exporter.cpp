@@ -54,6 +54,21 @@ namespace bha::exporters
         }
 
         /**
+         * Normalizes path separators to forward slashes for consistent graph IDs.
+         * Uses generic_string() for fs::path which is cross-platform portable.
+         * For string input, manually converts backslashes (for paths from external sources).
+         */
+        std::string normalize_path(const fs::path& path) {
+            return path.generic_string();
+        }
+
+        std::string normalize_path(const std::string& path) {
+            // For string paths (e.g., from included_by), convert to fs::path first
+            // to leverage generic_string() for cross-platform normalization
+            return fs::path(path).generic_string();
+        }
+
+        /**
          * Escapes HTML special characters.
          */
         std::string escape_html(const std::string& text) {
@@ -391,9 +406,8 @@ namespace bha::exporters
             json links = json::array();
             std::unordered_set<std::string> seen;
 
-            // Source file nodes
             for (const auto& file : analysis.files) {
-                if (std::string file_id = file.file.string(); seen.insert(file_id).second) {
+                if (std::string file_id = normalize_path(file.file.string()); seen.insert(file_id).second) {
                     nodes.push_back({
                         {"id", file_id},
                         {"type", "source"}
@@ -401,9 +415,8 @@ namespace bha::exporters
                 }
             }
 
-            // Header nodes
             for (const auto& hinfo : analysis.dependencies.headers) {
-                if (std::string hdr_id = hinfo.path.string(); seen.insert(hdr_id).second) {
+                if (std::string hdr_id = normalize_path(hinfo.path.string()); seen.insert(hdr_id).second) {
                     nodes.push_back({
                         {"id", hdr_id},
                         {"type", "header"}
@@ -411,12 +424,11 @@ namespace bha::exporters
                 }
             }
 
-            // Include links
             for (const auto& hinfo : analysis.dependencies.headers) {
-                std::string hdr_id = hinfo.path.string();
+                std::string hdr_id = normalize_path(hinfo.path.string());
                 for (const auto& incl_by : hinfo.included_by) {
                     links.push_back({
-                        {"source", incl_by},
+                        {"source", normalize_path(incl_by)},
                         {"target", hdr_id},
                         {"type", "include"}
                     });
@@ -494,11 +506,44 @@ namespace bha::exporters
                 sugg_entry["auto_applicable"] = sugg.is_safe;
 
                 if (!sugg.before_code.code.empty()) {
-                    sugg_entry["before_code"] = sugg.before_code.code;
+                    json before;
+                    before["file"] = sugg.before_code.file.string();
+                    before["line"] = sugg.before_code.line;
+                    before["code"] = sugg.before_code.code;
+                    sugg_entry["before_code"] = before;
                 }
                 if (!sugg.after_code.code.empty()) {
-                    sugg_entry["after_code"] = sugg.after_code.code;
+                    json after;
+                    after["file"] = sugg.after_code.file.string();
+                    after["line"] = sugg.after_code.line;
+                    after["code"] = sugg.after_code.code;
+                    sugg_entry["after_code"] = after;
                 }
+
+                if (!sugg.edits.empty()) {
+                    json edits_array = json::array();
+                    for (const auto& [file, start_line, start_col, end_line, end_col, new_text] : sugg.edits) {
+                        json e;
+                        e["file"] = file.string();
+                        e["start_line"] = start_line;
+                        e["start_col"] = start_col;
+                        e["end_line"] = end_line;
+                        e["end_col"] = end_col;
+                        e["new_text"] = new_text;
+                        edits_array.push_back(e);
+                    }
+                    sugg_entry["edits"] = edits_array;
+                }
+
+                if (!sugg.implementation_steps.empty()) {
+                    sugg_entry["implementation_steps"] = sugg.implementation_steps;
+                }
+
+                if (!sugg.caveats.empty()) {
+                    sugg_entry["caveats"] = sugg.caveats;
+                }
+
+                sugg_entry["is_safe"] = sugg.is_safe;
 
                 sugg_array.push_back(sugg_entry);
                 sugg_count++;
@@ -722,6 +767,45 @@ namespace bha::exporters
                 suggestion_cards << "\n                    </div>";
             }
 
+            if (!sugg.edits.empty()) {
+                suggestion_cards << "\n                    <details style=\"margin-top: 16px;\">\n"
+                                << "                        <summary style=\"cursor: pointer; color: var(--accent-color); font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;\">\n"
+                                << "                            <i class=\"fas fa-code\"></i> Text Edits (" << sugg.edits.size() << ")\n"
+                                << "                        </summary>\n"
+                                << "                        <div style=\"background: var(--bg-secondary); border-radius: 8px; padding: 12px; margin-top: 8px;\">\n";
+
+                for (std::size_t edit_idx = 0; edit_idx < sugg.edits.size(); ++edit_idx) {
+                    const auto& edit = sugg.edits[edit_idx];
+                    suggestion_cards << "                            <div style=\"margin-bottom: " << (edit_idx < sugg.edits.size() - 1 ? "12px" : "0") << "; padding: 10px; background: var(--bg-tertiary); border-radius: 6px; border-left: 3px solid var(--accent-color);\">\n"
+                                    << "                                <div style=\"font-family: monospace; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;\">\n"
+                                    << "                                    <i class=\"fas fa-file-alt\"></i> "
+                                    << escape_html(edit.file.string())
+                                    << " <span style=\"color: var(--accent-color);\">[" << edit.start_line << ":" << edit.start_col
+                                    << " -> " << edit.end_line << ":" << edit.end_col << "]</span>\n"
+                                    << "                                </div>\n";
+
+                    if (!edit.new_text.empty()) {
+                        suggestion_cards << R"(                                <pre class="code-block" style="margin: 0; font-size: 0.8rem; border-left: 2px solid var(--success-color);">)"
+                                        << escape_html(edit.new_text) << "</pre>\n";
+                    } else {
+                        suggestion_cards << "                                <div style=\"color: var(--danger-color); font-style: italic; font-size: 0.85rem;\">\n"
+                                        << "                                    <i class=\"fas fa-trash-alt\"></i> Delete this range\n"
+                                        << "                                </div>\n";
+                    }
+
+                    suggestion_cards << "                            </div>\n";
+                }
+
+                suggestion_cards << "                        </div>\n"
+                                << "                    </details>";
+            }
+
+            if (sugg.is_safe) {
+                suggestion_cards << "\n                    <div style=\"margin-top: 12px; padding: 8px 12px; background: rgba(40, 167, 69, 0.1); border-radius: 6px; color: var(--success-color); font-size: 0.85rem;\">\n"
+                                << "                        <i class=\"fas fa-check-circle\"></i> Safe to apply automatically\n"
+                                << "                    </div>";
+            }
+
             suggestion_cards << "\n                </div>";
         }
 
@@ -819,7 +903,7 @@ namespace bha::exporters
 
         if (options.include_suggestions && !suggestions.empty()) {
             stream << "\n# Suggestions\n";
-            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms)\n";
+            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Edits Count,Is Safe\n";
 
             for (const auto& sugg : suggestions) {
                 if (sugg.confidence < options.min_confidence) {
@@ -832,7 +916,9 @@ namespace bha::exporters
                        << sugg.target_file.line_start << ","
                        << std::fixed << std::setprecision(2) << sugg.confidence << ","
                        << static_cast<int>(sugg.priority) << ","
-                       << duration_to_ms(sugg.estimated_savings) << "\n";
+                       << duration_to_ms(sugg.estimated_savings) << ","
+                       << sugg.edits.size() << ","
+                       << (sugg.is_safe ? "true" : "false") << "\n";
             }
         }
 
@@ -942,6 +1028,26 @@ namespace bha::exporters
                 }
                 if (!sugg.after_code.code.empty()) {
                     stream << "**After:**\n```cpp\n" << sugg.after_code.code << "\n```\n\n";
+                }
+
+                if (!sugg.edits.empty()) {
+                    stream << "<details>\n<summary><strong>Text Edits (" << sugg.edits.size() << ")</strong></summary>\n\n";
+                    for (std::size_t edit_idx = 0; edit_idx < sugg.edits.size(); ++edit_idx) {
+                        const auto& edit = sugg.edits[edit_idx];
+                        stream << "**" << (edit_idx + 1) << ".** `" << edit.file.string()
+                               << "` [" << edit.start_line << ":" << edit.start_col
+                               << " -> " << edit.end_line << ":" << edit.end_col << "]\n\n";
+                        if (!edit.new_text.empty()) {
+                            stream << "```cpp\n" << edit.new_text << "\n```\n\n";
+                        } else {
+                            stream << "_Delete this range_\n\n";
+                        }
+                    }
+                    stream << "</details>\n\n";
+                }
+
+                if (sugg.is_safe) {
+                    stream << "> [OK] Safe to apply automatically\n\n";
                 }
 
                 stream << "---\n\n";

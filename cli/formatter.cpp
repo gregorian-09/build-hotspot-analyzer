@@ -102,7 +102,7 @@ namespace bha::cli
 
     std::string format_size(const std::size_t bytes) {
         int unit_idx = 0;
-        double size = static_cast<double>(bytes);
+        auto size = static_cast<double>(bytes);
 
         while (size >= 1024.0 && unit_idx < 4) {
             size /= 1024.0;
@@ -146,7 +146,7 @@ namespace bha::cli
 
     std::string format_timestamp(const Timestamp ts) {
         auto time_t = std::chrono::system_clock::to_time_t(ts);
-        std::tm tm;
+        std::tm tm{};
 #ifdef _WIN32
         localtime_s(&tm, &time_t);
 #else
@@ -160,7 +160,7 @@ namespace bha::cli
 
     std::string colorize_priority(const Priority priority) {
         if (!colors::enabled()) {
-            return std::string(to_string(priority));
+            return std::string{to_string(priority)};
         }
 
         std::string result;
@@ -183,7 +183,7 @@ namespace bha::cli
 
     std::string colorize_type(const SuggestionType type) {
         if (!colors::enabled()) {
-            return std::string(to_string(type));
+            return std::string{to_string(type)};
         }
 
         const std::string name = to_string(type);
@@ -209,7 +209,7 @@ namespace bha::cli
     std::string bar_graph(const double value, double max_value, const std::size_t width) {
         if (max_value <= 0) max_value = 1.0;
         const double pct = std::min(value / max_value, 1.0);
-        const std::size_t filled = static_cast<std::size_t>(pct * static_cast<double>(width));
+        const auto filled = static_cast<std::size_t>(pct * static_cast<double>(width));
 
         std::string result;
 
@@ -251,7 +251,7 @@ namespace bha::cli
     void Table::add_row(Row row) {
         // Pad row to match column count
         while (row.size() < columns_.size()) {
-            row.push_back("");
+            row.emplace_back("");
         }
         rows_.push_back(std::move(row));
         separators_.push_back(false);
@@ -610,14 +610,14 @@ namespace bha::cli
             return result;
         }
 
-        std::string to_json(const analyzers::AnalysisResult& result, bool pretty) {
+        std::string to_json(const analyzers::AnalysisResult& result, const bool pretty) {
             std::ostringstream ss;
             const std::string indent = pretty ? "  " : "";
             const std::string nl = pretty ? "\n" : "";
 
             ss << "{" << nl;
 
-            ss << indent << "\"bha_version\": \"1.0.0\"," << nl;
+            ss << indent << R"("bha_version": "1.0.0",)" << nl;
 
             ss << indent << "\"performance\": {" << nl;
             ss << indent << indent << "\"total_build_time_ns\": " << result.performance.total_build_time.count() << "," << nl;
@@ -645,26 +645,127 @@ namespace bha::cli
             return ss.str();
         }
 
-        std::string to_json(const std::vector<Suggestion>& suggestions, bool pretty) {
+        std::string to_json(const std::vector<Suggestion>& suggestions, const bool pretty) {
             std::ostringstream ss;
-            const std::string indent = pretty ? "  " : "";
+            const std::string i1 = pretty ? "  " : "";
+            const std::string i2 = pretty ? "    " : "";
+            const std::string i3 = pretty ? "      " : "";
+            const std::string i4 = pretty ? "        " : "";
             const std::string nl = pretty ? "\n" : "";
 
             ss << "[" << nl;
 
-            for (std::size_t i = 0; i < suggestions.size(); ++i) {
-                const auto& s = suggestions[i];
-                ss << indent << "{" << nl;
-                ss << indent << indent << "\"id\": \"" << escape_string(s.id) << "\"," << nl;
-                ss << indent << indent << "\"type\": \"" << to_string(s.type) << "\"," << nl;
-                ss << indent << indent << "\"priority\": \"" << to_string(s.priority) << "\"," << nl;
-                ss << indent << indent << "\"confidence\": " << s.confidence << "," << nl;
-                ss << indent << indent << "\"title\": \"" << escape_string(s.title) << "\"," << nl;
-                ss << indent << indent << "\"description\": \"" << escape_string(s.description) << "\"," << nl;
-                ss << indent << indent << "\"estimated_savings_ns\": " << s.estimated_savings.count() << "," << nl;
-                ss << indent << indent << "\"file\": \"" << escape_string(s.target_file.path.string()) << "\"" << nl;
-                ss << indent << "}";
-                if (i < suggestions.size() - 1) ss << ",";
+            for (std::size_t idx = 0; idx < suggestions.size(); ++idx) {
+                const auto& [id, type, priority, confidence, title, description, rationale, estimated_savings, estimated_savings_percent, target_file, secondary_files, before_code, after_code, edits, implementation_steps, impact, caveats, verification, documentation_link, is_safe] = suggestions[idx];
+                ss << i1 << "{" << nl;
+                ss << i2 << R"("id": ")" << escape_string(id) << "\"," << nl;
+                ss << i2 << R"("type": ")" << to_string(type) << "\"," << nl;
+                ss << i2 << R"("priority": ")" << to_string(priority) << "\"," << nl;
+                ss << i2 << "\"confidence\": " << confidence << "," << nl;
+                ss << i2 << R"("title": ")" << escape_string(title) << "\"," << nl;
+                ss << i2 << R"("description": ")" << escape_string(description) << "\"," << nl;
+
+                if (!rationale.empty()) {
+                    ss << i2 << R"("rationale": ")" << escape_string(rationale) << "\"," << nl;
+                }
+
+                ss << i2 << "\"estimated_savings_ns\": " << estimated_savings.count() << "," << nl;
+                ss << i2 << "\"estimated_savings_percent\": " << estimated_savings_percent << "," << nl;
+                ss << i2 << "\"is_safe\": " << (is_safe ? "true" : "false") << "," << nl;
+
+                ss << i2 << "\"target_file\": {" << nl;
+                ss << i3 << R"("path": ")" << escape_string(target_file.path.string()) << "\"," << nl;
+                ss << i3 << "\"line_start\": " << target_file.line_start << "," << nl;
+                ss << i3 << "\"line_end\": " << target_file.line_end << "," << nl;
+                ss << i3 << R"("action": ")" << to_string(target_file.action) << "\"" << nl;
+                ss << i2 << "}," << nl;
+
+                if (!secondary_files.empty()) {
+                    ss << i2 << "\"secondary_files\": [" << nl;
+                    for (std::size_t j = 0; j < secondary_files.size(); ++j) {
+                        const auto& sf = secondary_files[j];
+                        ss << i3 << "{" << nl;
+                        ss << i4 << R"("path": ")" << escape_string(sf.path.string()) << "\"," << nl;
+                        ss << i4 << "\"line_start\": " << sf.line_start << "," << nl;
+                        ss << i4 << R"("action": ")" << to_string(sf.action) << "\"" << nl;
+                        ss << i3 << "}";
+                        if (j < secondary_files.size() - 1) ss << ",";
+                        ss << nl;
+                    }
+                    ss << i2 << "]," << nl;
+                }
+
+                if (!before_code.code.empty()) {
+                    ss << i2 << "\"before_code\": {" << nl;
+                    ss << i3 << R"("file": ")" << escape_string(before_code.file.string()) << "\"," << nl;
+                    ss << i3 << "\"line\": " << before_code.line << "," << nl;
+                    ss << i3 << R"("code": ")" << escape_string(before_code.code) << "\"" << nl;
+                    ss << i2 << "}," << nl;
+                }
+
+                if (!after_code.code.empty()) {
+                    ss << i2 << "\"after_code\": {" << nl;
+                    ss << i3 << R"("file": ")" << escape_string(after_code.file.string()) << "\"," << nl;
+                    ss << i3 << "\"line\": " << after_code.line << "," << nl;
+                    ss << i3 << R"("code": ")" << escape_string(after_code.code) << "\"" << nl;
+                    ss << i2 << "}," << nl;
+                }
+
+                if (!edits.empty()) {
+                    ss << i2 << "\"edits\": [" << nl;
+                    for (std::size_t j = 0; j < edits.size(); ++j) {
+                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = edits[j];
+                        ss << i3 << "{" << nl;
+                        ss << i4 << R"("file": ")" << escape_string(file.string()) << "\"," << nl;
+                        ss << i4 << "\"start_line\": " << start_line << "," << nl;
+                        ss << i4 << "\"start_col\": " << start_col << "," << nl;
+                        ss << i4 << "\"end_line\": " << end_line << "," << nl;
+                        ss << i4 << "\"end_col\": " << end_col << "," << nl;
+                        ss << i4 << R"("new_text": ")" << escape_string(new_text) << "\"" << nl;
+                        ss << i3 << "}";
+                        if (j < edits.size() - 1) ss << ",";
+                        ss << nl;
+                    }
+                    ss << i2 << "]," << nl;
+                }
+
+                if (!implementation_steps.empty()) {
+                    ss << i2 << "\"implementation_steps\": [" << nl;
+                    for (std::size_t j = 0; j < implementation_steps.size(); ++j) {
+                        ss << i3 << "\"" << escape_string(implementation_steps[j]) << "\"";
+                        if (j < implementation_steps.size() - 1) ss << ",";
+                        ss << nl;
+                    }
+                    ss << i2 << "]," << nl;
+                }
+
+                ss << i2 << "\"impact\": {" << nl;
+                ss << i3 << "\"total_files_affected\": " << impact.total_files_affected << "," << nl;
+                ss << i3 << "\"cumulative_savings_ns\": " << impact.cumulative_savings.count() << "," << nl;
+                ss << i3 << "\"rebuild_files_count\": " << impact.rebuild_files_count << nl;
+                ss << i2 << "}," << nl;
+
+                if (!caveats.empty()) {
+                    ss << i2 << "\"caveats\": [" << nl;
+                    for (std::size_t j = 0; j < caveats.size(); ++j) {
+                        ss << i3 << "\"" << escape_string(caveats[j]) << "\"";
+                        if (j < caveats.size() - 1) ss << ",";
+                        ss << nl;
+                    }
+                    ss << i2 << "]," << nl;
+                }
+
+                if (!verification.empty()) {
+                    ss << i2 << R"("verification": ")" << escape_string(verification) << "\"," << nl;
+                }
+
+                if (documentation_link) {
+                    ss << i2 << R"("documentation_link": ")" << escape_string(*documentation_link) << "\"," << nl;
+                }
+
+                ss << i2 << R"("file": ")" << escape_string(target_file.path.string()) << "\"" << nl;
+                ss << i1 << "}";
+                if (idx < suggestions.size() - 1) ss << ",";
                 ss << nl;
             }
 
@@ -682,7 +783,7 @@ namespace bha::cli
             for (std::size_t i = 0; i < files.size(); ++i) {
                 const auto& f = files[i];
                 ss << indent << "{" << nl;
-                ss << indent << indent << "\"file\": \"" << escape_string(f.file.string()) << "\"," << nl;
+                ss << indent << indent << R"("file": ")" << escape_string(f.file.string()) << "\"," << nl;
                 ss << indent << indent << "\"compile_time_ns\": " << f.compile_time.count() << "," << nl;
                 ss << indent << indent << "\"frontend_time_ns\": " << f.frontend_time.count() << "," << nl;
                 ss << indent << indent << "\"backend_time_ns\": " << f.backend_time.count() << "," << nl;
