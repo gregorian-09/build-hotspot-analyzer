@@ -15,6 +15,7 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <sstream>
 
 namespace bha::cli
 {
@@ -353,6 +354,111 @@ namespace bha::cli
                     std::cout << "\n";
                 }
 
+                if (!s.before_code.code.empty() || !s.after_code.code.empty()) {
+                    std::cout << "Code Changes:\n";
+                    if (!s.before_code.code.empty()) {
+                        if (colors::enabled()) {
+                            std::cout << colors::RED << "  --- Before";
+                        } else {
+                            std::cout << "  --- Before";
+                        }
+                        if (!s.before_code.file.empty()) {
+                            std::cout << " (" << s.before_code.file.string();
+                            if (s.before_code.line > 0) {
+                                std::cout << ":" << s.before_code.line;
+                            }
+                            std::cout << ")";
+                        }
+                        if (colors::enabled()) {
+                            std::cout << colors::RESET;
+                        }
+                        std::cout << "\n";
+
+                        std::istringstream stream(s.before_code.code);
+                        std::string line;
+                        while (std::getline(stream, line)) {
+                            if (colors::enabled()) {
+                                std::cout << colors::DIM << "  | " << colors::RESET << line << "\n";
+                            } else {
+                                std::cout << "  | " << line << "\n";
+                            }
+                        }
+                        std::cout << "\n";
+                    }
+
+                    if (!s.after_code.code.empty()) {
+                        if (colors::enabled()) {
+                            std::cout << colors::GREEN << "  +++ After";
+                        } else {
+                            std::cout << "  +++ After";
+                        }
+                        if (!s.after_code.file.empty()) {
+                            std::cout << " (" << s.after_code.file.string();
+                            if (s.after_code.line > 0) {
+                                std::cout << ":" << s.after_code.line;
+                            }
+                            std::cout << ")";
+                        }
+                        if (colors::enabled()) {
+                            std::cout << colors::RESET;
+                        }
+                        std::cout << "\n";
+
+                        std::istringstream stream(s.after_code.code);
+                        std::string line;
+                        while (std::getline(stream, line)) {
+                            if (colors::enabled()) {
+                                std::cout << colors::DIM << "  | " << colors::RESET << line << "\n";
+                            } else {
+                                std::cout << "  | " << line << "\n";
+                            }
+                        }
+                        std::cout << "\n";
+                    }
+                }
+
+                if (!s.edits.empty()) {
+                    if (colors::enabled()) {
+                        std::cout << colors::CYAN << "Text Edits (" << s.edits.size() << "):" << colors::RESET << "\n";
+                    } else {
+                        std::cout << "Text Edits (" << s.edits.size() << "):\n";
+                    }
+                    for (std::size_t j = 0; j < s.edits.size(); ++j) {
+                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = s.edits[j];
+                        std::cout << "  [" << (j + 1) << "] " << file.string();
+                        std::cout << ":" << start_line << ":" << start_col;
+                        std::cout << " -> " << end_line << ":" << end_col << "\n";
+
+                        if (!new_text.empty()) {
+                            std::istringstream stream(new_text);
+                            std::string line;
+                            bool first = true;
+                            while (std::getline(stream, line)) {
+                                if (first) {
+                                    std::cout << "      Replace with: ";
+                                    first = false;
+                                } else {
+                                    std::cout << "                    ";
+                                }
+                                if (colors::enabled()) {
+                                    std::cout << colors::GREEN << line << colors::RESET << "\n";
+                                } else {
+                                    std::cout << line << "\n";
+                                }
+                            }
+                            if (new_text.empty() || new_text.back() == '\n') {
+                            }
+                        } else {
+                            if (colors::enabled()) {
+                                std::cout << "      " << colors::RED << "(delete)" << colors::RESET << "\n";
+                            } else {
+                                std::cout << "      (delete)\n";
+                            }
+                        }
+                    }
+                    std::cout << "\n";
+                }
+
                 if (!s.implementation_steps.empty()) {
                     std::cout << "Implementation Steps:\n";
                     for (std::size_t j = 0; j < s.implementation_steps.size(); ++j) {
@@ -364,7 +470,7 @@ namespace bha::cli
                 std::cout << "Impact:\n";
                 std::cout << "  Estimated savings: " << format_duration(s.estimated_savings);
                 std::cout << " (" << format_percent(s.estimated_savings_percent) << " of build time)\n";
-                std::cout << "  Confidence: " << format_percent(s.confidence) << "\n";
+                std::cout << "  Confidence: " << format_percent(s.confidence * 100.0) << "\n";
                 std::cout << "  Files affected: " << s.impact.total_files_affected << "\n";
 
                 if (!s.caveats.empty()) {
@@ -382,6 +488,14 @@ namespace bha::cli
                 if (!s.verification.empty()) {
                     std::cout << "\nVerification:\n";
                     std::cout << "  " << s.verification << "\n";
+                }
+
+                if (s.is_safe) {
+                    if (colors::enabled()) {
+                        std::cout << "\n" << colors::GREEN << "✓ This suggestion is marked as safe to apply automatically" << colors::RESET << "\n";
+                    } else {
+                        std::cout << "\n[Safe to apply automatically]\n";
+                    }
                 }
             }
         }
