@@ -325,7 +325,7 @@ tr:last-child td {
     color: #d4d4d4;
     padding: 20px;
     border-radius: 8px;
-    font-family: 'Fira Code', 'Monaco', 'Courier New', monospace;
+    font-family: 'Cascadia Code', 'Fira Code', 'Monaco', 'Courier New', monospace;
     font-size: 0.875rem;
     overflow-x: auto;
     overflow-y: auto;
