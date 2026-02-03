@@ -195,9 +195,9 @@ target_include_directories(bha_lib
 target_link_libraries(bha_lib
         PUBLIC
             bha::core
+            nlohmann_json::nlohmann_json
         PRIVATE
             bha::warnings
-            nlohmann_json::nlohmann_json
             $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
             $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
