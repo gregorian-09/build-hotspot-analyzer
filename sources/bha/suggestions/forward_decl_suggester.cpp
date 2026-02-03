@@ -231,7 +231,42 @@ namespace bha::suggestions
                 suggestion.verification =
                     "Compile the project after making changes. If compilation fails, "
                     "the type is used in a way that requires the full definition.";
-                suggestion.is_safe = false;  // Requires manual verification
+                suggestion.is_safe = false;
+
+                const std::string class_name = extract_class_name(header.path);
+                const std::string header_filename = header.path.filename().string();
+
+                if (auto include_dir = find_include_for_header(includer_path, header_filename)) {
+                    suggestion.target_file.line_start = include_dir->line + 1;
+                    suggestion.target_file.line_end = include_dir->line + 1;
+                    suggestion.target_file.col_start = include_dir->col_start + 1;
+                    suggestion.target_file.col_end = include_dir->col_end + 1;
+
+                    suggestion.edits.push_back(make_replace_line_edit(
+                        includer_path,
+                        include_dir->line,
+                        "class " + class_name + ";"
+                    ));
+
+                    fs::path cpp_file = includer_path;
+                    cpp_file.replace_extension(".cpp");
+                    if (fs::exists(cpp_file)) {
+                        std::size_t insert_line = find_last_include_line(cpp_file);
+                        suggestion.edits.push_back(make_insert_after_line_edit(
+                            cpp_file,
+                            insert_line,
+                            "#include \"" + header_filename + "\""
+                        ));
+
+                        FileTarget cpp_target;
+                        cpp_target.path = cpp_file;
+                        cpp_target.action = FileAction::AddInclude;
+                        cpp_target.line_start = insert_line + 2;
+                        cpp_target.line_end = insert_line + 2;
+                        cpp_target.note = "Add #include \"" + header_filename + "\"";
+                        suggestion.secondary_files.push_back(cpp_target);
+                    }
+                }
 
                 result.suggestions.push_back(std::move(suggestion));
             }

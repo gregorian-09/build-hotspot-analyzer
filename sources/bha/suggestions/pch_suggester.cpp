@@ -11,6 +11,37 @@ namespace bha::suggestions
 {
     namespace {
 
+        /**
+         * Finds the repository root by looking for common markers.
+         * Strips non-local paths down to a reasonable project root.
+         */
+        fs::path find_repository_root(const fs::path& path) {
+            fs::path current = path;
+            if (fs::exists(current)) {
+                current = current.parent_path();
+            } else {
+                // For non-local paths, return empty to use defaults
+                if (const std::string path_str = path.string(); !path_str.empty() && (path_str[0] == '/' ||
+                    (path_str.length() > 2 && path_str[1] == ':'))) {
+                    return {};
+                }
+                return path.parent_path();
+            }
+
+            // Walk up looking for project markers
+            while (!current.empty() && current.has_parent_path() &&
+                   current != current.parent_path()) {
+                if (fs::exists(current / "CMakeLists.txt") ||
+                    fs::exists(current / "meson.build") ||
+                    fs::exists(current / ".git")) {
+                    return current;
+                }
+                current = current.parent_path();
+            }
+
+            return path.parent_path();
+        }
+
         Priority calculate_priority(
             const analyzers::DependencyAnalysisResult::HeaderInfo& header,
             const Duration total_build_time,
@@ -217,6 +248,50 @@ namespace bha::suggestions
                 "Run 'time make clean && make' before and after to measure improvement. "
                 "Expected improvement: 10-40% reduction in build time.";
             suggestion.is_safe = true;
+
+            // For external/system headers, we can't create pch.h in system directories.
+            // Using a generic "pch.h" as a placeholder so the consolidator will handle the actual path.
+            fs::path pch_path;
+            if (header.is_external) {
+                pch_path = "pch.h";
+            } else {
+                fs::path project_root = find_repository_root(header.path);
+                if (project_root.empty()) {
+                    project_root = header.path.parent_path();
+                }
+
+                pch_path = project_root / "include" / "pch.h";
+                if (!fs::exists(pch_path.parent_path())) {
+                    pch_path = project_root / "pch.h";
+                }
+            }
+
+            std::string include_line;
+            if (header.path.string().find('<') == 0) {
+                include_line = "#include " + header.path.string();
+            } else {
+                include_line = "#include \"" + header.path.filename().string() + "\"";
+            }
+
+            if (fs::exists(pch_path)) {
+                std::size_t last_include = find_last_include_line(pch_path);
+                suggestion.edits.push_back(make_insert_after_line_edit(pch_path, last_include, include_line));
+            } else {
+                TextEdit create_pch;
+                create_pch.file = pch_path;
+                create_pch.start_line = 0;
+                create_pch.start_col = 0;
+                create_pch.end_line = 0;
+                create_pch.end_col = 0;
+                create_pch.new_text = "#pragma once\n\n" + include_line + "\n";
+                suggestion.edits.push_back(create_pch);
+
+                FileTarget pch_target;
+                pch_target.path = pch_path;
+                pch_target.action = FileAction::Create;
+                pch_target.note = "Create precompiled header file";
+                suggestion.secondary_files.push_back(pch_target);
+            }
 
             result.suggestions.push_back(std::move(suggestion));
         }

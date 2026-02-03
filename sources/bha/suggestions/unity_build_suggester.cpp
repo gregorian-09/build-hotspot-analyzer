@@ -108,6 +108,52 @@ namespace bha::suggestions
         };
 
         /**
+         * Finds the repository root by looking for common markers.
+         * Strips non-local paths down to a reasonable project root.
+         *
+         * @param path Any file path from analysis
+         * @return The detected repository root, or empty path if not found
+         */
+        fs::path find_repository_root(const fs::path& path) {
+            // First, check if this is a local path that exists
+            fs::path current = path;
+            if (fs::exists(current)) {
+                current = current.parent_path();
+            } else {
+                // For non-local paths, try to extract just the project portion
+                // by looking for common source directories
+                std::string path_str = path.string();
+
+                // Look for common project markers in the path
+                for (const auto& marker : {"CMakeLists.txt", "meson.build", ".git"}) {
+                    (void)marker; // unused in this branch
+                }
+
+                // Try to find a reasonable root by stripping leading components
+                // that look like absolute paths from another system
+                if (!path_str.empty() && (path_str[0] == '/' ||
+                    (path_str.length() > 2 && path_str[1] == ':'))) {
+                    // This is an absolute path - return empty to use defaults
+                    return {};
+                }
+                return path.parent_path();
+            }
+
+            // Walk up looking for project markers
+            while (!current.empty() && current.has_parent_path() &&
+                   current != current.parent_path()) {
+                if (fs::exists(current / "CMakeLists.txt") ||
+                    fs::exists(current / "meson.build") ||
+                    fs::exists(current / ".git")) {
+                    return current;
+                }
+                current = current.parent_path();
+            }
+
+            return path.parent_path();
+        }
+
+        /**
          * Checks if a file is a C++ source file (not a header).
          */
         bool is_source_file(const fs::path& path) {
@@ -874,6 +920,71 @@ namespace bha::suggestions
                 "6. Monitor peak memory usage during build";
 
             suggestion.is_safe = group.potential_conflicts.empty();
+
+            fs::path project_root;
+            if (!group.files.empty()) {
+                project_root = find_repository_root(group.files[0].path);
+                if (project_root.empty()) {
+                    project_root = group.files[0].path.parent_path();
+                }
+            }
+
+            fs::path unity_file_path = project_root / "src" / (group.suggested_name + ".cpp");
+            if (!fs::exists(unity_file_path.parent_path())) {
+                unity_file_path = project_root / (group.suggested_name + ".cpp");
+            }
+
+            TextEdit create_unity;
+            create_unity.file = unity_file_path;
+            create_unity.start_line = 0;
+            create_unity.start_col = 0;
+            create_unity.end_line = 0;
+            create_unity.end_col = 0;
+            create_unity.new_text = unity_content.str();
+            suggestion.edits.push_back(create_unity);
+
+            suggestion.target_file.path = unity_file_path;
+            suggestion.target_file.action = FileAction::Create;
+            suggestion.target_file.note = "Create unity build file";
+
+            if (fs::path cmake_path = project_root / "CMakeLists.txt"; fs::exists(cmake_path)) {
+                std::ifstream cmake_in(cmake_path);
+                std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
+                                          std::istreambuf_iterator<char>());
+                cmake_in.close();
+
+                if (cmake_content.find("CMAKE_UNITY_BUILD") == std::string::npos) {
+                    std::size_t insert_pos = 0;
+                    if (std::size_t project_pos = cmake_content.find("project("); project_pos != std::string::npos) {
+                        if (std::size_t line_end = cmake_content.find('\n', project_pos); line_end != std::string::npos) {
+                            insert_pos = line_end + 1;
+                        }
+                    }
+
+                    std::size_t line_num = 0;
+                    for (std::size_t i = 0; i < insert_pos && i < cmake_content.size(); ++i) {
+                        if (cmake_content[i] == '\n') ++line_num;
+                    }
+
+                    TextEdit cmake_edit;
+                    cmake_edit.file = cmake_path;
+                    cmake_edit.start_line = line_num;
+                    cmake_edit.start_col = 0;
+                    cmake_edit.end_line = line_num;
+                    cmake_edit.end_col = 0;
+                    cmake_edit.new_text = "\nset(CMAKE_UNITY_BUILD ON)\nset(CMAKE_UNITY_BUILD_BATCH_SIZE " +
+                                          std::to_string(group.files.size()) + ")\n";
+                    suggestion.edits.push_back(cmake_edit);
+
+                    FileTarget cmake_target;
+                    cmake_target.path = cmake_path;
+                    cmake_target.action = FileAction::Modify;
+                    cmake_target.line_start = line_num + 1;
+                    cmake_target.line_end = line_num + 1;
+                    cmake_target.note = "Add CMAKE_UNITY_BUILD settings";
+                    suggestion.secondary_files.push_back(cmake_target);
+                }
+            }
 
             result.suggestions.push_back(std::move(suggestion));
         }

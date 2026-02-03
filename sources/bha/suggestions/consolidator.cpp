@@ -131,7 +131,11 @@ namespace bha::suggestions
             }
 
             for (const auto& secondary : sug.secondary_files) {
-                if (std::string header_str = secondary.path.string(); header_str.find('<') == 0 ||
+                std::string header_str = secondary.path.string();
+                if (header_str.ends_with("pch.h") || header_str.ends_with("stdafx.h")) {
+                    continue;
+                }
+                if (header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
@@ -147,39 +151,11 @@ namespace bha::suggestions
 
         std::ostringstream desc;
         desc << "Consolidate frequently-used stable headers into a precompiled header to improve build times.\n\n";
-
-        if (!external_headers.empty() || !stable_headers.empty()) {
-            desc << "**Recommended pch.h content:**\n```\n";
-            desc << "// pch.h - Precompiled Header\n";
-            desc << "#pragma once\n\n";
-
-            if (!external_headers.empty()) {
-                desc << "// External/System Headers (inherently stable)\n";
-                std::vector sorted_external(external_headers.begin(), external_headers.end());
-                std::ranges::sort(sorted_external);
-                for (const auto& header : sorted_external) {
-                    if (header.find('<') == 0 || header.find('>') != std::string::npos) {
-                        desc << "#include " << header << "\n";
-                    } else {
-                        desc << "#include \"" << header << "\"\n";
-                    }
-                }
-                desc << "\n";
-            }
-
-            if (!stable_headers.empty()) {
-                desc << "// Project Stable Headers (rarely modified)\n";
-                std::vector sorted_stable(stable_headers.begin(), stable_headers.end());
-                std::ranges::sort(sorted_stable);
-                for (const auto& header : sorted_stable) {
-                    desc << "#include \"" << header << "\"\n";
-                }
-            }
-            desc << "```\n\n";
-        }
+        desc << "**Summary:** " << external_headers.size() << " external/system headers and "
+             << stable_headers.size() << " project headers identified for PCH inclusion.\n\n";
 
         if (!volatile_headers.empty()) {
-            desc << "**Note:** These headers should NOT be added to PCH (frequently modified):\n";
+            desc << "**Warning:** These headers should NOT be added to PCH (frequently modified):\n";
             std::vector sorted_volatile(volatile_headers.begin(), volatile_headers.end());
             std::ranges::sort(sorted_volatile);
             for (const auto& header : sorted_volatile) {
@@ -188,14 +164,10 @@ namespace bha::suggestions
             desc << "\n";
         }
 
+        desc << "See the **Text Edits** section below for the complete pch.h content.";
+
         consolidated.description = desc.str();
         consolidated.impact = merge_impacts(suggestions);
-
-        std::ostringstream title;
-        title << "Precompiled Header Optimization ("
-              << (stable_headers.size() + external_headers.size())
-              << " headers)";
-        consolidated.title = title.str();
 
         std::ostringstream rationale;
         rationale << "These headers are stable (rarely modified) and widely used across the codebase. "
@@ -242,6 +214,52 @@ namespace bha::suggestions
         consolidated.target_file.path = "pch.h";
         consolidated.target_file.action = FileAction::Create;
         consolidated.target_file.note = "Create or update precompiled header";
+
+        // Generate a single consolidated edit that creates pch.h with all headers
+        // instead of merging individual "create file" edits
+        std::ostringstream pch_content;
+        pch_content << "#pragma once\n\n";
+
+        std::size_t header_count = 0;
+        if (!external_headers.empty()) {
+            pch_content << "// External/System Headers\n";
+            std::vector sorted_external(external_headers.begin(), external_headers.end());
+            std::ranges::sort(sorted_external);
+            for (const auto& header : sorted_external) {
+                if (header.find('<') == 0 || header.find('>') != std::string::npos) {
+                    pch_content << "#include " << header << "\n";
+                } else {
+                    pch_content << "#include \"" << header << "\"\n";
+                }
+                ++header_count;
+            }
+            pch_content << "\n";
+        }
+
+        if (!stable_headers.empty()) {
+            pch_content << "// Project Headers\n";
+            std::vector sorted_stable(stable_headers.begin(), stable_headers.end());
+            std::ranges::sort(sorted_stable);
+            for (const auto& header : sorted_stable) {
+                pch_content << "#include \"" << header << "\"\n";
+                ++header_count;
+            }
+        }
+
+        TextEdit create_pch;
+        create_pch.file = "pch.h";
+        create_pch.start_line = 0;
+        create_pch.start_col = 0;
+        create_pch.end_line = 0;
+        create_pch.end_col = 0;
+        create_pch.new_text = pch_content.str();
+        consolidated.edits.push_back(create_pch);
+
+        std::ostringstream title;
+        title << "Precompiled Header Optimization ("
+              << header_count
+              << " headers)";
+        consolidated.title = title.str();
 
         return consolidated;
     }
@@ -298,6 +316,8 @@ namespace bha::suggestions
         consolidated.is_safe = false;
         consolidated.confidence = 0.7;
 
+        consolidated.edits = merge_edits(suggestions);
+
         return consolidated;
     }
 
@@ -324,36 +344,40 @@ namespace bha::suggestions
             }
         }
 
-        std::ostringstream desc;
-        desc << "Group compatible source files into unity builds to reduce compilation overhead.\n\n";
-
-        std::size_t group_num = 1;
         const std::size_t files_per_group = options_.max_items_per_suggestion / 3;
-
         std::vector sorted_files(all_files.begin(), all_files.end());
         std::ranges::sort(sorted_files);
 
+        // Generate unity build file edits
+        std::size_t group_num = 1;
         for (std::size_t i = 0; i < sorted_files.size(); i += files_per_group) {
-            desc << "**unity_build_" << group_num << ".cpp:**\n```\n";
-            desc << "// unity_build_" << group_num << ".cpp\n";
-            desc << "// Generated unity build file - combines multiple translation units\n\n";
+            std::ostringstream unity_content;
+            unity_content << "// unity_build_" << group_num << ".cpp\n";
+            unity_content << "// Generated unity build file - combines multiple translation units\n\n";
             for (std::size_t j = i; j < std::min(i + files_per_group, sorted_files.size()); ++j) {
-                desc << "#include \"" << sorted_files[j] << "\"\n";
+                unity_content << "#include \"" << sorted_files[j] << "\"\n";
             }
-            desc << "```\n\n";
 
-            desc << "**Rationale:** Combining these " << std::min(files_per_group, sorted_files.size() - i)
-                 << " files reduces header parsing overhead.\n\n";
+            TextEdit unity_edit;
+            unity_edit.file = "unity_build_" + std::to_string(group_num) + ".cpp";
+            unity_edit.start_line = 0;
+            unity_edit.start_col = 0;
+            unity_edit.end_line = 0;
+            unity_edit.end_col = 0;
+            unity_edit.new_text = unity_content.str();
+            consolidated.edits.push_back(unity_edit);
+
             ++group_num;
         }
 
-        desc << "**Build system changes:**\n```\n";
-        desc << "# CMakeLists.txt\n";
-        desc << "# Remove original source files and add unity build files:\n";
-        for (std::size_t i = 1; i < group_num; ++i) {
-            desc << "# add_library(mylib unity_build_" << i << ".cpp ...)\n";
-        }
-        desc << "```\n";
+        std::ostringstream desc;
+        desc << "Group compatible source files into unity builds to reduce compilation overhead.\n\n";
+        desc << "**Summary:** " << all_files.size() << " source files grouped into "
+             << (group_num - 1) << " unity build files.\n\n";
+        desc << "**Build system changes needed:**\n";
+        desc << "  - Remove original source files from build targets\n";
+        desc << "  - Add unity_build_*.cpp files to build targets\n\n";
+        desc << "See the **Text Edits** section below for the generated unity build files.";
 
         consolidated.description = desc.str();
         consolidated.impact = merge_impacts(suggestions);
@@ -423,6 +447,8 @@ namespace bha::suggestions
         consolidated.is_safe = false;
         consolidated.confidence = 0.75;
 
+        consolidated.edits = merge_edits(suggestions);
+
         return consolidated;
     }
 
@@ -453,6 +479,8 @@ namespace bha::suggestions
         consolidated.is_safe = false;
         consolidated.confidence = 0.7;
 
+        consolidated.edits = merge_edits(suggestions);
+
         return consolidated;
     }
 
@@ -467,12 +495,10 @@ namespace bha::suggestions
         consolidated.type = SuggestionType::ExplicitTemplate;
         consolidated.priority = Priority::Medium;
 
-        std::ostringstream desc;
-        desc << "Explicitly instantiate frequently-used templates to reduce instantiation overhead.\n\n";
-
-        desc << "**Create template_instantiations.cpp:**\n```\n";
-        desc << "// template_instantiations.cpp\n";
-        desc << "// Explicit template instantiations to reduce compile-time overhead\n\n";
+        // Build template_instantiations.cpp content
+        std::ostringstream tmpl_content;
+        tmpl_content << "// template_instantiations.cpp\n";
+        tmpl_content << "// Explicit template instantiations to reduce compile-time overhead\n\n";
 
         std::unordered_set<std::string> added_includes;
         for (const auto& sug : suggestions) {
@@ -485,38 +511,57 @@ namespace bha::suggestions
                 }
 
                 if (!added_includes.contains(include_path)) {
-                    desc << "#include \"" << include_path << "\"\n";
+                    tmpl_content << "#include \"" << include_path << "\"\n";
                     added_includes.insert(include_path);
                 }
             }
         }
-        desc << "\n// Explicit template instantiations\n";
+        tmpl_content << "\n// Explicit template instantiations\n";
+
+        std::vector<std::string> instantiations;
+        std::vector<std::string> extern_decls;
 
         for (const auto& sug : suggestions) {
             std::string code = sug.after_code.code;
             if (size_t start = code.find("template class "); start != std::string::npos) {
                 if (size_t end = code.find(';', start); end != std::string::npos) {
-                    std::string instantiation = code.substr(start, end - start + 1);
-                    desc << instantiation << "\n";
+                    instantiations.push_back(code.substr(start, end - start + 1));
                 }
             }
-        }
-        desc << "```\n\n";
-
-        desc << "**In corresponding headers, add extern declarations:**\n```\n";
-        desc << "// Prevent implicit instantiation in other translation units\n";
-        for (const auto& sug : suggestions) {
-            std::string code = sug.after_code.code;
             if (size_t start = code.find("extern template class "); start != std::string::npos) {
                 if (size_t end = code.find(';', start); end != std::string::npos) {
-                    std::string extern_decl = code.substr(start, end - start + 1);
-                    desc << extern_decl << "\n";
+                    extern_decls.push_back(code.substr(start, end - start + 1));
                 }
             }
         }
-        desc << "```\n\n";
 
-        desc << "**Impact:** " << suggestions.size() << " templates will be instantiated once instead of multiple times.\n";
+        for (const auto& inst : instantiations) {
+            tmpl_content << inst << "\n";
+        }
+
+        // Generate the template_instantiations.cpp edit
+        TextEdit tmpl_edit;
+        tmpl_edit.file = "template_instantiations.cpp";
+        tmpl_edit.start_line = 0;
+        tmpl_edit.start_col = 0;
+        tmpl_edit.end_line = 0;
+        tmpl_edit.end_col = 0;
+        tmpl_edit.new_text = tmpl_content.str();
+        consolidated.edits.push_back(tmpl_edit);
+
+        std::ostringstream desc;
+        desc << "Explicitly instantiate frequently-used templates to reduce instantiation overhead.\n\n";
+        desc << "**Summary:** " << suggestions.size() << " templates will be instantiated once instead of multiple times.\n\n";
+
+        if (!extern_decls.empty()) {
+            desc << "**Note:** Add these extern declarations to corresponding headers to prevent implicit instantiation:\n";
+            for (const auto& decl : extern_decls) {
+                desc << "  - `" << decl << "`\n";
+            }
+            desc << "\n";
+        }
+
+        desc << "See the **Text Edits** section below for the generated template_instantiations.cpp file.";
 
         consolidated.description = desc.str();
         consolidated.impact = merge_impacts(suggestions);
@@ -585,6 +630,70 @@ namespace bha::suggestions
                 }
             }
         }
+
+        return merged;
+    }
+
+    std::vector<TextEdit> SuggestionConsolidator::merge_edits(
+        const std::vector<Suggestion>& suggestions
+    ) {
+        std::vector<TextEdit> all_edits;
+
+        for (const auto& sug : suggestions) {
+            all_edits.insert(all_edits.end(), sug.edits.begin(), sug.edits.end());
+        }
+
+        if (all_edits.empty()) {
+            return all_edits;
+        }
+
+        std::ranges::sort(all_edits, [](const TextEdit& a, const TextEdit& b) {
+            if (a.file != b.file) {
+                return a.file < b.file;
+            }
+            if (a.start_line != b.start_line) {
+                return a.start_line < b.start_line;
+            }
+            return a.start_col < b.start_col;
+        });
+
+        std::vector<TextEdit> merged;
+        merged.reserve(all_edits.size());
+
+        for (const auto& edit : all_edits) {
+            bool conflict = false;
+
+            for (const auto& existing : merged) {
+                if (existing.file != edit.file) {
+                    continue;
+                }
+
+                bool overlaps =
+                    (edit.start_line < existing.end_line ||
+                     (edit.start_line == existing.end_line && edit.start_col < existing.end_col)) &&
+                    (edit.end_line > existing.start_line ||
+                     (edit.end_line == existing.start_line && edit.end_col > existing.start_col));
+
+                if (overlaps) {
+                    conflict = true;
+                    break;
+                }
+            }
+
+            if (!conflict) {
+                merged.push_back(edit);
+            }
+        }
+
+        std::ranges::sort(merged, [](const TextEdit& a, const TextEdit& b) {
+            if (a.file != b.file) {
+                return a.file < b.file;
+            }
+            if (a.start_line != b.start_line) {
+                return b.start_line < a.start_line;
+            }
+            return b.start_col < a.start_col;
+        });
 
         return merged;
     }
@@ -692,6 +801,8 @@ namespace bha::suggestions
         consolidated.estimated_savings = total_savings;
         consolidated.estimated_savings_percent = total_percent;
 
+        consolidated.edits = merge_edits(suggestions);
+
         return consolidated;
     }
 
@@ -751,6 +862,8 @@ namespace bha::suggestions
             total_savings += sug.estimated_savings;
         }
         consolidated.estimated_savings = total_savings;
+
+        consolidated.edits = merge_edits(suggestions);
 
         return consolidated;
     }

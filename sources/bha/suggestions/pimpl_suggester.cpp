@@ -546,6 +546,29 @@ namespace bha::suggestions
 
             suggestion.is_safe = false;
 
+            std::string class_name = file.file.stem().string();
+            class_name[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(class_name[0])));
+
+            auto class_info = parse_class_simple(header_path, class_name);
+            if (!class_info) {
+                class_info = parse_class_with_clang(header_path, class_name);
+            }
+
+            if (class_info && !class_info->members.empty()) {
+                fs::path source_path = file.file;
+                auto pimpl_edits = generate_pimpl_edits(*class_info, header_path, source_path);
+                suggestion.edits = std::move(pimpl_edits);
+
+                if (!suggestion.edits.empty()) {
+                    suggestion.target_file.line_start = class_info->class_start_line;
+                    suggestion.target_file.line_end = class_info->class_end_line;
+
+                    std::ostringstream members_note;
+                    members_note << "Class has " << class_info->members.size() << " private members to move to Impl";
+                    suggestion.target_file.note = members_note.str();
+                }
+            }
+
             result.suggestions.push_back(std::move(suggestion));
         }
 

@@ -118,6 +118,13 @@ namespace bha::suggestions
                 suggestion.verification = "Compile all affected files after changes";
                 suggestion.is_safe = false;
 
+                const std::string header_filename = header.path.filename().string();
+                for (const auto& includer : header.included_by) {
+                    if (auto include_dir = find_include_for_header(includer, header_filename)) {
+                        suggestion.edits.push_back(make_delete_line_edit(includer, include_dir->line));
+                    }
+                }
+
                 result.suggestions.push_back(std::move(suggestion));
             }
 
@@ -172,6 +179,36 @@ namespace bha::suggestions
                         };
 
                         suggestion.is_safe = false;
+
+                        const std::string move_header_filename = header.path.filename().string();
+                        if (auto include_dir = find_include_for_header(file_result.file, move_header_filename)) {
+                            suggestion.target_file.line_start = include_dir->line + 1;
+                            suggestion.target_file.line_end = include_dir->line + 1;
+
+                            suggestion.edits.push_back(make_delete_line_edit(
+                                file_result.file,
+                                include_dir->line
+                            ));
+
+                            fs::path cpp_file = file_result.file;
+                            cpp_file.replace_extension(".cpp");
+                            if (fs::exists(cpp_file)) {
+                                std::size_t insert_line = find_last_include_line(cpp_file);
+                                suggestion.edits.push_back(make_insert_after_line_edit(
+                                    cpp_file,
+                                    insert_line,
+                                    "#include \"" + move_header_filename + "\""
+                                ));
+
+                                FileTarget cpp_target;
+                                cpp_target.path = cpp_file;
+                                cpp_target.action = FileAction::AddInclude;
+                                cpp_target.line_start = insert_line + 2;
+                                cpp_target.line_end = insert_line + 2;
+                                cpp_target.note = "Add #include \"" + move_header_filename + "\"";
+                                suggestion.secondary_files.push_back(cpp_target);
+                            }
+                        }
 
                         result.suggestions.push_back(std::move(suggestion));
                         break;

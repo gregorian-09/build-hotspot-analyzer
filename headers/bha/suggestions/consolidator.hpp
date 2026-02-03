@@ -120,6 +120,13 @@ namespace bha::suggestions
             const std::vector<Suggestion>& suggestions
         );
 
+        /**
+         * Merges TextEdits from multiple suggestions, handling conflicts.
+         */
+        [[nodiscard]] static std::vector<TextEdit> merge_edits(
+            const std::vector<Suggestion>& suggestions
+        );
+
         ConsolidationOptions options_;
     };
 
