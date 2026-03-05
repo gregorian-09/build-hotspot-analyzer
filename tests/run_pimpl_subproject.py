@@ -75,6 +75,16 @@ def apply_shadowed_local_variant(project_root: Path) -> None:
     source_path.write_text(source_text, encoding="utf-8")
 
 
+def apply_lambda_variant(project_root: Path) -> None:
+    source_path = project_root / "src" / "pimpl_widget.cpp"
+    source_text = source_path.read_text(encoding="utf-8")
+    source_text = source_text.replace(
+        "std::string Widget::label() const {\n    return label_ + std::to_string(expander_.value);\n}\n",
+        "std::string Widget::label() const {\n    auto compute = [this]() { return label_ + std::to_string(expander_.value); };\n    return compute();\n}\n",
+    )
+    source_path.write_text(source_text, encoding="utf-8")
+
+
 def validate_variant(
     repo_root: Path,
     bha_bin: Path,
@@ -283,6 +293,7 @@ def main() -> int:
         ("copyable-noexcept", apply_copyable_noexcept_variant, True),
         ("copy-defaulted", apply_copy_defaulted_variant, False),
         ("shadowed-local", apply_shadowed_local_variant, False),
+        ("lambda-body", apply_lambda_variant, False),
         ("empty-body-noexcept", apply_empty_body_variant, True),
     ]
     for label, mutate_fixture, expect_safe in scenarios:
