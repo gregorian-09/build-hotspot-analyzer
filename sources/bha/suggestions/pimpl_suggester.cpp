@@ -834,6 +834,11 @@ namespace bha::suggestions
             const fs::path& source_file
         );
 
+        std::size_t find_private_section_end_line(
+            const ClassInfo& class_info,
+            const fs::path& header_file
+        );
+
         std::string build_pimpl_prototype_preview(
             const ClassInfo& class_info,
             const fs::path& header_file,
@@ -1447,17 +1452,15 @@ namespace bha::suggestions
 
             const auto private_non_field_declarations = collect_private_non_field_declarations(class_info, header_file);
 
-            std::size_t last_member_line = class_info.private_section_line;
-            for (const auto& member : class_info.members) {
-                if (member.is_private && member.line > last_member_line) {
-                    last_member_line = member.line;
-                }
-            }
+            const std::size_t private_section_end_line = find_private_section_end_line(
+                class_info,
+                header_file
+            );
             TextEdit replace_private;
             replace_private.file = header_file;
             replace_private.start_line = class_info.private_section_line - 1;
             replace_private.start_col = 0;
-            replace_private.end_line = last_member_line;
+            replace_private.end_line = private_section_end_line;
             replace_private.end_col = 0;
             std::string private_block;
             if (preserve_copy && !eligibility.copy_ctor_declared) {
@@ -1593,6 +1596,71 @@ namespace bha::suggestions
             }
 
             return edits;
+        }
+
+        std::size_t find_private_section_end_line(
+            const ClassInfo& class_info,
+            const fs::path& header_file
+        ) {
+            if (class_info.private_section_line == 0) {
+                return 0;
+            }
+
+            std::ifstream in(header_file);
+            if (!in) {
+                return class_info.private_section_line;
+            }
+
+            auto trim = [](std::string text) {
+                if (const auto first = text.find_first_not_of(" \t"); first != std::string::npos) {
+                    text.erase(0, first);
+                } else {
+                    text.clear();
+                }
+                if (!text.empty()) {
+                    if (const auto last = text.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                        text.erase(last + 1);
+                    }
+                }
+                return text;
+            };
+
+            std::size_t line_no = 0;
+            bool in_private = false;
+            std::size_t last_private_line = class_info.private_section_line;
+            std::string line;
+            while (std::getline(in, line)) {
+                ++line_no;
+                if (line_no < class_info.class_start_line || line_no > class_info.class_end_line) {
+                    continue;
+                }
+
+                const std::string trimmed = trim(line);
+                const bool is_private_label = trimmed == "private:" || trimmed == "private :";
+                const bool is_other_access =
+                    trimmed == "public:" || trimmed == "public :" ||
+                    trimmed == "protected:" || trimmed == "protected :";
+
+                if (line_no == class_info.private_section_line || is_private_label) {
+                    in_private = true;
+                    last_private_line = std::max(last_private_line, line_no);
+                    continue;
+                }
+
+                if (!in_private) {
+                    continue;
+                }
+
+                if (is_other_access) {
+                    break;
+                }
+                if (trimmed == "};" || trimmed == "}") {
+                    break;
+                }
+                last_private_line = line_no;
+            }
+
+            return std::max(last_private_line, class_info.private_section_line);
         }
 
 

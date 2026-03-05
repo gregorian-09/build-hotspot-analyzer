@@ -66,7 +66,7 @@ Exit criteria:
 - Text-only fallbacks are limited to no-compile-db cases.
 
 ## Phase 3: Finish Structural Refactor Generation
-Status: `[pending]`
+Status: `[in-progress]`
 
 Goal:
 - Replace remaining line-oriented structural generation with source-range-driven replacements for supported shapes.
@@ -87,6 +87,9 @@ Planned work:
   - `= default`
   - `= delete`
   from original declarations.
+
+Current progress:
+- `[done]` Strict PIMPL private-section replacement now computes the full private section end from class-range source scanning (`find_private_section_end_line`) instead of ending at the last private member line.
 
 Exit criteria:
 - Structural edits for supported shapes are source-range-based rather than line-rebuilt.
