@@ -95,6 +95,15 @@ def apply_macro_member_variant(project_root: Path) -> None:
     source_path.write_text(source_text, encoding="utf-8")
 
 
+def apply_this_member_variant(project_root: Path) -> None:
+    source_path = project_root / "src" / "pimpl_widget.cpp"
+    source_text = source_path.read_text(encoding="utf-8")
+    source_text = source_text.replace("values_.push_back(value);", "this->values_.push_back(value);")
+    source_text = source_text.replace("counters_[\"total\"] += value;", "this->counters_[\"total\"] += value;")
+    source_text = source_text.replace("fast_lookup_[\"total\"] = counters_[\"total\"];", "this->fast_lookup_[\"total\"] = this->counters_[\"total\"];")
+    source_path.write_text(source_text, encoding="utf-8")
+
+
 def validate_variant(
     repo_root: Path,
     bha_bin: Path,
@@ -301,6 +310,7 @@ def main() -> int:
         ("defaulted", None, True),
         ("copyable", apply_copyable_variant, True),
         ("copyable-noexcept", apply_copyable_noexcept_variant, True),
+        ("this-member", apply_this_member_variant, True),
         ("copy-defaulted", apply_copy_defaulted_variant, False),
         ("shadowed-local", apply_shadowed_local_variant, False),
         ("lambda-body", apply_lambda_variant, False),
