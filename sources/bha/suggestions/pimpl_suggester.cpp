@@ -812,7 +812,8 @@ namespace bha::suggestions
                         trimmed.find('{') != std::string::npos) {
                         readiness.has_private_inline_method_bodies = true;
                     }
-                    if (in_private_section &&
+                    if (!used_ast_extraction &&
+                        in_private_section &&
                         !trimmed.empty() &&
                         trimmed.find("//") != 0 &&
                         std::regex_search(trimmed, std::regex(R"(^[A-Z_][A-Z0-9_]*\s*\()"))) {

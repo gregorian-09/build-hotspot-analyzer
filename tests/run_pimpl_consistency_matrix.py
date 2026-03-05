@@ -236,7 +236,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_macro_decl",
-            "expected_mode": "advisory",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external_macro_decl.hpp",
             "source_name": "pimpl_widget_external_macro_decl.cpp",
             "class_name": "WidgetExternalMacroDecl",

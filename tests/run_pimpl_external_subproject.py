@@ -384,10 +384,14 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_macro_decl",
-            "expected_application_mode": "advisory",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_macro_decl.hpp",
             "header_markers": [],
-            "source_markers": [],
+            "source_markers": [
+                "struct WidgetExternalMacroDecl::Impl {",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->cache_path_ /= std::to_string(value);",
+            ],
             "executable_name": None,
         },
     ]
