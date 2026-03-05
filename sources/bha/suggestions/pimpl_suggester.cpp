@@ -1195,6 +1195,8 @@ namespace bha::suggestions
             bool has_explicit_copy_definition = false;
             std::size_t ctor_line = 0;
             std::size_t dtor_line = 0;
+            std::size_t copy_ctor_decl_line = 0;
+            std::size_t copy_assign_decl_line = 0;
             std::string ctor_signature;
             std::string copy_ctor_exception_spec;
             std::string copy_assign_exception_spec;
@@ -1262,6 +1264,48 @@ namespace bha::suggestions
                             eligibility.copy_assign_deleted = true;
                         } else if (spec == "default") {
                             eligibility.copy_assign_defaulted_in_class = true;
+                        }
+                    }
+                }
+            }
+
+            {
+                std::ifstream header_in(header_file);
+                if (header_in) {
+                    const std::regex ctor_decl_line_regex(
+                        "^\\s*" + class_info.name +
+                        R"(\s*\(\s*const\s+)" + class_info.name +
+                        R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*)" +
+                        R"((noexcept(?:\s*\([^)]*\))?)?)" +
+                        R"(\s*(?:=\s*(default|delete)\s*)?;\s*$)"
+                    );
+                    const std::regex assign_decl_line_regex(
+                        "^\\s*" + class_info.name +
+                        R"(\s*&\s*operator=\s*\(\s*const\s+)" + class_info.name +
+                        R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*)" +
+                        R"((noexcept(?:\s*\([^)]*\))?)?)" +
+                        R"(\s*(?:=\s*(default|delete)\s*)?;\s*$)"
+                    );
+                    std::string header_line;
+                    std::size_t header_line_no = 0;
+                    while (std::getline(header_in, header_line)) {
+                        ++header_line_no;
+                        if (header_line_no < class_info.class_start_line ||
+                            header_line_no > class_info.class_end_line) {
+                            continue;
+                        }
+                        std::smatch match;
+                        if (eligibility.copy_ctor_decl_line == 0 &&
+                            std::regex_match(header_line, match, ctor_decl_line_regex)) {
+                            eligibility.copy_ctor_decl_line = header_line_no;
+                        }
+                        if (eligibility.copy_assign_decl_line == 0 &&
+                            std::regex_match(header_line, match, assign_decl_line_regex)) {
+                            eligibility.copy_assign_decl_line = header_line_no;
+                        }
+                        if (eligibility.copy_ctor_decl_line != 0 &&
+                            eligibility.copy_assign_decl_line != 0) {
+                            break;
                         }
                     }
                 }
@@ -1443,9 +1487,7 @@ namespace bha::suggestions
             if (!eligibility.defaulted_out_of_line_ctor ||
                 !eligibility.defaulted_out_of_line_dtor ||
                 class_info.private_section_line == 0 ||
-                eligibility.has_explicit_copy_definition ||
-                eligibility.copy_ctor_defaulted_in_class ||
-                eligibility.copy_assign_defaulted_in_class) {
+                eligibility.has_explicit_copy_definition) {
                 return std::nullopt;
             }
             if (eligibility.copy_ctor_deleted != eligibility.copy_assign_deleted) {
@@ -1454,6 +1496,14 @@ namespace bha::suggestions
 
             std::vector<TextEdit> edits;
             const bool preserve_copy = !eligibility.copy_ctor_deleted && !eligibility.copy_assign_deleted;
+            if (preserve_copy) {
+                if (eligibility.copy_ctor_defaulted_in_class && eligibility.copy_ctor_decl_line == 0) {
+                    return std::nullopt;
+                }
+                if (eligibility.copy_assign_defaulted_in_class && eligibility.copy_assign_decl_line == 0) {
+                    return std::nullopt;
+                }
+            }
 
             bool has_memory_include = false;
             for (const auto includes = find_include_directives(header_file); const auto& inc : includes) {
@@ -1468,6 +1518,31 @@ namespace bha::suggestions
                 } else {
                     edits.push_back(make_insert_at_start_edit(header_file, "#include <memory>"));
                 }
+            }
+
+            if (eligibility.copy_ctor_defaulted_in_class) {
+                std::string decl = "    " + class_info.name + "(const " + class_info.name + "&)";
+                if (!eligibility.copy_ctor_exception_spec.empty()) {
+                    decl += eligibility.copy_ctor_exception_spec;
+                }
+                decl += ";";
+                edits.push_back(make_replace_line_edit(
+                    header_file,
+                    eligibility.copy_ctor_decl_line - 1,
+                    decl
+                ));
+            }
+            if (eligibility.copy_assign_defaulted_in_class) {
+                std::string decl = "    " + class_info.name + "& operator=(const " + class_info.name + "&)";
+                if (!eligibility.copy_assign_exception_spec.empty()) {
+                    decl += eligibility.copy_assign_exception_spec;
+                }
+                decl += ";";
+                edits.push_back(make_replace_line_edit(
+                    header_file,
+                    eligibility.copy_assign_decl_line - 1,
+                    decl
+                ));
             }
 
             const auto private_non_field_declarations = collect_private_non_field_declarations(class_info, header_file);

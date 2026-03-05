@@ -261,7 +261,7 @@ def validate_variant(
         "struct Widget::Impl {",
         "pimpl_->values_.push_back(value);",
     ]
-    if label == "copyable":
+    if label in {"copyable", "copy-defaulted"}:
         required_markers.append("Widget::Widget(const Widget& other)")
         required_markers.append("Widget& Widget::operator=(const Widget& other)")
     if label == "copyable-noexcept":
@@ -311,7 +311,7 @@ def main() -> int:
         ("copyable", apply_copyable_variant, True),
         ("copyable-noexcept", apply_copyable_noexcept_variant, True),
         ("this-member", apply_this_member_variant, True),
-        ("copy-defaulted", apply_copy_defaulted_variant, False),
+        ("copy-defaulted", apply_copy_defaulted_variant, True),
         ("shadowed-local", apply_shadowed_local_variant, False),
         ("lambda-body", apply_lambda_variant, False),
         ("macro-member", apply_macro_member_variant, False),
