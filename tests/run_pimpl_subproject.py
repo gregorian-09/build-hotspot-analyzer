@@ -57,6 +57,14 @@ def apply_copyable_noexcept_variant(project_root: Path) -> None:
     header_path.write_text(header_text, encoding="utf-8")
 
 
+def apply_copy_defaulted_variant(project_root: Path) -> None:
+    header_path = project_root / "include" / "pimpl_widget.hpp"
+    header_text = header_path.read_text(encoding="utf-8")
+    header_text = header_text.replace("    Widget(const Widget&) = delete;\n", "    Widget(const Widget&) = default;\n")
+    header_text = header_text.replace("    Widget& operator=(const Widget&) = delete;\n", "    Widget& operator=(const Widget&) = default;\n")
+    header_path.write_text(header_text, encoding="utf-8")
+
+
 def validate_variant(
     repo_root: Path,
     bha_bin: Path,
@@ -65,6 +73,7 @@ def validate_variant(
     timeout: int,
     compiler: str,
     label: str,
+    expect_safe: bool = True,
     mutate_fixture=None,
 ) -> bool:
     project_root = temp_root / label
@@ -127,8 +136,11 @@ def validate_variant(
     print(f"  total suggestions: {len(suggestions)}")
     print(f"  pimpl suggestions: {len(pimpl_suggestions)}")
     print(f"  safe pimpl suggestions: {len(safe_pimpl)}")
-    if not safe_pimpl:
+    if expect_safe and not safe_pimpl:
         print("error: expected a strict, safe PIMPL suggestion with concrete edits")
+        return False
+    if not expect_safe and safe_pimpl:
+        print("error: expected no strict/safe PIMPL suggestion for this variant")
         return False
 
     sys.path.insert(0, str((repo_root / "lsp" / "tests").resolve()))
@@ -162,6 +174,12 @@ def validate_variant(
             for suggestion in analysis.get("suggestions", [])
             if "PIMPL" in suggestion.get("title", "") and suggestion.get("autoApplicable")
         ]
+        if not expect_safe:
+            if pimpl_ids:
+                print("error: LSP unexpectedly marked PIMPL as auto-applicable")
+                return False
+            print(f"ok: expected advisory-only PIMPL classification for '{label}'")
+            return True
         if not pimpl_ids:
             print("error: LSP analysis did not surface a safe PIMPL suggestion")
             return False
@@ -250,12 +268,13 @@ def main() -> int:
         shutil.rmtree(temp_root)
 
     scenarios = [
-        ("defaulted", None),
-        ("copyable", apply_copyable_variant),
-        ("copyable-noexcept", apply_copyable_noexcept_variant),
-        ("empty-body-noexcept", apply_empty_body_variant),
+        ("defaulted", None, True),
+        ("copyable", apply_copyable_variant, True),
+        ("copyable-noexcept", apply_copyable_noexcept_variant, True),
+        ("copy-defaulted", apply_copy_defaulted_variant, False),
+        ("empty-body-noexcept", apply_empty_body_variant, True),
     ]
-    for label, mutate_fixture in scenarios:
+    for label, mutate_fixture, expect_safe in scenarios:
         if not validate_variant(
             repo_root=repo_root,
             bha_bin=bha_bin,
@@ -264,6 +283,7 @@ def main() -> int:
             timeout=args.timeout,
             compiler=args.compiler,
             label=label,
+            expect_safe=expect_safe,
             mutate_fixture=mutate_fixture,
         ):
             return 1
