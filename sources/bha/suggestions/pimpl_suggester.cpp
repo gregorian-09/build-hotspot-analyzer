@@ -1188,12 +1188,16 @@ namespace bha::suggestions
             bool copy_assign_declared = false;
             bool copy_ctor_deleted = false;
             bool copy_assign_deleted = false;
+            bool copy_ctor_defaulted_in_class = false;
+            bool copy_assign_defaulted_in_class = false;
             bool defaulted_out_of_line_ctor = false;
             bool defaulted_out_of_line_dtor = false;
             bool has_explicit_copy_definition = false;
             std::size_t ctor_line = 0;
             std::size_t dtor_line = 0;
             std::string ctor_signature;
+            std::string copy_ctor_exception_spec;
+            std::string copy_assign_exception_spec;
         };
 
         StrictPimplEligibility analyze_strict_pimpl_eligibility(
@@ -1211,41 +1215,55 @@ namespace bha::suggestions
                 return value;
             };
 
-            const std::regex deleted_copy_ctor_regex(
-                "^\\s*" + class_info.name +
-                R"(\s*\(\s*const\s+)" + class_info.name +
-                R"(\s*&\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?\s*)?=\s*delete\s*;\s*$)"
-            );
-            const std::regex deleted_copy_assign_regex(
-                "^\\s*" + class_info.name +
-                R"(\s*&\s*operator=\s*\(\s*const\s+)" + class_info.name +
-                R"(\s*&\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?\s*)?=\s*delete\s*;\s*$)"
-            );
             const std::regex copy_ctor_decl_regex(
                 "^\\s*" + class_info.name +
                 R"(\s*\(\s*const\s+)" + class_info.name +
-                R"(\s*&\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?\s*)?(?:=\s*default\s*)?;\s*$)"
+                R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*)" +
+                R"((noexcept(?:\s*\([^)]*\))?)?)" +
+                R"(\s*(?:=\s*(default|delete)\s*)?;\s*$)"
             );
             const std::regex copy_assign_decl_regex(
                 "^\\s*" + class_info.name +
                 R"(\s*&\s*operator=\s*\(\s*const\s+)" + class_info.name +
-                R"(\s*&\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?\s*)?(?:=\s*default\s*)?;\s*$)"
+                R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*)" +
+                R"((noexcept(?:\s*\([^)]*\))?)?)" +
+                R"(\s*(?:=\s*(default|delete)\s*)?;\s*$)"
             );
 
             for (const auto& decl : collect_public_api_lines(class_info, header_file)) {
-                if (std::regex_match(decl, deleted_copy_ctor_regex)) {
+                std::smatch ctor_match;
+                if (!eligibility.copy_ctor_declared &&
+                    std::regex_match(decl, ctor_match, copy_ctor_decl_regex)) {
                     eligibility.copy_ctor_declared = true;
-                    eligibility.copy_ctor_deleted = true;
+                    const std::string exception_spec = trim_trailing(ctor_match[1].str());
+                    if (!exception_spec.empty()) {
+                        eligibility.copy_ctor_exception_spec = " " + exception_spec;
+                    }
+                    if (ctor_match.size() > 2) {
+                        const std::string spec = trim_trailing(ctor_match[2].str());
+                        if (spec == "delete") {
+                            eligibility.copy_ctor_deleted = true;
+                        } else if (spec == "default") {
+                            eligibility.copy_ctor_defaulted_in_class = true;
+                        }
+                    }
                 }
-                if (std::regex_match(decl, deleted_copy_assign_regex)) {
+                std::smatch assign_match;
+                if (!eligibility.copy_assign_declared &&
+                    std::regex_match(decl, assign_match, copy_assign_decl_regex)) {
                     eligibility.copy_assign_declared = true;
-                    eligibility.copy_assign_deleted = true;
-                }
-                if (!eligibility.copy_ctor_declared && std::regex_match(decl, copy_ctor_decl_regex)) {
-                    eligibility.copy_ctor_declared = true;
-                }
-                if (!eligibility.copy_assign_declared && std::regex_match(decl, copy_assign_decl_regex)) {
-                    eligibility.copy_assign_declared = true;
+                    const std::string exception_spec = trim_trailing(assign_match[1].str());
+                    if (!exception_spec.empty()) {
+                        eligibility.copy_assign_exception_spec = " " + exception_spec;
+                    }
+                    if (assign_match.size() > 2) {
+                        const std::string spec = trim_trailing(assign_match[2].str());
+                        if (spec == "delete") {
+                            eligibility.copy_assign_deleted = true;
+                        } else if (spec == "default") {
+                            eligibility.copy_assign_defaulted_in_class = true;
+                        }
+                    }
                 }
             }
 
@@ -1425,7 +1443,9 @@ namespace bha::suggestions
             if (!eligibility.defaulted_out_of_line_ctor ||
                 !eligibility.defaulted_out_of_line_dtor ||
                 class_info.private_section_line == 0 ||
-                eligibility.has_explicit_copy_definition) {
+                eligibility.has_explicit_copy_definition ||
+                eligibility.copy_ctor_defaulted_in_class ||
+                eligibility.copy_assign_defaulted_in_class) {
                 return std::nullopt;
             }
             if (eligibility.copy_ctor_deleted != eligibility.copy_assign_deleted) {
@@ -1508,10 +1528,11 @@ namespace bha::suggestions
             }
             impl_def << "};\n\n";
             if (preserve_copy) {
-                impl_def << class_info.name << "::" << class_info.name << "(const " << class_info.name << "& other)\n";
+                impl_def << class_info.name << "::" << class_info.name << "(const " << class_info.name
+                         << "& other)" << eligibility.copy_ctor_exception_spec << "\n";
                 impl_def << "    : pimpl_(other.pimpl_ ? std::make_unique<Impl>(*other.pimpl_) : nullptr) {}\n\n";
                 impl_def << class_info.name << "& " << class_info.name << "::operator=(const " << class_info.name
-                         << "& other) {\n";
+                         << "& other)" << eligibility.copy_assign_exception_spec << " {\n";
                 impl_def << "    if (this == &other) {\n";
                 impl_def << "        return *this;\n";
                 impl_def << "    }\n";
