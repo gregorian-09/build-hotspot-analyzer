@@ -1620,6 +1620,22 @@ namespace bha::suggestions
                     search_from = close + 1;
                 }
             };
+            const auto has_macro_invocation = [](const std::string& text) {
+                static const std::regex macro_call_regex(R"(\b[A-Z_][A-Z0-9_]*\s*\()");
+                return std::regex_search(text, macro_call_regex);
+            };
+            const auto contains_private_member_name = [&class_info](const std::string& text) {
+                for (const auto& member : class_info.members) {
+                    if (!member.is_private || member.is_method || member.name.empty()) {
+                        continue;
+                    }
+                    const std::regex member_name_regex("\\b" + member.name + "\\b");
+                    if (std::regex_search(text, member_name_regex)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
 
             for (std::size_t i = 0; i < src_lines.size(); ++i) {
                 std::string updated = src_lines[i];
@@ -1648,6 +1664,9 @@ namespace bha::suggestions
                         if (std::regex_search(updated, local_shadow_regex)) {
                             return std::nullopt;
                         }
+                    }
+                    if (has_macro_invocation(updated) && contains_private_member_name(updated)) {
+                        return std::nullopt;
                     }
 
                     bool changed = false;
