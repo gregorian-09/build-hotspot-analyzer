@@ -1518,6 +1518,19 @@ namespace bha::suggestions
                 src_lines.push_back(std::move(line));
             }
 
+            std::vector<std::regex> local_shadow_regexes;
+            local_shadow_regexes.reserve(class_info.members.size());
+            for (const auto& member : class_info.members) {
+                if (!member.is_private || member.is_method || member.name.empty()) {
+                    continue;
+                }
+                local_shadow_regexes.emplace_back(
+                    R"((^\s*|[;{(]\s*)(?:const\s+|constexpr\s+|volatile\s+|static\s+|thread_local\s+|mutable\s+|signed\s+|unsigned\s+|short\s+|long\s+|struct\s+|class\s+|typename\s+)*[A-Za-z_][A-Za-z0-9_:<>,]*\s+[*&\s]*)" +
+                    member.name +
+                    R"(\b\s*(?:[=;,\)\[]))"
+                );
+            }
+
             std::ostringstream impl_def;
             impl_def << "struct " << class_info.name << "::Impl {\n";
             for (const auto& member : class_info.members) {
@@ -1572,6 +1585,42 @@ namespace bha::suggestions
                 return delta;
             };
 
+            const auto has_lambda_introducer = [](const std::string& text) {
+                std::size_t search_from = 0;
+                while (true) {
+                    const auto open = text.find('[', search_from);
+                    if (open == std::string::npos) {
+                        return false;
+                    }
+                    if (open + 1 < text.size() && text[open + 1] == '[') {
+                        search_from = open + 2;
+                        continue;
+                    }
+                    const auto close = text.find(']', open + 1);
+                    if (close == std::string::npos) {
+                        return false;
+                    }
+                    std::size_t pos = close + 1;
+                    while (pos < text.size() &&
+                           std::isspace(static_cast<unsigned char>(text[pos]))) {
+                        ++pos;
+                    }
+                    if (pos < text.size() &&
+                        (text[pos] == '(' || text[pos] == '{')) {
+                        return true;
+                    }
+                    if (pos + 7 <= text.size() &&
+                        text.compare(pos, 7, "mutable") == 0) {
+                        return true;
+                    }
+                    if (pos + 8 <= text.size() &&
+                        text.compare(pos, 8, "noexcept") == 0) {
+                        return true;
+                    }
+                    search_from = close + 1;
+                }
+            };
+
             for (std::size_t i = 0; i < src_lines.size(); ++i) {
                 std::string updated = src_lines[i];
                 if (i + 1 == eligibility.ctor_line || i + 1 == eligibility.dtor_line) {
@@ -1592,6 +1641,15 @@ namespace bha::suggestions
                 if (updated.find("//") == std::string::npos &&
                     (updated.empty() || updated.front() != '#') &&
                     !entering_method_signature) {
+                    if (has_lambda_introducer(updated)) {
+                        return std::nullopt;
+                    }
+                    for (const auto& local_shadow_regex : local_shadow_regexes) {
+                        if (std::regex_search(updated, local_shadow_regex)) {
+                            return std::nullopt;
+                        }
+                    }
+
                     bool changed = false;
                     for (const auto& member : class_info.members) {
                         if (!member.is_private || member.is_method || member.name.empty()) {
