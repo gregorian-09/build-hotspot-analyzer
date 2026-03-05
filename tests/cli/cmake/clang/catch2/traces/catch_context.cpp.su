@@ -1,2 +1,0 @@
-src/catch2/internal/catch_context.cpp:15:_ZN5Catch24getCurrentMutableContextEv	0	static
-src/catch2/internal/catch_context.cpp:19:_ZN5Catch9sharedRngEv	8	static

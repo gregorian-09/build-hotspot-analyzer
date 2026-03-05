@@ -1,8 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:12:12:Catch::Counts Catch::Counts::operator-(const Catch::Counts&) const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:21:13:Catch::Counts& Catch::Counts::operator+=(const Catch::Counts&)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:29:19:uint64_t Catch::Counts::total() const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:32:10:bool Catch::Counts::allPassed() const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:35:10:bool Catch::Counts::allOk() const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:39:12:Catch::Totals Catch::Totals::operator-(const Catch::Totals&) const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:46:13:Catch::Totals& Catch::Totals::operator+=(const Catch::Totals&)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_totals.cpp:52:12:Catch::Totals Catch::Totals::delta(const Catch::Totals&) const	8	static

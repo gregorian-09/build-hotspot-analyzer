@@ -1,4 +1,0 @@
-src/catch2/benchmark/detail/catch_run_for_at_least.cpp:21:_ZNK5Catch9Benchmark6Detail20optimized_away_error4whatEv	0	static
-src/catch2/benchmark/detail/catch_run_for_at_least.cpp:25:_ZN5Catch9Benchmark6Detail26throw_optimized_away_errorEv	24	static
-src/catch2/../catch2/internal/catch_enforce.hpp:21:_ZN5Catch15throw_exceptionINS_9Benchmark6Detail20optimized_away_errorEEEvRKT_	8	static
-src/catch2/benchmark/detail/catch_run_for_at_least.cpp:17:_ZN5Catch9Benchmark6Detail20optimized_away_errorD0Ev	8	static

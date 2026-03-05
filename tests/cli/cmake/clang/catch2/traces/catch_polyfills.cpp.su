@@ -1,4 +1,0 @@
-src/catch2/internal/catch_polyfills.cpp:18:_ZN5Catch5isnanEf	0	static
-src/catch2/internal/catch_polyfills.cpp:21:_ZN5Catch5isnanEd	0	static
-src/catch2/internal/catch_polyfills.cpp:38:_ZN5Catch9nextafterEff	0	static
-src/catch2/internal/catch_polyfills.cpp:39:_ZN5Catch9nextafterEdd	0	static

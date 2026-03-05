@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_testcase.cpp:12:5:Catch::ITestCaseRegistry::~ITestCaseRegistry()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_testcase.cpp:12:5:virtual Catch::ITestCaseRegistry::~ITestCaseRegistry()	8	static

@@ -1,4 +1,0 @@
-src/catch2/interfaces/catch_interfaces_registry_hub.cpp:12:_ZN5Catch12IRegistryHubD2Ev	0	static
-src/catch2/interfaces/catch_interfaces_registry_hub.cpp:12:_ZN5Catch12IRegistryHubD0Ev	0	static
-src/catch2/interfaces/catch_interfaces_registry_hub.cpp:13:_ZN5Catch19IMutableRegistryHubD2Ev	0	static
-src/catch2/interfaces/catch_interfaces_registry_hub.cpp:13:_ZN5Catch19IMutableRegistryHubD0Ev	0	static

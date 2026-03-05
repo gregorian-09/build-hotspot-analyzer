@@ -1,3 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_stdstreams.cpp:19:19:std::ostream& Catch::cout()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_stdstreams.cpp:20:19:std::ostream& Catch::cerr()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_stdstreams.cpp:21:19:std::ostream& Catch::clog()	8	static

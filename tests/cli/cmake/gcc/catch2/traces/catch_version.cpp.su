@@ -1,3 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_version.cpp:13:5:Catch::Version::Version(unsigned int, unsigned int, unsigned int, const char*, unsigned int)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_version.cpp:26:19:std::ostream& Catch::operator<<(std::ostream&, const Version&)	64	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_version.cpp:38:20:const Catch::Version& Catch::libraryVersion()	16	static

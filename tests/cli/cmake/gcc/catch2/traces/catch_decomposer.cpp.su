@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_decomposer.cpp:13:10:virtual void Catch::ITransientExpression::streamReconstructedExpression(std::ostream&) const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_decomposer.cpp:20:10:void Catch::formatReconstructedExpression(std::ostream&, const std::string&, StringRef, const std::string&)	64	static

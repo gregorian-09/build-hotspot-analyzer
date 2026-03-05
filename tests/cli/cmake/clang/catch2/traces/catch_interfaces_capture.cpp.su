@@ -1,3 +1,0 @@
-src/catch2/interfaces/catch_interfaces_capture.cpp:14:_ZN5Catch6Detail22missingCaptureInstanceEv	72	static
-src/catch2/interfaces/catch_interfaces_capture.cpp:19:_ZN5Catch14IResultCaptureD2Ev	0	static
-src/catch2/interfaces/catch_interfaces_capture.cpp:19:_ZN5Catch14IResultCaptureD0Ev	0	static

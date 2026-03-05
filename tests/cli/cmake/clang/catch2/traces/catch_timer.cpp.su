@@ -1,5 +1,0 @@
-src/catch2/catch_timer.cpp:20:_ZN5Catch5Timer5startEv	8	static
-src/catch2/catch_timer.cpp:23:_ZNK5Catch5Timer21getElapsedNanosecondsEv	8	static
-src/catch2/catch_timer.cpp:26:_ZNK5Catch5Timer22getElapsedMicrosecondsEv	8	static
-src/catch2/catch_timer.cpp:29:_ZNK5Catch5Timer22getElapsedMillisecondsEv	8	static
-src/catch2/catch_timer.cpp:32:_ZNK5Catch5Timer17getElapsedSecondsEv	8	static

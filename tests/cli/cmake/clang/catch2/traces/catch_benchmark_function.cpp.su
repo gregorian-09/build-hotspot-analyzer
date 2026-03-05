@@ -1,5 +1,0 @@
-src/catch2/benchmark/detail/catch_benchmark_function.cpp:18:_ZN5Catch9Benchmark6Detail17BenchmarkFunction8callableD0Ev	0	static
-src/catch2/benchmark/detail/catch_benchmark_function.cpp:19:_ZN5Catch9Benchmark6Detail17BenchmarkFunctionC2Ev	8	static
-src/catch2/../catch2/benchmark/detail/catch_benchmark_function.hpp:48:_ZNK5Catch9Benchmark6Detail17BenchmarkFunction5modelINS1_10do_nothingEE4callENS0_11ChronometerE	8	static
-src/catch2/benchmark/detail/catch_benchmark_function.cpp:18:_ZN5Catch9Benchmark6Detail17BenchmarkFunction8callableD2Ev	0	static
-src/catch2/../catch2/benchmark/detail/catch_benchmark_function.hpp:44:_ZN5Catch9Benchmark6Detail17BenchmarkFunction5modelINS1_10do_nothingEED0Ev	0	static

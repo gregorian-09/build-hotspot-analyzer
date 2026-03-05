@@ -1,4 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_registry_hub.cpp:12:5:Catch::IRegistryHub::~IRegistryHub()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_registry_hub.cpp:12:5:virtual Catch::IRegistryHub::~IRegistryHub()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_registry_hub.cpp:13:5:Catch::IMutableRegistryHub::~IMutableRegistryHub()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_registry_hub.cpp:13:5:virtual Catch::IMutableRegistryHub::~IMutableRegistryHub()	8	static

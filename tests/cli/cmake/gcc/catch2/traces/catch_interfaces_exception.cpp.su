@@ -1,4 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:12:5:Catch::IExceptionTranslator::~IExceptionTranslator()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:12:5:virtual Catch::IExceptionTranslator::~IExceptionTranslator()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:13:5:Catch::IExceptionTranslatorRegistry::~IExceptionTranslatorRegistry()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_exception.cpp:13:5:virtual Catch::IExceptionTranslatorRegistry::~IExceptionTranslatorRegistry()	8	static

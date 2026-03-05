@@ -1,3 +1,0 @@
-src/catch2/matchers/catch_matchers_templated.cpp:12:_ZN5Catch8Matchers18MatcherGenericBaseD2Ev	0	static
-src/catch2/matchers/catch_matchers_templated.cpp:12:_ZN5Catch8Matchers18MatcherGenericBaseD0Ev	0	static
-src/catch2/matchers/catch_matchers_templated.cpp:16:_ZN5Catch8Matchers6Detail22describe_multi_matcherENS_9StringRefEPKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESA_	72	static

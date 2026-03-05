@@ -16,8 +16,10 @@ add_executable(bha_tests
         unit/suggestions/test_header_split_suggester.cpp
         unit/suggestions/test_include_suggester.cpp
         unit/suggestions/test_pch_suggester.cpp
+        unit/suggestions/test_pimpl_eligibility.cpp
         unit/suggestions/test_pimpl_suggester.cpp
         unit/suggestions/test_template_suggester.cpp
+        unit/suggestions/test_project_root.cpp
         unit/analyzers/test_dependency_analyzer.cpp
         unit/analyzers/test_file_analyzer.cpp
         unit/analyzers/test_pch_analyzer.cpp

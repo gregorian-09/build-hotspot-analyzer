@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_test_failure_exception.cpp:15:10:void Catch::throw_test_failure_exception()	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_test_failure_exception.cpp:23:10:void Catch::throw_test_skip_exception()	16	static

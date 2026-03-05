@@ -1,2 +1,0 @@
-src/catch2/internal/catch_case_insensitive_comparisons.cpp:17:_ZNK5Catch6Detail19CaseInsensitiveLessclENS_9StringRefES2_	72	static
-src/catch2/internal/catch_case_insensitive_comparisons.cpp:26:_ZNK5Catch6Detail22CaseInsensitiveEqualToclENS_9StringRefES2_	56	static

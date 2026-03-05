@@ -1,2 +1,0 @@
-src/catch2/internal/catch_decomposer.cpp:13:_ZNK5Catch20ITransientExpression29streamReconstructedExpressionERSo	0	static
-src/catch2/internal/catch_decomposer.cpp:20:_ZN5Catch29formatReconstructedExpressionERSoRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_9StringRefES8_	56	static

@@ -1,5 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_timer.cpp:20:10:void Catch::Timer::start()	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_timer.cpp:23:10:uint64_t Catch::Timer::getElapsedNanoseconds() const	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_timer.cpp:26:10:uint64_t Catch::Timer::getElapsedMicroseconds() const	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_timer.cpp:29:10:unsigned int Catch::Timer::getElapsedMilliseconds() const	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_timer.cpp:32:10:double Catch::Timer::getElapsedSeconds() const	16	static

@@ -1,2 +1,0 @@
-/usr/include/c++/13/bits/locale_facets.h:1092:7:virtual std::ctype<char>::char_type std::ctype<char>::do_widen(char) const	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_debugger.cpp:84:14:bool Catch::isDebuggerActive()	672	static

@@ -1,7 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:21:5:Catch::ScopedMessage::ScopedMessage(Catch::MessageBuilder&&)	144	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:28:5:Catch::ScopedMessage::ScopedMessage(Catch::ScopedMessage&&)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:33:5:Catch::ScopedMessage::~ScopedMessage()	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:102:5:Catch::Capturer::~Capturer()	32	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:111:10:void Catch::Capturer::captureValue(size_t, const std::string&)	32	static
-/usr/include/c++/13/bits/vector.tcc:445:7:) [with _Args = {Catch::StringRef&, const Catch::SourceLineInfo&, Catch::ResultWas::OfType&}; _Tp = Catch::MessageInfo; _Alloc = std::allocator<Catch::MessageInfo>]	96	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/catch_message.cpp:38:5:Catch::Capturer::Capturer(Catch::StringRef, const Catch::SourceLineInfo&, Catch::ResultWas::OfType, Catch::StringRef, bool)	256	static

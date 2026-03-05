@@ -130,6 +130,63 @@ namespace bha
         EXPECT_EQ(suggestion.priority, Priority::Medium);
         EXPECT_DOUBLE_EQ(suggestion.confidence, 0.0);
         EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::Advisory);
+    }
+
+    TEST(SuggestionTest, ExplicitExternalRefactorModeIsPreservedWithoutEdits) {
+        Suggestion suggestion;
+        suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
+
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::ExternalRefactor);
+    }
+
+    TEST(SuggestionTest, ExplicitDirectEditsModeIsPreservedWithoutEdits) {
+        Suggestion suggestion;
+        suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::DirectEdits);
+    }
+
+    TEST(SuggestionTest, ApplicationModeStringRoundTrip) {
+        EXPECT_EQ(
+            suggestion_application_mode_from_string("advisory"),
+            SuggestionApplicationMode::Advisory
+        );
+        EXPECT_EQ(
+            suggestion_application_mode_from_string("direct-edits"),
+            SuggestionApplicationMode::DirectEdits
+        );
+        EXPECT_EQ(
+            suggestion_application_mode_from_string("external-refactor"),
+            SuggestionApplicationMode::ExternalRefactor
+        );
+
+        EXPECT_STREQ(to_string(SuggestionApplicationMode::Advisory), "advisory");
+        EXPECT_STREQ(to_string(SuggestionApplicationMode::DirectEdits), "direct-edits");
+        EXPECT_STREQ(to_string(SuggestionApplicationMode::ExternalRefactor), "external-refactor");
+    }
+
+    TEST(SuggestionTest, UnknownApplicationModeStringFallsBackToAdvisory) {
+        EXPECT_EQ(
+            suggestion_application_mode_from_string("manual-review"),
+            SuggestionApplicationMode::Advisory
+        );
+    }
+
+    TEST(SuggestionTest, ConcreteEditsAlwaysResolveToDirectEdits) {
+        Suggestion suggestion;
+        suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
+
+        TextEdit edit;
+        edit.file = "widget.hpp";
+        edit.start_line = 1;
+        edit.start_col = 0;
+        edit.end_line = 1;
+        edit.end_col = 0;
+        edit.new_text = "#include <memory>\n";
+        suggestion.edits.push_back(edit);
+
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::DirectEdits);
     }
 
     TEST(AnalysisOptionsTest, DefaultValues) {

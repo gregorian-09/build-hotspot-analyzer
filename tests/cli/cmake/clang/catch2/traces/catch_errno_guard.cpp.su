@@ -1,2 +1,0 @@
-src/catch2/internal/catch_errno_guard.cpp:14:_ZN5Catch10ErrnoGuardC2Ev	8	static
-src/catch2/internal/catch_errno_guard.cpp:15:_ZN5Catch10ErrnoGuardD2Ev	8	static

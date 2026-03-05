@@ -1,2 +1,0 @@
-src/catch2/internal/catch_test_failure_exception.cpp:15:_ZN5Catch28throw_test_failure_exceptionEv	8	static
-src/catch2/internal/catch_test_failure_exception.cpp:23:_ZN5Catch25throw_test_skip_exceptionEv	8	static

@@ -1,3 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_enforce.cpp:25:10:void Catch::throw_logic_error(const std::string&)	64	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_enforce.cpp:30:10:void Catch::throw_domain_error(const std::string&)	64	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/internal/catch_enforce.cpp:35:10:void Catch::throw_runtime_error(const std::string&)	64	static

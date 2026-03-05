@@ -1,7 +1,0 @@
-src/catch2/internal/catch_enforce.cpp:25:_ZN5Catch17throw_logic_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
-src/catch2/../catch2/internal/catch_enforce.hpp:21:_ZN5Catch15throw_exceptionISt11logic_errorEEvRKT_	24	static
-src/catch2/internal/catch_enforce.cpp:30:_ZN5Catch18throw_domain_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
-src/catch2/../catch2/internal/catch_enforce.hpp:21:_ZN5Catch15throw_exceptionISt12domain_errorEEvRKT_	24	static
-src/catch2/internal/catch_enforce.cpp:35:_ZN5Catch19throw_runtime_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE	24	static
-src/catch2/../catch2/internal/catch_enforce.hpp:21:_ZN5Catch15throw_exceptionISt13runtime_errorEEvRKT_	24	static
-/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/stdexcept:159:_ZNSt12domain_errorC2ERKS_	8	static

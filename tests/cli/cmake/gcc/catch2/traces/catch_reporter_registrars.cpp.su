@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/reporters/catch_reporter_registrars.cpp:17:14:void Catch::Detail::registerReporterImpl(const std::string&, Catch::IReporterFactoryPtr)	48	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/reporters/catch_reporter_registrars.cpp:30:14:void Catch::Detail::registerListenerImpl(unique_ptr<Catch::EventListenerFactory>)	32	static

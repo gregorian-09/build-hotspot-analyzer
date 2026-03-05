@@ -11,6 +11,7 @@ project(bha
 
 option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
 option(BHA_BUILD_CLI "Build command-line interface" ON)
+option(BHA_BUILD_REFACTOR_TOOLS "Build optional semantic refactor tools" OFF)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS "Enable sanitizers (address, undefined)" OFF)
@@ -164,6 +165,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/build_systems/adapter.cpp
+        sources/bha/refactor/pimpl_eligibility.cpp
         sources/bha/suggestions/consolidator.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
         sources/bha/suggestions/header_split_suggester.cpp
@@ -183,8 +185,6 @@ target_sources(bha_lib PRIVATE
         sources/bha/exporters/exporter.cpp
         sources/bha/git/git_integration.cpp
         sources/bha/storage/storage.cpp
-        sources/bha/lsp/server.cpp
-        sources/bha/lsp/suggestion_manager.cpp
 )
 
 target_include_directories(bha_lib
@@ -228,18 +228,65 @@ if(BHA_BUILD_CLI)
             $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
             $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
     )
+endif()
 
-    add_executable(bha-lsp
-            cli/lsp_server/main.cpp
+if(BHA_BUILD_REFACTOR_TOOLS)
+    add_executable(bha-refactor
+            tools/refactor/main.cpp
+            tools/refactor/pimpl_tooling.cpp
     )
 
-    target_link_libraries(bha-lsp
+    find_path(BHA_CLANG_TOOLING_INCLUDE_DIR
+            NAMES clang/Tooling/Tooling.h
+            PATHS
+                /usr/lib/llvm-18/include
+                /usr/lib/llvm-17/include
+                /usr/lib/llvm-16/include
+                /usr/lib/llvm-15/include
+                /usr/include
+    )
+    find_library(BHA_CLANG_CPP_LIBRARY
+            NAMES clang-cpp libclang-cpp
+            PATHS
+                /usr/lib/llvm-18/lib
+                /usr/lib/llvm-17/lib
+                /usr/lib/llvm-16/lib
+                /usr/lib/llvm-15/lib
+                /usr/lib/x86_64-linux-gnu
+    )
+    find_library(BHA_LLVM_LIBRARY
+            NAMES LLVM-18 LLVM
+            PATHS
+                /usr/lib/llvm-18/lib
+                /usr/lib/llvm-17/lib
+                /usr/lib/llvm-16/lib
+                /usr/lib/llvm-15/lib
+                /usr/lib/x86_64-linux-gnu
+                /lib/x86_64-linux-gnu
+    )
+
+    if(BHA_CLANG_TOOLING_INCLUDE_DIR AND BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
+        message(STATUS "Clang LibTooling headers and clang-cpp found: enabling LibTooling-backed bha-refactor engine")
+        target_compile_definitions(bha-refactor PRIVATE BHA_HAVE_CLANG_TOOLING=1)
+        target_include_directories(bha-refactor SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
+        target_link_libraries(bha-refactor PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
+    else()
+        message(STATUS "Clang LibTooling headers or libraries not found: bha-refactor will use the text-edit fallback engine")
+        target_compile_definitions(bha-refactor PRIVATE BHA_HAVE_CLANG_TOOLING=0)
+    endif()
+
+    target_link_libraries(bha-refactor
             PRIVATE
             bha::bha
             bha::warnings
             $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
             $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
     )
+endif()
+
+option(BHA_ENABLE_LSP "Build bha-lsp language server (optional, for separate repo/module)" OFF)
+if(BHA_ENABLE_LSP)
+    add_subdirectory(lsp)
 endif()
 
 # =============================================================================

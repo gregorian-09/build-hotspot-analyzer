@@ -1,4 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_generatortracker.cpp:26:14:virtual void Catch::Generators::GeneratorUntypedBase::skipToNthElementImpl(std::size_t)	32	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_generatortracker.cpp:17:14:bool Catch::Generators::GeneratorUntypedBase::countedNext()	16	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_generatortracker.cpp:36:14:void Catch::Generators::GeneratorUntypedBase::skipToNthElement(std::size_t)	32	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/catch2/src/catch2/interfaces/catch_interfaces_generatortracker.cpp:51:19:Catch::StringRef Catch::Generators::GeneratorUntypedBase::currentElementAsString() const	64	static

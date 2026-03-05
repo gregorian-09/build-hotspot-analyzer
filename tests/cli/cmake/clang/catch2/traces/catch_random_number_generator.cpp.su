@@ -1,6 +1,0 @@
-src/catch2/internal/catch_random_number_generator.cpp:39:_ZN5Catch11SimplePcg32C2Ej	0	static
-src/catch2/internal/catch_random_number_generator.cpp:44:_ZN5Catch11SimplePcg324seedEj	0	static
-src/catch2/internal/catch_random_number_generator.cpp:60:_ZN5Catch11SimplePcg32clEv	0	static
-src/catch2/internal/catch_random_number_generator.cpp:51:_ZN5Catch11SimplePcg327discardEm	0	static
-src/catch2/internal/catch_random_number_generator.cpp:71:_ZN5CatcheqERKNS_11SimplePcg32ES2_	0	static
-src/catch2/internal/catch_random_number_generator.cpp:75:_ZN5CatchneERKNS_11SimplePcg32ES2_	0	static
