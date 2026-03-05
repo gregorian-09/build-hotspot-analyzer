@@ -228,7 +228,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_inline_private",
-            "expected_mode": "advisory",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external_inline_method.hpp",
             "source_name": "pimpl_widget_external_inline_method.cpp",
             "class_name": "WidgetExternalInlinePrivate",

@@ -435,6 +435,17 @@ namespace bha::suggestions
                 );
                 return std::regex_search(text, line_location_regex);
             };
+            const std::string header_basename = header_file.filename().string();
+            const auto is_in_target_header = [&header_basename](const std::string& text) {
+                if (text.find("<line:") != std::string::npos) {
+                    return true;
+                }
+                if (!header_basename.empty() &&
+                    text.find(header_basename + ":line:") != std::string::npos) {
+                    return true;
+                }
+                return false;
+            };
 
             while (std::getline(in, line)) {
                 if (!in_class) {
@@ -516,6 +527,9 @@ namespace bha::suggestions
                 }
 
                 if (line.find("CXXMethodDecl") != std::string::npos) {
+                    if (has_line_location(line) && !is_in_target_header(line)) {
+                        continue;
+                    }
                     const bool is_virtual = line.find(" virtual ") != std::string::npos || line.ends_with(" virtual");
                     const bool is_implicit = line.find(" implicit ") != std::string::npos || line.ends_with(" implicit");
                     if (is_virtual) {
@@ -528,7 +542,8 @@ namespace bha::suggestions
 
                     if (in_private) {
                         if (!is_implicit &&
-                            line.find(" inline ") != std::string::npos &&
+                            (line.find(" inline ") != std::string::npos ||
+                             line.find(" implicit-inline") != std::string::npos) &&
                             line.find(" defaulted ") == std::string::npos &&
                             line.find(" deleted ") == std::string::npos) {
                             extraction.has_private_inline_method_bodies = true;
@@ -542,10 +557,10 @@ namespace bha::suggestions
                         member.is_method = true;
                         member.is_virtual = is_virtual;
                         if (std::smatch match;
-                            std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* col:\d+ ([A-Za-z_][A-Za-z0-9_]*) ')"))) {
+                            std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"))) {
                             member.line = std::stoul(match[1].str());
                             member.name = match[2].str();
-                        } else if (std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <line:(\d+):\d+.* col:\d+ ([A-Za-z_][A-Za-z0-9_]*) ')"))) {
+                        } else if (std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"))) {
                             member.line = std::stoul(match[1].str());
                             member.name = match[2].str();
                         }
@@ -568,6 +583,9 @@ namespace bha::suggestions
                 }
 
                 if (line.find("FieldDecl") != std::string::npos && in_private) {
+                    if (has_line_location(line) && !is_in_target_header(line)) {
+                        continue;
+                    }
                     if (!has_line_location(line)) {
                         extraction.has_macro_generated_private_declarations = true;
                     }

@@ -376,10 +376,17 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_inline_private",
-            "expected_application_mode": "advisory",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_inline_method.hpp",
-            "header_markers": [],
-            "source_markers": [],
+            "header_markers": [
+                "void update_total(int value);",
+            ],
+            "source_markers": [
+                "struct WidgetExternalInlinePrivate::Impl {",
+                "void WidgetExternalInlinePrivate::update_total(int value) {",
+                "pimpl_->cache_path_ /= std::to_string(value);",
+                "return pimpl_->label_ + std::to_string(pimpl_->expander_.value) + pimpl_->cache_path_.string();",
+            ],
             "executable_name": None,
         },
         {
