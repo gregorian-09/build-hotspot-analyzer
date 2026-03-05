@@ -236,7 +236,7 @@ namespace bha::suggestions
 
         struct InlinePrivateMethodMove {
             std::size_t line = 0;
-            std::string raw_line;
+            std::string raw_declaration;
             std::string declaration_line;
             std::string source_definition;
         };
@@ -1236,6 +1236,40 @@ namespace bha::suggestions
             const std::regex blocked_signature_regex(
                 R"(\b(template|constexpr|consteval|constinit|operator|friend|virtual)\b)"
             );
+            const auto has_lambda_introducer = [](const std::string& text) {
+                std::size_t search_from = 0;
+                while (true) {
+                    const auto open = text.find('[', search_from);
+                    if (open == std::string::npos) {
+                        return false;
+                    }
+                    const auto close = text.find(']', open + 1);
+                    if (close == std::string::npos) {
+                        return false;
+                    }
+                    auto pos = close + 1;
+                    while (pos < text.size() &&
+                           std::isspace(static_cast<unsigned char>(text[pos]))) {
+                        ++pos;
+                    }
+                    if (pos < text.size() &&
+                        (text[pos] == '(' || text[pos] == '{')) {
+                        return true;
+                    }
+                    search_from = close + 1;
+                }
+            };
+            std::vector<std::regex> local_shadow_regexes;
+            local_shadow_regexes.reserve(private_fields.size());
+            for (const auto& field_name : private_fields) {
+                local_shadow_regexes.emplace_back(
+                    std::regex(
+                        R"(\b(?:auto|const|volatile|mutable|register|static|thread_local|constexpr|signed|unsigned|short|long|int|float|double|bool|char|wchar_t|char8_t|char16_t|char32_t|size_t|std::\w+)\b[^;=\n]*\b)" +
+                        field_name +
+                        R"(\b)"
+                    )
+                );
+            }
 
             for (const auto& member : class_info.members) {
                 if (!member.is_private || !member.is_method || member.name.empty() || member.line == 0) {
@@ -1256,29 +1290,89 @@ namespace bha::suggestions
 
                 plan.saw_inline_method_body = true;
 
-                const auto close_brace = raw_line.rfind('}');
-                if (close_brace == std::string::npos ||
-                    close_brace <= open_brace ||
-                    raw_line.find('{', open_brace + 1) != std::string::npos) {
+                std::size_t close_line = 0;
+                std::size_t close_col = 0;
+                int brace_depth = 0;
+                bool found_close = false;
+                for (std::size_t line_index = member.line; line_index < lines.size() && !found_close; ++line_index) {
+                    const std::size_t start_col = (line_index == member.line) ? open_brace : 0;
+                    const std::string& current_line = lines[line_index];
+                    for (std::size_t col = start_col; col < current_line.size(); ++col) {
+                        const char ch = current_line[col];
+                        if (ch == '{') {
+                            ++brace_depth;
+                        } else if (ch == '}') {
+                            --brace_depth;
+                            if (brace_depth == 0) {
+                                close_line = line_index;
+                                close_col = col;
+                                found_close = true;
+                                break;
+                            }
+                            if (brace_depth < 0) {
+                                plan.all_movable = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!plan.all_movable) {
+                        break;
+                    }
+                }
+                if (!plan.all_movable || !found_close) {
+                    plan.all_movable = false;
+                    break;
+                }
+                if (close_line == member.line && close_col <= open_brace) {
                     plan.all_movable = false;
                     break;
                 }
 
                 const std::string signature = raw_line.substr(0, open_brace);
-                const std::string body = raw_line.substr(open_brace + 1, close_brace - open_brace - 1);
+                std::string body;
+                if (close_line == member.line) {
+                    body = raw_line.substr(open_brace + 1, close_col - open_brace - 1);
+                } else {
+                    body = raw_line.substr(open_brace + 1);
+                    for (std::size_t line_index = member.line + 1; line_index < close_line; ++line_index) {
+                        body += '\n';
+                        body += lines[line_index];
+                    }
+                    body += '\n';
+                    body += lines[close_line].substr(0, close_col);
+                }
                 if (signature.find(member.name + "(") == std::string::npos ||
                     std::regex_search(signature, blocked_signature_regex)) {
                     plan.all_movable = false;
                     break;
                 }
+                std::string trailing_after_close = lines[close_line].substr(close_col + 1);
+                if (const auto first = trailing_after_close.find_first_not_of(" \t");
+                    first != std::string::npos) {
+                    trailing_after_close.erase(0, first);
+                } else {
+                    trailing_after_close.clear();
+                }
+                if (!trailing_after_close.empty() && !trailing_after_close.starts_with("//")) {
+                    plan.all_movable = false;
+                    break;
+                }
                 if (body.find('#') != std::string::npos ||
-                    body.find('[') != std::string::npos ||
-                    body.find(']') != std::string::npos) {
+                    has_lambda_introducer(body)) {
                     plan.all_movable = false;
                     break;
                 }
                 if (std::regex_search(body, std::regex(R"(\b[A-Z_][A-Z0-9_]*\s*\()"))) {
                     plan.all_movable = false;
+                    break;
+                }
+                for (const auto& local_shadow_regex : local_shadow_regexes) {
+                    if (std::regex_search(body, local_shadow_regex)) {
+                        plan.all_movable = false;
+                        break;
+                    }
+                }
+                if (!plan.all_movable) {
                     break;
                 }
 
@@ -1317,12 +1411,19 @@ namespace bha::suggestions
                         "pimpl_->" + field_name
                     );
                 }
+                std::string raw_declaration;
+                for (std::size_t line_index = member.line; line_index <= close_line; ++line_index) {
+                    raw_declaration += lines[line_index];
+                    if (line_index < close_line) {
+                        raw_declaration.push_back('\n');
+                    }
+                }
 
                 plan.methods.push_back(InlinePrivateMethodMove{
                     .line = member.line,
-                    .raw_line = raw_line,
+                    .raw_declaration = std::move(raw_declaration),
                     .declaration_line = declaration,
-                    .source_definition = qualified_signature + " {" + rewritten_body + "}",
+                    .source_definition = qualified_signature + " {" + rewritten_body + "\n}",
                 });
             }
 
@@ -1702,7 +1803,7 @@ namespace bha::suggestions
             if (inline_move_plan.all_movable && !inline_move_plan.methods.empty()) {
                 for (auto& declaration : private_non_field_declarations) {
                     for (const auto& moved_method : inline_move_plan.methods) {
-                        if (declaration == moved_method.raw_line) {
+                        if (declaration == moved_method.raw_declaration) {
                             declaration = moved_method.declaration_line;
                         }
                     }
