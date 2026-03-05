@@ -93,13 +93,19 @@ def validate_fixture(
     print(f"  total suggestions: {len(suggestions)}")
     print(f"  pimpl suggestions: {len(pimpl_suggestions)}")
     if expected_application_mode != "tooling-rejection":
-        matching_pimpl = [
-            s for s in pimpl_suggestions
-            if s.get("application_mode") == expected_application_mode and not s.get("edits")
-        ]
+        if expected_application_mode == "direct-edits":
+            matching_pimpl = [
+                s for s in pimpl_suggestions
+                if s.get("application_mode") == expected_application_mode and s.get("edits")
+            ]
+        else:
+            matching_pimpl = [
+                s for s in pimpl_suggestions
+                if s.get("application_mode") == expected_application_mode and not s.get("edits")
+            ]
         print(f"  matching pimpl suggestions ({expected_application_mode}): {len(matching_pimpl)}")
         if not matching_pimpl:
-            print(f"error: expected a {expected_application_mode} PIMPL suggestion without direct edits")
+            print(f"error: expected a {expected_application_mode} PIMPL suggestion")
             return 1
 
     if expected_application_mode == "tooling-rejection":
@@ -157,8 +163,8 @@ def validate_fixture(
         print(f"error: bha-lsp binary not found: {server_path}")
         return 1
 
-    if expected_application_mode == "external-refactor":
-        print("[3/4] Applying the external PIMPL suggestion through the LSP...")
+    if expected_application_mode in {"external-refactor", "direct-edits"}:
+        print(f"[3/4] Applying the {expected_application_mode} PIMPL suggestion through the LSP...")
     else:
         print("[3/4] Validating the advisory PIMPL suggestion through the LSP...")
     client = LSPClient(
@@ -190,7 +196,7 @@ def validate_fixture(
             print(json.dumps(analysis, indent=2))
             return 1
 
-        if expected_application_mode == "external-refactor":
+        if expected_application_mode in {"external-refactor", "direct-edits"}:
             response = execute_command_with_timeout(
                 client,
                 "bha.applySuggestion",
@@ -203,7 +209,7 @@ def validate_fixture(
                 timeout_label="Apply suggestion",
             )
             if not response or "result" not in response or not response["result"].get("success"):
-                print("error: LSP failed to apply the external PIMPL suggestion")
+                print(f"error: LSP failed to apply the {expected_application_mode} PIMPL suggestion")
                 print(json.dumps(response, indent=2))
                 return 1
     finally:
@@ -212,14 +218,14 @@ def validate_fixture(
         finally:
             client.stop()
 
-    if expected_application_mode != "external-refactor":
+    if expected_application_mode not in {"external-refactor", "direct-edits"}:
         print(f"ok: advisory-only PIMPL suggestion validated for {fixture_name}")
         return 0
 
     print("[4/4] Rebuilding the rewritten temp project...")
     rebuild = run_cmd(["cmake", "--build", str(build_dir), "-j4"], cwd=project_root, timeout=timeout, capture=True)
     if rebuild.returncode != 0:
-        print("error: rebuild failed after applying the external PIMPL refactor")
+        print(f"error: rebuild failed after applying the {expected_application_mode} PIMPL refactor")
         print((rebuild.stdout or "")[-4000:])
         print((rebuild.stderr or "")[-4000:])
         return 1
@@ -227,15 +233,23 @@ def validate_fixture(
     header_text = (project_root / "include" / header_name).read_text(encoding="utf-8")
     source_candidates = sorted((project_root / "src").glob("*.cpp"))
     source_text = "\n".join(candidate.read_text(encoding="utf-8") for candidate in source_candidates)
+    normalized_header_text = header_text.replace("this->", "")
+    normalized_source_text = source_text.replace("this->", "")
     required_markers = [
         "struct Impl;",
         "std::unique_ptr<Impl> pimpl_;",
         *header_markers,
         *source_markers,
     ]
-    missing = [marker for marker in required_markers if marker not in header_text and marker not in source_text]
+    missing = [
+        marker for marker in required_markers
+        if marker not in header_text and
+        marker not in source_text and
+        marker not in normalized_header_text and
+        marker not in normalized_source_text
+    ]
     if missing:
-        print("error: rewritten files are missing expected external-refactor markers")
+        print("error: rewritten files are missing expected PIMPL markers")
         for marker in missing:
             print(f"  - {marker}")
         return 1
@@ -281,7 +295,7 @@ def main() -> int:
     fixtures = [
         {
             "fixture_name": "suggester_pimpl_external",
-            "expected_application_mode": "external-refactor",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external.hpp",
             "header_markers": [
                 "void update_total(int value);",
@@ -296,7 +310,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_multiline",
-            "expected_application_mode": "external-refactor",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_multiline.hpp",
             "header_markers": [
                 "void update_total(",
@@ -318,7 +332,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_copyable",
-            "expected_application_mode": "external-refactor",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_copyable.hpp",
             "header_markers": [
                 "WidgetExternalCopyable(const WidgetExternalCopyable&);",

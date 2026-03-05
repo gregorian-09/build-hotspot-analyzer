@@ -188,7 +188,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external",
-            "expected_mode": "external-refactor",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external.hpp",
             "source_name": "pimpl_widget_external.cpp",
             "class_name": "WidgetExternal",
@@ -196,7 +196,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_copyable",
-            "expected_mode": "external-refactor",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external_copyable.hpp",
             "source_name": "pimpl_widget_external_copyable.cpp",
             "class_name": "WidgetExternalCopyable",

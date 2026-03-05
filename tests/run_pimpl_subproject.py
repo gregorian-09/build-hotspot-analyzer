@@ -104,6 +104,25 @@ def apply_this_member_variant(project_root: Path) -> None:
     source_path.write_text(source_text, encoding="utf-8")
 
 
+def apply_inline_private_simple_variant(project_root: Path) -> None:
+    header_path = project_root / "include" / "pimpl_widget.hpp"
+    source_path = project_root / "src" / "pimpl_widget.cpp"
+
+    header_text = header_path.read_text(encoding="utf-8")
+    header_text = header_text.replace(
+        "private:\n",
+        "private:\n    int bias() const { return counters_.count(\"total\") ? counters_.at(\"total\") : expander_.value; }\n",
+    )
+    header_path.write_text(header_text, encoding="utf-8")
+
+    source_text = source_path.read_text(encoding="utf-8")
+    source_text = source_text.replace(
+        "    return sum + heavy::Fib<19>::value + expander_.value;\n",
+        "    return sum + heavy::Fib<19>::value + bias();\n",
+    )
+    source_path.write_text(source_text, encoding="utf-8")
+
+
 def validate_variant(
     repo_root: Path,
     bha_bin: Path,
@@ -264,6 +283,9 @@ def validate_variant(
     if label in {"copyable", "copy-defaulted"}:
         required_markers.append("Widget::Widget(const Widget& other)")
         required_markers.append("Widget& Widget::operator=(const Widget& other)")
+    if label == "inline-private-simple":
+        required_markers.append("int Widget::bias() const")
+        required_markers.append("pimpl_->counters_")
     if label == "copyable-noexcept":
         required_markers.append("Widget::Widget(const Widget& other) noexcept")
         required_markers.append("Widget& Widget::operator=(const Widget& other) noexcept")
@@ -311,6 +333,7 @@ def main() -> int:
         ("copyable", apply_copyable_variant, True),
         ("copyable-noexcept", apply_copyable_noexcept_variant, True),
         ("this-member", apply_this_member_variant, True),
+        ("inline-private-simple", apply_inline_private_simple_variant, True),
         ("copy-defaulted", apply_copy_defaulted_variant, True),
         ("shadowed-local", apply_shadowed_local_variant, False),
         ("lambda-body", apply_lambda_variant, False),

@@ -196,7 +196,6 @@ namespace bha::suggestions
                        has_virtual_members ||
                        has_private_inline_method_bodies ||
                        has_macro_generated_private_declarations ||
-                       has_private_methods ||
                        has_preprocessor_in_class;
             }
 
@@ -233,6 +232,19 @@ namespace bha::suggestions
             bool has_virtual_members = false;
             bool has_private_inline_method_bodies = false;
             bool has_macro_generated_private_declarations = false;
+        };
+
+        struct InlinePrivateMethodMove {
+            std::size_t line = 0;
+            std::string raw_line;
+            std::string declaration_line;
+            std::string source_definition;
+        };
+
+        struct InlinePrivateMethodMovePlan {
+            bool saw_inline_method_body = false;
+            bool all_movable = true;
+            std::vector<InlinePrivateMethodMove> methods;
         };
 
         std::vector<std::string> load_compile_command_args(
@@ -563,11 +575,11 @@ namespace bha::suggestions
                     member.is_private = true;
                     member.is_method = false;
                     std::smatch match;
-                    if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* col:\d+ ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
+                    if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
                         member.line = std::stoul(match[1].str());
                         member.name = match[2].str();
                         member.type = match[3].str();
-                    } else if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <line:(\d+):\d+.* col:\d+ ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
+                    } else if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
                         member.line = std::stoul(match[1].str());
                         member.name = match[2].str();
                         member.type = match[3].str();
@@ -661,6 +673,11 @@ namespace bha::suggestions
 
             return false;
         }
+
+        InlinePrivateMethodMovePlan plan_inline_private_method_moves(
+            const ClassInfo& class_info,
+            const fs::path& header_file
+        );
 
         PIMPLRefactorReadiness assess_pimpl_readiness(
             const SuggestionContext& context,
@@ -805,6 +822,13 @@ namespace bha::suggestions
             } else if (const std::regex preprocessor_regex(R"(^\s*#)", std::regex_constants::multiline);
                        std::regex_search(content, preprocessor_regex)) {
                 readiness.has_preprocessor_in_class = true;
+            }
+
+            if (readiness.has_private_inline_method_bodies) {
+                const auto inline_move_plan = plan_inline_private_method_moves(*class_info, header_file);
+                if (inline_move_plan.saw_inline_method_body && inline_move_plan.all_movable) {
+                    readiness.has_private_inline_method_bodies = false;
+                }
             }
 
             return readiness;
@@ -1183,6 +1207,131 @@ namespace bha::suggestions
             return unique;
         }
 
+        InlinePrivateMethodMovePlan plan_inline_private_method_moves(
+            const ClassInfo& class_info,
+            const fs::path& header_file
+        ) {
+            InlinePrivateMethodMovePlan plan;
+
+            std::ifstream in(header_file);
+            if (!in) {
+                plan.all_movable = false;
+                return plan;
+            }
+
+            std::vector<std::string> lines;
+            lines.emplace_back();
+            for (std::string line; std::getline(in, line); ) {
+                lines.push_back(std::move(line));
+            }
+
+            std::unordered_set<std::string> private_fields;
+            for (const auto& member : class_info.members) {
+                if (member.is_private && !member.is_method && !member.name.empty()) {
+                    private_fields.insert(member.name);
+                }
+            }
+
+            std::unordered_set<std::size_t> seen_lines;
+            const std::regex blocked_signature_regex(
+                R"(\b(template|constexpr|consteval|constinit|operator|friend|virtual)\b)"
+            );
+
+            for (const auto& member : class_info.members) {
+                if (!member.is_private || !member.is_method || member.name.empty() || member.line == 0) {
+                    continue;
+                }
+                if (!seen_lines.insert(member.line).second) {
+                    continue;
+                }
+                if (member.line >= lines.size()) {
+                    continue;
+                }
+
+                const std::string& raw_line = lines[member.line];
+                const auto open_brace = raw_line.find('{');
+                if (open_brace == std::string::npos) {
+                    continue;
+                }
+
+                plan.saw_inline_method_body = true;
+
+                const auto close_brace = raw_line.rfind('}');
+                if (close_brace == std::string::npos ||
+                    close_brace <= open_brace ||
+                    raw_line.find('{', open_brace + 1) != std::string::npos) {
+                    plan.all_movable = false;
+                    break;
+                }
+
+                const std::string signature = raw_line.substr(0, open_brace);
+                const std::string body = raw_line.substr(open_brace + 1, close_brace - open_brace - 1);
+                if (signature.find(member.name + "(") == std::string::npos ||
+                    std::regex_search(signature, blocked_signature_regex)) {
+                    plan.all_movable = false;
+                    break;
+                }
+                if (body.find('#') != std::string::npos ||
+                    body.find('[') != std::string::npos ||
+                    body.find(']') != std::string::npos) {
+                    plan.all_movable = false;
+                    break;
+                }
+                if (std::regex_search(body, std::regex(R"(\b[A-Z_][A-Z0-9_]*\s*\()"))) {
+                    plan.all_movable = false;
+                    break;
+                }
+
+                std::string declaration = signature;
+                if (const auto first = declaration.find_first_not_of(" \t");
+                    first != std::string::npos &&
+                    declaration.compare(first, 7, "inline ") == 0) {
+                    declaration.erase(first, 7);
+                }
+                while (!declaration.empty() &&
+                       std::isspace(static_cast<unsigned char>(declaration.back()))) {
+                    declaration.pop_back();
+                }
+                declaration += ";";
+
+                std::string qualified_signature = declaration;
+                if (!qualified_signature.empty() && qualified_signature.back() == ';') {
+                    qualified_signature.pop_back();
+                }
+                const auto method_pos = qualified_signature.find(member.name + "(");
+                if (method_pos == std::string::npos) {
+                    plan.all_movable = false;
+                    break;
+                }
+                qualified_signature.replace(
+                    method_pos,
+                    member.name.size(),
+                    class_info.name + "::" + member.name
+                );
+
+                std::string rewritten_body = body;
+                for (const auto& field_name : private_fields) {
+                    rewritten_body = std::regex_replace(
+                        rewritten_body,
+                        std::regex("\\b" + field_name + "\\b"),
+                        "pimpl_->" + field_name
+                    );
+                }
+
+                plan.methods.push_back(InlinePrivateMethodMove{
+                    .line = member.line,
+                    .raw_line = raw_line,
+                    .declaration_line = declaration,
+                    .source_definition = qualified_signature + " {" + rewritten_body + "}",
+                });
+            }
+
+            if (plan.saw_inline_method_body && plan.methods.empty()) {
+                plan.all_movable = false;
+            }
+            return plan;
+        }
+
         struct StrictPimplEligibility {
             bool copy_ctor_declared = false;
             bool copy_assign_declared = false;
@@ -1545,7 +1694,20 @@ namespace bha::suggestions
                 ));
             }
 
-            const auto private_non_field_declarations = collect_private_non_field_declarations(class_info, header_file);
+            auto private_non_field_declarations = collect_private_non_field_declarations(class_info, header_file);
+            const auto inline_move_plan = plan_inline_private_method_moves(class_info, header_file);
+            if (inline_move_plan.saw_inline_method_body && !inline_move_plan.all_movable) {
+                return std::nullopt;
+            }
+            if (inline_move_plan.all_movable && !inline_move_plan.methods.empty()) {
+                for (auto& declaration : private_non_field_declarations) {
+                    for (const auto& moved_method : inline_move_plan.methods) {
+                        if (declaration == moved_method.raw_line) {
+                            declaration = moved_method.declaration_line;
+                        }
+                    }
+                }
+            }
 
             const std::size_t private_section_end_line = find_private_section_end_line(
                 class_info,
@@ -1635,6 +1797,9 @@ namespace bha::suggestions
                 impl_def << "    }\n";
                 impl_def << "    return *this;\n";
                 impl_def << "}\n\n";
+            }
+            for (const auto& moved_method : inline_move_plan.methods) {
+                impl_def << moved_method.source_definition << "\n\n";
             }
             TextEdit add_impl;
             add_impl.file = source_file;
@@ -1801,6 +1966,7 @@ namespace bha::suggestions
             std::size_t line_no = 0;
             bool in_private = false;
             std::size_t last_private_line = class_info.private_section_line;
+            int nested_brace_depth = 0;
             std::string line;
             while (std::getline(in, line)) {
                 ++line_no;
@@ -1824,11 +1990,18 @@ namespace bha::suggestions
                     continue;
                 }
 
-                if (is_other_access) {
+                if (is_other_access && nested_brace_depth == 0) {
                     break;
                 }
-                if (trimmed == "};" || trimmed == "}") {
+                if ((trimmed == "};" || trimmed == "}") && nested_brace_depth == 0) {
                     break;
+                }
+
+                const int open_braces = static_cast<int>(std::count(trimmed.begin(), trimmed.end(), '{'));
+                const int close_braces = static_cast<int>(std::count(trimmed.begin(), trimmed.end(), '}'));
+                nested_brace_depth += open_braces - close_braces;
+                if (nested_brace_depth < 0) {
+                    nested_brace_depth = 0;
                 }
                 last_private_line = line_no;
             }
