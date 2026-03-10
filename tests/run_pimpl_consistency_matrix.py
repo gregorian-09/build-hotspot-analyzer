@@ -110,6 +110,20 @@ def validate_fixture(
         print(f"error: expected a PIMPL suggestion with application_mode={expected_mode}")
         print(json.dumps(pimpl_suggestions, indent=2))
         return 1
+    if expected_mode == "advisory":
+        advisory = matching[0]
+        if not advisory.get("application_summary"):
+            print("error: advisory suggestion missing application_summary")
+            print(json.dumps(advisory, indent=2))
+            return 1
+        if not advisory.get("application_guidance"):
+            print("error: advisory suggestion missing application_guidance")
+            print(json.dumps(advisory, indent=2))
+            return 1
+        if not advisory.get("auto_apply_blocked_reason"):
+            print("error: advisory suggestion missing auto_apply_blocked_reason")
+            print(json.dumps(advisory, indent=2))
+            return 1
 
     print(f"[{fixture_name}] bha-refactor outcome")
     refactor = run_cmd([
@@ -130,6 +144,7 @@ def validate_fixture(
     result = extract_json_object(refactor.stdout)
     replacements = result.get("replacements", [])
     refactor_success = bool(result.get("success"))
+    diagnostics = result.get("diagnostics", [])
 
     if refactor_success != expect_refactor_success:
         print("error: refactor success did not match expected matrix outcome")
@@ -145,6 +160,15 @@ def validate_fixture(
         print("error: rejected refactor returned replacements")
         print(json.dumps(result, indent=2))
         return 1
+    if not expect_refactor_success:
+        if not diagnostics:
+            print("error: rejected refactor returned no diagnostics")
+            print(json.dumps(result, indent=2))
+            return 1
+        if not any((diag.get("message") or "").strip() for diag in diagnostics if isinstance(diag, dict)):
+            print("error: rejected refactor diagnostics are missing messages")
+            print(json.dumps(result, indent=2))
+            return 1
 
     print(
         f"ok: {fixture_name} => application_mode={expected_mode}, "
@@ -204,7 +228,7 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_explicit_copy",
-            "expected_mode": "advisory",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external_explicit_copy.hpp",
             "source_name": "pimpl_widget_external_explicit_copy.cpp",
             "class_name": "WidgetExternalExplicitCopy",
@@ -212,18 +236,58 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_inheritance",
-            "expected_mode": "advisory",
+            "expected_mode": "direct-edits",
             "header_name": "pimpl_widget_external_inheritance.hpp",
             "source_name": "pimpl_widget_external_inheritance.cpp",
             "class_name": "WidgetExternalInheritance",
             "expect_refactor_success": False,
         },
         {
+            "fixture_name": "suggester_pimpl_external_inheritance_nontrivial",
+            "expected_mode": "direct-edits",
+            "header_name": "pimpl_widget_external_inheritance_nontrivial.hpp",
+            "source_name": "pimpl_widget_external_inheritance_nontrivial.cpp",
+            "class_name": "WidgetExternalInheritanceNontrivial",
+            "expect_refactor_success": False,
+        },
+        {
             "fixture_name": "suggester_pimpl_external_template",
-            "expected_mode": "advisory",
+            "expected_mode": "direct-edits",
             "header_name": "widgettemplate.hpp",
             "source_name": "widgettemplate.cpp",
             "class_name": "Widgettemplate",
+            "expect_refactor_success": False,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_safe",
+            "expected_mode": "direct-edits",
+            "header_name": "widgettemplatesafe.hpp",
+            "source_name": "widgettemplatesafe.cpp",
+            "class_name": "Widgettemplatesafe",
+            "expect_refactor_success": False,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_copydeclared",
+            "expected_mode": "direct-edits",
+            "header_name": "widgettemplatecopydeclared.hpp",
+            "source_name": "widgettemplatecopydeclared.cpp",
+            "class_name": "Widgettemplatecopydeclared",
+            "expect_refactor_success": False,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_multitype",
+            "expected_mode": "direct-edits",
+            "header_name": "widgettemplatemultitype.hpp",
+            "source_name": "widgettemplatemultitype.cpp",
+            "class_name": "Widgettemplatemultitype",
+            "expect_refactor_success": False,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_multiline_decl",
+            "expected_mode": "direct-edits",
+            "header_name": "widgettemplatemultilinedecl.hpp",
+            "source_name": "widgettemplatemultilinedecl.cpp",
+            "class_name": "Widgettemplatemultilinedecl",
             "expect_refactor_success": False,
         },
         {

@@ -4,6 +4,8 @@
 
 #include "bha/suggestions/header_split_suggester.hpp"
 
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace bha::suggestions
@@ -12,9 +14,26 @@ namespace bha::suggestions
     protected:
         void SetUp() override {
             suggester_ = std::make_unique<HeaderSplitSuggester>();
+            temp_root_ = std::filesystem::temp_directory_path() / "bha-header-split-test";
+            std::error_code ec;
+            std::filesystem::remove_all(temp_root_, ec);
+            std::filesystem::create_directories(temp_root_, ec);
+        }
+
+        void TearDown() override {
+            std::error_code ec;
+            std::filesystem::remove_all(temp_root_, ec);
+        }
+
+        static void write_file(const std::filesystem::path& path, const std::string& content) {
+            std::filesystem::create_directories(path.parent_path());
+            std::ofstream out(path);
+            ASSERT_TRUE(out.good());
+            out << content;
         }
 
         std::unique_ptr<HeaderSplitSuggester> suggester_;
+        std::filesystem::path temp_root_;
     };
 
     TEST_F(HeaderSplitSuggesterTest, Name) {
@@ -34,7 +53,7 @@ namespace bha::suggestions
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
 
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
@@ -54,7 +73,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -82,7 +101,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -103,7 +122,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         const SuggesterOptions options;
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -141,7 +160,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(impl_header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -161,7 +180,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(source);
 
         const SuggesterOptions options;
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -188,7 +207,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(big_header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -234,7 +253,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(low_header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -259,5 +278,93 @@ namespace bha::suggestions
         EXPECT_EQ(priorities["high"], Priority::High);
         EXPECT_EQ(priorities["medium"], Priority::Medium);
         EXPECT_EQ(priorities["low"], Priority::Low);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, GeneratesDirectEditsForForwardDeclSplit) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "monolith.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "struct Config {\n"
+            "    int value;\n"
+            "};\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_TRUE(suggestion.is_safe);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_TRUE(std::ranges::any_of(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file.filename() == "monolith_fwd.hpp" &&
+                   edit.new_text.find("class Widget;") != std::string::npos;
+        }));
+        EXPECT_TRUE(std::ranges::any_of(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file == header_path &&
+                   edit.new_text.find("#include \"monolith_fwd.hpp\"") != std::string::npos;
+        }));
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, SkipsHeaderWithExistingForwardCompanionInclude) {
+        BuildTrace trace;
+
+        const auto header_path = temp_root_ / "monolith.hpp";
+        const auto fwd_path = temp_root_ / "monolith_fwd.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "#include \"monolith_fwd.hpp\"\n"
+            "namespace demo {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            fwd_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget;\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
     }
 }

@@ -274,7 +274,13 @@ class OptimizationComparison:
 
 def main():
     script_dir = Path(__file__).parent
-    bha_lsp_path = script_dir.parent / "cmake-build-debug" / "bha-lsp"
+    repo_root = script_dir.parent
+    candidates = [
+        repo_root / "build" / "lsp" / "bha-lsp",
+        repo_root / "build" / "bha-lsp",
+        repo_root / "cmake-build-debug" / "bha-lsp",
+    ]
+    bha_lsp_path = next((path for path in candidates if path.exists()), candidates[0])
     test_root = script_dir / "cli"
 
     if not bha_lsp_path.exists():

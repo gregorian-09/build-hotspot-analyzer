@@ -86,6 +86,7 @@ namespace bha::analyzers {
         ASSERT_NE(it, templates.end());
         EXPECT_EQ(it->instantiation_count, 5u);
         EXPECT_TRUE(it->total_time == std::chrono::milliseconds(900));
+        EXPECT_EQ(it->files_using.size(), 2u);
     }
 
     TEST_F(TemplateAnalyzerTest, TemplatesSortedByTime) {

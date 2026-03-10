@@ -1,0 +1,150 @@
+[
+  {
+    "id": "pimpl-4259c2d8dea0974a-pimpl_widget.cpp",
+    "type": "PIMPL Pattern",
+    "priority": "Critical",
+    "confidence": 0.877915,
+    "title": "Consider PIMPL pattern for pimpl_widget.cpp",
+    "description": "File '/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp' takes 6437ms to compile (6124ms frontend) and has 164 direct includes. Its header is included by 2 other files. The PIMPL idiom could reduce compile-time coupling and improve incremental build times.",
+    "rationale": "The PIMPL (Pointer to Implementation) pattern hides class implementation details behind an opaque pointer. Benefits include:\n1. Reduced compile-time dependencies - changes to private members don't trigger recompilation of dependents\n2. Faster incremental builds - header changes don't cascade\n3. Binary compatibility - implementation changes don't break ABI\n4. Reduced header pollution - heavy includes move to .cpp\n\nThis file has a high frontend-to-total compile time ratio, indicating significant time spent on parsing and template instantiation that PIMPL can help reduce.",
+    "estimated_savings_ns": 1682052866,
+    "estimated_savings_percent": 14.7216,
+    "is_safe": true,
+    "application_mode": "direct-edits",
+    "refactor_class_name": "Widget",
+    "refactor_compile_commands_path": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/build/compile_commands.json",
+    "application_summary": "Auto-apply via direct text edits",
+    "application_guidance": "BHA can apply concrete text edits, rebuild-validate the result, and roll back from backup if validation fails.",
+    "target_file": {
+      "path": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+      "line_start": 12,
+      "line_end": 32,
+      "action": "MODIFY"
+    },
+    "secondary_files": [
+      {
+        "path": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/include/pimpl_widget.hpp",
+        "line_start": 12,
+        "action": "MODIFY"
+      }
+    ],
+    "before_code": {
+      "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/include/pimpl_widget.hpp",
+      "line": 0,
+      "code": "// pimpl_widget.hpp\n#pragma once\n#include <heavy_dependency.h>\n#include <another_heavy_dep.h>\n\nclass MyClass {\npublic:\n    void do_something();\n\nprivate:\n    HeavyDep member1_;\n    AnotherDep member2_;\n};"
+    },
+    "after_code": {
+      "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/include/pimpl_widget.hpp",
+      "line": 0,
+      "code": "// Prototype header sketch for pimpl_widget.hpp\nclass Widget {\npublic:\n    Widget();\n    ~Widget();\n    Widget(const Widget&) = delete;\n    Widget& operator=(const Widget&) = delete;\n    void add_value(int value);\n    int total() const;\n    std::string label() const;\n    Widget(Widget&&) noexcept;\n    Widget& operator=(Widget&&) noexcept;\n\nprivate:\n    struct Impl;\n    std::unique_ptr<Impl> pimpl_;\n};\n\n// Prototype source sketch for pimpl_widget.cpp\nstruct Widget::Impl {\n    std::string label_;\n    std::vector<int> values_;\n    std::map<std::string, int> counters_;\n    std::unordered_map<std::string, int> fast_lookup_;\n    heavy::Expander<160> expander_;\n    heavy::Expander<220> expander2_;\n    heavy::HeavySeq900 seq_;\n    heavy::MakeSeq<768>::type seq2_;\n};\n\nWidget::Widget()\n    : pimpl_(std::make_unique<Impl>()) {}\nWidget::~Widget() = default;\nWidget::Widget(Widget&&) noexcept = default;\nWidget& Widget::operator=(Widget&&) noexcept = default;\n"
+    },
+    "edits": [
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/include/pimpl_widget.hpp",
+        "start_line": 8,
+        "start_col": 0,
+        "end_line": 8,
+        "end_col": 0,
+        "new_text": "#include <memory>\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/include/pimpl_widget.hpp",
+        "start_line": 22,
+        "start_col": 0,
+        "end_line": 31,
+        "end_col": 0,
+        "new_text": "private:\n    struct Impl;\n    std::unique_ptr<Impl> pimpl_;\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 16,
+        "start_col": 0,
+        "end_line": 17,
+        "end_col": 0,
+        "new_text": "Widget::Widget() : pimpl_(std::make_unique<Impl>()) {}\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 16,
+        "start_col": 0,
+        "end_line": 16,
+        "end_col": 0,
+        "new_text": "struct Widget::Impl {\n    std::string label_;\n    std::vector<int> values_;\n    std::map<std::string, int> counters_;\n    std::unordered_map<std::string, int> fast_lookup_;\n    heavy::Expander<160> expander_;\n    heavy::Expander<220> expander2_;\n    heavy::HeavySeq900 seq_;\n    heavy::MakeSeq<768>::type seq2_;\n};\n\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 20,
+        "start_col": 0,
+        "end_line": 21,
+        "end_col": 0,
+        "new_text": "    pimpl_->values_.push_back(value);\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 21,
+        "start_col": 0,
+        "end_line": 22,
+        "end_col": 0,
+        "new_text": "    pimpl_->counters_[\"total\"] += value;\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 22,
+        "start_col": 0,
+        "end_line": 23,
+        "end_col": 0,
+        "new_text": "    pimpl_->fast_lookup_[\"total\"] = pimpl_->counters_[\"total\"];\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 27,
+        "start_col": 0,
+        "end_line": 28,
+        "end_col": 0,
+        "new_text": "    for (int value : pimpl_->values_) {\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 153,
+        "start_col": 0,
+        "end_line": 154,
+        "end_col": 0,
+        "new_text": "    return sum + heavy::Fib<19>::value + pimpl_->expander_.value;\n"
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp",
+        "start_line": 157,
+        "start_col": 0,
+        "end_line": 158,
+        "end_col": 0,
+        "new_text": "    return pimpl_->label_ + std::to_string(pimpl_->expander_.value);\n"
+      }
+    ],
+    "implementation_steps": [
+      "Review the class API and confirm it is a good PIMPL candidate",
+      "Declare an out-of-line destructor before introducing std::unique_ptr<Impl>",
+      "Move private data members into an Impl type defined in the source file",
+      "Update member functions to access private state via the implementation object",
+      "Preserve or explicitly redefine copy and move semantics as needed",
+      "Rebuild and verify all dependent files compile correctly"
+    ],
+    "impact": {
+      "total_files_affected": 3,
+      "cumulative_savings_ns": 1682052866,
+      "rebuild_files_count": 1
+    },
+    "caveats": [
+      "Adds heap allocation (minor memory and CPU overhead)",
+      "std::unique_ptr<Impl> requires the implementation type to be complete where destruction happens",
+      "Class becomes non-copyable by default (implement or explicitly delete copy operations as needed)",
+      "Debugging requires stepping into Impl (use debugger pretty-printers)",
+      "Automatic refactoring is only enabled for a narrow, compile-validated subset of classes",
+      "Not suitable for header-only libraries",
+      "Performance-critical inner loops may prefer direct access",
+      "Copy semantics are present and must be preserved explicitly in any future automated rewrite",
+      "This class matches the current strict compile-validated automatic refactor subset"
+    ],
+    "verification": "1. Rebuild the project and verify compilation succeeds\n2. Run the test suite to verify functionality\n3. Measure incremental build time after changing a private member\n4. Profile runtime performance if this is a hot code path",
+    "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_pimpl/src/pimpl_widget.cpp"
+  }
+]

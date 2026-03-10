@@ -1,0 +1,4 @@
+id=20260227-232854-1
+timestamp=1772231334
+file_count=1
+file=/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file29.cpp

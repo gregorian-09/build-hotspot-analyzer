@@ -6,6 +6,8 @@
 #include "bha/analyzers/dependency_analyzer.hpp"
 
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <fstream>
 
 namespace bha::analyzers
 {
@@ -164,5 +166,67 @@ namespace bha::analyzers
         const auto result = analyzer_->analyze(trace, options);
 
         ASSERT_TRUE(result.is_ok());
+    }
+
+    TEST_F(DependencyAnalyzerTest, DetectsCircularDependenciesFromHeaders) {
+        const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+        const fs::path temp_dir = fs::temp_directory_path() / ("bha-deps-cycle-" + std::to_string(stamp));
+        ASSERT_TRUE(fs::create_directories(temp_dir));
+
+        const fs::path a_header = temp_dir / "a.h";
+        const fs::path b_header = temp_dir / "b.h";
+        const fs::path source = temp_dir / "main.cpp";
+
+        {
+            std::ofstream out(a_header);
+            ASSERT_TRUE(out.good());
+            out << "#pragma once\n";
+            out << "struct B;\n";
+            out << "#include \"b.h\"\n";
+            out << "struct A { B* ptr; };\n";
+        }
+        {
+            std::ofstream out(b_header);
+            ASSERT_TRUE(out.good());
+            out << "#pragma once\n";
+            out << "struct A;\n";
+            out << "#include \"a.h\"\n";
+            out << "struct B { A* ptr; };\n";
+        }
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "#include \"a.h\"\n";
+            out << "int main() { return 0; }\n";
+        }
+
+        BuildTrace trace;
+        trace.id = "test-header-cycle";
+
+        CompilationUnit unit;
+        unit.source_file = source;
+        unit.includes = {
+            {a_header, std::chrono::milliseconds(10), 1, {}, {}},
+            {b_header, std::chrono::milliseconds(10), 2, {}, {}},
+        };
+        trace.units = {unit};
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& cycles = result.value().dependencies.circular_dependencies;
+        EXPECT_FALSE(cycles.empty());
+
+        const bool has_expected_pair = std::any_of(cycles.begin(), cycles.end(), [&](const auto& edge) {
+            const fs::path from = edge.first.lexically_normal();
+            const fs::path to = edge.second.lexically_normal();
+            return (from == a_header.lexically_normal() && to == b_header.lexically_normal()) ||
+                   (from == b_header.lexically_normal() && to == a_header.lexically_normal());
+        });
+        EXPECT_TRUE(has_expected_pair);
+
+        std::error_code ec;
+        fs::remove_all(temp_dir, ec);
     }
 }

@@ -1,0 +1,238 @@
+[
+  {
+    "id": "unused-explicit-f113aa26c592bb03-unused_direct.hpp",
+    "type": "Include Removal",
+    "priority": "High",
+    "confidence": 0.98,
+    "title": "Remove unused include of unused_direct.hpp",
+    "description": "clang-tidy misc-include-cleaner reported 'unused_direct.hpp' as unused in 25 translation units.",
+    "rationale": "This edit is based on explicit semantic diagnostics from clang-tidy, not include frequency alone.",
+    "estimated_savings_ns": 10024370000,
+    "estimated_savings_percent": 23.1149,
+    "is_safe": true,
+    "target_file": {
+      "path": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file29.cpp",
+      "line_start": 1,
+      "line_end": 1,
+      "action": "MODIFY"
+    },
+    "edits": [
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file29.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file28.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file3.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file27.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file24.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file23.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file25.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file22.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file21.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file1.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file10.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file19.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file11.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file12.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file31.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file13.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file30.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file16.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file18.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file17.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file14.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file2.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file26.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file15.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      },
+      {
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file20.cpp",
+        "start_line": 0,
+        "start_col": 0,
+        "end_line": 1,
+        "end_col": 0,
+        "new_text": ""
+      }
+    ],
+    "implementation_steps": [
+      "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
+      "Rebuild and run tests",
+      "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
+    ],
+    "impact": {
+      "total_files_affected": 25,
+      "cumulative_savings_ns": 10024370000,
+      "rebuild_files_count": 0
+    },
+    "caveats": [
+      "Diagnostics reflect the active compile_commands.json configuration",
+      "Conditionally compiled includes may still be needed in other build variants"
+    ],
+    "verification": "Compile all supported targets after applying the edits",
+    "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/subprojects/suggester_include_removal/src/file29.cpp"
+  }
+]

@@ -4,6 +4,8 @@
 
 #include "bha/suggestions/pch_suggester.hpp"
 
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace bha::suggestions
@@ -34,7 +36,7 @@ namespace bha::suggestions
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
 
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
@@ -56,7 +58,7 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -82,12 +84,98 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(PCHSuggesterTest, CMakeTargetSelectionUsesCompileUnitHints) {
+        namespace fs = std::filesystem;
+        const fs::path project_root = fs::temp_directory_path() / "bha_pch_target_selection_test";
+        std::error_code ec;
+        fs::remove_all(project_root, ec);
+        fs::create_directories(project_root / "include");
+        fs::create_directories(project_root / "src");
+        fs::create_directories(project_root / "tests");
+
+        {
+            std::ofstream cmake(project_root / "CMakeLists.txt");
+            cmake << "cmake_minimum_required(VERSION 3.20)\n"
+                  << "project(pch_target_selection LANGUAGES CXX)\n"
+                  << "add_executable(GTest tests/test_main.cpp)\n"
+                  << "add_library(core src/core.cpp)\n";
+        }
+        {
+            std::ofstream core_src(project_root / "src" / "core.cpp");
+            core_src << "#include \"heavy.hpp\"\n";
+        }
+        {
+            std::ofstream test_src(project_root / "tests" / "test_main.cpp");
+            test_src << "int main(){return 0;}\n";
+        }
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(8);
+        trace.build_system = BuildSystemType::CMake;
+
+        CompilationUnit core_unit;
+        core_unit.source_file = project_root / "src" / "core.cpp";
+        core_unit.command_line = {
+            "clang++",
+            "-c",
+            "-o",
+            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
+            core_unit.source_file.string()
+        };
+        trace.units.push_back(core_unit);
+
+        CompilationUnit test_unit;
+        test_unit.source_file = project_root / "tests" / "test_main.cpp";
+        test_unit.command_line = {
+            "clang++",
+            "-c",
+            "-o",
+            (project_root / "build" / "CMakeFiles" / "GTest.dir" / "tests" / "test_main.cpp.o").string(),
+            test_unit.source_file.string()
+        };
+        trace.units.push_back(test_unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = project_root / "include" / "heavy.hpp";
+        header.total_parse_time = std::chrono::milliseconds(1200);
+        header.inclusion_count = 20;
+        header.including_files = 12;
+        header.is_stable = true;
+        header.is_external = false;
+        header.included_by = {project_root / "src" / "core.cpp"};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, project_root};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto cmake_edit = std::find_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [&](const TextEdit& edit) {
+                return edit.file == (project_root / "CMakeLists.txt");
+            }
+        );
+        ASSERT_NE(cmake_edit, suggestion.edits.end());
+        EXPECT_NE(cmake_edit->new_text.find("target_precompile_headers(core PRIVATE"),
+                  std::string::npos);
+        EXPECT_EQ(cmake_edit->new_text.find("target_precompile_headers(GTest PRIVATE"),
+                  std::string::npos);
+
+        fs::remove_all(project_root, ec);
     }
 }

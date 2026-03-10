@@ -186,14 +186,27 @@ def validate_fixture(
         if not analysis:
             return 1
 
-        matching_ids = [
-            suggestion["id"]
+        matching_suggestions = [
+            suggestion
             for suggestion in analysis.get("suggestions", [])
             if "PIMPL" in suggestion.get("title", "") and suggestion.get("applicationMode") == expected_application_mode
         ]
-        if not matching_ids:
+        if not matching_suggestions:
             print(f"error: LSP analysis did not surface a {expected_application_mode} PIMPL suggestion")
             print(json.dumps(analysis, indent=2))
+            return 1
+        selected_suggestion = matching_suggestions[0]
+        if not selected_suggestion.get("applicationSummary"):
+            print("error: LSP suggestion missing applicationSummary")
+            print(json.dumps(selected_suggestion, indent=2))
+            return 1
+        if not selected_suggestion.get("applicationGuidance"):
+            print("error: LSP suggestion missing applicationGuidance")
+            print(json.dumps(selected_suggestion, indent=2))
+            return 1
+        if expected_application_mode == "advisory" and not selected_suggestion.get("autoApplyBlockedReason"):
+            print("error: advisory LSP suggestion missing autoApplyBlockedReason")
+            print(json.dumps(selected_suggestion, indent=2))
             return 1
 
         if expected_application_mode in {"external-refactor", "direct-edits"}:
@@ -201,7 +214,7 @@ def validate_fixture(
                 client,
                 "bha.applySuggestion",
                 [{
-                    "suggestionId": matching_ids[0],
+                    "suggestionId": selected_suggestion["id"],
                     "skipConsent": True,
                     "skipRebuild": False,
                 }],
@@ -352,26 +365,135 @@ def main() -> int:
         },
         {
             "fixture_name": "suggester_pimpl_external_explicit_copy",
-            "expected_application_mode": "advisory",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_explicit_copy.hpp",
-            "header_markers": [],
-            "source_markers": [],
+            "header_markers": [
+                "WidgetExternalExplicitCopy(const WidgetExternalExplicitCopy&);",
+                "WidgetExternalExplicitCopy& operator=(const WidgetExternalExplicitCopy&);",
+            ],
+            "source_markers": [
+                "struct WidgetExternalExplicitCopy::Impl {",
+                "WidgetExternalExplicitCopy::WidgetExternalExplicitCopy(const WidgetExternalExplicitCopy& other) : pimpl_(std::make_unique<Impl>()) {",
+                "pimpl_->label_ = other.pimpl_->label_ + \"-copy\";",
+                "WidgetExternalExplicitCopy& WidgetExternalExplicitCopy::operator=(const WidgetExternalExplicitCopy& other) {",
+                "if (!other.pimpl_) {",
+                "pimpl_.reset();",
+                "if (!pimpl_) {",
+                "pimpl_ = std::make_unique<Impl>();",
+                "pimpl_->label_ = other.pimpl_->label_ + \"-assign\";",
+            ],
             "executable_name": None,
         },
         {
             "fixture_name": "suggester_pimpl_external_inheritance",
-            "expected_application_mode": "advisory",
+            "expected_application_mode": "direct-edits",
             "header_name": "pimpl_widget_external_inheritance.hpp",
-            "header_markers": [],
-            "source_markers": [],
+            "header_markers": [
+                "int total() const override;",
+            ],
+            "source_markers": [
+                "struct WidgetExternalInheritance::Impl {",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + use_expander<180>() + use_expander<220>() + pimpl_->expander_.value;",
+            ],
+            "executable_name": None,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_inheritance_nontrivial",
+            "expected_application_mode": "direct-edits",
+            "header_name": "pimpl_widget_external_inheritance_nontrivial.hpp",
+            "header_markers": [
+                "int total() const override;",
+                "std::string label() const override;",
+            ],
+            "source_markers": [
+                "struct WidgetExternalInheritanceNontrivial::Impl {",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + use_expander<180>() + use_expander<228>() + pimpl_->expander_.value;",
+            ],
             "executable_name": None,
         },
         {
             "fixture_name": "suggester_pimpl_external_template",
-            "expected_application_mode": "advisory",
+            "expected_application_mode": "direct-edits",
             "header_name": "widgettemplate.hpp",
-            "header_markers": [],
-            "source_markers": [],
+            "header_markers": [
+                "Widgettemplate(const Widgettemplate&);",
+                "Widgettemplate& operator=(const Widgettemplate&);",
+            ],
+            "source_markers": [
+                "struct Widgettemplate<Tag>::Impl {",
+                "Widgettemplate<Tag>::Widgettemplate(const Widgettemplate<Tag>& other)",
+                "Widgettemplate<Tag>& Widgettemplate<Tag>::operator=(const Widgettemplate<Tag>& other)",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + type_bias + static_cast<int>(pimpl_->queue_.size()) + static_cast<int>(pimpl_->list_.size()) +",
+            ],
+            "executable_name": None,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_safe",
+            "expected_application_mode": "direct-edits",
+            "header_name": "widgettemplatesafe.hpp",
+            "header_markers": [
+                "Widgettemplatesafe(const Widgettemplatesafe&) = delete;",
+                "Widgettemplatesafe& operator=(const Widgettemplatesafe&) = delete;",
+            ],
+            "source_markers": [
+                "struct Widgettemplatesafe<Tag>::Impl {",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + type_bias + static_cast<int>(pimpl_->queue_.size()) + static_cast<int>(pimpl_->list_.size()) +",
+            ],
+            "executable_name": None,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_copydeclared",
+            "expected_application_mode": "direct-edits",
+            "header_name": "widgettemplatecopydeclared.hpp",
+            "header_markers": [
+                "Widgettemplatecopydeclared(const Widgettemplatecopydeclared&);",
+                "Widgettemplatecopydeclared& operator=(const Widgettemplatecopydeclared&);",
+            ],
+            "source_markers": [
+                "struct Widgettemplatecopydeclared<Tag>::Impl {",
+                "Widgettemplatecopydeclared<Tag>::Widgettemplatecopydeclared(const Widgettemplatecopydeclared<Tag>& other)",
+                "Widgettemplatecopydeclared<Tag>& Widgettemplatecopydeclared<Tag>::operator=(const Widgettemplatecopydeclared<Tag>& other)",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->counters_[\"total\"] += value;",
+            ],
+            "executable_name": None,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_multitype",
+            "expected_application_mode": "direct-edits",
+            "header_name": "widgettemplatemultitype.hpp",
+            "header_markers": [
+                "Widgettemplatemultitype(const Widgettemplatemultitype&) = delete;",
+                "Widgettemplatemultitype& operator=(const Widgettemplatemultitype&) = delete;",
+            ],
+            "source_markers": [
+                "struct Widgettemplatemultitype<Left, Right>::Impl {",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + left_bias + right_bias + static_cast<int>(pimpl_->queue_.size()) +",
+            ],
+            "executable_name": None,
+        },
+        {
+            "fixture_name": "suggester_pimpl_external_template_multiline_decl",
+            "expected_application_mode": "direct-edits",
+            "header_name": "widgettemplatemultilinedecl.hpp",
+            "header_markers": [
+                "Widgettemplatemultilinedecl(const Widgettemplatemultilinedecl&) = delete;",
+                "Widgettemplatemultilinedecl& operator=(const Widgettemplatemultilinedecl&) = delete;",
+            ],
+            "source_markers": [
+                "struct Widgettemplatemultilinedecl<Tag>::Impl {",
+                "pimpl_->values_.push_back(value);",
+                "pimpl_->counters_[\"total\"] += value;",
+                "return pimpl_->total_ + type_bias + static_cast<int>(pimpl_->queue_.size()) + static_cast<int>(pimpl_->list_.size()) +",
+            ],
             "executable_name": None,
         },
         {

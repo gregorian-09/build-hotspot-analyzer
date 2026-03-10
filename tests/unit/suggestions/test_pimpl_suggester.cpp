@@ -34,7 +34,7 @@ namespace bha::suggestions
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
 
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
@@ -61,7 +61,7 @@ namespace bha::suggestions
         }
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -73,6 +73,8 @@ namespace bha::suggestions
             EXPECT_EQ(suggestion.type, SuggestionType::PIMPLPattern);
             EXPECT_FALSE(suggestion.is_safe);
             EXPECT_GT(suggestion.estimated_savings.count(), 0);
+            EXPECT_TRUE(suggestion.edits.empty());
+            EXPECT_TRUE(suggestion.after_code.code.empty());
             EXPECT_FALSE(suggestion.implementation_steps.empty());
             EXPECT_FALSE(suggestion.caveats.empty());
         }
@@ -89,7 +91,7 @@ namespace bha::suggestions
         analysis.files.push_back(file);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -109,7 +111,7 @@ namespace bha::suggestions
         analysis.files.push_back(file);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -136,7 +138,7 @@ namespace bha::suggestions
         }
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -162,7 +164,7 @@ namespace bha::suggestions
         }
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -203,7 +205,7 @@ namespace bha::suggestions
         }
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -252,7 +254,7 @@ namespace bha::suggestions
         }
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 

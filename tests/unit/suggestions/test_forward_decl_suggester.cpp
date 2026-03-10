@@ -4,6 +4,9 @@
 
 #include "bha/suggestions/forward_decl_suggester.hpp"
 
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace bha::suggestions
@@ -12,9 +15,26 @@ namespace bha::suggestions
     protected:
         void SetUp() override {
             suggester_ = std::make_unique<ForwardDeclSuggester>();
+            temp_root_ = std::filesystem::temp_directory_path() / "bha-forward-decl-test";
+            std::error_code ec;
+            std::filesystem::remove_all(temp_root_, ec);
+            std::filesystem::create_directories(temp_root_, ec);
+        }
+
+        void TearDown() override {
+            std::error_code ec;
+            std::filesystem::remove_all(temp_root_, ec);
+        }
+
+        static void write_file(const std::filesystem::path& path, const std::string& content) {
+            std::filesystem::create_directories(path.parent_path());
+            std::ofstream out(path);
+            ASSERT_TRUE(out.good());
+            out << content;
         }
 
         std::unique_ptr<ForwardDeclSuggester> suggester_;
+        std::filesystem::path temp_root_;
     };
 
     TEST_F(ForwardDeclSuggesterTest, Name) {
@@ -34,38 +54,149 @@ namespace bha::suggestions
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
 
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
     }
 
-    TEST_F(ForwardDeclSuggesterTest, SuggestsForHeaderInHeader) {
+    TEST_F(ForwardDeclSuggesterTest, SuggestsSafeForwardDeclarationEdit) {
         BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class HeavyWidget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    HeavyWidget* ptr;\n"
+            "    void process(HeavyWidget& ref);\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void Consumer::process(HeavyWidget&) {}\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = "widget.h";
+        header.path = heavy_header;
         header.total_parse_time = std::chrono::milliseconds(100);
         header.inclusion_count = 5;
         header.including_files = 3;
-        header.included_by = {"base.h", "factory.h"};
+        header.included_by = {consumer_header};
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options};
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
 
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_GE(result.value().suggestions.size(), 1u);
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
 
-        if (!result.value().suggestions.empty()) {
-            const auto& suggestion = result.value().suggestions[0];
-            EXPECT_EQ(suggestion.type, SuggestionType::ForwardDeclaration);
-            EXPECT_FALSE(suggestion.is_safe);
-        }
+        const auto& suggestion = result.value().suggestions[0];
+        EXPECT_EQ(suggestion.type, SuggestionType::ForwardDeclaration);
+        EXPECT_TRUE(suggestion.is_safe);
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+        EXPECT_TRUE(std::ranges::any_of(
+            suggestion.edits,
+            [&consumer_source](const TextEdit& edit) { return edit.file == consumer_source; }
+        ));
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SkipsByValueTypeUsage) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer_by_value.h";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class HeavyWidget {};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class ConsumerByValue {\n"
+            "    HeavyWidget value;\n"
+            "};\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(120);
+        header.inclusion_count = 4;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SkipsInheritanceUsage) {
+        BuildTrace trace;
+
+        const auto base_header = temp_root_ / "base_widget.h";
+        const auto consumer_header = temp_root_ / "consumer_inherit.h";
+
+        write_file(
+            base_header,
+            "#pragma once\n"
+            "class BaseWidget {\n"
+            "public:\n"
+            "    virtual ~BaseWidget() = default;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"base_widget.h\"\n"
+            "class ConsumerInherit : public BaseWidget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = base_header;
+        header.total_parse_time = std::chrono::milliseconds(120);
+        header.inclusion_count = 4;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
     }
 
     TEST_F(ForwardDeclSuggesterTest, SkipsNonHeaders) {
@@ -79,11 +210,181 @@ namespace bha::suggestions
         analysis.dependencies.headers.push_back(header);
 
         const SuggesterOptions options;
-        const SuggestionContext context{trace, analysis, options};
+        const SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, FindsHeaderIncluderWhenTraceListsOnlySourceFile) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class HeavyWidget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    HeavyWidget* ptr;\n"
+            "    void process(const HeavyWidget& ref);\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void use(Consumer&) {}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(120);
+        header.inclusion_count = 6;
+        header.included_by = {consumer_source};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.target_file.path, consumer_header);
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SuggestsForwardDeclarationForNamespacedType) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "widget.hpp";
+        const auto consumer_header = temp_root_ / "consumer_ns.hpp";
+        const auto consumer_source = temp_root_ / "consumer_ns.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"widget.hpp\"\n"
+            "namespace demo {\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    Widget* ptr;\n"
+            "    void process(const Widget& ref);\n"
+            "    void reset(Widget* value);\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer_ns.hpp\"\n"
+            "namespace demo { void use(Consumer&) {} }\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(120);
+        header.inclusion_count = 6;
+        header.included_by = {consumer_source};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 3;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        EXPECT_EQ(result.value().suggestions.front().target_file.path, consumer_header);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, AddsIncludeToSourceInSrcDirectoryLayout) {
+        BuildTrace trace;
+
+        const auto include_dir = temp_root_ / "include";
+        const auto src_dir = temp_root_ / "src";
+        const auto heavy_header = include_dir / "widget.hpp";
+        const auto consumer_header = include_dir / "consumer.hpp";
+        const auto consumer_source = src_dir / "consumer.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"widget.hpp\"\n"
+            "namespace demo {\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    Widget* ptr;\n"
+            "    void process(const Widget& ref);\n"
+            "    void reset(Widget* value);\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.hpp\"\n"
+            "namespace demo {\n"
+            "void Consumer::process(const Widget& ref) { ref.ping(); }\n"
+            "void Consumer::reset(Widget* value) { (void)value; }\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(150);
+        header.inclusion_count = 6;
+        header.included_by = {consumer_source};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 3;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_TRUE(std::ranges::any_of(
+            suggestion.edits,
+            [&consumer_source](const TextEdit& edit) { return edit.file == consumer_source; }
+        ));
     }
 }
