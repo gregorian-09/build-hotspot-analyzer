@@ -1,3 +1,3 @@
 repos/abseil/absl/profiling/internal/periodic_sampler.cc:25:_ZN4absl18profiling_internal19PeriodicSamplerBase20GetExponentialBiasedEi	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/profiling/internal/periodic_sampler.cc:__clang_call_terminate	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/internal/periodic_sampler.cc:__clang_call_terminate	8	static
 repos/abseil/absl/profiling/internal/periodic_sampler.cc:29:_ZN4absl18profiling_internal19PeriodicSamplerBase19SubtleConfirmSampleEv	24	static

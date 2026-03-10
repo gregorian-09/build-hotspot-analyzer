@@ -7,7 +7,7 @@ repos/benchmark/src/sysinfo.cc:99:_ZN9benchmark12_GLOBAL__N_116PrintErrorAndDieI
 repos/benchmark/src/sysinfo.cc:93:_ZN9benchmark12_GLOBAL__N_18PrintImpIRA50_KcJPcEEEvRSoOT_DpOT0_	24	static
 repos/benchmark/src/string_util.h:38:_ZN9benchmark6StrCatIJRA28_KcRiRA26_S1_EEENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEDpOT_	424	static
 repos/benchmark/src/sysinfo.cc:216:_ZN9benchmark12_GLOBAL__N_112ReadFromFileINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEbRKS7_PT_	536	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/benchmark/src/sysinfo.cc:__clang_call_terminate	8	static
+/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc:__clang_call_terminate	8	static
 repos/benchmark/src/sysinfo.cc:99:_ZN9benchmark12_GLOBAL__N_116PrintErrorAndDieIJRA32_KcEEEvDpOT_	8	static
 repos/benchmark/src/sysinfo.cc:93:_ZN9benchmark12_GLOBAL__N_18PrintImpIRA32_KcJEEEvRSoOT_DpOT0_	24	static
 repos/benchmark/src/string_util.h:38:_ZN9benchmark6StrCatIJRNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERA6_KciRA2_S8_EEES6_DpOT_	424	static
