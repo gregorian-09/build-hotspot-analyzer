@@ -21,6 +21,8 @@
 #include <ctime>
 #include <fstream>
 #include <iomanip>
+#include <map>
+#include <numeric>
 #include <sstream>
 #include <unordered_set>
 
@@ -51,6 +53,17 @@ namespace bha::exporters
          */
         double duration_to_ms(const Duration d) {
             return static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(d).count()) / 1000.0;
+        }
+
+        std::string format_duration_human(const Duration d) {
+            const double ms = duration_to_ms(d);
+            std::ostringstream ss;
+            if (ms >= 1000.0) {
+                ss << std::fixed << std::setprecision(3) << (ms / 1000.0) << " s";
+            } else {
+                ss << std::fixed << std::setprecision(2) << ms << " ms";
+            }
+            return ss.str();
         }
 
         /**
@@ -170,6 +183,27 @@ namespace bha::exporters
             return html;
         }
 
+        std::size_t count_lines(const std::string& text) {
+            if (text.empty()) return 0;
+            return static_cast<std::size_t>(std::count(text.begin(), text.end(), '\n')) + 1;
+        }
+
+        std::string truncate_lines(const std::string& text, const std::size_t max_lines) {
+            if (max_lines == 0 || text.empty()) return {};
+            std::size_t line_count = 0;
+            std::size_t pos = 0;
+            for (; pos < text.size(); ++pos) {
+                if (text[pos] == '\n') {
+                    ++line_count;
+                    if (line_count >= max_lines) {
+                        ++pos;
+                        break;
+                    }
+                }
+            }
+            return text.substr(0, pos);
+        }
+
         /**
          * Replaces multiple placeholders in a template string.
          */
@@ -203,6 +237,36 @@ namespace bha::exporters
             }
             result += "\"";
             return result;
+        }
+
+        std::string application_mode_label(const Suggestion& suggestion) {
+            if (suggestion.application_summary && !suggestion.application_summary->empty()) {
+                return *suggestion.application_summary;
+            }
+            switch (resolve_application_mode(suggestion)) {
+                case SuggestionApplicationMode::DirectEdits:
+                    return "Direct Edits";
+                case SuggestionApplicationMode::ExternalRefactor:
+                    return "Refactor Tool";
+                case SuggestionApplicationMode::Advisory:
+                    return "Manual Review";
+            }
+            return "Manual Review";
+        }
+
+        std::string application_mode_note(const Suggestion& suggestion) {
+            if (suggestion.application_guidance && !suggestion.application_guidance->empty()) {
+                return *suggestion.application_guidance;
+            }
+            switch (resolve_application_mode(suggestion)) {
+                case SuggestionApplicationMode::DirectEdits:
+                    return "BHA can apply this suggestion with direct text edits, rebuild-validate the change, and roll back from backup if validation fails.";
+                case SuggestionApplicationMode::ExternalRefactor:
+                    return "BHA applies this through the semantic refactor tool, rebuild-validates the result, and rolls back from backup if validation fails.";
+                case SuggestionApplicationMode::Advisory:
+                    return "This suggestion is intentionally advisory. Review and apply it manually.";
+            }
+            return "This suggestion is intentionally advisory. Review and apply it manually.";
         }
 
     }  // namespace
@@ -311,7 +375,7 @@ namespace bha::exporters
     Result<void, Error> JsonExporter::export_to_stream(
         std::ostream& stream,
         const analyzers::AnalysisResult& analysis,
-        const std::vector<Suggestion>& suggestions,
+        [[maybe_unused]] const std::vector<Suggestion>& suggestions,
         const ExportOptions& options,
         ExportProgressCallback progress
     ) const {
@@ -331,7 +395,9 @@ namespace bha::exporters
         summary["total_files"] = analysis.files.size();
         summary["total_compile_time_ms"] = duration_to_ms(analysis.performance.total_build_time);
         summary["analysis_duration_ms"] = duration_to_ms(analysis.analysis_duration);
-        summary["suggestions_count"] = suggestions.size();
+        summary["cache_hit_opportunity_percent"] = analysis.cache_distribution.cache_hit_opportunity_percent;
+        summary["cache_risk_compilations"] = analysis.cache_distribution.cache_risk_compilations;
+        summary["distributed_suitability_score"] = analysis.cache_distribution.distributed_suitability_score;
 
         if (analysis.performance.total_memory.has_data()) {
             json memory_summary;
@@ -463,6 +529,26 @@ namespace bha::exporters
             output["templates"] = templates;
         }
 
+        const auto& cache = analysis.cache_distribution;
+        if (cache.total_compilations > 0) {
+            json cache_json;
+            cache_json["total_compilations"] = cache.total_compilations;
+            cache_json["cache_friendly_compilations"] = cache.cache_friendly_compilations;
+            cache_json["cache_risk_compilations"] = cache.cache_risk_compilations;
+            cache_json["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
+            cache_json["sccache_detected"] = cache.sccache_detected;
+            cache_json["fastbuild_detected"] = cache.fastbuild_detected;
+            cache_json["cache_wrapper_detected"] = cache.cache_wrapper_detected;
+            cache_json["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
+            cache_json["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
+            cache_json["pch_generation_risk_count"] = cache.pch_generation_risk_count;
+            cache_json["volatile_path_risk_count"] = cache.volatile_path_risk_count;
+            cache_json["heavy_translation_units"] = cache.heavy_translation_units;
+            cache_json["homogeneous_command_units"] = cache.homogeneous_command_units;
+            cache_json["distributed_suitability_score"] = cache.distributed_suitability_score;
+            output["cache_distribution"] = cache_json;
+        }
+
         if (options.include_symbols && !analysis.symbols.symbols.empty()) {
             json symbols;
             symbols["total_symbols"] = analysis.symbols.total_symbols;
@@ -480,75 +566,6 @@ namespace bha::exporters
             symbols["symbols"] = sym_array;
 
             output["symbols"] = symbols;
-        }
-
-        if (options.include_suggestions && !suggestions.empty()) {
-            json sugg_array = json::array();
-            std::size_t sugg_count = 0;
-
-            for (const auto& sugg : suggestions) {
-                if (sugg.confidence < options.min_confidence) {
-                    continue;
-                }
-                if (options.max_suggestions > 0 && sugg_count >= options.max_suggestions) {
-                    break;
-                }
-
-                json sugg_entry;
-                sugg_entry["type"] = sugg.type;
-                sugg_entry["title"] = sugg.title;
-                sugg_entry["description"] = sugg.description;
-                sugg_entry["target_file"] = sugg.target_file.path.string();
-                sugg_entry["target_line"] = sugg.target_file.line_start;
-                sugg_entry["confidence"] = sugg.confidence;
-                sugg_entry["priority"] = sugg.priority;
-                sugg_entry["estimated_savings_ms"] = duration_to_ms(sugg.estimated_savings);
-                sugg_entry["auto_applicable"] = sugg.is_safe;
-
-                if (!sugg.before_code.code.empty()) {
-                    json before;
-                    before["file"] = sugg.before_code.file.string();
-                    before["line"] = sugg.before_code.line;
-                    before["code"] = sugg.before_code.code;
-                    sugg_entry["before_code"] = before;
-                }
-                if (!sugg.after_code.code.empty()) {
-                    json after;
-                    after["file"] = sugg.after_code.file.string();
-                    after["line"] = sugg.after_code.line;
-                    after["code"] = sugg.after_code.code;
-                    sugg_entry["after_code"] = after;
-                }
-
-                if (!sugg.edits.empty()) {
-                    json edits_array = json::array();
-                    for (const auto& [file, start_line, start_col, end_line, end_col, new_text] : sugg.edits) {
-                        json e;
-                        e["file"] = file.string();
-                        e["start_line"] = start_line;
-                        e["start_col"] = start_col;
-                        e["end_line"] = end_line;
-                        e["end_col"] = end_col;
-                        e["new_text"] = new_text;
-                        edits_array.push_back(e);
-                    }
-                    sugg_entry["edits"] = edits_array;
-                }
-
-                if (!sugg.implementation_steps.empty()) {
-                    sugg_entry["implementation_steps"] = sugg.implementation_steps;
-                }
-
-                if (!sugg.caveats.empty()) {
-                    sugg_entry["caveats"] = sugg.caveats;
-                }
-
-                sugg_entry["is_safe"] = sugg.is_safe;
-
-                sugg_array.push_back(sugg_entry);
-                sugg_count++;
-            }
-            output["suggestions"] = sugg_array;
         }
 
         if (options.pretty_print) {
@@ -604,6 +621,7 @@ namespace bha::exporters
         // Generate embedded JSON data for JavaScript
         ExportOptions json_opts = options;
         json_opts.pretty_print = false;
+        json_opts.include_suggestions = false;
 
         JsonExporter json_exporter;
         auto json_result = json_exporter.export_to_string(analysis, suggestions, json_opts);
@@ -636,6 +654,18 @@ namespace bha::exporters
         summary_stats << duration_to_ms(analysis.performance.avg_file_time);
         std::string avg_file_time_str = summary_stats.str();
 
+        summary_stats.str("");
+        summary_stats.clear();
+        summary_stats << std::fixed << std::setprecision(1);
+        summary_stats << analysis.cache_distribution.cache_hit_opportunity_percent;
+        std::string cache_hit_opportunity_str = summary_stats.str();
+
+        summary_stats.str("");
+        summary_stats.clear();
+        summary_stats << std::fixed << std::setprecision(1);
+        summary_stats << analysis.cache_distribution.distributed_suitability_score;
+        std::string distributed_suitability_str = summary_stats.str();
+
         std::string body_start = replace_placeholders(REPORT_BODY_START_HTML, {
             {"{{THEME_CLASS}}", theme_class},
             {"{{TITLE}}", escape_html(options.html_title)},
@@ -643,7 +673,9 @@ namespace bha::exporters
             {"{{TOTAL_FILES}}", std::to_string(analysis.files.size())},
             {"{{TOTAL_BUILD_TIME}}", total_build_time_str},
             {"{{AVG_FILE_TIME}}", avg_file_time_str},
-            {"{{TOTAL_SUGGESTIONS}}", std::to_string(suggestions.size())}
+            {"{{CACHE_HIT_OPPORTUNITY}}", cache_hit_opportunity_str},
+            {"{{CACHE_RISK_UNITS}}", std::to_string(analysis.cache_distribution.cache_risk_compilations)},
+            {"{{DISTRIBUTED_SUITABILITY}}", distributed_suitability_str}
         });
 
         // ==================================================================
@@ -693,10 +725,94 @@ namespace bha::exporters
         // 4. Build SUGGESTION CARDS (dynamic content)
         // ==================================================================
         std::ostringstream suggestion_cards;
-        for (const auto& sugg : suggestions) {
+        auto priority_rank = [](const Priority priority) {
+            switch (priority) {
+                case Priority::Critical: return 4;
+                case Priority::High: return 3;
+                case Priority::Medium: return 2;
+                case Priority::Low: return 1;
+            }
+            return 0;
+        };
+
+        std::size_t critical_count = 0;
+        std::size_t high_count = 0;
+        std::size_t medium_count = 0;
+        std::size_t low_count = 0;
+        Duration total_savings = Duration::zero();
+
+        std::vector<std::size_t> suggestion_order(suggestions.size());
+        std::iota(suggestion_order.begin(), suggestion_order.end(), 0);
+        std::ranges::sort(suggestion_order, [&](const std::size_t lhs, const std::size_t rhs) {
+            const auto& a = suggestions[lhs];
+            const auto& b = suggestions[rhs];
+            const int a_rank = priority_rank(a.priority);
+            const int b_rank = priority_rank(b.priority);
+            if (a_rank != b_rank) {
+                return a_rank > b_rank;
+            }
+            if (a.estimated_savings != b.estimated_savings) {
+                return a.estimated_savings > b.estimated_savings;
+            }
+            return a.confidence > b.confidence;
+        });
+
+        for (const auto& suggestion : suggestions) {
+            total_savings += suggestion.estimated_savings;
+            switch (suggestion.priority) {
+                case Priority::Critical: ++critical_count; break;
+                case Priority::High: ++high_count; break;
+                case Priority::Medium: ++medium_count; break;
+                case Priority::Low: ++low_count; break;
+            }
+        }
+
+        const std::size_t quick_pick_count = std::min<std::size_t>(3, suggestion_order.size());
+        suggestion_cards << "<div class=\"suggestions-overview\">\n"
+                        << "  <div class=\"dep-stats\">\n"
+                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << suggestions.size() << "</div><div class=\"dep-stat-label\">Total Suggestions</div></div>\n"
+                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << (critical_count + high_count) << "</div><div class=\"dep-stat-label\">High Impact</div></div>\n"
+                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << format_duration_human(total_savings) << "</div><div class=\"dep-stat-label\">Est. Total Savings</div></div>\n"
+                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << critical_count << "/" << high_count << "/" << medium_count << "/" << low_count
+                        << "</div><div class=\"dep-stat-label\">C/H/M/L Mix</div></div>\n"
+                        << "  </div>\n"
+                        << "  <p class=\"suggestions-guidance\">Suggestions are optimization hypotheses. Validate with rebuild + tests before rollout.</p>\n";
+
+        if (quick_pick_count > 0) {
+            suggestion_cards << "  <h3 class=\"suggestions-subtitle\"><i class=\"fas fa-bolt\"></i> Top Actions</h3>\n"
+                            << "  <div class=\"suggestion-quick-list\">\n";
+
+            for (std::size_t i = 0; i < quick_pick_count; ++i) {
+                const std::size_t idx = suggestion_order[i];
+                const auto& suggestion = suggestions[idx];
+                suggestion_cards << "    <a class=\"suggestion-quick-item\" href=\"#suggestion-" << idx << "\">\n"
+                                << "      <span class=\"suggestion-quick-title\">" << escape_html(suggestion.title) << "</span>\n"
+                                << "      <span class=\"suggestion-quick-meta\">" << escape_html(to_string(suggestion.type))
+                                << " · " << format_duration_human(suggestion.estimated_savings) << "</span>\n"
+                                << "    </a>\n";
+            }
+
+            suggestion_cards << "  </div>\n";
+        }
+
+        suggestion_cards << "</div>\n";
+
+        if (!suggestions.empty()) {
+            suggestion_cards << "<details class=\"suggestions-full-list\">\n"
+                            << "  <summary class=\"suggestions-full-summary\"><i class=\"fas fa-list\"></i> View Full Suggestion Details (" << suggestions.size() << ")</summary>\n"
+                            << "  <div class=\"suggestions-full-list-body\">\n";
+        } else {
+            suggestion_cards << "<div class=\"info-badge\"><i class=\"fas fa-info-circle\"></i> No suggestions generated for this run.</div>\n";
+        }
+
+        for (const auto suggestion_index : suggestion_order) {
+            const auto& sugg = suggestions[suggestion_index];
             std::string badge_class = "badge-low";
             std::string priority_text = "Low";
-            if (sugg.priority == Priority::High || sugg.priority == Priority::Critical) {
+            if (sugg.priority == Priority::Critical) {
+                badge_class = "badge-critical";
+                priority_text = "Critical";
+            } else if (sugg.priority == Priority::High) {
                 badge_class = "badge-high";
                 priority_text = "High";
             } else if (sugg.priority == Priority::Medium) {
@@ -704,26 +820,188 @@ namespace bha::exporters
                 priority_text = "Medium";
             }
 
-            suggestion_cards << "\n                <div class=\"suggestion-card\">\n"
+            const std::string type_text = to_string(sugg.type);
+            const std::string target_path = sugg.target_file.path.empty()
+                ? "Unknown"
+                : escape_html(sugg.target_file.path.string());
+            const std::string savings_human = format_duration_human(sugg.estimated_savings);
+            const bool has_steps = !sugg.implementation_steps.empty();
+            const bool has_caveats = !sugg.caveats.empty();
+            const bool has_rationale = !sugg.rationale.empty();
+            const bool has_verification = !sugg.verification.empty();
+            const bool has_docs = sugg.documentation_link.has_value() && !sugg.documentation_link->empty();
+            const bool has_hotspot_origins = !sugg.hotspot_origins.empty();
+            const bool has_blocked_reason =
+                sugg.auto_apply_blocked_reason.has_value() && !sugg.auto_apply_blocked_reason->empty();
+
+            suggestion_cards << "\n                <div class=\"suggestion-card\" id=\"suggestion-" << suggestion_index << "\">\n"
                             << "                    <div class=\"suggestion-header\">\n"
-                            << "                        <span class=\"suggestion-title\">" << escape_html(sugg.title) << "</span>\n"
-                            << "                        <span class=\"suggestion-badge " << badge_class << "\">" << priority_text << "</span>\n"
+                            << "                        <div class=\"suggestion-title-block\">\n"
+                            << "                            <span class=\"suggestion-title\">" << escape_html(sugg.title) << "</span>\n"
+                            << "                            <div class=\"suggestion-chips\">\n"
+                            << "                                <span class=\"chip chip-type\"><i class=\"fas fa-tag\"></i> " << escape_html(type_text) << "</span>\n"
+                            << "                                <span class=\"chip " << badge_class << "\">" << priority_text << "</span>\n";
+
+            if (sugg.is_safe) {
+                suggestion_cards << "                                <span class=\"chip chip-safe\"><i class=\"fas fa-shield-check\"></i> Safe</span>\n";
+            }
+
+            suggestion_cards << "                            </div>\n"
+                            << "                        </div>\n"
                             << "                    </div>\n"
-                            << "                    <div class=\"suggestion-meta\">\n"
-                            << "                        <span class=\"suggestion-meta-item\">\n"
+                            << "                    <div class=\"suggestion-meta-grid\">\n"
+                            << "                        <div class=\"meta-pill\">\n"
                             << "                            <i class=\"fas fa-map-marker-alt\"></i>\n"
-                            << "                            " << escape_html(sugg.target_file.path.string()) << ":" << sugg.target_file.line_start << "\n"
-                            << "                        </span>\n"
-                            << "                        <span class=\"suggestion-meta-item\">\n"
+                            << "                            <div>\n"
+                            << "                                <div class=\"meta-label\">Target</div>\n"
+                            << "                                <div class=\"meta-value\">" << target_path;
+
+            if (sugg.target_file.line_start > 0) {
+                suggestion_cards << ":" << sugg.target_file.line_start;
+            }
+
+            suggestion_cards << "</div>\n"
+                            << "                            </div>\n"
+                            << "                        </div>\n"
+                            << "                        <div class=\"meta-pill\">\n"
                             << "                            <i class=\"fas fa-percentage\"></i>\n"
-                            << "                            Confidence: " << std::fixed << std::setprecision(0) << (sugg.confidence * 100) << "%\n"
-                            << "                        </span>\n"
-                            << "                        <span class=\"suggestion-meta-item\">\n"
+                            << "                            <div>\n"
+                            << "                                <div class=\"meta-label\">Confidence</div>\n"
+                            << "                                <div class=\"meta-value\">" << std::fixed << std::setprecision(0) << (sugg.confidence * 100) << "%</div>\n"
+                            << "                            </div>\n"
+                            << "                        </div>\n"
+                            << "                        <div class=\"meta-pill\">\n"
                             << "                            <i class=\"fas fa-clock\"></i>\n"
-                            << "                            Est. savings: " << std::fixed << std::setprecision(1) << duration_to_ms(sugg.estimated_savings) << " ms\n"
-                            << "                        </span>\n"
+                            << "                            <div>\n"
+                            << "                                <div class=\"meta-label\">Est. Savings</div>\n"
+                            << "                                <div class=\"meta-value\">" << savings_human << "</div>\n"
+                            << "                            </div>\n"
+                            << "                        </div>\n"
+                            << "                        <div class=\"meta-pill\">\n"
+                            << "                            <i class=\"fas fa-layer-group\"></i>\n"
+                            << "                            <div>\n"
+                            << "                                <div class=\"meta-label\">Edits</div>\n"
+                            << "                                <div class=\"meta-value\">" << sugg.edits.size() << "</div>\n"
+                            << "                            </div>\n"
+                            << "                        </div>\n"
+                            << "                        <div class=\"meta-pill\">\n"
+                            << "                            <i class=\"fas fa-wand-magic-sparkles\"></i>\n"
+                            << "                            <div>\n"
+                            << "                                <div class=\"meta-label\">Apply</div>\n"
+                            << "                                <div class=\"meta-value\">" << escape_html(application_mode_label(sugg)) << "</div>\n"
+                            << "                            </div>\n"
+                            << "                        </div>\n"
                             << "                    </div>\n"
-                            << "                    <div class=\"suggestion-description\">" << format_markdown_simple(sugg.description) << "</div>";
+                            << "                    <div class=\"suggestion-section\">\n"
+                            << "                        <h4><i class=\"fas fa-lightbulb\"></i> What & Why</h4>\n"
+                            << "                        <div class=\"suggestion-description\">" << format_markdown_simple(sugg.description) << "</div>\n";
+
+            if (has_rationale) {
+                suggestion_cards << "                        <div class=\"suggestion-rationale\">" << format_markdown_simple(sugg.rationale) << "</div>\n";
+            }
+
+            suggestion_cards << "                    </div>\n";
+
+            if (has_steps) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-list-check\"></i> How to Apply</h4>\n"
+                                << "                        <p style=\"margin: 0 0 10px 0; color: var(--text-secondary);\">"
+                                << escape_html(application_mode_note(sugg)) << "</p>\n"
+                                << "                        <ol class=\"suggestion-steps\">\n";
+                for (const auto& step : sugg.implementation_steps) {
+                    suggestion_cards << "                            <li>" << escape_html(step) << "</li>\n";
+                }
+                suggestion_cards << "                        </ol>\n"
+                                << "                    </div>\n";
+            } else {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-list-check\"></i> How to Apply</h4>\n"
+                                << "                        <p style=\"margin: 0; color: var(--text-secondary);\">"
+                                << escape_html(application_mode_note(sugg)) << "</p>\n"
+                                << "                    </div>\n";
+            }
+
+            if (has_blocked_reason) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-lock\"></i> Why Manual Review</h4>\n"
+                                << "                        <p style=\"margin: 0; color: var(--warning-color); font-weight: 500;\">"
+                                << escape_html(*sugg.auto_apply_blocked_reason) << "</p>\n"
+                                << "                    </div>\n";
+            }
+
+            if (sugg.refactor_class_name || sugg.refactor_compile_commands_path) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-diagram-project\"></i> Refactor Context</h4>\n";
+                if (sugg.refactor_class_name) {
+                    suggestion_cards << "                        <div class=\"target-file\">Class: "
+                                    << escape_html(*sugg.refactor_class_name) << "</div>\n";
+                }
+                if (sugg.refactor_compile_commands_path) {
+                    suggestion_cards << "                        <div class=\"target-file\">Compile DB: "
+                                    << escape_html(sugg.refactor_compile_commands_path->string()) << "</div>\n";
+                }
+                suggestion_cards << "                    </div>\n";
+            }
+
+            if (has_verification) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-clipboard-check\"></i> Verify</h4>\n"
+                                << "                        <div class=\"suggestion-description\">" << format_markdown_simple(sugg.verification) << "</div>\n"
+                                << "                    </div>\n";
+            }
+
+            if (has_hotspot_origins) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-route\"></i> Hotspot Origin</h4>\n";
+
+                for (const auto& origin : sugg.hotspot_origins) {
+                    suggestion_cards << "                        <div class=\"meta-pill\" style=\"margin-bottom: 10px;\">\n"
+                                    << "                            <i class=\"fas fa-link\"></i>\n"
+                                    << "                            <div>\n"
+                                    << "                                <div class=\"meta-label\">" << escape_html(origin.kind) << "</div>\n"
+                                    << "                                <div class=\"meta-value\">";
+                    if (origin.estimated_cost > Duration::zero()) {
+                        suggestion_cards << format_duration_human(origin.estimated_cost) << " · ";
+                    }
+                    suggestion_cards << escape_html(origin.note.empty()
+                        ? std::string("Origin evidence from build trace")
+                        : origin.note) << "</div>\n"
+                                    << "                            </div>\n"
+                                    << "                        </div>\n";
+
+                    if (!origin.chain.empty()) {
+                        suggestion_cards << "                        <pre class=\"code-block\" style=\"margin-top: 0;\">";
+                        for (std::size_t chain_idx = 0; chain_idx < origin.chain.size(); ++chain_idx) {
+                            if (chain_idx > 0) {
+                                suggestion_cards << "\n-> ";
+                            }
+                            suggestion_cards << escape_html(origin.chain[chain_idx]);
+                        }
+                        suggestion_cards << "</pre>\n";
+                    }
+                }
+
+                suggestion_cards << "                    </div>\n";
+            }
+
+            if (has_caveats) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-triangle-exclamation\"></i> Risks & Caveats</h4>\n"
+                                << "                        <ul class=\"suggestion-caveats\">\n";
+                for (const auto& caveat : sugg.caveats) {
+                    suggestion_cards << "                            <li>" << escape_html(caveat) << "</li>\n";
+                }
+                suggestion_cards << "                        </ul>\n"
+                                << "                    </div>\n";
+            }
+
+            if (has_docs) {
+                suggestion_cards << "                    <div class=\"suggestion-section\">\n"
+                                << "                        <h4><i class=\"fas fa-book\"></i> Documentation</h4>\n"
+                                << "                        <a class=\"suggestion-link\" href=\"" << escape_html(*sugg.documentation_link)
+                                << "\" target=\"_blank\" rel=\"noopener noreferrer\">" << escape_html(*sugg.documentation_link) << "</a>\n"
+                                << "                    </div>\n";
+            }
 
             if (!sugg.before_code.code.empty() || !sugg.after_code.code.empty()) {
                 suggestion_cards << "\n                    <div class=\"code-comparison\">";
@@ -768,29 +1046,58 @@ namespace bha::exporters
             }
 
             if (!sugg.edits.empty()) {
-                suggestion_cards << "\n                    <details style=\"margin-top: 16px;\">\n"
-                                << "                        <summary style=\"cursor: pointer; color: var(--accent-color); font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;\">\n"
-                                << "                            <i class=\"fas fa-code\"></i> Text Edits (" << sugg.edits.size() << ")\n"
-                                << "                        </summary>\n"
-                                << "                        <div style=\"background: var(--bg-secondary); border-radius: 8px; padding: 12px; margin-top: 8px;\">\n";
+                std::map<std::string, std::vector<TextEdit>> edits_by_file;
+                for (const auto& edit : sugg.edits) {
+                    edits_by_file[edit.file.string()].push_back(edit);
+                }
 
-                for (std::size_t edit_idx = 0; edit_idx < sugg.edits.size(); ++edit_idx) {
-                    const auto& edit = sugg.edits[edit_idx];
-                    suggestion_cards << "                            <div style=\"margin-bottom: " << (edit_idx < sugg.edits.size() - 1 ? "12px" : "0") << "; padding: 10px; background: var(--bg-tertiary); border-radius: 6px; border-left: 3px solid var(--accent-color);\">\n"
-                                    << "                                <div style=\"font-family: monospace; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;\">\n"
-                                    << "                                    <i class=\"fas fa-file-alt\"></i> "
-                                    << escape_html(edit.file.string())
-                                    << " <span style=\"color: var(--accent-color);\">[" << edit.start_line << ":" << edit.start_col
-                                    << " -> " << edit.end_line << ":" << edit.end_col << "]</span>\n"
+                suggestion_cards << "\n                    <details class=\"suggestion-edits\">\n"
+                                << "                        <summary class=\"suggestion-edits-summary\">\n"
+                                << "                            <span><i class=\"fas fa-code\"></i> Text Edits</span>\n"
+                                << "                            <span class=\"edit-summary\">" << sugg.edits.size() << " changes</span>\n"
+                                << "                        </summary>\n"
+                                << "                        <div class=\"suggestion-edits-body\">\n";
+
+                for (const auto& [file_path, file_edits] : edits_by_file) {
+                    suggestion_cards << "                            <div class=\"edit-file-group\">\n"
+                                    << "                                <div class=\"edit-file-header\">\n"
+                                    << "                                    <i class=\"fas fa-file-code\"></i>\n"
+                                    << "                                    <span class=\"edit-file-name\">" << escape_html(file_path) << "</span>\n"
+                                    << "                                    <span class=\"edit-file-count\">" << file_edits.size() << " edits</span>\n"
                                     << "                                </div>\n";
 
-                    if (!edit.new_text.empty()) {
-                        suggestion_cards << R"(                                <pre class="code-block" style="margin: 0; font-size: 0.8rem; border-left: 2px solid var(--success-color);">)"
-                                        << escape_html(edit.new_text) << "</pre>\n";
-                    } else {
-                        suggestion_cards << "                                <div style=\"color: var(--danger-color); font-style: italic; font-size: 0.85rem;\">\n"
-                                        << "                                    <i class=\"fas fa-trash-alt\"></i> Delete this range\n"
-                                        << "                                </div>\n";
+                    for (std::size_t edit_idx = 0; edit_idx < file_edits.size(); ++edit_idx) {
+                        const auto& edit = file_edits[edit_idx];
+                        suggestion_cards << "                                <div class=\"text-edit\">\n"
+                                        << "                                    <div class=\"text-edit-meta\">\n"
+                                        << "                                        <span class=\"edit-range\">[" << edit.start_line << ":" << edit.start_col
+                                        << " → " << edit.end_line << ":" << edit.end_col << "]</span>\n"
+                                        << "                                    </div>\n";
+
+                        if (!edit.new_text.empty()) {
+                            const std::size_t total_lines = count_lines(edit.new_text);
+                            const bool is_large = edit.new_text.size() > 8000 || total_lines > 200;
+                            const std::string preview_text = is_large
+                                ? truncate_lines(edit.new_text, 80)
+                                : edit.new_text;
+
+                            suggestion_cards << R"(                                    <pre class="code-block code-edit-block">)"
+                                            << escape_html(preview_text) << "</pre>\n";
+
+                            if (is_large) {
+                                suggestion_cards << "                                    <details class=\"edit-expand\">\n"
+                                                << "                                        <summary>Show full edit</summary>\n"
+                                                << R"(                                        <pre class="code-block code-edit-block">)"
+                                                << escape_html(edit.new_text) << "</pre>\n"
+                                                << "                                    </details>\n";
+                            }
+                        } else {
+                            suggestion_cards << "                                    <div class=\"edit-delete\">\n"
+                                            << "                                        <i class=\"fas fa-trash-alt\"></i> Delete this range\n"
+                                            << "                                    </div>\n";
+                        }
+
+                        suggestion_cards << "                                </div>\n";
                     }
 
                     suggestion_cards << "                            </div>\n";
@@ -800,13 +1107,12 @@ namespace bha::exporters
                                 << "                    </details>";
             }
 
-            if (sugg.is_safe) {
-                suggestion_cards << "\n                    <div style=\"margin-top: 12px; padding: 8px 12px; background: rgba(40, 167, 69, 0.1); border-radius: 6px; color: var(--success-color); font-size: 0.85rem;\">\n"
-                                << "                        <i class=\"fas fa-check-circle\"></i> Safe to apply automatically\n"
-                                << "                    </div>";
-            }
-
             suggestion_cards << "\n                </div>";
+        }
+
+        if (!suggestions.empty()) {
+            suggestion_cards << "  </div>\n"
+                            << "</details>\n";
         }
 
         // ==================================================================
@@ -903,7 +1209,7 @@ namespace bha::exporters
 
         if (options.include_suggestions && !suggestions.empty()) {
             stream << "\n# Suggestions\n";
-            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Edits Count,Is Safe\n";
+            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Edits Count,Is Safe,Application Mode,Application Summary,Auto-Apply Blocked Reason\n";
 
             for (const auto& sugg : suggestions) {
                 if (sugg.confidence < options.min_confidence) {
@@ -918,7 +1224,10 @@ namespace bha::exporters
                        << static_cast<int>(sugg.priority) << ","
                        << duration_to_ms(sugg.estimated_savings) << ","
                        << sugg.edits.size() << ","
-                       << (sugg.is_safe ? "true" : "false") << "\n";
+                       << (sugg.is_safe ? "true" : "false") << ","
+                       << escape_csv(to_string(resolve_application_mode(sugg))) << ","
+                       << escape_csv(sugg.application_summary.value_or("")) << ","
+                       << escape_csv(sugg.auto_apply_blocked_reason.value_or("")) << "\n";
             }
         }
 
@@ -975,6 +1284,9 @@ namespace bha::exporters
                << duration_to_ms(analysis.performance.total_build_time) / 1000.0 << " s |\n";
         stream << "| Avg File Time | " << duration_to_ms(analysis.performance.avg_file_time) << " ms |\n";
         stream << "| Parallelism Efficiency | " << std::setprecision(1) << (analysis.performance.parallelism_efficiency * 100.0) << "% |\n";
+        stream << "| Cache Hit Opportunity | " << std::setprecision(1) << analysis.cache_distribution.cache_hit_opportunity_percent << "% |\n";
+        stream << "| Cache Risk Compilations | " << analysis.cache_distribution.cache_risk_compilations << " |\n";
+        stream << "| Distributed Suitability | " << std::setprecision(1) << analysis.cache_distribution.distributed_suitability_score << "% |\n";
         stream << "| Suggestions | " << suggestions.size() << " |\n\n";
 
         if (options.include_file_details) {
@@ -1018,8 +1330,7 @@ namespace bha::exporters
                 stream << "**Priority:** " << priority
                        << " | **Confidence:** " << std::fixed << std::setprecision(0)
                        << (sugg.confidence * 100) << "%"
-                       << " | **Est. Savings:** " << std::setprecision(1)
-                       << duration_to_ms(sugg.estimated_savings) << " ms\n\n";
+                       << " | **Est. Savings:** " << format_duration_human(sugg.estimated_savings) << "\n\n";
                 stream << "**File:** `" << sugg.target_file.path.string() << ":" << sugg.target_file.line_start << "`\n\n";
                 stream << sugg.description << "\n\n";
 
@@ -1046,6 +1357,31 @@ namespace bha::exporters
                     stream << "</details>\n\n";
                 }
 
+                if (!sugg.hotspot_origins.empty()) {
+                    stream << "**Hotspot Origin**\n\n";
+                    for (const auto& origin : sugg.hotspot_origins) {
+                        stream << "- **" << origin.kind << "**";
+                        if (origin.estimated_cost > Duration::zero()) {
+                            stream << " (" << format_duration_human(origin.estimated_cost) << ")";
+                        }
+                        if (!origin.note.empty()) {
+                            stream << ": " << origin.note;
+                        }
+                        stream << "\n";
+                        if (!origin.chain.empty()) {
+                            stream << "  - Chain: ";
+                            for (std::size_t origin_idx = 0; origin_idx < origin.chain.size(); ++origin_idx) {
+                                if (origin_idx > 0) {
+                                    stream << " -> ";
+                                }
+                                stream << "`" << origin.chain[origin_idx] << "`";
+                            }
+                            stream << "\n";
+                        }
+                    }
+                    stream << "\n";
+                }
+
                 if (sugg.is_safe) {
                     stream << "> [OK] Safe to apply automatically\n\n";
                 }
@@ -1060,6 +1396,19 @@ namespace bha::exporters
             stream << "- **Unique Headers:** " << analysis.dependencies.unique_headers << "\n";
             stream << "- **Max Include Depth:** " << analysis.dependencies.max_include_depth << "\n";
             stream << "- **Circular Dependencies:** " << analysis.dependencies.circular_dependencies.size() << "\n\n";
+        }
+
+        if (analysis.cache_distribution.total_compilations > 0) {
+            stream << "## Cache & Distribution Awareness\n\n";
+            stream << "- **sccache detected:** " << (analysis.cache_distribution.sccache_detected ? "yes" : "no") << "\n";
+            stream << "- **FASTBuild detected:** " << (analysis.cache_distribution.fastbuild_detected ? "yes" : "no") << "\n";
+            stream << "- **Cache wrapper detected:** " << (analysis.cache_distribution.cache_wrapper_detected ? "yes" : "no") << "\n";
+            stream << "- **Dynamic macro risk units:** " << analysis.cache_distribution.dynamic_macro_risk_count << "\n";
+            stream << "- **Coverage/profile risk units:** " << analysis.cache_distribution.profile_or_coverage_risk_count << "\n";
+            stream << "- **PCH generation risk units:** " << analysis.cache_distribution.pch_generation_risk_count << "\n";
+            stream << "- **Volatile path risk units:** " << analysis.cache_distribution.volatile_path_risk_count << "\n";
+            stream << "- **Heavy translation units:** " << analysis.cache_distribution.heavy_translation_units << "\n";
+            stream << "- **Largest homogeneous command group:** " << analysis.cache_distribution.homogeneous_command_units << "\n\n";
         }
 
         return Result<void, Error>::success();

@@ -28,6 +28,7 @@
 #include <optional>
 #include <chrono>
 #include <filesystem>
+#include <string_view>
 
 #include "heuristics/config.hpp"
 
@@ -326,6 +327,42 @@ namespace bha {
     }
 
     /**
+     * How a suggestion should be applied.
+     */
+    enum class SuggestionApplicationMode {
+        Advisory,
+        DirectEdits,
+        ExternalRefactor
+    };
+
+    /**
+     * Converts SuggestionApplicationMode to string.
+     */
+    inline const char* to_string(SuggestionApplicationMode mode) noexcept {
+        switch (mode) {
+            case SuggestionApplicationMode::Advisory:         return "advisory";
+            case SuggestionApplicationMode::DirectEdits:      return "direct-edits";
+            case SuggestionApplicationMode::ExternalRefactor: return "external-refactor";
+        }
+        return "advisory";
+    }
+
+    /**
+     * Parses SuggestionApplicationMode from string.
+     */
+    inline SuggestionApplicationMode suggestion_application_mode_from_string(
+        const std::string_view value
+    ) noexcept {
+        if (value == "direct-edits") {
+            return SuggestionApplicationMode::DirectEdits;
+        }
+        if (value == "external-refactor") {
+            return SuggestionApplicationMode::ExternalRefactor;
+        }
+        return SuggestionApplicationMode::Advisory;
+    }
+
+    /**
      * Action type for file modifications.
      */
     enum class FileAction {
@@ -451,6 +488,18 @@ namespace bha {
     };
 
     /**
+     * Evidence describing why a suggestion is expensive.
+     */
+    struct HotspotOrigin {
+        std::string kind;  // include_chain | template_origin
+        fs::path source;
+        fs::path target;
+        Duration estimated_cost = Duration::zero();
+        std::vector<std::string> chain;
+        std::string note;
+    };
+
+    /**
      * A complete optimization suggestion.
      *
      * Suggestions are designed to be actionable with explicit file targeting.
@@ -486,9 +535,31 @@ namespace bha {
         std::vector<std::string> caveats;
         std::string verification;
         std::optional<std::string> documentation_link;
+        std::vector<HotspotOrigin> hotspot_origins;
 
         bool is_safe = false;
+        SuggestionApplicationMode application_mode = SuggestionApplicationMode::Advisory;
+        std::optional<std::string> refactor_class_name;
+        std::optional<fs::path> refactor_compile_commands_path;
+        std::optional<std::string> application_summary;
+        std::optional<std::string> application_guidance;
+        std::optional<std::string> auto_apply_blocked_reason;
     };
+
+    /**
+     * Resolves the effective application mode for a suggestion.
+     *
+     * Existing auto-applicable suggestions that already expose concrete edits
+     * are treated as direct-edits even if they did not explicitly set the mode.
+     */
+    inline SuggestionApplicationMode resolve_application_mode(
+        const Suggestion& suggestion
+    ) noexcept {
+        if (!suggestion.edits.empty()) {
+            return SuggestionApplicationMode::DirectEdits;
+        }
+        return suggestion.application_mode;
+    }
 
     // ============================================================================
     // Git Integration Data
@@ -556,6 +627,8 @@ namespace bha {
         bool analyze_includes = true;
         bool analyze_symbols = true;
         bool verbose = false;
+        Duration max_total_time = Duration::zero();
+        Duration max_analyzer_time = Duration::zero();
     };
 
     /**
@@ -567,6 +640,10 @@ namespace bha {
         double min_confidence = 0.5;
         bool include_unsafe = false;
         bool enable_consolidation = true;
+        bool restrict_to_trace = true;
+        Duration max_total_time = Duration::zero();
+        Duration max_suggester_time = Duration::zero();
+        std::optional<fs::path> compile_commands_path;
         std::vector<SuggestionType> enabled_types;
         heuristics::HeuristicsConfig heuristics = heuristics::HeuristicsConfig::defaults();
     };

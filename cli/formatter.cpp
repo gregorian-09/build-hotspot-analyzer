@@ -404,6 +404,22 @@ namespace bha::cli
         out_ << " (" << format_percent(tmpl.template_time_percent) << " of total)\n";
         out_ << "Total Instantiations: " << format_count(tmpl.total_instantiations) << "\n";
 
+        const auto& cache = result.cache_distribution;
+        if (cache.total_compilations > 0) {
+            out_ << "\n";
+            out_ << "Cache Opportunity:    " << format_percent(cache.cache_hit_opportunity_percent) << "\n";
+            out_ << "Cache Risky Units:    " << format_count(cache.cache_risk_compilations) << "\n";
+            out_ << "Distributed Fit:      " << format_percent(cache.distributed_suitability_score) << "\n";
+            out_ << "Tooling Detected:     "
+                 << (cache.sccache_detected ? "sccache " : "")
+                 << (cache.fastbuild_detected ? "fastbuild " : "")
+                 << (cache.cache_wrapper_detected ? "cache-wrapper" : "");
+            if (!cache.sccache_detected && !cache.fastbuild_detected && !cache.cache_wrapper_detected) {
+                out_ << "none";
+            }
+            out_ << "\n";
+        }
+
         out_ << "\n";
     }
 
@@ -584,6 +600,26 @@ namespace bha::cli
                 out_ << s.caveats[0] << "\n";
             }
 
+            if (!s.hotspot_origins.empty()) {
+                out_ << "    Hotspot Origin:\n";
+                for (const auto& origin : s.hotspot_origins) {
+                    out_ << "      - " << origin.kind;
+                    if (origin.estimated_cost > Duration::zero()) {
+                        out_ << " (" << format_duration(origin.estimated_cost) << ")";
+                    }
+                    out_ << "\n";
+                    if (!origin.chain.empty()) {
+                        out_ << "        " << origin.chain.front() << "\n";
+                        for (std::size_t origin_idx = 1; origin_idx < origin.chain.size(); ++origin_idx) {
+                            out_ << "        -> " << origin.chain[origin_idx] << "\n";
+                        }
+                    }
+                    if (!origin.note.empty()) {
+                        out_ << "        " << origin.note << "\n";
+                    }
+                }
+            }
+
             out_ << "\n";
         }
     }
@@ -639,6 +675,24 @@ namespace bha::cli
             ss << indent << indent << "\"total_time_ns\": " << result.templates.total_template_time.count() << "," << nl;
             ss << indent << indent << "\"total_instantiations\": " << result.templates.total_instantiations << "," << nl;
             ss << indent << indent << "\"time_percent\": " << result.templates.template_time_percent << nl;
+            ss << indent << "}," << nl;
+
+            const auto& cache = result.cache_distribution;
+            ss << indent << "\"cache_distribution\": {" << nl;
+            ss << indent << indent << "\"total_compilations\": " << cache.total_compilations << "," << nl;
+            ss << indent << indent << "\"cache_friendly_compilations\": " << cache.cache_friendly_compilations << "," << nl;
+            ss << indent << indent << "\"cache_risk_compilations\": " << cache.cache_risk_compilations << "," << nl;
+            ss << indent << indent << "\"cache_hit_opportunity_percent\": " << cache.cache_hit_opportunity_percent << "," << nl;
+            ss << indent << indent << "\"sccache_detected\": " << (cache.sccache_detected ? "true" : "false") << "," << nl;
+            ss << indent << indent << "\"fastbuild_detected\": " << (cache.fastbuild_detected ? "true" : "false") << "," << nl;
+            ss << indent << indent << "\"cache_wrapper_detected\": " << (cache.cache_wrapper_detected ? "true" : "false") << "," << nl;
+            ss << indent << indent << "\"dynamic_macro_risk_count\": " << cache.dynamic_macro_risk_count << "," << nl;
+            ss << indent << indent << "\"profile_or_coverage_risk_count\": " << cache.profile_or_coverage_risk_count << "," << nl;
+            ss << indent << indent << "\"pch_generation_risk_count\": " << cache.pch_generation_risk_count << "," << nl;
+            ss << indent << indent << "\"volatile_path_risk_count\": " << cache.volatile_path_risk_count << "," << nl;
+            ss << indent << indent << "\"heavy_translation_units\": " << cache.heavy_translation_units << "," << nl;
+            ss << indent << indent << "\"homogeneous_command_units\": " << cache.homogeneous_command_units << "," << nl;
+            ss << indent << indent << "\"distributed_suitability_score\": " << cache.distributed_suitability_score << nl;
             ss << indent << "}" << nl;
 
             ss << "}";
@@ -656,65 +710,82 @@ namespace bha::cli
             ss << "[" << nl;
 
             for (std::size_t idx = 0; idx < suggestions.size(); ++idx) {
-                const auto& [id, type, priority, confidence, title, description, rationale, estimated_savings, estimated_savings_percent, target_file, secondary_files, before_code, after_code, edits, implementation_steps, impact, caveats, verification, documentation_link, is_safe] = suggestions[idx];
+                const auto& suggestion = suggestions[idx];
+                const auto mode = resolve_application_mode(suggestion);
                 ss << i1 << "{" << nl;
-                ss << i2 << R"("id": ")" << escape_string(id) << "\"," << nl;
-                ss << i2 << R"("type": ")" << to_string(type) << "\"," << nl;
-                ss << i2 << R"("priority": ")" << to_string(priority) << "\"," << nl;
-                ss << i2 << "\"confidence\": " << confidence << "," << nl;
-                ss << i2 << R"("title": ")" << escape_string(title) << "\"," << nl;
-                ss << i2 << R"("description": ")" << escape_string(description) << "\"," << nl;
+                ss << i2 << R"("id": ")" << escape_string(suggestion.id) << "\"," << nl;
+                ss << i2 << R"("type": ")" << to_string(suggestion.type) << "\"," << nl;
+                ss << i2 << R"("priority": ")" << to_string(suggestion.priority) << "\"," << nl;
+                ss << i2 << "\"confidence\": " << suggestion.confidence << "," << nl;
+                ss << i2 << R"("title": ")" << escape_string(suggestion.title) << "\"," << nl;
+                ss << i2 << R"("description": ")" << escape_string(suggestion.description) << "\"," << nl;
 
-                if (!rationale.empty()) {
-                    ss << i2 << R"("rationale": ")" << escape_string(rationale) << "\"," << nl;
+                if (!suggestion.rationale.empty()) {
+                    ss << i2 << R"("rationale": ")" << escape_string(suggestion.rationale) << "\"," << nl;
                 }
 
-                ss << i2 << "\"estimated_savings_ns\": " << estimated_savings.count() << "," << nl;
-                ss << i2 << "\"estimated_savings_percent\": " << estimated_savings_percent << "," << nl;
-                ss << i2 << "\"is_safe\": " << (is_safe ? "true" : "false") << "," << nl;
+                ss << i2 << "\"estimated_savings_ns\": " << suggestion.estimated_savings.count() << "," << nl;
+                ss << i2 << "\"estimated_savings_percent\": " << suggestion.estimated_savings_percent << "," << nl;
+                ss << i2 << "\"is_safe\": " << (suggestion.is_safe ? "true" : "false") << "," << nl;
+                ss << i2 << R"("application_mode": ")" << to_string(mode) << "\"," << nl;
+                if (suggestion.refactor_class_name) {
+                    ss << i2 << R"("refactor_class_name": ")" << escape_string(*suggestion.refactor_class_name) << "\"," << nl;
+                }
+                if (suggestion.refactor_compile_commands_path) {
+                    ss << i2 << R"("refactor_compile_commands_path": ")" << escape_string(suggestion.refactor_compile_commands_path->string()) << "\"," << nl;
+                }
+                if (suggestion.application_summary) {
+                    ss << i2 << R"("application_summary": ")" << escape_string(*suggestion.application_summary) << "\"," << nl;
+                }
+                if (suggestion.application_guidance) {
+                    ss << i2 << R"("application_guidance": ")" << escape_string(*suggestion.application_guidance) << "\"," << nl;
+                }
+                if (suggestion.auto_apply_blocked_reason) {
+                    ss << i2 << R"("auto_apply_blocked_reason": ")" << escape_string(*suggestion.auto_apply_blocked_reason) << "\"," << nl;
+                }
 
                 ss << i2 << "\"target_file\": {" << nl;
-                ss << i3 << R"("path": ")" << escape_string(target_file.path.string()) << "\"," << nl;
-                ss << i3 << "\"line_start\": " << target_file.line_start << "," << nl;
-                ss << i3 << "\"line_end\": " << target_file.line_end << "," << nl;
-                ss << i3 << R"("action": ")" << to_string(target_file.action) << "\"" << nl;
+                ss << i3 << R"("path": ")" << escape_string(suggestion.target_file.path.string()) << "\"," << nl;
+                ss << i3 << "\"line_start\": " << suggestion.target_file.line_start << "," << nl;
+                ss << i3 << "\"line_end\": " << suggestion.target_file.line_end << "," << nl;
+                ss << i3 << R"("action": ")" << to_string(suggestion.target_file.action) << "\"" << nl;
                 ss << i2 << "}," << nl;
 
-                if (!secondary_files.empty()) {
+                if (!suggestion.secondary_files.empty()) {
                     ss << i2 << "\"secondary_files\": [" << nl;
-                    for (std::size_t j = 0; j < secondary_files.size(); ++j) {
-                        const auto& sf = secondary_files[j];
+                    for (std::size_t j = 0; j < suggestion.secondary_files.size(); ++j) {
+                        const auto& sf = suggestion.secondary_files[j];
                         ss << i3 << "{" << nl;
                         ss << i4 << R"("path": ")" << escape_string(sf.path.string()) << "\"," << nl;
                         ss << i4 << "\"line_start\": " << sf.line_start << "," << nl;
                         ss << i4 << R"("action": ")" << to_string(sf.action) << "\"" << nl;
                         ss << i3 << "}";
-                        if (j < secondary_files.size() - 1) ss << ",";
+                        if (j < suggestion.secondary_files.size() - 1) ss << ",";
                         ss << nl;
                     }
                     ss << i2 << "]," << nl;
                 }
 
-                if (!before_code.code.empty()) {
+                if (!suggestion.before_code.code.empty()) {
                     ss << i2 << "\"before_code\": {" << nl;
-                    ss << i3 << R"("file": ")" << escape_string(before_code.file.string()) << "\"," << nl;
-                    ss << i3 << "\"line\": " << before_code.line << "," << nl;
-                    ss << i3 << R"("code": ")" << escape_string(before_code.code) << "\"" << nl;
+                    ss << i3 << R"("file": ")" << escape_string(suggestion.before_code.file.string()) << "\"," << nl;
+                    ss << i3 << "\"line\": " << suggestion.before_code.line << "," << nl;
+                    ss << i3 << R"("code": ")" << escape_string(suggestion.before_code.code) << "\"" << nl;
                     ss << i2 << "}," << nl;
                 }
 
-                if (!after_code.code.empty()) {
+                if (!suggestion.after_code.code.empty()) {
                     ss << i2 << "\"after_code\": {" << nl;
-                    ss << i3 << R"("file": ")" << escape_string(after_code.file.string()) << "\"," << nl;
-                    ss << i3 << "\"line\": " << after_code.line << "," << nl;
-                    ss << i3 << R"("code": ")" << escape_string(after_code.code) << "\"" << nl;
+                    ss << i3 << R"("file": ")" << escape_string(suggestion.after_code.file.string()) << "\"," << nl;
+                    ss << i3 << "\"line\": " << suggestion.after_code.line << "," << nl;
+                    ss << i3 << R"("code": ")" << escape_string(suggestion.after_code.code) << "\"" << nl;
                     ss << i2 << "}," << nl;
                 }
 
-                if (!edits.empty()) {
+                if (!suggestion.edits.empty()) {
                     ss << i2 << "\"edits\": [" << nl;
-                    for (std::size_t j = 0; j < edits.size(); ++j) {
-                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = edits[j];
+                    for (std::size_t j = 0; j < suggestion.edits.size(); ++j) {
+                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = suggestion.edits[j];
                         ss << i3 << "{" << nl;
                         ss << i4 << R"("file": ")" << escape_string(file.string()) << "\"," << nl;
                         ss << i4 << "\"start_line\": " << start_line << "," << nl;
@@ -723,47 +794,75 @@ namespace bha::cli
                         ss << i4 << "\"end_col\": " << end_col << "," << nl;
                         ss << i4 << R"("new_text": ")" << escape_string(new_text) << "\"" << nl;
                         ss << i3 << "}";
-                        if (j < edits.size() - 1) ss << ",";
+                        if (j < suggestion.edits.size() - 1) ss << ",";
                         ss << nl;
                     }
                     ss << i2 << "]," << nl;
                 }
 
-                if (!implementation_steps.empty()) {
+                if (!suggestion.implementation_steps.empty()) {
                     ss << i2 << "\"implementation_steps\": [" << nl;
-                    for (std::size_t j = 0; j < implementation_steps.size(); ++j) {
-                        ss << i3 << "\"" << escape_string(implementation_steps[j]) << "\"";
-                        if (j < implementation_steps.size() - 1) ss << ",";
+                    for (std::size_t j = 0; j < suggestion.implementation_steps.size(); ++j) {
+                        ss << i3 << "\"" << escape_string(suggestion.implementation_steps[j]) << "\"";
+                        if (j < suggestion.implementation_steps.size() - 1) ss << ",";
                         ss << nl;
                     }
                     ss << i2 << "]," << nl;
                 }
 
                 ss << i2 << "\"impact\": {" << nl;
-                ss << i3 << "\"total_files_affected\": " << impact.total_files_affected << "," << nl;
-                ss << i3 << "\"cumulative_savings_ns\": " << impact.cumulative_savings.count() << "," << nl;
-                ss << i3 << "\"rebuild_files_count\": " << impact.rebuild_files_count << nl;
+                ss << i3 << "\"total_files_affected\": " << suggestion.impact.total_files_affected << "," << nl;
+                ss << i3 << "\"cumulative_savings_ns\": " << suggestion.impact.cumulative_savings.count() << "," << nl;
+                ss << i3 << "\"rebuild_files_count\": " << suggestion.impact.rebuild_files_count << nl;
                 ss << i2 << "}," << nl;
 
-                if (!caveats.empty()) {
+                if (!suggestion.caveats.empty()) {
                     ss << i2 << "\"caveats\": [" << nl;
-                    for (std::size_t j = 0; j < caveats.size(); ++j) {
-                        ss << i3 << "\"" << escape_string(caveats[j]) << "\"";
-                        if (j < caveats.size() - 1) ss << ",";
+                    for (std::size_t j = 0; j < suggestion.caveats.size(); ++j) {
+                        ss << i3 << "\"" << escape_string(suggestion.caveats[j]) << "\"";
+                        if (j < suggestion.caveats.size() - 1) ss << ",";
                         ss << nl;
                     }
                     ss << i2 << "]," << nl;
                 }
 
-                if (!verification.empty()) {
-                    ss << i2 << R"("verification": ")" << escape_string(verification) << "\"," << nl;
+                if (!suggestion.verification.empty()) {
+                    ss << i2 << R"("verification": ")" << escape_string(suggestion.verification) << "\"," << nl;
                 }
 
-                if (documentation_link) {
-                    ss << i2 << R"("documentation_link": ")" << escape_string(*documentation_link) << "\"," << nl;
+                if (suggestion.documentation_link) {
+                    ss << i2 << R"("documentation_link": ")" << escape_string(*suggestion.documentation_link) << "\"," << nl;
                 }
 
-                ss << i2 << R"("file": ")" << escape_string(target_file.path.string()) << "\"" << nl;
+                if (!suggestion.hotspot_origins.empty()) {
+                    ss << i2 << "\"hotspot_origins\": [" << nl;
+                    for (std::size_t j = 0; j < suggestion.hotspot_origins.size(); ++j) {
+                        const auto& origin = suggestion.hotspot_origins[j];
+                        ss << i3 << "{" << nl;
+                        ss << i4 << R"("kind": ")" << escape_string(origin.kind) << "\"," << nl;
+                        ss << i4 << R"("source": ")" << escape_string(origin.source.string()) << "\"," << nl;
+                        ss << i4 << R"("target": ")" << escape_string(origin.target.string()) << "\"," << nl;
+                        ss << i4 << "\"estimated_cost_ns\": " << origin.estimated_cost.count() << "," << nl;
+                        ss << i4 << R"("note": ")" << escape_string(origin.note) << "\"," << nl;
+                        ss << i4 << "\"chain\": [" << nl;
+                        for (std::size_t k = 0; k < origin.chain.size(); ++k) {
+                            ss << i4 << i1 << "\"" << escape_string(origin.chain[k]) << "\"";
+                            if (k + 1 < origin.chain.size()) {
+                                ss << ",";
+                            }
+                            ss << nl;
+                        }
+                        ss << i4 << "]" << nl;
+                        ss << i3 << "}";
+                        if (j + 1 < suggestion.hotspot_origins.size()) {
+                            ss << ",";
+                        }
+                        ss << nl;
+                    }
+                    ss << i2 << "]," << nl;
+                }
+
+                ss << i2 << R"("file": ")" << escape_string(suggestion.target_file.path.string()) << "\"" << nl;
                 ss << i1 << "}";
                 if (idx < suggestions.size() - 1) ss << ",";
                 ss << nl;

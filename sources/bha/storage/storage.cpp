@@ -271,6 +271,44 @@ namespace bha::storage
             return perf;
         }
 
+        nlohmann::json serialize_cache_distribution(const analyzers::CacheDistributionAnalysisResult& cache) {
+            nlohmann::json j;
+            j["total_compilations"] = cache.total_compilations;
+            j["cache_friendly_compilations"] = cache.cache_friendly_compilations;
+            j["cache_risk_compilations"] = cache.cache_risk_compilations;
+            j["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
+            j["sccache_detected"] = cache.sccache_detected;
+            j["fastbuild_detected"] = cache.fastbuild_detected;
+            j["cache_wrapper_detected"] = cache.cache_wrapper_detected;
+            j["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
+            j["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
+            j["pch_generation_risk_count"] = cache.pch_generation_risk_count;
+            j["volatile_path_risk_count"] = cache.volatile_path_risk_count;
+            j["distributed_suitability_score"] = cache.distributed_suitability_score;
+            j["heavy_translation_units"] = cache.heavy_translation_units;
+            j["homogeneous_command_units"] = cache.homogeneous_command_units;
+            return j;
+        }
+
+        analyzers::CacheDistributionAnalysisResult deserialize_cache_distribution(const nlohmann::json& j) {
+            analyzers::CacheDistributionAnalysisResult cache;
+            cache.total_compilations = j.value("total_compilations", std::size_t{0});
+            cache.cache_friendly_compilations = j.value("cache_friendly_compilations", std::size_t{0});
+            cache.cache_risk_compilations = j.value("cache_risk_compilations", std::size_t{0});
+            cache.cache_hit_opportunity_percent = j.value("cache_hit_opportunity_percent", 0.0);
+            cache.sccache_detected = j.value("sccache_detected", false);
+            cache.fastbuild_detected = j.value("fastbuild_detected", false);
+            cache.cache_wrapper_detected = j.value("cache_wrapper_detected", false);
+            cache.dynamic_macro_risk_count = j.value("dynamic_macro_risk_count", std::size_t{0});
+            cache.profile_or_coverage_risk_count = j.value("profile_or_coverage_risk_count", std::size_t{0});
+            cache.pch_generation_risk_count = j.value("pch_generation_risk_count", std::size_t{0});
+            cache.volatile_path_risk_count = j.value("volatile_path_risk_count", std::size_t{0});
+            cache.distributed_suitability_score = j.value("distributed_suitability_score", 0.0);
+            cache.heavy_translation_units = j.value("heavy_translation_units", std::size_t{0});
+            cache.homogeneous_command_units = j.value("homogeneous_command_units", std::size_t{0});
+            return cache;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -285,6 +323,36 @@ namespace bha::storage
             j["priority"] = static_cast<int>(sugg.priority);
             j["estimated_savings_ms"] = duration_to_ms(sugg.estimated_savings);
             j["is_safe"] = sugg.is_safe;
+            j["application_mode"] = to_string(resolve_application_mode(sugg));
+            if (sugg.refactor_class_name) {
+                j["refactor_class_name"] = *sugg.refactor_class_name;
+            }
+            if (sugg.refactor_compile_commands_path) {
+                j["refactor_compile_commands_path"] = sugg.refactor_compile_commands_path->string();
+            }
+            if (sugg.application_summary) {
+                j["application_summary"] = *sugg.application_summary;
+            }
+            if (sugg.application_guidance) {
+                j["application_guidance"] = *sugg.application_guidance;
+            }
+            if (sugg.auto_apply_blocked_reason) {
+                j["auto_apply_blocked_reason"] = *sugg.auto_apply_blocked_reason;
+            }
+            if (!sugg.hotspot_origins.empty()) {
+                nlohmann::json origins = nlohmann::json::array();
+                for (const auto& origin : sugg.hotspot_origins) {
+                    nlohmann::json oj;
+                    oj["kind"] = origin.kind;
+                    oj["source"] = origin.source.string();
+                    oj["target"] = origin.target.string();
+                    oj["estimated_cost_ms"] = duration_to_ms(origin.estimated_cost);
+                    oj["chain"] = origin.chain;
+                    oj["note"] = origin.note;
+                    origins.push_back(std::move(oj));
+                }
+                j["hotspot_origins"] = std::move(origins);
+            }
             return j;
         }
 
@@ -302,6 +370,42 @@ namespace bha::storage
             sugg.priority = static_cast<Priority>(j.value("priority", 0));
             sugg.estimated_savings = ms_to_duration(j.value("estimated_savings_ms", 0.0));
             sugg.is_safe = j.value("is_safe", false);
+            sugg.application_mode = suggestion_application_mode_from_string(
+                j.value("application_mode", std::string(to_string(SuggestionApplicationMode::Advisory)))
+            );
+            if (j.contains("refactor_class_name")) {
+                sugg.refactor_class_name = j.value("refactor_class_name", "");
+            }
+            if (j.contains("refactor_compile_commands_path")) {
+                sugg.refactor_compile_commands_path = fs::path(
+                    j.value("refactor_compile_commands_path", "")
+                );
+            }
+            if (j.contains("application_summary")) {
+                sugg.application_summary = j.value("application_summary", "");
+            }
+            if (j.contains("application_guidance")) {
+                sugg.application_guidance = j.value("application_guidance", "");
+            }
+            if (j.contains("auto_apply_blocked_reason")) {
+                sugg.auto_apply_blocked_reason = j.value("auto_apply_blocked_reason", "");
+            }
+            if (j.contains("hotspot_origins")) {
+                for (const auto& oj : j["hotspot_origins"]) {
+                    HotspotOrigin origin;
+                    origin.kind = oj.value("kind", "");
+                    origin.source = oj.value("source", "");
+                    origin.target = oj.value("target", "");
+                    origin.estimated_cost = ms_to_duration(oj.value("estimated_cost_ms", 0.0));
+                    if (oj.contains("chain")) {
+                        for (const auto& item : oj["chain"]) {
+                            origin.chain.push_back(item.get<std::string>());
+                        }
+                    }
+                    origin.note = oj.value("note", "");
+                    sugg.hotspot_origins.push_back(std::move(origin));
+                }
+            }
             return sugg;
         }
 
@@ -373,6 +477,7 @@ namespace bha::storage
         j["dependencies"] = serialize_dependencies(analysis.dependencies);
 
         j["templates"] = serialize_templates(analysis.templates);
+        j["cache_distribution"] = serialize_cache_distribution(analysis.cache_distribution);
 
         nlohmann::json sugg_array = nlohmann::json::array();
         for (const auto& sugg : suggestions) {
@@ -449,6 +554,10 @@ namespace bha::storage
 
             if (j.contains("templates")) {
                 snapshot.analysis.templates = deserialize_templates(j["templates"]);
+            }
+
+            if (j.contains("cache_distribution")) {
+                snapshot.analysis.cache_distribution = deserialize_cache_distribution(j["cache_distribution"]);
             }
 
             if (j.contains("suggestions")) {
@@ -594,7 +703,8 @@ namespace bha::storage
 
     Result<ComparisonResult, Error> SnapshotStore::compare(
         const std::string& old_name,
-        const std::string& new_name
+        const std::string& new_name,
+        const double significance_threshold
     ) const {
         auto old_result = load(old_name);
         if (old_result.is_err()) {
@@ -607,13 +717,14 @@ namespace bha::storage
         }
 
         return Result<ComparisonResult, Error>::success(
-            compare_analyses(old_result.value().analysis, new_result.value().analysis)
+            compare_analyses(old_result.value().analysis, new_result.value().analysis, significance_threshold)
         );
     }
 
     Result<ComparisonResult, Error> SnapshotStore::compare_with_analysis(
         const std::string& snapshot_name,
-        const analyzers::AnalysisResult& current
+        const analyzers::AnalysisResult& current,
+        const double significance_threshold
     ) const {
         auto snapshot_result = load(snapshot_name);
         if (snapshot_result.is_err()) {
@@ -621,7 +732,7 @@ namespace bha::storage
         }
 
         return Result<ComparisonResult, Error>::success(
-            compare_analyses(snapshot_result.value().analysis, current)
+            compare_analyses(snapshot_result.value().analysis, current, significance_threshold)
         );
     }
 
@@ -632,22 +743,48 @@ namespace bha::storage
     ComparisonResult compare_analyses(
         const analyzers::AnalysisResult& old_result,
         const analyzers::AnalysisResult& new_result,
-        double significance_threshold
+        const double significance_threshold
     ) {
+        auto percent_change = [](const Duration old_time, const Duration delta) -> double {
+            if (old_time.count() <= 0) {
+                return 0.0;
+            }
+            return 100.0 * static_cast<double>(delta.count()) / static_cast<double>(old_time.count());
+        };
+
+        auto sum_file_compile_time = [](const std::vector<analyzers::FileAnalysisResult>& files) -> Duration {
+            Duration total = Duration::zero();
+            for (const auto& file : files) {
+                total += file.compile_time;
+            }
+            return total;
+        };
+
         ComparisonResult result;
+        result.significance_threshold_percent = significance_threshold * 100.0;
 
         // Overall build time change
         auto old_time = old_result.performance.total_build_time;
         auto new_time = new_result.performance.total_build_time;
         result.build_time_delta = new_time - old_time;
 
-        if (old_time.count() > 0) {
-            result.build_time_percent_change =
-                100.0 * static_cast<double>(result.build_time_delta.count()) /
-                static_cast<double>(old_time.count());
-        } else {
-            result.build_time_percent_change = 0.0;
-        }
+        result.build_time_percent_change = percent_change(old_time, result.build_time_delta);
+
+        result.translation_unit.old_time = sum_file_compile_time(old_result.files);
+        result.translation_unit.new_time = sum_file_compile_time(new_result.files);
+        result.translation_unit.delta = result.translation_unit.new_time - result.translation_unit.old_time;
+        result.translation_unit.percent_change =
+            percent_change(result.translation_unit.old_time, result.translation_unit.delta);
+
+        result.headers.old_time = old_result.dependencies.total_include_time;
+        result.headers.new_time = new_result.dependencies.total_include_time;
+        result.headers.delta = result.headers.new_time - result.headers.old_time;
+        result.headers.percent_change = percent_change(result.headers.old_time, result.headers.delta);
+
+        result.templates.old_time = old_result.templates.total_template_time;
+        result.templates.new_time = new_result.templates.total_template_time;
+        result.templates.delta = result.templates.new_time - result.templates.old_time;
+        result.templates.percent_change = percent_change(result.templates.old_time, result.templates.delta);
 
         // File count change
         result.file_count_delta =
@@ -671,11 +808,7 @@ namespace bha::storage
             } else {
                 const auto* new_file = it->second;
                 auto delta = new_file->compile_time - old_file->compile_time;
-                double percent = 0.0;
-                if (old_file->compile_time.count() > 0) {
-                    percent = 100.0 * static_cast<double>(delta.count()) /
-                        static_cast<double>(old_file->compile_time.count());
-                }
+                const double percent = percent_change(old_file->compile_time, delta);
 
                 if (std::abs(percent) > significance_threshold * 100.0) {
                     ComparisonResult::FileChange change;

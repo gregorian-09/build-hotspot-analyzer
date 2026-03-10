@@ -13,12 +13,15 @@ add_executable(bha_tests
         unit/core/test_result.cpp
         unit/core/test_types.cpp
         unit/suggestions/test_forward_decl_suggester.cpp
+        unit/suggestions/test_explainability.cpp
         unit/suggestions/test_header_split_suggester.cpp
         unit/suggestions/test_include_suggester.cpp
         unit/suggestions/test_pch_suggester.cpp
         unit/suggestions/test_pimpl_eligibility.cpp
         unit/suggestions/test_pimpl_suggester.cpp
         unit/suggestions/test_template_suggester.cpp
+        unit/suggestions/test_unity_build_suggester.cpp
+        unit/suggestions/test_unreal_mode.cpp
         unit/suggestions/test_project_root.cpp
         unit/analyzers/test_dependency_analyzer.cpp
         unit/analyzers/test_file_analyzer.cpp
@@ -27,6 +30,7 @@ add_executable(bha_tests
         unit/analyzers/test_symbol_analyzer.cpp
         unit/analyzers/test_template_analyzer.cpp
         unit/exporters/test_exporter.cpp
+        unit/storage/test_storage_compare.cpp
         unit/git/test_git_integration.cpp
 )
 
