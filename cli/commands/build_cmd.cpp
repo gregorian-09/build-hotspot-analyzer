@@ -144,6 +144,12 @@ namespace bha::cli
                         std::cerr << "\n";
                     }
                 }
+                if (args.get_flag("verbose") && !result.output.empty()) {
+                    std::cerr << result.output;
+                    if (!result.output.ends_with('\n')) {
+                        std::cerr << "\n";
+                    }
+                }
                 return 1;
             }
 
@@ -155,6 +161,13 @@ namespace bha::cli
 
             if (options.enable_memory_profiling) {
                 print_verbose("Memory files: " + std::to_string(result.memory_files.size()));
+            }
+
+            if (args.get_flag("verbose") && !result.output.empty()) {
+                std::cout << result.output;
+                if (!result.output.ends_with('\n')) {
+                    std::cout << "\n";
+                }
             }
 
             if (args.get_flag("analyze") && !result.trace_files.empty()) {

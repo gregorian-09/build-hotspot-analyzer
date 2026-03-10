@@ -89,8 +89,8 @@ namespace
         std::cout << "  bha suggest --detailed traces/        Get suggestions with code examples\n";
         std::cout << "  bha suggest --pch-min-includes 5      Custom PCH detection threshold\n";
         std::cout << "  bha export --format html -o report    Generate interactive HTML report\n";
-        std::cout << "  bha snapshot save baseline            Save analysis for comparison\n";
-        std::cout << "  bha compare baseline current          Compare two snapshots\n";
+        std::cout << "  bha snapshot baseline set v1.0        Set baseline snapshot\n";
+        std::cout << "  bha compare --baseline current        Compare with current baseline\n";
 
         std::cout << "\n";
         if (colors::enabled()) {

@@ -13,6 +13,8 @@
 #include <iomanip>
 #include <sstream>
 #include <cmath>
+#include <optional>
+#include <vector>
 
 namespace bha::cli
 {
@@ -112,6 +114,16 @@ namespace bha::cli
             return green(ss.str());
         }
 
+        bool gate_exceeded(const double percent_change, const std::optional<double> gate_percent) {
+            return gate_percent.has_value() && percent_change > *gate_percent;
+        }
+
+        std::string format_percent_plain(const double percent) {
+            std::ostringstream ss;
+            ss << std::fixed << std::setprecision(1) << percent << "%";
+            return ss.str();
+        }
+
     }  // namespace
 
     /**
@@ -138,14 +150,18 @@ namespace bha::cli
                    "  bha compare v1.0 v2.0\n"
                    "  bha compare before-refactor after-refactor\n"
                    "  bha compare --baseline current-build\n"
-                   "  bha compare v1.0 v2.0 --top 20";
+                   "  bha compare v1.0 v2.0 --top 20\n"
+                   "  bha compare --baseline current --gate-tu 5 --gate-header 8 --gate-template 10";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
             return {
                 {"baseline", 'b', "Compare against baseline", false, false, "", ""},
                 {"top", 't', "Number of top changes to show", false, true, "10", "N"},
-                {"threshold", 0, "Significance threshold (%)", false, true, "5", "PERCENT"},
+                {"threshold", 0, "Overall regression threshold (%)", false, true, "5", "PERCENT"},
+                {"gate-tu", 0, "Fail if Translation Unit category regresses beyond (%)", false, true, "", "PERCENT"},
+                {"gate-header", 0, "Fail if Header category regresses beyond (%)", false, true, "", "PERCENT"},
+                {"gate-template", 0, "Fail if Template category regresses beyond (%)", false, true, "", "PERCENT"},
                 {"storage", 0, "Storage directory", false, true, ".bha/snapshots", "DIR"},
             };
         }
@@ -159,6 +175,20 @@ namespace bha::cli
                 if (args.positional().size() < 2) {
                     return "Usage: bha compare <old-snapshot> <new-snapshot>";
                 }
+            }
+
+            const auto threshold = args.get_double("threshold").value_or(5.0);
+            if (threshold < 0.0) {
+                return "--threshold must be >= 0";
+            }
+            if (const auto gate_tu = args.get_double("gate-tu"); gate_tu && *gate_tu < 0.0) {
+                return "--gate-tu must be >= 0";
+            }
+            if (const auto gate_header = args.get_double("gate-header"); gate_header && *gate_header < 0.0) {
+                return "--gate-header must be >= 0";
+            }
+            if (const auto gate_template = args.get_double("gate-template"); gate_template && *gate_template < 0.0) {
+                return "--gate-template must be >= 0";
             }
             return "";
         }
@@ -188,7 +218,7 @@ namespace bha::cli
             if (args.get_flag("baseline")) {
                 auto baseline = store.get_baseline();
                 if (!baseline) {
-                    print_error("No baseline set. Use 'bha baseline set <snapshot>' first.");
+                    print_error("No baseline set. Use 'bha snapshot baseline set <snapshot>' first.");
                     return 1;
                 }
                 old_name = *baseline;
@@ -199,22 +229,41 @@ namespace bha::cli
             }
 
             std::size_t top_count = static_cast<std::size_t>(args.get_int("top").value_or(10));
+            const double threshold_percent = args.get_double("threshold").value_or(5.0);
+            const auto gate_tu = args.get_double("gate-tu");
+            const auto gate_header = args.get_double("gate-header");
+            const auto gate_template = args.get_double("gate-template");
 
-            auto result = store.compare(old_name, new_name);
+            auto result = store.compare(old_name, new_name, threshold_percent / 100.0);
             if (result.is_err()) {
                 print_error("Comparison failed: " + result.error().message());
                 return 1;
             }
 
             const auto& comparison = result.value();
+            const bool tu_gate_failed = gate_exceeded(comparison.translation_unit.percent_change, gate_tu);
+            const bool header_gate_failed = gate_exceeded(comparison.headers.percent_change, gate_header);
+            const bool template_gate_failed = gate_exceeded(comparison.templates.percent_change, gate_template);
+            const bool category_gate_failed = tu_gate_failed || header_gate_failed || template_gate_failed;
+            const bool overall_regression_failed = comparison.is_regression() && comparison.is_significant();
 
             if (is_json()) {
-                print_comparison_json(comparison, old_name, new_name);
+                print_comparison_json(
+                    comparison, old_name, new_name,
+                    gate_tu, gate_header, gate_template,
+                    tu_gate_failed, header_gate_failed, template_gate_failed,
+                    overall_regression_failed
+                );
             } else {
-                print_comparison(comparison, old_name, new_name, top_count);
+                print_comparison(
+                    comparison, old_name, new_name, top_count,
+                    gate_tu, gate_header, gate_template,
+                    tu_gate_failed, header_gate_failed, template_gate_failed,
+                    overall_regression_failed
+                );
             }
 
-            return comparison.is_regression() ? 1 : 0;
+            return (overall_regression_failed || category_gate_failed) ? 1 : 0;
         }
 
     private:
@@ -222,7 +271,14 @@ namespace bha::cli
             const storage::ComparisonResult& result,
             const std::string& old_name,
             const std::string& new_name,
-            std::size_t top_count
+            std::size_t top_count,
+            const std::optional<double> gate_tu,
+            const std::optional<double> gate_header,
+            const std::optional<double> gate_template,
+            const bool tu_gate_failed,
+            const bool header_gate_failed,
+            const bool template_gate_failed,
+            const bool overall_regression_failed
         ) {
             std::cout << bold("Build Comparison: ") << old_name << " -> " << new_name << "\n\n";
 
@@ -232,10 +288,37 @@ namespace bha::cli
                       << format_percent_change(result.build_time_percent_change) << ")\n";
             std::cout << "  File Count: " << (result.file_count_delta >= 0 ? "+" : "")
                       << result.file_count_delta << "\n";
+            std::cout << "  Threshold: +" << std::fixed << std::setprecision(1)
+                      << result.significance_threshold_percent << "%\n";
+
+            std::cout << "\n" << bold("Category Deltas") << "\n";
+            std::cout << "  TU:       " << format_delta(result.translation_unit.delta)
+                      << " (" << format_percent_change(result.translation_unit.percent_change) << ")";
+            if (gate_tu) {
+                std::cout << " gate<=" << format_percent_plain(*gate_tu)
+                          << " " << (tu_gate_failed ? red("[FAIL]") : green("[PASS]"));
+            }
+            std::cout << "\n";
+
+            std::cout << "  Headers:  " << format_delta(result.headers.delta)
+                      << " (" << format_percent_change(result.headers.percent_change) << ")";
+            if (gate_header) {
+                std::cout << " gate<=" << format_percent_plain(*gate_header)
+                          << " " << (header_gate_failed ? red("[FAIL]") : green("[PASS]"));
+            }
+            std::cout << "\n";
+
+            std::cout << "  Templates:" << format_delta(result.templates.delta)
+                      << " (" << format_percent_change(result.templates.percent_change) << ")";
+            if (gate_template) {
+                std::cout << " gate<=" << format_percent_plain(*gate_template)
+                          << " " << (template_gate_failed ? red("[FAIL]") : green("[PASS]"));
+            }
+            std::cout << "\n";
 
             // Status
             std::cout << "\n";
-            if (result.is_regression() && result.is_significant()) {
+            if (overall_regression_failed) {
                 std::cout << red("! REGRESSION DETECTED") << "\n";
                 std::cout << "  Build time increased by "
                           << std::fixed << std::setprecision(1) << result.build_time_percent_change << "%\n";
@@ -245,6 +328,22 @@ namespace bha::cli
                           << std::fixed << std::setprecision(1) << -result.build_time_percent_change << "%\n";
             } else {
                 std::cout << dim("= No significant change") << "\n";
+            }
+
+            if (tu_gate_failed || header_gate_failed || template_gate_failed) {
+                std::cout << red("! CATEGORY GATE FAILED") << "\n";
+                if (tu_gate_failed) {
+                    std::cout << "  - TU regression " << format_percent_plain(result.translation_unit.percent_change)
+                              << " exceeded gate " << format_percent_plain(*gate_tu) << "\n";
+                }
+                if (header_gate_failed) {
+                    std::cout << "  - Header regression " << format_percent_plain(result.headers.percent_change)
+                              << " exceeded gate " << format_percent_plain(*gate_header) << "\n";
+                }
+                if (template_gate_failed) {
+                    std::cout << "  - Template regression " << format_percent_plain(result.templates.percent_change)
+                              << " exceeded gate " << format_percent_plain(*gate_template) << "\n";
+                }
             }
 
             if (!result.regressions.empty()) {
@@ -380,21 +479,54 @@ namespace bha::cli
         static void print_comparison_json(
             const storage::ComparisonResult& result,
             const std::string& old_name,
-            const std::string& new_name
+            const std::string& new_name,
+            const std::optional<double> gate_tu,
+            const std::optional<double> gate_header,
+            const std::optional<double> gate_template,
+            const bool tu_gate_failed,
+            const bool header_gate_failed,
+            const bool template_gate_failed,
+            const bool overall_regression_failed
         ) {
+            const bool any_category_gate_failed = tu_gate_failed || header_gate_failed || template_gate_failed;
             std::cout << "{\n";
             std::cout << "  \"old_snapshot\": \"" << old_name << "\",\n";
             std::cout << "  \"new_snapshot\": \"" << new_name << "\",\n";
             std::cout << "  \"build_time_delta_ms\": "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(result.build_time_delta).count() << ",\n";
             std::cout << "  \"build_time_percent_change\": " << result.build_time_percent_change << ",\n";
+            std::cout << "  \"significance_threshold_percent\": " << result.significance_threshold_percent << ",\n";
             std::cout << "  \"file_count_delta\": " << result.file_count_delta << ",\n";
             std::cout << "  \"is_regression\": " << (result.is_regression() ? "true" : "false") << ",\n";
             std::cout << "  \"is_significant\": " << (result.is_significant() ? "true" : "false") << ",\n";
+            std::cout << "  \"overall_gate_failed\": " << (overall_regression_failed ? "true" : "false") << ",\n";
+            std::cout << "  \"category_gate_failed\": " << (any_category_gate_failed ? "true" : "false") << ",\n";
+            std::cout << "  \"exit_failure\": " << ((overall_regression_failed || any_category_gate_failed) ? "true" : "false") << ",\n";
             std::cout << "  \"regressions_count\": " << result.regressions.size() << ",\n";
             std::cout << "  \"improvements_count\": " << result.improvements.size() << ",\n";
             std::cout << "  \"new_files_count\": " << result.new_files.size() << ",\n";
-            std::cout << "  \"removed_files_count\": " << result.removed_files.size() << "\n";
+            std::cout << "  \"removed_files_count\": " << result.removed_files.size() << ",\n";
+
+            std::cout << "  \"categories\": {\n";
+            std::cout << "    \"translation_unit\": {\n";
+            std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.translation_unit.delta).count() << ",\n";
+            std::cout << "      \"percent_change\": " << result.translation_unit.percent_change << ",\n";
+            std::cout << "      \"gate_percent\": " << (gate_tu ? std::to_string(*gate_tu) : "null") << ",\n";
+            std::cout << "      \"gate_failed\": " << (tu_gate_failed ? "true" : "false") << "\n";
+            std::cout << "    },\n";
+            std::cout << "    \"headers\": {\n";
+            std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.headers.delta).count() << ",\n";
+            std::cout << "      \"percent_change\": " << result.headers.percent_change << ",\n";
+            std::cout << "      \"gate_percent\": " << (gate_header ? std::to_string(*gate_header) : "null") << ",\n";
+            std::cout << "      \"gate_failed\": " << (header_gate_failed ? "true" : "false") << "\n";
+            std::cout << "    },\n";
+            std::cout << "    \"templates\": {\n";
+            std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.templates.delta).count() << ",\n";
+            std::cout << "      \"percent_change\": " << result.templates.percent_change << ",\n";
+            std::cout << "      \"gate_percent\": " << (gate_template ? std::to_string(*gate_template) : "null") << ",\n";
+            std::cout << "      \"gate_failed\": " << (template_gate_failed ? "true" : "false") << "\n";
+            std::cout << "    }\n";
+            std::cout << "  }\n";
             std::cout << "}\n";
         }
     };

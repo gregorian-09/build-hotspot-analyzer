@@ -47,7 +47,7 @@ namespace bha::cli
             return {
                 {"output", 'o', "Output file (required)", true, true, "", "FILE"},
                 {"format", 'f', "Output format (json, html, csv, md)", false, true, "", "FORMAT"},
-                {"include-suggestions", 's', "Include optimization suggestions", false, false, "", ""},
+                {"include-suggestions", 's', "Include optimization suggestions (csv/md only)", false, false, "", ""},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
@@ -211,20 +211,59 @@ namespace bha::cli
             print_verbose("Running analysis...");
 
             AnalysisOptions analysis_opts;
+            analysis_opts.verbose = is_verbose() && !is_json();
             auto analysis_result = analyzers::run_full_analysis(build_trace, analysis_opts);
             if (!analysis_result.is_ok()) {
                 print_error("Analysis failed: " + analysis_result.error().message());
                 return 1;
             }
 
-            // Generate suggestions if requested
+            const bool supports_suggestions_payload =
+                format == exporters::ExportFormat::CSV || format == exporters::ExportFormat::Markdown;
+            const bool include_suggestions =
+                args.get_flag("include-suggestions") && supports_suggestions_payload;
+            if (args.get_flag("include-suggestions") && !supports_suggestions_payload) {
+                print_verbose("Suggestions payload is disabled for JSON/HTML exports");
+            }
+
+            // Generate suggestions if requested and supported by target payload
             std::vector<Suggestion> suggestions;
-            if (args.get_flag("include-suggestions")) {
+            if (include_suggestions) {
                 print_verbose("Generating suggestions...");
 
                 SuggesterOptions suggester_opts;
+                fs::path project_root;
+                if (project_root.empty() && !args.positional().empty()) {
+                    const fs::path trace_path(args.positional().front());
+                    const fs::path abs_trace = trace_path.is_relative() ? fs::absolute(trace_path) : trace_path;
+                    project_root = suggestions::find_project_root_from_trace_path(abs_trace);
+                }
+                if (project_root.empty()) {
+                    for (const auto& unit : build_trace.units) {
+                        const auto resolved = suggestions::resolve_source_path(unit.source_file);
+                        const auto root = suggestions::find_repository_root(resolved);
+                        if (!root.empty() && suggestions::has_build_system_marker(root)) {
+                            project_root = root;
+                            break;
+                        }
+                    }
+                }
+                if (project_root.empty()) {
+                    for (const auto& header : analysis_result.value().dependencies.headers) {
+                        const auto resolved = suggestions::resolve_source_path(header.path);
+                        const auto root = suggestions::find_repository_root(resolved);
+                        if (!root.empty() && suggestions::has_build_system_marker(root)) {
+                            project_root = root;
+                            break;
+                        }
+                    }
+                }
+                if (project_root.empty()) {
+                    project_root = fs::current_path();
+                }
+                print_verbose("Resolved project root: " + project_root.generic_string());
                 auto suggestions_result = suggestions::generate_all_suggestions(
-                    build_trace, analysis_result.value(), suggester_opts
+                    build_trace, analysis_result.value(), suggester_opts, project_root
                 );
 
                 if (suggestions_result.is_ok()) {
@@ -246,7 +285,7 @@ namespace bha::cli
             export_opts.html_title = args.get_or("title", "Build Analysis Report");
             export_opts.max_files = static_cast<std::size_t>(args.get_int("max-files").value_or(0));
             export_opts.max_suggestions = static_cast<std::size_t>(args.get_int("max-suggestions").value_or(0));
-            export_opts.include_suggestions = !suggestions.empty();
+            export_opts.include_suggestions = include_suggestions && !suggestions.empty();
 
             // Content control options (inverted logic - flags disable features)
             export_opts.include_file_details = !args.get_flag("no-file-details");
@@ -292,124 +331,11 @@ namespace bha::cli
         }
     };
 
-    /**
-     * Report command - shorthand for common export operations.
-     */
-    class ReportCommand final : public Command {
-    public:
-        [[nodiscard]] std::string_view name() const noexcept override {
-            return "report";
-        }
-
-        [[nodiscard]] std::string_view description() const noexcept override {
-            return "Generate an HTML analysis report (alias for 'export --format html')";
-        }
-
-        [[nodiscard]] std::string usage() const override {
-            return "Usage: bha report [OPTIONS] <trace-files...>\n"
-                   "\n"
-                   "Examples:\n"
-                   "  bha report traces/\n"
-                   "  bha report -o custom-report.html build/*.json\n"
-                   "  bha report --dark-mode --title 'My Project' traces/";
-        }
-
-        [[nodiscard]] std::vector<ArgDef> arguments() const override {
-            return {
-                {"output", 'o', "Output file", false, true, "bha-report.html", "FILE"},
-                {"dark-mode", 0, "Use dark mode theme", false, false, "", ""},
-                {"title", 0, "Report title", false, true, "Build Analysis Report", "TITLE"},
-                {"open", 0, "Open report in browser after generation", false, false, "", ""},
-            };
-        }
-
-        [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
-            if (args.positional().empty()) {
-                return "No trace files specified";
-            }
-            return "";
-        }
-
-        [[nodiscard]] int execute(const ParsedArgs& parsed_args) override {
-            if (parsed_args.get_flag("help")) {
-                print_help();
-                return 0;
-            }
-
-            // Build export command args
-            std::vector<std::string> export_args;
-            export_args.emplace_back("--format");
-            export_args.emplace_back("html");
-            export_args.emplace_back("--include-suggestions");
-
-            export_args.emplace_back("-o");
-            export_args.push_back(parsed_args.get_or("output", "bha-report.html"));
-
-            if (parsed_args.get_flag("dark-mode")) {
-                export_args.emplace_back("--dark-mode");
-            }
-
-            if (const auto title = parsed_args.get("title")) {
-                export_args.emplace_back("--title");
-                export_args.push_back(*title);
-            }
-
-            if (parsed_args.get_flag("verbose")) {
-                export_args.emplace_back("--verbose");
-            }
-            if (parsed_args.get_flag("quiet")) {
-                export_args.emplace_back("--quiet");
-            }
-
-            for (const auto& pos : parsed_args.positional()) {
-                export_args.push_back(pos);
-            }
-
-            // Parse and execute export command
-            auto* export_cmd = CommandRegistry::instance().find("export");
-            if (!export_cmd) {
-                print_error("Export command not found");
-                return 1;
-            }
-
-            auto [args, error, success] = parse_arguments(export_args, export_cmd->arguments());
-            if (!success) {
-                print_error(error);
-                return 1;
-            }
-
-            const int result = export_cmd->execute(args);
-
-            // Open in browser if requested
-            if (result == 0 && parsed_args.get_flag("open")) {
-                const auto output_file = parsed_args.get_or("output", "bha-report.html");
-                open_in_browser(output_file);
-            }
-
-            return result;
-        }
-
-    private:
-        static void open_in_browser(const std::string& path) {
-#ifdef _WIN32
-            std::string cmd = R"(start "" ")" + path + "\"";
-#elif defined(__APPLE__)
-            std::string cmd = "open \"" + path + "\"";
-#else
-            const std::string cmd = "xdg-open \"" + path + "\" 2>/dev/null || sensible-browser \"" + path + "\"";
-#endif
-            std::system(cmd.c_str());
-        }
-    };
-
     namespace {
         struct ExportCommandRegistrar {
             ExportCommandRegistrar() {
                 CommandRegistry::instance().register_command(
                     std::make_unique<ExportCommand>()
-                );
-                CommandRegistry::instance().register_command(
-                    std::make_unique<ReportCommand>()
                 );
             }
         } export_registrar;

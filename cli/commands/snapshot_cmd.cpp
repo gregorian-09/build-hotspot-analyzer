@@ -101,13 +101,18 @@ namespace bha::cli
                    "  list                       List all snapshots\n"
                    "  show <name>                Show snapshot details\n"
                    "  delete <name>              Delete a snapshot\n"
+                   "  baseline set <name>        Set comparison baseline snapshot\n"
+                   "  baseline show              Show current baseline snapshot\n"
+                   "  baseline clear             Clear comparison baseline snapshot\n"
                    "\n"
                    "Examples:\n"
                    "  bha snapshot save v1.0 build/trace.json\n"
                    "  bha snapshot save before-refactor trace.json -d \"Before major refactor\"\n"
                    "  bha snapshot list\n"
                    "  bha snapshot show v1.0\n"
-                   "  bha snapshot delete old-snapshot";
+                   "  bha snapshot delete old-snapshot\n"
+                   "  bha snapshot baseline set v1.0\n"
+                   "  bha snapshot baseline show";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
@@ -120,12 +125,13 @@ namespace bha::cli
 
         [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
             if (args.positional().empty()) {
-                return "No subcommand specified. Use 'bha snapshot list|save|show|delete'";
+                return "No subcommand specified. Use 'bha snapshot list|save|show|delete|baseline'";
             }
 
             const std::string& subcommand = args.positional()[0];
             if (subcommand != "save" && subcommand != "list" &&
-                subcommand != "show" && subcommand != "delete") {
+                subcommand != "show" && subcommand != "delete" &&
+                subcommand != "baseline") {
                 return "Unknown subcommand: " + subcommand;
                 }
 
@@ -137,6 +143,19 @@ namespace bha::cli
                 args.positional().size() < 2) {
                 return "Usage: bha snapshot " + subcommand + " <name>";
                 }
+
+            if (subcommand == "baseline") {
+                if (args.positional().size() < 2) {
+                    return "Usage: bha snapshot baseline <set|show|clear> [snapshot]";
+                }
+                const std::string& baseline_action = args.positional()[1];
+                if (baseline_action != "set" && baseline_action != "show" && baseline_action != "clear") {
+                    return "Unknown baseline action: " + baseline_action;
+                }
+                if (baseline_action == "set" && args.positional().size() < 3) {
+                    return "Usage: bha snapshot baseline set <snapshot>";
+                }
+            }
 
             return "";
         }
@@ -184,6 +203,18 @@ namespace bha::cli
                 if (subcommand == "delete") {
                     const std::string snap_name = args.positional()[1];
                     return delete_snapshot(store, snap_name);
+                }
+                if (subcommand == "baseline") {
+                    const std::string& baseline_action = args.positional()[1];
+                    if (baseline_action == "set") {
+                        return set_baseline(store, args.positional()[2]);
+                    }
+                    if (baseline_action == "show") {
+                        return show_baseline(store);
+                    }
+                    if (baseline_action == "clear") {
+                        return clear_baseline(store);
+                    }
                 }
             }
 
@@ -313,7 +344,9 @@ namespace bha::cli
             spinner2.success("Analyzed");
 
             Spinner spinner3("Generating suggestions");
-            auto sugg_result = suggestions::generate_all_suggestions(trace, analysis_result.value(), SuggesterOptions{});
+            auto sugg_result = suggestions::generate_all_suggestions(
+                trace, analysis_result.value(), SuggesterOptions{}, fs::current_path()
+            );
             std::vector<Suggestion> sugg_list;
             if (sugg_result.is_ok()) {
                 sugg_list = std::move(sugg_result.value());
@@ -428,6 +461,89 @@ namespace bha::cli
             }
 
             print("Snapshot deleted: " + snap_name);
+            return 0;
+        }
+
+        [[nodiscard]] int set_baseline(
+            const storage::SnapshotStore& store,
+            const std::string& snap_name
+        ) const {
+            if (!store.exists(snap_name)) {
+                print_error("Snapshot not found: " + snap_name);
+                print("Use 'bha snapshot list' to see available snapshots.");
+                return 1;
+            }
+
+            if (auto result = store.set_baseline(snap_name); result.is_err()) {
+                print_error("Failed to set baseline: " + result.error().message());
+                return 1;
+            }
+
+            print("Baseline set to: " + snap_name);
+            return 0;
+        }
+
+        [[nodiscard]] int show_baseline(const storage::SnapshotStore& store) const {
+            const auto baseline = store.get_baseline();
+            if (!baseline) {
+                if (is_json()) {
+                    std::cout << "{\"baseline\": null}\n";
+                } else {
+                    print("No baseline set.");
+                    print("Use 'bha snapshot baseline set <snapshot>' to set one.");
+                }
+                return 0;
+            }
+
+            auto result = store.load(*baseline);
+            if (result.is_err()) {
+                print_error("Failed to load baseline snapshot: " + result.error().message());
+                return 1;
+            }
+
+            const auto& [metadata, analysis, suggestions] = result.value();
+            (void)analysis;
+            (void)suggestions;
+
+            if (is_json()) {
+                std::cout << "{\n";
+                std::cout << "  \"baseline\": \"" << *baseline << "\",\n";
+                std::cout << R"(  "created_at": ")" << format_time(metadata.created_at) << "\",\n";
+                std::cout << R"(  "git_commit": ")" << metadata.git_commit << "\",\n";
+                std::cout << R"(  "git_branch": ")" << metadata.git_branch << "\",\n";
+                std::cout << "  \"file_count\": " << metadata.file_count << ",\n";
+                std::cout << "  \"total_build_time_ms\": "
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(metadata.total_build_time).count() << "\n";
+                std::cout << "}\n";
+                return 0;
+            }
+
+            std::cout << bold("Baseline Snapshot: ") << *baseline << "\n\n";
+            std::cout << "Created:    " << format_time(metadata.created_at) << "\n";
+            if (!metadata.git_branch.empty()) {
+                std::cout << "Git Branch: " << metadata.git_branch << "\n";
+            }
+            if (!metadata.git_commit.empty()) {
+                std::cout << "Git Commit: " << metadata.git_commit << "\n";
+            }
+            std::cout << "Files:      " << metadata.file_count << "\n";
+            std::cout << "Build Time: " << format_duration_short(metadata.total_build_time) << "\n";
+            return 0;
+        }
+
+        [[nodiscard]] int clear_baseline(const storage::SnapshotStore& store) const {
+            const auto baseline = store.get_baseline();
+            if (!baseline) {
+                print("No baseline is currently set.");
+                return 0;
+            }
+
+            if (auto result = store.clear_baseline(); result.is_err()) {
+                print_error("Failed to clear baseline: " + result.error().message());
+                return 1;
+            }
+
+            print("Baseline cleared (was: " + *baseline + ")");
             return 0;
         }
     };

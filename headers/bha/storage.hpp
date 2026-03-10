@@ -59,10 +59,22 @@ namespace bha::storage
      * Summary of differences between two snapshots.
      */
     struct ComparisonResult {
+        struct CategoryDelta {
+            Duration old_time = Duration::zero();
+            Duration new_time = Duration::zero();
+            Duration delta = Duration::zero();
+            double percent_change = 0.0;
+        };
+
         // Overall changes
         Duration build_time_delta;           // Positive = slower, negative = faster
         double build_time_percent_change;    // Percentage change
         int64_t file_count_delta;            // Change in file count
+        double significance_threshold_percent = 5.0;
+
+        CategoryDelta translation_unit;
+        CategoryDelta headers;
+        CategoryDelta templates;
 
         // Performance regressions (files that got slower)
         struct FileChange {
@@ -100,7 +112,7 @@ namespace bha::storage
         bool is_regression() const { return build_time_delta.count() > 0; }
         bool is_improvement() const { return build_time_delta.count() < 0; }
         bool is_significant() const {
-            return std::abs(build_time_percent_change) > 5.0; // >5% change
+            return std::abs(build_time_percent_change) > significance_threshold_percent;
         }
     };
 
@@ -177,7 +189,8 @@ namespace bha::storage
          */
         Result<ComparisonResult, Error> compare(
             const std::string& old_name,
-            const std::string& new_name
+            const std::string& new_name,
+            double significance_threshold = 0.10
         ) const;
 
         /**
@@ -185,7 +198,8 @@ namespace bha::storage
          */
         Result<ComparisonResult, Error> compare_with_analysis(
             const std::string& snapshot_name,
-            const analyzers::AnalysisResult& current
+            const analyzers::AnalysisResult& current,
+            double significance_threshold = 0.10
         ) const;
 
         /**

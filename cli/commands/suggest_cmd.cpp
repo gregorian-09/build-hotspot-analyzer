@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <chrono>
 #include <algorithm>
 #include <sstream>
 
@@ -22,6 +23,30 @@ namespace bha::cli
     namespace fs = std::filesystem;
 
     namespace {
+        std::optional<fs::path> find_compile_commands_path(
+            const fs::path& project_root
+        ) {
+            if (project_root.empty()) {
+                return std::nullopt;
+            }
+
+            const std::vector<fs::path> candidates = {
+                project_root / "compile_commands.json",
+                project_root / "build" / "compile_commands.json",
+                project_root / "out" / "build" / "compile_commands.json",
+                project_root / "cmake-build-debug" / "compile_commands.json",
+                project_root / "cmake-build-release" / "compile_commands.json",
+            };
+
+            for (const auto& candidate : candidates) {
+                if (fs::exists(candidate)) {
+                    return candidate;
+                }
+            }
+
+            return std::nullopt;
+        }
+
         std::optional<SuggestionType> parse_suggestion_type(const std::string& str) {
             std::string lower = str;
             std::ranges::transform(lower, lower.begin(), [](const unsigned char c) { return std::tolower(c); });
@@ -72,6 +97,7 @@ namespace bha::cli
                 {"include-unsafe", 0, "Include potentially unsafe suggestions", false, false, "", ""},
                 {"detailed", 'd', "Show detailed suggestion info", false, false, "", ""},
                 {"disable-consolidation", 0, "Disable suggestion consolidation", false, false, "", ""},
+                {"unreal-mode", 0, "Enable Unreal module-aware suggestions", false, false, "", ""},
 
                     // Heuristics configuration overrides
                 {"pch-min-includes", 0, "Min header inclusions for PCH (default: 10)", false, true, "10", "N"},
@@ -84,6 +110,12 @@ namespace bha::cli
                 {"header-min-includers", 0, "Min includers for header split (default: 5)", false, true, "5", "N"},
                 {"fwd-decl-min-time", 0, "Min parse time for fwd decl in ms (default: 50)", false, true, "50", "MS"},
                 {"codegen-threshold", 0, "Long code generation threshold in ms (default: 500)", false, true, "500", "MS"},
+                {"unreal-min-module-files", 0, "Min Unreal module source files for unity suggestions (default: 8)", false, true, "8", "N"},
+                {"unreal-min-pch-time", 0, "Min Unreal module include parse time for PCH in ms (default: 300)", false, true, "300", "MS"},
+                {"max-suggest-time", 0, "Max total suggestion time in ms (default: 0, no limit)", false, true, "0", "MS"},
+                {"max-suggester-time", 0, "Max time per suggester in ms (default: 0, no limit)", false, true, "0", "MS"},
+                {"max-analyze-time", 0, "Max total analysis time in ms (default: 0, no limit)", false, true, "0", "MS"},
+                {"max-analyzer-time", 0, "Max time per analyzer in ms (default: 0, no limit)", false, true, "0", "MS"},
                 {"max-files", 0, "Max files to report (default: 10)", false, true, "10", "N"},
                 {"min-file-time", 0, "Min file time threshold in ms (default: 10)", false, true, "10", "MS"},
             };
@@ -168,12 +200,18 @@ namespace bha::cli
             print_verbose("Running analysis...");
 
             AnalysisOptions analysis_opts;
+            analysis_opts.verbose = is_verbose() && !is_json();
+            if (auto val = args.get_int("max-analyze-time")) {
+                analysis_opts.max_total_time = std::chrono::milliseconds(*val);
+            }
+            if (auto val = args.get_int("max-analyzer-time")) {
+                analysis_opts.max_analyzer_time = std::chrono::milliseconds(*val);
+            }
             auto analysis_result = analyzers::run_full_analysis(build_trace, analysis_opts);
             if (!analysis_result.is_ok()) {
                 print_error("Analysis failed: " + analysis_result.error().message());
                 return 1;
             }
-
             print_verbose("Generating suggestions...");
 
             SuggesterOptions suggester_opts;
@@ -182,6 +220,12 @@ namespace bha::cli
             suggester_opts.min_confidence = min_confidence;
             suggester_opts.include_unsafe = include_unsafe;
             suggester_opts.enable_consolidation = !args.get_flag("disable-consolidation");
+            if (auto val = args.get_int("max-suggest-time")) {
+                suggester_opts.max_total_time = std::chrono::milliseconds(*val);
+            }
+            if (auto val = args.get_int("max-suggester-time")) {
+                suggester_opts.max_suggester_time = std::chrono::milliseconds(*val);
+            }
 
             // Parse and validate suggestion types filter
             if (auto type_filters = args.get_all("type"); !type_filters.empty()) {
@@ -197,8 +241,17 @@ namespace bha::cli
                 print_verbose("Filtering suggestions to " + std::to_string(suggester_opts.enabled_types.size()) + " types");
             }
 
-             // Apply heuristics config overrides from CLI
-            auto& [analysis, pch, templates, codegen, headers, unity_build, forward_decl] = suggester_opts.heuristics;
+            // Apply heuristics config overrides from CLI
+            auto& analysis = suggester_opts.heuristics.analysis;
+            auto& pch = suggester_opts.heuristics.pch;
+            auto& templates = suggester_opts.heuristics.templates;
+            auto& codegen = suggester_opts.heuristics.codegen;
+            auto& headers = suggester_opts.heuristics.headers;
+            auto& unity_build = suggester_opts.heuristics.unity_build;
+            auto& forward_decl = suggester_opts.heuristics.forward_decl;
+            auto& unreal = suggester_opts.heuristics.unreal;
+
+            unreal.enabled = args.get_flag("unreal-mode");
 
             if (auto val = args.get_int("pch-min-includes")) {
                 pch.min_include_count = static_cast<std::size_t>(*val);
@@ -235,6 +288,12 @@ namespace bha::cli
             if (auto val = args.get_int("codegen-threshold")) {
                 codegen.long_codegen_threshold = std::chrono::milliseconds(*val);
             }
+            if (auto val = args.get_int("unreal-min-module-files")) {
+                unreal.min_module_files_for_unity = static_cast<std::size_t>(*val);
+            }
+            if (auto val = args.get_int("unreal-min-pch-time")) {
+                unreal.min_module_include_time_for_pch = std::chrono::milliseconds(*val);
+            }
 
             if (auto val = args.get_int("max-files")) {
                 analysis.max_files_to_report = static_cast<std::size_t>(*val);
@@ -248,9 +307,63 @@ namespace bha::cli
             print_verbose("  PCH min time: " + std::to_string(pch.min_aggregate_time.count()) + "ms");
             print_verbose("  Template min count: " + std::to_string(templates.min_instantiation_count));
             print_verbose("  Unity min files: " + std::to_string(unity_build.min_files_threshold));
+            print_verbose("  Unreal mode: " + std::string(unreal.enabled ? "enabled" : "auto-detect"));
 
+            fs::path project_root;
+            if (!args.positional().empty()) {
+                const fs::path trace_path(args.positional().front());
+                const fs::path abs_trace = trace_path.is_relative() ? fs::absolute(trace_path) : trace_path;
+                project_root = suggestions::find_project_root_from_trace_path(abs_trace);
+            }
+            if (project_root.empty()) {
+                std::size_t checked = 0;
+                for (const auto& unit : build_trace.units) {
+                    const fs::path source_path(unit.source_file);
+                    if (!source_path.is_absolute()) {
+                        if (++checked >= 20) {
+                            break;
+                        }
+                        continue;
+                    }
+                    const auto root = suggestions::find_repository_root(source_path);
+                    if (!root.empty() && suggestions::has_build_system_marker(root)) {
+                        project_root = root;
+                        break;
+                    }
+                    if (++checked >= 20) {
+                        break;
+                    }
+                }
+            }
+            if (project_root.empty()) {
+                std::size_t checked = 0;
+                for (const auto& header : analysis_result.value().dependencies.headers) {
+                    if (!header.path.is_absolute()) {
+                        if (++checked >= 20) {
+                            break;
+                        }
+                        continue;
+                    }
+                    const auto root = suggestions::find_repository_root(header.path);
+                    if (!root.empty() && suggestions::has_build_system_marker(root)) {
+                        project_root = root;
+                        break;
+                    }
+                    if (++checked >= 20) {
+                        break;
+                    }
+                }
+            }
+            if (project_root.empty()) {
+                project_root = fs::current_path();
+            }
+            if (const auto compile_commands_path = find_compile_commands_path(project_root)) {
+                suggester_opts.compile_commands_path = *compile_commands_path;
+                print_verbose("Using compile_commands: " + compile_commands_path->generic_string());
+            }
+            print_verbose("Resolved project root: " + project_root.generic_string());
             auto suggestions_result = suggestions::generate_all_suggestions(
-                build_trace, analysis_result.value(), suggester_opts
+                build_trace, analysis_result.value(), suggester_opts, project_root
             );
 
             if (!suggestions_result.is_ok()) {
