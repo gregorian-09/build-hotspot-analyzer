@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace bha::analyzers
 {
@@ -18,6 +19,7 @@ namespace bha::analyzers
             Duration total_time = Duration::zero();
             std::size_t instantiation_count = 0;
             std::vector<SourceLocation> locations;
+            std::unordered_set<std::string> files_using;
         };
 
     }  // namespace
@@ -46,7 +48,8 @@ namespace bha::analyzers
 
         for (const auto& unit : trace.units) {
             for (const auto& tmpl : unit.templates) {
-                auto& [name, full_signature, total_time, instantiation_count, locations] = template_map[tmpl.full_signature];
+                auto& [name, full_signature, total_time, instantiation_count, locations, files_using] =
+                    template_map[tmpl.full_signature];
 
                 if (full_signature.empty()) {
                     name = tmpl.name;
@@ -60,18 +63,27 @@ namespace bha::analyzers
                 if (tmpl.location.has_location()) {
                     locations.push_back(tmpl.location);
                 }
+
+                if (!unit.source_file.empty()) {
+                    files_using.insert(unit.source_file.string());
+                }
             }
         }
 
         result.templates.templates.reserve(template_map.size());
 
-        for (auto& [name, full_signature, total_time, instantiation_count, locations] : template_map | std::views::values) {
+        for (auto& [name, full_signature, total_time, instantiation_count, locations, files_using] :
+             template_map | std::views::values) {
             TemplateAnalysisResult::TemplateInfo info;
             info.name = name;
             info.full_signature = full_signature;
             info.total_time = total_time;
             info.instantiation_count = instantiation_count;
             info.locations = std::move(locations);
+            info.files_using.reserve(files_using.size());
+            for (const auto& source_file : files_using) {
+                info.files_using.push_back(source_file);
+            }
 
             if (total_template_time.count() > 0) {
                 info.time_percent = 100.0 * static_cast<double>(total_time.count()) /

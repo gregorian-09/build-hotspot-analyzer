@@ -5,8 +5,9 @@
 #include "bha/suggestions/header_split_suggester.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <cctype>
+#include <cmath>
+#include <regex>
 #include <sstream>
 #include <unordered_set>
 
@@ -21,6 +22,14 @@ namespace bha::suggestions
             const std::string ext = path.extension().string();
             return ext == ".h" || ext == ".hpp" || ext == ".hxx" || ext == ".H" ||
                    ext == ".hh" || ext == ".h++";
+        }
+
+        bool is_likely_system_header(const fs::path& path) {
+            const std::string value = path.generic_string();
+            return value.starts_with("/usr/include") ||
+                   value.find("/include/c++/") != std::string::npos ||
+                   value.find("/lib/clang/") != std::string::npos ||
+                   value.rfind("<built-in>", 0) == 0;
         }
 
         /**
@@ -287,6 +296,346 @@ namespace bha::suggestions
             return steps;
         }
 
+        std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment) {
+            std::string cleaned;
+            cleaned.reserve(line.size());
+
+            bool in_string = false;
+            char quote_char = '\0';
+            bool escape_next = false;
+
+            for (std::size_t i = 0; i < line.size(); ++i) {
+                const char ch = line[i];
+                const char next = (i + 1 < line.size()) ? line[i + 1] : '\0';
+
+                if (in_block_comment) {
+                    if (ch == '*' && next == '/') {
+                        in_block_comment = false;
+                        ++i;
+                    }
+                    continue;
+                }
+
+                if (in_string) {
+                    if (escape_next) {
+                        escape_next = false;
+                    } else if (ch == '\\') {
+                        escape_next = true;
+                    } else if (ch == quote_char) {
+                        in_string = false;
+                    }
+                    cleaned.push_back(' ');
+                    continue;
+                }
+
+                if (ch == '/' && next == '/') {
+                    break;
+                }
+                if (ch == '/' && next == '*') {
+                    in_block_comment = true;
+                    ++i;
+                    continue;
+                }
+                if (ch == '"' || ch == '\'') {
+                    in_string = true;
+                    quote_char = ch;
+                    cleaned.push_back(' ');
+                    continue;
+                }
+
+                cleaned.push_back(ch);
+            }
+
+            return cleaned;
+        }
+
+        std::vector<std::string> split_namespace_path(const std::string& ns_path) {
+            std::vector<std::string> parts;
+            std::size_t start = 0;
+            while (start < ns_path.size()) {
+                const auto sep = ns_path.find("::", start);
+                if (sep == std::string::npos) {
+                    parts.push_back(ns_path.substr(start));
+                    break;
+                }
+                parts.push_back(ns_path.substr(start, sep - start));
+                start = sep + 2;
+            }
+            return parts;
+        }
+
+        std::optional<std::size_t> find_guard_define_line(const fs::path& header_path) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return std::nullopt;
+            }
+
+            const auto& lines = lines_result.value();
+            std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
+            std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
+            std::smatch match;
+
+            std::string guard_macro;
+            bool found_ifndef = false;
+
+            const std::size_t scan_limit = std::min<std::size_t>(lines.size(), 80);
+            for (std::size_t i = 0; i < scan_limit; ++i) {
+                if (!found_ifndef) {
+                    if (std::regex_match(lines[i], match, ifndef_regex)) {
+                        guard_macro = match[1].str();
+                        found_ifndef = true;
+                    } else if (!lines[i].empty() && lines[i].find("#pragma once") == std::string::npos) {
+                        break;
+                    }
+                    continue;
+                }
+
+                if (std::regex_match(lines[i], match, define_regex)) {
+                    if (match[1].str() == guard_macro) {
+                        return i;
+                    }
+                    break;
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        std::optional<std::size_t> find_safe_include_insertion_line(const fs::path& header_path) {
+            if (auto include_line = find_include_insertion_line(header_path)) {
+                return include_line;
+            }
+            if (const auto guard_line = find_guard_define_line(header_path)) {
+                return *guard_line;
+            }
+            return std::nullopt;
+        }
+
+        std::optional<fs::path> resolve_header_path_for_edits(
+            const fs::path& header_path,
+            const fs::path& project_root
+        ) {
+            if (header_path.empty()) {
+                return std::nullopt;
+            }
+
+            fs::path candidate = header_path;
+            if (candidate.is_relative() && !project_root.empty()) {
+                candidate = (project_root / candidate).lexically_normal();
+            } else {
+                candidate = candidate.lexically_normal();
+            }
+
+            if (fs::exists(candidate)) {
+                return candidate;
+            }
+
+            const fs::path resolved = resolve_source_path(header_path).lexically_normal();
+            if (fs::exists(resolved)) {
+                return resolved;
+            }
+
+            if (!project_root.empty()) {
+                if (auto found = find_file_in_repo(project_root, header_path.filename())) {
+                    return found->lexically_normal();
+                }
+            }
+
+            const fs::path repo_root = find_repository_root(header_path);
+            if (!repo_root.empty()) {
+                if (auto found = find_file_in_repo(repo_root, header_path.filename())) {
+                    return found->lexically_normal();
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        struct NamespaceScope {
+            std::vector<std::string> names;
+            std::size_t open_depth = 0;
+        };
+
+        struct ForwardDeclSymbol {
+            std::vector<std::string> namespaces;
+            std::string kind;
+            std::string name;
+        };
+
+        std::vector<std::string> collect_active_namespaces(const std::vector<NamespaceScope>& scope_stack) {
+            std::vector<std::string> result;
+            for (const auto& scope : scope_stack) {
+                result.insert(result.end(), scope.names.begin(), scope.names.end());
+            }
+            return result;
+        }
+
+        std::string make_symbol_key(const ForwardDeclSymbol& symbol) {
+            std::ostringstream key;
+            for (const auto& ns : symbol.namespaces) {
+                key << ns << "::";
+            }
+            key << symbol.kind << " " << symbol.name;
+            return key.str();
+        }
+
+        std::vector<ForwardDeclSymbol> extract_forward_decl_symbols(const fs::path& header_path) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return {};
+            }
+
+            static const std::regex namespace_open_regex(
+                R"(^\s*(?:inline\s+)?namespace\s+([A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*)\s*\{)"
+            );
+            static const std::regex class_or_struct_regex(
+                R"(^\s*(class|struct)\s+([A-Za-z_][A-Za-z0-9_]*)\b)"
+            );
+
+            std::vector<ForwardDeclSymbol> symbols;
+            std::unordered_set<std::string> seen;
+            std::vector<NamespaceScope> namespace_stack;
+            bool in_block_comment = false;
+            std::size_t brace_depth = 0;
+            bool template_pending = false;
+            bool skip_next_class_decl = false;
+
+            for (const auto& raw_line : lines_result.value()) {
+                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+
+                std::size_t namespace_depth = 0;
+                if (!namespace_stack.empty()) {
+                    namespace_depth = namespace_stack.back().open_depth;
+                }
+
+                const std::string trimmed = [&]() {
+                    const auto start = line.find_first_not_of(" \t\r\n");
+                    if (start == std::string::npos) {
+                        return std::string{};
+                    }
+                    const auto end = line.find_last_not_of(" \t\r\n");
+                    return line.substr(start, end - start + 1);
+                }();
+
+                std::optional<NamespaceScope> pending_namespace;
+                if (std::smatch namespace_match;
+                    std::regex_search(trimmed, namespace_match, namespace_open_regex) &&
+                    brace_depth == namespace_depth) {
+                    NamespaceScope scope;
+                    scope.names = split_namespace_path(namespace_match[1].str());
+                    scope.open_depth = brace_depth + 1;
+                    pending_namespace = std::move(scope);
+                }
+
+                if (trimmed.rfind("template", 0) == 0) {
+                    template_pending = true;
+                    if (trimmed.find('>') != std::string::npos) {
+                        template_pending = false;
+                        skip_next_class_decl = true;
+                    }
+                }
+
+                const bool can_scan_class_decl =
+                    !trimmed.empty() &&
+                    brace_depth == namespace_depth &&
+                    !template_pending;
+                if (can_scan_class_decl) {
+                    std::smatch class_match;
+                    if (std::regex_search(trimmed, class_match, class_or_struct_regex)) {
+                        if (!skip_next_class_decl &&
+                            (trimmed.find('{') != std::string::npos || trimmed.find(';') != std::string::npos)) {
+                            ForwardDeclSymbol symbol;
+                            symbol.namespaces = collect_active_namespaces(namespace_stack);
+                            symbol.kind = class_match[1].str();
+                            symbol.name = class_match[2].str();
+                            if (seen.insert(make_symbol_key(symbol)).second) {
+                                symbols.push_back(std::move(symbol));
+                            }
+                        }
+                        skip_next_class_decl = false;
+                    }
+                }
+
+                for (const char ch : line) {
+                    if (ch == '{') {
+                        ++brace_depth;
+                    } else if (ch == '}') {
+                        if (brace_depth > 0) {
+                            --brace_depth;
+                        }
+                    }
+                }
+
+                if (pending_namespace.has_value() && brace_depth >= pending_namespace->open_depth) {
+                    namespace_stack.push_back(std::move(*pending_namespace));
+                }
+
+                while (!namespace_stack.empty() && brace_depth < namespace_stack.back().open_depth) {
+                    namespace_stack.pop_back();
+                }
+            }
+
+            return symbols;
+        }
+
+        std::optional<std::string> generate_forward_header_content(const fs::path& header_path) {
+            auto symbols = extract_forward_decl_symbols(header_path);
+            if (symbols.empty()) {
+                return std::nullopt;
+            }
+
+            std::ranges::sort(symbols, [](const ForwardDeclSymbol& a, const ForwardDeclSymbol& b) {
+                if (a.namespaces != b.namespaces) {
+                    return a.namespaces < b.namespaces;
+                }
+                if (a.kind != b.kind) {
+                    return a.kind < b.kind;
+                }
+                return a.name < b.name;
+            });
+
+            std::ostringstream out;
+            out << "#pragma once\n\n";
+
+            std::vector<std::string> opened_namespaces;
+            auto close_namespace = [&](const std::string& ns) {
+                out << "}  // namespace " << ns << "\n";
+            };
+            auto open_namespace = [&](const std::string& ns) {
+                out << "namespace " << ns << " {\n";
+            };
+
+            auto adjust_namespace_stack = [&](const std::vector<std::string>& target) {
+                std::size_t common_prefix = 0;
+                while (common_prefix < opened_namespaces.size() &&
+                       common_prefix < target.size() &&
+                       opened_namespaces[common_prefix] == target[common_prefix]) {
+                    ++common_prefix;
+                }
+
+                for (std::size_t i = opened_namespaces.size(); i > common_prefix; --i) {
+                    close_namespace(opened_namespaces[i - 1]);
+                }
+                opened_namespaces.resize(common_prefix);
+
+                for (std::size_t i = common_prefix; i < target.size(); ++i) {
+                    open_namespace(target[i]);
+                    opened_namespaces.push_back(target[i]);
+                }
+            };
+
+            for (const auto& symbol : symbols) {
+                adjust_namespace_stack(symbol.namespaces);
+                out << symbol.kind << " " << symbol.name << ";\n";
+            }
+
+            for (std::size_t i = opened_namespaces.size(); i > 0; --i) {
+                close_namespace(opened_namespaces[i - 1]);
+            }
+
+            return out.str();
+        }
+
     }  // namespace
 
     Result<SuggestionResult, Error> HeaderSplitSuggester::suggest(
@@ -297,16 +646,37 @@ namespace bha::suggestions
 
         const auto& deps = context.analysis.dependencies;
 
-        // Thresholds for considering a split (based on ClangBuildAnalyzer patterns)
-        constexpr auto min_parse_time = std::chrono::milliseconds(200);
+        const auto min_parse_time = context.options.heuristics.headers.min_parse_time;
+        const auto min_includer_count = context.options.heuristics.headers.min_includers_for_split;
 
         std::size_t analyzed = 0;
         std::size_t skipped = 0;
 
         for (const auto& header : deps.headers) {
+            if (context.is_cancelled()) {
+                break;
+            }
             ++analyzed;
 
+            if (!context.target_files_lookup.empty()) {
+                bool any_target = false;
+                for (const auto& includer : header.included_by) {
+                    if (context.should_analyze(includer)) {
+                        any_target = true;
+                        break;
+                    }
+                }
+                if (!any_target) {
+                    ++skipped;
+                    continue;
+                }
+            }
+
             if (!is_header(header.path)) {
+                ++skipped;
+                continue;
+            }
+            if (is_likely_system_header(header.path)) {
                 ++skipped;
                 continue;
             }
@@ -316,10 +686,13 @@ namespace bha::suggestions
                 continue;
             }
 
-            if (constexpr std::size_t min_includer_count = 5; header.including_files < min_includer_count) {
+            if (header.including_files < min_includer_count) {
                 ++skipped;
                 continue;
             }
+
+            const auto resolved_header_path = resolve_header_path_for_edits(header.path, context.project_root);
+            const std::string fwd_header_name = suggest_split_name(header.path, "fwd");
 
             // Check if already split
             std::string filename = header.path.filename().string();
@@ -336,6 +709,11 @@ namespace bha::suggestions
                                  lower_filename.find("_impl") != std::string::npos ||
                                  lower_filename.find("_internal") != std::string::npos ||
                                  lower_filename.find("_detail") != std::string::npos;
+            if (!already_split && resolved_header_path.has_value()) {
+                if (find_include_for_header(*resolved_header_path, fwd_header_name).has_value()) {
+                    already_split = true;
+                }
+            }
             if (already_split) {
                 ++skipped;
                 continue;
@@ -373,11 +751,10 @@ namespace bha::suggestions
             auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 header.total_parse_time).count();
 
-            std::string fwd_header_name = suggest_split_name(header.path, "fwd");
             std::string types_header_name = suggest_split_name(header.path, "types");
 
             std::ostringstream desc;
-            desc << "Header '" << header.path.string() << "' takes "
+            desc << "Header '" << make_repo_relative(header.path) << "' takes "
                  << parse_ms << "ms to parse and is included by "
                  << header.including_files << " files";
             if (header.inclusion_count > header.including_files) {
@@ -454,7 +831,7 @@ namespace bha::suggestions
             suggestion.target_file.note = "Split into smaller, focused headers";
 
             std::ostringstream before;
-            before << "// " << header.path.string() << "\n"
+            before << "// " << make_repo_relative(header.path) << "\n"
                    << "#pragma once\n\n"
                    << "// Current: Single monolithic header\n"
                    << "// Parse time: " << parse_ms << "ms\n"
@@ -484,7 +861,7 @@ namespace bha::suggestions
                           << "// Use when you only need pointers/references\n"
                           << "// Files using forward decls: ~" << (header.including_files * 30 / 100) << "\n\n"
                           << "// Original header\n"
-                          << "// " << header.path.string() << "\n"
+                          << "// " << make_repo_relative(header.path) << "\n"
                           << "#pragma once\n"
                           << "#include \"" << fwd_header_name << "\"\n\n"
                           << "// Full definitions for files that need them\n"
@@ -499,7 +876,7 @@ namespace bha::suggestions
                           << "// " << types_header_name << " - Type definitions only\n"
                           << "#pragma once\n"
                           << "#include \"" << fwd_header_name << "\"\n\n"
-                          << "// " << header.path.string() << " - Full header\n"
+                          << "// " << make_repo_relative(header.path) << " - Full header\n"
                           << "#pragma once\n"
                           << "#include \"" << types_header_name << "\"\n\n"
                           << "// Includers can now choose:\n"
@@ -511,7 +888,7 @@ namespace bha::suggestions
                     break;
 
                 case SplitPattern::FunctionalGroups:
-                    after << "// Split " << header.path.string() << " into focused headers:\n\n"
+                    after << "// Split " << make_repo_relative(header.path) << " into focused headers:\n\n"
                           << "// " << suggest_split_name(header.path, "group1") << " - Specific functionality\n"
                           << "// " << suggest_split_name(header.path, "group2") << " - Another functionality\n\n"
                           << "// Benefits:\n"
@@ -556,7 +933,68 @@ namespace bha::suggestions
                 "3. Measure compile times before and after to verify improvement\n"
                 "4. Run full test suite to ensure no functionality changes";
 
-            suggestion.is_safe = false;
+            const bool supports_direct_edits =
+                pattern == SplitPattern::ForwardDecl && resolved_header_path.has_value();
+            bool created_fwd_header = false;
+
+            if (supports_direct_edits) {
+                const fs::path fwd_header_path = resolved_header_path->parent_path() / fwd_header_name;
+                const bool fwd_exists = fs::exists(fwd_header_path);
+                const bool include_exists =
+                    find_include_for_header(*resolved_header_path, fwd_header_name).has_value();
+
+                if (!fwd_exists) {
+                    if (auto fwd_content = generate_forward_header_content(*resolved_header_path)) {
+                        TextEdit create_fwd;
+                        create_fwd.file = fwd_header_path;
+                        create_fwd.start_line = 0;
+                        create_fwd.start_col = 0;
+                        create_fwd.end_line = 0;
+                        create_fwd.end_col = 0;
+                        create_fwd.new_text = *fwd_content;
+                        if (!create_fwd.new_text.empty() && create_fwd.new_text.back() != '\n') {
+                            create_fwd.new_text.push_back('\n');
+                        }
+                        suggestion.edits.push_back(std::move(create_fwd));
+                        created_fwd_header = true;
+
+                        FileTarget create_target;
+                        create_target.path = fwd_header_path;
+                        create_target.action = FileAction::Create;
+                        create_target.note = "Create generated forward-declaration companion header";
+                        suggestion.secondary_files.push_back(std::move(create_target));
+                    }
+                }
+
+                if (!include_exists && (fwd_exists || created_fwd_header)) {
+                    const std::string include_line = "#include \"" + fwd_header_name + "\"";
+                    if (auto insert_line = find_safe_include_insertion_line(*resolved_header_path)) {
+                        suggestion.edits.push_back(make_insert_after_line_edit(
+                            *resolved_header_path,
+                            *insert_line,
+                            include_line
+                        ));
+                    } else {
+                        suggestion.edits.push_back(make_insert_at_start_edit(
+                            *resolved_header_path,
+                            include_line
+                        ));
+                    }
+                }
+            }
+
+            suggestion.is_safe = !suggestion.edits.empty();
+            if (suggestion.is_safe) {
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can create the _fwd header and wire it into the original header. Rebuild and validate before broader include pruning.";
+            } else {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.application_summary = "Manual refactor recommended";
+                suggestion.application_guidance =
+                    "This split shape requires manual symbol partitioning. Keep headers self-contained and compile-validated after each step.";
+            }
 
             result.suggestions.push_back(std::move(suggestion));
         }

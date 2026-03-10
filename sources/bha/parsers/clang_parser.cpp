@@ -10,6 +10,8 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <optional>
+#include <sstream>
 
 namespace bha::parsers {
 
@@ -81,6 +83,46 @@ namespace bha::parsers {
                    ext == ".C" || ext == ".CC" || ext == ".CPP" || ext == ".CXX";
         }
 
+        std::optional<fs::path> extract_source_from_detail(const std::string& detail) {
+            if (detail.empty()) {
+                return std::nullopt;
+            }
+
+            if (is_source_file(detail)) {
+                return fs::path(detail);
+            }
+
+            if (const auto colon_pos = detail.find(':'); colon_pos != std::string::npos) {
+                const std::string prefix = detail.substr(0, colon_pos);
+                if (is_source_file(prefix)) {
+                    return fs::path(prefix);
+                }
+            }
+
+            std::string tokenized = detail;
+            for (char& ch : tokenized) {
+                if (ch == '(' || ch == ')' || ch == ';' || ch == ',' || ch == '\t') {
+                    ch = ' ';
+                }
+            }
+
+            std::istringstream in(tokenized);
+            std::string token;
+            while (in >> token) {
+                while (!token.empty() && (token.back() == ':' || token.back() == ']')) {
+                    token.pop_back();
+                }
+                while (!token.empty() && (token.front() == '[' || token.front() == '\'' || token.front() == '"')) {
+                    token.erase(token.begin());
+                }
+                if (is_source_file(token)) {
+                    return fs::path(token);
+                }
+            }
+
+            return std::nullopt;
+        }
+
         fs::path extract_source_file(const std::vector<TraceEvent>& events) {
             // First try ExecuteCompiler event (as this is most reliable)
             for (const auto& event : events) {
@@ -100,6 +142,13 @@ namespace bha::parsers {
                             return fs::path(file_path);
                         }
                     }
+                }
+            }
+
+            // Generic fallback for events that carry absolute source paths
+            for (const auto& event : events) {
+                if (auto source = extract_source_from_detail(event.detail); source.has_value()) {
+                    return *source;
                 }
             }
 

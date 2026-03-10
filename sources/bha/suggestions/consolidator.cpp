@@ -5,13 +5,171 @@
 #include "bha/suggestions/consolidator.hpp"
 
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
 #include <ranges>
+#include <fstream>
+#include <regex>
 #include <sstream>
 #include <unordered_set>
 
 namespace bha::suggestions
 {
     namespace {
+        namespace fs = std::filesystem;
+
+        bool is_build_system_file(const fs::path& path) {
+            const auto name = path.filename().string();
+            return name == "CMakeLists.txt" || name == "Makefile" ||
+                   name == "makefile" || name == "GNUmakefile";
+        }
+
+        std::vector<TextEdit> merge_text_edits(std::vector<TextEdit> edits) {
+            if (edits.empty()) {
+                return edits;
+            }
+
+            std::ranges::sort(edits, [](const TextEdit& a, const TextEdit& b) {
+                if (a.file != b.file) {
+                    return a.file < b.file;
+                }
+                if (a.start_line != b.start_line) {
+                    return a.start_line < b.start_line;
+                }
+                return a.start_col < b.start_col;
+            });
+
+            std::vector<TextEdit> merged;
+            merged.reserve(edits.size());
+
+            for (const auto& edit : edits) {
+                bool conflict = false;
+
+                for (const auto& existing : merged) {
+                    if (existing.file != edit.file) {
+                        continue;
+                    }
+
+                    const bool overlaps =
+                        (edit.start_line < existing.end_line ||
+                         (edit.start_line == existing.end_line && edit.start_col < existing.end_col)) &&
+                        (edit.end_line > existing.start_line ||
+                         (edit.end_line == existing.start_line && edit.end_col > existing.start_col));
+
+                    if (overlaps) {
+                        conflict = true;
+                        break;
+                    }
+                }
+
+                if (!conflict) {
+                    merged.push_back(edit);
+                }
+            }
+
+            std::ranges::sort(merged, [](const TextEdit& a, const TextEdit& b) {
+                if (a.file != b.file) {
+                    return a.file < b.file;
+                }
+                if (a.start_line != b.start_line) {
+                    return b.start_line < a.start_line;
+                }
+                return b.start_col < a.start_col;
+            });
+
+            return merged;
+        }
+
+        TextEdit make_replace_file_edit(const fs::path& path, const std::string& content) {
+            TextEdit edit;
+            edit.file = path;
+            edit.start_line = 0;
+            edit.start_col = 0;
+            edit.end_line = 0;
+            edit.end_col = 0;
+            edit.new_text = content;
+
+            if (fs::exists(path)) {
+                std::ifstream in(path);
+                if (in) {
+                    const std::string existing((std::istreambuf_iterator<char>(in)),
+                                               std::istreambuf_iterator<char>());
+                    edit.end_line = end_of_file_insert_line(existing);
+                    edit.end_col = 0;
+                }
+            }
+
+            return edit;
+        }
+
+        void append_build_system_targets(
+            const std::vector<Suggestion>& suggestions,
+            std::vector<FileTarget>& targets
+        ) {
+            std::unordered_set<std::string> seen;
+
+            auto add_target = [&](const FileTarget& target) {
+                if (target.path.empty() || !is_build_system_file(target.path)) {
+                    return;
+                }
+                const std::string key = target.path.string();
+                if (seen.insert(key).second) {
+                    targets.push_back(target);
+                }
+            };
+
+            for (const auto& sug : suggestions) {
+                add_target(sug.target_file);
+                for (const auto& secondary : sug.secondary_files) {
+                    add_target(secondary);
+                }
+            }
+        }
+
+        void append_build_system_edits(
+            const std::vector<Suggestion>& suggestions,
+            std::vector<TextEdit>& edits
+        ) {
+            std::unordered_set<std::string> seen;
+            for (const auto& sug : suggestions) {
+                for (const auto& edit : sug.edits) {
+                    if (is_build_system_file(edit.file)) {
+                        std::ostringstream key;
+                        key << edit.file.string() << ":" << edit.start_line << ":" << edit.end_line
+                            << ":" << edit.new_text;
+                        if (seen.insert(key.str()).second) {
+                            edits.push_back(edit);
+                        }
+                    }
+                }
+            }
+        }
+
+        std::string make_repo_relative_for_root(const fs::path& path, const fs::path& root) {
+            fs::path resolved_path = path;
+            if (path.is_relative() && path.parent_path().empty()) {
+                resolved_path = resolve_source_path(path);
+            }
+
+            if (auto repo_root = resolve_trace_repo_root(resolved_path)) {
+                if (auto found = find_file_in_repo(*repo_root, resolved_path.filename())) {
+                    std::error_code ec;
+                    auto rel = fs::relative(*found, *repo_root, ec);
+                    if (!ec && !rel.empty()) {
+                        return rel.generic_string();
+                    }
+                }
+            }
+
+            if (!root.empty() && resolved_path.is_absolute()) {
+                std::error_code ec;
+                auto rel = fs::relative(resolved_path, root, ec);
+                if (!ec && !rel.empty()) {
+                    return rel.generic_string();
+                }
+            }
+            return resolved_path.generic_string();
+        }
 
         std::vector<Suggestion> group_by_type(
             const std::vector<Suggestion>& suggestions,
@@ -34,6 +192,55 @@ namespace bha::suggestions
             }
             const auto min = sec / 60;
             return std::to_string(min) + "m " + std::to_string(sec % 60) + "s";
+        }
+
+        fs::path common_parent_path(const fs::path& lhs, const fs::path& rhs) {
+            fs::path result;
+            auto lit = lhs.begin();
+            auto rit = rhs.begin();
+            for (; lit != lhs.end() && rit != rhs.end() && *lit == *rit; ++lit, ++rit) {
+                result /= *lit;
+            }
+            return result;
+        }
+
+        fs::path compute_common_directory(const std::unordered_set<std::string>& files) {
+            fs::path common_dir;
+            for (const auto& file : files) {
+                fs::path path(file);
+                if (!path.is_absolute()) {
+                    continue;
+                }
+                fs::path dir = path.parent_path();
+                if (dir.empty()) {
+                    continue;
+                }
+                if (common_dir.empty()) {
+                    common_dir = dir;
+                } else {
+                    common_dir = common_parent_path(common_dir, dir);
+                }
+                if (common_dir.empty()) {
+                    break;
+                }
+            }
+            return common_dir;
+        }
+
+        bool is_source_file_path(const fs::path& path) {
+            const std::string ext = path.extension().string();
+            return ext == ".cpp" || ext == ".cc" || ext == ".cxx" ||
+                   ext == ".c" || ext == ".C" || ext == ".c++";
+        }
+
+        std::string resolve_unity_include_path(const fs::path& path) {
+            fs::path resolved = resolve_source_path(path);
+            std::string rel = make_repo_relative(resolved);
+            if (!fs::path(rel).parent_path().empty()) {
+                return rel;
+            }
+
+            return rel;
         }
 
     }  // namespace
@@ -111,6 +318,30 @@ namespace bha::suggestions
         std::unordered_set<std::string> stable_headers;
         std::unordered_set<std::string> volatile_headers;
         std::unordered_set<std::string> external_headers;
+        fs::path repo_root;
+
+        const auto is_probable_header_path = [](const fs::path& path) {
+            std::string lower = path.generic_string();
+            std::ranges::transform(lower, lower.begin(),
+                                   [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            if (lower.find("cmakelists.txt") != std::string::npos) {
+                return false;
+            }
+            if (lower.ends_with("makefile") || lower.ends_with("gnumakefile")) {
+                return false;
+            }
+            const std::string ext = path.extension().string();
+            if (ext == ".h" || ext == ".hpp" || ext == ".hh" || ext == ".hxx") {
+                return true;
+            }
+            if (!lower.empty() && lower.front() == '<') {
+                return true;
+            }
+            if (lower.find("/include/") != std::string::npos) {
+                return true;
+            }
+            return false;
+        };
 
         for (const auto& sug : suggestions) {
             if (sug.priority == Priority::Critical) {
@@ -118,19 +349,34 @@ namespace bha::suggestions
             }
 
             if (!sug.target_file.path.empty()) {
-                if (std::string header_str = sug.target_file.path.string(); header_str.find('<') == 0 ||
+                if (!is_probable_header_path(sug.target_file.path)) {
+                    continue;
+                }
+                if (repo_root.empty()) {
+                    repo_root = find_repository_root(sug.target_file.path);
+                }
+
+                std::string header_str = sug.target_file.path.string();
+                if (header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
                 } else if (sug.rationale.find("volatile") != std::string::npos ||
                            sug.rationale.find("frequently modified") != std::string::npos) {
-                    volatile_headers.insert(header_str);
+                    volatile_headers.insert(make_repo_relative_for_root(sug.target_file.path, repo_root));
                 } else {
-                    stable_headers.insert(header_str);
+                    stable_headers.insert(make_repo_relative_for_root(sug.target_file.path, repo_root));
                 }
             }
 
             for (const auto& secondary : sug.secondary_files) {
+                if (!is_probable_header_path(secondary.path)) {
+                    continue;
+                }
+                if (repo_root.empty()) {
+                    repo_root = find_repository_root(secondary.path);
+                }
+
                 std::string header_str = secondary.path.string();
                 if (header_str.ends_with("pch.h") || header_str.ends_with("stdafx.h")) {
                     continue;
@@ -140,7 +386,7 @@ namespace bha::suggestions
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
                 } else {
-                    stable_headers.insert(header_str);
+                    stable_headers.insert(make_repo_relative_for_root(secondary.path, repo_root));
                 }
             }
         }
@@ -215,6 +461,39 @@ namespace bha::suggestions
         consolidated.target_file.action = FileAction::Create;
         consolidated.target_file.note = "Create or update precompiled header";
 
+        const auto normalize_external_header = [](const std::string& header) -> std::string {
+            if (header.empty()) {
+                return header;
+            }
+            std::string trimmed = header;
+            while (!trimmed.empty() && std::isspace(static_cast<unsigned char>(trimmed.front()))) {
+                trimmed.erase(trimmed.begin());
+            }
+            while (!trimmed.empty() && std::isspace(static_cast<unsigned char>(trimmed.back()))) {
+                trimmed.pop_back();
+            }
+            if (trimmed.size() >= 2 && trimmed.front() == '"' && trimmed.back() == '"') {
+                trimmed = trimmed.substr(1, trimmed.size() - 2);
+            }
+            if (!trimmed.empty() && trimmed.front() == '<' && trimmed.back() == '>') {
+                return trimmed;
+            }
+            if (!trimmed.empty() && trimmed.front() == '/') {
+                std::string include_path;
+                const std::string marker = "/include/";
+                const auto pos = trimmed.rfind(marker);
+                if (pos != std::string::npos) {
+                    include_path = trimmed.substr(pos + marker.size());
+                } else {
+                    include_path = fs::path(trimmed).filename().string();
+                }
+                if (!include_path.empty()) {
+                    return "<" + include_path + ">";
+                }
+            }
+            return trimmed;
+        };
+
         // Generate a single consolidated edit that creates pch.h with all headers
         // instead of merging individual "create file" edits
         std::ostringstream pch_content;
@@ -226,10 +505,11 @@ namespace bha::suggestions
             std::vector sorted_external(external_headers.begin(), external_headers.end());
             std::ranges::sort(sorted_external);
             for (const auto& header : sorted_external) {
-                if (header.find('<') == 0 || header.find('>') != std::string::npos) {
-                    pch_content << "#include " << header << "\n";
+                std::string include_header = normalize_external_header(header);
+                if (include_header.find('<') == 0 || include_header.find('>') != std::string::npos) {
+                    pch_content << "#include " << include_header << "\n";
                 } else {
-                    pch_content << "#include \"" << header << "\"\n";
+                    pch_content << "#include \"" << include_header << "\"\n";
                 }
                 ++header_count;
             }
@@ -246,14 +526,12 @@ namespace bha::suggestions
             }
         }
 
-        TextEdit create_pch;
-        create_pch.file = "pch.h";
-        create_pch.start_line = 0;
-        create_pch.start_col = 0;
-        create_pch.end_line = 0;
-        create_pch.end_col = 0;
-        create_pch.new_text = pch_content.str();
-        consolidated.edits.push_back(create_pch);
+        const fs::path pch_path = "pch.h";
+        consolidated.edits.push_back(make_replace_file_edit(pch_path, pch_content.str()));
+
+        append_build_system_targets(suggestions, consolidated.secondary_files);
+        append_build_system_edits(suggestions, consolidated.edits);
+        consolidated.edits = merge_text_edits(std::move(consolidated.edits));
 
         std::ostringstream title;
         title << "Precompiled Header Optimization ("
@@ -281,7 +559,7 @@ namespace bha::suggestions
             if (sug.priority >= Priority::High) {
                 consolidated.priority = Priority::High;
             }
-            std::string key = sug.target_file.path.string();
+            std::string key = make_repo_relative(sug.target_file.path);
             by_file[key].push_back(&sug);
         }
 
@@ -334,38 +612,85 @@ namespace bha::suggestions
 
         std::unordered_set<std::string> all_files;
         for (const auto& sug : suggestions) {
-            if (!sug.target_file.path.empty()) {
-                all_files.insert(sug.target_file.path.string());
-            }
             for (const auto& sec : sug.secondary_files) {
                 if (!sec.path.empty()) {
-                    all_files.insert(sec.path.string());
+                    const fs::path resolved = resolve_source_path(sec.path);
+                    all_files.insert(resolved.string());
                 }
+            }
+            if (sug.secondary_files.empty() && !sug.target_file.path.empty()) {
+                const fs::path resolved = resolve_source_path(sug.target_file.path);
+                all_files.insert(resolved.string());
             }
         }
 
-        const std::size_t files_per_group = options_.max_items_per_suggestion / 3;
-        std::vector sorted_files(all_files.begin(), all_files.end());
+        std::unordered_set<std::string> source_files;
+        for (const auto& file : all_files) {
+            if (is_source_file_path(fs::path(file))) {
+                source_files.insert(file);
+            }
+        }
+
+        if (source_files.empty()) {
+            return std::nullopt;
+        }
+
+        const std::size_t files_per_group = std::max<std::size_t>(1, options_.max_items_per_suggestion / 3);
+        std::vector sorted_files(source_files.begin(), source_files.end());
         std::ranges::sort(sorted_files);
 
+        fs::path unity_base_dir;
+        for (const auto& file : sorted_files) {
+            const fs::path path(file);
+            if (!path.is_absolute()) {
+                continue;
+            }
+            unity_base_dir = find_repository_root(path);
+            if (!unity_base_dir.empty()) {
+                if (fs::exists(unity_base_dir / "src")) {
+                    unity_base_dir /= "src";
+                }
+                break;
+            }
+        }
+        if (unity_base_dir.empty()) {
+            unity_base_dir = compute_common_directory(source_files);
+        }
+
         // Generate unity build file edits
+        bool first_unity = true;
         std::size_t group_num = 1;
         for (std::size_t i = 0; i < sorted_files.size(); i += files_per_group) {
+            const fs::path unity_path = unity_base_dir.empty()
+                ? fs::path("unity_build_" + std::to_string(group_num) + ".cpp")
+                : unity_base_dir / ("unity_build_" + std::to_string(group_num) + ".cpp");
+
             std::ostringstream unity_content;
             unity_content << "// unity_build_" << group_num << ".cpp\n";
             unity_content << "// Generated unity build file - combines multiple translation units\n\n";
+            const fs::path unity_dir = unity_path.parent_path();
             for (std::size_t j = i; j < std::min(i + files_per_group, sorted_files.size()); ++j) {
-                unity_content << "#include \"" << sorted_files[j] << "\"\n";
+                const fs::path source_path = resolve_source_path(fs::path(sorted_files[j]));
+                std::error_code ec;
+                fs::path rel = fs::relative(source_path, unity_dir, ec);
+                if (ec || rel.empty()) {
+                    rel = resolve_unity_include_path(source_path);
+                }
+                unity_content << "#include \"" << rel.generic_string() << "\"\n";
             }
 
-            TextEdit unity_edit;
-            unity_edit.file = "unity_build_" + std::to_string(group_num) + ".cpp";
-            unity_edit.start_line = 0;
-            unity_edit.start_col = 0;
-            unity_edit.end_line = 0;
-            unity_edit.end_col = 0;
-            unity_edit.new_text = unity_content.str();
-            consolidated.edits.push_back(unity_edit);
+            consolidated.edits.push_back(make_replace_file_edit(unity_path, unity_content.str()));
+
+            FileTarget unity_target;
+            unity_target.path = unity_path;
+            unity_target.action = FileAction::Create;
+            unity_target.note = "Create unity build file";
+            if (first_unity) {
+                consolidated.target_file = unity_target;
+                first_unity = false;
+            } else {
+                consolidated.secondary_files.push_back(unity_target);
+            }
 
             ++group_num;
         }
@@ -407,6 +732,10 @@ namespace bha::suggestions
         consolidated.estimated_savings = total_savings;
         consolidated.estimated_savings_percent = total_percent;
 
+        append_build_system_targets(suggestions, consolidated.secondary_files);
+        append_build_system_edits(suggestions, consolidated.edits);
+        consolidated.edits = merge_text_edits(std::move(consolidated.edits));
+
         return consolidated;
     }
 
@@ -426,7 +755,7 @@ namespace bha::suggestions
 
         std::unordered_map<std::string, std::vector<std::string>> by_source;
         for (const auto& sug : suggestions) {
-            std::string source = sug.target_file.path.string();
+            std::string source = make_repo_relative(sug.target_file.path);
             if (!sug.description.empty()) {
                 by_source[source].push_back(sug.description);
             }
@@ -444,8 +773,13 @@ namespace bha::suggestions
         consolidated.impact = merge_impacts(suggestions);
         consolidated.title = "Include Cleanup (" + std::to_string(suggestions.size()) + " includes)";
         consolidated.rationale = "Removing unused includes reduces compilation time and dependencies.";
-        consolidated.is_safe = false;
-        consolidated.confidence = 0.75;
+        const bool all_safe = std::ranges::all_of(
+            suggestions,
+            [](const Suggestion& s) { return s.is_safe; }
+        );
+        consolidated.is_safe = all_safe;
+        consolidated.confidence = all_safe ? 0.98 : 0.75;
+        consolidated.target_file = suggestions.front().target_file;
 
         consolidated.edits = merge_edits(suggestions);
 
@@ -468,7 +802,7 @@ namespace bha::suggestions
 
         for (const auto& sug : suggestions) {
             if (!sug.target_file.path.empty()) {
-                desc << "**" << sug.target_file.path.string() << ":**\n";
+                desc << "**" << make_repo_relative(sug.target_file.path) << ":**\n";
                 desc << sug.description << "\n\n";
             }
         }
@@ -501,65 +835,72 @@ namespace bha::suggestions
         tmpl_content << "// Explicit template instantiations to reduce compile-time overhead\n\n";
 
         std::unordered_set<std::string> added_includes;
+        std::unordered_set<std::string> instantiations;
+        std::unordered_set<std::string> extern_decls;
+
+        const std::regex inst_regex(R"(template\s+class\s+[^;]+;)");
+        const std::regex extern_regex(R"(extern\s+template\s+class\s+[^;]+;)");
+
+        auto capture_templates = [&](const std::string& code) {
+            for (std::sregex_iterator it(code.begin(), code.end(), inst_regex), end; it != end; ++it) {
+                instantiations.insert(it->str());
+            }
+            for (std::sregex_iterator it(code.begin(), code.end(), extern_regex), end; it != end; ++it) {
+                extern_decls.insert(it->str());
+            }
+        };
+
         for (const auto& sug : suggestions) {
-            if (!sug.target_file.path.empty()) {
-                std::string include_path = sug.target_file.path.string();
-                if (include_path.find(".cpp") != std::string::npos) {
-                    include_path.replace(include_path.find(".cpp"), 4, ".h");
-                } else if (include_path == "template_instantiations.cpp") {
-                    continue;
+            for (const auto& edit : sug.edits) {
+                if (!edit.new_text.empty()) {
+                    capture_templates(edit.new_text);
                 }
 
-                if (!added_includes.contains(include_path)) {
-                    tmpl_content << "#include \"" << include_path << "\"\n";
-                    added_includes.insert(include_path);
+                if (!edit.file.empty()) {
+                    const auto ext = edit.file.extension().string();
+                    if (ext == ".h" || ext == ".hpp" || ext == ".hh" || ext == ".hxx") {
+                        const std::string include_path = make_repo_relative(edit.file);
+                        if (!added_includes.contains(include_path)) {
+                            tmpl_content << "#include \"" << include_path << "\"\n";
+                            added_includes.insert(include_path);
+                        }
+                    }
+                }
+            }
+
+            for (const auto& step : sug.implementation_steps) {
+                if (step.find("template class ") != std::string::npos ||
+                    step.find("extern template class ") != std::string::npos) {
+                    capture_templates(step);
                 }
             }
         }
         tmpl_content << "\n// Explicit template instantiations\n";
 
-        std::vector<std::string> instantiations;
-        std::vector<std::string> extern_decls;
-
-        for (const auto& sug : suggestions) {
-            std::string code = sug.after_code.code;
-            if (size_t start = code.find("template class "); start != std::string::npos) {
-                if (size_t end = code.find(';', start); end != std::string::npos) {
-                    instantiations.push_back(code.substr(start, end - start + 1));
-                }
-            }
-            if (size_t start = code.find("extern template class "); start != std::string::npos) {
-                if (size_t end = code.find(';', start); end != std::string::npos) {
-                    extern_decls.push_back(code.substr(start, end - start + 1));
-                }
-            }
-        }
-
-        for (const auto& inst : instantiations) {
+        std::vector<std::string> ordered_instantiations(instantiations.begin(), instantiations.end());
+        std::ranges::sort(ordered_instantiations);
+        for (const auto& inst : ordered_instantiations) {
             tmpl_content << inst << "\n";
         }
 
+        fs::path inst_path;
+        for (const auto& sug : suggestions) {
+            if (!sug.target_file.path.empty() &&
+                sug.target_file.path.filename() == "template_instantiations.cpp") {
+                inst_path = sug.target_file.path;
+                break;
+            }
+        }
+        if (inst_path.empty()) {
+            inst_path = "template_instantiations.cpp";
+        }
+
         // Generate the template_instantiations.cpp edit
-        TextEdit tmpl_edit;
-        tmpl_edit.file = "template_instantiations.cpp";
-        tmpl_edit.start_line = 0;
-        tmpl_edit.start_col = 0;
-        tmpl_edit.end_line = 0;
-        tmpl_edit.end_col = 0;
-        tmpl_edit.new_text = tmpl_content.str();
-        consolidated.edits.push_back(tmpl_edit);
+        TextEdit tmpl_edit = make_replace_file_edit(inst_path, tmpl_content.str());
 
         std::ostringstream desc;
         desc << "Explicitly instantiate frequently-used templates to reduce instantiation overhead.\n\n";
         desc << "**Summary:** " << suggestions.size() << " templates will be instantiated once instead of multiple times.\n\n";
-
-        if (!extern_decls.empty()) {
-            desc << "**Note:** Add these extern declarations to corresponding headers to prevent implicit instantiation:\n";
-            for (const auto& decl : extern_decls) {
-                desc << "  - `" << decl << "`\n";
-            }
-            desc << "\n";
-        }
 
         desc << "See the **Text Edits** section below for the generated template_instantiations.cpp file.";
 
@@ -587,6 +928,24 @@ namespace bha::suggestions
             total_savings += sug.estimated_savings;
         }
         consolidated.estimated_savings = total_savings;
+
+        consolidated.edits = merge_edits(suggestions);
+        consolidated.edits.erase(
+            std::remove_if(consolidated.edits.begin(), consolidated.edits.end(),
+                [](const TextEdit& edit) {
+                    return edit.file.filename() == "template_instantiations.cpp";
+                }),
+            consolidated.edits.end()
+        );
+        consolidated.edits.push_back(tmpl_edit);
+
+        consolidated.target_file.path = inst_path;
+        consolidated.target_file.action = FileAction::Create;
+        consolidated.target_file.note = "Create explicit instantiation file";
+
+        append_build_system_targets(suggestions, consolidated.secondary_files);
+        append_build_system_edits(suggestions, consolidated.edits);
+        consolidated.edits = merge_text_edits(std::move(consolidated.edits));
 
         return consolidated;
     }
@@ -703,6 +1062,9 @@ namespace bha::suggestions
     ) {
         if (suggestions.empty()) {
             return std::nullopt;
+        }
+        if (suggestions.size() == 1) {
+            return suggestions.front();
         }
 
         Suggestion consolidated;
@@ -824,7 +1186,7 @@ namespace bha::suggestions
                 consolidated.priority = Priority::Medium;
             }
 
-            std::string header = sug.target_file.path.string();
+            std::string header = make_repo_relative(sug.target_file.path);
             if (!sug.description.empty()) {
                 by_header[header].push_back(sug.description);
             }

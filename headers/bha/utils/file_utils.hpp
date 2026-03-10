@@ -22,6 +22,13 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <cstdio>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace bha::file_utils {
 
@@ -207,12 +214,12 @@ namespace bha::file_utils {
         };
 
         if (recursive) {
-            for (const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
-                process_entry(entry);
+            for (fs::recursive_directory_iterator it(dir, ec), end; it != end && !ec; ++it) {
+                process_entry(*it);
             }
         } else {
-            for (const auto& entry : fs::directory_iterator(dir, ec)) {
-                process_entry(entry);
+            for (fs::directory_iterator it(dir, ec), end; it != end && !ec; ++it) {
+                process_entry(*it);
             }
         }
 
@@ -245,16 +252,61 @@ namespace bha::file_utils {
             );
         }
 
-        auto base = std::string(prefix) + "XXXXXX" + std::string(extension);
-        auto temp_path = temp_dir / base;
+#ifdef _WIN32
+        char temp_dir_buf[MAX_PATH];
+        const DWORD dir_len = GetTempPathA(MAX_PATH, temp_dir_buf);
+        if (dir_len == 0 || dir_len > MAX_PATH) {
+            return Result<fs::path, Error>::failure(
+                Error::io_error("Failed to get temp directory path")
+            );
+        }
 
-        if (std::ofstream file(temp_path); !file) {
+        char temp_file_buf[MAX_PATH];
+        std::string prefix_str(prefix);
+        if (!GetTempFileNameA(temp_dir_buf, prefix_str.c_str(), 0, temp_file_buf)) {
             return Result<fs::path, Error>::failure(
                 Error::io_error("Failed to create temp file")
             );
         }
 
-        return Result<fs::path, Error>::success(temp_path);
+        fs::path temp_path = temp_file_buf;
+        if (!extension.empty()) {
+            fs::path renamed = temp_path;
+            renamed.replace_extension(extension);
+            if (std::error_code rename_ec; !fs::equivalent(temp_path, renamed, rename_ec) || rename_ec) {
+                fs::rename(temp_path, renamed, rename_ec);
+                if (rename_ec) {
+                    return Result<fs::path, Error>::failure(
+                        Error::io_error("Failed to rename temp file", rename_ec.message())
+                    );
+                }
+            }
+            temp_path = renamed;
+        }
+
+        return Result<fs::path, Error>::success(std::move(temp_path));
+#else
+        const std::string suffix(extension);
+        std::string tmpl = (temp_dir / (std::string(prefix) + "XXXXXX" + suffix)).string();
+        std::vector<char> buf(tmpl.begin(), tmpl.end());
+        buf.push_back('\0');
+
+        int fd = -1;
+        if (suffix.empty()) {
+            fd = mkstemp(buf.data());
+        } else {
+            fd = mkstemps(buf.data(), static_cast<int>(suffix.size()));
+        }
+
+        if (fd == -1) {
+            return Result<fs::path, Error>::failure(
+                Error::io_error("Failed to create temp file")
+            );
+        }
+
+        close(fd);
+        return Result<fs::path, Error>::success(fs::path(buf.data()));
+#endif
     }
 
     /**

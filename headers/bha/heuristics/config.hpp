@@ -145,6 +145,9 @@ namespace bha::heuristics
 
         /// Estimated ratio of compile time spent on header parsing (40-50%)
         double header_parsing_ratio = 0.45;
+
+        /// Max allowed conflict risk (0-1). Higher risk groups are skipped.
+        double max_conflict_risk = 0.7;
     };
 
     /**
@@ -156,6 +159,32 @@ namespace bha::heuristics
 
         /// Minimum usage sites to make suggestion worthwhile
         std::size_t min_usage_sites = 3;
+    };
+
+    /**
+     * @brief Unreal Engine module-aware suggestion settings.
+     */
+    struct UnrealConfig {
+        /// Force Unreal mode even if project markers are not detected.
+        bool enabled = false;
+
+        /// Auto-enable Unreal mode when .uproject/.Build.cs markers are present.
+        bool auto_detect = true;
+
+        /// Emit module-level IWYU guidance.
+        bool emit_iwyu = true;
+
+        /// Emit module-level PCH guidance.
+        bool emit_pch = true;
+
+        /// Emit module-level unity-build guidance.
+        bool emit_unity = true;
+
+        /// Minimum source files in a module to consider unity suggestions.
+        std::size_t min_module_files_for_unity = 8;
+
+        /// Minimum aggregated include parse time to suggest module PCH usage.
+        std::chrono::milliseconds min_module_include_time_for_pch{300};
     };
 
     /**
@@ -172,6 +201,7 @@ namespace bha::heuristics
         HeaderConfig headers;
         UnityBuildConfig unity_build;
         ForwardDeclConfig forward_decl;
+        UnrealConfig unreal;
 
         /// Get default configuration with research-backed values.
         static HeuristicsConfig defaults() {

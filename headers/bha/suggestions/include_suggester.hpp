@@ -36,6 +36,10 @@ namespace bha::suggestions {
             return SuggestionType::IncludeRemoval;
         }
 
+        [[nodiscard]] std::vector<SuggestionType> supported_types() const override {
+            return {SuggestionType::IncludeRemoval, SuggestionType::MoveToCpp};
+        }
+
         [[nodiscard]] Result<SuggestionResult, Error> suggest(
             const SuggestionContext& context
         ) const override;

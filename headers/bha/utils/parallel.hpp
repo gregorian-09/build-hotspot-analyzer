@@ -19,9 +19,13 @@
 #include <thread>
 #include <queue>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <condition_variable>
 #include <algorithm>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace bha::parallel {
 
@@ -91,7 +95,10 @@ namespace bha::parallel {
             using return_type = std::invoke_result_t<F, Args...>;
 
             auto task = std::make_shared<std::packaged_task<return_type()>>(
-                std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+                [fn = std::forward<F>(f),
+                 tup = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+                    return std::apply(std::move(fn), std::move(tup));
+                }
             );
 
             std::future<return_type> result = task->get_future();
@@ -170,8 +177,9 @@ namespace bha::parallel {
         futures.reserve(items.size());
 
         for (auto& item : items) {
-            futures.push_back(pool.submit([&f, &item]() {
-                f(item);
+            auto* item_ptr = std::addressof(item);
+            futures.push_back(pool.submit([&f, item_ptr]() {
+                f(*item_ptr);
             }));
         }
 
@@ -199,8 +207,9 @@ namespace bha::parallel {
         futures.reserve(items.size());
 
         for (const auto& item : items) {
-            futures.push_back(pool.submit([&f, &item]() {
-                return f(item);
+            auto* item_ptr = std::addressof(item);
+            futures.push_back(pool.submit([&f, item_ptr]() {
+                return f(*item_ptr);
             }));
         }
 
@@ -230,8 +239,9 @@ namespace bha::parallel {
         futures.reserve(items.size());
 
         for (const auto& item : items) {
-            futures.push_back(pool.submit([&predicate, &item]() {
-                return predicate(item);
+            auto* item_ptr = std::addressof(item);
+            futures.push_back(pool.submit([&predicate, item_ptr]() {
+                return predicate(*item_ptr);
             }));
         }
 

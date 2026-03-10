@@ -35,6 +35,23 @@ namespace bha::build_systems
             const fs::path& working_dir = fs::path()
         );
 
+#ifndef _WIN32
+        std::string shell_escape_posix(const std::string& input) {
+            std::string escaped;
+            escaped.reserve(input.size() + 2);
+            escaped.push_back('\'');
+            for (char c : input) {
+                if (c == '\'') {
+                    escaped += "'\\''";
+                } else {
+                    escaped.push_back(c);
+                }
+            }
+            escaped.push_back('\'');
+            return escaped;
+        }
+#endif
+
         fs::path find_compiler_path(const std::string& compiler_name) {
             if (compiler_name.empty()) return {};
 
@@ -398,7 +415,7 @@ namespace bha::build_systems
             // Unix implementation
             std::string full_command = command;
             if (!working_dir.empty()) {
-                full_command = "cd '" + working_dir.string() + "' && " + command;
+                full_command = "cd " + shell_escape_posix(working_dir.string()) + " && " + command;
             }
             full_command += " 2>&1";
 
@@ -413,6 +430,24 @@ namespace bha::build_systems
                 }
             }
 #endif
+
+            if (const char* log_path = std::getenv("BHA_BUILD_LOG"); log_path && *log_path) {
+                std::ofstream log(log_path, std::ios::app);
+                if (log) {
+                    log << "=== BHA build command ===\n";
+                    log << "Working dir: " << (working_dir.empty() ? "." : working_dir.string()) << "\n";
+                    log << "Command: " << command << "\n";
+                    log << "Exit code: " << exit_code << "\n";
+                    if (output.empty()) {
+                        log << "(no output)\n";
+                    } else {
+                        log << output;
+                        if (!output.ends_with('\n')) {
+                            log << "\n";
+                        }
+                    }
+                }
+            }
 
             return std::pair{exit_code, std::move(output)};
         }
@@ -570,7 +605,9 @@ namespace bha::build_systems
     void BuildSystemRegistry::register_adapter(
         std::unique_ptr<IBuildSystemAdapter> adapter
     ) {
-        adapters_.push_back(std::move(adapter));
+        if (adapter) {
+            adapters_.push_back(std::move(adapter));
+        }
     }
 
     IBuildSystemAdapter* BuildSystemRegistry::detect(const fs::path& project_path) const {
@@ -1168,6 +1205,7 @@ namespace bha::build_systems
             auto info = AutotoolsInfo::detect(project_path);
             fs::path work_dir = project_path;
             fs::path configure_script = project_path / "configure";
+            const fs::path project_abs = fs::absolute(project_path);
 
             if (!fs::exists(configure_script) && info.is_autotools) {
                 if (!info.bootstrap_script.empty()) {
@@ -1216,7 +1254,10 @@ namespace bha::build_systems
                 );
             }
 
-            fs::path build_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            fs::path build_dir = options.build_dir.empty() ? project_abs : options.build_dir;
+            if (build_dir.is_relative()) {
+                build_dir = fs::absolute(project_abs / build_dir);
+            }
             bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path;
 
             if (use_vpath) {
@@ -1308,10 +1349,14 @@ namespace bha::build_systems
                                    info.has_configure ||
                                    !info.bootstrap_script.empty();
 
-            fs::path work_dir = project_path;
-            fs::path build_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            const fs::path project_abs = fs::absolute(project_path);
+            fs::path work_dir = project_abs;
+            fs::path build_dir = options.build_dir.empty() ? project_abs : options.build_dir;
+            if (build_dir.is_relative()) {
+                build_dir = fs::absolute(project_abs / build_dir);
+            }
 
-            if (bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path) {
+            if (!options.build_dir.empty() && options.build_dir != project_path) {
                 work_dir = build_dir;
             }
 
@@ -1319,7 +1364,7 @@ namespace bha::build_systems
                                             fs::exists(work_dir / "makefile") ||
                                             fs::exists(work_dir / "GNUmakefile");
 
-            if (options.clean_first && has_makefile_in_work_dir) {
+            if (options.clean_first) {
                 clean(project_path, options);
                 has_makefile_in_work_dir = false;
             }
@@ -1448,14 +1493,18 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            fs::path work_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            const fs::path project_abs = fs::absolute(project_path);
+            fs::path work_dir = options.build_dir.empty() ? project_abs : options.build_dir;
+            if (work_dir.is_relative()) {
+                work_dir = fs::absolute(project_abs / work_dir);
+            }
 
             bool has_makefile = fs::exists(work_dir / "Makefile") ||
                                 fs::exists(work_dir / "makefile") ||
                                 fs::exists(work_dir / "GNUmakefile");
 
             if (!has_makefile) {
-                work_dir = project_path;
+                work_dir = project_abs;
                 has_makefile = fs::exists(work_dir / "Makefile") ||
                                fs::exists(work_dir / "makefile") ||
                                fs::exists(work_dir / "GNUmakefile");
@@ -1465,7 +1514,26 @@ namespace bha::build_systems
                 return Result<void, Error>::success();
             }
 
-            execute_command("make clean", work_dir);
+            const bool has_project_makefile = fs::exists(project_abs / "Makefile") ||
+                                              fs::exists(project_abs / "makefile") ||
+                                              fs::exists(project_abs / "GNUmakefile");
+            const bool has_config_in_project = fs::exists(project_abs / "config.status");
+            const bool has_config_in_work = fs::exists(work_dir / "config.status");
+
+            bool cleaned = false;
+            if (has_config_in_project && has_project_makefile) {
+                auto [exit_code, output] = execute_command("make distclean", project_abs);
+                (void)output;
+                cleaned = (exit_code == 0);
+            } else if (has_config_in_work) {
+                auto [exit_code, output] = execute_command("make distclean", work_dir);
+                (void)output;
+                cleaned = (exit_code == 0);
+            }
+
+            if (!cleaned) {
+                execute_command("make clean", work_dir);
+            }
 
             // Remove cached compiler settings files that may persist between builds
             // These files cache CFLAGS and compiler choices, causing issues when switching compilers
@@ -1479,7 +1547,7 @@ namespace bha::build_systems
 
             // Also check common subdirectories for these files
             for (const auto& subdir : {"src", "deps"}) {
-                if (fs::path subdir_path = project_path / subdir; fs::exists(subdir_path)) {
+                if (fs::path subdir_path = project_abs / subdir; fs::exists(subdir_path)) {
                     for (const auto& settings_file : {".make-settings", ".make-prerequisites", ".make-*"}) {
                         fs::remove(subdir_path / settings_file, ec);
                     }
@@ -1493,14 +1561,18 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            const fs::path work_dir = options.build_dir.empty() ? project_path : options.build_dir;
+            const fs::path project_abs = fs::absolute(project_path);
+            fs::path work_dir = options.build_dir.empty() ? project_abs : options.build_dir;
+            if (work_dir.is_relative()) {
+                work_dir = fs::absolute(project_abs / work_dir);
+            }
             fs::path compile_commands = work_dir / "compile_commands.json";
 
             if (fs::exists(compile_commands)) {
                 return Result<fs::path, Error>::success(compile_commands);
             }
 
-            compile_commands = project_path / "compile_commands.json";
+            compile_commands = project_abs / "compile_commands.json";
             if (fs::exists(compile_commands)) {
                 return Result<fs::path, Error>::success(compile_commands);
             }

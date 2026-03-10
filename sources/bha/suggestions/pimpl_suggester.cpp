@@ -181,6 +181,8 @@ namespace bha::suggestions
         struct PIMPLRefactorReadiness {
             bool has_compile_context = false;
             bool has_template_declaration = false;
+            bool supports_template_direct_edits = false;
+            bool has_template_explicit_instantiations = false;
             bool has_inheritance = false;
             bool has_virtual_members = false;
             bool has_private_methods = false;
@@ -191,7 +193,7 @@ namespace bha::suggestions
             std::size_t private_data_members = 0;
 
             [[nodiscard]] bool has_blockers() const noexcept {
-                return has_template_declaration ||
+                return (has_template_declaration && !supports_template_direct_edits) ||
                        has_inheritance ||
                        has_virtual_members ||
                        has_private_inline_method_bodies ||
@@ -232,6 +234,15 @@ namespace bha::suggestions
             bool has_virtual_members = false;
             bool has_private_inline_method_bodies = false;
             bool has_macro_generated_private_declarations = false;
+            std::size_t base_count = 0;
+            std::size_t public_base_count = 0;
+            bool has_final_attr = false;
+            bool has_override_attr = false;
+        };
+
+        struct SimpleTemplateShape {
+            std::string declaration_line;
+            std::vector<std::string> parameter_names;
         };
 
         struct InlinePrivateMethodMove {
@@ -515,14 +526,33 @@ namespace bha::suggestions
                     continue;
                 }
 
+                if (line.find("FinalAttr") != std::string::npos) {
+                    extraction.has_final_attr = true;
+                    continue;
+                }
+                if (line.find("OverrideAttr") != std::string::npos) {
+                    extraction.has_override_attr = true;
+                    continue;
+                }
+
+                const bool is_public_base_line = line.find("|-public '") != std::string::npos;
+                const bool is_protected_base_line = line.find("|-protected '") != std::string::npos;
+                const bool is_private_base_line = line.find("|-private '") != std::string::npos;
+                const bool is_base_access_line =
+                    is_public_base_line || is_protected_base_line || is_private_base_line;
                 const bool is_inheritance_line =
                     line.find("CXXBaseSpecifier") != std::string::npos ||
-                    ((line.find("|-public '") != std::string::npos ||
-                      line.find("|-protected '") != std::string::npos ||
-                      line.find("|-private '") != std::string::npos) &&
-                     line.find("AccessSpecDecl") == std::string::npos);
+                    (is_base_access_line && line.find("AccessSpecDecl") == std::string::npos);
                 if (is_inheritance_line) {
                     extraction.has_inheritance = true;
+                    if (is_base_access_line) {
+                        ++extraction.base_count;
+                        if (is_public_base_line) {
+                            ++extraction.public_base_count;
+                        }
+                    } else if (line.find("CXXBaseSpecifier") != std::string::npos) {
+                        ++extraction.base_count;
+                    }
                     continue;
                 }
 
@@ -663,8 +693,14 @@ namespace bha::suggestions
             }
 
             const auto contains_copy_param = [&class_name](const std::string& line) {
-                return line.find("const " + class_name + " &") != std::string::npos ||
-                       line.find("const " + class_name + "&") != std::string::npos;
+                if (line.find("const " + class_name + " &") != std::string::npos ||
+                    line.find("const " + class_name + "&") != std::string::npos) {
+                    return true;
+                }
+                const std::regex templated_copy_param_regex(
+                    "const\\s+" + class_name + R"(<[^>]+>\s*&)"
+                );
+                return std::regex_search(line, templated_copy_param_regex);
             };
 
             std::string line;
@@ -697,6 +733,186 @@ namespace bha::suggestions
             const fs::path& header_file
         );
 
+        std::optional<SimpleTemplateShape> detect_simple_template_shape(
+            const ClassInfo& class_info,
+            const fs::path& header_file
+        ) {
+            if (class_info.class_start_line == 0) {
+                return std::nullopt;
+            }
+            std::ifstream in(header_file);
+            if (!in) {
+                return std::nullopt;
+            }
+
+            std::vector<std::string> lines;
+            for (std::string line; std::getline(in, line);) {
+                lines.push_back(line);
+            }
+            if (class_info.class_start_line > lines.size()) {
+                return std::nullopt;
+            }
+
+            const std::string& class_line = lines[class_info.class_start_line - 1];
+            const std::regex class_decl_regex(
+                "^\\s*class\\s+" + class_info.name + R"(\b)"
+            );
+            if (!std::regex_search(class_line, class_decl_regex)) {
+                return std::nullopt;
+            }
+
+            std::size_t search_line = class_info.class_start_line - 1;
+            std::size_t scanned = 0;
+            std::vector<std::string> declaration_lines;
+            while (search_line > 0 && scanned < 16) {
+                --search_line;
+                ++scanned;
+                std::string candidate = lines[search_line];
+                if (const auto first = candidate.find_first_not_of(" \t"); first != std::string::npos) {
+                    candidate.erase(0, first);
+                } else {
+                    continue;
+                }
+                if (const auto last = candidate.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                    candidate.erase(last + 1);
+                }
+                if (candidate.empty() || candidate.starts_with("//")) {
+                    continue;
+                }
+
+                declaration_lines.push_back(candidate);
+                if (candidate.find("template") != std::string::npos) {
+                    break;
+                }
+            }
+
+            if (declaration_lines.empty()) {
+                return std::nullopt;
+            }
+            if (declaration_lines.back().find("template") == std::string::npos) {
+                return std::nullopt;
+            }
+
+            std::reverse(declaration_lines.begin(), declaration_lines.end());
+
+            std::string candidate;
+            for (std::size_t i = 0; i < declaration_lines.size(); ++i) {
+                if (i > 0) {
+                    candidate += ' ';
+                }
+                candidate += declaration_lines[i];
+            }
+
+            std::smatch match;
+            const std::regex template_decl_regex(
+                R"(^template\s*<\s*(?:(?:typename|class)\s+[A-Za-z_][A-Za-z0-9_]*\s*(?:,\s*(?:typename|class)\s+[A-Za-z_][A-Za-z0-9_]*\s*)*)>\s*$)"
+            );
+            if (!std::regex_match(candidate, match, template_decl_regex)) {
+                return std::nullopt;
+            }
+            std::vector<std::string> parameter_names;
+            const std::regex template_parameter_regex(
+                R"((?:typename|class)\s+([A-Za-z_][A-Za-z0-9_]*))"
+            );
+            auto begin = std::sregex_iterator(candidate.begin(), candidate.end(), template_parameter_regex);
+            auto end = std::sregex_iterator();
+            for (auto it = begin; it != end; ++it) {
+                parameter_names.push_back((*it)[1].str());
+            }
+            if (parameter_names.empty()) {
+                return std::nullopt;
+            }
+            return SimpleTemplateShape{
+                .declaration_line = candidate,
+                .parameter_names = std::move(parameter_names),
+            };
+        }
+
+        std::string build_template_argument_list(const SimpleTemplateShape& template_shape) {
+            std::string argument_list;
+            for (std::size_t i = 0; i < template_shape.parameter_names.size(); ++i) {
+                if (i > 0) {
+                    argument_list += ", ";
+                }
+                argument_list += template_shape.parameter_names[i];
+            }
+            return argument_list;
+        }
+
+        bool has_template_explicit_instantiations(
+            const fs::path& source_file,
+            const std::string& class_name
+        ) {
+            std::ifstream in(source_file);
+            if (!in) {
+                return false;
+            }
+            const std::regex explicit_instantiation_regex(
+                "^\\s*template\\s+class\\s+(?:[A-Za-z_][A-Za-z0-9_]*::)*" +
+                class_name + R"(\s*<)"
+            );
+            std::string line;
+            while (std::getline(in, line)) {
+                if (std::regex_search(line, explicit_instantiation_regex)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool is_trivial_final_inheritance_shape(
+            const ClassInfo& class_info,
+            const fs::path& header_file,
+            const ASTClassExtraction* ast_extraction = nullptr
+        ) {
+            if (class_info.class_start_line == 0 || class_info.class_end_line < class_info.class_start_line) {
+                return false;
+            }
+
+            std::ifstream in(header_file);
+            if (!in) {
+                return false;
+            }
+
+            const std::regex final_public_bases_regex(
+                R"(\bclass\s+)" + class_info.name +
+                R"(\s+final\s*:\s*public\s+[^,{]+(?:\s*,\s*public\s+[^,{]+)*\s*\{)"
+            );
+
+            std::string line;
+            std::size_t line_no = 0;
+            bool saw_final_single_base_decl = false;
+            bool saw_override = false;
+
+            if (ast_extraction != nullptr) {
+                saw_final_single_base_decl =
+                    ast_extraction->has_final_attr &&
+                    ast_extraction->base_count >= 1 &&
+                    ast_extraction->public_base_count == ast_extraction->base_count;
+                saw_override = ast_extraction->has_override_attr;
+            }
+
+            while (std::getline(in, line)) {
+                ++line_no;
+                if (line_no < class_info.class_start_line || line_no > class_info.class_end_line) {
+                    continue;
+                }
+
+                if (!saw_final_single_base_decl && std::regex_search(line, final_public_bases_regex)) {
+                    saw_final_single_base_decl = true;
+                }
+                if (line.find("override") != std::string::npos) {
+                    saw_override = true;
+                }
+                if (line.find("virtual ") != std::string::npos ||
+                    line.find("virtual\t") != std::string::npos) {
+                    return false;
+                }
+            }
+
+            return saw_final_single_base_decl && saw_override;
+        }
+
         PIMPLRefactorReadiness assess_pimpl_readiness(
             const SuggestionContext& context,
             const fs::path& source_file,
@@ -707,16 +923,18 @@ namespace bha::suggestions
             readiness.has_compile_context = has_compile_command_for_source(context, source_file);
 
             std::optional<ClassInfo> class_info;
+            std::optional<ASTClassExtraction> ast_extraction;
             bool used_ast_extraction = false;
             if (readiness.has_compile_context) {
                 if (auto extraction = extract_class_info_from_compile_db_ast(context, source_file, header_file, class_name)) {
-                    class_info = extraction->info;
+                    ast_extraction = std::move(*extraction);
+                    class_info = ast_extraction->info;
                     used_ast_extraction = true;
-                    readiness.has_template_declaration = extraction->has_template_declaration;
-                    readiness.has_inheritance = extraction->has_inheritance;
-                    readiness.has_virtual_members = extraction->has_virtual_members;
-                    readiness.has_private_inline_method_bodies = extraction->has_private_inline_method_bodies;
-                    readiness.has_macro_generated_private_declarations = extraction->has_macro_generated_private_declarations;
+                    readiness.has_template_declaration = ast_extraction->has_template_declaration;
+                    readiness.has_inheritance = ast_extraction->has_inheritance;
+                    readiness.has_virtual_members = ast_extraction->has_virtual_members;
+                    readiness.has_private_inline_method_bodies = ast_extraction->has_private_inline_method_bodies;
+                    readiness.has_macro_generated_private_declarations = ast_extraction->has_macro_generated_private_declarations;
                 }
             }
             if (!class_info) {
@@ -725,6 +943,17 @@ namespace bha::suggestions
             if (!class_info) {
                 return readiness;
             }
+            if (class_info->private_section_line == 0) {
+                if (auto parsed = parse_class_simple(header_file, class_name)) {
+                    if (parsed->private_section_line != 0) {
+                        class_info->private_section_line = parsed->private_section_line;
+                    }
+                }
+            }
+
+            const auto simple_template_shape = detect_simple_template_shape(*class_info, header_file);
+            readiness.has_template_explicit_instantiations =
+                has_template_explicit_instantiations(source_file, class_name);
 
             readiness.has_copy_constructor = class_info->has_copy_constructor;
             readiness.private_data_members = static_cast<std::size_t>(std::count_if(
@@ -849,6 +1078,26 @@ namespace bha::suggestions
                     readiness.has_private_inline_method_bodies = false;
                 }
             }
+
+            if ((readiness.has_inheritance || readiness.has_virtual_members) &&
+                is_trivial_final_inheritance_shape(
+                    *class_info,
+                    header_file,
+                    ast_extraction ? &*ast_extraction : nullptr
+                )) {
+                readiness.has_inheritance = false;
+                readiness.has_virtual_members = false;
+            }
+
+            readiness.supports_template_direct_edits =
+                readiness.has_template_declaration &&
+                simple_template_shape.has_value() &&
+                readiness.has_template_explicit_instantiations &&
+                !readiness.has_inheritance &&
+                !readiness.has_virtual_members &&
+                !readiness.has_private_inline_method_bodies &&
+                !readiness.has_macro_generated_private_declarations &&
+                !readiness.has_preprocessor_in_class;
 
             return readiness;
         }
@@ -1586,30 +1835,34 @@ namespace bha::suggestions
             }
 
             const std::string exception_spec = R"((?:\s+noexcept(?:\s*\([^)]*\))?)?)";
+            const std::string class_qualifier =
+                class_info.name + R"((?:<[^>]+>)?::)" + class_info.name;
+            const std::string class_param_type =
+                class_info.name + R"((?:<[^>]+>)?)";
             const std::regex ctor_defaulted_regex(
-                "^\\s*(" + class_info.name + "::" + class_info.name +
+                "^\\s*(" + class_qualifier +
                 R"(\(\))" + exception_spec + R"()\s*=\s*default\s*;\s*$)"
             );
             const std::regex ctor_empty_body_regex(
-                "^\\s*(" + class_info.name + "::" + class_info.name +
+                "^\\s*(" + class_qualifier +
                 R"(\(\))" + exception_spec + R"()\s*\{\s*\}\s*$)"
             );
             const std::regex dtor_defaulted_regex(
-                "^\\s*(" + class_info.name + R"(::~)" + class_info.name +
+                "^\\s*(" + class_info.name + R"((?:<[^>]+>)?::~)" + class_info.name +
                 R"(\(\))" + exception_spec + R"()\s*=\s*default\s*;\s*$)"
             );
             const std::regex dtor_empty_body_regex(
-                "^\\s*(" + class_info.name + R"(::~)" + class_info.name +
+                "^\\s*(" + class_info.name + R"((?:<[^>]+>)?::~)" + class_info.name +
                 R"(\(\))" + exception_spec + R"()\s*\{\s*\}\s*$)"
             );
             const std::regex copy_ctor_definition_regex(
-                "^\\s*" + class_info.name + "::" + class_info.name +
-                R"(\s*\(\s*const\s+)" + class_info.name +
+                "^\\s*" + class_qualifier +
+                R"(\s*\(\s*const\s+)" + class_param_type +
                 R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?)?)"
             );
             const std::regex copy_assign_definition_regex(
-                "^\\s*" + class_info.name + R"(::operator=\s*\(\s*const\s+)" +
-                class_info.name +
+                "^\\s*" + class_info.name + R"((?:<[^>]+>)?::operator=\s*\(\s*const\s+)" +
+                class_param_type +
                 R"(\s*&(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*(?:noexcept(?:\s*\([^)]*\))?)?)"
             );
 
@@ -1643,6 +1896,503 @@ namespace bha::suggestions
             return eligibility;
         }
 
+        struct OutOfLineFunctionBlock {
+            std::size_t start_line = 0;  // inclusive, zero-based
+            std::size_t end_line = 0;    // exclusive, zero-based
+            std::string prefix;
+            std::string signature;
+            std::string initializer;
+            std::string body;
+        };
+
+        std::string trim_copy(std::string text) {
+            if (const auto first = text.find_first_not_of(" \t\r\n"); first != std::string::npos) {
+                text.erase(0, first);
+            } else {
+                text.clear();
+            }
+            if (!text.empty()) {
+                if (const auto last = text.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                    text.erase(last + 1);
+                }
+            }
+            return text;
+        }
+
+        std::optional<std::size_t> find_initializer_colon(const std::string& header) {
+            int paren_depth = 0;
+            int brace_depth = 0;
+            int bracket_depth = 0;
+            int angle_depth = 0;
+            for (std::size_t i = 0; i < header.size(); ++i) {
+                const char ch = header[i];
+                switch (ch) {
+                    case '(':
+                        ++paren_depth;
+                        break;
+                    case ')':
+                        paren_depth = std::max(0, paren_depth - 1);
+                        break;
+                    case '{':
+                        ++brace_depth;
+                        break;
+                    case '}':
+                        brace_depth = std::max(0, brace_depth - 1);
+                        break;
+                    case '[':
+                        ++bracket_depth;
+                        break;
+                    case ']':
+                        bracket_depth = std::max(0, bracket_depth - 1);
+                        break;
+                    case '<':
+                        ++angle_depth;
+                        break;
+                    case '>':
+                        angle_depth = std::max(0, angle_depth - 1);
+                        break;
+                    case ':': {
+                        const char prev = i > 0 ? header[i - 1] : '\0';
+                        const char next = i + 1 < header.size() ? header[i + 1] : '\0';
+                        if (paren_depth == 0 &&
+                            brace_depth == 0 &&
+                            bracket_depth == 0 &&
+                            angle_depth == 0 &&
+                            prev != ':' &&
+                            next != ':') {
+                            return i;
+                        }
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+            return std::nullopt;
+        }
+
+        std::vector<std::string> split_top_level_initializer_entries(const std::string& initializer) {
+            std::vector<std::string> entries;
+            std::string current;
+            int paren_depth = 0;
+            int brace_depth = 0;
+            int bracket_depth = 0;
+            int angle_depth = 0;
+
+            for (const char ch : initializer) {
+                switch (ch) {
+                    case '(':
+                        ++paren_depth;
+                        break;
+                    case ')':
+                        paren_depth = std::max(0, paren_depth - 1);
+                        break;
+                    case '{':
+                        ++brace_depth;
+                        break;
+                    case '}':
+                        brace_depth = std::max(0, brace_depth - 1);
+                        break;
+                    case '[':
+                        ++bracket_depth;
+                        break;
+                    case ']':
+                        bracket_depth = std::max(0, bracket_depth - 1);
+                        break;
+                    case '<':
+                        ++angle_depth;
+                        break;
+                    case '>':
+                        angle_depth = std::max(0, angle_depth - 1);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (ch == ',' &&
+                    paren_depth == 0 &&
+                    brace_depth == 0 &&
+                    bracket_depth == 0 &&
+                    angle_depth == 0) {
+                    auto entry = trim_copy(current);
+                    if (!entry.empty()) {
+                        entries.push_back(std::move(entry));
+                    }
+                    current.clear();
+                    continue;
+                }
+
+                current.push_back(ch);
+            }
+
+            auto tail = trim_copy(current);
+            if (!tail.empty()) {
+                entries.push_back(std::move(tail));
+            }
+            return entries;
+        }
+
+        std::optional<OutOfLineFunctionBlock> find_out_of_line_function_block(
+            const std::vector<std::string>& lines,
+            const std::regex& signature_regex
+        ) {
+            for (std::size_t sig_line = 0; sig_line < lines.size(); ++sig_line) {
+                if (!std::regex_search(lines[sig_line], signature_regex)) {
+                    continue;
+                }
+
+                std::size_t start_line = sig_line;
+                while (start_line > 0) {
+                    const std::string previous = trim_copy(lines[start_line - 1]);
+                    if (!previous.starts_with("template<") && !previous.starts_with("template <")) {
+                        break;
+                    }
+                    --start_line;
+                }
+
+                std::size_t open_line = sig_line;
+                std::size_t open_col = std::string::npos;
+                for (; open_line < lines.size(); ++open_line) {
+                    open_col = lines[open_line].find('{');
+                    if (open_col != std::string::npos) {
+                        break;
+                    }
+                }
+                if (open_line >= lines.size()) {
+                    return std::nullopt;
+                }
+
+                std::string prefix;
+                for (std::size_t i = start_line; i < sig_line; ++i) {
+                    prefix += lines[i];
+                    prefix.push_back('\n');
+                }
+
+                std::string header;
+                for (std::size_t i = sig_line; i <= open_line; ++i) {
+                    if (i > sig_line) {
+                        header.push_back('\n');
+                    }
+                    if (i == open_line) {
+                        header += lines[i].substr(0, open_col);
+                    } else {
+                        header += lines[i];
+                    }
+                }
+
+                const auto colon_pos = find_initializer_colon(header);
+                OutOfLineFunctionBlock block;
+                block.start_line = start_line;
+                block.prefix = std::move(prefix);
+                if (colon_pos.has_value()) {
+                    block.signature = trim_copy(header.substr(0, *colon_pos));
+                    block.initializer = trim_copy(header.substr(*colon_pos + 1));
+                } else {
+                    block.signature = trim_copy(header);
+                }
+
+                int brace_depth = 0;
+                bool saw_open = false;
+                std::string body;
+                std::size_t end_line = open_line;
+                for (std::size_t line_index = open_line; line_index < lines.size(); ++line_index) {
+                    const std::string& line = lines[line_index];
+                    std::size_t col_begin = 0;
+                    if (line_index == open_line) {
+                        col_begin = open_col;
+                    }
+                    for (std::size_t col = col_begin; col < line.size(); ++col) {
+                        const char ch = line[col];
+                        if (!saw_open) {
+                            if (ch == '{') {
+                                saw_open = true;
+                                brace_depth = 1;
+                            }
+                            continue;
+                        }
+                        if (ch == '{') {
+                            ++brace_depth;
+                            body.push_back(ch);
+                            continue;
+                        }
+                        if (ch == '}') {
+                            --brace_depth;
+                            if (brace_depth == 0) {
+                                end_line = line_index + 1;
+                                block.end_line = end_line;
+                                block.body = trim_copy(body);
+                                return block;
+                            }
+                            body.push_back(ch);
+                            continue;
+                        }
+                        body.push_back(ch);
+                    }
+                    if (saw_open && brace_depth > 0) {
+                        body.push_back('\n');
+                    }
+                }
+                return std::nullopt;
+            }
+            return std::nullopt;
+        }
+
+        std::string rewrite_unqualified_private_member_tokens(
+            const std::string& input,
+            const std::unordered_set<std::string>& private_fields
+        ) {
+            std::string output;
+            output.reserve(input.size() + private_fields.size() * 8);
+            bool in_single_quote = false;
+            bool in_double_quote = false;
+            bool in_line_comment = false;
+            bool in_block_comment = false;
+
+            for (std::size_t i = 0; i < input.size(); ++i) {
+                const char ch = input[i];
+                const char next = (i + 1 < input.size()) ? input[i + 1] : '\0';
+
+                if (in_line_comment) {
+                    output.push_back(ch);
+                    if (ch == '\n') {
+                        in_line_comment = false;
+                    }
+                    continue;
+                }
+                if (in_block_comment) {
+                    output.push_back(ch);
+                    if (ch == '*' && next == '/') {
+                        output.push_back('/');
+                        ++i;
+                        in_block_comment = false;
+                    }
+                    continue;
+                }
+                if (in_single_quote) {
+                    output.push_back(ch);
+                    if (ch == '\\' && next != '\0') {
+                        output.push_back(next);
+                        ++i;
+                        continue;
+                    }
+                    if (ch == '\'') {
+                        in_single_quote = false;
+                    }
+                    continue;
+                }
+                if (in_double_quote) {
+                    output.push_back(ch);
+                    if (ch == '\\' && next != '\0') {
+                        output.push_back(next);
+                        ++i;
+                        continue;
+                    }
+                    if (ch == '"') {
+                        in_double_quote = false;
+                    }
+                    continue;
+                }
+                if (ch == '/' && next == '/') {
+                    output += "//";
+                    ++i;
+                    in_line_comment = true;
+                    continue;
+                }
+                if (ch == '/' && next == '*') {
+                    output += "/*";
+                    ++i;
+                    in_block_comment = true;
+                    continue;
+                }
+                if (ch == '\'') {
+                    output.push_back(ch);
+                    in_single_quote = true;
+                    continue;
+                }
+                if (ch == '"') {
+                    output.push_back(ch);
+                    in_double_quote = true;
+                    continue;
+                }
+
+                if (std::isalpha(static_cast<unsigned char>(ch)) || ch == '_') {
+                    const std::size_t token_start = i;
+                    std::size_t token_end = i + 1;
+                    while (token_end < input.size() &&
+                           (std::isalnum(static_cast<unsigned char>(input[token_end])) ||
+                            input[token_end] == '_')) {
+                        ++token_end;
+                    }
+                    const std::string token = input.substr(token_start, token_end - token_start);
+                    i = token_end - 1;
+
+                    if (!private_fields.contains(token)) {
+                        output += token;
+                        continue;
+                    }
+
+                    char prev_non_space = '\0';
+                    for (std::size_t back = token_start; back > 0; --back) {
+                        const char c = input[back - 1];
+                        if (!std::isspace(static_cast<unsigned char>(c))) {
+                            prev_non_space = c;
+                            break;
+                        }
+                    }
+                    if (prev_non_space == '.' || prev_non_space == '>' || prev_non_space == ':') {
+                        output += token;
+                    } else {
+                        output += "pimpl_->" + token;
+                    }
+                    continue;
+                }
+
+                output.push_back(ch);
+            }
+
+            return output;
+        }
+
+        std::string rewrite_copy_body_for_pimpl(
+            std::string body,
+            const std::unordered_set<std::string>& private_fields
+        ) {
+            for (const auto& field : private_fields) {
+                body = std::regex_replace(
+                    body,
+                    std::regex("\\bother\\s*\\.\\s*" + field + "\\b"),
+                    "other.pimpl_->" + field
+                );
+                body = std::regex_replace(
+                    body,
+                    std::regex("\\bthis\\s*->\\s*" + field + "\\b"),
+                    "pimpl_->" + field
+                );
+            }
+            return rewrite_unqualified_private_member_tokens(body, private_fields);
+        }
+
+        std::optional<std::string> build_rewritten_explicit_copy_ctor(
+            const OutOfLineFunctionBlock& ctor_block,
+            const std::unordered_set<std::string>& private_fields
+        ) {
+            if (ctor_block.signature.empty()) {
+                return std::nullopt;
+            }
+
+            std::vector<std::string> assignments;
+            if (!ctor_block.initializer.empty()) {
+                const auto entries = split_top_level_initializer_entries(ctor_block.initializer);
+                assignments.reserve(entries.size());
+                for (const auto& entry : entries) {
+                    std::smatch match;
+                    std::string field_name;
+                    std::string expression;
+                    if (std::regex_match(entry, match, std::regex(R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*$)"))) {
+                        field_name = match[1].str();
+                        expression = match[2].str();
+                    } else if (std::regex_match(entry, match, std::regex(R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\{(.*)\}\s*$)"))) {
+                        field_name = match[1].str();
+                        expression = match[2].str();
+                    } else {
+                        return std::nullopt;
+                    }
+                    if (!private_fields.contains(field_name)) {
+                        return std::nullopt;
+                    }
+                    assignments.push_back(
+                        "    pimpl_->" + field_name + " = " +
+                        trim_copy(rewrite_copy_body_for_pimpl(expression, private_fields)) + ";"
+                    );
+                }
+            }
+
+            std::string rewritten_body = trim_copy(rewrite_copy_body_for_pimpl(ctor_block.body, private_fields));
+
+            std::string rewritten;
+            rewritten.reserve(ctor_block.prefix.size() + ctor_block.signature.size() + rewritten_body.size() + 256);
+            rewritten += ctor_block.prefix;
+            rewritten += ctor_block.signature;
+            rewritten += " : pimpl_(std::make_unique<Impl>()) {\n";
+            rewritten += "    if (!other.pimpl_) {\n";
+            rewritten += "        return;\n";
+            rewritten += "    }\n";
+            for (const auto& assignment : assignments) {
+                rewritten += assignment + "\n";
+            }
+            if (!rewritten_body.empty()) {
+                rewritten += rewritten_body;
+                if (!rewritten.ends_with('\n')) {
+                    rewritten.push_back('\n');
+                }
+            }
+            rewritten += "}\n";
+            return rewritten;
+        }
+
+        std::string insert_assignment_null_guards(std::string body) {
+            static constexpr std::string_view guard =
+                "    if (!other.pimpl_) {\n"
+                "        pimpl_.reset();\n"
+                "        return *this;\n"
+                "    }\n"
+                "    if (!pimpl_) {\n"
+                "        pimpl_ = std::make_unique<Impl>();\n"
+                "    }\n";
+
+            const auto self_check_pos = body.find("if (this == &other)");
+            if (self_check_pos == std::string::npos) {
+                return std::string(guard) + body;
+            }
+
+            const auto open_brace_pos = body.find('{', self_check_pos);
+            if (open_brace_pos == std::string::npos) {
+                return std::string(guard) + body;
+            }
+
+            int depth = 0;
+            for (std::size_t i = open_brace_pos; i < body.size(); ++i) {
+                if (body[i] == '{') {
+                    ++depth;
+                } else if (body[i] == '}') {
+                    --depth;
+                    if (depth == 0) {
+                        std::size_t insert_at = i + 1;
+                        if (insert_at < body.size() && body[insert_at] == '\n') {
+                            ++insert_at;
+                        }
+                        body.insert(insert_at, guard);
+                        return body;
+                    }
+                }
+            }
+            return std::string(guard) + body;
+        }
+
+        std::optional<std::string> build_rewritten_explicit_copy_assign(
+            const OutOfLineFunctionBlock& assign_block,
+            const std::unordered_set<std::string>& private_fields
+        ) {
+            if (assign_block.signature.empty() || !assign_block.initializer.empty()) {
+                return std::nullopt;
+            }
+
+            std::string rewritten_body = trim_copy(rewrite_copy_body_for_pimpl(assign_block.body, private_fields));
+            rewritten_body = insert_assignment_null_guards(rewritten_body);
+
+            std::string rewritten;
+            rewritten.reserve(assign_block.prefix.size() + assign_block.signature.size() + rewritten_body.size() + 128);
+            rewritten += assign_block.prefix;
+            rewritten += assign_block.signature;
+            rewritten += " {\n";
+            rewritten += rewritten_body;
+            if (!rewritten.ends_with('\n')) {
+                rewritten.push_back('\n');
+            }
+            rewritten += "}\n";
+            return rewritten;
+        }
+
         std::vector<std::string> discover_defined_class_names(
             const fs::path& source_file
         ) {
@@ -1657,13 +2407,20 @@ namespace bha::suggestions
             const std::regex ctor_regex(
                 R"(\b([A-Za-z_][A-Za-z0-9_]*)::\1\s*\()"
             );
+            const std::regex templated_ctor_regex(
+                R"(\b([A-Za-z_][A-Za-z0-9_]*)<[^>]+>::\1\s*\()"
+            );
             const std::regex dtor_regex(
                 R"(\b([A-Za-z_][A-Za-z0-9_]*)::~\1\s*\()"
+            );
+            const std::regex templated_dtor_regex(
+                R"(\b([A-Za-z_][A-Za-z0-9_]*)<[^>]+>::~\1\s*\()"
             );
 
             std::string line;
             while (std::getline(in, line)) {
-                for (const auto* pattern : {&ctor_regex, &dtor_regex}) {
+                for (const auto* pattern :
+                     {&ctor_regex, &templated_ctor_regex, &dtor_regex, &templated_dtor_regex}) {
                     std::smatch match;
                     if (!std::regex_search(line, match, *pattern)) {
                         continue;
@@ -1728,6 +2485,13 @@ namespace bha::suggestions
                 if (!class_info) {
                     continue;
                 }
+                if (class_info->private_section_line == 0) {
+                    if (auto parsed = parse_class_simple(header_file, class_name)) {
+                        if (parsed->private_section_line != 0) {
+                            class_info->private_section_line = parsed->private_section_line;
+                        }
+                    }
+                }
 
                 const std::size_t score =
                     (readiness.is_strict_candidate() ? 1000U : 0U) +
@@ -1752,19 +2516,32 @@ namespace bha::suggestions
             const fs::path& header_file,
             const fs::path& source_file
         ) {
+            const auto simple_template_shape = detect_simple_template_shape(class_info, header_file);
+            const bool is_template_class = simple_template_shape.has_value();
             const auto eligibility = analyze_strict_pimpl_eligibility(class_info, header_file, source_file);
             if (!eligibility.defaulted_out_of_line_ctor ||
                 !eligibility.defaulted_out_of_line_dtor ||
-                class_info.private_section_line == 0 ||
-                eligibility.has_explicit_copy_definition) {
+                class_info.private_section_line == 0) {
                 return std::nullopt;
             }
-            if (eligibility.copy_ctor_deleted != eligibility.copy_assign_deleted) {
+            bool copy_ctor_deleted = eligibility.copy_ctor_deleted;
+            bool copy_assign_deleted = eligibility.copy_assign_deleted;
+            if (is_template_class) {
+                if (copy_ctor_deleted != copy_assign_deleted) {
+                    return std::nullopt;
+                }
+                if (!copy_ctor_deleted &&
+                    (eligibility.copy_ctor_declared != eligibility.copy_assign_declared)) {
+                    return std::nullopt;
+                }
+            }
+            if (copy_ctor_deleted != copy_assign_deleted) {
                 return std::nullopt;
             }
 
             std::vector<TextEdit> edits;
-            const bool preserve_copy = !eligibility.copy_ctor_deleted && !eligibility.copy_assign_deleted;
+            const bool preserve_copy = !copy_ctor_deleted && !copy_assign_deleted;
+            const bool has_user_copy_definitions = eligibility.has_explicit_copy_definition;
             if (preserve_copy) {
                 if (eligibility.copy_ctor_defaulted_in_class && eligibility.copy_ctor_decl_line == 0) {
                     return std::nullopt;
@@ -1816,6 +2593,9 @@ namespace bha::suggestions
 
             auto private_non_field_declarations = collect_private_non_field_declarations(class_info, header_file);
             const auto inline_move_plan = plan_inline_private_method_moves(class_info, header_file);
+            if (is_template_class && inline_move_plan.saw_inline_method_body) {
+                return std::nullopt;
+            }
             if (inline_move_plan.saw_inline_method_body && !inline_move_plan.all_movable) {
                 return std::nullopt;
             }
@@ -1875,6 +2655,64 @@ namespace bha::suggestions
                 src_lines.push_back(std::move(line));
             }
 
+            std::unordered_set<std::string> private_field_names;
+            for (const auto& member : class_info.members) {
+                if (member.is_private && !member.is_method && !member.name.empty()) {
+                    private_field_names.insert(member.name);
+                }
+            }
+
+            std::vector<std::pair<std::size_t, std::size_t>> skip_source_ranges;
+            if (has_user_copy_definitions) {
+                const std::string class_qualifier =
+                    class_info.name + R"((?:<[^>]+>)?::)" + class_info.name;
+                const std::string class_param_type =
+                    class_info.name + R"((?:<[^>]+>)?)";
+                const std::regex copy_ctor_regex(
+                    R"(\b)" + class_qualifier +
+                    R"(\s*\(\s*const\s+)" + class_param_type + R"(\s*&)"
+                );
+                const std::regex copy_assign_regex(
+                    R"(\b)" + class_info.name + R"((?:<[^>]+>)?::operator=\s*\(\s*const\s+)" +
+                    class_param_type + R"(\s*&)"
+                );
+
+                const auto copy_ctor_block = find_out_of_line_function_block(src_lines, copy_ctor_regex);
+                const auto copy_assign_block = find_out_of_line_function_block(src_lines, copy_assign_regex);
+                if (!copy_ctor_block || !copy_assign_block) {
+                    return std::nullopt;
+                }
+
+                const auto rewritten_copy_ctor =
+                    build_rewritten_explicit_copy_ctor(*copy_ctor_block, private_field_names);
+                const auto rewritten_copy_assign =
+                    build_rewritten_explicit_copy_assign(*copy_assign_block, private_field_names);
+                if (!rewritten_copy_ctor || !rewritten_copy_assign) {
+                    return std::nullopt;
+                }
+
+                TextEdit copy_ctor_edit;
+                copy_ctor_edit.file = source_file;
+                copy_ctor_edit.start_line = copy_ctor_block->start_line;
+                copy_ctor_edit.start_col = 0;
+                copy_ctor_edit.end_line = copy_ctor_block->end_line;
+                copy_ctor_edit.end_col = 0;
+                copy_ctor_edit.new_text = *rewritten_copy_ctor;
+                edits.push_back(std::move(copy_ctor_edit));
+
+                TextEdit copy_assign_edit;
+                copy_assign_edit.file = source_file;
+                copy_assign_edit.start_line = copy_assign_block->start_line;
+                copy_assign_edit.start_col = 0;
+                copy_assign_edit.end_line = copy_assign_block->end_line;
+                copy_assign_edit.end_col = 0;
+                copy_assign_edit.new_text = *rewritten_copy_assign;
+                edits.push_back(std::move(copy_assign_edit));
+
+                skip_source_ranges.emplace_back(copy_ctor_block->start_line, copy_ctor_block->end_line);
+                skip_source_ranges.emplace_back(copy_assign_block->start_line, copy_assign_block->end_line);
+            }
+
             std::vector<std::regex> local_shadow_regexes;
             local_shadow_regexes.reserve(class_info.members.size());
             for (const auto& member : class_info.members) {
@@ -1889,7 +2727,19 @@ namespace bha::suggestions
             }
 
             std::ostringstream impl_def;
-            impl_def << "struct " << class_info.name << "::Impl {\n";
+            std::string template_class_spelling;
+            if (is_template_class) {
+                const std::string template_argument_list =
+                    build_template_argument_list(*simple_template_shape);
+                impl_def << simple_template_shape->declaration_line << "\n";
+                template_class_spelling =
+                    class_info.name + "<" + template_argument_list + ">";
+                impl_def << "struct " << class_info.name
+                         << "<" << template_argument_list
+                         << ">::Impl {\n";
+            } else {
+                impl_def << "struct " << class_info.name << "::Impl {\n";
+            }
             for (const auto& member : class_info.members) {
                 if (!member.is_private || member.is_method || member.type.empty() || member.name.empty()) {
                     continue;
@@ -1897,12 +2747,26 @@ namespace bha::suggestions
                 impl_def << "    " << member.type << ' ' << member.name << ";\n";
             }
             impl_def << "};\n\n";
-            if (preserve_copy) {
-                impl_def << class_info.name << "::" << class_info.name << "(const " << class_info.name
-                         << "& other)" << eligibility.copy_ctor_exception_spec << "\n";
+            if (preserve_copy && !has_user_copy_definitions) {
+                if (is_template_class) {
+                    impl_def << simple_template_shape->declaration_line << "\n";
+                    impl_def << template_class_spelling << "::" << class_info.name
+                             << "(const " << template_class_spelling
+                             << "& other)" << eligibility.copy_ctor_exception_spec << "\n";
+                } else {
+                    impl_def << class_info.name << "::" << class_info.name << "(const " << class_info.name
+                             << "& other)" << eligibility.copy_ctor_exception_spec << "\n";
+                }
                 impl_def << "    : pimpl_(other.pimpl_ ? std::make_unique<Impl>(*other.pimpl_) : nullptr) {}\n\n";
-                impl_def << class_info.name << "& " << class_info.name << "::operator=(const " << class_info.name
-                         << "& other)" << eligibility.copy_assign_exception_spec << " {\n";
+                if (is_template_class) {
+                    impl_def << simple_template_shape->declaration_line << "\n";
+                    impl_def << template_class_spelling << "& " << template_class_spelling
+                             << "::operator=(const " << template_class_spelling
+                             << "& other)" << eligibility.copy_assign_exception_spec << " {\n";
+                } else {
+                    impl_def << class_info.name << "& " << class_info.name << "::operator=(const " << class_info.name
+                             << "& other)" << eligibility.copy_assign_exception_spec << " {\n";
+                }
                 impl_def << "    if (this == &other) {\n";
                 impl_def << "        return *this;\n";
                 impl_def << "    }\n";
@@ -1921,17 +2785,46 @@ namespace bha::suggestions
             for (const auto& moved_method : inline_move_plan.methods) {
                 impl_def << moved_method.source_definition << "\n\n";
             }
+            std::size_t impl_insert_line = eligibility.ctor_line - 1;
+            if (is_template_class && eligibility.ctor_line > 1) {
+                std::ifstream source_in(source_file);
+                if (!source_in) {
+                    return std::nullopt;
+                }
+                std::vector<std::string> source_lines;
+                for (std::string source_line; std::getline(source_in, source_line); ) {
+                    source_lines.push_back(std::move(source_line));
+                }
+                if (eligibility.ctor_line - 2 < source_lines.size()) {
+                    std::string previous = source_lines[eligibility.ctor_line - 2];
+                    if (const auto first = previous.find_first_not_of(" \t"); first != std::string::npos) {
+                        previous.erase(0, first);
+                    } else {
+                        previous.clear();
+                    }
+                    if (const auto last = previous.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                        previous.erase(last + 1);
+                    }
+                    if (previous.starts_with("template<") || previous.starts_with("template <")) {
+                        impl_insert_line = eligibility.ctor_line - 2;
+                    }
+                }
+            }
+
             TextEdit add_impl;
             add_impl.file = source_file;
-            add_impl.start_line = eligibility.ctor_line - 1;
+            add_impl.start_line = impl_insert_line;
             add_impl.start_col = 0;
-            add_impl.end_line = eligibility.ctor_line - 1;
+            add_impl.end_line = impl_insert_line;
             add_impl.end_col = 0;
             add_impl.new_text = impl_def.str();
             edits.push_back(std::move(add_impl));
 
             bool in_class_method = false;
             int brace_depth = 0;
+            const std::regex class_method_qualifier_regex(
+                "\\b" + class_info.name + R"((?:<[^>]+>)?::)"
+            );
 
             const auto brace_delta = [](const std::string& text) {
                 int delta = 0;
@@ -2002,10 +2895,15 @@ namespace bha::suggestions
                 if (i + 1 == eligibility.ctor_line || i + 1 == eligibility.dtor_line) {
                     continue;
                 }
+                if (std::ranges::any_of(
+                        skip_source_ranges,
+                        [i](const auto& range) { return i >= range.first && i < range.second; })) {
+                    continue;
+                }
 
                 bool entering_method_signature = false;
                 if (!in_class_method) {
-                    if (updated.find(class_info.name + "::") == std::string::npos ||
+                    if (!std::regex_search(updated, class_method_qualifier_regex) ||
                         updated.find('(') == std::string::npos ||
                         updated.find('{') == std::string::npos) {
                         continue;
@@ -2347,7 +3245,7 @@ namespace bha::suggestions
             }
         }
 
-        constexpr auto min_compile_time = std::chrono::milliseconds(500);
+        constexpr auto min_compile_time = std::chrono::milliseconds(450);
 
         std::size_t analyzed = 0;
         std::size_t skipped = 0;
@@ -2509,8 +3407,28 @@ namespace bha::suggestions
                 continue;
             }
 
+            fs::path effective_source_file = file.file;
+            if (!fs::exists(effective_source_file)) {
+                if (auto compile_args = load_compile_command_args(context, file.file);
+                    !compile_args.empty()) {
+                    for (auto it = compile_args.rbegin(); it != compile_args.rend(); ++it) {
+                        fs::path candidate_path(*it);
+                        if (!is_source_file(candidate_path) || !fs::exists(candidate_path)) {
+                            continue;
+                        }
+                        if (candidate_path.filename() == file.file.filename()) {
+                            effective_source_file = candidate_path.lexically_normal();
+                            break;
+                        }
+                        if (!fs::exists(effective_source_file)) {
+                            effective_source_file = candidate_path.lexically_normal();
+                        }
+                    }
+                }
+            }
+
             PIMPLCandidate candidate;
-            candidate.source_file = file.file;
+            candidate.source_file = effective_source_file;
             candidate.header_file = header_path;
             candidate.compile_time = file.compile_time;
             candidate.frontend_time = file.frontend_time;
@@ -2551,7 +3469,7 @@ namespace bha::suggestions
 
             std::optional<ClassInfo> class_info;
             PIMPLRefactorReadiness readiness;
-            if (const auto resolved_target = resolve_pimpl_target(context, file.file, header_path)) {
+            if (const auto resolved_target = resolve_pimpl_target(context, effective_source_file, header_path)) {
                 readiness = resolved_target->readiness;
                 class_info = resolved_target->class_info;
             } else {
@@ -2565,11 +3483,11 @@ namespace bha::suggestions
                         std::toupper(static_cast<unsigned char>(fallback_class_name[0]))
                     );
                 }
-                readiness = assess_pimpl_readiness(context, file.file, header_path, fallback_class_name);
+                readiness = assess_pimpl_readiness(context, effective_source_file, header_path, fallback_class_name);
             }
 
             Suggestion suggestion;
-            suggestion.id = generate_suggestion_id("pimpl", file.file);
+            suggestion.id = generate_suggestion_id("pimpl", effective_source_file);
             suggestion.type = SuggestionType::PIMPLPattern;
             suggestion.priority = candidate.priority;
             suggestion.confidence = candidate.confidence;
@@ -2581,7 +3499,7 @@ namespace bha::suggestions
             }
 
             std::ostringstream title;
-            title << "Consider PIMPL pattern for " << file.file.filename().string();
+            title << "Consider PIMPL pattern for " << effective_source_file.filename().string();
             suggestion.title = title.str();
 
             auto compile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -2590,7 +3508,7 @@ namespace bha::suggestions
                 file.frontend_time).count();
 
             std::ostringstream desc;
-            desc << "File '" << file.file.string() << "' takes "
+            desc << "File '" << effective_source_file.string() << "' takes "
                  << compile_ms << "ms to compile";
             if (frontend_ms > 0) {
                 desc << " (" << frontend_ms << "ms frontend)";
@@ -2633,7 +3551,7 @@ namespace bha::suggestions
                     static_cast<double>(context.trace.total_time.count());
             }
 
-            suggestion.target_file.path = file.file;
+            suggestion.target_file.path = effective_source_file;
             suggestion.target_file.action = FileAction::Modify;
             suggestion.target_file.note = "Review this class before applying a PIMPL refactor";
             if (class_info) {
@@ -2676,9 +3594,9 @@ namespace bha::suggestions
             suggestion.before_code.code = before.str();
             if (class_info) {
                 suggestion.after_code.file = header_path;
-                suggestion.after_code.code = build_pimpl_prototype_preview(*class_info, header_path, file.file);
+                suggestion.after_code.code = build_pimpl_prototype_preview(*class_info, header_path, effective_source_file);
                 if (readiness.is_strict_candidate()) {
-                    if (auto strict_edits = generate_strict_pimpl_refactor_edits(*class_info, header_path, file.file)) {
+                    if (auto strict_edits = generate_strict_pimpl_refactor_edits(*class_info, header_path, effective_source_file)) {
                         suggestion.edits = std::move(*strict_edits);
                     }
                 }
@@ -2728,7 +3646,7 @@ namespace bha::suggestions
             if (readiness.is_strict_candidate()) {
                 if (suggestion.edits.empty()) {
                     suggestion.caveats.push_back(
-                        "This class is close to the strict automation subset, but it still misses explicit deleted copy operations or simple single-line out-of-line ctor/dtor definitions"
+                        "This class is close to the strict automation subset, but it still misses strict copy-operation requirements or simple single-line out-of-line ctor/dtor definitions"
                     );
                 } else {
                     suggestion.caveats.push_back(
@@ -2749,6 +3667,9 @@ namespace bha::suggestions
             suggestion.is_safe = !suggestion.edits.empty();
             if (suggestion.is_safe) {
                 suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can apply concrete text edits, rebuild-validate the result, and roll back from backup if validation fails.";
             } else if (supports_external_refactor) {
                 suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
                 suggestion.target_file.note = "Semantic refactor tool required: this class is eligible for an AST-driven PIMPL rewrite";
@@ -2756,8 +3677,24 @@ namespace bha::suggestions
                     suggestion.secondary_files.front().note =
                         "Semantic refactor tool required: preserve the public API while moving private state behind Impl";
                 }
+                suggestion.application_summary = "Auto-apply via semantic refactor tool";
+                suggestion.application_guidance =
+                    "BHA invokes bha-refactor for semantic rewrites, applies replacements, rebuild-validates the result, and rolls back from backup if validation fails.";
             } else {
                 suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Automatic apply is disabled for this class shape. Use the blocker reason and caveats to refactor manually.";
+                if (const auto blocker = bha::refactor::first_pimpl_eligibility_blocker(eligibility)) {
+                    suggestion.auto_apply_blocked_reason =
+                        std::string(bha::refactor::pimpl_blocker_message(*blocker));
+                } else if (!eligibility.has_compile_context) {
+                    suggestion.auto_apply_blocked_reason =
+                        "No compile_commands entry was found for this translation unit, so semantic validation for automatic PIMPL refactoring is unavailable.";
+                } else {
+                    suggestion.auto_apply_blocked_reason =
+                        "This class is outside the current automatic PIMPL support boundary.";
+                }
             }
 
             result.suggestions.push_back(std::move(suggestion));

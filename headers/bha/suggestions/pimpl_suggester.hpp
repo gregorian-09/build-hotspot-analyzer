@@ -42,6 +42,19 @@ namespace bha::suggestions {
     };
 
     /**
+     * @brief Generates concrete PIMPL text edits for the strict, compile-validated subset.
+     *
+     * This is used by the external refactor tool path so it can reuse the same
+     * AST-backed class extraction and strict edit generator as the suggester.
+     */
+    [[nodiscard]] Result<std::vector<TextEdit>, Error> generate_pimpl_refactor_edits(
+        const fs::path& compile_commands_path,
+        const fs::path& source_file,
+        const fs::path& header_file,
+        std::string_view class_name
+    );
+
+    /**
      * @brief Registers the PIMPL suggester with the global registry.
      */
     void register_pimpl_pattern_suggester();
