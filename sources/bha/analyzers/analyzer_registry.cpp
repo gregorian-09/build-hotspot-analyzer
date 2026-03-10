@@ -6,6 +6,8 @@
 
 #include "bha/analyzers/analyzer.hpp"
 #include <unordered_map>
+#include <chrono>
+#include <optional>
 
 namespace bha::analyzers
 {
@@ -44,11 +46,25 @@ namespace bha::analyzers
     ) {
         AnalysisResult combined_result;
         const auto start_time = std::chrono::steady_clock::now();
+        const auto total_deadline = options.max_total_time != Duration::zero()
+            ? std::optional<std::chrono::steady_clock::time_point>(start_time + options.max_total_time)
+            : std::optional<std::chrono::steady_clock::time_point>();
 
         std::unordered_map<std::string, FileAnalysisResult> file_map;
 
         for (const auto analyzers = AnalyzerRegistry::instance().list_analyzers(); const auto* analyzer : analyzers) {
+            if (total_deadline.has_value() && std::chrono::steady_clock::now() >= *total_deadline) {
+                break;
+            }
+
+            const auto analyzer_start = std::chrono::steady_clock::now();
             auto result = analyzer->analyze(trace, options);
+            const auto analyzer_elapsed = std::chrono::steady_clock::now() - analyzer_start;
+
+            if (options.max_analyzer_time != Duration::zero() &&
+                analyzer_elapsed >= options.max_analyzer_time) {
+                continue;
+            }
 
             if (result.is_err()) {
                 continue;
@@ -148,6 +164,10 @@ namespace bha::analyzers
 
             if (!partial.symbols.symbols.empty()) {
                 combined_result.symbols = std::move(partial.symbols);
+            }
+
+            if (partial.cache_distribution.total_compilations > 0) {
+                combined_result.cache_distribution = partial.cache_distribution;
             }
         }
 

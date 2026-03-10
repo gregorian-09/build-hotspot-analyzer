@@ -144,6 +144,29 @@ namespace bha::analyzers {
     };
 
     /**
+     * Cache/distributed build opportunity analysis.
+     */
+    struct CacheDistributionAnalysisResult {
+        std::size_t total_compilations = 0;
+        std::size_t cache_friendly_compilations = 0;
+        std::size_t cache_risk_compilations = 0;
+        double cache_hit_opportunity_percent = 0.0;
+
+        bool sccache_detected = false;
+        bool fastbuild_detected = false;
+        bool cache_wrapper_detected = false;
+
+        std::size_t dynamic_macro_risk_count = 0;
+        std::size_t profile_or_coverage_risk_count = 0;
+        std::size_t pch_generation_risk_count = 0;
+        std::size_t volatile_path_risk_count = 0;
+
+        double distributed_suitability_score = 0.0;
+        std::size_t heavy_translation_units = 0;
+        std::size_t homogeneous_command_units = 0;
+    };
+
+    /**
      * Combined analysis result containing all analysis types.
      */
     struct AnalysisResult {
@@ -152,6 +175,7 @@ namespace bha::analyzers {
         DependencyAnalysisResult dependencies;
         TemplateAnalysisResult templates;
         SymbolAnalysisResult symbols;
+        CacheDistributionAnalysisResult cache_distribution;
 
         Timestamp analysis_time{};
         Duration analysis_duration = Duration::zero();

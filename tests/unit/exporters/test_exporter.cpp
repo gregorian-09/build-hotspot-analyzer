@@ -76,6 +76,21 @@ namespace bha::exporters::test
         tmpl1.time_percent = 4.0;
         result.templates.templates.push_back(tmpl1);
 
+        result.cache_distribution.total_compilations = 50;
+        result.cache_distribution.cache_friendly_compilations = 40;
+        result.cache_distribution.cache_risk_compilations = 10;
+        result.cache_distribution.cache_hit_opportunity_percent = 80.0;
+        result.cache_distribution.sccache_detected = true;
+        result.cache_distribution.fastbuild_detected = false;
+        result.cache_distribution.cache_wrapper_detected = true;
+        result.cache_distribution.dynamic_macro_risk_count = 3;
+        result.cache_distribution.profile_or_coverage_risk_count = 2;
+        result.cache_distribution.pch_generation_risk_count = 1;
+        result.cache_distribution.volatile_path_risk_count = 4;
+        result.cache_distribution.distributed_suitability_score = 67.5;
+        result.cache_distribution.heavy_translation_units = 8;
+        result.cache_distribution.homogeneous_command_units = 22;
+
         result.analysis_time = std::chrono::system_clock::now();
         result.analysis_duration = std::chrono::milliseconds(500);
 
@@ -212,7 +227,7 @@ namespace bha::exporters::test
         EXPECT_FALSE(json_str.empty());
         EXPECT_TRUE(json_str.find("\"bha_version\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"files\"") != std::string::npos);
-        EXPECT_TRUE(json_str.find("\"suggestions\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"suggestions\"") == std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportToStream) {
@@ -223,6 +238,8 @@ namespace bha::exporters::test
         const auto& json_str = stream.str();
         EXPECT_FALSE(json_str.empty());
         EXPECT_TRUE(json_str.find("\"summary\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"cache_distribution\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"cache_hit_opportunity_percent\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {
@@ -276,16 +293,27 @@ namespace bha::exporters::test
         const auto& html_str = result.value();
         EXPECT_TRUE(html_str.find("main.cpp") != std::string::npos);
         EXPECT_TRUE(html_str.find("utils.cpp") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Cache Hit Opportunity") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Distributed Suitability") != std::string::npos);
     }
 
-    TEST_F(HtmlExporterTest, ContainsSuggestionData) {
+    TEST_F(HtmlExporterTest, DoesNotContainSuggestionData) {
         auto result = exporter_->export_to_string(analysis, suggestions, {});
         ASSERT_TRUE(result.is_ok());
 
         const auto& html_str = result.value();
-        EXPECT_TRUE(html_str.find("forward declaration") != std::string::npos ||
-                    html_str.find("Forward Declaration") != std::string::npos ||
-                    html_str.find("ForwardDeclaration") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Optimization Suggestions") == std::string::npos);
+        EXPECT_TRUE(html_str.find("Suggestions") == std::string::npos);
+        EXPECT_TRUE(html_str.find("forward declaration") == std::string::npos);
+    }
+
+    TEST_F(HtmlExporterTest, FormatsSavingsUsingSecondsForLargeValues) {
+        auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& html_str = result.value();
+        EXPECT_TRUE(html_str.find("5000.0 ms") != std::string::npos);
+        EXPECT_TRUE(html_str.find("3000.0 ms") != std::string::npos);
     }
 
     // ============================================================================
