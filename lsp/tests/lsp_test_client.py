@@ -386,6 +386,7 @@ PROJECT_MESON_FLAGS = {
 }
 
 PROJECT_ANALYSIS_TIMEOUTS = {
+    "abseil": 1000,
     "rocksdb": 1000,
 }
 

@@ -110,6 +110,34 @@ namespace bha::suggestions
             return ext == ".h" || ext == ".hpp" || ext == ".hh" || ext == ".hxx";
         }
 
+        bool is_c_source_extension(const fs::path& path) {
+            std::string ext = path.extension().string();
+            std::ranges::transform(ext, ext.begin(),
+                                   [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            return ext == ".c";
+        }
+
+        bool is_cxx_source_extension(const fs::path& path) {
+            std::string ext = path.extension().string();
+            std::ranges::transform(ext, ext.begin(),
+                                   [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            return ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".c++" || ext == ".cp" ||
+                   ext == ".cppm" || ext == ".ixx" || ext == ".mm" || ext == ".cu";
+        }
+
+        bool is_c_only_trace(const BuildTrace& trace) {
+            bool has_c = false;
+            bool has_cxx = false;
+            for (const auto& unit : trace.units) {
+                if (is_cxx_source_extension(unit.source_file)) {
+                    has_cxx = true;
+                } else if (is_c_source_extension(unit.source_file)) {
+                    has_c = true;
+                }
+            }
+            return has_c && !has_cxx;
+        }
+
         bool is_non_header_artifact(const fs::path& path) {
             std::string lower = path.generic_string();
             std::ranges::transform(lower, lower.begin(),
@@ -415,7 +443,9 @@ namespace bha::suggestions
                    lower_path.find("example") != std::string::npos ||
                    lower_path.find("benchmark") != std::string::npos ||
                    lower_path.find("install_test") != std::string::npos ||
-                   lower_path.find("/cmake/") != std::string::npos;
+                   lower_path.find("/cmake/") != std::string::npos ||
+                   lower_path.find(".lsp-optimization-backup") != std::string::npos ||
+                   lower_path.find(".bha_traces") != std::string::npos;
         }
 
         int score_cmake_path(const std::string& lower_path) {
@@ -1431,6 +1461,7 @@ namespace bha::suggestions
         const auto& pch_config = context.options.heuristics.pch;
         const auto min_cpp_standard = find_min_cpp_standard(context.trace);
         const int effective_cpp_standard = min_cpp_standard.value_or(14);
+        const bool c_only_trace = is_c_only_trace(context.trace);
 
         fs::path project_root = context.project_root;
         if (!project_root.empty() && project_root.is_relative()) {
@@ -1510,6 +1541,11 @@ namespace bha::suggestions
             }
 
             if (header.is_external && is_unstable_external_header(header.path)) {
+                ++skipped;
+                continue;
+            }
+
+            if (c_only_trace && header.is_external) {
                 ++skipped;
                 continue;
             }
@@ -1730,10 +1766,8 @@ namespace bha::suggestions
 
                 if (target && !has_cmake_pch_for_target(cmake_content, target->name)) {
                     std::size_t insert_line = target->insert_after_line;
-                    if (target->is_macro) {
-                        if (auto end_line = find_cmake_block_end(cmake_content, target->line)) {
-                            insert_line = *end_line;
-                        }
+                    if (auto end_line = find_cmake_block_end(cmake_content, target->line)) {
+                        insert_line = *end_line;
                     }
                     fs::path rel_pch = pch_path;
                     std::error_code ec;
