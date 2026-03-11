@@ -5,6 +5,7 @@
 #include "bha/suggestions/all_suggesters.hpp"
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/consolidator.hpp"
+#include "bha/suggestions/unreal_context.hpp"
 #include "bha/lsp/uri.hpp"
 #include "bha/utils/path_utils.hpp"
 #include <nlohmann/json.hpp>
@@ -68,6 +69,130 @@ namespace bha::lsp
             return BuildSystemType::Make;
         }
         return BuildSystemType::Unknown;
+    }
+
+    bool should_force_unreal_mode(
+        const fs::path& project_root,
+        const BuildTrace& trace
+    ) {
+        if (!project_root.empty()) {
+            fs::path current = project_root;
+            for (int hops = 0; hops < 6 && !current.empty(); ++hops) {
+                if (suggestions::is_unreal_project_root(current)) {
+                    return true;
+                }
+                const fs::path parent = current.parent_path();
+                if (parent.empty() || parent == current) {
+                    break;
+                }
+                current = parent;
+            }
+        }
+
+        std::size_t checked = 0;
+        for (const auto& unit : trace.units) {
+            if (++checked > 20) {
+                break;
+            }
+            fs::path current = unit.source_file.parent_path();
+            while (!current.empty() && current.has_parent_path()) {
+                if (suggestions::is_unreal_project_root(current)) {
+                    return true;
+                }
+                const fs::path parent = current.parent_path();
+                if (parent.empty() || parent == current) {
+                    break;
+                }
+                current = parent;
+            }
+        }
+
+        return false;
+    }
+
+    std::unordered_map<std::string, std::vector<fs::path>> index_sources_by_filename(
+        const std::vector<fs::path>& sources
+    ) {
+        std::unordered_map<std::string, std::vector<fs::path>> index;
+        index.reserve(sources.size());
+        for (const auto& source : sources) {
+            const std::string filename = source.filename().string();
+            if (filename.empty()) {
+                continue;
+            }
+            index[filename].push_back(source.lexically_normal());
+        }
+        return index;
+    }
+
+    std::optional<fs::path> resolve_trace_source_with_compile_commands(
+        const fs::path& raw_source,
+        const fs::path& project_root,
+        const std::unordered_map<std::string, std::vector<fs::path>>& by_filename
+    ) {
+        if (raw_source.empty()) {
+            return std::nullopt;
+        }
+
+        if (raw_source.is_absolute() && fs::exists(raw_source)) {
+            return raw_source.lexically_normal();
+        }
+
+        if (!project_root.empty()) {
+            const fs::path candidate = (project_root / raw_source).lexically_normal();
+            if (fs::exists(candidate)) {
+                return candidate;
+            }
+        }
+
+        const std::string filename = raw_source.filename().string();
+        if (filename.empty()) {
+            return std::nullopt;
+        }
+
+        const auto it = by_filename.find(filename);
+        if (it == by_filename.end() || it->second.empty()) {
+            return std::nullopt;
+        }
+        if (it->second.size() == 1) {
+            return it->second.front();
+        }
+
+        const std::string raw_suffix = raw_source.lexically_normal().generic_string();
+        for (const auto& candidate : it->second) {
+            const std::string candidate_str = candidate.generic_string();
+            if (candidate_str.size() >= raw_suffix.size() &&
+                candidate_str.compare(candidate_str.size() - raw_suffix.size(), raw_suffix.size(), raw_suffix) == 0) {
+                return candidate;
+            }
+        }
+
+        return it->second.front();
+    }
+
+    std::optional<fs::path> detect_project_root_with_registered_adapters(
+        const fs::path& start_path,
+        build_systems::BuildSystemRegistry& registry
+    ) {
+        if (start_path.empty()) {
+            return std::nullopt;
+        }
+
+        fs::path current = start_path;
+        while (!current.empty()) {
+            if (registry.detect(current) != nullptr) {
+                return current;
+            }
+            if (!current.has_parent_path()) {
+                break;
+            }
+            const fs::path parent = current.parent_path();
+            if (parent == current) {
+                break;
+            }
+            current = parent;
+        }
+        return std::nullopt;
     }
 
     std::optional<fs::path> resolve_trace_file_to_project(
@@ -175,44 +300,6 @@ namespace bha::lsp
             result.push_back('\n');
         }
         return result;
-    }
-
-    BuildSystemType map_adapter_name_to_build_system(std::string name) {
-        std::ranges::transform(
-            name,
-            name.begin(),
-            [](const unsigned char c) { return static_cast<char>(std::tolower(c)); }
-        );
-        if (name == "cmake") return BuildSystemType::CMake;
-        if (name == "ninja") return BuildSystemType::Ninja;
-        if (name == "make") return BuildSystemType::Make;
-        if (name == "msbuild") return BuildSystemType::MSBuild;
-        if (name == "bazel") return BuildSystemType::Bazel;
-        if (name == "buck2") return BuildSystemType::Buck2;
-        if (name == "meson") return BuildSystemType::Meson;
-        if (name == "scons") return BuildSystemType::SCons;
-        if (name == "xcode") return BuildSystemType::XCode;
-        return BuildSystemType::Unknown;
-    }
-
-    BuildSystemType detect_build_system_from_build_dir(const fs::path& build_dir) {
-        if (build_dir.empty() || !fs::exists(build_dir)) {
-            return BuildSystemType::Unknown;
-        }
-        if (fs::exists(build_dir / "CMakeCache.txt") || fs::exists(build_dir / "CMakeFiles")) {
-            return BuildSystemType::CMake;
-        }
-        if (fs::exists(build_dir / "meson-info") || fs::exists(build_dir / "meson-private")) {
-            return BuildSystemType::Meson;
-        }
-        if (fs::exists(build_dir / "Makefile") || fs::exists(build_dir / "makefile") ||
-            fs::exists(build_dir / "GNUmakefile")) {
-            return BuildSystemType::Make;
-        }
-        if (fs::exists(build_dir / "build.ninja")) {
-            return BuildSystemType::Ninja;
-        }
-        return BuildSystemType::Unknown;
     }
 
     bool is_build_system_file(const fs::path& path) {
@@ -431,6 +518,63 @@ namespace bha::lsp
             return "The target class is outside the current supported automatic PIMPL refactor subset.";
         }
         return "No safe automatic apply path is available for this suggestion.";
+    }
+
+    bool is_unreal_module_rules_file(const fs::path& path) {
+        return path.filename().string().ends_with(".Build.cs");
+    }
+
+    bool is_unreal_target_rules_file(const fs::path& path) {
+        return path.filename().string().ends_with(".Target.cs");
+    }
+
+    bool is_unreal_suggestion(const bha::Suggestion& suggestion) {
+        const std::string title_lower = [&]() {
+            std::string t = suggestion.title;
+            std::ranges::transform(t, t.begin(), [](const unsigned char c) {
+                return static_cast<char>(std::tolower(c));
+            });
+            return t;
+        }();
+        if (title_lower.find("unreal") != std::string::npos) {
+            return true;
+        }
+        if (is_unreal_module_rules_file(suggestion.target_file.path) ||
+            is_unreal_target_rules_file(suggestion.target_file.path)) {
+            return true;
+        }
+        return std::ranges::any_of(suggestion.secondary_files, [](const bha::FileTarget& file) {
+            return is_unreal_module_rules_file(file.path) || is_unreal_target_rules_file(file.path);
+        });
+    }
+
+    std::optional<std::string> infer_unreal_safety_guard(const bha::Suggestion& suggestion) {
+        const auto blocked = format_auto_apply_blocked_reason(suggestion);
+        if (!blocked.has_value()) {
+            return std::nullopt;
+        }
+
+        std::string text = *blocked;
+        std::ranges::transform(text, text.begin(), [](const unsigned char c) {
+            return static_cast<char>(std::tolower(c));
+        });
+        if (text.find("generated.h") != std::string::npos ||
+            text.find("include-order") != std::string::npos) {
+            return "generated-header-last-include";
+        }
+        if (text.find("constructor block") != std::string::npos) {
+            return "rules-constructor-block-not-found";
+        }
+        if (text.find("ambiguous unreal module rules") != std::string::npos ||
+            text.find("ambiguous unreal target rules") != std::string::npos ||
+            text.find("duplicate unreal module") != std::string::npos ||
+            text.find("duplicate unreal target") != std::string::npos) {
+            return "ambiguous-rules-ownership";
+        }
+        if (text.find("uht") != std::string::npos) {
+            return "uht-safety";
+        }
+        return "unreal-safety-guard";
     }
 
     struct ExternalReplacement {
@@ -1115,6 +1259,25 @@ namespace bha::lsp
             }
         }
 
+        if (compile_commands_path.has_value()) {
+            auto compile_sources = collect_compile_commands_sources(*compile_commands_path, 10000);
+            if (!compile_sources.empty()) {
+                const auto by_filename = index_sources_by_filename(compile_sources);
+                for (auto& unit : build_trace.units) {
+                    if (unit.source_file.is_relative() || !fs::exists(unit.source_file)) {
+                        if (auto resolved = resolve_trace_source_with_compile_commands(
+                            unit.source_file,
+                            project_root,
+                            by_filename
+                        )) {
+                            unit.source_file = *resolved;
+                            unit.metrics.path = *resolved;
+                        }
+                    }
+                }
+            }
+        }
+
         report("Running analyzers...", 50);
 
         AnalysisOptions analysis_opts;
@@ -1132,6 +1295,9 @@ namespace bha::lsp
         suggester_opts.include_unsafe = config_.include_unsafe_suggestions;
         suggester_opts.enable_consolidation = true;
         suggester_opts.compile_commands_path = compile_commands_path;
+        if (should_force_unreal_mode(project_root, build_trace)) {
+            suggester_opts.heuristics.unreal.enabled = true;
+        }
 
         // Generate suggestions using all registered suggesters
         auto suggestions_result = suggestions::generate_all_suggestions(
@@ -1457,16 +1623,15 @@ namespace bha::lsp
             auto& registry = build_systems::BuildSystemRegistry::instance();
 
             if (!analysis.units.empty()) {
-                fs::path project_root = analysis.units[0].source_file.parent_path();
-                while (project_root.has_parent_path() && !fs::exists(project_root / "CMakeLists.txt") &&
-                       !fs::exists(project_root / "Makefile") && !fs::exists(project_root / "meson.build")) {
-                    project_root = project_root.parent_path();
-                       }
+                const fs::path source_dir = analysis.units[0].source_file.parent_path();
+                const auto project_root = detect_project_root_with_registered_adapters(source_dir, registry);
+                build_systems::IBuildSystemAdapter* adapter =
+                    project_root.has_value() ? registry.detect(*project_root) : nullptr;
 
-                if (auto* adapter = registry.detect(project_root)) {
+                if (project_root.has_value() && adapter != nullptr) {
                     build_systems::BuildOptions options;
 
-                    if (auto build_result = adapter->build(project_root, options); build_result.is_ok() && build_result.value().success) {
+                    if (auto build_result = adapter->build(*project_root, options); build_result.is_ok() && build_result.value().success) {
                         BuildResult lsp_build_result;
                         lsp_build_result.success = true;
                         result.build_result = lsp_build_result;
@@ -2232,6 +2397,29 @@ namespace bha::lsp
         lsp_sug.application_summary = format_application_summary(bha_sug);
         lsp_sug.application_guidance = format_application_guidance(bha_sug);
         lsp_sug.auto_apply_blocked_reason = format_auto_apply_blocked_reason(bha_sug);
+        if (is_unreal_suggestion(bha_sug)) {
+            lsp_sug.project_context = "unreal";
+            std::unordered_set<std::string> seen_module_rules;
+            std::unordered_set<std::string> seen_target_rules;
+            const auto add_file = [&](const fs::path& path) {
+                const std::string normalized = path.lexically_normal().string();
+                if (is_unreal_module_rules_file(path)) {
+                    if (seen_module_rules.insert(normalized).second) {
+                        lsp_sug.module_rules_files.push_back(normalized);
+                    }
+                }
+                if (is_unreal_target_rules_file(path)) {
+                    if (seen_target_rules.insert(normalized).second) {
+                        lsp_sug.target_rules_files.push_back(normalized);
+                    }
+                }
+            };
+            add_file(bha_sug.target_file.path);
+            for (const auto& file : bha_sug.secondary_files) {
+                add_file(file.path);
+            }
+            lsp_sug.safety_guard = infer_unreal_safety_guard(bha_sug);
+        }
 
         const auto savings_ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(

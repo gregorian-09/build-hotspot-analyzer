@@ -5,6 +5,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/progress.hpp"
 #include "bha/cli/formatter.hpp"
+#include "bha/cli/suggestion_utils.hpp"
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
@@ -23,30 +24,6 @@ namespace bha::cli
     namespace fs = std::filesystem;
 
     namespace {
-        std::optional<fs::path> find_compile_commands_path(
-            const fs::path& project_root
-        ) {
-            if (project_root.empty()) {
-                return std::nullopt;
-            }
-
-            const std::vector<fs::path> candidates = {
-                project_root / "compile_commands.json",
-                project_root / "build" / "compile_commands.json",
-                project_root / "out" / "build" / "compile_commands.json",
-                project_root / "cmake-build-debug" / "compile_commands.json",
-                project_root / "cmake-build-release" / "compile_commands.json",
-            };
-
-            for (const auto& candidate : candidates) {
-                if (fs::exists(candidate)) {
-                    return candidate;
-                }
-            }
-
-            return std::nullopt;
-        }
-
         std::optional<SuggestionType> parse_suggestion_type(const std::string& str) {
             std::string lower = str;
             std::ranges::transform(lower, lower.begin(), [](const unsigned char c) { return std::tolower(c); });
@@ -106,6 +83,7 @@ namespace bha::cli
                 {"template-min-time", 0, "Min template time in ms (default: 100)", false, true, "100", "MS"},
                 {"unity-files-per-unit", 0, "Files per unity build unit (default: 50)", false, true, "50", "N"},
                 {"unity-min-files", 0, "Min files for unity build (default: 10)", false, true, "10", "N"},
+                {"unity-min-time", 0, "Min aggregate unity group compile time in ms (default: 10)", false, true, "10", "MS"},
                 {"header-min-time", 0, "Min header parse time in ms (default: 100)", false, true, "100", "MS"},
                 {"header-min-includers", 0, "Min includers for header split (default: 5)", false, true, "5", "N"},
                 {"fwd-decl-min-time", 0, "Min parse time for fwd decl in ms (default: 50)", false, true, "50", "MS"},
@@ -273,6 +251,9 @@ namespace bha::cli
             if (auto val = args.get_int("unity-min-files")) {
                 unity_build.min_files_threshold = static_cast<std::size_t>(*val);
             }
+            if (auto val = args.get_int("unity-min-time")) {
+                unity_build.min_group_total_time = std::chrono::milliseconds(*val);
+            }
 
             if (auto val = args.get_int("header-min-time")) {
                 headers.min_parse_time = std::chrono::milliseconds(*val);
@@ -307,57 +288,21 @@ namespace bha::cli
             print_verbose("  PCH min time: " + std::to_string(pch.min_aggregate_time.count()) + "ms");
             print_verbose("  Template min count: " + std::to_string(templates.min_instantiation_count));
             print_verbose("  Unity min files: " + std::to_string(unity_build.min_files_threshold));
+            print_verbose("  Unity min time: " + std::to_string(unity_build.min_group_total_time.count()) + "ms");
             print_verbose("  Unreal mode: " + std::string(unreal.enabled ? "enabled" : "auto-detect"));
 
-            fs::path project_root;
-            if (!args.positional().empty()) {
-                const fs::path trace_path(args.positional().front());
-                const fs::path abs_trace = trace_path.is_relative() ? fs::absolute(trace_path) : trace_path;
-                project_root = suggestions::find_project_root_from_trace_path(abs_trace);
+            std::vector<fs::path> input_paths;
+            input_paths.reserve(args.positional().size());
+            for (const auto& path : args.positional()) {
+                input_paths.emplace_back(path);
             }
-            if (project_root.empty()) {
-                std::size_t checked = 0;
-                for (const auto& unit : build_trace.units) {
-                    const fs::path source_path(unit.source_file);
-                    if (!source_path.is_absolute()) {
-                        if (++checked >= 20) {
-                            break;
-                        }
-                        continue;
-                    }
-                    const auto root = suggestions::find_repository_root(source_path);
-                    if (!root.empty() && suggestions::has_build_system_marker(root)) {
-                        project_root = root;
-                        break;
-                    }
-                    if (++checked >= 20) {
-                        break;
-                    }
-                }
-            }
-            if (project_root.empty()) {
-                std::size_t checked = 0;
-                for (const auto& header : analysis_result.value().dependencies.headers) {
-                    if (!header.path.is_absolute()) {
-                        if (++checked >= 20) {
-                            break;
-                        }
-                        continue;
-                    }
-                    const auto root = suggestions::find_repository_root(header.path);
-                    if (!root.empty() && suggestions::has_build_system_marker(root)) {
-                        project_root = root;
-                        break;
-                    }
-                    if (++checked >= 20) {
-                        break;
-                    }
-                }
-            }
-            if (project_root.empty()) {
-                project_root = fs::current_path();
-            }
-            if (const auto compile_commands_path = find_compile_commands_path(project_root)) {
+            fs::path project_root = suggestion_utils::resolve_project_root_for_suggestions(
+                input_paths,
+                build_trace,
+                analysis_result.value(),
+                20
+            );
+            if (const auto compile_commands_path = suggestion_utils::find_compile_commands_path(project_root)) {
                 suggester_opts.compile_commands_path = *compile_commands_path;
                 print_verbose("Using compile_commands: " + compile_commands_path->generic_string());
             }
