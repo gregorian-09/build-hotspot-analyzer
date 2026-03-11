@@ -24,6 +24,7 @@ namespace bha::lsp
         int build_timeout_seconds = 300;
         bool keep_backups = false;
         std::string backup_directory = ".lsp-optimization-backup";
+        bool persist_trust_loop = true;
         bool allow_missing_compile_commands = true;
         bool include_unsafe_suggestions = false;
         double min_confidence = 0.5;
@@ -137,6 +138,11 @@ namespace bha::lsp
 
         bool run_build_validation(std::vector<Diagnostic>& errors, std::optional<int>& measured_duration_ms) const;
         static std::string detect_build_command(const std::filesystem::path& project_root);
+        void persist_trust_loop_metrics(
+            const json& trust_loop,
+            const std::optional<std::string>& suggestion_id,
+            bool apply_all
+        ) const;
 
         std::map<std::string, RequestHandler> request_handlers_;
         std::map<std::string, NotificationHandler> notification_handlers_;

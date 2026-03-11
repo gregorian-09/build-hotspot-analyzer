@@ -1,5 +1,7 @@
 #include "bha/lsp/server.hpp"
 #include "bha/lsp/uri.hpp"
+#include "bha/build_systems/adapter.hpp"
+#include "bha/suggestions/unreal_context.hpp"
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
@@ -8,6 +10,8 @@
 #include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <fstream>
+#include <iomanip>
 #include <regex>
 #ifndef _WIN32
 #include <sys/wait.h>
@@ -121,6 +125,197 @@ namespace bha::lsp
         return payload;
     }
 
+    std::optional<std::filesystem::path> workspace_path_from_uri_or_path(const std::string& workspace_root) {
+        if (workspace_root.empty()) {
+            return std::nullopt;
+        }
+        std::string root = workspace_root;
+        if (root.starts_with("file://")) {
+            root = root.substr(7);
+        }
+        if (root.empty()) {
+            return std::nullopt;
+        }
+        return std::filesystem::path(root);
+    }
+
+    std::string utc_timestamp_iso8601() {
+        using clock = std::chrono::system_clock;
+        const auto now = clock::now();
+        const std::time_t tt = clock::to_time_t(now);
+        std::tm tm{};
+#ifdef _WIN32
+        gmtime_s(&tm, &tt);
+#else
+        gmtime_r(&tt, &tm);
+#endif
+        std::ostringstream out;
+        out << std::put_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
+        return out.str();
+    }
+
+    bool command_exists(const std::string& name) {
+        if (name.empty()) {
+            return false;
+        }
+#ifdef _WIN32
+        const std::string cmd = "where " + name + " >nul 2>nul";
+#else
+        const std::string cmd = "command -v " + name + " >/dev/null 2>&1";
+#endif
+        return std::system(cmd.c_str()) == 0;
+    }
+
+    bool has_unreal_markers(const std::filesystem::path& project_root) {
+        return suggestions::is_unreal_project_root(project_root);
+    }
+
+    std::size_t count_unreal_rules_files(
+        const std::filesystem::path& project_root,
+        const std::string& suffix,
+        const std::size_t limit = 4000
+    ) {
+        namespace fs = std::filesystem;
+        const fs::path source_root = project_root / "Source";
+        if (!fs::exists(source_root)) {
+            return 0;
+        }
+        std::error_code ec;
+        std::size_t count = 0;
+        std::size_t scanned = 0;
+        for (const auto& entry : fs::recursive_directory_iterator(source_root, ec)) {
+            if (ec) {
+                break;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+            if (++scanned > limit) {
+                break;
+            }
+            const std::string name = entry.path().filename().string();
+            if (name.ends_with(suffix)) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    bool has_file_with_extension(
+        const std::filesystem::path& directory,
+        const std::string& extension
+    ) {
+        namespace fs = std::filesystem;
+        if (!fs::exists(directory) || !fs::is_directory(directory)) {
+            return false;
+        }
+        std::error_code ec;
+        for (const auto& entry : fs::directory_iterator(directory, ec)) {
+            if (ec) {
+                return false;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+            if (entry.path().extension() == extension) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    json build_unreal_environment_checks(const std::filesystem::path& project_root) {
+        json checks = json::array();
+        if (!has_unreal_markers(project_root)) {
+            return checks;
+        }
+
+        checks.push_back({
+            {"id", "project-detected"},
+            {"status", "ok"},
+            {"severity", "info"},
+            {"message", "Detected Unreal project markers (.uproject or ModuleRules/TargetRules)."}
+        });
+
+        const bool has_engine_env =
+            (std::getenv("BHA_UE_BUILD_SCRIPT") && *std::getenv("BHA_UE_BUILD_SCRIPT")) ||
+            (std::getenv("UE_ENGINE_ROOT") && *std::getenv("UE_ENGINE_ROOT")) ||
+            (std::getenv("UNREAL_ENGINE_ROOT") && *std::getenv("UNREAL_ENGINE_ROOT"));
+        const bool has_ubt_on_path = command_exists("UnrealBuildTool");
+        if (has_engine_env || has_ubt_on_path) {
+            checks.push_back({
+                {"id", "build-tooling"},
+                {"status", "ok"},
+                {"severity", "info"},
+                {"message", "Unreal build tooling is discoverable for rebuild validation."}
+            });
+        } else {
+            checks.push_back({
+                {"id", "build-tooling"},
+                {"status", "warning"},
+                {"severity", "warning"},
+                {"message", "Unreal build tooling is not discoverable from current environment."},
+                {"recommendedAction", "Set BHA_UE_BUILD_SCRIPT or UE_ENGINE_ROOT/UNREAL_ENGINE_ROOT, or add UnrealBuildTool to PATH."}
+            });
+        }
+
+        const std::size_t module_rules = count_unreal_rules_files(project_root, ".Build.cs");
+        const std::size_t target_rules = count_unreal_rules_files(project_root, ".Target.cs");
+        if (module_rules == 0) {
+            checks.push_back({
+                {"id", "module-rules"},
+                {"status", "warning"},
+                {"severity", "warning"},
+                {"message", "No *.Build.cs files were found under Source/."},
+                {"recommendedAction", "Verify module layout or point analysis to the actual Unreal workspace root."}
+            });
+        } else {
+            checks.push_back({
+                {"id", "module-rules"},
+                {"status", "ok"},
+                {"severity", "info"},
+                {"message", "Found " + std::to_string(module_rules) + " Unreal ModuleRules files."}
+            });
+        }
+
+        if (target_rules == 0) {
+            checks.push_back({
+                {"id", "target-rules"},
+                {"status", "warning"},
+                {"severity", "warning"},
+                {"message", "No *.Target.cs files were found under Source/; target inference may be limited."},
+                {"recommendedAction", "Add or expose target rules to improve build-target resolution."}
+            });
+        } else {
+            checks.push_back({
+                {"id", "target-rules"},
+                {"status", "ok"},
+                {"severity", "info"},
+                {"message", "Found " + std::to_string(target_rules) + " Unreal TargetRules files."}
+            });
+        }
+
+        const bool has_rider_workspace = std::filesystem::exists(project_root / ".idea");
+        const bool has_visual_studio_solution = has_file_with_extension(project_root, ".sln");
+        if (!has_rider_workspace && !has_visual_studio_solution) {
+            checks.push_back({
+                {"id", "ide-workflow"},
+                {"status", "info"},
+                {"severity", "info"},
+                {"message", "Optional: configure Rider or Visual Studio Unreal integration for smoother apply/rebuild workflow."}
+            });
+        } else {
+            checks.push_back({
+                {"id", "ide-workflow"},
+                {"status", "ok"},
+                {"severity", "info"},
+                {"message", "Detected Rider/Visual Studio project metadata for Unreal workflow."}
+            });
+        }
+
+        return checks;
+    }
+
     LSPConfig LSPConfig::from_json(const json& j) {
         LSPConfig config;
         if (j.contains("optimization")) {
@@ -133,6 +328,7 @@ namespace bha::lsp
             if (opt.contains("buildTimeout")) config.build_timeout_seconds = opt["buildTimeout"].get<int>();
             if (opt.contains("keepBackups")) config.keep_backups = opt["keepBackups"].get<bool>();
             if (opt.contains("backupDirectory")) config.backup_directory = opt["backupDirectory"].get<std::string>();
+            if (opt.contains("persistTrustLoop")) config.persist_trust_loop = opt["persistTrustLoop"].get<bool>();
             if (opt.contains("allowMissingCompileCommands")) config.allow_missing_compile_commands = opt["allowMissingCompileCommands"].get<bool>();
             if (opt.contains("includeUnsafeSuggestions")) config.include_unsafe_suggestions = opt["includeUnsafeSuggestions"].get<bool>();
             if (opt.contains("minConfidence")) config.min_confidence = opt["minConfidence"].get<double>();
@@ -168,6 +364,7 @@ namespace bha::lsp
                 {"buildTimeout", build_timeout_seconds},
                 {"keepBackups", keep_backups},
                 {"backupDirectory", backup_directory},
+                {"persistTrustLoop", persist_trust_loop},
                 {"allowMissingCompileCommands", allow_missing_compile_commands},
                 {"includeUnsafeSuggestions", include_unsafe_suggestions},
                 {"minConfidence", min_confidence},
@@ -706,13 +903,18 @@ namespace bha::lsp
             json metrics_json;
             to_json(metrics_json, baseline_metrics);
 
-            return {
+            json response = {
                 {"analysisId", analysis_id},
                 {"suggestions", suggestions_json},
                 {"baselineMetrics", metrics_json},
                 {"filesAnalyzed", files_analyzed},
                 {"durationMs", duration_ms}
             };
+            const json unreal_checks = build_unreal_environment_checks(std::filesystem::path(project_root));
+            if (!unreal_checks.empty()) {
+                response["unrealEnvironmentChecks"] = unreal_checks;
+            }
+            return response;
         } catch (const std::exception& e) {
             WorkDoneProgressEnd end_progress;
             end_progress.message = std::string("Analysis failed: ") + e.what();
@@ -872,6 +1074,15 @@ namespace bha::lsp
             errors_json.push_back(err_json);
         }
 
+        const json trust_loop = build_trust_loop_payload(
+            predicted_savings_ms,
+            baseline_duration_ms,
+            build_validation_ran,
+            build_validation_success,
+            measured_rebuild_duration_ms
+        );
+        persist_trust_loop_metrics(trust_loop, suggestion_id, false);
+
         return {
             {"success", result.success},
             {"changedFiles", result.changed_files},
@@ -884,13 +1095,7 @@ namespace bha::lsp
                 {"errorCount", build_errors.size()}
             }},
             {"rollback", rollback_json},
-            {"trustLoop", build_trust_loop_payload(
-                predicted_savings_ms,
-                baseline_duration_ms,
-                build_validation_ran,
-                build_validation_success,
-                measured_rebuild_duration_ms
-            )}
+            {"trustLoop", trust_loop}
         };
     }
 
@@ -1060,6 +1265,15 @@ namespace bha::lsp
             errors_json.push_back(err_json);
         }
 
+        const json trust_loop = build_trust_loop_payload(
+            predicted_savings_ms,
+            baseline_duration_ms,
+            build_validation_ran,
+            build_validation_success,
+            measured_rebuild_duration_ms
+        );
+        persist_trust_loop_metrics(trust_loop, std::nullopt, true);
+
         return {
             {"success", success},
             {"appliedCount", applied_count},
@@ -1075,13 +1289,7 @@ namespace bha::lsp
                 {"errorCount", build_errors.size()}
             }},
             {"rollback", rollback_json},
-            {"trustLoop", build_trust_loop_payload(
-                predicted_savings_ms,
-                baseline_duration_ms,
-                build_validation_ran,
-                build_validation_success,
-                measured_rebuild_duration_ms
-            )}
+            {"trustLoop", trust_loop}
         };
     }
 
@@ -1179,19 +1387,134 @@ namespace bha::lsp
         };
     }
 
+    void LSPServer::persist_trust_loop_metrics(
+        const json& trust_loop,
+        const std::optional<std::string>& suggestion_id,
+        const bool apply_all
+    ) const {
+        if (!config_.persist_trust_loop) {
+            return;
+        }
+
+        const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
+        if (!workspace_path.has_value()) {
+            return;
+        }
+
+        std::filesystem::path output_dir(config_.backup_directory);
+        if (output_dir.empty()) {
+            return;
+        }
+        if (output_dir.is_relative()) {
+            output_dir = *workspace_path / output_dir;
+        }
+
+        std::error_code ec;
+        std::filesystem::create_directories(output_dir, ec);
+        if (ec) {
+            return;
+        }
+
+        const std::filesystem::path log_path = output_dir / "trust_loop.jsonl";
+        std::ofstream out(log_path, std::ios::app);
+        if (!out) {
+            return;
+        }
+
+        json record = {
+            {"timestamp", utc_timestamp_iso8601()},
+            {"applyAll", apply_all},
+            {"workspaceRoot", workspace_path->string()},
+            {"trustLoop", trust_loop}
+        };
+        if (suggestion_id.has_value() && !suggestion_id->empty()) {
+            record["suggestionId"] = *suggestion_id;
+        }
+        out << record.dump() << "\n";
+    }
+
     bool LSPServer::run_build_validation(
         std::vector<Diagnostic>& errors,
         std::optional<int>& measured_duration_ms
     ) const
     {
-        std::string build_cmd = config_.build_command;
-
-        if (build_cmd.empty() && !workspace_root_.empty()) {
+        std::optional<std::filesystem::path> workspace_path;
+        if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
             if (root.starts_with("file://")) {
                 root = root.substr(7);
             }
-            build_cmd = detect_build_command(root);
+            if (!root.empty()) {
+                workspace_path = std::filesystem::path(root);
+            }
+        }
+
+        std::string build_cmd = config_.build_command;
+        if (build_cmd.empty() && workspace_path.has_value()) {
+            auto& registry = build_systems::BuildSystemRegistry::instance();
+            if (auto* adapter = registry.detect(*workspace_path); adapter != nullptr) {
+                send_notification("window/logMessage", {
+                    {"type", static_cast<int>(MessageType::Info)},
+                    {"message", "Running build validation via adapter: " + adapter->name()}
+                });
+
+                build_systems::BuildOptions options;
+                options.build_type = "Development";
+                options.enable_tracing = false;
+                options.enable_memory_profiling = false;
+                options.clean_first = false;
+                options.verbose = false;
+
+                const auto started = std::chrono::steady_clock::now();
+                auto build_result = adapter->build(*workspace_path, options);
+                const auto ended = std::chrono::steady_clock::now();
+                measured_duration_ms = static_cast<int>(
+                    std::chrono::duration_cast<std::chrono::milliseconds>(ended - started).count()
+                );
+
+                if (build_result.is_err()) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Build adapter failed: " + build_result.error().message();
+                    errors.push_back(std::move(diag));
+                    return false;
+                }
+
+                const auto& build = build_result.value();
+                if (build.success) {
+                    return true;
+                }
+
+                std::regex error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+                std::smatch match;
+                auto search_start = build.output.cbegin();
+                while (std::regex_search(search_start, build.output.cend(), match, error_regex)) {
+                    Diagnostic diag;
+                    diag.range.start.line = std::stoi(match[2]) - 1;
+                    diag.range.start.character = std::stoi(match[3]) - 1;
+                    diag.range.end = diag.range.start;
+                    diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
+                    diag.message = match[5];
+                    diag.source = "compiler";
+                    errors.push_back(std::move(diag));
+                    search_start = match.suffix().first;
+                }
+
+                if (errors.empty()) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    if (!build.error_message.empty()) {
+                        diag.message = build.error_message;
+                    } else {
+                        diag.message = "Build failed via adapter: " + adapter->name();
+                    }
+                    errors.push_back(std::move(diag));
+                }
+                return false;
+            }
+            build_cmd = detect_build_command(*workspace_path);
         }
 
         if (build_cmd.empty()) {
@@ -1280,6 +1603,40 @@ namespace bha::lsp
 
     std::string LSPServer::detect_build_command(const std::filesystem::path& project_root) {
         namespace fs = std::filesystem;
+
+        bool has_unreal_markers = false;
+        std::error_code ec;
+        for (const auto& entry : fs::directory_iterator(project_root, ec)) {
+            if (ec) {
+                break;
+            }
+            if (entry.is_regular_file() && entry.path().extension() == ".uproject") {
+                has_unreal_markers = true;
+                break;
+            }
+        }
+        if (!has_unreal_markers && fs::exists(project_root / "Source")) {
+            std::size_t scanned = 0;
+            for (const auto& entry : fs::recursive_directory_iterator(project_root / "Source", ec)) {
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (++scanned > 4000) {
+                    break;
+                }
+                const std::string name = entry.path().filename().string();
+                if (name.ends_with(".Build.cs") || name.ends_with(".Target.cs")) {
+                    has_unreal_markers = true;
+                    break;
+                }
+            }
+        }
+        if (has_unreal_markers) {
+            return "bha build --build-system unreal";
+        }
 
         if (fs::exists(project_root / "CMakeLists.txt") ||
             fs::exists(project_root / "build" / "build.ninja") ||

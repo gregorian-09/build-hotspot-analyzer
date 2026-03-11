@@ -55,12 +55,10 @@ namespace bha::suggestions
             suggestion.type = SuggestionType::IncludeRemoval;
             suggestion.priority = candidates.size() >= 3 ? Priority::High : Priority::Medium;
             suggestion.confidence = 0.83;
-            suggestion.is_safe = true;
-            suggestion.application_mode = SuggestionApplicationMode::Advisory;
-            suggestion.title = "Unreal Module IWYU Configuration (" + std::to_string(candidates.size()) + " modules)";
+            suggestion.title = "Unreal Module IWYU (UBT) Configuration (" + std::to_string(candidates.size()) + " modules)";
 
             std::ostringstream desc;
-            desc << "Enable module-level IWYU enforcement in Unreal Build Tool for these modules:\n";
+            desc << "Apply a ModuleRules-only UnrealBuildTool (UBT) change to enable IWYU without bulk source rewrites:\n";
             for (const auto& module : candidates) {
                 const auto include_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                     module.stats.include_parse_time
@@ -74,8 +72,8 @@ namespace bha::suggestions
             suggestion.description = desc.str();
 
             suggestion.rationale =
-                "Unreal module-level IWYU enforces direct include ownership and reduces transitive include churn. "
-                "Applying it at ModuleRules scope is safer than bulk source rewrites.";
+                "This suggestion only updates ModuleRules (.Build.cs) settings in UBT. "
+                "That keeps rollout localized per module while improving include discipline and reducing transitive include churn.";
 
             Duration total_include_time = Duration::zero();
             std::size_t affected_files = 0;
@@ -113,15 +111,81 @@ namespace bha::suggestions
 
             suggestion.implementation_steps = {
                 "Set bEnforceIWYU = true; in each listed <Module>.Build.cs file",
-                "Regenerate project files and run UnrealBuildTool for each module",
-                "Fix missing direct includes reported by IWYU enforcement"
+                "Regenerate project files and run UnrealBuildTool for each affected target",
+                "Fix direct-include violations reported by UBT/IWYU checks"
             };
             suggestion.caveats = {
                 "Some modules intentionally rely on legacy transitive includes and may need staged rollout",
-                "Keep generated headers and module export headers included explicitly where required"
+                "Keep generated headers and module export headers included explicitly where required",
+                "UHT requires *.generated.h to remain the last include in each UObject header"
             };
             suggestion.verification =
                 "Run UnrealBuildTool for targets using the updated modules and confirm clean compile with IWYU enabled.";
+
+            const auto include_order_violations = find_generated_include_order_violations(context.project_root);
+            const auto module_name_collisions = find_unreal_module_name_collisions(modules);
+            const bool has_include_order_blocker = !include_order_violations.empty();
+            const bool has_module_name_collision = !module_name_collisions.empty();
+            if (!has_include_order_blocker && !has_module_name_collision) {
+                for (const auto& module : candidates) {
+                    if (auto edit = make_unreal_assignment_edit(
+                        module.rules.build_cs_path,
+                        "bEnforceIWYU",
+                        "true",
+                        module.rules.enforce_iwyu_line
+                    )) {
+                        suggestion.edits.push_back(std::move(*edit));
+                    }
+                }
+            }
+
+            if (has_include_order_blocker) {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Fix Unreal header include order first, then enable bEnforceIWYU. Keep *.generated.h as the last include in each header.";
+                const auto& first = include_order_violations.front();
+                std::ostringstream reason;
+                reason << "Detected Unreal header include-order violations (include appears after *.generated.h), e.g. "
+                       << make_repo_relative(first.header_path) << ":" << first.generated_include_line
+                       << " followed by include at line " << first.trailing_include_line << ".";
+                suggestion.auto_apply_blocked_reason = reason.str();
+                suggestion.caveats.push_back(
+                    "Unreal requires *.generated.h to be the last include in a header; enable IWYU only after these files are corrected."
+                );
+            } else if (has_module_name_collision) {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Multiple ModuleRules files define the same Unreal module name. Resolve module ownership ambiguity, then apply IWYU settings.";
+                const auto& first = module_name_collisions.front();
+                std::ostringstream reason;
+                reason << "Ambiguous Unreal module rules for '" << first.name
+                       << "' (multiple .Build.cs files): ";
+                for (std::size_t i = 0; i < first.paths.size(); ++i) {
+                    if (i > 0) {
+                        reason << ", ";
+                    }
+                    reason << make_repo_relative(first.paths[i]);
+                }
+                suggestion.auto_apply_blocked_reason = reason.str();
+            } else if (suggestion.edits.size() == candidates.size()) {
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.is_safe = true;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can set bEnforceIWYU in ModuleRules files. Rebuild Unreal targets and rollback if validation fails.";
+            } else {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Automatic edit placement failed for one or more ModuleRules files. Apply the listed Build.cs changes manually.";
+                suggestion.auto_apply_blocked_reason =
+                    "At least one ModuleRules constructor block could not be located for safe edit insertion.";
+            }
 
             return suggestion;
         }

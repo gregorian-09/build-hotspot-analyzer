@@ -1611,6 +1611,7 @@ namespace bha::suggestions
             }
 
             const auto modules = collect_unreal_module_context(context);
+            const auto targets = discover_unreal_target_rules(context.project_root);
             std::vector<UnrealModuleContext> candidates;
             candidates.reserve(modules.size());
             for (const auto& module : modules) {
@@ -1635,12 +1636,10 @@ namespace bha::suggestions
             suggestion.type = SuggestionType::UnityBuild;
             suggestion.priority = candidates.size() >= 2 ? Priority::High : Priority::Medium;
             suggestion.confidence = 0.78;
-            suggestion.is_safe = true;
-            suggestion.application_mode = SuggestionApplicationMode::Advisory;
-            suggestion.title = "Unreal Module Unity Build Configuration (" + std::to_string(candidates.size()) + " modules)";
+            suggestion.title = "Unreal Module Unity Build (UBT) Configuration (" + std::to_string(candidates.size()) + " modules)";
 
             std::ostringstream desc;
-            desc << "Enable unity build at Unreal ModuleRules scope for modules that explicitly disabled it:\n";
+            desc << "Apply ModuleRules/TargetRules UnrealBuildTool (UBT) unity toggles for modules that explicitly disabled unity:\n";
             for (const auto& module : candidates) {
                 const auto compile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                     module.stats.total_compile_time
@@ -1651,11 +1650,41 @@ namespace bha::suggestions
                      << ", compile " << compile_ms << "ms)\n";
                 desc << "    Set: bUseUnity = true;\n";
             }
+            std::vector<UnrealTargetRules> target_overrides;
+            for (const auto& target : targets) {
+                if (target.use_unity.has_value() && !target.use_unity.value()) {
+                    target_overrides.push_back(target);
+                }
+            }
+            std::vector<UnrealTargetRules> adaptive_overrides;
+            for (const auto& target : targets) {
+                if (target.use_adaptive_unity.has_value() && !target.use_adaptive_unity.value()) {
+                    adaptive_overrides.push_back(target);
+                }
+            }
+            if (!target_overrides.empty()) {
+                desc << "Also update Unreal target overrides that disable unity globally:\n";
+                for (const auto& target : target_overrides) {
+                    desc << "  - " << target.target_name << " ("
+                         << make_repo_relative(target.target_cs_path)
+                         << ")\n"
+                         << "    Set: bUseUnity = true;\n";
+                }
+            }
+            if (!adaptive_overrides.empty()) {
+                desc << "Adaptive unity is disabled in these targets (consider enabling for incremental build throughput):\n";
+                for (const auto& target : adaptive_overrides) {
+                    desc << "  - " << target.target_name << " ("
+                         << make_repo_relative(target.target_cs_path)
+                         << ")\n"
+                         << "    Set: bUseAdaptiveUnityBuild = true;\n";
+                }
+            }
             suggestion.description = desc.str();
 
             suggestion.rationale =
-                "Unreal's module-level unity toggle is safer than ad-hoc source amalgamation and keeps build "
-                "configuration localized in ModuleRules.";
+                "This changes only UBT settings in ModuleRules/TargetRules and avoids ad-hoc source amalgamation. "
+                "That keeps rollout reversible and aligned with Unreal build ownership.";
 
             Duration total_compile_time = Duration::zero();
             std::size_t total_files = 0;
@@ -1690,18 +1719,120 @@ namespace bha::suggestions
                 }
                 suggestion.secondary_files.push_back(std::move(secondary));
             }
+            for (const auto& target : target_overrides) {
+                FileTarget secondary;
+                secondary.path = target.target_cs_path;
+                secondary.action = FileAction::Modify;
+                secondary.note = "Enable bUseUnity in Unreal TargetRules";
+                if (target.use_unity_line.has_value()) {
+                    secondary.line_start = *target.use_unity_line;
+                    secondary.line_end = *target.use_unity_line;
+                }
+                suggestion.secondary_files.push_back(std::move(secondary));
+            }
+            for (const auto& target : adaptive_overrides) {
+                FileTarget secondary;
+                secondary.path = target.target_cs_path;
+                secondary.action = FileAction::Modify;
+                secondary.note = "Enable bUseAdaptiveUnityBuild in Unreal TargetRules";
+                if (target.use_adaptive_unity_line.has_value()) {
+                    secondary.line_start = *target.use_adaptive_unity_line;
+                    secondary.line_end = *target.use_adaptive_unity_line;
+                }
+                suggestion.secondary_files.push_back(std::move(secondary));
+            }
 
             suggestion.implementation_steps = {
                 "Set bUseUnity = true; in each listed <Module>.Build.cs file",
+                "Set bUseUnity = true; in listed <Target>.Target.cs files that override unity",
+                "Set bUseAdaptiveUnityBuild = true; in listed <Target>.Target.cs files where disabled",
                 "Run UnrealBuildTool for impacted targets",
-                "If any module has ODR/macro issues, disable unity only for that module"
+                "If any module has macro/ODR issues, keep unity disabled only for that module"
             };
             suggestion.caveats = {
-                "Keep unity disabled for modules with known ODR-sensitive generated code",
-                "Prefer module-level overrides instead of global unity toggles"
+                "Keep unity disabled for modules with known UHT-generated-code sensitivity",
+                "Prefer module-level overrides instead of global unity toggles",
+                "Adaptive unity's writable-file working-set heuristic is source-control sensitive and may behave differently on Git than Perforce"
             };
             suggestion.verification =
                 "Build editor/game targets that consume these modules and compare clean build wall time.";
+
+            const auto module_name_collisions = find_unreal_module_name_collisions(modules);
+            const auto target_name_collisions = find_unreal_target_name_collisions(targets);
+            const bool has_name_collisions =
+                !module_name_collisions.empty() || !target_name_collisions.empty();
+
+            if (!has_name_collisions) {
+                for (const auto& module : candidates) {
+                    if (auto edit = make_unreal_assignment_edit(
+                        module.rules.build_cs_path,
+                        "bUseUnity",
+                        "true",
+                        module.rules.use_unity_line
+                    )) {
+                        suggestion.edits.push_back(std::move(*edit));
+                    }
+                }
+
+                for (const auto& target : target_overrides) {
+                    if (auto edit = make_unreal_assignment_edit(
+                        target.target_cs_path,
+                        "bUseUnity",
+                        "true",
+                        target.use_unity_line
+                    )) {
+                        suggestion.edits.push_back(std::move(*edit));
+                    }
+                }
+
+                for (const auto& target : adaptive_overrides) {
+                    if (auto edit = make_unreal_assignment_edit(
+                        target.target_cs_path,
+                        "bUseAdaptiveUnityBuild",
+                        "true",
+                        target.use_adaptive_unity_line
+                    )) {
+                        suggestion.edits.push_back(std::move(*edit));
+                    }
+                }
+            }
+
+            if (has_name_collisions) {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Duplicate Unreal module/target rule names were detected. Resolve rule ownership ambiguity before enabling unity toggles automatically.";
+                std::ostringstream reason;
+                bool wrote_any = false;
+                if (!module_name_collisions.empty()) {
+                    const auto& first = module_name_collisions.front();
+                    reason << "Ambiguous Unreal module rules for '" << first.name << "'";
+                    wrote_any = true;
+                }
+                if (!target_name_collisions.empty()) {
+                    const auto& first = target_name_collisions.front();
+                    if (wrote_any) {
+                        reason << "; ";
+                    }
+                    reason << "ambiguous Unreal target rules for '" << first.name << "'";
+                }
+                suggestion.auto_apply_blocked_reason = reason.str();
+            } else if (suggestion.edits.size() == candidates.size() + target_overrides.size() + adaptive_overrides.size()) {
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.is_safe = true;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can set module/target unity toggles directly, including adaptive-unity target settings. Rebuild affected Unreal targets to validate behavior.";
+            } else {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Automatic edit placement failed for one or more ModuleRules/TargetRules files. Apply listed Unity settings manually.";
+                suggestion.auto_apply_blocked_reason =
+                    "At least one ModuleRules or TargetRules constructor block could not be located for safe edit insertion.";
+            }
 
             return suggestion;
         }
@@ -1770,7 +1901,7 @@ namespace bha::suggestions
                 continue;
             }
 
-            if (group.total_compile_time < std::chrono::milliseconds(10)) {
+            if (group.total_compile_time < unity_config.min_group_total_time) {
                 ++skipped;
                 continue;
             }

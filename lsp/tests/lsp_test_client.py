@@ -221,6 +221,14 @@ def test_analyze(client: LSPClient, project_root: str, build_dir: Optional[str] 
             print(f"  Analysis ID: {result['analysisId']}")
             print(f"  Suggestions: {len(result['suggestions'])}")
             print(f"  Files analyzed: {result.get('filesAnalyzed', 0)}")
+            unreal_checks = result.get("unrealEnvironmentChecks") or []
+            if unreal_checks:
+                print(f"  Unreal environment checks: {len(unreal_checks)}")
+                for check in unreal_checks:
+                    check_id = check.get("id", "unknown")
+                    status = check.get("status", "unknown")
+                    message = check.get("message", "")
+                    print(f"    - [{status}] {check_id}: {message}")
             return result
         else:
             print("✗ Analysis response missing required fields")

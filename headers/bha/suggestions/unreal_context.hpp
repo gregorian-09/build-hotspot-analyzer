@@ -3,11 +3,13 @@
 #include "bha/suggestions/suggester.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <fstream>
 #include <optional>
 #include <regex>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -44,6 +46,27 @@ namespace bha::suggestions
         UnrealModuleStats stats;
     };
 
+    struct UnrealTargetRules {
+        std::string target_name;
+        fs::path target_cs_path;
+        std::optional<bool> use_unity;
+        std::optional<std::size_t> use_unity_line;
+        std::optional<bool> use_adaptive_unity;
+        std::optional<std::size_t> use_adaptive_unity_line;
+    };
+
+    struct UnrealGeneratedIncludeViolation {
+        fs::path header_path;
+        std::size_t generated_include_line = 0;       // 1-based
+        std::size_t trailing_include_line = 0;        // 1-based
+        std::string trailing_include_header;
+    };
+
+    struct UnrealRulesNameCollision {
+        std::string name;
+        std::vector<fs::path> paths;
+    };
+
     [[nodiscard]] inline std::string to_lower_copy(const std::string& value) {
         std::string lowered = value;
         std::ranges::transform(
@@ -75,14 +98,115 @@ namespace bha::suggestions
         return line;
     }
 
+    [[nodiscard]] inline std::vector<std::string> read_text_lines(const fs::path& path) {
+        std::vector<std::string> lines;
+        std::ifstream input(path);
+        if (!input) {
+            return lines;
+        }
+
+        std::string line;
+        while (std::getline(input, line)) {
+            lines.push_back(line);
+        }
+        return lines;
+    }
+
+    [[nodiscard]] inline std::string leading_whitespace(const std::string& line) {
+        std::size_t pos = 0;
+        while (pos < line.size()) {
+            const char ch = line[pos];
+            if (ch != ' ' && ch != '\t') {
+                break;
+            }
+            ++pos;
+        }
+        return line.substr(0, pos);
+    }
+
+    [[nodiscard]] inline std::optional<std::size_t> find_unreal_rules_open_brace_line(
+        const fs::path& rules_file
+    ) {
+        const auto lines = read_text_lines(rules_file);
+        if (lines.empty()) {
+            return std::nullopt;
+        }
+
+        const std::regex ctor_regex(
+            R"(\b[A-Za-z_][A-Za-z0-9_]*\s*\(\s*(?:ReadOnlyTargetRules|TargetInfo)\s+Target\s*\)\s*:\s*base\s*\(\s*Target\s*\))"
+        );
+
+        std::optional<std::size_t> ctor_line;
+        for (std::size_t i = 0; i < lines.size(); ++i) {
+            if (std::regex_search(strip_line_comment(lines[i]), ctor_regex)) {
+                ctor_line = i;
+                break;
+            }
+        }
+        if (!ctor_line.has_value()) {
+            return std::nullopt;
+        }
+
+        for (std::size_t i = *ctor_line; i < lines.size(); ++i) {
+            const std::string sanitized = strip_line_comment(lines[i]);
+            if (sanitized.find('{') != std::string::npos) {
+                return i;
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    [[nodiscard]] inline std::optional<TextEdit> make_unreal_assignment_edit(
+        const fs::path& rules_file,
+        const std::string& setting_name,
+        const std::string& assigned_value,
+        const std::optional<std::size_t>& existing_line
+    ) {
+        if (setting_name.empty()) {
+            return std::nullopt;
+        }
+
+        const auto lines = read_text_lines(rules_file);
+        if (lines.empty()) {
+            return std::nullopt;
+        }
+
+        std::string line_text = setting_name + " = " + assigned_value + ";";
+        if (existing_line.has_value() && *existing_line > 0 && *existing_line <= lines.size()) {
+            const std::string indent = leading_whitespace(lines[*existing_line - 1]);
+            return make_replace_line_edit(rules_file, *existing_line - 1, indent + line_text);
+        }
+
+        const auto open_brace_line = find_unreal_rules_open_brace_line(rules_file);
+        if (!open_brace_line.has_value() || *open_brace_line >= lines.size()) {
+            return std::nullopt;
+        }
+
+        const std::string indent = leading_whitespace(lines[*open_brace_line]) + "    ";
+        return make_insert_after_line_edit(rules_file, *open_brace_line, indent + line_text);
+    }
+
     [[nodiscard]] inline bool is_unreal_build_file(const fs::path& path) {
         return path.filename().string().ends_with(".Build.cs");
+    }
+
+    [[nodiscard]] inline bool is_unreal_target_file(const fs::path& path) {
+        return path.filename().string().ends_with(".Target.cs");
     }
 
     [[nodiscard]] inline std::string module_name_from_build_file(const fs::path& path) {
         std::string stem = path.stem().string();
         if (stem.ends_with(".Build")) {
             stem.erase(stem.size() - std::string(".Build").size());
+        }
+        return stem;
+    }
+
+    [[nodiscard]] inline std::string target_name_from_target_file(const fs::path& path) {
+        std::string stem = path.stem().string();
+        if (stem.ends_with(".Target")) {
+            stem.erase(stem.size() - std::string(".Target").size());
         }
         return stem;
     }
@@ -274,6 +398,59 @@ namespace bha::suggestions
         return rules;
     }
 
+    [[nodiscard]] inline std::optional<UnrealTargetRules> parse_unreal_target_file(const fs::path& target_cs_path) {
+        if (!fs::exists(target_cs_path)) {
+            return std::nullopt;
+        }
+        if (!is_unreal_target_file(target_cs_path)) {
+            return std::nullopt;
+        }
+
+        UnrealTargetRules rules;
+        rules.target_name = target_name_from_target_file(target_cs_path);
+        rules.target_cs_path = target_cs_path;
+        if (rules.target_name.empty()) {
+            return std::nullopt;
+        }
+
+        std::ifstream input(target_cs_path);
+        if (!input) {
+            return std::nullopt;
+        }
+
+        const std::regex unity_regex(
+            R"(\bbUseUnity\s*=\s*(true|false)\s*;)",
+            std::regex_constants::icase
+        );
+        const std::regex adaptive_unity_regex(
+            R"(\bbUseAdaptiveUnityBuild\s*=\s*(true|false)\s*;)",
+            std::regex_constants::icase
+        );
+
+        std::string line;
+        std::size_t line_number = 0;
+        while (std::getline(input, line)) {
+            ++line_number;
+            const std::string sanitized = strip_line_comment(line);
+            std::smatch match;
+
+            if (!rules.use_unity.has_value() && std::regex_search(sanitized, match, unity_regex)) {
+                const std::string value = to_lower_copy(match[1].str());
+                rules.use_unity = (value == "true");
+                rules.use_unity_line = line_number;
+            }
+
+            if (!rules.use_adaptive_unity.has_value() &&
+                std::regex_search(sanitized, match, adaptive_unity_regex)) {
+                const std::string value = to_lower_copy(match[1].str());
+                rules.use_adaptive_unity = (value == "true");
+                rules.use_adaptive_unity_line = line_number;
+            }
+        }
+
+        return rules;
+    }
+
     [[nodiscard]] inline std::vector<UnrealModuleRules> discover_unreal_module_rules(const fs::path& project_root) {
         std::vector<UnrealModuleRules> rules;
         if (project_root.empty() || !fs::exists(project_root)) {
@@ -318,13 +495,217 @@ namespace bha::suggestions
         return rules;
     }
 
+    [[nodiscard]] inline std::vector<UnrealTargetRules> discover_unreal_target_rules(const fs::path& project_root) {
+        std::vector<UnrealTargetRules> rules;
+        if (project_root.empty() || !fs::exists(project_root)) {
+            return rules;
+        }
+
+        std::unordered_set<std::string> seen_target_files;
+        std::error_code ec;
+        std::size_t scanned = 0;
+        for (const auto& entry : fs::recursive_directory_iterator(project_root, ec)) {
+            if (ec) {
+                break;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+            if (++scanned > 8000) {
+                break;
+            }
+
+            const fs::path path = entry.path();
+            if (!is_unreal_target_file(path)) {
+                continue;
+            }
+
+            const std::string normalized_path = path.lexically_normal().generic_string();
+            if (!seen_target_files.insert(normalized_path).second) {
+                continue;
+            }
+
+            if (auto parsed = parse_unreal_target_file(path)) {
+                rules.push_back(std::move(*parsed));
+            }
+        }
+
+        std::ranges::sort(
+            rules,
+            [](const UnrealTargetRules& lhs, const UnrealTargetRules& rhs) {
+                if (lhs.target_name != rhs.target_name) {
+                    return lhs.target_name < rhs.target_name;
+                }
+                return lhs.target_cs_path < rhs.target_cs_path;
+            }
+        );
+        return rules;
+    }
+
+    [[nodiscard]] inline bool is_unreal_header_file(const fs::path& path) {
+        static constexpr std::array<std::string_view, 4> kHeaderExts = {
+            ".h", ".hh", ".hpp", ".hxx"
+        };
+        const std::string ext = to_lower_copy(path.extension().string());
+        return std::ranges::any_of(kHeaderExts, [&](const std::string_view candidate) {
+            return ext == candidate;
+        });
+    }
+
+    [[nodiscard]] inline bool is_generated_header_include(const std::string& include_header) {
+        return to_lower_copy(include_header).ends_with(".generated.h");
+    }
+
+    [[nodiscard]] inline std::vector<UnrealGeneratedIncludeViolation> find_generated_include_order_violations(
+        const fs::path& project_root,
+        const std::size_t max_headers_to_scan = 2000
+    ) {
+        std::vector<UnrealGeneratedIncludeViolation> violations;
+        if (project_root.empty() || !fs::exists(project_root)) {
+            return violations;
+        }
+
+        const fs::path source_root = project_root / "Source";
+        if (!fs::exists(source_root)) {
+            return violations;
+        }
+
+        std::error_code ec;
+        std::size_t scanned_headers = 0;
+        for (const auto& entry : fs::recursive_directory_iterator(source_root, ec)) {
+            if (ec) {
+                break;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+            if (!is_unreal_header_file(entry.path())) {
+                continue;
+            }
+            if (++scanned_headers > max_headers_to_scan) {
+                break;
+            }
+
+            const auto includes = find_include_directives(entry.path());
+            if (includes.empty()) {
+                continue;
+            }
+
+            std::optional<IncludeDirective> generated_include;
+            for (const auto& include : includes) {
+                if (is_generated_header_include(include.header_name)) {
+                    generated_include = include;
+                    break;
+                }
+            }
+            if (!generated_include.has_value()) {
+                continue;
+            }
+
+            for (const auto& include : includes) {
+                if (include.line > generated_include->line) {
+                    UnrealGeneratedIncludeViolation violation;
+                    violation.header_path = entry.path();
+                    violation.generated_include_line = generated_include->line + 1;
+                    violation.trailing_include_line = include.line + 1;
+                    violation.trailing_include_header = include.header_name;
+                    violations.push_back(std::move(violation));
+                    break;
+                }
+            }
+        }
+
+        return violations;
+    }
+
+    [[nodiscard]] inline std::vector<UnrealRulesNameCollision> find_unreal_module_name_collisions(
+        const std::vector<UnrealModuleContext>& modules
+    ) {
+        std::unordered_map<std::string, std::vector<fs::path>> grouped_paths;
+        std::unordered_map<std::string, std::string> canonical_names;
+        for (const auto& module : modules) {
+            const std::string key = to_lower_copy(module.rules.module_name);
+            if (key.empty()) {
+                continue;
+            }
+            grouped_paths[key].push_back(module.rules.build_cs_path);
+            if (!canonical_names.contains(key)) {
+                canonical_names[key] = module.rules.module_name;
+            }
+        }
+
+        std::vector<UnrealRulesNameCollision> collisions;
+        for (auto& [key, paths] : grouped_paths) {
+            std::ranges::sort(paths);
+            paths.erase(std::unique(paths.begin(), paths.end()), paths.end());
+            if (paths.size() <= 1) {
+                continue;
+            }
+
+            UnrealRulesNameCollision collision;
+            collision.name = canonical_names[key];
+            collision.paths = std::move(paths);
+            collisions.push_back(std::move(collision));
+        }
+
+        std::ranges::sort(collisions, [](const UnrealRulesNameCollision& lhs, const UnrealRulesNameCollision& rhs) {
+            return lhs.name < rhs.name;
+        });
+        return collisions;
+    }
+
+    [[nodiscard]] inline std::vector<UnrealRulesNameCollision> find_unreal_target_name_collisions(
+        const std::vector<UnrealTargetRules>& targets
+    ) {
+        std::unordered_map<std::string, std::vector<fs::path>> grouped_paths;
+        std::unordered_map<std::string, std::string> canonical_names;
+        for (const auto& target : targets) {
+            const std::string key = to_lower_copy(target.target_name);
+            if (key.empty()) {
+                continue;
+            }
+            grouped_paths[key].push_back(target.target_cs_path);
+            if (!canonical_names.contains(key)) {
+                canonical_names[key] = target.target_name;
+            }
+        }
+
+        std::vector<UnrealRulesNameCollision> collisions;
+        for (auto& [key, paths] : grouped_paths) {
+            std::ranges::sort(paths);
+            paths.erase(std::unique(paths.begin(), paths.end()), paths.end());
+            if (paths.size() <= 1) {
+                continue;
+            }
+
+            UnrealRulesNameCollision collision;
+            collision.name = canonical_names[key];
+            collision.paths = std::move(paths);
+            collisions.push_back(std::move(collision));
+        }
+
+        std::ranges::sort(collisions, [](const UnrealRulesNameCollision& lhs, const UnrealRulesNameCollision& rhs) {
+            return lhs.name < rhs.name;
+        });
+        return collisions;
+    }
+
     [[nodiscard]] inline std::unordered_map<std::string, UnrealModuleStats> collect_unreal_module_stats(
         const SuggestionContext& context
     ) {
         std::unordered_map<std::string, UnrealModuleStats> stats_by_module;
         for (const auto& unit : context.trace.units) {
             const fs::path source = resolve_source_path(unit.source_file).lexically_normal();
-            const auto module_name = module_name_from_source_path(source);
+            std::optional<std::string> module_name = module_name_from_source_path(source);
+            if (!module_name.has_value()) {
+                for (const auto& include : unit.includes) {
+                    const fs::path include_path = resolve_source_path(include.header).lexically_normal();
+                    module_name = module_name_from_source_path(include_path);
+                    if (module_name.has_value()) {
+                        break;
+                    }
+                }
+            }
             if (!module_name.has_value()) {
                 continue;
             }

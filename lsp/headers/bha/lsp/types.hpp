@@ -100,6 +100,10 @@ namespace bha::lsp
         std::optional<std::string> application_summary;
         std::optional<std::string> application_guidance;
         std::optional<std::string> auto_apply_blocked_reason;
+        std::optional<std::string> project_context;
+        std::vector<std::string> module_rules_files;
+        std::vector<std::string> target_rules_files;
+        std::optional<std::string> safety_guard;
 
         /// Target file URI (file:// scheme)
         std::optional<std::string> target_uri;
@@ -298,6 +302,18 @@ namespace bha::lsp
         }
         if (s.auto_apply_blocked_reason) {
             j["autoApplyBlockedReason"] = *s.auto_apply_blocked_reason;
+        }
+        if (s.project_context) {
+            j["projectContext"] = *s.project_context;
+        }
+        if (!s.module_rules_files.empty()) {
+            j["moduleRulesFiles"] = s.module_rules_files;
+        }
+        if (!s.target_rules_files.empty()) {
+            j["targetRulesFiles"] = s.target_rules_files;
+        }
+        if (s.safety_guard) {
+            j["safetyGuard"] = *s.safety_guard;
         }
     }
 

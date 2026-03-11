@@ -1288,12 +1288,10 @@ namespace bha::suggestions
             suggestion.type = SuggestionType::PCHOptimization;
             suggestion.priority = candidates.size() >= 3 ? Priority::High : Priority::Medium;
             suggestion.confidence = 0.81;
-            suggestion.is_safe = true;
-            suggestion.application_mode = SuggestionApplicationMode::Advisory;
-            suggestion.title = "Unreal Module PCH Configuration (" + std::to_string(candidates.size()) + " modules)";
+            suggestion.title = "Unreal Module PCH (UBT) Configuration (" + std::to_string(candidates.size()) + " modules)";
 
             std::ostringstream desc;
-            desc << "Prefer explicit/shared PCH usage for Unreal modules with high include parse overhead:\n";
+            desc << "Apply a ModuleRules-only UnrealBuildTool (UBT) PCH policy change for modules with high include parse overhead:\n";
             for (const auto& module : candidates) {
                 const auto include_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                     module.stats.include_parse_time
@@ -1306,8 +1304,8 @@ namespace bha::suggestions
             suggestion.description = desc.str();
 
             suggestion.rationale =
-                "ModuleRules-level PCH configuration in Unreal Build Tool reduces repeated include parsing "
-                "without requiring broad source rewrites.";
+                "This keeps PCH policy in ModuleRules (.Build.cs), where Unreal teams already manage build behavior. "
+                "It reduces repeated include parsing without forcing broad source edits.";
 
             Duration total_include_time = Duration::zero();
             std::size_t total_files = 0;
@@ -1345,7 +1343,7 @@ namespace bha::suggestions
 
             suggestion.implementation_steps = {
                 "Set PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs; in each listed <Module>.Build.cs",
-                "Define or verify each module's private/public PCH header strategy",
+                "Define or verify each module's PrivatePCHHeaderFile/SharedPCHHeaderFile strategy where needed",
                 "Run UnrealBuildTool to confirm module rebuild correctness"
             };
             suggestion.caveats = {
@@ -1354,6 +1352,53 @@ namespace bha::suggestions
             };
             suggestion.verification =
                 "Build Unreal targets consuming the modules and compare clean/incremental compile times.";
+
+            const auto module_name_collisions = find_unreal_module_name_collisions(modules);
+            if (module_name_collisions.empty()) {
+                for (const auto& module : candidates) {
+                    if (auto edit = make_unreal_assignment_edit(
+                        module.rules.build_cs_path,
+                        "PCHUsage",
+                        "PCHUsageMode.UseExplicitOrSharedPCHs",
+                        module.rules.pch_usage_line
+                    )) {
+                        suggestion.edits.push_back(std::move(*edit));
+                    }
+                }
+            }
+
+            if (!module_name_collisions.empty()) {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Multiple ModuleRules files define the same Unreal module name. Resolve module ownership ambiguity, then apply PCH settings.";
+                const auto& first = module_name_collisions.front();
+                std::ostringstream reason;
+                reason << "Ambiguous Unreal module rules for '" << first.name
+                       << "' (multiple .Build.cs files): ";
+                for (std::size_t i = 0; i < first.paths.size(); ++i) {
+                    if (i > 0) {
+                        reason << ", ";
+                    }
+                    reason << make_repo_relative(first.paths[i]);
+                }
+                suggestion.auto_apply_blocked_reason = reason.str();
+            } else if (suggestion.edits.size() == candidates.size()) {
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.is_safe = true;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can set ModuleRules PCHUsage values directly. Rebuild Unreal targets and validate clean/incremental behavior.";
+            } else {
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.is_safe = false;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Automatic edit placement failed for one or more ModuleRules files. Apply the listed Build.cs changes manually.";
+                suggestion.auto_apply_blocked_reason =
+                    "At least one ModuleRules constructor block could not be located for safe edit insertion.";
+            }
 
             return suggestion;
         }

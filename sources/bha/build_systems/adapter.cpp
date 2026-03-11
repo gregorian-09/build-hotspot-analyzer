@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <tuple>
 
@@ -589,6 +590,163 @@ namespace bha::build_systems
 
         bool has_git_submodules(const fs::path& project_path) {
             return fs::exists(project_path / ".gitmodules");
+        }
+
+        std::optional<fs::path> find_unreal_uproject(const fs::path& project_path) {
+            std::error_code ec;
+            for (const auto& entry : fs::directory_iterator(project_path, ec)) {
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (entry.path().extension() == ".uproject") {
+                    return entry.path();
+                }
+            }
+            return std::nullopt;
+        }
+
+        bool has_unreal_build_markers(const fs::path& project_path) {
+            const fs::path source_root = project_path / "Source";
+            if (!fs::exists(source_root)) {
+                return false;
+            }
+            std::error_code ec;
+            std::size_t scanned = 0;
+            for (const auto& entry : fs::recursive_directory_iterator(source_root, ec)) {
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (++scanned > 4000) {
+                    break;
+                }
+                const std::string filename = entry.path().filename().string();
+                if (filename.ends_with(".Build.cs") || filename.ends_with(".Target.cs")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        std::vector<std::string> discover_unreal_targets(const fs::path& project_path) {
+            std::vector<std::string> targets;
+            const fs::path source_root = project_path / "Source";
+            if (!fs::exists(source_root)) {
+                return targets;
+            }
+
+            std::error_code ec;
+            std::size_t scanned = 0;
+            for (const auto& entry : fs::recursive_directory_iterator(source_root, ec)) {
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (++scanned > 4000) {
+                    break;
+                }
+                const std::string filename = entry.path().filename().string();
+                if (!filename.ends_with(".Target.cs")) {
+                    continue;
+                }
+
+                std::string stem = entry.path().stem().string();
+                if (stem.ends_with(".Target")) {
+                    stem.erase(stem.size() - std::string(".Target").size());
+                }
+                if (!stem.empty()) {
+                    targets.push_back(stem);
+                }
+            }
+
+            std::ranges::sort(targets);
+            targets.erase(std::unique(targets.begin(), targets.end()), targets.end());
+            return targets;
+        }
+
+        std::string select_unreal_target_name(const fs::path& project_path, const fs::path& uproject_path) {
+            auto targets = discover_unreal_targets(project_path);
+            if (!targets.empty()) {
+                if (const auto editor_it = std::ranges::find_if(targets, [](const std::string& name) {
+                    std::string lower = name;
+                    std::ranges::transform(lower, lower.begin(), [](const unsigned char c) {
+                        return static_cast<char>(std::tolower(c));
+                    });
+                    return lower.ends_with("editor");
+                }); editor_it != targets.end()) {
+                    return *editor_it;
+                }
+                return targets.front();
+            }
+
+            const std::string project_name = uproject_path.stem().string();
+            if (!project_name.empty()) {
+                return project_name + "Editor";
+            }
+            return {};
+        }
+
+        std::string unreal_platform_name() {
+#ifdef _WIN32
+            return "Win64";
+#elif defined(__APPLE__)
+            return "Mac";
+#else
+            return "Linux";
+#endif
+        }
+
+        std::string unreal_configuration_from_build_type(const std::string& build_type) {
+            std::string lower = build_type;
+            std::ranges::transform(lower, lower.begin(), [](const unsigned char c) {
+                return static_cast<char>(std::tolower(c));
+            });
+            if (lower == "debug") {
+                return "Debug";
+            }
+            if (lower == "shipping") {
+                return "Shipping";
+            }
+            if (lower == "test") {
+                return "Test";
+            }
+            return "Development";
+        }
+
+        std::optional<fs::path> resolve_unreal_build_script() {
+            std::vector<fs::path> candidates;
+            if (const char* explicit_script = std::getenv("BHA_UE_BUILD_SCRIPT"); explicit_script && *explicit_script) {
+                candidates.emplace_back(explicit_script);
+            }
+            if (const char* engine_root = std::getenv("UE_ENGINE_ROOT"); engine_root && *engine_root) {
+#ifdef _WIN32
+                candidates.emplace_back(fs::path(engine_root) / "Engine" / "Build" / "BatchFiles" / "Build.bat");
+#else
+                candidates.emplace_back(fs::path(engine_root) / "Engine" / "Build" / "BatchFiles" / "Linux" / "Build.sh");
+#endif
+            }
+            if (const char* engine_root = std::getenv("UNREAL_ENGINE_ROOT"); engine_root && *engine_root) {
+#ifdef _WIN32
+                candidates.emplace_back(fs::path(engine_root) / "Engine" / "Build" / "BatchFiles" / "Build.bat");
+#else
+                candidates.emplace_back(fs::path(engine_root) / "Engine" / "Build" / "BatchFiles" / "Linux" / "Build.sh");
+#endif
+            }
+
+            for (const auto& candidate : candidates) {
+                std::error_code ec;
+                if (!candidate.empty() && fs::exists(candidate, ec) && !ec) {
+                    return candidate;
+                }
+            }
+            return std::nullopt;
         }
 
     }  // namespace
@@ -2374,6 +2532,172 @@ namespace bha::build_systems
     };
 
     // --------------------------------------------------------------------------
+    // Unreal Adapter
+    // --------------------------------------------------------------------------
+
+    class UnrealAdapter final : public IBuildSystemAdapter {
+    public:
+        [[nodiscard]] std::string name() const override { return "Unreal"; }
+
+        [[nodiscard]] std::string description() const override {
+            return "Unreal Build Tool adapter (.uproject / ModuleRules / TargetRules)";
+        }
+
+        [[nodiscard]] double detect(const fs::path& project_path) const override {
+            if (find_unreal_uproject(project_path).has_value()) {
+                return 0.98;
+            }
+            if (has_unreal_build_markers(project_path)) {
+                return 0.7;
+            }
+            return 0.0;
+        }
+
+        Result<void, Error> configure(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)project_path;
+            (void)options;
+            return Result<void, Error>::success();
+        }
+
+        Result<BuildResult, Error> build(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            BuildResult result;
+            const auto start = std::chrono::steady_clock::now();
+
+            const auto uproject = find_unreal_uproject(project_path);
+            if (!uproject.has_value()) {
+                result.error_message = "No .uproject file found at project root";
+                return Result<BuildResult, Error>::success(result);
+            }
+
+            const std::string target_name = select_unreal_target_name(project_path, *uproject);
+            if (target_name.empty()) {
+                result.error_message = "Could not determine Unreal target name from .Target.cs files";
+                return Result<BuildResult, Error>::success(result);
+            }
+
+            const std::string platform = unreal_platform_name();
+            const std::string configuration = unreal_configuration_from_build_type(options.build_type);
+
+            if (options.clean_first) {
+                if (auto clean_result = clean(project_path, options); clean_result.is_err()) {
+                    result.error_message = clean_result.error().message();
+                    return Result<BuildResult, Error>::success(result);
+                }
+            }
+
+            std::ostringstream cmd;
+            if (const auto build_script = resolve_unreal_build_script(); build_script.has_value()) {
+#ifdef _WIN32
+                cmd << "\"" << build_script->string() << "\"";
+                cmd << " \"" << target_name << "\"";
+                cmd << " " << platform;
+                cmd << " " << configuration;
+                cmd << " -Project=\"" << uproject->string() << "\"";
+#else
+                cmd << shell_escape_posix(build_script->string());
+                cmd << " " << shell_escape_posix(target_name);
+                cmd << " " << shell_escape_posix(platform);
+                cmd << " " << shell_escape_posix(configuration);
+                cmd << " -Project=" << shell_escape_posix(uproject->string());
+#endif
+            } else {
+                cmd << "UnrealBuildTool";
+                cmd << " " << target_name;
+                cmd << " " << platform;
+                cmd << " " << configuration;
+                cmd << " -Project=\"" << uproject->string() << "\"";
+            }
+
+            cmd << " -NoHotReload";
+            cmd << " -Progress";
+            for (const auto& arg : options.extra_args) {
+                cmd << " " << arg;
+            }
+
+            const auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            result.output = output;
+            result.success = (exit_code == 0);
+
+            if (!result.success) {
+                const std::string error_summary = extract_error_summary(output);
+                if (error_summary.empty()) {
+                    result.error_message = "Unreal build failed";
+                } else {
+                    result.error_message = error_summary;
+                }
+            }
+
+            result.trace_files = find_trace_files(project_path / "Saved");
+            result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<BuildResult, Error>::success(result);
+        }
+
+        Result<void, Error> clean(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            const auto uproject = find_unreal_uproject(project_path);
+            if (!uproject.has_value()) {
+                return Result<void, Error>::success();
+            }
+
+            const std::string target_name = select_unreal_target_name(project_path, *uproject);
+            if (target_name.empty()) {
+                return Result<void, Error>::success();
+            }
+
+            const std::string platform = unreal_platform_name();
+            const std::string configuration = unreal_configuration_from_build_type(options.build_type);
+
+            if (const auto build_script = resolve_unreal_build_script(); build_script.has_value()) {
+                std::ostringstream cmd;
+#ifdef _WIN32
+                cmd << "\"" << build_script->string() << "\"";
+                cmd << " \"" << target_name << "\"";
+                cmd << " " << platform;
+                cmd << " " << configuration;
+                cmd << " -Project=\"" << uproject->string() << "\"";
+#else
+                cmd << shell_escape_posix(build_script->string());
+                cmd << " " << shell_escape_posix(target_name);
+                cmd << " " << shell_escape_posix(platform);
+                cmd << " " << shell_escape_posix(configuration);
+                cmd << " -Project=" << shell_escape_posix(uproject->string());
+#endif
+                cmd << " -clean";
+
+                if (const auto [exit_code, output] = execute_command(cmd.str(), project_path); exit_code != 0) {
+                    return Result<void, Error>::failure(
+                        Error(ErrorCode::InternalError, "Unreal clean failed: " + output)
+                    );
+                }
+            }
+
+            return Result<void, Error>::success();
+        }
+
+        Result<fs::path, Error> get_compile_commands(
+            const fs::path& project_path,
+            const BuildOptions& options
+        ) override {
+            (void)options;
+            const fs::path compile_commands = project_path / "compile_commands.json";
+            if (fs::exists(compile_commands)) {
+                return Result<fs::path, Error>::success(compile_commands);
+            }
+            return Result<fs::path, Error>::failure(
+                Error(ErrorCode::NotFound, "compile_commands.json not found for Unreal project")
+            );
+        }
+    };
+
+    // --------------------------------------------------------------------------
     // XCode Adapter
     // --------------------------------------------------------------------------
 
@@ -2584,6 +2908,12 @@ namespace bha::build_systems
     void register_xcode_adapter() {
         BuildSystemRegistry::instance().register_adapter(
             std::make_unique<XCodeAdapter>()
+        );
+    }
+
+    void register_unreal_adapter() {
+        BuildSystemRegistry::instance().register_adapter(
+            std::make_unique<UnrealAdapter>()
         );
     }
 

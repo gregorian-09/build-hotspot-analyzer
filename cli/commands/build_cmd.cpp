@@ -35,7 +35,7 @@ namespace bha::cli
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
             return {
-                {"build-system", 's', "Force specific build system (cmake, ninja, make, msbuild)", false, true, "", "SYSTEM"},
+                {"build-system", 's', "Force specific build system (cmake, ninja, make, msbuild, unreal)", false, true, "", "SYSTEM"},
                 {"config", 'c', "Build configuration (Debug, Release, etc.)", false, true, "Release", "CONFIG"},
                 {"jobs", 'j', "Number of parallel jobs (0=auto)", false, true, "0", "N"},
                 {"memory", 'm', "Enable memory profiling", false, false, "", ""},
@@ -74,7 +74,7 @@ namespace bha::cli
                 adapter = registry.get(system_name);
                 if (!adapter) {
                     print_error("Unknown build system: " + system_name);
-                    print_error("Available: cmake, ninja, make, msbuild");
+                    print_error("Available: cmake, ninja, make, msbuild, unreal");
                     return 1;
                 }
             } else {

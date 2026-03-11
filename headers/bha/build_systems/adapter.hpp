@@ -210,6 +210,7 @@ namespace bha::build_systems
     void register_buck2_adapter();
     void register_scons_adapter();
     void register_xcode_adapter();
+    void register_unreal_adapter();
 
     // Register all built-in adapters
     inline void register_all_adapters() {
@@ -222,6 +223,7 @@ namespace bha::build_systems
         register_buck2_adapter();
         register_scons_adapter();
         register_xcode_adapter();
+        register_unreal_adapter();
     }
 
 } // namespace bha::build_systems

@@ -143,6 +143,9 @@ namespace bha::heuristics
         /// Minimum files to consider unity build worthwhile
         std::size_t min_files_threshold = 10;
 
+        /// Minimum aggregate compile time for a unity group
+        std::chrono::milliseconds min_group_total_time{10};
+
         /// Estimated ratio of compile time spent on header parsing (40-50%)
         double header_parsing_ratio = 0.45;
 

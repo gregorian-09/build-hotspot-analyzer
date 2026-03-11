@@ -1,7 +1,34 @@
 #include "bha/build_systems/adapter.hpp"
 #include <gtest/gtest.h>
+#include <chrono>
+#include <filesystem>
+#include <fstream>
 
 using namespace bha::build_systems;
+namespace fs = std::filesystem;
+
+namespace {
+    struct TempDir {
+        fs::path root;
+
+        TempDir() {
+            const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+            root = fs::temp_directory_path() / ("bha-buildsys-" + std::to_string(stamp));
+            fs::create_directories(root);
+        }
+
+        ~TempDir() {
+            std::error_code ec;
+            fs::remove_all(root, ec);
+        }
+    };
+
+    void write_file(const fs::path& path, const std::string& content) {
+        fs::create_directories(path.parent_path());
+        std::ofstream out(path);
+        out << content;
+    }
+}
 
 TEST(BuildOptionsTest, DefaultValues) {
     const BuildOptions options;
@@ -68,4 +95,23 @@ TEST(BuildSystemRegistryTest, GetByName) {
 
     auto* nonexistent = registry.get("Nonexistent");
     EXPECT_EQ(nonexistent, nullptr);
+}
+
+TEST(BuildSystemRegistryTest, DetectsUnrealProjectFromUprojectAndTargetRules) {
+    register_all_adapters();
+    const auto& registry = BuildSystemRegistry::instance();
+
+    TempDir temp;
+    write_file(temp.root / "Sample.uproject", "{\n}");
+    write_file(
+        temp.root / "Source" / "SampleEditor.Target.cs",
+        "using UnrealBuildTool;\n"
+        "public class SampleEditorTarget : TargetRules {\n"
+        "  public SampleEditorTarget(ReadOnlyTargetRules Target) : base(Target) {}\n"
+        "}\n"
+    );
+
+    auto* adapter = registry.detect(temp.root);
+    ASSERT_NE(adapter, nullptr);
+    EXPECT_EQ(adapter->name(), "Unreal");
 }
