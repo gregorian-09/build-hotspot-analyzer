@@ -5,6 +5,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/progress.hpp"
 #include "bha/cli/formatter.hpp"
+#include "bha/cli/suggestion_utils.hpp"
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
@@ -14,6 +15,7 @@
 #include "bha/exporters/exporter.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 #include <unordered_map>
 
@@ -31,7 +33,7 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string_view description() const noexcept override {
-            return "Export analysis results to JSON, HTML, CSV, or Markdown";
+            return "Export analysis results to JSON, HTML, CSV, SARIF, or Markdown";
         }
 
         [[nodiscard]] std::string usage() const override {
@@ -40,14 +42,18 @@ namespace bha::cli
                    "Examples:\n"
                    "  bha export --format json -o report.json traces/\n"
                    "  bha export --format html -o report.html build/*.json\n"
-                   "  bha export --format csv -o data.csv trace.json";
+                   "  bha export --format csv -o data.csv trace.json\n"
+                   "  bha export --format sarif -o bha.sarif traces/\n"
+                   "  bha export --format json -o report.json --pr-annotations github traces/";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
             return {
                 {"output", 'o', "Output file (required)", true, true, "", "FILE"},
-                {"format", 'f', "Output format (json, html, csv, md)", false, true, "", "FORMAT"},
-                {"include-suggestions", 's', "Include optimization suggestions (csv/md only)", false, false, "", ""},
+                {"format", 'f', "Output format (json, html, csv, sarif, md)", false, true, "", "FORMAT"},
+                {"include-suggestions", 's', "Include optimization suggestions (csv/md/sarif)", false, false, "", ""},
+                {"pr-annotations", 0, "Emit PR annotations (github, gitlab)", false, true, "", "FORMAT"},
+                {"annotations-output", 0, "Output file for annotations (default: stdout)", false, true, "", "FILE"},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
@@ -97,7 +103,7 @@ namespace bha::cli
                 auto parsed = exporters::string_to_format(*format_str);
                 if (!parsed) {
                     print_error("Unknown format: " + *format_str);
-                    print_error("Supported formats: json, html, csv, md");
+                    print_error("Supported formats: json, html, csv, sarif, md");
                     return 1;
                 }
                 format = *parsed;
@@ -105,12 +111,24 @@ namespace bha::cli
                 if (auto ext = output_path.extension().string(); ext == ".json") format = exporters::ExportFormat::JSON;
                 else if (ext == ".html" || ext == ".htm") format = exporters::ExportFormat::HTML;
                 else if (ext == ".csv") format = exporters::ExportFormat::CSV;
+                else if (ext == ".sarif") format = exporters::ExportFormat::SARIF;
                 else if (ext == ".md") format = exporters::ExportFormat::Markdown;
                 else {
                     print_error("Cannot determine format from extension: " + ext);
                     print_error("Use --format to specify the output format");
                     return 1;
                 }
+            }
+
+            std::optional<exporters::PRAnnotationFormat> pr_annotation_format;
+            if (auto format_name = args.get("pr-annotations")) {
+                auto parsed = exporters::string_to_pr_annotation_format(*format_name);
+                if (!parsed) {
+                    print_error("Unknown PR annotation format: " + *format_name);
+                    print_error("Supported formats: github, gitlab");
+                    return 1;
+                }
+                pr_annotation_format = *parsed;
             }
 
             // Collect trace files AND memory files
@@ -219,48 +237,35 @@ namespace bha::cli
             }
 
             const bool supports_suggestions_payload =
-                format == exporters::ExportFormat::CSV || format == exporters::ExportFormat::Markdown;
+                format == exporters::ExportFormat::CSV ||
+                format == exporters::ExportFormat::Markdown ||
+                format == exporters::ExportFormat::SARIF;
             const bool include_suggestions =
-                args.get_flag("include-suggestions") && supports_suggestions_payload;
+                format == exporters::ExportFormat::SARIF ||
+                (args.get_flag("include-suggestions") && supports_suggestions_payload);
             if (args.get_flag("include-suggestions") && !supports_suggestions_payload) {
                 print_verbose("Suggestions payload is disabled for JSON/HTML exports");
             }
+            const bool needs_suggestions_for_annotations = pr_annotation_format.has_value();
+            const bool needs_suggestions = include_suggestions || needs_suggestions_for_annotations;
 
             // Generate suggestions if requested and supported by target payload
             std::vector<Suggestion> suggestions;
-            if (include_suggestions) {
+            fs::path project_root;
+            if (needs_suggestions) {
                 print_verbose("Generating suggestions...");
 
                 SuggesterOptions suggester_opts;
-                fs::path project_root;
-                if (project_root.empty() && !args.positional().empty()) {
-                    const fs::path trace_path(args.positional().front());
-                    const fs::path abs_trace = trace_path.is_relative() ? fs::absolute(trace_path) : trace_path;
-                    project_root = suggestions::find_project_root_from_trace_path(abs_trace);
+                std::vector<fs::path> input_paths;
+                input_paths.reserve(args.positional().size());
+                for (const auto& path : args.positional()) {
+                    input_paths.emplace_back(path);
                 }
-                if (project_root.empty()) {
-                    for (const auto& unit : build_trace.units) {
-                        const auto resolved = suggestions::resolve_source_path(unit.source_file);
-                        const auto root = suggestions::find_repository_root(resolved);
-                        if (!root.empty() && suggestions::has_build_system_marker(root)) {
-                            project_root = root;
-                            break;
-                        }
-                    }
-                }
-                if (project_root.empty()) {
-                    for (const auto& header : analysis_result.value().dependencies.headers) {
-                        const auto resolved = suggestions::resolve_source_path(header.path);
-                        const auto root = suggestions::find_repository_root(resolved);
-                        if (!root.empty() && suggestions::has_build_system_marker(root)) {
-                            project_root = root;
-                            break;
-                        }
-                    }
-                }
-                if (project_root.empty()) {
-                    project_root = fs::current_path();
-                }
+                project_root = suggestion_utils::resolve_project_root_for_suggestions(
+                    input_paths,
+                    build_trace,
+                    analysis_result.value()
+                );
                 print_verbose("Resolved project root: " + project_root.generic_string());
                 auto suggestions_result = suggestions::generate_all_suggestions(
                     build_trace, analysis_result.value(), suggester_opts, project_root
@@ -285,7 +290,7 @@ namespace bha::cli
             export_opts.html_title = args.get_or("title", "Build Analysis Report");
             export_opts.max_files = static_cast<std::size_t>(args.get_int("max-files").value_or(0));
             export_opts.max_suggestions = static_cast<std::size_t>(args.get_int("max-suggestions").value_or(0));
-            export_opts.include_suggestions = include_suggestions && !suggestions.empty();
+            export_opts.include_suggestions = include_suggestions;
 
             // Content control options (inverted logic - flags disable features)
             export_opts.include_file_details = !args.get_flag("no-file-details");
@@ -318,6 +323,37 @@ namespace bha::cli
             if (!export_result.is_ok()) {
                 print_error("Export failed: " + export_result.error().message());
                 return 1;
+            }
+
+            if (pr_annotation_format.has_value()) {
+                auto annotation_result = exporters::export_pr_annotations(
+                    suggestions,
+                    *pr_annotation_format,
+                    project_root,
+                    export_opts.max_suggestions
+                );
+                if (!annotation_result.is_ok()) {
+                    print_error("Failed to generate PR annotations: " + annotation_result.error().message());
+                    return 1;
+                }
+
+                if (auto annotations_path = args.get("annotations-output")) {
+                    std::ofstream out(*annotations_path);
+                    if (!out.is_open()) {
+                        print_error("Failed to open annotations output file: " + *annotations_path);
+                        return 1;
+                    }
+                    out << annotation_result.value();
+                    if (!is_quiet()) {
+                        std::cout << "Exported " << exporters::pr_annotation_format_to_string(*pr_annotation_format)
+                                  << " annotations to " << *annotations_path << "\n";
+                    }
+                } else {
+                    std::cout << annotation_result.value();
+                    if (!annotation_result.value().empty() && annotation_result.value().back() != '\n') {
+                        std::cout << "\n";
+                    }
+                }
             }
 
             if (!is_quiet()) {
