@@ -69,6 +69,14 @@ namespace bha::lsp
         int duration_ms;
     };
 
+    struct AnalyzeSuggestionOptions {
+        std::vector<bha::SuggestionType> enabled_types;
+        std::optional<bool> include_unsafe;
+        std::optional<double> min_confidence;
+        std::optional<bool> enable_consolidation;
+        bool relax_heuristics = false;
+    };
+
     struct ApplySuggestionResult {
         bool success;
         std::vector<std::string> changed_files;
@@ -124,7 +132,8 @@ namespace bha::lsp
             const fs::path& project_root,
             const std::optional<fs::path>& build_dir = std::nullopt,
             bool rebuild = false,
-            const ProgressCallback& on_progress = nullptr
+            const ProgressCallback& on_progress = nullptr,
+            const AnalyzeSuggestionOptions& analyze_options = {}
         );
 
         DetailedSuggestion get_suggestion_details(const std::string& suggestion_id);
@@ -133,6 +142,11 @@ namespace bha::lsp
             const std::string& suggestion_id,
             bool skip_validation = false,
             bool skip_rebuild = false,
+            bool create_backup = true
+        );
+
+        ApplySuggestionResult apply_edit_bundle(
+            const std::vector<bha::TextEdit>& edits,
             bool create_backup = true
         );
 

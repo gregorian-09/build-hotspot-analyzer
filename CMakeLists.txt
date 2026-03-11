@@ -207,6 +207,7 @@ add_dependencies(bha_lib generate_resources)
 
 if(BHA_BUILD_CLI)
     add_executable(bha
+            cli/commands/apply_cmd.cpp
             cli/commands/analyze_cmd.cpp
             cli/commands/build_cmd.cpp
             cli/commands/command.cpp

@@ -11,33 +11,75 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/suggestions/suggester.hpp"
+#include "bha/suggestions/suggester_catalog.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <chrono>
 #include <algorithm>
+#include <unordered_set>
 #include <sstream>
+
+#include <nlohmann/json.hpp>
 
 namespace bha::cli
 {
     namespace fs = std::filesystem;
 
     namespace {
-        std::optional<SuggestionType> parse_suggestion_type(const std::string& str) {
-            std::string lower = str;
-            std::ranges::transform(lower, lower.begin(), [](const unsigned char c) { return std::tolower(c); });
+        nlohmann::json descriptor_to_json(const suggestions::SuggesterDescriptor& descriptor) {
+            nlohmann::json supported_types = nlohmann::json::array();
+            for (const auto type : descriptor.supported_types) {
+                supported_types.push_back(suggestions::suggestion_type_id(type));
+            }
 
-            if (lower == "pch" || lower == "pch-optimization") return SuggestionType::PCHOptimization;
-            if (lower == "forward-decl" || lower == "forward-declaration") return SuggestionType::ForwardDeclaration;
-            if (lower == "header-split") return SuggestionType::HeaderSplit;
-            if (lower == "pimpl" || lower == "pimpl-pattern") return SuggestionType::PIMPLPattern;
-            if (lower == "include-removal") return SuggestionType::IncludeRemoval;
-            if (lower == "move-to-cpp") return SuggestionType::MoveToCpp;
-            if (lower == "explicit-template") return SuggestionType::ExplicitTemplate;
-            if (lower == "unity-build") return SuggestionType::UnityBuild;
+            nlohmann::json requirements = nlohmann::json::array();
+            for (const auto& requirement : descriptor.input_requirements) {
+                requirements.push_back(requirement);
+            }
 
-            return std::nullopt;
+            return nlohmann::json{
+                {"id", descriptor.id},
+                {"className", descriptor.class_name},
+                {"description", descriptor.description},
+                {"supportedTypes", supported_types},
+                {"inputRequirements", requirements},
+                {"potentiallyAutoApplicable", descriptor.potentially_auto_applicable},
+                {"supportsExplainMode", descriptor.supports_explain_mode}
+            };
+        }
+
+        void print_descriptor_text(const suggestions::SuggesterDescriptor& descriptor) {
+            std::cout << descriptor.id << " (" << descriptor.class_name << ")\n";
+            std::cout << "  " << descriptor.description << "\n";
+            std::cout << "  Supported types: ";
+            for (std::size_t i = 0; i < descriptor.supported_types.size(); ++i) {
+                if (i > 0) {
+                    std::cout << ", ";
+                }
+                std::cout << suggestions::suggestion_type_id(descriptor.supported_types[i]);
+            }
+            std::cout << "\n";
+            std::cout << "  Potentially auto-applicable: " << (descriptor.potentially_auto_applicable ? "yes" : "no") << "\n";
+            std::cout << "  Input requirements:\n";
+            for (const auto& requirement : descriptor.input_requirements) {
+                std::cout << "    - " << requirement << "\n";
+            }
+        }
+
+        std::vector<SuggestionType> intersect_types(
+            const std::vector<SuggestionType>& lhs,
+            const std::vector<SuggestionType>& rhs
+        ) {
+            std::vector<SuggestionType> result;
+            for (const auto type : lhs) {
+                if (std::ranges::find(rhs, type) != rhs.end() &&
+                    std::ranges::find(result, type) == result.end()) {
+                    result.push_back(type);
+                }
+            }
+            return result;
         }
     }
 
@@ -60,7 +102,9 @@ namespace bha::cli
                    "Examples:\n"
                    "  bha suggest build/*.json\n"
                    "  bha suggest --min-priority high trace.json\n"
-                   "  bha suggest --type pch --type forward-decl traces/";
+                   "  bha suggest --type pch --type forward-decl traces/\n"
+                   "  bha suggest --list-suggesters\n"
+                   "  bha suggest --describe-suggester pch";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
@@ -71,6 +115,10 @@ namespace bha::cli
                 {"min-priority", 'p', "Minimum priority (low, medium, high, critical)", false, true, "low", "LEVEL"},
                 {"min-confidence", 'c', "Minimum confidence (0.0-1.0)", false, true, "0.5", "VALUE"},
                 {"type", 0, "Filter by suggestion type (can be repeated)", false, true, "", "TYPE"},
+                {"suggester", 0, "Filter by suggester id/class-name (can be repeated)", false, true, "", "NAME"},
+                {"list-suggesters", 0, "List available suggesters and required inputs", false, false, "", ""},
+                {"describe-suggester", 0, "Describe a specific suggester without running analysis", false, true, "", "NAME"},
+                {"explain", 0, "Relax thresholds for exploratory suggester runs", false, false, "", ""},
                 {"include-unsafe", 0, "Include potentially unsafe suggestions", false, false, "", ""},
                 {"detailed", 'd', "Show detailed suggestion info", false, false, "", ""},
                 {"disable-consolidation", 0, "Disable suggestion consolidation", false, false, "", ""},
@@ -100,7 +148,9 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
-            if (args.positional().empty()) {
+            const bool list_mode = args.get_flag("list-suggesters");
+            const bool describe_mode = args.get("describe-suggester").has_value();
+            if (!list_mode && !describe_mode && args.positional().empty()) {
                 return "No trace files specified. Use 'bha suggest <files...>'";
             }
 
@@ -127,6 +177,38 @@ namespace bha::cli
                 set_output_format(OutputFormat::JSON);
             }
 
+            if (args.get_flag("list-suggesters")) {
+                const auto descriptors = suggestions::list_suggester_descriptors();
+                if (is_json()) {
+                    nlohmann::json payload = nlohmann::json::array();
+                    for (const auto& descriptor : descriptors) {
+                        payload.push_back(descriptor_to_json(descriptor));
+                    }
+                    std::cout << payload.dump(2) << "\n";
+                } else {
+                    std::cout << "Available suggesters:\n\n";
+                    for (const auto& descriptor : descriptors) {
+                        print_descriptor_text(descriptor);
+                        std::cout << "\n";
+                    }
+                }
+                return 0;
+            }
+
+            if (auto requested = args.get("describe-suggester")) {
+                const auto descriptor = suggestions::find_suggester_descriptor(*requested);
+                if (!descriptor.has_value()) {
+                    print_error("Unknown suggester: " + *requested);
+                    return 1;
+                }
+                if (is_json()) {
+                    std::cout << descriptor_to_json(*descriptor).dump(2) << "\n";
+                } else {
+                    print_descriptor_text(*descriptor);
+                }
+                return 0;
+            }
+
             std::size_t limit = static_cast<std::size_t>(args.get_int("limit").value_or(20));
             double min_confidence = args.get_double("min-confidence").value_or(0.5);
             bool include_unsafe = args.get_flag("include-unsafe");
@@ -136,6 +218,37 @@ namespace bha::cli
             if (auto priority_str = args.get_or("min-priority", "low"); priority_str == "critical") min_priority = Priority::Critical;
             else if (priority_str == "high") min_priority = Priority::High;
             else if (priority_str == "medium") min_priority = Priority::Medium;
+
+            std::vector<SuggestionType> cli_type_filters;
+            if (auto type_filters = args.get_all("type"); !type_filters.empty()) {
+                for (const auto& type_str : type_filters) {
+                    if (auto type = suggestions::parse_suggestion_type_id(type_str)) {
+                        if (std::ranges::find(cli_type_filters, *type) == cli_type_filters.end()) {
+                            cli_type_filters.push_back(*type);
+                        }
+                    } else {
+                        print_error("Unknown suggestion type: " + type_str);
+                        print_error("Valid types: pch, forward-decl, header-split, include-removal, move-to-cpp, template-instantiation, unity-build, pimpl.");
+                        return 1;
+                    }
+                }
+            }
+
+            std::vector<SuggestionType> suggester_type_filters;
+            if (auto suggester_filters = args.get_all("suggester"); !suggester_filters.empty()) {
+                for (const auto& token : suggester_filters) {
+                    const auto descriptor = suggestions::find_suggester_descriptor(token);
+                    if (!descriptor.has_value()) {
+                        print_error("Unknown suggester: " + token);
+                        return 1;
+                    }
+                    for (const auto type : descriptor->supported_types) {
+                        if (std::ranges::find(suggester_type_filters, type) == suggester_type_filters.end()) {
+                            suggester_type_filters.push_back(type);
+                        }
+                    }
+                }
+            }
 
             std::vector<fs::path> trace_files;
             for (const auto& path_str : args.positional()) {
@@ -205,18 +318,22 @@ namespace bha::cli
                 suggester_opts.max_suggester_time = std::chrono::milliseconds(*val);
             }
 
-            // Parse and validate suggestion types filter
-            if (auto type_filters = args.get_all("type"); !type_filters.empty()) {
-                for (const auto& type_str : type_filters) {
-                    if (auto type = parse_suggestion_type(type_str)) {
-                        suggester_opts.enabled_types.push_back(*type);
-                    } else {
-                        print_error("Unknown suggestion type: " + type_str);
-                        print_error("Valid types: pch, forward-decl, header-split, unity-build, etc.");
-                        return 1;
-                    }
-                }
+            if (!cli_type_filters.empty() && !suggester_type_filters.empty()) {
+                suggester_opts.enabled_types = intersect_types(cli_type_filters, suggester_type_filters);
+            } else if (!cli_type_filters.empty()) {
+                suggester_opts.enabled_types = cli_type_filters;
+            } else if (!suggester_type_filters.empty()) {
+                suggester_opts.enabled_types = suggester_type_filters;
+            }
+
+            if (!suggester_opts.enabled_types.empty()) {
                 print_verbose("Filtering suggestions to " + std::to_string(suggester_opts.enabled_types.size()) + " types");
+            }
+
+            if (args.get_flag("explain")) {
+                suggester_opts.min_confidence = 0.0;
+                suggester_opts.include_unsafe = true;
+                suggester_opts.enable_consolidation = false;
             }
 
             // Apply heuristics config overrides from CLI
@@ -274,6 +391,21 @@ namespace bha::cli
             }
             if (auto val = args.get_int("unreal-min-pch-time")) {
                 unreal.min_module_include_time_for_pch = std::chrono::milliseconds(*val);
+            }
+
+            if (args.get_flag("explain")) {
+                pch.min_include_count = 1;
+                pch.min_aggregate_time = std::chrono::milliseconds(1);
+                templates.min_instantiation_count = 1;
+                templates.min_total_time = std::chrono::milliseconds(1);
+                unity_build.min_files_threshold = 2;
+                unity_build.min_group_total_time = std::chrono::milliseconds(1);
+                headers.min_parse_time = std::chrono::milliseconds(1);
+                headers.min_includers_for_split = 1;
+                forward_decl.min_parse_time = std::chrono::milliseconds(1);
+                codegen.long_codegen_threshold = std::chrono::milliseconds(1);
+                unreal.min_module_files_for_unity = 1;
+                unreal.min_module_include_time_for_pch = std::chrono::milliseconds(1);
             }
 
             if (auto val = args.get_int("max-files")) {

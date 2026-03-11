@@ -1141,7 +1141,8 @@ namespace bha::lsp
         const fs::path& project_root,
         const std::optional<fs::path>& build_dir,
         bool rebuild,
-        const ProgressCallback& on_progress
+        const ProgressCallback& on_progress,
+        const AnalyzeSuggestionOptions& analyze_options
     ) {
         auto start = std::chrono::steady_clock::now();
 
@@ -1295,6 +1296,39 @@ namespace bha::lsp
         suggester_opts.include_unsafe = config_.include_unsafe_suggestions;
         suggester_opts.enable_consolidation = true;
         suggester_opts.compile_commands_path = compile_commands_path;
+        if (!analyze_options.enabled_types.empty()) {
+            suggester_opts.enabled_types = analyze_options.enabled_types;
+        }
+        if (analyze_options.include_unsafe.has_value()) {
+            suggester_opts.include_unsafe = *analyze_options.include_unsafe;
+        }
+        if (analyze_options.min_confidence.has_value()) {
+            suggester_opts.min_confidence = *analyze_options.min_confidence;
+        }
+        if (analyze_options.enable_consolidation.has_value()) {
+            suggester_opts.enable_consolidation = *analyze_options.enable_consolidation;
+        }
+        if (analyze_options.relax_heuristics) {
+            auto& pch = suggester_opts.heuristics.pch;
+            auto& templates = suggester_opts.heuristics.templates;
+            auto& headers = suggester_opts.heuristics.headers;
+            auto& unity = suggester_opts.heuristics.unity_build;
+            auto& forward_decl = suggester_opts.heuristics.forward_decl;
+            auto& codegen = suggester_opts.heuristics.codegen;
+            auto& unreal = suggester_opts.heuristics.unreal;
+            pch.min_include_count = 1;
+            pch.min_aggregate_time = std::chrono::milliseconds(1);
+            templates.min_instantiation_count = 1;
+            templates.min_total_time = std::chrono::milliseconds(1);
+            headers.min_parse_time = std::chrono::milliseconds(1);
+            headers.min_includers_for_split = 1;
+            unity.min_files_threshold = 2;
+            unity.min_group_total_time = std::chrono::milliseconds(1);
+            forward_decl.min_parse_time = std::chrono::milliseconds(1);
+            codegen.long_codegen_threshold = std::chrono::milliseconds(1);
+            unreal.min_module_files_for_unity = 1;
+            unreal.min_module_include_time_for_pch = std::chrono::milliseconds(1);
+        }
         if (should_force_unreal_mode(project_root, build_trace)) {
             suggester_opts.heuristics.unreal.enabled = true;
         }
@@ -1663,6 +1697,72 @@ namespace bha::lsp
             }
         }
 
+        result.success = true;
+        return result;
+    }
+
+    ApplySuggestionResult SuggestionManager::apply_edit_bundle(
+        const std::vector<bha::TextEdit>& edits,
+        const bool create_backup_flag
+    ) {
+        ApplySuggestionResult result;
+        result.success = false;
+
+        if (edits.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "No edits provided";
+            result.errors.push_back(std::move(diag));
+            return result;
+        }
+
+        std::vector<fs::path> files_to_backup;
+        std::unordered_set<std::string> seen;
+        files_to_backup.reserve(edits.size());
+        for (const auto& edit : edits) {
+            const fs::path file = edit.file;
+            const std::string key = file.lexically_normal().generic_string();
+            if (!seen.insert(key).second) {
+                continue;
+            }
+            files_to_backup.push_back(file);
+        }
+
+        if (create_backup_flag && !files_to_backup.empty()) {
+            result.backup_id = create_backup(files_to_backup);
+        }
+
+        bha::Suggestion synthetic;
+        synthetic.title = "Direct text edit bundle";
+        synthetic.type = bha::SuggestionType::IncludeRemoval;
+        synthetic.is_safe = true;
+        synthetic.edits = edits;
+        synthetic.application_mode = bha::SuggestionApplicationMode::DirectEdits;
+
+        std::vector<fs::path> changed_files;
+        if (!apply_file_changes(synthetic, changed_files)) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "Failed to apply edit bundle";
+            result.errors.push_back(std::move(diag));
+            if (result.backup_id) {
+                if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
+                    for (auto& revert_error : revert.errors) {
+                        result.errors.push_back(std::move(revert_error));
+                    }
+                    Diagnostic rollback_diag;
+                    rollback_diag.severity = DiagnosticSeverity::Error;
+                    rollback_diag.message = "Automatic rollback failed after edit-bundle apply failure";
+                    rollback_diag.source = "bha-lsp";
+                    result.errors.push_back(std::move(rollback_diag));
+                }
+            }
+            return result;
+        }
+
+        for (const auto& file : changed_files) {
+            result.changed_files.push_back(file.string());
+        }
         result.success = true;
         return result;
     }

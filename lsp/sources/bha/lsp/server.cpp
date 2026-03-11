@@ -1,6 +1,7 @@
 #include "bha/lsp/server.hpp"
 #include "bha/lsp/uri.hpp"
 #include "bha/build_systems/adapter.hpp"
+#include "bha/suggestions/suggester_catalog.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include <sstream>
 #include <iostream>
@@ -13,6 +14,7 @@
 #include <fstream>
 #include <iomanip>
 #include <regex>
+#include <unordered_set>
 #ifndef _WIN32
 #include <sys/wait.h>
 #endif
@@ -50,6 +52,14 @@ namespace bha::lsp
         escaped.push_back('\'');
         return escaped;
 #endif
+    }
+
+    std::optional<bha::SuggestionType> parse_suggestion_type_token(const std::string& token) {
+        return suggestions::parse_suggestion_type_id(token);
+    }
+
+    std::string suggestion_type_token(const bha::SuggestionType type) {
+        return suggestions::suggestion_type_id(type);
     }
 
     json build_trust_loop_payload(
@@ -697,10 +707,14 @@ namespace bha::lsp
                 {"commands", json::array({
                     "bha.analyze",
                     "bha.applySuggestion",
+                    "bha.applyEdits",
                     "bha.applyAllSuggestions",
                     "bha.getSuggestionDetails",
                     "bha.revertChanges",
-                    "bha.showMetrics"
+                    "bha.showMetrics",
+                    "bha.listSuggesters",
+                    "bha.runSuggester",
+                    "bha.explainSuggestion"
                 })}
             }},
             {"experimental", {
@@ -779,6 +793,9 @@ namespace bha::lsp
         if (command == "bha.applySuggestion") {
             return execute_apply_suggestion(args);
         }
+        if (command == "bha.applyEdits") {
+            return execute_apply_edits(args);
+        }
         if (command == "bha.applyAllSuggestions") {
             return execute_apply_all_suggestions(args);
         }
@@ -790,6 +807,15 @@ namespace bha::lsp
         }
         if (command == "bha.showMetrics") {
             return execute_show_metrics(args);
+        }
+        if (command == "bha.listSuggesters") {
+            return execute_list_suggesters(args);
+        }
+        if (command == "bha.runSuggester") {
+            return execute_run_suggester(args);
+        }
+        if (command == "bha.explainSuggestion") {
+            return execute_explain_suggestion(args);
         }
 
         throw std::runtime_error("Unknown command: " + command);
@@ -860,6 +886,35 @@ namespace bha::lsp
 
         bool rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
 
+        AnalyzeSuggestionOptions analyze_options;
+        if (args.contains("enabledTypes") && args["enabledTypes"].is_array()) {
+            for (const auto& item : args["enabledTypes"]) {
+                if (!item.is_string()) {
+                    continue;
+                }
+                if (const auto parsed = parse_suggestion_type_token(item.get<std::string>()); parsed.has_value()) {
+                    if (std::ranges::find(analyze_options.enabled_types, *parsed) == analyze_options.enabled_types.end()) {
+                        analyze_options.enabled_types.push_back(*parsed);
+                    }
+                }
+            }
+        }
+        if (args.contains("includeUnsafe") && args["includeUnsafe"].is_boolean()) {
+            analyze_options.include_unsafe = args["includeUnsafe"].get<bool>();
+        }
+        if (args.contains("minConfidence") && args["minConfidence"].is_number()) {
+            analyze_options.min_confidence = args["minConfidence"].get<double>();
+        }
+        if (args.contains("disableConsolidation") && args["disableConsolidation"].is_boolean()) {
+            analyze_options.enable_consolidation = !args["disableConsolidation"].get<bool>();
+        }
+        if (args.contains("explain") && args["explain"].is_boolean() && args["explain"].get<bool>()) {
+            analyze_options.relax_heuristics = true;
+            analyze_options.include_unsafe = true;
+            analyze_options.min_confidence = 0.0;
+            analyze_options.enable_consolidation = false;
+        }
+
         ProgressToken token = create_progress_token();
 
         WorkDoneProgressBegin begin_progress;
@@ -884,7 +939,8 @@ namespace bha::lsp
                     json report_json;
                     to_json(report_json, report);
                     send_progress(token, report_json);
-                }
+                },
+                analyze_options
             );
 
             WorkDoneProgressEnd end_progress;
@@ -923,6 +979,260 @@ namespace bha::lsp
             send_progress(token, end_json);
             throw;
         }
+    }
+
+    json LSPServer::execute_list_suggesters(const json&) const {
+        json suggesters = json::array();
+        for (const auto& descriptor : suggestions::list_suggester_descriptors()) {
+            json supported_types = json::array();
+            for (const auto type : descriptor.supported_types) {
+                supported_types.push_back(suggestion_type_token(type));
+            }
+            json input_requirements = json::array();
+            for (const auto& requirement : descriptor.input_requirements) {
+                input_requirements.push_back(requirement);
+            }
+            suggesters.push_back({
+                {"id", descriptor.id},
+                {"className", descriptor.class_name},
+                {"description", descriptor.description},
+                {"supportedTypes", supported_types},
+                {"inputRequirements", input_requirements},
+                {"potentiallyAutoApplicable", descriptor.potentially_auto_applicable},
+                {"supportsExplainMode", descriptor.supports_explain_mode}
+            });
+        }
+
+        return {
+            {"suggesters", suggesters}
+        };
+    }
+
+    json LSPServer::execute_run_suggester(const json& args) {
+        if (!args.contains("suggester") || !args["suggester"].is_string()) {
+            throw std::runtime_error("Missing suggester");
+        }
+
+        const std::string requested = args["suggester"].get<std::string>();
+        const auto descriptor = suggestions::find_suggester_descriptor(requested);
+        if (!descriptor.has_value()) {
+            throw std::runtime_error("Unknown suggester: " + requested);
+        }
+
+        json forwarded = args;
+        json enabled_types = json::array();
+        for (const auto type : descriptor->supported_types) {
+            enabled_types.push_back(suggestion_type_token(type));
+        }
+        forwarded["enabledTypes"] = enabled_types;
+
+        json result = execute_analyze(forwarded);
+        result["requestedSuggester"] = descriptor->id;
+        result["requestedSuggesterClass"] = descriptor->class_name;
+        return result;
+    }
+
+    json LSPServer::execute_explain_suggestion(const json& args) const {
+        if (args.contains("suggestionId") && args["suggestionId"].is_string()) {
+            return execute_get_suggestion_details(args);
+        }
+        if (!args.contains("suggester") || !args["suggester"].is_string()) {
+            throw std::runtime_error("Missing suggester");
+        }
+
+        const std::string requested = args["suggester"].get<std::string>();
+        const auto descriptor = suggestions::find_suggester_descriptor(requested);
+        if (!descriptor.has_value()) {
+            throw std::runtime_error("Unknown suggester: " + requested);
+        }
+
+        json supported_types = json::array();
+        for (const auto type : descriptor->supported_types) {
+            supported_types.push_back(suggestion_type_token(type));
+        }
+        json input_requirements = json::array();
+        for (const auto& requirement : descriptor->input_requirements) {
+            input_requirements.push_back(requirement);
+        }
+
+        return {
+            {"id", descriptor->id},
+            {"className", descriptor->class_name},
+            {"description", descriptor->description},
+            {"supportedTypes", supported_types},
+            {"inputRequirements", input_requirements},
+            {"potentiallyAutoApplicable", descriptor->potentially_auto_applicable},
+            {"supportsExplainMode", descriptor->supports_explain_mode},
+            {"usage", {
+                {"command", "bha.runSuggester"},
+                {"arguments", {
+                    {"suggester", descriptor->id},
+                    {"projectRoot", "<path>"},
+                    {"buildDir", "<path>"},
+                    {"rebuild", false},
+                    {"explain", true}
+                }}
+            }}
+        };
+    }
+
+    json LSPServer::execute_apply_edits(const json& args) {
+        if (!suggestion_manager_) {
+            throw std::runtime_error("Server not fully initialized");
+        }
+
+        std::string project_root = workspace_root_;
+        if (args.contains("projectRoot") && args["projectRoot"].is_string()) {
+            project_root = args["projectRoot"].get<std::string>();
+        }
+        const fs::path project_root_path = project_root.empty()
+            ? fs::path{}
+            : (project_root.starts_with("file://") ? uri::uri_to_path(project_root) : fs::path(project_root));
+
+        auto read_size = [](const json& item, const char* snake, const char* camel, std::size_t fallback = 0) {
+            if (item.contains(snake) && item[snake].is_number_unsigned()) {
+                return item[snake].get<std::size_t>();
+            }
+            if (item.contains(camel) && item[camel].is_number_unsigned()) {
+                return item[camel].get<std::size_t>();
+            }
+            return fallback;
+        };
+
+        std::vector<bha::TextEdit> edits;
+        auto append_edits_array = [&](const json& edit_array) {
+            if (!edit_array.is_array()) {
+                return;
+            }
+            for (const auto& item : edit_array) {
+                if (!item.is_object()) {
+                    continue;
+                }
+
+                std::string file;
+                if (item.contains("file") && item["file"].is_string()) {
+                    file = item["file"].get<std::string>();
+                } else if (item.contains("path") && item["path"].is_string()) {
+                    file = item["path"].get<std::string>();
+                }
+                if (file.empty()) {
+                    continue;
+                }
+
+                bha::TextEdit edit;
+                fs::path edit_file = file.starts_with("file://") ? uri::uri_to_path(file) : fs::path(file);
+                if (edit_file.is_relative() && !project_root_path.empty()) {
+                    edit_file = (project_root_path / edit_file).lexically_normal();
+                }
+                edit.file = edit_file;
+                edit.start_line = read_size(item, "start_line", "startLine", 0);
+                edit.start_col = read_size(item, "start_col", "startCol", 0);
+                edit.end_line = read_size(item, "end_line", "endLine", edit.start_line);
+                edit.end_col = read_size(item, "end_col", "endCol", edit.start_col);
+                if (item.contains("new_text") && item["new_text"].is_string()) {
+                    edit.new_text = item["new_text"].get<std::string>();
+                } else if (item.contains("newText") && item["newText"].is_string()) {
+                    edit.new_text = item["newText"].get<std::string>();
+                }
+                edits.push_back(std::move(edit));
+            }
+        };
+
+        append_edits_array(args.value("edits", json::array()));
+        append_edits_array(args.value("textEdits", json::array()));
+        append_edits_array(args.value("text_edits", json::array()));
+        if (args.contains("suggestions") && args["suggestions"].is_array()) {
+            for (const auto& suggestion : args["suggestions"]) {
+                append_edits_array(suggestion.value("edits", json::array()));
+                append_edits_array(suggestion.value("textEdits", json::array()));
+                append_edits_array(suggestion.value("text_edits", json::array()));
+            }
+        }
+
+        if (edits.empty()) {
+            throw std::runtime_error("No valid edits provided");
+        }
+
+        bool skip_rebuild = !config_.rebuild_after_apply;
+        if (args.contains("skipRebuild")) {
+            skip_rebuild = args["skipRebuild"].get<bool>();
+        }
+
+        auto result = suggestion_manager_->apply_edit_bundle(edits, true);
+
+        auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
+            json out = json::array();
+            for (const auto& diagnostic : diagnostics) {
+                json item;
+                to_json(item, diagnostic);
+                out.push_back(std::move(item));
+            }
+            return out;
+        };
+
+        const bool build_validation_requested = config_.rebuild_after_apply && !skip_rebuild;
+        bool build_validation_ran = false;
+        bool build_validation_success = true;
+        std::vector<Diagnostic> build_errors;
+
+        json rollback_json = {
+            {"attempted", false},
+            {"success", false},
+            {"reason", "not-required"},
+            {"restoredFiles", json::array()},
+            {"errors", json::array()}
+        };
+
+        if (result.success && build_validation_requested) {
+            std::optional<int> measured_rebuild_duration_ms;
+            build_validation_ran = true;
+            build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
+            if (!build_validation_success) {
+                result.success = false;
+                result.errors.insert(result.errors.end(), build_errors.begin(), build_errors.end());
+                rollback_json["reason"] = "build-failed";
+
+                if (!config_.rollback_on_build_failure) {
+                    rollback_json["reason"] = "rollback-disabled";
+                } else if (!result.backup_id.has_value() || result.backup_id->empty()) {
+                    rollback_json["reason"] = "no-backup";
+                } else {
+                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
+                    rollback_json["attempted"] = true;
+                    rollback_json["success"] = rollback_result.success;
+                    rollback_json["restoredFiles"] = rollback_result.restored_files;
+                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
+                    rollback_json["reason"] = rollback_result.success ? "rollback-succeeded" : "rollback-failed";
+                }
+            }
+        } else if (!build_validation_requested) {
+            rollback_json["reason"] = "validation-skipped";
+        }
+
+        json errors_json = json::array();
+        for (const auto& err : result.errors) {
+            json err_json;
+            to_json(err_json, err);
+            errors_json.push_back(err_json);
+        }
+
+        return {
+            {"success", result.success},
+            {"changedFiles", result.changed_files},
+            {"errors", errors_json},
+            {"backupId", result.backup_id.value_or("")},
+            {"buildValidation", {
+                {"requested", build_validation_requested},
+                {"ran", build_validation_ran},
+                {"success", build_validation_success},
+                {"errorCount", build_errors.size()}
+            }},
+            {"rollback", rollback_json},
+            {"trustLoop", {
+                {"available", false},
+                {"reason", "manual-edits"}
+            }}
+        };
     }
 
     json LSPServer::execute_apply_suggestion(const json& args) {

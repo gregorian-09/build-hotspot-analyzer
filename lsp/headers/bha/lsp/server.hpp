@@ -131,10 +131,14 @@ namespace bha::lsp
 
         json execute_analyze(const json& args);
         json execute_apply_suggestion(const json& args);
+        json execute_apply_edits(const json& args);
         json execute_apply_all_suggestions(const json& args);
         json execute_revert_changes(const json& args) const;
         json execute_get_suggestion_details(const json& args) const;
         json execute_show_metrics(const json& args) const;
+        json execute_list_suggesters(const json& args) const;
+        json execute_run_suggester(const json& args);
+        json execute_explain_suggestion(const json& args) const;
 
         bool run_build_validation(std::vector<Diagnostic>& errors, std::optional<int>& measured_duration_ms) const;
         static std::string detect_build_command(const std::filesystem::path& project_root);
