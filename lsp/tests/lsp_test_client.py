@@ -36,6 +36,7 @@ class LSPClient:
         self.process: Optional[subprocess.Popen] = None
         self.request_id = 0
         self.stderr_log: Optional[Any] = None
+        self.debug_requests = str(os.environ.get("BHA_LSP_TEST_CLIENT_DEBUG", "0")).lower() in {"1", "true", "yes"}
 
     def start(self):
         log_path = self.stderr_path or Path("/tmp/bha-lsp.err")
@@ -66,7 +67,7 @@ class LSPClient:
         if not self.process or not self.process.stdin:
             raise RuntimeError("Server not started")
 
-        if message.get("method") == "workspace/executeCommand":
+        if self.debug_requests and message.get("method") == "workspace/executeCommand":
             params = message.get("params", {})
             if isinstance(params, dict) and params.get("command") == "bha.analyze":
                 print(f"  LSP request: {json.dumps(message, indent=2)}")
@@ -367,6 +368,7 @@ PROJECT_CMAKE_FLAGS = {
     "yaml-cpp": "-DYAML_BUILD_SHARED_LIBS=OFF -DYAML_CPP_BUILD_TESTS=OFF",
     "libjpeg-turbo": "-DENABLE_SHARED=OFF -DWITH_TURBOJPEG=OFF",
     "glfw": "-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF",
+    "opencv": "-DBUILD_LIST=core,imgproc,imgcodecs -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_opencv_apps=OFF",
 }
 
 PROJECT_MAKE_FLAGS = {
@@ -387,6 +389,7 @@ PROJECT_MESON_FLAGS = {
 
 PROJECT_ANALYSIS_TIMEOUTS = {
     "abseil": 1000,
+    "opencv": 1800,
     "rocksdb": 1000,
 }
 

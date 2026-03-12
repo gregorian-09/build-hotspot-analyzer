@@ -1589,6 +1589,7 @@ namespace bha::lsp
             {"appliedCount", applied_count},
             {"skippedCount", skipped_count},
             {"failedCount", errors.size()},
+            {"appliedSuggestionIds", apply_all_result.applied_suggestion_ids},
             {"changedFiles", changed_files},
             {"errors", errors_json},
             {"backupId", backup_id},

@@ -17,3 +17,4 @@ make/*/*/output/
 meson/*/*/build/
 meson/*/*/repo/
 meson/*/*/output/
+benchmarks/
