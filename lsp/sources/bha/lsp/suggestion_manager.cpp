@@ -489,6 +489,29 @@ namespace bha::lsp
         return "Manual review only";
     }
 
+    bool has_external_refactor_payload(const bha::Suggestion& suggestion) {
+        return suggestion.type == bha::SuggestionType::PIMPLPattern &&
+               suggestion.refactor_class_name.has_value() &&
+               suggestion.refactor_compile_commands_path.has_value() &&
+               !suggestion.secondary_files.empty();
+    }
+
+    bool is_auto_applicable_suggestion(const bha::Suggestion& suggestion) {
+        switch (bha::resolve_application_mode(suggestion)) {
+            case bha::SuggestionApplicationMode::DirectEdits:
+                return suggestion.is_safe && !suggestion.edits.empty();
+            case bha::SuggestionApplicationMode::ExternalRefactor:
+                if (suggestion.auto_apply_blocked_reason &&
+                    !suggestion.auto_apply_blocked_reason->empty()) {
+                    return false;
+                }
+                return has_external_refactor_payload(suggestion);
+            case bha::SuggestionApplicationMode::Advisory:
+                return false;
+        }
+        return false;
+    }
+
     std::string format_application_guidance(const bha::Suggestion& suggestion) {
         if (suggestion.application_guidance && !suggestion.application_guidance->empty()) {
             return *suggestion.application_guidance;
@@ -2484,7 +2507,7 @@ namespace bha::lsp
         lsp_sug.title = bha_sug.title;
         lsp_sug.description = bha_sug.description;
         lsp_sug.confidence = bha_sug.confidence;
-        lsp_sug.auto_applicable = bha_sug.is_safe;
+        lsp_sug.auto_applicable = is_auto_applicable_suggestion(bha_sug);
         lsp_sug.application_mode = std::string(
             bha::to_string(bha::resolve_application_mode(bha_sug))
         );
@@ -2621,7 +2644,7 @@ namespace bha::lsp
         std::vector<std::string> ids_to_apply;
 
         for (const auto& [id, bha_sug] : bha_suggestions_) {
-            if (safe_only && !bha_sug.is_safe) {
+            if (safe_only && !is_auto_applicable_suggestion(bha_sug)) {
                 result.skipped_count++;
                 continue;
             }

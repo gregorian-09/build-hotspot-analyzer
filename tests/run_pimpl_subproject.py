@@ -200,6 +200,15 @@ def validate_variant(
     if not expect_safe and safe_pimpl:
         print("error: expected no strict/safe PIMPL suggestion for this variant")
         return False
+    if not expect_safe:
+        advisory_pimpl = [
+            s for s in pimpl_suggestions
+            if s.get("application_mode") == "advisory"
+        ]
+        if advisory_pimpl:
+            print("error: expected non-safe PIMPL suggestions to use external-refactor, found advisory mode")
+            print(json.dumps(advisory_pimpl[0], indent=2))
+            return False
 
     sys.path.insert(0, str((repo_root / "lsp" / "tests").resolve()))
     from lsp_test_client import (
@@ -236,7 +245,15 @@ def validate_variant(
             if pimpl_ids:
                 print("error: LSP unexpectedly marked PIMPL as auto-applicable")
                 return False
-            print(f"ok: expected advisory-only PIMPL classification for '{label}'")
+            advisory = [
+                suggestion for suggestion in analysis.get("suggestions", [])
+                if "PIMPL" in suggestion.get("title", "") and suggestion.get("applicationMode") == "advisory"
+            ]
+            if advisory:
+                print("error: expected non-safe PIMPL suggestions to avoid advisory mode in LSP")
+                print(json.dumps(advisory[0], indent=2))
+                return False
+            print(f"ok: expected non-safe external-refactor PIMPL classification for '{label}'")
             return True
         if not pimpl_ids:
             print("error: LSP analysis did not surface a safe PIMPL suggestion")
@@ -337,7 +354,7 @@ def main() -> int:
         ("copy-defaulted", apply_copy_defaulted_variant, True),
         ("shadowed-local", apply_shadowed_local_variant, False),
         ("lambda-body", apply_lambda_variant, False),
-        ("macro-member", apply_macro_member_variant, False),
+        ("macro-member", apply_macro_member_variant, True),
         ("empty-body-noexcept", apply_empty_body_variant, True),
     ]
     for label, mutate_fixture, expect_safe in scenarios:

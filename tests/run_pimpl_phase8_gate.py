@@ -99,7 +99,7 @@ def run_external_apply_runner(repo_root: Path, compiler: str, timeout: int, refa
 
 
 def run_cli_advisory_blocker_check(repo_root: Path, compiler: str, timeout: int) -> int:
-    print("[phase8] checking CLI advisory blocker details...")
+    print("[phase8] checking CLI non-safe mode details...")
     fixture = repo_root / "tests" / "subprojects" / "suggester_pimpl_external_explicit_copy"
     if not fixture.exists():
         print(f"error: missing fixture: {fixture}")
@@ -180,29 +180,28 @@ def run_cli_advisory_blocker_check(repo_root: Path, compiler: str, timeout: int)
         return 1
 
     suggestions = extract_json_array(suggest.stdout)
-    advisory_pimpl = [
+    external_pimpl = [
         s for s in suggestions
-        if s.get("type") == "PIMPL Pattern" and s.get("application_mode") == "advisory"
+        if s.get("type") == "PIMPL Pattern" and s.get("application_mode") == "external-refactor"
     ]
-    if not advisory_pimpl:
-        print("error: expected advisory PIMPL suggestion in CLI output")
+    if not external_pimpl:
+        print("error: expected external-refactor PIMPL suggestion in CLI output")
         print(json.dumps(suggestions, indent=2))
         return 1
 
-    blocked_reason = advisory_pimpl[0].get("auto_apply_blocked_reason", "")
-    app_summary = advisory_pimpl[0].get("application_summary", "")
-    app_guidance = advisory_pimpl[0].get("application_guidance", "")
-    if not blocked_reason or not app_summary or not app_guidance:
-        print("error: advisory metadata missing in CLI output")
-        print(json.dumps(advisory_pimpl[0], indent=2))
+    app_summary = external_pimpl[0].get("application_summary", "")
+    app_guidance = external_pimpl[0].get("application_guidance", "")
+    if not app_summary or not app_guidance:
+        print("error: external-refactor metadata missing in CLI output")
+        print(json.dumps(external_pimpl[0], indent=2))
         return 1
 
-    print("ok: CLI advisory metadata present")
+    print("ok: CLI non-safe mode metadata present")
     return 0
 
 
 def run_lsp_advisory_blocker_check(repo_root: Path, compiler: str, timeout: int, refactor_bin: Path) -> int:
-    print("[phase8] checking LSP advisory blocker details...")
+    print("[phase8] checking LSP non-safe mode details...")
     fixture = repo_root / "tests" / "subprojects" / "suggester_pimpl_external_explicit_copy"
     if not fixture.exists():
         print(f"error: missing fixture: {fixture}")
@@ -283,18 +282,18 @@ def run_lsp_advisory_blocker_check(repo_root: Path, compiler: str, timeout: int,
         if not analysis:
             return 1
 
-        advisory_pimpl = [
+        external_pimpl = [
             s for s in analysis.get("suggestions", [])
-            if "PIMPL" in s.get("title", "") and s.get("applicationMode") == "advisory"
+            if "PIMPL" in s.get("title", "") and s.get("applicationMode") == "external-refactor"
         ]
-        if not advisory_pimpl:
-            print("error: expected advisory PIMPL suggestion in LSP output")
+        if not external_pimpl:
+            print("error: expected external-refactor PIMPL suggestion in LSP output")
             print(json.dumps(analysis, indent=2))
             return 1
 
-        first = advisory_pimpl[0]
-        if not first.get("applicationSummary") or not first.get("applicationGuidance") or not first.get("autoApplyBlockedReason"):
-            print("error: advisory metadata missing in LSP output")
+        first = external_pimpl[0]
+        if not first.get("applicationSummary") or not first.get("applicationGuidance"):
+            print("error: external-refactor metadata missing in LSP output")
             print(json.dumps(first, indent=2))
             return 1
     finally:
@@ -303,7 +302,7 @@ def run_lsp_advisory_blocker_check(repo_root: Path, compiler: str, timeout: int,
         finally:
             client.stop()
 
-    print("ok: LSP advisory metadata present")
+    print("ok: LSP non-safe mode metadata present")
     return 0
 
 

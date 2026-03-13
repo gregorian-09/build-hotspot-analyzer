@@ -450,6 +450,7 @@ class BenchmarkRunner:
                 "confidence": detail.get("confidence", suggestion.get("confidence")),
                 "autoApplicable": bool(detail.get("autoApplicable", False)),
                 "applicationMode": detail.get("applicationMode", ""),
+                "autoApplyBlockedReason": detail.get("autoApplyBlockedReason"),
                 "estimatedImpact": detail.get("estimatedImpact", suggestion.get("estimatedImpact")),
                 "filesToCreate": detail.get("filesToCreate", []),
                 "filesToModify": detail.get("filesToModify", []),
@@ -522,7 +523,7 @@ class BenchmarkRunner:
         return filtered
 
     @staticmethod
-    def _extract_auto_direct_suggestions(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_auto_apply_candidates(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
         result: List[Dict[str, Any]] = []
         suggestions = payload.get("suggestions")
         if not isinstance(suggestions, list):
@@ -536,23 +537,26 @@ class BenchmarkRunner:
             if not bool(item.get("autoApplicable", False)):
                 continue
             mode = str(item.get("applicationMode") or "").strip().lower()
-            if mode != "direct-edits":
+            if mode not in {"direct-edits", "external-refactor"}:
                 continue
-            edits: List[Dict[str, Any]] = []
-            for key in ("textEdits", "text_edits", "edits"):
-                value = item.get(key)
-                if isinstance(value, list):
-                    for edit in value:
-                        if isinstance(edit, dict) and ("file" in edit or "path" in edit):
-                            edits.append(edit)
-            if not edits:
-                continue
-            result.append({
+            candidate: Dict[str, Any] = {
                 "id": sid,
                 "title": str(item.get("title") or ""),
                 "type": item.get("type"),
-                "edits": edits,
-            })
+                "mode": mode,
+            }
+            if mode == "direct-edits":
+                edits: List[Dict[str, Any]] = []
+                for key in ("textEdits", "text_edits", "edits"):
+                    value = item.get(key)
+                    if isinstance(value, list):
+                        for edit in value:
+                            if isinstance(edit, dict) and ("file" in edit or "path" in edit):
+                                edits.append(edit)
+                if not edits:
+                    continue
+                candidate["edits"] = edits
+            result.append(candidate)
         return result
 
     @staticmethod
@@ -598,6 +602,27 @@ class BenchmarkRunner:
             return None, f"apply-timeout-{self.args.apply_timeout}s"
         if not response or "result" not in response:
             return None, "apply-edits-command-failed"
+        return response["result"] or {}, None
+
+    def _apply_suggestion(
+        self,
+        client: LSPClient,
+        suggestion_id: str,
+    ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+        response, timed_out = execute_command_with_timeout(
+            client,
+            "bha.applySuggestion",
+            [{
+                "suggestionId": suggestion_id,
+                "skipConsent": True,
+                "skipRebuild": False,
+            }],
+            self.args.apply_timeout,
+        )
+        if timed_out:
+            return None, f"apply-timeout-{self.args.apply_timeout}s"
+        if not response or "result" not in response:
+            return None, "apply-suggestion-command-failed"
         return response["result"] or {}, None
 
     def _resolve_replay_file(self, case: ProjectCase) -> Tuple[Optional[Path], bool]:
@@ -715,11 +740,11 @@ class BenchmarkRunner:
                 except Exception:
                     details_payload = {}
 
-            candidates = self._extract_auto_direct_suggestions(details_payload)
+            candidates = self._extract_auto_apply_candidates(details_payload)
             candidates = self._filter_candidates_for_safety(candidates)
             if not candidates:
                 record["status"] = "no_suggestions"
-                record["reason"] = "no-safe-auto-direct-suggestions"
+                record["reason"] = "no-safe-auto-applicable-suggestions"
                 record["postApplyTimeMs"] = record["baselineTimeMs"]
                 record["deltaMs"] = 0
                 record["deltaPercent"] = 0.0
@@ -727,9 +752,8 @@ class BenchmarkRunner:
                 self.discover_status[project_key(case)] = record["status"]
                 return self._finalize_record(record, start)
 
-            bulk_edits: List[Dict[str, Any]] = []
-            for candidate in candidates:
-                bulk_edits.extend(candidate["edits"])
+            direct_candidates = [c for c in candidates if str(c.get("mode")) == "direct-edits"]
+            external_candidates = [c for c in candidates if str(c.get("mode")) == "external-refactor"]
 
             applied_ids: Set[str] = set()
             failed_ids: Set[str] = set()
@@ -738,40 +762,73 @@ class BenchmarkRunner:
             last_build_validation = record["buildValidation"]
             rollback_triggered = False
 
-            bulk_result, bulk_error = self._apply_edits_batch(client, case, bulk_edits)
-            if bulk_error is None and bulk_result is not None and bool(bulk_result.get("success")):
-                applied_ids = {str(candidate["id"]) for candidate in candidates}
-                backup_id = str(bulk_result.get("backupId") or "")
-                record["backupId"] = backup_id
-                changed_files = {str(path) for path in (bulk_result.get("changedFiles") or []) if isinstance(path, str)}
-                last_build_validation = bulk_result.get("buildValidation") or last_build_validation
-            else:
-                if bulk_error:
-                    apply_errors.append({"message": bulk_error})
-                elif bulk_result is not None:
-                    apply_errors.extend(bulk_result.get("errors") or [])
-                    rollback_triggered = rollback_triggered or bool((bulk_result.get("rollback") or {}).get("attempted"))
-                for candidate in candidates:
-                    candidate_result, candidate_error = self._apply_edits_batch(client, case, candidate["edits"])
-                    if candidate_error:
-                        failed_ids.add(str(candidate["id"]))
-                        apply_errors.append({"message": candidate_error, "suggestionId": candidate["id"]})
-                        continue
-                    if not candidate_result:
-                        failed_ids.add(str(candidate["id"]))
-                        apply_errors.append({"message": "apply-edits-empty-result", "suggestionId": candidate["id"]})
-                        continue
-                    if bool(candidate_result.get("success")):
-                        applied_ids.add(str(candidate["id"]))
-                        backup_id = str(candidate_result.get("backupId") or backup_id)
-                        for path in (candidate_result.get("changedFiles") or []):
-                            if isinstance(path, str):
-                                changed_files.add(path)
-                        last_build_validation = candidate_result.get("buildValidation") or last_build_validation
-                    else:
-                        failed_ids.add(str(candidate["id"]))
-                        apply_errors.extend(candidate_result.get("errors") or [])
-                        rollback_triggered = rollback_triggered or bool((candidate_result.get("rollback") or {}).get("attempted"))
+            if direct_candidates:
+                bulk_edits: List[Dict[str, Any]] = []
+                for candidate in direct_candidates:
+                    bulk_edits.extend(candidate.get("edits", []))
+
+                bulk_result, bulk_error = self._apply_edits_batch(client, case, bulk_edits)
+                if bulk_error is None and bulk_result is not None and bool(bulk_result.get("success")):
+                    applied_ids.update({str(candidate["id"]) for candidate in direct_candidates})
+                    backup_id = str(bulk_result.get("backupId") or "")
+                    record["backupId"] = backup_id
+                    changed_files.update(
+                        str(path) for path in (bulk_result.get("changedFiles") or []) if isinstance(path, str)
+                    )
+                    last_build_validation = bulk_result.get("buildValidation") or last_build_validation
+                else:
+                    if bulk_error:
+                        apply_errors.append({"message": bulk_error})
+                    elif bulk_result is not None:
+                        apply_errors.extend(bulk_result.get("errors") or [])
+                        rollback_triggered = rollback_triggered or bool((bulk_result.get("rollback") or {}).get("attempted"))
+                    for candidate in direct_candidates:
+                        edits = candidate.get("edits") or []
+                        candidate_result, candidate_error = self._apply_edits_batch(client, case, edits)
+                        if candidate_error:
+                            failed_ids.add(str(candidate["id"]))
+                            apply_errors.append({"message": candidate_error, "suggestionId": candidate["id"]})
+                            continue
+                        if not candidate_result:
+                            failed_ids.add(str(candidate["id"]))
+                            apply_errors.append({"message": "apply-edits-empty-result", "suggestionId": candidate["id"]})
+                            continue
+                        if bool(candidate_result.get("success")):
+                            applied_ids.add(str(candidate["id"]))
+                            backup_id = str(candidate_result.get("backupId") or backup_id)
+                            for path in (candidate_result.get("changedFiles") or []):
+                                if isinstance(path, str):
+                                    changed_files.add(path)
+                            last_build_validation = candidate_result.get("buildValidation") or last_build_validation
+                        else:
+                            failed_ids.add(str(candidate["id"]))
+                            apply_errors.extend(candidate_result.get("errors") or [])
+                            rollback_triggered = rollback_triggered or bool((candidate_result.get("rollback") or {}).get("attempted"))
+
+            for candidate in external_candidates:
+                suggestion_id = str(candidate.get("id") or "")
+                if not suggestion_id:
+                    continue
+                candidate_result, candidate_error = self._apply_suggestion(client, suggestion_id)
+                if candidate_error:
+                    failed_ids.add(suggestion_id)
+                    apply_errors.append({"message": candidate_error, "suggestionId": suggestion_id})
+                    continue
+                if not candidate_result:
+                    failed_ids.add(suggestion_id)
+                    apply_errors.append({"message": "apply-suggestion-empty-result", "suggestionId": suggestion_id})
+                    continue
+                if bool(candidate_result.get("success")):
+                    applied_ids.add(suggestion_id)
+                    backup_id = str(candidate_result.get("backupId") or backup_id)
+                    for path in (candidate_result.get("changedFiles") or []):
+                        if isinstance(path, str):
+                            changed_files.add(path)
+                    last_build_validation = candidate_result.get("buildValidation") or last_build_validation
+                else:
+                    failed_ids.add(suggestion_id)
+                    apply_errors.extend(candidate_result.get("errors") or [])
+                    rollback_triggered = rollback_triggered or bool((candidate_result.get("rollback") or {}).get("attempted"))
 
             record["backupId"] = backup_id
             record["suggestionsApplied"] = len(applied_ids)

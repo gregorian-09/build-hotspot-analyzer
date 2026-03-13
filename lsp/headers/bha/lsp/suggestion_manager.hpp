@@ -158,7 +158,7 @@ namespace bha::lsp
         /**
          * Apply all suggestions from the last analysis.
          * @param min_priority Optional minimum priority filter (e.g., "high", "medium")
-         * @param safe_only If true, only apply suggestions marked as safe
+         * @param safe_only If true, only apply suggestions that expose an automatic apply path
          * @return Result with counts and changed files
          */
         ApplyAllResult apply_all_suggestions(

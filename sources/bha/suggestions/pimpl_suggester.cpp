@@ -2873,22 +2873,6 @@ namespace bha::suggestions
                     search_from = close + 1;
                 }
             };
-            const auto has_macro_invocation = [](const std::string& text) {
-                static const std::regex macro_call_regex(R"(\b[A-Z_][A-Z0-9_]*\s*\()");
-                return std::regex_search(text, macro_call_regex);
-            };
-            const auto contains_private_member_name = [&class_info](const std::string& text) {
-                for (const auto& member : class_info.members) {
-                    if (!member.is_private || member.is_method || member.name.empty()) {
-                        continue;
-                    }
-                    const std::regex member_name_regex("\\b" + member.name + "\\b");
-                    if (std::regex_search(text, member_name_regex)) {
-                        return true;
-                    }
-                }
-                return false;
-            };
 
             for (std::size_t i = 0; i < src_lines.size(); ++i) {
                 std::string updated = src_lines[i];
@@ -2923,10 +2907,6 @@ namespace bha::suggestions
                             return std::nullopt;
                         }
                     }
-                    if (has_macro_invocation(updated) && contains_private_member_name(updated)) {
-                        return std::nullopt;
-                    }
-
                     bool changed = false;
                     for (const auto& member : class_info.members) {
                         if (!member.is_private || member.is_method || member.name.empty()) {
@@ -3663,28 +3643,11 @@ namespace bha::suggestions
 
             const bool supports_external_refactor =
                 class_info.has_value() && bha::refactor::supports_pimpl_external_refactor(eligibility);
-
-            suggestion.is_safe = !suggestion.edits.empty();
-            if (suggestion.is_safe) {
-                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-                suggestion.application_summary = "Auto-apply via direct text edits";
-                suggestion.application_guidance =
-                    "BHA can apply concrete text edits, rebuild-validate the result, and roll back from backup if validation fails.";
-            } else if (supports_external_refactor) {
-                suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
-                suggestion.target_file.note = "Semantic refactor tool required: this class is eligible for an AST-driven PIMPL rewrite";
-                if (!suggestion.secondary_files.empty()) {
-                    suggestion.secondary_files.front().note =
-                        "Semantic refactor tool required: preserve the public API while moving private state behind Impl";
-                }
-                suggestion.application_summary = "Auto-apply via semantic refactor tool";
-                suggestion.application_guidance =
-                    "BHA invokes bha-refactor for semantic rewrites, applies replacements, rebuild-validates the result, and rolls back from backup if validation fails.";
-            } else {
-                suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                suggestion.application_summary = "Manual review only";
-                suggestion.application_guidance =
-                    "Automatic apply is disabled for this class shape. Use the blocker reason and caveats to refactor manually.";
+            const bool has_external_refactor_metadata =
+                class_info.has_value() &&
+                context.options.compile_commands_path.has_value() &&
+                !suggestion.secondary_files.empty();
+            if (!supports_external_refactor) {
                 if (const auto blocker = bha::refactor::first_pimpl_eligibility_blocker(eligibility)) {
                     suggestion.auto_apply_blocked_reason =
                         std::string(bha::refactor::pimpl_blocker_message(*blocker));
@@ -3694,6 +3657,40 @@ namespace bha::suggestions
                 } else {
                     suggestion.auto_apply_blocked_reason =
                         "This class is outside the current automatic PIMPL support boundary.";
+                }
+            }
+
+            suggestion.is_safe = !suggestion.edits.empty();
+            if (suggestion.is_safe) {
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.application_summary = "Auto-apply via direct text edits";
+                suggestion.application_guidance =
+                    "BHA can apply concrete text edits, rebuild-validate the result, and roll back from backup if validation fails.";
+            } else if (has_external_refactor_metadata) {
+                suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
+                suggestion.target_file.note =
+                    "Semantic refactor tool required: use bha-refactor to validate and apply this PIMPL rewrite.";
+                if (!suggestion.secondary_files.empty()) {
+                    suggestion.secondary_files.front().note =
+                        "Semantic refactor tool required: preserve the public API while moving private state behind Impl";
+                }
+                if (supports_external_refactor) {
+                    suggestion.application_summary = "Auto-apply via semantic refactor tool";
+                    suggestion.application_guidance =
+                        "BHA invokes bha-refactor for semantic rewrites, applies replacements, rebuild-validates the result, and rolls back from backup if validation fails.";
+                } else {
+                    suggestion.application_summary = "Best-effort semantic refactor";
+                    suggestion.application_guidance =
+                        "BHA invokes bha-refactor for semantic rewrites; unsupported class shapes may be rejected with diagnostics before any edits are applied.";
+                }
+            } else {
+                suggestion.application_mode = SuggestionApplicationMode::ExternalRefactor;
+                suggestion.application_summary = "Best-effort semantic refactor";
+                suggestion.application_guidance =
+                    "Provide compile_commands.json metadata and run bha-refactor for semantic validation; unsupported shapes are rejected with diagnostics before edits are applied.";
+                if (!suggestion.auto_apply_blocked_reason.has_value()) {
+                    suggestion.auto_apply_blocked_reason =
+                        "compile_commands.json metadata was not available for this suggestion.";
                 }
             }
 
