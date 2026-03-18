@@ -1,0 +1,726 @@
+{
+  "projectKey": "make/clang/redis",
+  "capturedAt": "2026-03-12T09:31:36Z",
+  "suggestionCount": 4,
+  "totalTextEdits": 78,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (19 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 2717,
+        "percentage": 16.045476449763274,
+        "timeSaved": 86789,
+        "timeSavedMs": 86789
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/Makefile"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <endian.h>\n#include <errno.h>\n#include <fcntl.h>\n#include <features-time64.h>\n#include <features.h>\n#include <limits.h>\n#include <linux/param.h>\n#include <math.h>\n#include <netinet/in.h>\n#include <pthread.h>\n#include <string.h>\n#include <time.h>\n#include <unistd.h>\n#include <x86_64-linux-gnu/asm/param.h>\n#include <x86_64-linux-gnu/sys/param.h>\n#include <x86_64-linux-gnu/sys/socket.h>\n#include <x86_64-linux-gnu/sys/time.h>\n#include <x86_64-linux-gnu/sys/types.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/Makefile",
+          "newText": "\n# Precompiled header\nPCH_HEADER := pch.h\nPCH_FILE := $(PCH_HEADER).gch\nCPPFLAGS += -include $(PCH_HEADER)\n\n$(PCH_FILE): $(PCH_HEADER)\n\t$(CXX) $(CPPFLAGS) -x c++-header $< -o $@\n",
+          "startCol": 0,
+          "startLine": 20
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Header Splitting Opportunities (34 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 1855,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 68,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 47,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/hiredis/sds.h",
+          "newText": "#include \"sds_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 47
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/hiredis/sds_fwd.h",
+          "newText": "#pragma once\n\nstruct __attribute__;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 2,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/activity_callback.h",
+          "newText": "#include \"activity_callback_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 2
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/activity_callback_fwd.h",
+          "newText": "#pragma once\n\nstruct activity_callback_thunk_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/arena_inlines_b.h",
+          "newText": "#include \"arena_inlines_b_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/arena_inlines_b_fwd.h",
+          "newText": "#pragma once\n\nstruct arena_dalloc_bin_locked_info_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 9,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/arena_stats.h",
+          "newText": "#include \"arena_stats_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/arena_stats_fwd.h",
+          "newText": "#pragma once\n\nstruct arena_stats_large_s;\nstruct arena_stats_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 6,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/base.h",
+          "newText": "#include \"base_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 6
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/base_fwd.h",
+          "newText": "#pragma once\n\nstruct base_block_s;\nstruct base_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/bin.h",
+          "newText": "#include \"bin_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/bin_fwd.h",
+          "newText": "#pragma once\n\nstruct bin_s;\nstruct bins_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/bin_info.h",
+          "newText": "#include \"bin_info_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/bin_info_fwd.h",
+          "newText": "#pragma once\n\nstruct bin_info_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 5,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/cache_bin.h",
+          "newText": "#include \"cache_bin_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/cache_bin_fwd.h",
+          "newText": "#pragma once\n\nstruct cache_bin_array_descriptor_s;\nstruct cache_bin_info_s;\nstruct cache_bin_ptr_array_s;\nstruct cache_bin_s;\nstruct cache_bin_stats_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/decay.h",
+          "newText": "#include \"decay_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/decay_fwd.h",
+          "newText": "#pragma once\n\nstruct decay_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/div.h",
+          "newText": "#include \"div_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/div_fwd.h",
+          "newText": "#pragma once\n\nstruct div_info_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 6,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ecache.h",
+          "newText": "#include \"ecache_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 6
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ecache_fwd.h",
+          "newText": "#pragma once\n\nstruct ecache_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 14,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/edata.h",
+          "newText": "#include \"edata_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 14
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/edata_fwd.h",
+          "newText": "#pragma once\n\nstruct e_prof_info_s;\nstruct edata_cmp_summary_s;\nstruct edata_map_info_s;\nstruct edata_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 5,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ehooks.h",
+          "newText": "#include \"ehooks_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ehooks_fwd.h",
+          "newText": "#pragma once\n\nstruct ehooks_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 5,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/emap.h",
+          "newText": "#include \"emap_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/emap_fwd.h",
+          "newText": "#pragma once\n\nstruct emap_alloc_ctx_t;\nstruct emap_full_alloc_ctx_s;\nstruct emap_prepare_s;\nstruct emap_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hook.h",
+          "newText": "#include \"hook_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hook_fwd.h",
+          "newText": "#pragma once\n\nstruct hook_ralloc_args_s;\nstruct hooks_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpa.h",
+          "newText": "#include \"hpa_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpa_fwd.h",
+          "newText": "#pragma once\n\nstruct hpa_central_s;\nstruct hpa_shard_nonderived_stats_s;\nstruct hpa_shard_s;\nstruct hpa_shard_stats_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpa_opts.h",
+          "newText": "#include \"hpa_opts_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpa_opts_fwd.h",
+          "newText": "#pragma once\n\nstruct hpa_shard_opts_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 7,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpdata.h",
+          "newText": "#include \"hpdata_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/hpdata_fwd.h",
+          "newText": "#pragma once\n\nstruct hpdata_purge_state_s;\nstruct hpdata_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 7,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/mutex.h",
+          "newText": "#include \"mutex_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/mutex_fwd.h",
+          "newText": "#pragma once\n\nstruct malloc_mutex_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/pa.h",
+          "newText": "#include \"pa_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/pa_fwd.h",
+          "newText": "#pragma once\n\nstruct pa_central_s;\nstruct pa_shard_s;\nstruct pa_shard_stats_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 6,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/pac.h",
+          "newText": "#include \"pac_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 6
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/pac_fwd.h",
+          "newText": "#pragma once\n\nstruct pac_decay_stats_s;\nstruct pac_estats_s;\nstruct pac_s;\nstruct pac_stats_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/rtree.h",
+          "newText": "#include \"rtree_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/rtree_fwd.h",
+          "newText": "#pragma once\n\nstruct rtree_contents_s;\nstruct rtree_leaf_elm_s;\nstruct rtree_level_s;\nstruct rtree_metadata_s;\nstruct rtree_node_elm_s;\nstruct rtree_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/sc.h",
+          "newText": "#include \"sc_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/sc_fwd.h",
+          "newText": "#pragma once\n\nstruct sc_data_s;\nstruct sc_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 5,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ticker.h",
+          "newText": "#include \"ticker_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/ticker_fwd.h",
+          "newText": "#pragma once\n\nstruct ticker_geom_s;\nstruct ticker_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 310,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/tsd.h",
+          "newText": "#include \"tsd_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 310
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/jemalloc/include/jemalloc/internal/tsd_fwd.h",
+          "newText": "#pragma once\n\nstruct tsd_s;\nstruct tsdn_s;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 14,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lstate.h",
+          "newText": "#include \"lstate_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 14
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lstate_fwd.h",
+          "newText": "#pragma once\n\nstruct lua_State;\nstruct lua_longjmp;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lua.h",
+          "newText": "#include \"lua_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lua.h",
+          "newText": "#include \"lua_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lua_fwd.h",
+          "newText": "#pragma once\n\nstruct lua_Debug;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lua_fwd.h",
+          "newText": "#pragma once\n\nstruct lua_Debug;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lzio.h",
+          "newText": "#include \"lzio_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/deps/lua/src/lzio_fwd.h",
+          "newText": "#pragma once\n\nstruct Zio;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/connection.h",
+          "newText": "#include \"connection_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 19
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/connection_fwd.h",
+          "newText": "#pragma once\n\nstruct aeEventLoop;\nstruct connListener;\nstruct connection;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/functions.h",
+          "newText": "#include \"functions_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/functions_fwd.h",
+          "newText": "#pragma once\n\nstruct functionLibInfo;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/rio.h",
+          "newText": "#include \"rio_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/rio_fwd.h",
+          "newText": "#pragma once\n\nstruct _rio;\nstruct redisObject;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 3335,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.h",
+          "newText": "#include \"server_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 3335
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server_fwd.h",
+          "newText": "#pragma once\n\nstruct RedisModule;\nstruct RedisModuleCommand;\nstruct RedisModuleCtx;\nstruct RedisModuleDefragCtx;\nstruct RedisModuleDigest;\nstruct RedisModuleIO;\nstruct RedisModuleKeyOptCtx;\nstruct clusterState;\nstruct evictionPoolEntry;\nstruct hdr_histogram;\nstruct hotkeyStats;\nstruct listpackEx;\nstruct malloc_stats;\nstruct moduleLoadQueueEntry;\nstruct pendingCommand;\nstruct redisCommand;\nstruct redisError;\nstruct redisFunctionSym;\nstruct redisMemOverhead;\nstruct redisObject;\nstruct redisServer;\nstruct rewriteConfigState;\nstruct saveparam;\nstruct sentinelConfig;\nstruct sentinelLoadQueueEntry;\nstruct sharedObjectsStruct;\nstruct slotRangeArray;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 7,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/stream.h",
+          "newText": "#include \"stream_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/stream_fwd.h",
+          "newText": "#pragma once\n\nstruct client;\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Move to Source File (3 items)",
+      "type": 7,
+      "priority": 1,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 2,
+        "filesAffected": 6,
+        "percentage": 0.0,
+        "timeSaved": 1240,
+        "timeSavedMs": 1240
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 6,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 4,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/keymeta.c",
+          "newText": "#include \"object.h\"\n",
+          "startCol": 0,
+          "startLine": 4
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/keymeta.h",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 7517,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.c",
+          "newText": "#include \"commands.h\"\n",
+          "startCol": 0,
+          "startLine": 7517
+        },
+        {
+          "endCol": 0,
+          "endLine": 7517,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.c",
+          "newText": "#include \"rio.h\"\n",
+          "startCol": 0,
+          "startLine": 7517
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.h",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.h",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 20
+        }
+      ]
+    },
+    {
+      "id": "ana-4",
+      "title": "Forward Declaration Opportunities (2 locations)",
+      "type": 5,
+      "priority": 1,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 2,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/kvstore.h",
+          "newText": "class dictEntry;\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 53,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis/src/server.h",
+          "newText": "class dictEntry;\n",
+          "startCol": 0,
+          "startLine": 52
+        }
+      ]
+    }
+  ]
+}

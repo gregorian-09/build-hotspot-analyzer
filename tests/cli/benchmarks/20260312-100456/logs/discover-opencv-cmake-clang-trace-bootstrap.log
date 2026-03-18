@@ -1,0 +1,8 @@
+$ cd "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv" && "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/build/bha" build --build-system cmake --compiler clang --build-dir "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/build" --output "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/traces" --memory --clean --cmake-args "-DBUILD_LIST=core,imgproc,imgcodecs;-DBUILD_TESTS=OFF;-DBUILD_PERF_TESTS=OFF;-DBUILD_EXAMPLES=OFF;-DBUILD_opencv_apps=OFF"
+
+[stdout]
+Build completed in 199s
+
+
+[stderr]
+

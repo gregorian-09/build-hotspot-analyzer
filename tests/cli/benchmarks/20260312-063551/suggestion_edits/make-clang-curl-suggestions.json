@@ -1,0 +1,413 @@
+{
+  "projectKey": "make/clang/curl",
+  "capturedAt": "2026-03-12T06:56:46Z",
+  "suggestionCount": 1,
+  "totalTextEdits": 48,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Header Splitting Opportunities (24 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 1657,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 48,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 2,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/bufref.h",
+          "newText": "#include \"bufref_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 2
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/bufref_fwd.h",
+          "newText": "#pragma once\n\nstruct bufref;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/cf-socket.h",
+          "newText": "#include \"cf-socket_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/cf-socket_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_addrinfo;\nstruct Curl_cfilter;\nstruct Curl_easy;\nstruct Curl_sockaddr_ex;\nstruct connectdata;\nstruct ip_quadruple;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/cookie.h",
+          "newText": "#include \"cookie_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/cookie_fwd.h",
+          "newText": "#pragma once\n\nstruct Cookie;\nstruct CookieInfo;\nstruct Curl_easy;\nstruct Curl_llist;\nstruct connectdata;\nstruct curl_slist;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 40,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_addrinfo.h",
+          "newText": "#include \"curl_addrinfo_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 40
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_addrinfo_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_addrinfo;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 1172,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_setup.h",
+          "newText": "#include \"curl_setup_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 1172
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_setup_fwd.h",
+          "newText": "#pragma once\n\nstruct passwd;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 252,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_setup_once.h",
+          "newText": "#include \"curl_setup_once_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 252
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curl_setup_once_fwd.h",
+          "newText": "#pragma once\n\nstruct timeval;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curlx/strparse.h",
+          "newText": "#include \"strparse_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curlx/strparse_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_str;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curlx/timeval.h",
+          "newText": "#include \"timeval_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/curlx/timeval_fwd.h",
+          "newText": "#pragma once\n\nstruct curltime;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/formdata.h",
+          "newText": "#include \"formdata_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/formdata_fwd.h",
+          "newText": "#pragma once\n\nstruct FormInfo;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/ftp.h",
+          "newText": "#include \"ftp_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/ftp_fwd.h",
+          "newText": "#pragma once\n\nstruct FTP;\nstruct ftp_conn;\nstruct ftp_parselist_data;\nstruct ftp_wc;\nstruct pathcomp;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/hostip.h",
+          "newText": "#include \"hostip_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/hostip_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_addrinfo;\nstruct Curl_dns_entry;\nstruct Curl_dnscache;\nstruct Curl_easy;\nstruct Curl_https_rrinfo;\nstruct addrinfo;\nstruct connectdata;\nstruct easy_pollset;\nstruct hostent;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/http_chunks.h",
+          "newText": "#include \"http_chunks_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/http_chunks_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_chunker;\nstruct connectdata;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/mime.h",
+          "newText": "#include \"mime_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/mime_fwd.h",
+          "newText": "#pragma once\n\nstruct curl_mime;\nstruct curl_mimepart;\nstruct mime_encoder;\nstruct mime_encoder_state;\nstruct mime_state;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/multi_ntfy.h",
+          "newText": "#include \"multi_ntfy_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/multi_ntfy_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_easy;\nstruct Curl_multi;\nstruct curl_multi_ntfy;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/multihandle.h",
+          "newText": "#include \"multihandle_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 37
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/multihandle_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_easy;\nstruct Curl_message;\nstruct Curl_multi;\nstruct connectdata;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/request.h",
+          "newText": "#include \"request_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/request_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_easy;\nstruct SingleRequest;\nstruct UserDefined;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/select.h",
+          "newText": "#include \"select_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/select_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_waitfds;\nstruct curl_pollfds;\nstruct easy_pollset;\nstruct pollfd;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 285,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/urldata.h",
+          "newText": "#include \"urldata_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 285
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/urldata_fwd.h",
+          "newText": "#pragma once\n\nstruct ConnectBits;\nstruct Curl_data_prio_node;\nstruct Curl_data_priority;\nstruct Curl_easy;\nstruct Curl_multi;\nstruct Curl_protocol;\nstruct Curl_scheme;\nstruct Progress;\nstruct PureInfo;\nstruct UrlState;\nstruct UserDefined;\nstruct auth;\nstruct connectdata;\nstruct curl_trc_featt;\nstruct digestdata;\nstruct hostname;\nstruct ip_quadruple;\nstruct pgrs_dir;\nstruct proxy_info;\nstruct ssl_config_data;\nstruct ssl_general_config;\nstruct ssl_primary_config;\nstruct time_node;\nstruct urlpieces;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 128,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/vauth/vauth.h",
+          "newText": "#include \"vauth_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 128
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/vauth/vauth_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_easy;\nstruct bufref;\nstruct connectdata;\nstruct digestdata;\nstruct gsasldata;\nstruct kerberos5data;\nstruct negotiatedata;\nstruct ntlmdata;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 52,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/vtls/vtls.h",
+          "newText": "#include \"vtls_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 52
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/lib/vtls/vtls_fwd.h",
+          "newText": "#pragma once\n\nstruct Curl_cfilter;\nstruct Curl_easy;\nstruct connectdata;\nstruct curl_slist;\nstruct dynbuf;\nstruct ssl_config_data;\nstruct ssl_peer;\nstruct ssl_primary_config;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_cfgable.h",
+          "newText": "#include \"tool_cfgable_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_cfgable_fwd.h",
+          "newText": "#pragma once\n\nstruct GlobalConfig;\nstruct OperationConfig;\nstruct State;\nstruct termout;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_operate.h",
+          "newText": "#include \"tool_operate_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_operate_fwd.h",
+          "newText": "#pragma once\n\nstruct per_transfer;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_urlglob.h",
+          "newText": "#include \"tool_urlglob_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/tool_urlglob_fwd.h",
+          "newText": "#pragma once\n\nstruct URLGlob;\nstruct URLPattern;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/var.h",
+          "newText": "#include \"var_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl/src/var_fwd.h",
+          "newText": "#pragma once\n\nstruct tool_var;\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    }
+  ]
+}

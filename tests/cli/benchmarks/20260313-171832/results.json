@@ -1,0 +1,65 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "glfw",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/glfw",
+      "recordKey": "discover:cmake/clang/glfw",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 22402,
+      "postApplyTimeMs": 4040,
+      "deltaMs": 18362,
+      "deltaPercent": 81.966,
+      "baselineDisplay": "22.40s",
+      "postApplyDisplay": "4.04s",
+      "deltaDisplay": "18.36s",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 5,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260313-181851-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260313-171832/logs/discover-glfw-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 10,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260313-171832/suggestion_edits/cmake-clang-glfw-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-13T17:18:33Z",
+      "finishedAt": "2026-03-13T17:19:08Z",
+      "elapsedSeconds": 35.486
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "runMeta": {
+    "timestampUtc": "2026-03-12T08:03:30Z",
+    "branch": "feat/repo-wide-benchmark",
+    "commit": "b898a5c831885c6ca442340ea3310a82eff3e3b4",
+    "testsRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli",
+    "outputDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-080231",
+    "mode": "both",
+    "replaySelection": "discover-applied-only",
+    "compilerFilter": "clang",
+    "buildSystemFilter": "cmake",
+    "excludedProjects": [],
+    "replayEditsDir": "",
+    "keepChanges": false,
+    "cleanRepoBeforeCase": false
+  },
+  "totals": {
+    "records": 2,
+    "attempted": 2,
+    "successful": 1,
+    "statusCounts": {
+      "success": 1,
+      "rollback_triggered": 1
+    },
+    "totalBaselineMs": 22402,
+    "totalPostApplyMs": 22402,
+    "totalDeltaMs": 0,
+    "totalDeltaPercent": 0.0,
+    "totalBaselineDisplay": "22.40s",
+    "totalPostApplyDisplay": "22.40s",
+    "totalDeltaDisplay": "0ms",
+    "meanDeltaPercentSuccessOnly": 0.0,
+    "medianDeltaPercentSuccessOnly": 0.0
+  },
+  "byMode": {
+    "discover": {
+      "records": 1,
+      "attempted": 1,
+      "successful": 1,
+      "statusCounts": {
+        "success": 1
+      },
+      "totalBaselineMs": 22402,
+      "totalPostApplyMs": 22402,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "22.40s",
+      "totalPostApplyDisplay": "22.40s",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    },
+    "replay": {
+      "records": 1,
+      "attempted": 1,
+      "successful": 0,
+      "statusCounts": {
+        "rollback_triggered": 1
+      },
+      "totalBaselineMs": 0,
+      "totalPostApplyMs": 0,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "0ms",
+      "totalPostApplyDisplay": "0ms",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    }
+  },
+  "topImprovements": [
+    {
+      "recordKey": "discover:cmake/clang/glfw",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    }
+  ],
+  "topRegressions": []
+}

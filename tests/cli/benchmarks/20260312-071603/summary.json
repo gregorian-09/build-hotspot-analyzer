@@ -1,0 +1,90 @@
+{
+  "runMeta": {
+    "timestampUtc": "2026-03-12T07:22:43Z",
+    "branch": "feat/repo-wide-benchmark",
+    "commit": "b898a5c831885c6ca442340ea3310a82eff3e3b4",
+    "testsRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli",
+    "outputDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603",
+    "mode": "both",
+    "replaySelection": "discover-applied-only",
+    "compilerFilter": "clang",
+    "buildSystemFilter": "cmake",
+    "excludedProjects": [
+      "rocksdb"
+    ],
+    "replayEditsDir": "",
+    "keepChanges": false,
+    "cleanRepoBeforeCase": true
+  },
+  "totals": {
+    "records": 6,
+    "attempted": 6,
+    "successful": 2,
+    "statusCounts": {
+      "rollback_triggered": 4,
+      "success": 2
+    },
+    "totalBaselineMs": 73110,
+    "totalPostApplyMs": 73110,
+    "totalDeltaMs": 0,
+    "totalDeltaPercent": 0.0,
+    "totalBaselineDisplay": "73.11s",
+    "totalPostApplyDisplay": "73.11s",
+    "totalDeltaDisplay": "0ms",
+    "meanDeltaPercentSuccessOnly": 0.0,
+    "medianDeltaPercentSuccessOnly": 0.0
+  },
+  "byMode": {
+    "discover": {
+      "records": 3,
+      "attempted": 3,
+      "successful": 1,
+      "statusCounts": {
+        "rollback_triggered": 2,
+        "success": 1
+      },
+      "totalBaselineMs": 36555,
+      "totalPostApplyMs": 36555,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "36.55s",
+      "totalPostApplyDisplay": "36.55s",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    },
+    "replay": {
+      "records": 3,
+      "attempted": 3,
+      "successful": 1,
+      "statusCounts": {
+        "rollback_triggered": 2,
+        "success": 1
+      },
+      "totalBaselineMs": 36555,
+      "totalPostApplyMs": 36555,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "36.55s",
+      "totalPostApplyDisplay": "36.55s",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    }
+  },
+  "topImprovements": [
+    {
+      "recordKey": "discover:cmake/clang/mimalloc",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    },
+    {
+      "recordKey": "replay:cmake/clang/mimalloc",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    }
+  ],
+  "topRegressions": []
+}

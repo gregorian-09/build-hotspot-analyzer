@@ -1,0 +1,344 @@
+{
+  "failures": [
+    {
+      "mode": "discover",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "discover:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 3,
+      "suggestionsFailed": 2,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 2,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "\u2018SpinLockDelay\u2019 was not declared in this scope; did you mean \u2018kSpinLockHeld\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 152
+            },
+            "start": {
+              "character": 4,
+              "line": 152
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018SpinLockWake\u2019 was not declared in this scope; did you mean \u2018SpinLock\u2019?",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 164
+            },
+            "start": {
+              "character": 2,
+              "line": 164
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "20260312-081751-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/logs/discover-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 4,
+        "totalTextEdits": 136,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/suggestion_edits/cmake-clang-abseil-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T07:16:03Z",
+      "finishedAt": "2026-03-12T07:17:56Z",
+      "elapsedSeconds": 113.451
+    },
+    {
+      "mode": "replay",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "replay:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 66,
+      "changedFilesCount": 20,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 2,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "\u2018SpinLockDelay\u2019 was not declared in this scope; did you mean \u2018kSpinLockHeld\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 152
+            },
+            "start": {
+              "character": 4,
+              "line": 152
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018SpinLockWake\u2019 was not declared in this scope; did you mean \u2018SpinLock\u2019?",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 164
+            },
+            "start": {
+              "character": 2,
+              "line": 164
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "20260312-081947-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/logs/replay-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/suggestion_edits/cmake-clang-abseil-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T07:17:56Z",
+      "finishedAt": "2026-03-12T07:19:50Z",
+      "elapsedSeconds": 114.061
+    },
+    {
+      "mode": "discover",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "discover:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "20260312-082055-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/logs/discover-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 74,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/suggestion_edits/cmake-clang-benchmark-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T07:19:50Z",
+      "finishedAt": "2026-03-12T07:20:55Z",
+      "elapsedSeconds": 64.458
+    },
+    {
+      "mode": "replay",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "replay:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 68,
+      "changedFilesCount": 10,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "20260312-082156-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/logs/replay-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-071603/suggestion_edits/cmake-clang-benchmark-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T07:20:55Z",
+      "finishedAt": "2026-03-12T07:21:57Z",
+      "elapsedSeconds": 61.899
+    }
+  ]
+}

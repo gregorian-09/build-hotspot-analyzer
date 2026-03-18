@@ -1,0 +1,1262 @@
+{
+  "failures": [
+    {
+      "mode": "discover",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "discover:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 2,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-074025-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 14,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-abseil-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T06:35:51Z",
+      "finishedAt": "2026-03-12T06:40:32Z",
+      "elapsedSeconds": 280.599
+    },
+    {
+      "mode": "replay",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "replay:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 14,
+      "changedFilesCount": 2,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-074517-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-abseil-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T06:40:32Z",
+      "finishedAt": "2026-03-12T06:45:18Z",
+      "elapsedSeconds": 285.737
+    },
+    {
+      "mode": "discover",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "discover:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-074621-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 10,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-benchmark-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:45:18Z",
+      "finishedAt": "2026-03-12T06:46:25Z",
+      "elapsedSeconds": 66.679
+    },
+    {
+      "mode": "replay",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "replay:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 10,
+      "changedFilesCount": 1,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-074724-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-benchmark-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:46:25Z",
+      "finishedAt": "2026-03-12T06:47:24Z",
+      "elapsedSeconds": 59.583
+    },
+    {
+      "mode": "discover",
+      "project": "leveldb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/leveldb",
+      "recordKey": "discover:cmake/clang/leveldb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 152015,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "152.01s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 2,
+      "suggestionsFailed": 3,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 3,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075010-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-leveldb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 4,
+        "totalTextEdits": 62,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-leveldb-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:48:45Z",
+      "finishedAt": "2026-03-12T06:50:34Z",
+      "elapsedSeconds": 109.268
+    },
+    {
+      "mode": "replay",
+      "project": "leveldb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/leveldb",
+      "recordKey": "replay:cmake/clang/leveldb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 152015,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "152.01s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 62,
+      "changedFilesCount": 58,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 48,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075159-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-leveldb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-leveldb-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:50:34Z",
+      "finishedAt": "2026-03-12T06:52:00Z",
+      "elapsedSeconds": 86.384
+    },
+    {
+      "mode": "discover",
+      "project": "libjpeg-turbo",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/libjpeg-turbo",
+      "recordKey": "discover:cmake/clang/libjpeg-turbo",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 70534,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "70.53s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 40,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 40,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075207-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-libjpeg-turbo-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 4,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-libjpeg-turbo-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:52:00Z",
+      "finishedAt": "2026-03-12T06:52:16Z",
+      "elapsedSeconds": 15.675
+    },
+    {
+      "mode": "replay",
+      "project": "libjpeg-turbo",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/libjpeg-turbo",
+      "recordKey": "replay:cmake/clang/libjpeg-turbo",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 70534,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "70.53s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 4,
+      "changedFilesCount": 4,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 35,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075223-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-libjpeg-turbo-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-libjpeg-turbo-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:52:16Z",
+      "finishedAt": "2026-03-12T06:52:23Z",
+      "elapsedSeconds": 6.879
+    },
+    {
+      "mode": "replay",
+      "project": "mimalloc",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/mimalloc",
+      "recordKey": "replay:cmake/clang/mimalloc",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 36555,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "36.55s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 4,
+      "changedFilesCount": 3,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075255-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-mimalloc-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-mimalloc-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:52:47Z",
+      "finishedAt": "2026-03-12T06:52:58Z",
+      "elapsedSeconds": 11.678
+    },
+    {
+      "mode": "discover",
+      "project": "rocksdb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/rocksdb",
+      "recordKey": "discover:cmake/clang/rocksdb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/traces",
+      "status": "skipped",
+      "reason": "excluded-project",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-rocksdb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T06:52:58Z",
+      "finishedAt": "2026-03-12T06:52:58Z",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "mode": "replay",
+      "project": "rocksdb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/rocksdb",
+      "recordKey": "replay:cmake/clang/rocksdb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/traces",
+      "status": "skipped",
+      "reason": "excluded-project",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-rocksdb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T06:52:58Z",
+      "finishedAt": "2026-03-12T06:52:58Z",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "mode": "discover",
+      "project": "yaml-cpp",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/yaml-cpp",
+      "recordKey": "discover:cmake/clang/yaml-cpp",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 157391,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "157.39s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 2,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075405-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-yaml-cpp-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 48,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-yaml-cpp-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:52:58Z",
+      "finishedAt": "2026-03-12T06:54:12Z",
+      "elapsedSeconds": 73.464
+    },
+    {
+      "mode": "replay",
+      "project": "yaml-cpp",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/yaml-cpp",
+      "recordKey": "replay:cmake/clang/yaml-cpp",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 157391,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "157.39s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 48,
+      "changedFilesCount": 42,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 10,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075521-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-yaml-cpp-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-yaml-cpp-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:54:12Z",
+      "finishedAt": "2026-03-12T06:55:22Z",
+      "elapsedSeconds": 70.318
+    },
+    {
+      "mode": "replay",
+      "project": "zstd",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/zstd",
+      "recordKey": "replay:cmake/clang/zstd",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/build/cmake",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 100202,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "100.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 6,
+      "changedFilesCount": 6,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 47,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075629-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-zstd-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/cmake-clang-zstd-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:56:14Z",
+      "finishedAt": "2026-03-12T06:56:31Z",
+      "elapsedSeconds": 16.625
+    },
+    {
+      "mode": "discover",
+      "project": "curl",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/curl",
+      "recordKey": "discover:make/clang/curl",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/traces",
+      "status": "build_failed",
+      "reason": "build-validation-failed",
+      "baselineTimeMs": 240922,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "240.92s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-curl-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 1,
+        "totalTextEdits": 48,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/make-clang-curl-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T06:56:31Z",
+      "finishedAt": "2026-03-12T06:56:46Z",
+      "elapsedSeconds": 15.237
+    },
+    {
+      "mode": "replay",
+      "project": "curl",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/curl",
+      "recordKey": "replay:make/clang/curl",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 240922,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "240.92s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 48,
+      "changedFilesCount": 48,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-075700-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-curl-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/make-clang-curl-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T06:56:46Z",
+      "finishedAt": "2026-03-12T06:57:01Z",
+      "elapsedSeconds": 14.799
+    },
+    {
+      "mode": "replay",
+      "project": "libpng",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/libpng",
+      "recordKey": "replay:make/clang/libpng",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/traces",
+      "status": "skipped",
+      "reason": "replay-edits-empty",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-libpng-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/make-clang-libpng-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T06:57:06Z",
+      "finishedAt": "2026-03-12T06:57:06Z",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "mode": "replay",
+      "project": "redis",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/redis",
+      "recordKey": "replay:make/clang/redis",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 540899,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "540.90s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 78,
+      "changedFilesCount": 72,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 50,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "backupId": "20260312-080252-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-redis-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/make-clang-redis-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T07:01:28Z",
+      "finishedAt": "2026-03-12T07:02:54Z",
+      "elapsedSeconds": 86.577
+    },
+    {
+      "mode": "replay",
+      "project": "zlib",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/zlib",
+      "recordKey": "replay:make/clang/zlib",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/traces",
+      "status": "skipped",
+      "reason": "replay-edits-empty",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-zlib-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/suggestion_edits/make-clang-zlib-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T07:02:57Z",
+      "finishedAt": "2026-03-12T07:02:57Z",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "mode": "discover",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "discover:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "skipped",
+      "reason": "traces-missing",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/discover-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T07:02:57Z",
+      "finishedAt": "2026-03-12T07:02:57Z",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "mode": "replay",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "replay:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "skipped",
+      "reason": "traces-missing",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-063551/logs/replay-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T07:02:57Z",
+      "finishedAt": "2026-03-12T07:02:57Z",
+      "elapsedSeconds": 0.0
+    }
+  ]
+}

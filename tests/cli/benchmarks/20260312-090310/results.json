@@ -1,0 +1,126 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "discover:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "no_suggestions",
+      "reason": "missing-external-dependency-libdisplay-info",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-090310/logs/discover-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:03:10Z",
+      "finishedAt": "2026-03-12T09:03:13Z",
+      "elapsedSeconds": 2.356
+    },
+    {
+      "mode": "replay",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "replay:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "no_suggestions",
+      "reason": "missing-external-dependency-libdisplay-info",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-090310/logs/replay-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:03:13Z",
+      "finishedAt": "2026-03-12T09:03:15Z",
+      "elapsedSeconds": 2.302
+    }
+  ]
+}

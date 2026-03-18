@@ -1,0 +1,828 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "opencv",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/opencv",
+      "recordKey": "discover:cmake/clang/opencv",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 707263,
+      "postApplyTimeMs": 712875,
+      "deltaMs": -5612,
+      "deltaPercent": -0.793,
+      "baselineDisplay": "707.26s",
+      "postApplyDisplay": "712.88s",
+      "deltaDisplay": "-5.61s",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 2,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [
+        {
+          "message": "unknown type name 'OPJ_UINT32'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 49
+            },
+            "start": {
+              "character": 7,
+              "line": 49
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'opj_bio_t'",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 49
+            },
+            "start": {
+              "character": 33,
+              "line": 49
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 55
+            },
+            "start": {
+              "character": 7,
+              "line": 55
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'opj_bio_t'",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 55
+            },
+            "start": {
+              "character": 32,
+              "line": 55
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 61
+            },
+            "start": {
+              "character": 7,
+              "line": 61
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'opj_bio_t'",
+          "range": {
+            "end": {
+              "character": 31,
+              "line": 61
+            },
+            "start": {
+              "character": 31,
+              "line": 61
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 73
+            },
+            "start": {
+              "character": 7,
+              "line": 73
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'opj_bio_t'",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 73
+            },
+            "start": {
+              "character": 32,
+              "line": 73
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 293
+            },
+            "start": {
+              "character": 0,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_SIZE_T'",
+          "range": {
+            "end": {
+              "character": 9,
+              "line": 77
+            },
+            "start": {
+              "character": 9,
+              "line": 77
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_FALSE'",
+          "range": {
+            "end": {
+              "character": 15,
+              "line": 78
+            },
+            "start": {
+              "character": 15,
+              "line": 78
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected ';' after top level declarator",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 293
+            },
+            "start": {
+              "character": 21,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_TRUE'",
+          "range": {
+            "end": {
+              "character": 11,
+              "line": 81
+            },
+            "start": {
+              "character": 11,
+              "line": 81
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected ';' after top level declarator",
+          "range": {
+            "end": {
+              "character": 16,
+              "line": 298
+            },
+            "start": {
+              "character": 16,
+              "line": 298
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 84
+            },
+            "start": {
+              "character": 7,
+              "line": 84
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_SIZE_T'",
+          "range": {
+            "end": {
+              "character": 9,
+              "line": 88
+            },
+            "start": {
+              "character": 9,
+              "line": 88
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_FALSE'",
+          "range": {
+            "end": {
+              "character": 15,
+              "line": 89
+            },
+            "start": {
+              "character": 15,
+              "line": 89
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'OPJ_TRUE'",
+          "range": {
+            "end": {
+              "character": 11,
+              "line": 92
+            },
+            "start": {
+              "character": 11,
+              "line": 92
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_UINT32'",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 95
+            },
+            "start": {
+              "character": 7,
+              "line": 95
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 26,
+              "line": 313
+            },
+            "start": {
+              "character": 26,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 12,
+              "line": 316
+            },
+            "start": {
+              "character": 12,
+              "line": 316
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 20,
+              "line": 323
+            },
+            "start": {
+              "character": 20,
+              "line": 323
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 328
+            },
+            "start": {
+              "character": 22,
+              "line": 328
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 333
+            },
+            "start": {
+              "character": 23,
+              "line": 333
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 339
+            },
+            "start": {
+              "character": 4,
+              "line": 339
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 346
+            },
+            "start": {
+              "character": 0,
+              "line": 346
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 348
+            },
+            "start": {
+              "character": 4,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 348
+            },
+            "start": {
+              "character": 35,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 348
+            },
+            "start": {
+              "character": 24,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 8,
+              "line": 353
+            },
+            "start": {
+              "character": 8,
+              "line": 353
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 19,
+              "line": 359
+            },
+            "start": {
+              "character": 19,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 359
+            },
+            "start": {
+              "character": 37,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name 'OPJ_BOOL'",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 293
+            },
+            "start": {
+              "character": 0,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected ';' after top level declarator",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 293
+            },
+            "start": {
+              "character": 21,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected ';' after top level declarator",
+          "range": {
+            "end": {
+              "character": 16,
+              "line": 298
+            },
+            "start": {
+              "character": 16,
+              "line": 298
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 311
+            },
+            "start": {
+              "character": 0,
+              "line": 311
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 313
+            },
+            "start": {
+              "character": 4,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression",
+          "range": {
+            "end": {
+              "character": 38,
+              "line": 313
+            },
+            "start": {
+              "character": 38,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 26,
+              "line": 313
+            },
+            "start": {
+              "character": 26,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 12,
+              "line": 316
+            },
+            "start": {
+              "character": 12,
+              "line": 316
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 20,
+              "line": 323
+            },
+            "start": {
+              "character": 20,
+              "line": 323
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 328
+            },
+            "start": {
+              "character": 22,
+              "line": 328
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 333
+            },
+            "start": {
+              "character": 23,
+              "line": 333
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 339
+            },
+            "start": {
+              "character": 4,
+              "line": 339
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 346
+            },
+            "start": {
+              "character": 0,
+              "line": 346
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 348
+            },
+            "start": {
+              "character": 4,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 348
+            },
+            "start": {
+              "character": 35,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "use of undeclared identifier 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 348
+            },
+            "start": {
+              "character": 24,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "call to undeclared function 'opj_free'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+          "range": {
+            "end": {
+              "character": 8,
+              "line": 353
+            },
+            "start": {
+              "character": 8,
+              "line": 353
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_cond_t'",
+          "range": {
+            "end": {
+              "character": 19,
+              "line": 359
+            },
+            "start": {
+              "character": 19,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "must use 'struct' tag to refer to type 'opj_mutex_t'",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 359
+            },
+            "start": {
+              "character": 37,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "20260312-115020-2",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-104527/logs/discover-opencv-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 23,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-104527/suggestion_edits/cmake-clang-opencv-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T10:45:27Z",
+      "finishedAt": "2026-03-12T11:02:46Z",
+      "elapsedSeconds": 1039.547
+    }
+  ]
+}

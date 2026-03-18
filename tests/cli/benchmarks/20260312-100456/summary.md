@@ -1,0 +1,35 @@
+# Repo Apply/Rebuild Benchmark Summary
+
+- Timestamp (UTC): `2026-03-12T10:18:45Z`
+- Branch: `feat/repo-wide-benchmark`
+- Commit: `b898a5c831885c6ca442340ea3310a82eff3e3b4`
+- Mode: `both`
+- Replay selection: `discover-applied-only`
+- Clean repo before case: `True`
+- Tests root: `/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli`
+- Output dir: `/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-100456`
+
+## Overall Totals
+
+- Records: **2**
+- Attempted: **2**
+- Successful: **0**
+- Fleet baseline: **695.92s**
+- Fleet post-apply: **695.92s**
+- Fleet delta: **0ms (0.000%)**
+
+## Mode Breakdown
+
+- `discover`: records=1, attempted=1, success=0, delta=0ms (0.000%)
+- `replay`: records=1, attempted=1, success=0, delta=0ms (0.000%)
+
+## Status Counts
+
+- `no_suggestions`: **2**
+
+## Per-Record Results
+
+| Mode | Project | System | Compiler | Status | Before | After | Delta | Delta % | Applied | Found | Edits Supplied |
+|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `discover` | `opencv` | `cmake` | `clang` | `no_suggestions` | 695.92s | 695.92s | 0ms | 0.000% | 0 | 3 | 0 |
+| `replay` | `opencv` | `cmake` | `clang` | `no_suggestions` | n/a | n/a | n/a | n/a | 0 | 0 | 0 |

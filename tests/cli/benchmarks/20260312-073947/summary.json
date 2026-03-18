@@ -1,0 +1,57 @@
+{
+  "runMeta": {
+    "timestampUtc": "2026-03-12T07:40:48Z",
+    "branch": "feat/repo-wide-benchmark",
+    "commit": "b898a5c831885c6ca442340ea3310a82eff3e3b4",
+    "testsRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli",
+    "outputDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-073947",
+    "mode": "discover",
+    "replaySelection": "discover-applied-only",
+    "compilerFilter": "clang",
+    "buildSystemFilter": "cmake",
+    "excludedProjects": [
+      "rocksdb"
+    ],
+    "replayEditsDir": "",
+    "keepChanges": false,
+    "cleanRepoBeforeCase": true
+  },
+  "totals": {
+    "records": 1,
+    "attempted": 1,
+    "successful": 0,
+    "statusCounts": {
+      "rollback_triggered": 1
+    },
+    "totalBaselineMs": 0,
+    "totalPostApplyMs": 0,
+    "totalDeltaMs": 0,
+    "totalDeltaPercent": 0.0,
+    "totalBaselineDisplay": "0ms",
+    "totalPostApplyDisplay": "0ms",
+    "totalDeltaDisplay": "0ms",
+    "meanDeltaPercentSuccessOnly": 0.0,
+    "medianDeltaPercentSuccessOnly": 0.0
+  },
+  "byMode": {
+    "discover": {
+      "records": 1,
+      "attempted": 1,
+      "successful": 0,
+      "statusCounts": {
+        "rollback_triggered": 1
+      },
+      "totalBaselineMs": 0,
+      "totalPostApplyMs": 0,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "0ms",
+      "totalPostApplyDisplay": "0ms",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    }
+  },
+  "topImprovements": [],
+  "topRegressions": []
+}

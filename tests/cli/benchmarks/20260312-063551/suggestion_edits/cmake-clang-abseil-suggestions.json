@@ -1,0 +1,182 @@
+{
+  "projectKey": "cmake/clang/abseil",
+  "capturedAt": "2026-03-12T06:40:25Z",
+  "suggestionCount": 3,
+  "totalTextEdits": 14,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "PIMPL Pattern Opportunities (8 classes)",
+      "type": 6,
+      "priority": 0,
+      "confidence": 0.75,
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 8,
+        "percentage": 1.0173998112270832,
+        "timeSaved": 8348,
+        "timeSavedMs": 8348
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 0,
+      "textEdits": []
+    },
+    {
+      "id": "ana-2",
+      "title": "Template Instantiation Optimization (9 templates)",
+      "type": 3,
+      "priority": 1,
+      "confidence": 0.8,
+      "estimatedImpact": {
+        "complexity": 2,
+        "filesAffected": 178,
+        "percentage": 0.0,
+        "timeSaved": 2116,
+        "timeSavedMs": 2116
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/template_instantiations.cpp"
+      ],
+      "filesToModify": [],
+      "textEditCount": 1,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 6,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/template_instantiations.cpp",
+          "newText": "// template_instantiations.cpp\n// Explicit template instantiations to reduce compile-time overhead\n\n\n// Explicit template instantiations\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Include Cleanup (13 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 13,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc"
+      ],
+      "textEditCount": 13,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 63,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 62
+        },
+        {
+          "endCol": 0,
+          "endLine": 62,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 61
+        },
+        {
+          "endCol": 0,
+          "endLine": 61,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 60
+        },
+        {
+          "endCol": 0,
+          "endLine": 60,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 59
+        },
+        {
+          "endCol": 0,
+          "endLine": 59,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 58
+        },
+        {
+          "endCol": 0,
+          "endLine": 58,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 56
+        },
+        {
+          "endCol": 0,
+          "endLine": 56,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 55
+        },
+        {
+          "endCol": 0,
+          "endLine": 55,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 54
+        },
+        {
+          "endCol": 0,
+          "endLine": 53,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 52
+        },
+        {
+          "endCol": 0,
+          "endLine": 51,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 50
+        },
+        {
+          "endCol": 0,
+          "endLine": 50,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 49
+        },
+        {
+          "endCol": 0,
+          "endLine": 49,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 48
+        }
+      ]
+    }
+  ]
+}

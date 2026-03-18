@@ -1,0 +1,45 @@
+{
+  "projectKey": "cmake/clang/glfw",
+  "capturedAt": "2026-03-12T06:21:59Z",
+  "suggestionCount": 1,
+  "totalTextEdits": 2,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Include Cleanup (2 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 2,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "failures": [
+    {
+      "project": "rocksdb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/rocksdb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/traces",
+      "status": "skipped",
+      "reason": "excluded-project",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {},
+      "existingExports": [],
+      "startedAt": "2026-03-12T05:57:52Z",
+      "finishedAt": "2026-03-12T05:57:52Z",
+      "elapsedSeconds": 0.001
+    }
+  ]
+}

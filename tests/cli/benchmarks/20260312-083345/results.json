@@ -1,0 +1,3536 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "discover:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": 820588,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "820.59s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 2,
+      "editsSupplied": 0,
+      "changedFilesCount": 2,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [
+        {
+          "message": "\u2018SpinLockDelay\u2019 was not declared in this scope; did you mean \u2018kSpinLockHeld\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 152
+            },
+            "start": {
+              "character": 4,
+              "line": 152
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018SpinLockWake\u2019 was not declared in this scope; did you mean \u2018SpinLock\u2019?",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 164
+            },
+            "start": {
+              "character": 2,
+              "line": 164
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018lambda\u2019 was not declared in this scope",
+          "range": {
+            "end": {
+              "character": 95,
+              "line": 189
+            },
+            "start": {
+              "character": 95,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "parse error in template argument list",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 189
+            },
+            "start": {
+              "character": 40,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "ISO C++ forbids declaration of \u2018StringResizeAndOverwriteImpl\u2019 with no type [-fpermissive]",
+          "range": {
+            "end": {
+              "character": 16,
+              "line": 189
+            },
+            "start": {
+              "character": 16,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "template-id \u2018StringResizeAndOverwriteImpl<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, <expression error> >\u2019 used as a declarator",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 189
+            },
+            "start": {
+              "character": 40,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018absl::strings_internal::StringResizeAndOverwriteImpl(T&, typename T::size_type, Op)\u2019 is not a variable template",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 189
+            },
+            "start": {
+              "character": 40,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018;\u2019 before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 214,
+              "line": 189
+            },
+            "start": {
+              "character": 214,
+              "line": 189
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018lambda\u2019 was not declared in this scope",
+          "range": {
+            "end": {
+              "character": 95,
+              "line": 190
+            },
+            "start": {
+              "character": 95,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "parse error in template argument list",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 190
+            },
+            "start": {
+              "character": 40,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "ISO C++ forbids declaration of \u2018StringResizeAndOverwriteImpl\u2019 with no type [-fpermissive]",
+          "range": {
+            "end": {
+              "character": 16,
+              "line": 190
+            },
+            "start": {
+              "character": 16,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "template-id \u2018StringResizeAndOverwriteImpl<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, <expression error> >\u2019 used as a declarator",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 190
+            },
+            "start": {
+              "character": 40,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018absl::strings_internal::StringResizeAndOverwriteImpl(T&, typename T::size_type, Op)\u2019 is not a variable template",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 190
+            },
+            "start": {
+              "character": 40,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018;\u2019 before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 216,
+              "line": 190
+            },
+            "start": {
+              "character": 216,
+              "line": 190
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018lambda\u2019 was not declared in this scope",
+          "range": {
+            "end": {
+              "character": 99,
+              "line": 191
+            },
+            "start": {
+              "character": 99,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "parse error in template argument list",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 191
+            },
+            "start": {
+              "character": 40,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "ISO C++ forbids declaration of \u2018StringResizeAndOverwriteFallback\u2019 with no type [-fpermissive]",
+          "range": {
+            "end": {
+              "character": 16,
+              "line": 191
+            },
+            "start": {
+              "character": 16,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "template-id \u2018StringResizeAndOverwriteFallback<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, <expression error> >\u2019 used as a declarator",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 191
+            },
+            "start": {
+              "character": 40,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018absl::strings_internal::StringResizeAndOverwriteFallback(T&, typename T::size_type, Op)\u2019 is not a variable template",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 191
+            },
+            "start": {
+              "character": 40,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018;\u2019 before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 220,
+              "line": 191
+            },
+            "start": {
+              "character": 220,
+              "line": 191
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018SpinLockDelay\u2019 was not declared in this scope; did you mean \u2018kSpinLockHeld\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 152
+            },
+            "start": {
+              "character": 4,
+              "line": 152
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018SpinLockWake\u2019 was not declared in this scope; did you mean \u2018SpinLock\u2019?",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 164
+            },
+            "start": {
+              "character": 2,
+              "line": 164
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "20260312-093540-2",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 4,
+        "totalTextEdits": 136,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-abseil-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T08:33:45Z",
+      "finishedAt": "2026-03-12T08:38:26Z",
+      "elapsedSeconds": 281.21
+    },
+    {
+      "mode": "replay",
+      "project": "abseil",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/abseil",
+      "recordKey": "replay:cmake/clang/abseil",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 820588,
+      "postApplyTimeMs": 820588,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "820.59s",
+      "postApplyDisplay": "820.59s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 2,
+      "changedFilesCount": 2,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-094018-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-abseil-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-abseil-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_dark_demo.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/abseil/output/export/report_pch.html"
+      ],
+      "startedAt": "2026-03-12T08:38:26Z",
+      "finishedAt": "2026-03-12T08:42:48Z",
+      "elapsedSeconds": 261.596
+    },
+    {
+      "mode": "discover",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "discover:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "no_suggestions",
+      "reason": "Build failed with exit code 1",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": 25205,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "25.20s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 74,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-benchmark-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:42:48Z",
+      "finishedAt": "2026-03-12T08:43:52Z",
+      "elapsedSeconds": 64.311
+    },
+    {
+      "mode": "replay",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "replay:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-benchmark-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:43:52Z",
+      "finishedAt": "2026-03-12T08:43:52Z",
+      "elapsedSeconds": 0.006
+    },
+    {
+      "mode": "discover",
+      "project": "glfw",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/glfw",
+      "recordKey": "discover:cmake/clang/glfw",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 22402,
+      "postApplyTimeMs": 22402,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "22.40s",
+      "postApplyDisplay": "22.40s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 5,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-094411-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-glfw-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 10,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-glfw-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:43:52Z",
+      "finishedAt": "2026-03-12T08:44:32Z",
+      "elapsedSeconds": 39.841
+    },
+    {
+      "mode": "replay",
+      "project": "glfw",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/glfw",
+      "recordKey": "replay:cmake/clang/glfw",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 22402,
+      "postApplyTimeMs": 22402,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "22.40s",
+      "postApplyDisplay": "22.40s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 8,
+      "changedFilesCount": 5,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-094450-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-glfw-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-glfw-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:44:32Z",
+      "finishedAt": "2026-03-12T08:45:11Z",
+      "elapsedSeconds": 39.386
+    },
+    {
+      "mode": "discover",
+      "project": "leveldb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/leveldb",
+      "recordKey": "discover:cmake/clang/leveldb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/traces",
+      "status": "no_suggestions",
+      "reason": "\u2018is_standard_layout_v\u2019 is not a member of \u2018std\u2019; did you mean \u2018is_standard_layout\u2019?",
+      "baselineTimeMs": 152015,
+      "postApplyTimeMs": 152015,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "152.01s",
+      "postApplyDisplay": "152.01s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 2,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "\u2018is_standard_layout_v\u2019 is not a member of \u2018std\u2019; did you mean \u2018is_standard_layout\u2019?",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 23
+            },
+            "start": {
+              "character": 23,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018>\u2019 token",
+          "range": {
+            "end": {
+              "character": 69,
+              "line": 23
+            },
+            "start": {
+              "character": 69,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 71,
+              "line": 23
+            },
+            "start": {
+              "character": 71,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018is_standard_layout_v\u2019 is not a member of \u2018std\u2019; did you mean \u2018is_standard_layout\u2019?",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 23
+            },
+            "start": {
+              "character": 23,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018>\u2019 token",
+          "range": {
+            "end": {
+              "character": 69,
+              "line": 23
+            },
+            "start": {
+              "character": 69,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 71,
+              "line": 23
+            },
+            "start": {
+              "character": 71,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018is_standard_layout_v\u2019 is not a member of \u2018std\u2019; did you mean \u2018is_standard_layout\u2019?",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 23
+            },
+            "start": {
+              "character": 23,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018>\u2019 token",
+          "range": {
+            "end": {
+              "character": 69,
+              "line": 23
+            },
+            "start": {
+              "character": 69,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected primary-expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 71,
+              "line": 23
+            },
+            "start": {
+              "character": 71,
+              "line": 23
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-leveldb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 4,
+        "totalTextEdits": 62,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-leveldb-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:45:11Z",
+      "finishedAt": "2026-03-12T08:46:56Z",
+      "elapsedSeconds": 104.548
+    },
+    {
+      "mode": "replay",
+      "project": "leveldb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/leveldb",
+      "recordKey": "replay:cmake/clang/leveldb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-leveldb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-leveldb-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/leveldb/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:46:56Z",
+      "finishedAt": "2026-03-12T08:46:56Z",
+      "elapsedSeconds": 0.004
+    },
+    {
+      "mode": "discover",
+      "project": "libjpeg-turbo",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/libjpeg-turbo",
+      "recordKey": "discover:cmake/clang/libjpeg-turbo",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/traces",
+      "status": "no_suggestions",
+      "reason": "unknown type name \u2018size_t\u2019",
+      "baselineTimeMs": 70534,
+      "postApplyTimeMs": 70534,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "70.53s",
+      "postApplyDisplay": "70.53s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 854
+            },
+            "start": {
+              "character": 2,
+              "line": 854
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 2,
+              "line": 866
+            },
+            "start": {
+              "character": 2,
+              "line": 866
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 57,
+              "line": 897
+            },
+            "start": {
+              "character": 57,
+              "line": 897
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 899
+            },
+            "start": {
+              "character": 24,
+              "line": 899
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 33,
+              "line": 974
+            },
+            "start": {
+              "character": 33,
+              "line": 974
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 976
+            },
+            "start": {
+              "character": 35,
+              "line": 976
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 51,
+              "line": 983
+            },
+            "start": {
+              "character": 51,
+              "line": 983
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018FILE\u2019",
+          "range": {
+            "end": {
+              "character": 52,
+              "line": 984
+            },
+            "start": {
+              "character": 52,
+              "line": 984
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018size_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 591
+            },
+            "start": {
+              "character": 37,
+              "line": 591
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018NULL\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 54
+            },
+            "start": {
+              "character": 22,
+              "line": 54
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-libjpeg-turbo-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 4,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-libjpeg-turbo-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:46:56Z",
+      "finishedAt": "2026-03-12T08:47:12Z",
+      "elapsedSeconds": 16.27
+    },
+    {
+      "mode": "replay",
+      "project": "libjpeg-turbo",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/libjpeg-turbo",
+      "recordKey": "replay:cmake/clang/libjpeg-turbo",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libjpeg-turbo",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-libjpeg-turbo-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-libjpeg-turbo-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/libjpeg-turbo/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:47:12Z",
+      "finishedAt": "2026-03-12T08:47:12Z",
+      "elapsedSeconds": 0.006
+    },
+    {
+      "mode": "discover",
+      "project": "mimalloc",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/mimalloc",
+      "recordKey": "discover:cmake/clang/mimalloc",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 36555,
+      "postApplyTimeMs": 36555,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "36.55s",
+      "postApplyDisplay": "36.55s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 3,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-094721-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-mimalloc-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 1,
+        "totalTextEdits": 4,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-mimalloc-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:47:12Z",
+      "finishedAt": "2026-03-12T08:47:35Z",
+      "elapsedSeconds": 22.935
+    },
+    {
+      "mode": "replay",
+      "project": "mimalloc",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/mimalloc",
+      "recordKey": "replay:cmake/clang/mimalloc",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 36555,
+      "postApplyTimeMs": 36555,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "36.55s",
+      "postApplyDisplay": "36.55s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 4,
+      "changedFilesCount": 3,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-094744-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-mimalloc-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-mimalloc-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/mimalloc/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:47:35Z",
+      "finishedAt": "2026-03-12T08:47:58Z",
+      "elapsedSeconds": 23.099
+    },
+    {
+      "mode": "discover",
+      "project": "rocksdb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/rocksdb",
+      "recordKey": "discover:cmake/clang/rocksdb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/traces",
+      "status": "no_suggestions",
+      "reason": "Build failed with exit code 1",
+      "baselineTimeMs": 9912607,
+      "postApplyTimeMs": 9912607,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "9912.61s",
+      "postApplyDisplay": "9912.61s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 3,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-rocksdb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 81,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-rocksdb-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T08:47:58Z",
+      "finishedAt": "2026-03-12T08:58:13Z",
+      "elapsedSeconds": 614.932
+    },
+    {
+      "mode": "replay",
+      "project": "rocksdb",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/rocksdb",
+      "recordKey": "replay:cmake/clang/rocksdb",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/rocksdb/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-rocksdb-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-rocksdb-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T08:58:13Z",
+      "finishedAt": "2026-03-12T08:58:13Z",
+      "elapsedSeconds": 0.019
+    },
+    {
+      "mode": "discover",
+      "project": "yaml-cpp",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/yaml-cpp",
+      "recordKey": "discover:cmake/clang/yaml-cpp",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/traces",
+      "status": "no_suggestions",
+      "reason": "Build failed with exit code 1",
+      "baselineTimeMs": 157391,
+      "postApplyTimeMs": 157391,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "157.39s",
+      "postApplyDisplay": "157.39s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 2,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-yaml-cpp-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 48,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-yaml-cpp-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:58:13Z",
+      "finishedAt": "2026-03-12T08:59:32Z",
+      "elapsedSeconds": 78.984
+    },
+    {
+      "mode": "replay",
+      "project": "yaml-cpp",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/yaml-cpp",
+      "recordKey": "replay:cmake/clang/yaml-cpp",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-yaml-cpp-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-yaml-cpp-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/yaml-cpp/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:59:32Z",
+      "finishedAt": "2026-03-12T08:59:32Z",
+      "elapsedSeconds": 0.006
+    },
+    {
+      "mode": "discover",
+      "project": "zstd",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/zstd",
+      "recordKey": "discover:cmake/clang/zstd",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/build/cmake",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 100202,
+      "postApplyTimeMs": 100202,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "100.20s",
+      "postApplyDisplay": "100.20s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 6,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-095948-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-zstd-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 1,
+        "totalTextEdits": 6,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-zstd-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:59:32Z",
+      "finishedAt": "2026-03-12T09:00:08Z",
+      "elapsedSeconds": 35.507
+    },
+    {
+      "mode": "replay",
+      "project": "zstd",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/zstd",
+      "recordKey": "replay:cmake/clang/zstd",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/build/cmake",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 100202,
+      "postApplyTimeMs": 100202,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "100.20s",
+      "postApplyDisplay": "100.20s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 6,
+      "changedFilesCount": 6,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-100024-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-zstd-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/cmake-clang-zstd-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/zstd/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T09:00:08Z",
+      "finishedAt": "2026-03-12T09:00:44Z",
+      "elapsedSeconds": 35.613
+    },
+    {
+      "mode": "discover",
+      "project": "curl",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/curl",
+      "recordKey": "discover:make/clang/curl",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/traces",
+      "status": "no_suggestions",
+      "reason": "no-auto-direct-suggestions",
+      "baselineTimeMs": 240922,
+      "postApplyTimeMs": 240922,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "240.92s",
+      "postApplyDisplay": "240.92s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-curl-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 1,
+        "totalTextEdits": 48,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-curl-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:00:44Z",
+      "finishedAt": "2026-03-12T09:00:58Z",
+      "elapsedSeconds": 14.952
+    },
+    {
+      "mode": "replay",
+      "project": "curl",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/curl",
+      "recordKey": "replay:make/clang/curl",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/curl",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-curl-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-curl-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/curl/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:00:58Z",
+      "finishedAt": "2026-03-12T09:00:59Z",
+      "elapsedSeconds": 0.013
+    },
+    {
+      "mode": "discover",
+      "project": "libpng",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/libpng",
+      "recordKey": "discover:make/clang/libpng",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/traces",
+      "status": "no_suggestions",
+      "reason": "no-suggestions-generated",
+      "baselineTimeMs": 7973,
+      "postApplyTimeMs": 7973,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "7.97s",
+      "postApplyDisplay": "7.97s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-libpng-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-libpng-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:00:59Z",
+      "finishedAt": "2026-03-12T09:01:04Z",
+      "elapsedSeconds": 5.003
+    },
+    {
+      "mode": "replay",
+      "project": "libpng",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/libpng",
+      "recordKey": "replay:make/clang/libpng",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/libpng",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-libpng-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-libpng-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/libpng/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:01:04Z",
+      "finishedAt": "2026-03-12T09:01:04Z",
+      "elapsedSeconds": 0.004
+    },
+    {
+      "mode": "discover",
+      "project": "redis",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/redis",
+      "recordKey": "discover:make/clang/redis",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/traces",
+      "status": "no_suggestions",
+      "reason": "Build failed with exit code 1",
+      "baselineTimeMs": 540899,
+      "postApplyTimeMs": 540899,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "540.90s",
+      "postApplyDisplay": "540.90s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 4,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-redis-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 4,
+        "totalTextEdits": 78,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-redis-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:01:04Z",
+      "finishedAt": "2026-03-12T09:02:26Z",
+      "elapsedSeconds": 82.734
+    },
+    {
+      "mode": "replay",
+      "project": "redis",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/redis",
+      "recordKey": "replay:make/clang/redis",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/redis",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-redis-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-redis-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/redis/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:02:26Z",
+      "finishedAt": "2026-03-12T09:02:26Z",
+      "elapsedSeconds": 0.009
+    },
+    {
+      "mode": "discover",
+      "project": "zlib",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/zlib",
+      "recordKey": "discover:make/clang/zlib",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/traces",
+      "status": "no_suggestions",
+      "reason": "no-suggestions-generated",
+      "baselineTimeMs": 3957,
+      "postApplyTimeMs": 3957,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "3.96s",
+      "postApplyDisplay": "3.96s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-zlib-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-zlib-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:02:26Z",
+      "finishedAt": "2026-03-12T09:02:29Z",
+      "elapsedSeconds": 2.564
+    },
+    {
+      "mode": "replay",
+      "project": "zlib",
+      "buildSystem": "make",
+      "compiler": "clang",
+      "projectKey": "make/clang/zlib",
+      "recordKey": "replay:make/clang/zlib",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zlib",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-zlib-make-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/suggestion_edits/make-clang-zlib-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/make/clang/zlib/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:02:29Z",
+      "finishedAt": "2026-03-12T09:02:29Z",
+      "elapsedSeconds": 0.004
+    },
+    {
+      "mode": "discover",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "discover:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "build_failed",
+      "reason": "trace-bootstrap-failed-rc1",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/discover-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:02:29Z",
+      "finishedAt": "2026-03-12T09:02:31Z",
+      "elapsedSeconds": 2.6
+    },
+    {
+      "mode": "replay",
+      "project": "weston",
+      "buildSystem": "meson",
+      "compiler": "clang",
+      "projectKey": "meson/clang/weston",
+      "recordKey": "replay:meson/clang/weston",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces",
+      "status": "build_failed",
+      "reason": "trace-bootstrap-failed-rc1",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345/logs/replay-weston-meson-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.html",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/output/export/report.json"
+      ],
+      "startedAt": "2026-03-12T09:02:31Z",
+      "finishedAt": "2026-03-12T09:02:34Z",
+      "elapsedSeconds": 2.412
+    }
+  ]
+}

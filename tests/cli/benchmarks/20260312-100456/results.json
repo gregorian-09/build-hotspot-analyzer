@@ -1,0 +1,1635 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "opencv",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/opencv",
+      "recordKey": "discover:cmake/clang/opencv",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/traces",
+      "status": "no_suggestions",
+      "reason": "unknown type name \u2018OPJ_BOOL\u2019",
+      "baselineTimeMs": 695923,
+      "postApplyTimeMs": 695923,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "695.92s",
+      "postApplyDisplay": "695.92s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 2,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 293
+            },
+            "start": {
+              "character": 0,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018opj_has_thread_support\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 293
+            },
+            "start": {
+              "character": 22,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018opj_get_num_cpus\u2019",
+          "range": {
+            "end": {
+              "character": 17,
+              "line": 298
+            },
+            "start": {
+              "character": 17,
+              "line": 298
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 311
+            },
+            "start": {
+              "character": 0,
+              "line": 311
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 313
+            },
+            "start": {
+              "character": 4,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_mutex_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 26,
+              "line": 313
+            },
+            "start": {
+              "character": 26,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 38,
+              "line": 313
+            },
+            "start": {
+              "character": 38,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018mutex\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 315
+            },
+            "start": {
+              "character": 37,
+              "line": 315
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 20,
+              "line": 323
+            },
+            "start": {
+              "character": 20,
+              "line": 323
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 328
+            },
+            "start": {
+              "character": 22,
+              "line": 328
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 333
+            },
+            "start": {
+              "character": 23,
+              "line": 333
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 346
+            },
+            "start": {
+              "character": 0,
+              "line": 346
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 348
+            },
+            "start": {
+              "character": 4,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_cond_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 348
+            },
+            "start": {
+              "character": 24,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 348
+            },
+            "start": {
+              "character": 35,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018cond\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 352
+            },
+            "start": {
+              "character": 32,
+              "line": 352
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 19,
+              "line": 359
+            },
+            "start": {
+              "character": 19,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 359
+            },
+            "start": {
+              "character": 37,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 364
+            },
+            "start": {
+              "character": 21,
+              "line": 364
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 371
+            },
+            "start": {
+              "character": 22,
+              "line": 371
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_fn\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 382
+            },
+            "start": {
+              "character": 4,
+              "line": 382
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 389
+            },
+            "start": {
+              "character": 4,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_thread_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 389
+            },
+            "start": {
+              "character": 28,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 41,
+              "line": 389
+            },
+            "start": {
+              "character": 41,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018thread_fn\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 10,
+              "line": 390
+            },
+            "start": {
+              "character": 10,
+              "line": 390
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018user_data\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 390
+            },
+            "start": {
+              "character": 28,
+              "line": 390
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 394
+            },
+            "start": {
+              "character": 0,
+              "line": 394
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_fn\u2019; did you mean \u2018pthread_t\u2019?",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 394
+            },
+            "start": {
+              "character": 32,
+              "line": 394
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; did you mean \u2018pthread_t\u2019?",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 418
+            },
+            "start": {
+              "character": 21,
+              "line": 418
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_free_func\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 499
+            },
+            "start": {
+              "character": 4,
+              "line": 499
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 507
+            },
+            "start": {
+              "character": 7,
+              "line": 507
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_tls_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 12,
+              "line": 509
+            },
+            "start": {
+              "character": 12,
+              "line": 509
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 509
+            },
+            "start": {
+              "character": 22,
+              "line": 509
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 512
+            },
+            "start": {
+              "character": 28,
+              "line": 512
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 18,
+              "line": 527
+            },
+            "start": {
+              "character": 18,
+              "line": 527
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 538
+            },
+            "start": {
+              "character": 0,
+              "line": 538
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 538
+            },
+            "start": {
+              "character": 21,
+              "line": 538
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_free_func\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 539
+            },
+            "start": {
+              "character": 21,
+              "line": 539
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_job_fn\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 572
+            },
+            "start": {
+              "character": 4,
+              "line": 572
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 577
+            },
+            "start": {
+              "character": 4,
+              "line": 577
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 578
+            },
+            "start": {
+              "character": 4,
+              "line": 578
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 581
+            },
+            "start": {
+              "character": 4,
+              "line": 581
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 582
+            },
+            "start": {
+              "character": 4,
+              "line": 582
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 606
+            },
+            "start": {
+              "character": 4,
+              "line": 606
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 607
+            },
+            "start": {
+              "character": 4,
+              "line": 607
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 613
+            },
+            "start": {
+              "character": 4,
+              "line": 613
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 617
+            },
+            "start": {
+              "character": 7,
+              "line": 617
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019; did you mean \u2018pthread_cond_t\u2019?",
+          "range": {
+            "end": {
+              "character": 38,
+              "line": 617
+            },
+            "start": {
+              "character": 38,
+              "line": 617
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019; did you mean \u2018pthread_cond_t\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 619
+            },
+            "start": {
+              "character": 4,
+              "line": 619
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 621
+            },
+            "start": {
+              "character": 4,
+              "line": 621
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "Build validation timed out after 300 seconds",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 293
+            },
+            "start": {
+              "character": 0,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018opj_has_thread_support\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 293
+            },
+            "start": {
+              "character": 22,
+              "line": 293
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018opj_get_num_cpus\u2019",
+          "range": {
+            "end": {
+              "character": 17,
+              "line": 298
+            },
+            "start": {
+              "character": 17,
+              "line": 298
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 311
+            },
+            "start": {
+              "character": 0,
+              "line": 311
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 313
+            },
+            "start": {
+              "character": 4,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_mutex_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 26,
+              "line": 313
+            },
+            "start": {
+              "character": 26,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 38,
+              "line": 313
+            },
+            "start": {
+              "character": 38,
+              "line": 313
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018mutex\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 315
+            },
+            "start": {
+              "character": 37,
+              "line": 315
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 20,
+              "line": 323
+            },
+            "start": {
+              "character": 20,
+              "line": 323
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 328
+            },
+            "start": {
+              "character": 22,
+              "line": 328
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 333
+            },
+            "start": {
+              "character": 23,
+              "line": 333
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 346
+            },
+            "start": {
+              "character": 0,
+              "line": 346
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 348
+            },
+            "start": {
+              "character": 4,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_cond_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 24,
+              "line": 348
+            },
+            "start": {
+              "character": 24,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 348
+            },
+            "start": {
+              "character": 35,
+              "line": 348
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018cond\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 352
+            },
+            "start": {
+              "character": 32,
+              "line": 352
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 19,
+              "line": 359
+            },
+            "start": {
+              "character": 19,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 37,
+              "line": 359
+            },
+            "start": {
+              "character": 37,
+              "line": 359
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 364
+            },
+            "start": {
+              "character": 21,
+              "line": 364
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 371
+            },
+            "start": {
+              "character": 22,
+              "line": 371
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_fn\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 382
+            },
+            "start": {
+              "character": 4,
+              "line": 382
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 389
+            },
+            "start": {
+              "character": 4,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_thread_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 389
+            },
+            "start": {
+              "character": 28,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 41,
+              "line": 389
+            },
+            "start": {
+              "character": 41,
+              "line": 389
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018thread_fn\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 10,
+              "line": 390
+            },
+            "start": {
+              "character": 10,
+              "line": 390
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "request for member \u2018user_data\u2019 in something not a structure or union",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 390
+            },
+            "start": {
+              "character": 28,
+              "line": 390
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; use \u2018struct\u2019 keyword to refer to the type",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 394
+            },
+            "start": {
+              "character": 0,
+              "line": 394
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_fn\u2019; did you mean \u2018pthread_t\u2019?",
+          "range": {
+            "end": {
+              "character": 32,
+              "line": 394
+            },
+            "start": {
+              "character": 32,
+              "line": 394
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019; did you mean \u2018pthread_t\u2019?",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 418
+            },
+            "start": {
+              "character": 21,
+              "line": 418
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_free_func\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 499
+            },
+            "start": {
+              "character": 4,
+              "line": 499
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 507
+            },
+            "start": {
+              "character": 7,
+              "line": 507
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018opj_tls_t\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 12,
+              "line": 509
+            },
+            "start": {
+              "character": 12,
+              "line": 509
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "expected expression before \u2018)\u2019 token",
+          "range": {
+            "end": {
+              "character": 22,
+              "line": 509
+            },
+            "start": {
+              "character": 22,
+              "line": 509
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 28,
+              "line": 512
+            },
+            "start": {
+              "character": 28,
+              "line": 512
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 18,
+              "line": 527
+            },
+            "start": {
+              "character": 18,
+              "line": 527
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 538
+            },
+            "start": {
+              "character": 0,
+              "line": 538
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 538
+            },
+            "start": {
+              "character": 21,
+              "line": 538
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_free_func\u2019",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 539
+            },
+            "start": {
+              "character": 21,
+              "line": 539
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_job_fn\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 572
+            },
+            "start": {
+              "character": 4,
+              "line": 572
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 577
+            },
+            "start": {
+              "character": 4,
+              "line": 577
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 578
+            },
+            "start": {
+              "character": 4,
+              "line": 578
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 581
+            },
+            "start": {
+              "character": 4,
+              "line": 581
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 582
+            },
+            "start": {
+              "character": 4,
+              "line": 582
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_cond_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 606
+            },
+            "start": {
+              "character": 4,
+              "line": 606
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_mutex_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 607
+            },
+            "start": {
+              "character": 4,
+              "line": 607
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_tls_t\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 613
+            },
+            "start": {
+              "character": 4,
+              "line": 613
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 7,
+              "line": 617
+            },
+            "start": {
+              "character": 7,
+              "line": 617
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019; did you mean \u2018pthread_cond_t\u2019?",
+          "range": {
+            "end": {
+              "character": 38,
+              "line": 617
+            },
+            "start": {
+              "character": 38,
+              "line": 617
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018opj_thread_pool_t\u2019; did you mean \u2018pthread_cond_t\u2019?",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 619
+            },
+            "start": {
+              "character": 4,
+              "line": 619
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "unknown type name \u2018OPJ_BOOL\u2019",
+          "range": {
+            "end": {
+              "character": 4,
+              "line": 621
+            },
+            "start": {
+              "character": 4,
+              "line": 621
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-100456/logs/discover-opencv-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 27,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-100456/suggestion_edits/cmake-clang-opencv-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T10:04:56Z",
+      "finishedAt": "2026-03-12T10:18:45Z",
+      "elapsedSeconds": 828.64
+    },
+    {
+      "mode": "replay",
+      "project": "opencv",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/opencv",
+      "recordKey": "replay:cmake/clang/opencv",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/traces",
+      "status": "no_suggestions",
+      "reason": "replay-edits-empty-after-filter",
+      "baselineTimeMs": null,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "n/a",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 0,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "requested": false,
+        "ran": false,
+        "success": null,
+        "errorCount": 0
+      },
+      "applyErrors": [],
+      "backupId": "",
+      "revert": {
+        "attempted": false,
+        "success": null
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-100456/logs/replay-opencv-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-100456/suggestion_edits/cmake-clang-opencv-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T10:18:45Z",
+      "finishedAt": "2026-03-12T10:18:45Z",
+      "elapsedSeconds": 0.038
+    }
+  ]
+}

@@ -1,0 +1,668 @@
+{
+  "projectKey": "cmake/clang/benchmark",
+  "capturedAt": "2026-03-12T07:20:55Z",
+  "suggestionCount": 3,
+  "totalTextEdits": 74,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "PIMPL Pattern Opportunities (2 classes)",
+      "type": 6,
+      "priority": 0,
+      "confidence": 0.75,
+      "autoApplicable": false,
+      "applicationMode": "advisory",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 8,
+        "percentage": 2.8199905630089948,
+        "timeSaved": 710,
+        "timeSavedMs": 710
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 0,
+      "textEdits": []
+    },
+    {
+      "id": "ana-2",
+      "title": "Header Splitting Opportunities (3 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 43,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 6,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 187,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark.h",
+          "newText": "#include \"benchmark_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 187
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/include/benchmark/benchmark_fwd.h",
+          "newText": "#pragma once\n\nclass BaseClass;\nnamespace benchmark {\nclass BENCHMARK_EXPORT;\nclass Benchmark;\nclass MemoryManager;\nclass ProfilerManager;\nclass State;\nstruct BENCHMARK_EXPORT;\nstruct State;\nstruct ThreadRunnerBase;\nnamespace internal {\nclass BenchmarkFamilies;\nclass BenchmarkImp;\nclass BenchmarkInstance;\nclass PerfCountersMeasurement;\nclass ThreadManager;\nclass ThreadTimer;\nstruct Statistics;\n}  // namespace internal\n}  // namespace benchmark\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 11,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/check.h",
+          "newText": "#include \"check_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/check_fwd.h",
+          "newText": "#pragma once\n\nnamespace benchmark {\nnamespace internal {\nclass CheckHandler;\n}  // namespace internal\n}  // namespace benchmark\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 5,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.h",
+          "newText": "#include \"timers_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers_fwd.h",
+          "newText": "#pragma once\n\nnamespace benchmark {\nstruct ChooseClockType;\nstruct QuRTClock;\n}  // namespace benchmark\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Include Cleanup (32 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 68,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc"
+      ],
+      "textEditCount": 68,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 56
+        },
+        {
+          "endCol": 0,
+          "endLine": 56,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 55
+        },
+        {
+          "endCol": 0,
+          "endLine": 52,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 51
+        },
+        {
+          "endCol": 0,
+          "endLine": 45,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 44
+        },
+        {
+          "endCol": 0,
+          "endLine": 35,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 34
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 50,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 49
+        },
+        {
+          "endCol": 0,
+          "endLine": 49,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 48
+        },
+        {
+          "endCol": 0,
+          "endLine": 44,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 43
+        },
+        {
+          "endCol": 0,
+          "endLine": 43,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 42
+        },
+        {
+          "endCol": 0,
+          "endLine": 42,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 41
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 36,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 35
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 21
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_register.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 55,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 54
+        },
+        {
+          "endCol": 0,
+          "endLine": 53,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 52
+        },
+        {
+          "endCol": 0,
+          "endLine": 48,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 47
+        },
+        {
+          "endCol": 0,
+          "endLine": 46,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 45
+        },
+        {
+          "endCol": 0,
+          "endLine": 39,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 38
+        },
+        {
+          "endCol": 0,
+          "endLine": 38,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 37
+        },
+        {
+          "endCol": 0,
+          "endLine": 36,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 35
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/benchmark_runner.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/colorprint.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/console_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/console_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/console_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/console_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/console_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 21
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/json_reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 14
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/perf_counters.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/reporter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 83,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 82
+        },
+        {
+          "endCol": 0,
+          "endLine": 81,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 80
+        },
+        {
+          "endCol": 0,
+          "endLine": 77,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 76
+        },
+        {
+          "endCol": 0,
+          "endLine": 75,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 74
+        },
+        {
+          "endCol": 0,
+          "endLine": 74,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 73
+        },
+        {
+          "endCol": 0,
+          "endLine": 73,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 72
+        },
+        {
+          "endCol": 0,
+          "endLine": 72,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 71
+        },
+        {
+          "endCol": 0,
+          "endLine": 62,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 61
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 62,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 61
+        },
+        {
+          "endCol": 0,
+          "endLine": 61,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 60
+        },
+        {
+          "endCol": 0,
+          "endLine": 58,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 56
+        },
+        {
+          "endCol": 0,
+          "endLine": 51,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 50
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        }
+      ]
+    }
+  ]
+}

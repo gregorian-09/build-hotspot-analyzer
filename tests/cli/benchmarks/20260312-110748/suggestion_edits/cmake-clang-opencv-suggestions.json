@@ -1,0 +1,240 @@
+{
+  "projectKey": "cmake/clang/opencv",
+  "capturedAt": "2026-03-12T11:09:02Z",
+  "suggestionCount": 2,
+  "totalTextEdits": 23,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (100 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 23045,
+        "percentage": 16.106950392721696,
+        "timeSaved": 114822,
+        "timeSavedMs": 114822
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/tbb/CMakeLists.txt"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <eigen3/Eigen/src/Core/../plugins/BlockMethods.h>\n#include <eigen3/Eigen/src/Core/../plugins/IndexedViewMethods.h>\n#include <eigen3/Eigen/src/Core/ArithmeticSequence.h>\n#include <eigen3/Eigen/src/Core/Array.h>\n#include <eigen3/Eigen/src/Core/ArrayBase.h>\n#include <eigen3/Eigen/src/Core/AssignEvaluator.h>\n#include <eigen3/Eigen/src/Core/BandMatrix.h>\n#include <eigen3/Eigen/src/Core/Block.h>\n#include <eigen3/Eigen/src/Core/CoreEvaluators.h>\n#include <eigen3/Eigen/src/Core/CwiseNullaryOp.h>\n#include <eigen3/Eigen/src/Core/DenseBase.h>\n#include <eigen3/Eigen/src/Core/DenseCoeffsBase.h>\n#include <eigen3/Eigen/src/Core/DenseStorage.h>\n#include <eigen3/Eigen/src/Core/GeneralProduct.h>\n#include <eigen3/Eigen/src/Core/GenericPacketMath.h>\n#include <eigen3/Eigen/src/Core/GlobalFunctions.h>\n#include <eigen3/Eigen/src/Core/IO.h>\n#include <eigen3/Eigen/src/Core/MathFunctions.h>\n#include <eigen3/Eigen/src/Core/Matrix.h>\n#include <eigen3/Eigen/src/Core/MatrixBase.h>\n#include <eigen3/Eigen/src/Core/NumTraits.h>\n#include <eigen3/Eigen/src/Core/PermutationMatrix.h>\n#include <eigen3/Eigen/src/Core/PlainObjectBase.h>\n#include <eigen3/Eigen/src/Core/ProductEvaluators.h>\n#include <eigen3/Eigen/src/Core/Redux.h>\n#include <eigen3/Eigen/src/Core/Ref.h>\n#include <eigen3/Eigen/src/Core/Reshaped.h>\n#include <eigen3/Eigen/src/Core/SelfAdjointView.h>\n#include <eigen3/Eigen/src/Core/SolveTriangular.h>\n#include <eigen3/Eigen/src/Core/StlIterators.h>\n#include <eigen3/Eigen/src/Core/Transpose.h>\n#include <eigen3/Eigen/src/Core/TriangularMatrix.h>\n#include <eigen3/Eigen/src/Core/VectorwiseOp.h>\n#include <eigen3/Eigen/src/Core/arch/AVX/PacketMath.h>\n#include <eigen3/Eigen/src/Core/arch/Default/BFloat16.h>\n#include <eigen3/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h>\n#include <eigen3/Eigen/src/Core/arch/Default/Half.h>\n#include <eigen3/Eigen/src/Core/arch/SSE/Complex.h>\n#include <eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h>\n#include <eigen3/Eigen/src/Core/arch/SSE/PacketMath.h>\n#include <eigen3/Eigen/src/Core/functors/BinaryFunctors.h>\n#include <eigen3/Eigen/src/Core/functors/UnaryFunctors.h>\n#include <eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h>\n#include <eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h>\n#include <eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h>\n#include <eigen3/Eigen/src/Core/products/GeneralMatrixVector.h>\n#include <eigen3/Eigen/src/Core/products/Parallelizer.h>\n#include <eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h>\n#include <eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h>\n#include <eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h>\n#include <eigen3/Eigen/src/Core/products/TriangularMatrixVector.h>\n#include <eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h>\n#include <eigen3/Eigen/src/Core/util/BlasUtil.h>\n#include <eigen3/Eigen/src/Core/util/IndexedViewHelper.h>\n#include <eigen3/Eigen/src/Core/util/Memory.h>\n#include <eigen3/Eigen/src/Core/util/Meta.h>\n#include <eigen3/Eigen/src/Core/util/SymbolicIndex.h>\n#include <eigen3/Eigen/src/Core/util/XprHelper.h>\n#include <eigen3/unsupported/Eigen/CXX11/../src/SpecialFunctions/BesselFunctionsBFloat16.h>\n#include <eigen3/unsupported/Eigen/CXX11/../src/SpecialFunctions/BesselFunctionsImpl.h>\n#include <eigen3/unsupported/Eigen/CXX11/../src/SpecialFunctions/SpecialFunctionsImpl.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorBase.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorBlock.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorBroadcasting.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorChipping.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConcatenation.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContraction.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContractionMapper.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConversion.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConvolution.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorCostModel.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorCustomOp.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDimensions.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorEvaluator.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorExecutor.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorExpr.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorFFT.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorFunctors.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorImagePatch.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorIndexList.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorMorphing.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorPadding.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorRandom.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorReduction.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorReverse.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorScan.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorShuffling.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorStriding.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorUInt128.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorVolumePatch.h>\n#include <eigen3/unsupported/Eigen/CXX11/src/util/CXX11Meta.h>\n#include <emmintrin.h>\n#include <math.h>\n#include <mm_malloc.h>\n#include <pthread.h>\n#include <sched.h>\n#include <string.h>\n#include <wchar.h>\n#include <wmmintrin.h>\n#include <xmmintrin.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 122,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/tbb/CMakeLists.txt",
+          "newText": "target_precompile_headers(tbb PRIVATE \"../../pch.h\")\n",
+          "startCol": 0,
+          "startLine": 122
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Include Cleanup (21 includes)",
+      "type": 4,
+      "priority": 0,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 21,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openexr/Iex/IexBaseExc.cpp"
+      ],
+      "textEditCount": 21,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 43,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openexr/Iex/IexBaseExc.cpp",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 42
+        },
+        {
+          "endCol": 0,
+          "endLine": 38,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/bio.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 37
+        },
+        {
+          "endCol": 0,
+          "endLine": 40,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/cio.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/event.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/function_list.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 45,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/ht_dec.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 44
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/image.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/invert.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 40,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/jp2.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 39,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/mqc.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 38
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/opj_clock.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/opj_clock.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 39,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/opj_clock.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 38
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/opj_malloc.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 36,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/opj_malloc.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 35
+        },
+        {
+          "endCol": 0,
+          "endLine": 41,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/pi.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 40
+        },
+        {
+          "endCol": 0,
+          "endLine": 41,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/t2.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 40
+        },
+        {
+          "endCol": 0,
+          "endLine": 42,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/t2.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 41
+        },
+        {
+          "endCol": 0,
+          "endLine": 43,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/tcd.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 42
+        },
+        {
+          "endCol": 0,
+          "endLine": 40,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/tgt.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 293,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv/3rdparty/openjpeg/openjp2/thread.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 292
+        }
+      ]
+    }
+  ]
+}

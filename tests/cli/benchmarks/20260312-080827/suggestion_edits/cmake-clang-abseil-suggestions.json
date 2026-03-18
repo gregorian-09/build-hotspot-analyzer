@@ -1,0 +1,1190 @@
+{
+  "projectKey": "cmake/clang/abseil",
+  "capturedAt": "2026-03-12T08:10:14Z",
+  "suggestionCount": 4,
+  "totalTextEdits": 136,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (18 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 1740,
+        "percentage": 8.041349434368804,
+        "timeSaved": 65986,
+        "timeSavedMs": 65986
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/CMakeLists.txt"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <ctype.h>\n#include <endian.h>\n#include <errno.h>\n#include <features.h>\n#include <limits.h>\n#include <linux/errno.h>\n#include <math.h>\n#include <mmintrin.h>\n#include <pthread.h>\n#include <sched.h>\n#include <string.h>\n#include <time.h>\n#include <unistd.h>\n#include <wchar.h>\n#include <wctype.h>\n#include <x86_64-linux-gnu/sys/time.h>\n#include <xmmintrin.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 291,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/CMakeLists.txt",
+          "newText": "target_precompile_headers(base PRIVATE \"../../pch.h\")\n",
+          "startCol": 0,
+          "startLine": 291
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Header Splitting Opportunities (35 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 746,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 70,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 39,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/attributes.h",
+          "newText": "#include \"attributes_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/attributes_fwd.h",
+          "newText": "#pragma once\n\nstruct AbslInternal_YouForgotToExplicitlyInitializeAField;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 44,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/call_once.h",
+          "newText": "#include \"call_once_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 44
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/call_once_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass once_flag;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_scheduling.h",
+          "newText": "#include \"low_level_scheduling_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_scheduling_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass CondVar;\nclass Mutex;\nnamespace base_internal {\nclass SchedulingGuard;\nclass SchedulingHelper;\nclass SpinLock;\n}  // namespace base_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 45,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.h",
+          "newText": "#include \"spinlock_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 45
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace base_internal {\nclass ABSL_LOCKABLE;\n}  // namespace base_internal\n}  // namespace absl\nnamespace tcmalloc {\nnamespace tcmalloc_internal {\nclass AllocationGuardSpinLockHolder;\nclass Static;\n}  // namespace tcmalloc_internal\n}  // namespace tcmalloc\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 35,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.h",
+          "newText": "#include \"thread_identity_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 35
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nstruct SynchLocksHeld;\nstruct SynchWaitParams;\nnamespace base_internal {\nclass SpinLock;\nstruct PerThreadSynch;\nstruct ThreadIdentity;\n}  // namespace base_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 60,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hash_function_defaults.h",
+          "newText": "#include \"hash_function_defaults_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 60
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hash_function_defaults_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace container_internal {\nstruct StringEq;\nstruct StringHash;\nstruct StringHashEq;\n}  // namespace container_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.h",
+          "newText": "#include \"hashtablez_sampler_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace container_internal {\nclass HashtablezInfoHandle;\nstruct HashtablezInfo;\nstruct SamplingState;\n}  // namespace container_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 222,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/raw_hash_set.h",
+          "newText": "#include \"raw_hash_set_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 222
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/raw_hash_set_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace container_internal {\nclass CommonFields;\nclass CommonFieldsGenerationInfoDisabled;\nclass CommonFieldsGenerationInfoEnabled;\nclass GrowthInfo;\nclass HashSetIteratorGenerationInfoDisabled;\nclass HashSetIteratorGenerationInfoEnabled;\nclass HashtableSize;\nclass PerTableSeed;\nclass RawHashSetLayout;\nstruct HashtableFreeFunctionsAccess;\nstruct full_soo_tag_t;\nstruct no_seed_empty_tag_t;\nstruct non_soo_tag_t;\nstruct soo_tag_t;\nstruct uninitialized_tag_t;\n}  // namespace container_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/crc32c.h",
+          "newText": "#include \"crc32c_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/crc32c_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass crc32c_t;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_cord_state.h",
+          "newText": "#include \"crc_cord_state_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_cord_state_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace crc_internal {\nclass CrcCordState;\n}  // namespace crc_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto.h",
+          "newText": "#include \"proto_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 34
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/internal/proto_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace log_internal {\nclass ProtoField;\n}  // namespace log_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_entry.h",
+          "newText": "#include \"log_entry_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 37
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_entry_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass LogEntry;\nnamespace log_internal {\nclass LogEntryTestPeer;\nclass LogMessage;\n}  // namespace log_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_sink.h",
+          "newText": "#include \"log_sink_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/log/log_sink_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass LogSink;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 1216,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/numeric/int128.h",
+          "newText": "#include \"int128_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 1216
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/numeric/int128_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass int128;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/fast_uniform_bits.h",
+          "newText": "#include \"fast_uniform_bits_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/fast_uniform_bits_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace random_internal {\nstruct RejectionLoopTag;\n}  // namespace random_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/traits.h",
+          "newText": "#include \"traits_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/random/internal/traits_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace random_internal {\nstruct U256;\n}  // namespace random_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 98,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/cord.h",
+          "newText": "#include \"cord_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 98
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/cord_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass Cord;\nclass CordTestPeer;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree.h",
+          "newText": "#include \"cord_rep_btree_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace cord_internal {\nclass CordRepBtree;\nclass CordRepBtreeNavigator;\n}  // namespace cord_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_navigator.h",
+          "newText": "#include \"cord_rep_btree_navigator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_navigator_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace cord_internal {\nclass CordRepBtreeNavigator;\n}  // namespace cord_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_reader.h",
+          "newText": "#include \"cord_rep_btree_reader_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_btree_reader_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace cord_internal {\nclass CordRepBtreeReader;\n}  // namespace cord_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_crc.h",
+          "newText": "#include \"cord_rep_crc_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cord_rep_crc_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace cord_internal {\nstruct CordRepCrc;\n}  // namespace cord_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cordz_info.h",
+          "newText": "#include \"cordz_info_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/cordz_info_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace cord_internal {\nclass ABSL_LOCKABLE;\n}  // namespace cord_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 39,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/arg.h",
+          "newText": "#include \"arg_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/arg_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass Cord;\nclass FormatConversionSpec;\nclass FormatCountCapture;\nclass FormatSink;\nnamespace str_format_internal {\nstruct VoidPtr;\n}  // namespace str_format_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/bind.h",
+          "newText": "#include \"bind_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/bind_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass UntypedFormatSpec;\nnamespace str_format_internal {\nclass BoundConversion;\nclass UntypedFormatSpecImpl;\n}  // namespace str_format_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/constexpr_parser.h",
+          "newText": "#include \"constexpr_parser_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/constexpr_parser_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace str_format_internal {\nclass ConvTag;\nstruct ConvTagHolder;\nstruct UnboundConversion;\n}  // namespace str_format_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/extension.h",
+          "newText": "#include \"extension_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/internal/str_format/extension_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace str_format_internal {\nclass FormatConversionSpecImpl;\nclass FormatRawSinkImpl;\nstruct FormatConversionSpecImplFriend;\n}  // namespace str_format_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 116,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.h",
+          "newText": "#include \"str_cat_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 116
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nstruct Hex;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 89,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_format.h",
+          "newText": "#include \"str_format_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 89
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_format_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass FormatSink;\nclass UntypedFormatSpec;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 50,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_split.h",
+          "newText": "#include \"str_split_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 50
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_split_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass ByAnyChar;\nclass ByAsciiWhitespace;\nclass ByChar;\nclass ByLength;\nclass ByString;\nstruct SkipEmpty;\nstruct SkipWhitespace;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/kernel_timeout.h",
+          "newText": "#include \"kernel_timeout_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/kernel_timeout_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace synchronization_internal {\nclass KernelTimeout;\n}  // namespace synchronization_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/per_thread_sem.h",
+          "newText": "#include \"per_thread_sem_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/per_thread_sem_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass Mutex;\nnamespace synchronization_internal {\nclass PerThreadSem;\n}  // namespace synchronization_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/waiter_base.h",
+          "newText": "#include \"waiter_base_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 21
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/internal/waiter_base_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace synchronization_internal {\nclass WaiterBase;\n}  // namespace synchronization_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 77,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/mutex.h",
+          "newText": "#include \"mutex_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 77
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/synchronization/mutex_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nclass ABSL_LOCKABLE;\nclass ABSL_SCOPED_LOCKABLE;\nclass Condition;\nstruct SynchWaitParams;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 103,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time.h",
+          "newText": "#include \"time_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 103
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/time/time_fwd.h",
+          "newText": "#pragma once\n\nstruct timeval;\nnamespace absl {\nclass Duration;\nclass Time;\nclass TimeZone;\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 51,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/types/compare.h",
+          "newText": "#include \"compare_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 51
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/types/compare_fwd.h",
+          "newText": "#pragma once\n\nnamespace absl {\nnamespace compare_internal {\nclass OnlyLiteralZero;\n}  // namespace compare_internal\n}  // namespace absl\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Template Instantiation Optimization (9 templates)",
+      "type": 3,
+      "priority": 1,
+      "confidence": 0.8,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 2,
+        "filesAffected": 178,
+        "percentage": 0.0,
+        "timeSaved": 2116,
+        "timeSavedMs": 2116
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/template_instantiations.cpp"
+      ],
+      "filesToModify": [],
+      "textEditCount": 10,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 246,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/functional/function_ref.h",
+          "newText": "extern template absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;\n",
+          "startCol": 0,
+          "startLine": 246
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/profiling/template_instantiations.cpp",
+          "newText": "// template_instantiations.cpp\n// Explicit template instantiations to reduce compile-time overhead\n\n#include \"function_ref.h\"\n#include \"str_cat.h\"\n#include \"resize_and_overwrite.h\"\n#include \"cord.h\"\n\n// Explicit template instantiations\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 1760,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/cord.h",
+          "newText": "extern template absl::cord_internal::CordRepExternalImpl<void (*)(std::basic_string_view<char>)>::CordRepExternalImpl<void (*)(std::basic_string_view<char>)>;\n",
+          "startCol": 0,
+          "startLine": 1760
+        },
+        {
+          "endCol": 0,
+          "endLine": 1760,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/cord.h",
+          "newText": "extern template absl::cord_internal::NewExternalRep<void (*)(std::basic_string_view<char>)>;\n",
+          "startCol": 0,
+          "startLine": 1760
+        },
+        {
+          "endCol": 0,
+          "endLine": 189,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/resize_and_overwrite.h",
+          "newText": "extern template absl::strings_internal::StringResizeAndOverwriteFallback<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/str_cat.h:476:29)>;\n",
+          "startCol": 0,
+          "startLine": 189
+        },
+        {
+          "endCol": 0,
+          "endLine": 189,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/resize_and_overwrite.h",
+          "newText": "extern template absl::strings_internal::StringResizeAndOverwriteImpl<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/str_cat.h:476:29)>;\n",
+          "startCol": 0,
+          "startLine": 189
+        },
+        {
+          "endCol": 0,
+          "endLine": 189,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/resize_and_overwrite.h",
+          "newText": "extern template absl::strings_internal::StringResizeAndOverwriteImpl<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/ascii.h:194:46)>;\n",
+          "startCol": 0,
+          "startLine": 189
+        },
+        {
+          "endCol": 0,
+          "endLine": 630,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.h",
+          "newText": "extern template absl::StringResizeAndOverwrite<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/str_cat.h:490:28)>;\n",
+          "startCol": 0,
+          "startLine": 630
+        },
+        {
+          "endCol": 0,
+          "endLine": 630,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.h",
+          "newText": "extern template absl::StringResizeAndOverwrite<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/str_cat.h:476:29)>;\n",
+          "startCol": 0,
+          "startLine": 630
+        },
+        {
+          "endCol": 0,
+          "endLine": 630,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/strings/str_cat.h",
+          "newText": "extern template absl::StringResizeAndOverwrite<std::basic_string<char>, (lambda at /mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/strings/ascii.h:194:46)>;\n",
+          "startCol": 0,
+          "startLine": 630
+        }
+      ]
+    },
+    {
+      "id": "ana-4",
+      "title": "Include Cleanup (38 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 54,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc"
+      ],
+      "textEditCount": 54,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/cycleclock.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 58,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 54,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 53
+        },
+        {
+          "endCol": 0,
+          "endLine": 40,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 39
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/low_level_alloc.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/scoped_set_env.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/spinlock.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 71,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 70
+        },
+        {
+          "endCol": 0,
+          "endLine": 69,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 68
+        },
+        {
+          "endCol": 0,
+          "endLine": 64,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 63
+        },
+        {
+          "endCol": 0,
+          "endLine": 63,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 62
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/sysinfo.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/thread_identity.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/internal/throw_delegate.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/base/log_severity.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 36,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 35
+        },
+        {
+          "endCol": 0,
+          "endLine": 35,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 34
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/hashtablez_sampler.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/raw_hash_set.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/container/internal/raw_hash_set.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/cpu_detect.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 63,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 62
+        },
+        {
+          "endCol": 0,
+          "endLine": 62,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 61
+        },
+        {
+          "endCol": 0,
+          "endLine": 61,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 60
+        },
+        {
+          "endCol": 0,
+          "endLine": 60,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 59
+        },
+        {
+          "endCol": 0,
+          "endLine": 59,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 58
+        },
+        {
+          "endCol": 0,
+          "endLine": 58,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 56
+        },
+        {
+          "endCol": 0,
+          "endLine": 56,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 55
+        },
+        {
+          "endCol": 0,
+          "endLine": 55,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 54
+        },
+        {
+          "endCol": 0,
+          "endLine": 53,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 52
+        },
+        {
+          "endCol": 0,
+          "endLine": 51,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 50
+        },
+        {
+          "endCol": 0,
+          "endLine": 50,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 49
+        },
+        {
+          "endCol": 0,
+          "endLine": 49,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_memcpy_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 48
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 26,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 25
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 21
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/abseil/absl/crc/internal/crc_x86_arm_combined.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        }
+      ]
+    }
+  ]
+}

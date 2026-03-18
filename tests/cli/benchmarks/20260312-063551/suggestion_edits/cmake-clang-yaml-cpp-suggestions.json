@@ -1,0 +1,459 @@
+{
+  "projectKey": "cmake/clang/yaml-cpp",
+  "capturedAt": "2026-03-12T06:54:05Z",
+  "suggestionCount": 3,
+  "totalTextEdits": 48,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (6 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 193,
+        "percentage": 4.2129487153103495,
+        "timeSaved": 6630,
+        "timeSavedMs": 6630
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/CMakeLists.txt"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <errno.h>\n#include <features.h>\n#include <linux/errno.h>\n#include <pthread.h>\n#include <sched.h>\n#include <wchar.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 92,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/CMakeLists.txt",
+          "newText": "target_precompile_headers(yaml-cpp PRIVATE \"pch.h\")\n",
+          "startCol": 0,
+          "startLine": 92
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Header Splitting Opportunities (22 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 198,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 42,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/binary.h",
+          "newText": "#include \"binary_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/binary_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass YAML_CPP_API;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emitter.h",
+          "newText": "#include \"emitter_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emitter_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass Binary;\nclass EmitterState;\nclass YAML_CPP_API;\nstruct _Null;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emittermanip.h",
+          "newText": "#include \"emittermanip_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/emittermanip_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nstruct _Alias;\nstruct _Anchor;\nstruct _Comment;\nstruct _Indent;\nstruct _Precision;\nstruct _Tag;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/eventhandler.h",
+          "newText": "#include \"eventhandler_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/eventhandler_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass EventHandler;\nstruct Mark;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions.h",
+          "newText": "#include \"exceptions_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/exceptions_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass YAML_CPP_API;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/mark.h",
+          "newText": "#include \"mark_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/mark_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nstruct YAML_CPP_API;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/iterator.h",
+          "newText": "#include \"iterator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/iterator.h",
+          "newText": "#include \"iterator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/memory.h",
+          "newText": "#include \"memory_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/memory_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nnamespace detail {\nclass YAML_CPP_API;\nclass node;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_data.h",
+          "newText": "#include \"node_data_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_data_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nnamespace detail {\nclass YAML_CPP_API;\nclass node;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_iterator.h",
+          "newText": "#include \"node_iterator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_iterator_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nnamespace detail {\nstruct iterator_type;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_ref.h",
+          "newText": "#include \"node_ref_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_ref_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nnamespace detail {\nclass node_ref;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/node.h",
+          "newText": "#include \"node_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/node.h",
+          "newText": "#include \"node_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/node_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass YAML_CPP_API;\nnamespace detail {\nclass node;\nclass node_data;\nstruct iterator_value;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/node_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass YAML_CPP_API;\nnamespace detail {\nclass node;\nclass node_data;\nstruct iterator_value;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/ptr.h",
+          "newText": "#include \"ptr_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/ptr_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nnamespace detail {\nclass memory;\nclass memory_holder;\nclass node;\nclass node_data;\nclass node_ref;\n}  // namespace detail\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/ostream_wrapper.h",
+          "newText": "#include \"ostream_wrapper_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/ostream_wrapper_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass YAML_CPP_API;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/parser.h",
+          "newText": "#include \"parser_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/parser_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass EventHandler;\nclass Node;\nclass Scanner;\nclass YAML_CPP_API;\nstruct Directives;\nstruct Token;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 86,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/regex_yaml.h",
+          "newText": "#include \"regex_yaml_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 86
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/regex_yaml_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass Stream;\nclass YAML_CPP_API;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner.h",
+          "newText": "#include \"scanner_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 19
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/scanner_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass Node;\nclass RegEx;\nclass Scanner;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/stream.h",
+          "newText": "#include \"stream_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/stream_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass Stream;\nclass StreamCharSource;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/streamcharsource.h",
+          "newText": "#include \"streamcharsource_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/streamcharsource_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nclass StreamCharSource;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/token.h",
+          "newText": "#include \"token_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/token_fwd.h",
+          "newText": "#pragma once\n\nnamespace YAML {\nstruct Token;\n}  // namespace YAML\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Template Instantiation Optimization (1 templates)",
+      "type": 3,
+      "priority": 1,
+      "confidence": 0.8,
+      "estimatedImpact": {
+        "complexity": 2,
+        "filesAffected": 8,
+        "percentage": 0.0,
+        "timeSaved": 151,
+        "timeSavedMs": 151
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/template_instantiations.cpp"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/CMakeLists.txt"
+      ],
+      "textEditCount": 4,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 87,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/CMakeLists.txt",
+          "newText": "\n\nif(TARGET yaml-cpp)\n  target_sources(yaml-cpp PRIVATE \"src/template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 87
+        },
+        {
+          "endCol": 0,
+          "endLine": 87,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/CMakeLists.txt",
+          "newText": "\n\nif(TARGET yaml-cpp)\n  target_sources(yaml-cpp PRIVATE \"src/template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 87
+        },
+        {
+          "endCol": 0,
+          "endLine": 178,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/include/yaml-cpp/node/detail/node_iterator.h",
+          "newText": "extern template struct YAML::detail::node_iterator_value<YAML::detail::node>;\n",
+          "startCol": 0,
+          "startLine": 178
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/yaml-cpp/src/template_instantiations.cpp",
+          "newText": "// template_instantiations.cpp\n// Explicit template instantiations to reduce compile-time overhead\n\n#include \"include/yaml-cpp/node/detail/node_iterator.h\"\n\n// Explicit template instantiations\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    }
+  ]
+}

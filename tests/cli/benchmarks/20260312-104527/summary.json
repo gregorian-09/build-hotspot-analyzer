@@ -1,0 +1,69 @@
+{
+  "runMeta": {
+    "timestampUtc": "2026-03-12T11:02:46Z",
+    "branch": "feat/repo-wide-benchmark",
+    "commit": "b898a5c831885c6ca442340ea3310a82eff3e3b4",
+    "testsRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli",
+    "outputDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-104527",
+    "mode": "discover",
+    "replaySelection": "discover-applied-only",
+    "compilerFilter": "clang",
+    "buildSystemFilter": "cmake",
+    "excludedProjects": [],
+    "replayEditsDir": "",
+    "keepChanges": false,
+    "cleanRepoBeforeCase": true
+  },
+  "totals": {
+    "records": 1,
+    "attempted": 1,
+    "successful": 1,
+    "statusCounts": {
+      "success": 1
+    },
+    "totalBaselineMs": 707263,
+    "totalPostApplyMs": 712875,
+    "totalDeltaMs": -5612,
+    "totalDeltaPercent": -0.793,
+    "totalBaselineDisplay": "707.26s",
+    "totalPostApplyDisplay": "712.88s",
+    "totalDeltaDisplay": "-5.61s",
+    "meanDeltaPercentSuccessOnly": -0.793,
+    "medianDeltaPercentSuccessOnly": -0.793
+  },
+  "byMode": {
+    "discover": {
+      "records": 1,
+      "attempted": 1,
+      "successful": 1,
+      "statusCounts": {
+        "success": 1
+      },
+      "totalBaselineMs": 707263,
+      "totalPostApplyMs": 712875,
+      "totalDeltaMs": -5612,
+      "totalDeltaPercent": -0.793,
+      "totalBaselineDisplay": "707.26s",
+      "totalPostApplyDisplay": "712.88s",
+      "totalDeltaDisplay": "-5.61s",
+      "meanDeltaPercentSuccessOnly": -0.793,
+      "medianDeltaPercentSuccessOnly": -0.793
+    }
+  },
+  "topImprovements": [
+    {
+      "recordKey": "discover:cmake/clang/opencv",
+      "deltaMs": -5612,
+      "deltaDisplay": "-5.61s",
+      "deltaPercent": -0.793
+    }
+  ],
+  "topRegressions": [
+    {
+      "recordKey": "discover:cmake/clang/opencv",
+      "deltaMs": -5612,
+      "deltaDisplay": "-5.61s",
+      "deltaPercent": -0.793
+    }
+  ]
+}

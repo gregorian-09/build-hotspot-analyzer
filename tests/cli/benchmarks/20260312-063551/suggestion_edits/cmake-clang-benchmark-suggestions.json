@@ -1,0 +1,129 @@
+{
+  "projectKey": "cmake/clang/benchmark",
+  "capturedAt": "2026-03-12T06:46:21Z",
+  "suggestionCount": 2,
+  "totalTextEdits": 10,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "PIMPL Pattern Opportunities (2 classes)",
+      "type": 6,
+      "priority": 0,
+      "confidence": 0.75,
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 8,
+        "percentage": 2.8199905630089948,
+        "timeSaved": 710,
+        "timeSavedMs": 710
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 0,
+      "textEdits": []
+    },
+    {
+      "id": "ana-2",
+      "title": "Include Cleanup (10 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 10,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc"
+      ],
+      "textEditCount": 10,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 62,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 61
+        },
+        {
+          "endCol": 0,
+          "endLine": 61,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 60
+        },
+        {
+          "endCol": 0,
+          "endLine": 58,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 57
+        },
+        {
+          "endCol": 0,
+          "endLine": 57,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 56
+        },
+        {
+          "endCol": 0,
+          "endLine": 51,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 50
+        },
+        {
+          "endCol": 0,
+          "endLine": 31,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 30
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 29,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 28
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 26
+        },
+        {
+          "endCol": 0,
+          "endLine": 25,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark/src/timers.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 24
+        }
+      ]
+    }
+  ]
+}

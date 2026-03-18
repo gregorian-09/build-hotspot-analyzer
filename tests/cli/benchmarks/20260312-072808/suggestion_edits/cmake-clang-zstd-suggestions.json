@@ -1,0 +1,79 @@
+{
+  "projectKey": "cmake/clang/zstd",
+  "capturedAt": "2026-03-12T07:36:21Z",
+  "suggestionCount": 1,
+  "totalTextEdits": 6,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Include Cleanup (5 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 6,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c"
+      ],
+      "textEditCount": 6,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/pool.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 14
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/common/threading.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/fse_compress.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 19
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/hist.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 28,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/compress/huf_compress.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/zstd/lib/decompress/zstd_ddict.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        }
+      ]
+    }
+  ]
+}

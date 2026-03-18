@@ -1,0 +1,109 @@
+{
+  "runMeta": {
+    "timestampUtc": "2026-03-12T09:02:34Z",
+    "branch": "feat/repo-wide-benchmark",
+    "commit": "b898a5c831885c6ca442340ea3310a82eff3e3b4",
+    "testsRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli",
+    "outputDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-083345",
+    "mode": "both",
+    "replaySelection": "discover-applied-only",
+    "compilerFilter": "clang",
+    "buildSystemFilter": "all",
+    "excludedProjects": [],
+    "replayEditsDir": "",
+    "keepChanges": false,
+    "cleanRepoBeforeCase": true
+  },
+  "totals": {
+    "records": 28,
+    "attempted": 28,
+    "successful": 8,
+    "statusCounts": {
+      "success": 8,
+      "no_suggestions": 18,
+      "build_failed": 2
+    },
+    "totalBaselineMs": 13070997,
+    "totalPostApplyMs": 13070997,
+    "totalDeltaMs": 0,
+    "totalDeltaPercent": 0.0,
+    "totalBaselineDisplay": "13071.00s",
+    "totalPostApplyDisplay": "13071.00s",
+    "totalDeltaDisplay": "0ms",
+    "meanDeltaPercentSuccessOnly": 0.0,
+    "medianDeltaPercentSuccessOnly": 0.0
+  },
+  "byMode": {
+    "discover": {
+      "records": 14,
+      "attempted": 14,
+      "successful": 4,
+      "statusCounts": {
+        "success": 4,
+        "no_suggestions": 9,
+        "build_failed": 1
+      },
+      "totalBaselineMs": 12091250,
+      "totalPostApplyMs": 12091250,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "12091.25s",
+      "totalPostApplyDisplay": "12091.25s",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    },
+    "replay": {
+      "records": 14,
+      "attempted": 14,
+      "successful": 4,
+      "statusCounts": {
+        "success": 4,
+        "no_suggestions": 9,
+        "build_failed": 1
+      },
+      "totalBaselineMs": 979747,
+      "totalPostApplyMs": 979747,
+      "totalDeltaMs": 0,
+      "totalDeltaPercent": 0.0,
+      "totalBaselineDisplay": "979.75s",
+      "totalPostApplyDisplay": "979.75s",
+      "totalDeltaDisplay": "0ms",
+      "meanDeltaPercentSuccessOnly": 0.0,
+      "medianDeltaPercentSuccessOnly": 0.0
+    }
+  },
+  "topImprovements": [
+    {
+      "recordKey": "discover:cmake/clang/abseil",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    },
+    {
+      "recordKey": "replay:cmake/clang/abseil",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    },
+    {
+      "recordKey": "discover:cmake/clang/glfw",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    },
+    {
+      "recordKey": "replay:cmake/clang/glfw",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    },
+    {
+      "recordKey": "discover:cmake/clang/mimalloc",
+      "deltaMs": 0,
+      "deltaDisplay": "0ms",
+      "deltaPercent": 0.0
+    }
+  ],
+  "topRegressions": []
+}

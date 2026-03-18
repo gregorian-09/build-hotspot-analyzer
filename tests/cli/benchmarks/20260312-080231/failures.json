@@ -1,0 +1,276 @@
+{
+  "failures": [
+    {
+      "mode": "replay",
+      "project": "glfw",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/glfw",
+      "recordKey": "replay:cmake/clang/glfw",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 22402,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "22.40s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 0,
+      "suggestionsFailed": 0,
+      "editsSupplied": 8,
+      "changedFilesCount": 5,
+      "applyCommand": "bha.applyEdits",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 14,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "invalid application of \u2018sizeof\u2019 to incomplete type \u2018struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 25,
+              "line": 277
+            },
+            "start": {
+              "character": 25,
+              "line": 277
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "invalid use of undefined type \u2018const struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 50,
+              "line": 277
+            },
+            "start": {
+              "character": 50,
+              "line": 277
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "invalid use of undefined type \u2018const struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 41,
+              "line": 279
+            },
+            "start": {
+              "character": 41,
+              "line": 279
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "invalid use of undefined type \u2018const struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 55,
+              "line": 283
+            },
+            "start": {
+              "character": 55,
+              "line": 283
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "invalid use of undefined type \u2018const struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 13,
+              "line": 285
+            },
+            "start": {
+              "character": 13,
+              "line": 285
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_CREATE\u2019 undeclared (first use in this function); did you mean \u2018O_CREAT\u2019?",
+          "range": {
+            "end": {
+              "character": 23,
+              "line": 285
+            },
+            "start": {
+              "character": 23,
+              "line": 285
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_ATTRIB\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 35,
+              "line": 285
+            },
+            "start": {
+              "character": 35,
+              "line": 285
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "invalid use of undefined type \u2018const struct inotify_event\u2019",
+          "range": {
+            "end": {
+              "character": 18,
+              "line": 287
+            },
+            "start": {
+              "character": 18,
+              "line": 287
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_DELETE\u2019 undeclared (first use in this function); did you mean \u2018KEY_DELETE\u2019?",
+          "range": {
+            "end": {
+              "character": 27,
+              "line": 287
+            },
+            "start": {
+              "character": 27,
+              "line": 287
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_NONBLOCK\u2019 undeclared (first use in this function); did you mean \u2018O_NONBLOCK\u2019?",
+          "range": {
+            "end": {
+              "character": 40,
+              "line": 310
+            },
+            "start": {
+              "character": 40,
+              "line": 310
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_CLOEXEC\u2019 undeclared (first use in this function); did you mean \u2018O_CLOEXEC\u2019?",
+          "range": {
+            "end": {
+              "character": 54,
+              "line": 310
+            },
+            "start": {
+              "character": 54,
+              "line": 310
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_CREATE\u2019 undeclared (first use in this function); did you mean \u2018O_CREAT\u2019?",
+          "range": {
+            "end": {
+              "character": 46,
+              "line": 318
+            },
+            "start": {
+              "character": 46,
+              "line": 318
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_ATTRIB\u2019 undeclared (first use in this function)",
+          "range": {
+            "end": {
+              "character": 58,
+              "line": 318
+            },
+            "start": {
+              "character": 58,
+              "line": 318
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        },
+        {
+          "message": "\u2018IN_DELETE\u2019 undeclared (first use in this function); did you mean \u2018KEY_DELETE\u2019?",
+          "range": {
+            "end": {
+              "character": 70,
+              "line": 318
+            },
+            "start": {
+              "character": 70,
+              "line": 318
+            }
+          },
+          "severity": 1,
+          "source": "compiler"
+        }
+      ],
+      "backupId": "20260312-090330-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-080231/logs/replay-glfw-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": false,
+        "count": 0,
+        "totalTextEdits": 0,
+        "file": ""
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-080231/suggestion_edits/cmake-clang-glfw-suggestions.json",
+        "usedGeneratedFromDiscover": true
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T08:03:11Z",
+      "finishedAt": "2026-03-12T08:03:30Z",
+      "elapsedSeconds": 18.871
+    }
+  ]
+}

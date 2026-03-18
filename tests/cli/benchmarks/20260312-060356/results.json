@@ -1,0 +1,53 @@
+{
+  "projects": [
+    {
+      "project": "glfw",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/glfw",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 22402,
+      "postApplyTimeMs": 22402,
+      "deltaMs": 0,
+      "deltaPercent": 0.0,
+      "baselineDisplay": "22.40s",
+      "postApplyDisplay": "22.40s",
+      "deltaDisplay": "0ms",
+      "suggestionsFound": 1,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "backupId": "20260312-070414-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-060356/logs/glfw-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 1,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-060356/suggestion_edits/cmake-clang-glfw-suggestions.json"
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/glfw/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T06:03:56Z",
+      "finishedAt": "2026-03-12T06:04:35Z",
+      "elapsedSeconds": 39.065
+    }
+  ]
+}

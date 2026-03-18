@@ -1,0 +1,80 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "benchmark",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/benchmark",
+      "recordKey": "discover:cmake/clang/benchmark",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/benchmark",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/traces",
+      "status": "rollback_triggered",
+      "reason": "rollback-succeeded",
+      "baselineTimeMs": 25205,
+      "postApplyTimeMs": null,
+      "deltaMs": null,
+      "deltaPercent": null,
+      "baselineDisplay": "25.20s",
+      "postApplyDisplay": "n/a",
+      "deltaDisplay": "n/a",
+      "suggestionsFound": 3,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 1,
+      "editsSupplied": 0,
+      "changedFilesCount": 0,
+      "applyCommand": "bha.applyAllSuggestions",
+      "rollbackTriggered": true,
+      "buildValidation": {
+        "errorCount": 1,
+        "ran": true,
+        "requested": true,
+        "success": false
+      },
+      "applyErrors": [
+        {
+          "message": "Build failed with exit code 1",
+          "range": {
+            "end": {
+              "character": 0,
+              "line": 0
+            },
+            "start": {
+              "character": 0,
+              "line": 0
+            }
+          },
+          "severity": 1
+        }
+      ],
+      "backupId": "20260312-084048-1",
+      "revert": {
+        "attempted": true,
+        "success": false
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-073947/logs/discover-benchmark-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 3,
+        "totalTextEdits": 74,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-073947/suggestion_edits/cmake-clang-benchmark-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report.json",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/benchmark/output/export/report_pch_check.html"
+      ],
+      "startedAt": "2026-03-12T07:39:47Z",
+      "finishedAt": "2026-03-12T07:40:48Z",
+      "elapsedSeconds": 61.086
+    }
+  ]
+}

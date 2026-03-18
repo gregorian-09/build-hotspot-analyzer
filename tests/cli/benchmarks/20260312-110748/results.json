@@ -1,0 +1,62 @@
+{
+  "records": [
+    {
+      "mode": "discover",
+      "project": "opencv",
+      "buildSystem": "cmake",
+      "compiler": "clang",
+      "projectKey": "cmake/clang/opencv",
+      "recordKey": "discover:cmake/clang/opencv",
+      "projectRoot": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "repoDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/opencv",
+      "buildDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/build",
+      "traceDir": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/cmake/clang/opencv/traces",
+      "status": "success",
+      "reason": "completed",
+      "baselineTimeMs": 712875,
+      "postApplyTimeMs": 709901,
+      "deltaMs": 2974,
+      "deltaPercent": 0.417,
+      "baselineDisplay": "712.88s",
+      "postApplyDisplay": "709.90s",
+      "deltaDisplay": "2.97s",
+      "suggestionsFound": 2,
+      "suggestionsApplied": 1,
+      "suggestionsFailed": 0,
+      "editsSupplied": 0,
+      "changedFilesCount": 2,
+      "applyCommand": "bha.applyEdits(auto-direct)",
+      "rollbackTriggered": false,
+      "buildValidation": {
+        "errorCount": 0,
+        "ran": true,
+        "requested": true,
+        "success": true
+      },
+      "applyErrors": [],
+      "backupId": "20260312-120902-1",
+      "revert": {
+        "attempted": true,
+        "success": true
+      },
+      "logs": {
+        "lspStderr": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-110748/logs/discover-opencv-cmake-clang.lsp.err"
+      },
+      "suggestionEdits": {
+        "captured": true,
+        "count": 2,
+        "totalTextEdits": 23,
+        "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/benchmarks/20260312-110748/suggestion_edits/cmake-clang-opencv-suggestions.json"
+      },
+      "replaySource": {
+        "requestedDir": "",
+        "file": "",
+        "usedGeneratedFromDiscover": false
+      },
+      "existingExports": [],
+      "startedAt": "2026-03-12T11:07:48Z",
+      "finishedAt": "2026-03-12T11:20:59Z",
+      "elapsedSeconds": 790.677
+    }
+  ]
+}

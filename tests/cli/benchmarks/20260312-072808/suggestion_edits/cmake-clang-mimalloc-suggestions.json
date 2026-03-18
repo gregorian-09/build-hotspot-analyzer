@@ -1,0 +1,63 @@
+{
+  "projectKey": "cmake/clang/mimalloc",
+  "capturedAt": "2026-03-12T07:34:16Z",
+  "suggestionCount": 1,
+  "totalTextEdits": 4,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Include Cleanup (4 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 4,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/static.c"
+      ],
+      "textEditCount": 4,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/heap.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/static.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/src/static.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 64,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/mimalloc/test/test-stress.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 63
+        }
+      ]
+    }
+  ]
+}

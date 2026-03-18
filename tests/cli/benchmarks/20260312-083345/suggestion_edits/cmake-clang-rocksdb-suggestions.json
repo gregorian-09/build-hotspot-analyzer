@@ -1,0 +1,730 @@
+{
+  "projectKey": "cmake/clang/rocksdb",
+  "capturedAt": "2026-03-12T08:58:13Z",
+  "suggestionCount": 3,
+  "totalTextEdits": 81,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (39 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 10283,
+        "percentage": 11.146480350700635,
+        "timeSaved": 1104906,
+        "timeSavedMs": 1104906
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <../../../../../../../../mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/external_sst_file_ingestion_job.h>\n#include <asm-generic/errno.h>\n#include <ctype.h>\n#include <emmintrin.h>\n#include <endian.h>\n#include <errno.h>\n#include <features.h>\n#include <hresetintrin.h>\n#include <immintrin.h>\n#include <inttypes.h>\n#include <libintl.h>\n#include <limits.h>\n#include <linux/errno.h>\n#include <locale.h>\n#include <malloc.h>\n#include <math.h>\n#include <mm_malloc.h>\n#include <mmintrin.h>\n#include <pmmintrin.h>\n#include <pthread.h>\n#include <sched.h>\n#include <semaphore.h>\n#include <string.h>\n#include <syscall.h>\n#include <time.h>\n#include <unistd.h>\n#include <wchar.h>\n#include <wctype.h>\n#include <wmmintrin.h>\n#include <x86_64-linux-gnu/asm/errno.h>\n#include <x86_64-linux-gnu/asm/unistd.h>\n#include <x86_64-linux-gnu/asm/unistd_64.h>\n#include <x86_64-linux-gnu/sys/cdefs.h>\n#include <x86_64-linux-gnu/sys/mman.h>\n#include <x86_64-linux-gnu/sys/syscall.h>\n#include <x86_64-linux-gnu/sys/time.h>\n#include <x86gprintrin.h>\n#include <xmmintrin.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 1664,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "target_precompile_headers(block_cache_trace_analyzer PRIVATE \"pch.h\")\n",
+          "startCol": 0,
+          "startLine": 1664
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Template Instantiation Optimization (40 templates)",
+      "type": 3,
+      "priority": 1,
+      "confidence": 0.8,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 2,
+        "filesAffected": 3798,
+        "percentage": 0.0,
+        "timeSaved": 116045,
+        "timeSavedMs": 116045
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/tools/template_instantiations.cpp"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile"
+      ],
+      "textEditCount": 55,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 1334,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/CMakeLists.txt",
+          "newText": "\n\nif(TARGET testharness)\n  target_sources(testharness PRIVATE \"template_instantiations.cpp\")\nendif()\n",
+          "startCol": 0,
+          "startLine": 1334
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 2543,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/Makefile",
+          "newText": "\nSRCS += template_instantiations.cpp\n",
+          "startCol": 0,
+          "startLine": 2543
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/tools/template_instantiations.cpp",
+          "newText": "// template_instantiations.cpp\n// Explicit template instantiations to reduce compile-time overhead\n\n#include \"util/autovector.h\"\n#include \"util/mutexlock.h\"\n\n// Explicit template instantiations\ntemplate class rocksdb::Striped<rocksdb::CacheAlignedWrapper<rocksdb::port::Mutex>>;\ntemplate class rocksdb::autovector<const unsigned long *>::autovector;\ntemplate class rocksdb::autovector<const unsigned long *>::push_back;\ntemplate class rocksdb::autovector<rocksdb::ColumnFamilyData *>::autovector;\ntemplate class rocksdb::autovector<rocksdb::ColumnFamilyData *>::emplace_back<rocksdb::ColumnFamilyData *&>;\ntemplate class rocksdb::autovector<rocksdb::ColumnFamilyData *>;\ntemplate class rocksdb::autovector<rocksdb::FileIndexer::IndexLevel>;\ntemplate class rocksdb::autovector<rocksdb::FileMetaData>::assign;\ntemplate class rocksdb::autovector<rocksdb::FileMetaData>::push_back;\ntemplate class rocksdb::autovector<rocksdb::FileMetaData>;\ntemplate class rocksdb::autovector<rocksdb::IngestedFileInfo *>::push_back;\ntemplate class rocksdb::autovector<rocksdb::KeyContext *, 32>;\ntemplate class rocksdb::autovector<rocksdb::LevelFilesBrief>;\ntemplate class rocksdb::autovector<rocksdb::LogBuffer::BufferedLog *>;\ntemplate class rocksdb::autovector<rocksdb::ProtectionInfoKVOC<unsigned long>>::resize;\ntemplate class rocksdb::autovector<rocksdb::ProtectionInfoKVOC<unsigned long>>;\ntemplate class rocksdb::autovector<rocksdb::ReadOnlyMemTable *>::autovector;\ntemplate class rocksdb::autovector<rocksdb::SuperVersion *>::autovector;\ntemplate class rocksdb::autovector<rocksdb::SuperVersionContext::WriteStallNotification>::autovector;\ntemplate class rocksdb::autovector<rocksdb::SuperVersionContext::WriteStallNotification>::push_back;\ntemplate class rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>::pop_back;\ntemplate class rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>::push_back;\ntemplate class rocksdb::autovector<rocksdb::VersionEdit *>::assign;\ntemplate class rocksdb::autovector<rocksdb::VersionEdit *>::autovector;\ntemplate class rocksdb::autovector<rocksdb::VersionEdit *>::emplace_back<rocksdb::VersionEdit *&>;\ntemplate class rocksdb::autovector<rocksdb::VersionEdit *>;\ntemplate class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::autovector;\ntemplate class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::emplace_back<const rocksdb::autovector<rocksdb::VersionEdit *> &>;\ntemplate class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::emplace_back<rocksdb::autovector<rocksdb::VersionEdit *> &>;\ntemplate class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>;\ntemplate class rocksdb::autovector<rocksdb::log::Writer *>::autovector;\ntemplate class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>::pop_back;\ntemplate class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>::push_back;\ntemplate class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>;\ntemplate class rocksdb::autovector<std::pair<int, rocksdb::FileMetaData *>>::emplace_back<int &, rocksdb::FileMetaData *&>;\ntemplate class rocksdb::autovector<std::pair<int, rocksdb::FileMetaData *>>;\ntemplate class rocksdb::autovector<std::shared_ptr<const rocksdb::SnapshotImpl>>::emplace_back<std::shared_ptr<const rocksdb::SnapshotImpl> &>;\ntemplate class rocksdb::autovector<unsigned long>::assign;\ntemplate class rocksdb::autovector<unsigned long>::autovector;\ntemplate class rocksdb::autovector<unsigned long>::push_back;\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::IngestedFileInfo *>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<const unsigned long *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::LogBuffer::BufferedLog *>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::shared_ptr<const rocksdb::SnapshotImpl>>::emplace_back<std::shared_ptr<const rocksdb::SnapshotImpl> &>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::VersionEdit *>::emplace_back<rocksdb::VersionEdit *&>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ColumnFamilyData *>::emplace_back<rocksdb::ColumnFamilyData *&>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ProtectionInfoKVOC<unsigned long>>::resize;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ProtectionInfoKVOC<unsigned long>>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<const unsigned long *>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::SuperVersion *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<unsigned long>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::SuperVersionContext::WriteStallNotification>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::pair<int, rocksdb::FileMetaData *>>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<unsigned long>::assign;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::KeyContext *, 32>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<unsigned long>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::FileMetaData>::assign;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ColumnFamilyData *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::VersionEdit *>::assign;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::VersionEdit *>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::log::Writer *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>::pop_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ReadOnlyMemTable *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::FileMetaData>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::FileIndexer::IndexLevel>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>::pop_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::LevelFilesBrief>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::ColumnFamilyData *>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::emplace_back<const rocksdb::autovector<rocksdb::VersionEdit *> &>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::autovector<rocksdb::VersionEdit *>>::emplace_back<rocksdb::autovector<rocksdb::VersionEdit *> &>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::VersionEdit *>::autovector;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::FileMetaData>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::pair<int, rocksdb::FileMetaData *>>::emplace_back<int &, rocksdb::FileMetaData *&>;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<std::_Rb_tree_const_iterator<rocksdb::TruncatedRangeDelIterator *>>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 396,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/autovector.h",
+          "newText": "extern template class rocksdb::autovector<rocksdb::SuperVersionContext::WriteStallNotification>::push_back;\n",
+          "startCol": 0,
+          "startLine": 396
+        },
+        {
+          "endCol": 0,
+          "endLine": 188,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/util/mutexlock.h",
+          "newText": "extern template class rocksdb::Striped<rocksdb::CacheAlignedWrapper<rocksdb::port::Mutex>>;\n",
+          "startCol": 0,
+          "startLine": 188
+        }
+      ]
+    },
+    {
+      "id": "ana-3",
+      "title": "Include Cleanup (21 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 24,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/lru_cache.cc"
+      ],
+      "textEditCount": 24,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_entry_roles.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_key.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_reservation_manager.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 19
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/cache_reservation_manager.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/lru_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 19
+        },
+        {
+          "endCol": 0,
+          "endLine": 19,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/lru_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/lru_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/secondary_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 6,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/secondary_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 5
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/secondary_cache_adapter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/secondary_cache_adapter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 7
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/cache/sharded_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/arena_wrapped_db_iter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 17
+        },
+        {
+          "endCol": 0,
+          "endLine": 14,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/arena_wrapped_db_iter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_contents.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 11,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_contents.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_contents.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_builder.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_builder.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 17,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_cache.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_reader.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/rocksdb/db/blob/blob_file_reader.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 20
+        }
+      ]
+    }
+  ]
+}

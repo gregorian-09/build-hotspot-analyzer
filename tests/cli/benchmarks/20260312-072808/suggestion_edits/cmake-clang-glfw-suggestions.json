@@ -1,0 +1,134 @@
+{
+  "projectKey": "cmake/clang/glfw",
+  "capturedAt": "2026-03-12T07:31:16Z",
+  "suggestionCount": 2,
+  "totalTextEdits": 10,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Header Splitting Opportunities (1 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 26,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 45,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_platform.h",
+          "newText": "#include \"wl_platform_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 45
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_platform_fwd.h",
+          "newText": "#pragma once\n\nstruct libdecor;\nstruct libdecor_configuration;\nstruct libdecor_frame;\nstruct libdecor_state;\nstruct wl_output;\nstruct wl_shm;\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "Include Cleanup (8 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 8,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c"
+      ],
+      "textEditCount": 8,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/linux_joystick.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/linux_joystick.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/null_monitor.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_time.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 32,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/posix_time.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 31
+        },
+        {
+          "endCol": 0,
+          "endLine": 37,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 36
+        },
+        {
+          "endCol": 0,
+          "endLine": 33,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_init.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 32
+        },
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/glfw/src/wl_monitor.c",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        }
+      ]
+    }
+  ]
+}

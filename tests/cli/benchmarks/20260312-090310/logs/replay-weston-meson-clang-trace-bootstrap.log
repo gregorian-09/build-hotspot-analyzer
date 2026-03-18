@@ -1,0 +1,108 @@
+$ cd "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston" && "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/build/bha" build --build-system meson --compiler clang --build-dir "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build" --output "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/traces" --memory --clean --configure-args "-Dbackend-drm=true;-Dbackend-wayland=false;-Dbackend-x11=false;-Dbackend-headless=true;-Drenderer-gl=false;-Dxwayland=false;-Dpipewire=false;-Dremoting=false;-Dshell-lua=false;-Dbackend-rdp=false;-Drenderer-vulkan=false;-Dshell-desktop=false;-Dshell-ivi=false;-Dbackend-pipewire=false;-Dshell-kiosk=true;-Ddemo-clients=false;-Dsimple-clients=[];-Dtests=false"
+
+[stdout]
+
+
+[stderr]
+error: Build failed
+Meson configure failed: The Meson build system
+Version: 1.3.2
+Source dir: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston
+Build dir: /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build
+Build type: native build
+Project name: weston
+Project version: 14.0.93
+C compiler for the host machine: /usr/bin/clang (clang 18.1.8 "Ubuntu clang version 18.1.8 (++20240731025043+3b5b5c1ec4a3-1~exp1~20240731145144.92)")
+C linker for the host machine: /usr/bin/clang ld.bfd 2.42
+C++ compiler for the host machine: /usr/bin/clang++ (clang 18.1.8 "Ubuntu clang version 18.1.8 (++20240731025043+3b5b5c1ec4a3-1~exp1~20240731145144.92)")
+C++ linker for the host machine: /usr/bin/clang++ ld.bfd 2.42
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Found git repository at /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston
+Compiler for C supports arguments -Wmissing-prototypes: YES 
+Compiler for C supports arguments -Wno-unused-parameter: YES 
+Compiler for C supports arguments -Wno-shift-negative-value: YES 
+Compiler for C supports arguments -Wno-missing-field-initializers: YES 
+Compiler for C supports arguments -Wno-pedantic: YES 
+Compiler for C supports arguments -Wundef: YES 
+Compiler for C supports arguments -fvisibility=hidden: YES 
+Header "sys/sysmacros.h" has symbol "major" : YES 
+Compiler for C++ supports arguments -Wno-unused-parameter: YES 
+Checking for function "mkostemp" : YES 
+Checking for function "strchrnul" : YES 
+Checking for function "initgroups" : YES 
+Checking for function "posix_fallocate" : YES 
+Checking for function "memfd_create" : YES 
+Checking for function "unreachable" : YES 
+Has header "linux/sync_file.h" : YES 
+Checking if "builtin_clz" : links: YES 
+Checking if "builtin_bswap32" : links: YES 
+Checking if "builtin_popcount" : links: YES 
+Message: The default backend is drm
+Found pkg-config: YES (/usr/bin/pkg-config) 1.8.1
+Run-time dependency wayland-server found: YES 1.23.0
+Run-time dependency wayland-client found: YES 1.23.0
+Run-time dependency pixman-1 found: YES 0.42.2
+Run-time dependency xkbcommon found: YES 1.6.0
+Run-time dependency libinput found: YES 1.25.0
+Run-time dependency libevdev found: YES 1.13.1
+Library m found: YES
+Library dl found: YES
+Run-time dependency libdrm found: YES 2.4.125
+Run-time dependency threads found: YES
+Run-time dependency lcms2 found: YES 2.14
+Found CMake: /usr/bin/cmake (3.28.3)
+Run-time dependency libdisplay-info found: NO (tried pkgconfig and cmake)
+Looking for a fallback subproject for the dependency libdisplay-info
+
+Executing subproject display-info 
+
+display-info| Project name: libdisplay-info
+display-info| Project version: 0.2.0
+display-info| C compiler for the host machine: /usr/bin/clang (clang 18.1.8 "Ubuntu clang version 18.1.8 (++20240731025043+3b5b5c1ec4a3-1~exp1~20240731145144.92)")
+display-info| C linker for the host machine: /usr/bin/clang ld.bfd 2.42
+display-info| Build-time dependency hwdata found: YES 0.379
+display-info| Program tool/gen-search-table.py found: YES (/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston/subprojects/display-info/tool/gen-search-table.py)
+display-info| Library m found: YES
+display-info| Compiler for C supports arguments -Wundef: YES (cached)
+display-info| Compiler for C supports arguments -Wmissing-prototypes: YES (cached)
+display-info| Compiler for C supports arguments -Walloca: YES
+display-info| Compiler for C supports arguments -Wdeclaration-after-statement: YES
+display-info| Compiler for C supports arguments -Wconversion: YES
+display-info| Compiler for C supports arguments -Wno-unused-parameter: YES (cached)
+display-info| Compiler for C supports arguments -Wno-missing-field-initializers: YES (cached)
+display-info| Compiler for C supports arguments -Werror=implicit: YES
+display-info| Program ./edid-decode-check.sh found: YES (/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston/subprojects/display-info/test/./edid-decode-check.sh)
+display-info| Program ./edid-print-check.sh found: YES (/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston/subprojects/display-info/test/./edid-print-check.sh)
+display-info| Program ./edid-decode-diff.sh found: YES (/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/weston/subprojects/display-info/test/./edid-decode-diff.sh)
+display-info| Using subprojects/display-info/subprojects/edid-decode.wrap
+display-info| WARNING: Subproject edid-decode's revision may be out of date; its wrap file has changed since it was first configured
+
+Executing subproject display-info:edid-decode
+
+edid-decode| Project name: edid-decode
+edid-decode| Project version: undefined
+edid-decode| C++ compiler for the host machine: /usr/bin/clang++ (clang 18.1.8 "Ubuntu clang version 18.1.8 (++20240731025043+3b5b5c1ec4a3-1~exp1~20240731145144.92)")
+edid-decode| C++ linker for the host machine: /usr/bin/clang++ ld.bfd 2.42
+edid-decode| Program git found: YES (/usr/bin/git)
+edid-decode| Build targets in project: 6
+edid-decode| Subproject edid-decode finished.
+
+display-info| Program edid-decode found: YES (overridden)
+display-info| Build targets in project: 7
+display-info| Subproject display-info finished.
+
+Dependency libdisplay-info found: YES 0.2.0 (overridden)
+Program python3 found: YES (/usr/bin/python3)
+Program  found: NO
+Configuring version.h using configuration
+Build-time dependency wayland-scanner found: YES 1.23.0
+Program /usr/local/bin/wayland-scanner found: YES (/usr/local/bin/wayland-scanner)
+Dependency wayland-protocols found: NO found 1.45 but need: '>= 1.46'
+Run-time dependency wayland-protocols found: NO (tried pkgconfig and cmake)
+Looking for a fallback subproject for the dependency wayland-protocols
+
+protocol/meson.build:4:9: ERROR: Neither a subproject directory nor a wayland-protocols.wrap file was found.
+
+A full log can be found at /home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/meson/clang/weston/build/meson-logs/meson-log.txt
+

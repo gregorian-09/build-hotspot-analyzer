@@ -1,0 +1,597 @@
+{
+  "projectKey": "cmake/clang/leveldb",
+  "capturedAt": "2026-03-12T07:33:45Z",
+  "suggestionCount": 4,
+  "totalTextEdits": 62,
+  "suggestions": [
+    {
+      "id": "ana-1",
+      "title": "Precompiled Header Optimization (7 headers)",
+      "type": 0,
+      "priority": 0,
+      "confidence": 0.85,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 247,
+        "percentage": 5.851318720378422,
+        "timeSaved": 8894,
+        "timeSavedMs": 8894
+      },
+      "filesToCreate": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/pch.h"
+      ],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/CMakeLists.txt"
+      ],
+      "textEditCount": 2,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/pch.h",
+          "newText": "#pragma once\n\n// External/System Headers\n#include <errno.h>\n#include <features.h>\n#include <linux/errno.h>\n#include <pthread.h>\n#include <string.h>\n#include <wchar.h>\n#include <x86_64-linux-gnu/asm/errno.h>\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 211,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/CMakeLists.txt",
+          "newText": "target_precompile_headers(leveldb PRIVATE \"pch.h\")\n",
+          "startCol": 0,
+          "startLine": 211
+        }
+      ]
+    },
+    {
+      "id": "ana-2",
+      "title": "PIMPL Pattern Opportunities (11 classes)",
+      "type": 6,
+      "priority": 0,
+      "confidence": 0.75,
+      "autoApplicable": false,
+      "applicationMode": "advisory",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 11,
+        "percentage": 5.2487928753603885,
+        "timeSaved": 7978,
+        "timeSavedMs": 7978
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 0,
+      "textEdits": []
+    },
+    {
+      "id": "ana-3",
+      "title": "Header Splitting Opportunities (24 headers)",
+      "type": 1,
+      "priority": 0,
+      "confidence": 0.7,
+      "autoApplicable": false,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 3,
+        "filesAffected": 310,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        ""
+      ],
+      "textEditCount": 48,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 18,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/dbformat.h",
+          "newText": "#include \"dbformat_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 18
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/dbformat_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass InternalFilterPolicy;\nclass InternalKey;\nclass InternalKeyComparator;\nclass LookupKey;\nstruct ParsedInternalKey;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/filename.h",
+          "newText": "#include \"filename_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/filename_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Env;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_reader.h",
+          "newText": "#include \"log_reader_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_reader_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass SequentialFile;\nnamespace log {\nclass Reader;\n}  // namespace log\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer.h",
+          "newText": "#include \"log_writer_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/log_writer_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass WritableFile;\nnamespace log {\nclass Writer;\n}  // namespace log\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable.h",
+          "newText": "#include \"memtable_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/memtable_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass InternalKeyComparator;\nclass MemTable;\nclass MemTableIterator;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 16,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/table_cache.h",
+          "newText": "#include \"table_cache_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 16
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/table_cache_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Env;\nclass TableCache;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/version_edit.h",
+          "newText": "#include \"version_edit_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/version_edit_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass VersionEdit;\nclass VersionSet;\nstruct FileMetaData;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 24,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/cache.h",
+          "newText": "#include \"cache_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 24
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/cache_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/comparator.h",
+          "newText": "#include \"comparator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/comparator_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\nclass Slice;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/db.h",
+          "newText": "#include \"db_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/db_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\nclass WriteBatch;\nstruct LEVELDB_EXPORT;\nstruct Options;\nstruct ReadOptions;\nstruct WriteOptions;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 22,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/env.h",
+          "newText": "#include \"env_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 22
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/env_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass FileLock;\nclass LEVELDB_EXPORT;\nclass Logger;\nclass RandomAccessFile;\nclass SequentialFile;\nclass Slice;\nclass WritableFile;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 21,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/filter_policy.h",
+          "newText": "#include \"filter_policy_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 21
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/filter_policy_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\nclass Slice;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/iterator.h",
+          "newText": "#include \"iterator_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/iterator_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/options.h",
+          "newText": "#include \"options_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/options_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Cache;\nclass Comparator;\nclass Env;\nclass FilterPolicy;\nclass Logger;\nclass Snapshot;\nstruct LEVELDB_EXPORT;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 23,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/slice.h",
+          "newText": "#include \"slice_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 23
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/slice_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/status.h",
+          "newText": "#include \"status_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/status_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 11,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/table.h",
+          "newText": "#include \"table_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 20,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/table_builder.h",
+          "newText": "#include \"table_builder_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 20
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/table_builder_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass BlockBuilder;\nclass BlockHandle;\nclass LEVELDB_EXPORT;\nclass WritableFile;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/table_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Block;\nclass BlockHandle;\nclass Footer;\nclass LEVELDB_EXPORT;\nclass RandomAccessFile;\nclass TableCache;\nstruct Options;\nstruct ReadOptions;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 27,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/write_batch.h",
+          "newText": "#include \"write_batch_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 27
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/include/leveldb/write_batch_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass LEVELDB_EXPORT;\nclass Slice;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 43,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/port/port_stdcxx.h",
+          "newText": "#include \"port_stdcxx_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 43
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/port/port_stdcxx_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nnamespace port {\nclass CondVar;\nclass LOCKABLE;\n}  // namespace port\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 11,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block.h",
+          "newText": "#include \"block_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Block;\nclass Comparator;\nstruct BlockContents;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 13,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/format.h",
+          "newText": "#include \"format_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/format_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Block;\nclass BlockHandle;\nclass Footer;\nclass RandomAccessFile;\nstruct BlockContents;\nstruct ReadOptions;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena.h",
+          "newText": "#include \"arena_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 12
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/arena_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Arena;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        },
+        {
+          "endCol": 0,
+          "endLine": 15,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging.h",
+          "newText": "#include \"logging_fwd.h\"\n",
+          "startCol": 0,
+          "startLine": 15
+        },
+        {
+          "endCol": 0,
+          "endLine": 0,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/util/logging_fwd.h",
+          "newText": "#pragma once\n\nnamespace leveldb {\nclass Slice;\nclass WritableFile;\n}  // namespace leveldb\n",
+          "startCol": 0,
+          "startLine": 0
+        }
+      ]
+    },
+    {
+      "id": "ana-4",
+      "title": "Include Cleanup (9 includes)",
+      "type": 4,
+      "priority": 2,
+      "confidence": 0.98,
+      "autoApplicable": true,
+      "applicationMode": "direct-edits",
+      "estimatedImpact": {
+        "complexity": 1,
+        "filesAffected": 12,
+        "percentage": 0.0,
+        "timeSaved": 0,
+        "timeSavedMs": 0
+      },
+      "filesToCreate": [],
+      "filesToModify": [
+        "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/format.cc"
+      ],
+      "textEditCount": 12,
+      "textEdits": [
+        {
+          "endCol": 0,
+          "endLine": 34,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/db_impl.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 33
+        },
+        {
+          "endCol": 0,
+          "endLine": 30,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/db_impl.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 29
+        },
+        {
+          "endCol": 0,
+          "endLine": 14,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/db_iter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 13
+        },
+        {
+          "endCol": 0,
+          "endLine": 12,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/db_iter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 11
+        },
+        {
+          "endCol": 0,
+          "endLine": 9,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/db_iter.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/dbformat.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 10,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/filename.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 9
+        },
+        {
+          "endCol": 0,
+          "endLine": 7,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/db/version_edit.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 6
+        },
+        {
+          "endCol": 0,
+          "endLine": 11,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 10
+        },
+        {
+          "endCol": 0,
+          "endLine": 9,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/block.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 9,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/format.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 8
+        },
+        {
+          "endCol": 0,
+          "endLine": 8,
+          "file": "/home/gregorian-rayne/CLionProjects/build-hotspot-analyzer/tests/cli/repos/leveldb/table/two_level_iterator.cc",
+          "newText": "",
+          "startCol": 0,
+          "startLine": 7
+        }
+      ]
+    }
+  ]
+}
