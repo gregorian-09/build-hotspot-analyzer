@@ -176,6 +176,9 @@ namespace bha::cli
             out.close();
 
             auto* parser = parsers::ParserRegistry::instance().find_parser_for_file(trace_file);
+            if (!parser) {
+                parser = parsers::ParserRegistry::instance().find_parser_for_content(captured_output);
+            }
             if (parser) {
                 print("Captured " + std::string(parser->name()) + " timing output to " + trace_file.string());
             } else {
@@ -187,7 +190,11 @@ namespace bha::cli
 
             if (args.get_flag("analyze") && parser) {
                 print_verbose("Running analysis...");
-                if (auto result = parser->parse_file(trace_file); result.is_ok()) {
+                auto result = parser->parse_file(trace_file);
+                if (result.is_err()) {
+                    result = parser->parse_content(captured_output, trace_file);
+                }
+                if (result.is_ok()) {
                     const auto& unit = result.value();
                     auto to_ms = [](const Duration d) {
                         return std::chrono::duration_cast<std::chrono::milliseconds>(d);
