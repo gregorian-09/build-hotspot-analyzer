@@ -19,3 +19,6 @@ nul
 *.iml
 
 .cache
+
+# Exclude internal files
+internal/
