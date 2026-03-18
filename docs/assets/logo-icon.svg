@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Build Hotspot Analyzer icon</title>
+  <desc id="desc">Square icon with hotspot core, build bars, and pulse line.</desc>
+  <defs>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#21A0A0"/>
+      <stop offset="100%" stop-color="#1463A9"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFB347"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </linearGradient>
+    <linearGradient id="bars" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8AE3E3"/>
+      <stop offset="100%" stop-color="#2186C6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="92" fill="#0F1724"/>
+  <rect x="42" y="42" width="428" height="428" rx="64" fill="#101D31" stroke="#1A2A44" stroke-width="6"/>
+
+  <circle cx="256" cy="256" r="140" fill="none" stroke="url(#ring)" stroke-width="26"/>
+  <circle cx="256" cy="256" r="80" fill="url(#core)"/>
+
+  <rect x="146" y="318" width="26" height="68" rx="8" fill="url(#bars)"/>
+  <rect x="188" y="292" width="26" height="94" rx="8" fill="url(#bars)"/>
+  <rect x="230" y="268" width="26" height="118" rx="8" fill="url(#bars)"/>
+  <rect x="272" y="296" width="26" height="90" rx="8" fill="url(#bars)"/>
+  <rect x="314" y="276" width="26" height="110" rx="8" fill="url(#bars)"/>
+
+  <path d="M120 230 L188 230 L214 194 L256 276 L296 214 L336 252 L392 252"
+        fill="none" stroke="#D9F6FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

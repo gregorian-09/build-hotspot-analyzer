@@ -1,0 +1,62 @@
+name: Docs Quality
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - ".markdownlint-cli2.jsonc"
+      - ".vale.ini"
+      - ".github/styles/**"
+      - ".lychee.toml"
+      - ".github/workflows/docs.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "docs/**"
+      - ".markdownlint-cli2.jsonc"
+      - ".vale.ini"
+      - ".github/styles/**"
+      - ".lychee.toml"
+      - ".github/workflows/docs.yml"
+
+jobs:
+  markdownlint:
+    name: Markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          config: ".markdownlint-cli2.jsonc"
+          globs: |
+            README.md
+            docs/**/*.md
+
+  vale:
+    name: Vale Prose Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint prose
+        uses: errata-ai/vale-action@v2.1.1
+        with:
+          files: '["README.md","docs"]'
+          fail_on_error: true
+
+  links:
+    name: Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config .lychee.toml README.md docs/**/*.md
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

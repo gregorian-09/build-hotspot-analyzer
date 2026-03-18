@@ -1,0 +1,10 @@
+extends: existence
+message: "Avoid weak qualifier '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - very
+  - really
+  - simply
+  - obviously
+
