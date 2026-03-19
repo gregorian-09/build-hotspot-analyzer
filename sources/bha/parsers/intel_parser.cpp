@@ -21,6 +21,10 @@ namespace bha::parsers {
         constexpr std::string_view ICC_OPT_REPORT = "LOOP BEGIN";
         constexpr std::string_view ICX_MARKER = "icx";
 
+        std::string to_lower_copy(const std::string_view text) {
+            return string_utils::to_lower(std::string(text));
+        }
+
         Duration parse_icc_time(const std::string_view time_str) {
             double seconds = 0.0;
             auto trimmed = string_utils::trim(time_str);
@@ -55,9 +59,9 @@ namespace bha::parsers {
     }
 
     bool IntelClassicParser::can_parse_content(std::string_view content) const {
-        return string_utils::contains(content, ICC_MARKER) ||
-               (string_utils::contains(content, ICC_OPT_REPORT) &&
-                string_utils::contains(content, "icc"));
+        const auto lower_content = to_lower_copy(content);
+        return string_utils::contains(lower_content, to_lower_copy(ICC_MARKER)) ||
+               string_utils::contains(lower_content, to_lower_copy(ICC_OPT_REPORT));
     }
 
     Result<CompilationUnit, Error> IntelClassicParser::parse_file(
@@ -86,19 +90,30 @@ namespace bha::parsers {
 
         const auto lines = string_utils::split(content, '\n');
 
-        const std::regex time_regex(R"((\d+\.?\d*)\s*(?:s|seconds?))");
-        const std::regex loop_regex(R"(LOOP BEGIN at ([^:]+):(\d+))");
+        const std::regex time_regex(R"((\d+\.?\d*)\s*(?:s|sec|secs|seconds?))", std::regex_constants::icase);
+        const std::regex loop_paren_regex(
+            R"(LOOP BEGIN at\s+(.+)\((\d+)(?:,\d+)?\))",
+            std::regex_constants::icase
+        );
+        const std::regex loop_colon_regex(
+            R"(LOOP BEGIN at\s+(.+):(\d+))",
+            std::regex_constants::icase
+        );
 
         Duration total_time = Duration::zero();
 
         for (const auto& line : lines) {
             std::string line_str(line);
 
-            if (std::smatch loop_match; std::regex_search(line_str, loop_match, loop_regex)) {
-                if (unit.source_file.empty() && loop_match.size() > 1) {
-                    unit.source_file = loop_match[1].str();
-                    unit.metrics.path = unit.source_file;
-                }
+            if (std::smatch loop_match;
+                unit.source_file.empty() && std::regex_search(line_str, loop_match, loop_paren_regex) &&
+                loop_match.size() > 1) {
+                unit.source_file = string_utils::trim(loop_match[1].str());
+                unit.metrics.path = unit.source_file;
+            } else if (unit.source_file.empty() && std::regex_search(line_str, loop_match, loop_colon_regex) &&
+                       loop_match.size() > 1) {
+                unit.source_file = string_utils::trim(loop_match[1].str());
+                unit.metrics.path = unit.source_file;
             }
 
             if (std::smatch time_match; std::regex_search(line_str, time_match, time_regex)) {
@@ -134,9 +149,13 @@ namespace bha::parsers {
             return false;
         }
 
-        return string_utils::contains(content, ICX_MARKER) ||
-               string_utils::contains(content, "Intel") ||
-               string_utils::contains(content, "oneAPI");
+        const auto lower_content = to_lower_copy(content);
+        return string_utils::contains(lower_content, to_lower_copy(ICX_MARKER)) ||
+               string_utils::contains(lower_content, "intel") ||
+               string_utils::contains(lower_content, "oneapi") ||
+               string_utils::contains(lower_content, "total frontend") ||
+               string_utils::contains(lower_content, "total backend") ||
+               string_utils::contains(lower_content, "executecompiler");
     }
 
     Result<CompilationUnit, Error> IntelOneAPIParser::parse_file(

@@ -4,6 +4,7 @@
 
 #include "bha/parsers/nvcc_parser.hpp"
 
+#include <chrono>
 #include <gtest/gtest.h>
 
 namespace bha::parsers
@@ -62,4 +63,36 @@ fatbinary: 0.2s
         EXPECT_EQ(unit.source_file, fs::path("/src/kernel.cu"));
         EXPECT_GT(unit.metrics.total_time.count(), 0);
     }
-}
+
+    TEST_F(NVCCParserTest, ParseContent_SupportsSpacedPhaseNamesAndMinuteSecondDurations) {
+        const std::string content = R"(
+nvcc timing information:
+host compile phase: 1m 2.5s
+device ptxas pass: 0.5s
+fatbinary link: 0.2s
+)";
+
+        auto result = parser_->parse_content(content, "/src/kernel.cu");
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+
+        EXPECT_GT(unit.metrics.total_time, std::chrono::seconds(63));
+        EXPECT_GT(unit.metrics.frontend_time.count(), 0);
+        EXPECT_GT(unit.metrics.backend_time.count(), 0);
+    }
+
+    TEST_F(NVCCParserTest, ParseContent_SupportsDurationPrefixLines) {
+        const std::string content = R"(
+0.8s ptxas device pass
+0.4s host compile
+)";
+
+        auto result = parser_->parse_content(content, "/src/kernel.cu");
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+
+        EXPECT_GT(unit.metrics.total_time.count(), 0);
+        EXPECT_GT(unit.metrics.frontend_time.count(), 0);
+        EXPECT_GT(unit.metrics.backend_time.count(), 0);
+    }
+} 
