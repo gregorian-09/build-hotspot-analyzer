@@ -25,10 +25,15 @@
 #ifdef _WIN32
 #define popen _popen
 #define pclose _pclose
-#elif defined(__linux__)
-#include <limits.h>
+#include <io.h>
+#include <fcntl.h>
+#else
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#if defined(__linux__)
+#include <limits.h>
+#endif
 #endif
 
 namespace bha::lsp
@@ -704,6 +709,74 @@ namespace bha::lsp
             return text;
         }
         return text.substr(0, max_chars) + "\n... (truncated)";
+    }
+
+    bool sync_file_to_disk(const fs::path& path) {
+#ifdef _WIN32
+        const int fd = _open(path.string().c_str(), _O_RDONLY | _O_BINARY);
+        if (fd < 0) {
+            return false;
+        }
+        const bool ok = _commit(fd) == 0;
+        _close(fd);
+        return ok;
+#else
+        const int fd = ::open(path.c_str(), O_RDONLY);
+        if (fd < 0) {
+            return false;
+        }
+        const bool ok = ::fsync(fd) == 0;
+        ::close(fd);
+        return ok;
+#endif
+    }
+
+    bool sync_directory_to_disk(const fs::path& dir) {
+#ifdef _WIN32
+        (void)dir;
+        return true;
+#else
+        int open_flags = O_RDONLY;
+#ifdef O_DIRECTORY
+        open_flags |= O_DIRECTORY;
+#endif
+        const int fd = ::open(dir.c_str(), open_flags);
+        if (fd < 0) {
+            return false;
+        }
+        const bool ok = ::fsync(fd) == 0;
+        ::close(fd);
+        return ok;
+#endif
+    }
+
+    bool copy_file_with_sync(const fs::path& src, const fs::path& dest) {
+        std::ifstream in(src, std::ios::binary);
+        if (!in) {
+            return false;
+        }
+        std::ofstream out(dest, std::ios::binary | std::ios::trunc);
+        if (!out) {
+            return false;
+        }
+
+        out << in.rdbuf();
+        out.flush();
+        out.close();
+        in.close();
+        if (!out.good()) {
+            return false;
+        }
+
+        if (!sync_file_to_disk(dest)) {
+            return false;
+        }
+
+        const fs::path parent = dest.parent_path();
+        if (!parent.empty() && !sync_directory_to_disk(parent)) {
+            return false;
+        }
+        return true;
     }
 
     std::string resolve_bha_cli_binary() {
@@ -2164,7 +2237,16 @@ namespace bha::lsp
             }
 
             if (create_backup_flag && !files_to_backup.empty()) {
-                result.backup_id = create_backup(files_to_backup);
+                const std::string backup_id = create_backup(files_to_backup);
+                if (backup_id.empty()) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Failed to create durable backup before applying external refactor suggestion";
+                    result.errors.push_back(std::move(diag));
+                    return result;
+                }
+                result.backup_id = backup_id;
             }
 
             for (auto& [file_path_str, file_replacements] : replacements_by_file) {
@@ -2213,7 +2295,16 @@ namespace bha::lsp
             }
 
             if (create_backup_flag && !files_to_backup.empty()) {
-                result.backup_id = create_backup(files_to_backup);
+                const std::string backup_id = create_backup(files_to_backup);
+                if (backup_id.empty()) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Failed to create durable backup before applying suggestion " + suggestion_id;
+                    result.errors.push_back(std::move(diag));
+                    return result;
+                }
+                result.backup_id = backup_id;
             }
             if (enforce_forward_decl_validation && !files_to_backup.empty() &&
                 !capture_transactional_snapshot(files_to_backup)) {
@@ -2357,7 +2448,16 @@ namespace bha::lsp
         }
 
         if (create_backup_flag && !files_to_backup.empty()) {
-            result.backup_id = create_backup(files_to_backup);
+            const std::string backup_id = create_backup(files_to_backup);
+            if (backup_id.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Failed to create durable backup before applying edit bundle";
+                result.errors.push_back(std::move(diag));
+                return result;
+            }
+            result.backup_id = backup_id;
         }
 
         bha::Suggestion synthetic;
@@ -2468,7 +2568,10 @@ namespace bha::lsp
         if (config_.use_disk_backups && !config_.workspace_root.empty()) {
             return create_disk_backup(files);
         }
+        return create_memory_backup(files);
+    }
 
+    std::string SuggestionManager::create_memory_backup(const std::vector<fs::path>& files) {
         Backup backup;
         backup.id = generate_backup_id();
         backup.timestamp = std::chrono::system_clock::now();
@@ -2515,7 +2618,11 @@ namespace bha::lsp
         std::string backup_id = timestamp_ss.str() + "-" + std::to_string(++backup_counter_);
         fs::path backup_path = get_backup_path(backup_id);
 
-        fs::create_directories(backup_path);
+        std::error_code ec;
+        fs::create_directories(backup_path, ec);
+        if (ec) {
+            return {};
+        }
 
         Backup backup;
         backup.id = backup_id;
@@ -2527,24 +2634,40 @@ namespace bha::lsp
             FileBackup file_backup;
             file_backup.path = file;
 
-            fs::path relative = fs::relative(file, config_.workspace_root);
+            fs::path relative = fs::relative(file, config_.workspace_root, ec);
+            if (ec) {
+                fs::remove_all(backup_path, ec);
+                return {};
+            }
             fs::path dest = backup_path / "files" / relative;
             if (const fs::path parent = dest.parent_path(); !parent.empty()) {
-                fs::create_directories(parent);
+                fs::create_directories(parent, ec);
+                if (ec) {
+                    fs::remove_all(backup_path, ec);
+                    return {};
+                }
             }
 
-            try {
-                fs::copy_file(file, dest, fs::copy_options::overwrite_existing);
-                backup.files.push_back(std::move(file_backup));
-            } catch (const std::exception&) {
-                fs::remove_all(backup_path);
-                return create_backup(files);
+            if (!copy_file_with_sync(file, dest)) {
+                fs::remove_all(backup_path, ec);
+                return {};
             }
+            backup.files.push_back(std::move(file_backup));
         }
 
         if (!write_backup_metadata(backup_path, backup)) {
-            fs::remove_all(backup_path);
-            return create_backup(files);
+            fs::remove_all(backup_path, ec);
+            return {};
+        }
+
+        if (!sync_directory_to_disk(backup_path)) {
+            fs::remove_all(backup_path, ec);
+            return {};
+        }
+        const fs::path root_backup_dir = (config_.workspace_root / config_.backup_directory).lexically_normal();
+        if (!root_backup_dir.empty() && !sync_directory_to_disk(root_backup_dir)) {
+            fs::remove_all(backup_path, ec);
+            return {};
         }
 
         backups_[backup_id] = std::move(backup);
@@ -2556,7 +2679,8 @@ namespace bha::lsp
 
     bool SuggestionManager::write_backup_metadata(const fs::path& backup_dir, const Backup& backup) {
         const fs::path meta_path = backup_dir / "metadata.txt";
-        std::ofstream out(meta_path);
+        const fs::path tmp_meta_path = backup_dir / "metadata.txt.tmp";
+        std::ofstream out(tmp_meta_path, std::ios::trunc);
         if (!out) return false;
 
         const auto time_t = std::chrono::system_clock::to_time_t(backup.timestamp);
@@ -2567,8 +2691,34 @@ namespace bha::lsp
         for (const auto& [path, content] : backup.files) {
             out << "file=" << path.string() << "\n";
         }
+        out.flush();
+        out.close();
+        if (!out.good()) {
+            return false;
+        }
 
-        return out.good();
+        if (!sync_file_to_disk(tmp_meta_path)) {
+            return false;
+        }
+
+        std::error_code ec;
+        fs::rename(tmp_meta_path, meta_path, ec);
+        if (ec) {
+            fs::remove(meta_path, ec);
+            ec.clear();
+            fs::rename(tmp_meta_path, meta_path, ec);
+            if (ec) {
+                return false;
+            }
+        }
+
+        if (!sync_file_to_disk(meta_path)) {
+            return false;
+        }
+        if (!sync_directory_to_disk(backup_dir)) {
+            return false;
+        }
+        return true;
     }
 
     std::optional<Backup> SuggestionManager::read_backup_metadata(const fs::path& backup_dir) {
@@ -3449,6 +3599,15 @@ namespace bha::lsp
         // Single backup for all changes
         if (!all_files_to_backup.empty()) {
             result.backup_id = create_backup(all_files_to_backup);
+            if (result.backup_id.empty()) {
+                result.success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Failed to create durable backup before apply-all operation";
+                result.errors.push_back(std::move(diag));
+                return result;
+            }
         }
 
         std::unordered_set<std::string> changed_file_set;

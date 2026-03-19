@@ -195,6 +195,7 @@ namespace bha::lsp
         std::string generate_backup_id();
 
         std::string create_backup(const std::vector<fs::path>& files);
+        std::string create_memory_backup(const std::vector<fs::path>& files);
         static bool validate_files_exist(const std::vector<fs::path>& files);
         static bool apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files);
         bool validate_forward_decl_suggestion(
