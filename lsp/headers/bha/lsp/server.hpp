@@ -12,6 +12,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <optional>
+#include <thread>
+#include <unordered_map>
 
 namespace bha::lsp
 {
@@ -83,7 +85,7 @@ namespace bha::lsp
         using NotificationHandler = std::function<void(const json& params)>;
 
         LSPServer();
-        ~LSPServer() = default;
+        ~LSPServer();
 
         void run();
         void stop();
@@ -133,6 +135,8 @@ namespace bha::lsp
         json execute_apply_suggestion(const json& args);
         json execute_apply_edits(const json& args);
         json execute_apply_all_suggestions(const json& args);
+        json execute_get_job_status(const json& args) const;
+        json execute_cancel_job(const json& args);
         json execute_revert_changes(const json& args) const;
         json execute_get_suggestion_details(const json& args) const;
         json execute_show_metrics(const json& args) const;
@@ -169,6 +173,43 @@ namespace bha::lsp
         std::map<int, PendingRequest> pending_requests_;
         std::mutex pending_mutex_;
         std::condition_variable pending_cv_;
+        mutable std::mutex suggestion_manager_mutex_;
+
+        enum class AsyncJobStatus {
+            Queued,
+            Running,
+            Completed,
+            Failed,
+            Cancelled
+        };
+
+        struct AsyncJob {
+            std::string id;
+            std::string command;
+            json args;
+            ProgressToken progress_token;
+            mutable std::mutex mutex;
+            std::atomic<bool> cancel_requested{false};
+            std::atomic<bool> finished{false};
+            std::atomic<AsyncJobStatus> status{AsyncJobStatus::Queued};
+            std::optional<json> result;
+            std::optional<std::string> error;
+            std::chrono::system_clock::time_point created_at;
+            std::chrono::system_clock::time_point started_at;
+            std::chrono::system_clock::time_point finished_at;
+            std::thread worker;
+        };
+
+        std::string create_async_job_id();
+        json queue_async_command(const std::string& command, const json& args);
+        void run_async_job(const std::shared_ptr<AsyncJob>& job);
+        void cleanup_finished_jobs();
+        static std::string async_job_status_to_string(AsyncJobStatus status);
+        json build_async_job_payload(const AsyncJob& job) const;
+
+        std::unordered_map<std::string, std::shared_ptr<AsyncJob>> async_jobs_;
+        mutable std::mutex async_jobs_mutex_;
+        std::atomic<int> async_job_counter_{0};
 
         void handle_response(const ResponseMessage& response);
         json send_request(const std::string& method, const json& params);

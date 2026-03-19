@@ -11,9 +11,11 @@
 #include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <regex>
+#include <thread>
 #include <unordered_set>
 #ifndef _WIN32
 #include <sys/wait.h>
@@ -26,6 +28,10 @@
 
 namespace bha::lsp
 {
+    namespace {
+        std::mutex g_lsp_write_mutex;
+    }
+
     std::string shell_quote_for_shell(const std::string& input) {
 #ifdef _WIN32
         std::string escaped = "\"";
@@ -394,20 +400,41 @@ namespace bha::lsp
         initialize_handlers();
     }
 
+    LSPServer::~LSPServer() {
+        stop();
+    }
+
     void LSPServer::run() {
         while (running_) {
             try {
                 if (std::string message = read_message(); !message.empty()) {
                     handle_message(message);
                 }
+                cleanup_finished_jobs();
             } catch (const std::exception& e) {
                 std::cerr << "Error processing message: " << e.what() << std::endl;
             }
         }
+        cleanup_finished_jobs();
     }
 
     void LSPServer::stop() {
         running_ = false;
+
+        std::vector<std::shared_ptr<AsyncJob>> jobs;
+        {
+            std::lock_guard lock(async_jobs_mutex_);
+            for (const auto& [_, job] : async_jobs_) {
+                job->cancel_requested.store(true);
+                jobs.push_back(job);
+            }
+        }
+
+        for (const auto& job : jobs) {
+            if (job->worker.joinable()) {
+                job->worker.join();
+            }
+        }
     }
 
     void LSPServer::register_request_handler(const std::string& method, RequestHandler handler) {
@@ -464,6 +491,217 @@ namespace bha::lsp
         std::visit([&params](auto&& arg) { params["token"] = arg; }, token);
         params["value"] = value;
         send_notification("$/progress", params);
+    }
+
+    std::string LSPServer::async_job_status_to_string(const AsyncJobStatus status) {
+        switch (status) {
+            case AsyncJobStatus::Queued: return "queued";
+            case AsyncJobStatus::Running: return "running";
+            case AsyncJobStatus::Completed: return "completed";
+            case AsyncJobStatus::Failed: return "failed";
+            case AsyncJobStatus::Cancelled: return "cancelled";
+        }
+        return "unknown";
+    }
+
+    std::string LSPServer::create_async_job_id() {
+        return "bha-job-" + std::to_string(++async_job_counter_);
+    }
+
+    json LSPServer::build_async_job_payload(const AsyncJob& job) const {
+        std::lock_guard state_lock(job.mutex);
+        const auto to_iso = [](const std::chrono::system_clock::time_point& tp) -> std::string {
+            if (tp.time_since_epoch().count() == 0) {
+                return "";
+            }
+            const std::time_t tt = std::chrono::system_clock::to_time_t(tp);
+            std::tm tm{};
+#ifdef _WIN32
+            gmtime_s(&tm, &tt);
+#else
+            gmtime_r(&tt, &tm);
+#endif
+            std::ostringstream out;
+            out << std::put_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
+            return out.str();
+        };
+
+        json payload = {
+            {"jobId", job.id},
+            {"command", job.command},
+            {"status", async_job_status_to_string(job.status.load())},
+            {"cancelRequested", job.cancel_requested.load()},
+            {"finished", job.finished.load()},
+            {"createdAt", to_iso(job.created_at)},
+            {"startedAt", to_iso(job.started_at)},
+            {"finishedAt", to_iso(job.finished_at)}
+        };
+
+        if (job.error.has_value()) {
+            payload["error"] = *job.error;
+        }
+        if (job.result.has_value()) {
+            payload["result"] = *job.result;
+        }
+        return payload;
+    }
+
+    void LSPServer::cleanup_finished_jobs() {
+        std::lock_guard lock(async_jobs_mutex_);
+        for (auto& [_, job] : async_jobs_) {
+            if (job->finished.load() && job->worker.joinable()) {
+                job->worker.join();
+            }
+        }
+    }
+
+    json LSPServer::queue_async_command(const std::string& command, const json& args) {
+        auto job = std::make_shared<AsyncJob>();
+        job->id = create_async_job_id();
+        job->command = command;
+        job->args = args;
+        job->created_at = std::chrono::system_clock::now();
+        job->progress_token = create_progress_token();
+
+        {
+            std::lock_guard lock(async_jobs_mutex_);
+            async_jobs_[job->id] = job;
+        }
+
+        job->worker = std::thread([this, job]() {
+            run_async_job(job);
+        });
+
+        json progress_token_json;
+        std::visit([&progress_token_json](auto&& value) {
+            progress_token_json = value;
+        }, job->progress_token);
+
+        return {
+            {"accepted", true},
+            {"async", true},
+            {"jobId", job->id},
+            {"status", "queued"},
+            {"progressToken", progress_token_json}
+        };
+    }
+
+    void LSPServer::run_async_job(const std::shared_ptr<AsyncJob>& job) {
+        WorkDoneProgressBegin begin;
+        begin.title = "BHA " + job->command;
+        begin.cancellable = true;
+        begin.percentage = 0;
+        json begin_json;
+        to_json(begin_json, begin);
+        send_progress(job->progress_token, begin_json);
+
+        send_notification("bha/jobStarted", {
+            {"jobId", job->id},
+            {"command", job->command}
+        });
+
+        if (job->cancel_requested.load()) {
+            job->status = AsyncJobStatus::Cancelled;
+            job->finished = true;
+            {
+                std::lock_guard lock(job->mutex);
+                job->started_at = std::chrono::system_clock::now();
+                job->finished_at = job->started_at;
+            }
+            WorkDoneProgressEnd end;
+            end.message = "Job cancelled before start";
+            json end_json;
+            to_json(end_json, end);
+            send_progress(job->progress_token, end_json);
+            send_notification("bha/jobCompleted", build_async_job_payload(*job));
+            return;
+        }
+
+        job->status = AsyncJobStatus::Running;
+        {
+            std::lock_guard lock(job->mutex);
+            job->started_at = std::chrono::system_clock::now();
+        }
+
+        WorkDoneProgressReport report;
+        report.message = "Applying suggestions in background";
+        report.percentage = 30;
+        json report_json;
+        to_json(report_json, report);
+        send_progress(job->progress_token, report_json);
+
+        try {
+            json run_args = job->args;
+            run_args["async"] = false;
+            run_args["skipConsent"] = true;
+
+            json result;
+            if (job->command == "bha.applySuggestion") {
+                result = execute_apply_suggestion(run_args);
+            } else if (job->command == "bha.applyAllSuggestions") {
+                result = execute_apply_all_suggestions(run_args);
+            } else if (job->command == "bha.applyEdits") {
+                result = execute_apply_edits(run_args);
+            } else {
+                throw std::runtime_error("Unsupported async command: " + job->command);
+            }
+
+            if (job->cancel_requested.load()) {
+                if (result.contains("backupId") && result["backupId"].is_string()) {
+                    const std::string backup_id = result["backupId"].get<std::string>();
+                    if (!backup_id.empty() && suggestion_manager_) {
+                        RevertResult revert_result;
+                        {
+                            std::lock_guard lock(suggestion_manager_mutex_);
+                            revert_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                        }
+                        result["cancelRollback"] = {
+                            {"attempted", true},
+                            {"success", revert_result.success},
+                            {"restoredFiles", revert_result.restored_files}
+                        };
+                    }
+                }
+                job->status = AsyncJobStatus::Cancelled;
+                {
+                    std::lock_guard lock(job->mutex);
+                    job->error = "Cancellation was requested while job was running";
+                }
+            } else {
+                job->status = AsyncJobStatus::Completed;
+            }
+
+            {
+                std::lock_guard lock(job->mutex);
+                job->result = std::move(result);
+            }
+        } catch (const std::exception& e) {
+            job->status = job->cancel_requested.load() ? AsyncJobStatus::Cancelled : AsyncJobStatus::Failed;
+            {
+                std::lock_guard lock(job->mutex);
+                job->error = e.what();
+            }
+        }
+
+        job->finished = true;
+        {
+            std::lock_guard lock(job->mutex);
+            job->finished_at = std::chrono::system_clock::now();
+        }
+
+        WorkDoneProgressEnd end;
+        if (job->status.load() == AsyncJobStatus::Completed) {
+            end.message = "Background apply completed";
+        } else if (job->status.load() == AsyncJobStatus::Cancelled) {
+            end.message = "Background apply cancelled";
+        } else {
+            end.message = "Background apply failed";
+        }
+        json end_json;
+        to_json(end_json, end);
+        send_progress(job->progress_token, end_json);
+
+        send_notification("bha/jobCompleted", build_async_job_payload(*job));
     }
 
     void LSPServer::handle_message(const std::string& message) {
@@ -606,6 +844,22 @@ namespace bha::lsp
     }
 
     void LSPServer::handle_notification(const NotificationMessage& notification) {
+        if (notification.method == "$/cancelRequest") {
+            const json params = notification.params.value_or(json::object());
+            if (params.contains("id") && params["id"].is_string()) {
+                const std::string id = params["id"].get<std::string>();
+                json cancel_args = {
+                    {"jobId", id}
+                };
+                try {
+                    execute_cancel_job(cancel_args);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error handling cancel request: " << e.what() << std::endl;
+                }
+            }
+            return;
+        }
+
         if (const auto it = notification_handlers_.find(notification.method); it != notification_handlers_.end()) {
             try {
                 const json params = notification.params.value_or(json::object());
@@ -650,6 +904,7 @@ namespace bha::lsp
     }
 
     void LSPServer::write_message(const std::string& content) {
+        std::lock_guard lock(g_lsp_write_mutex);
         std::ostringstream header;
         header << "Content-Length: " << content.length() << "\r\n\r\n";
 
@@ -709,6 +964,8 @@ namespace bha::lsp
                     "bha.applySuggestion",
                     "bha.applyEdits",
                     "bha.applyAllSuggestions",
+                    "bha.getJobStatus",
+                    "bha.cancelJob",
                     "bha.getSuggestionDetails",
                     "bha.revertChanges",
                     "bha.showMetrics",
@@ -725,7 +982,8 @@ namespace bha::lsp
                         {"safeEditing", true},
                         {"buildIntegration", true},
                         {"impactAnalysis", true},
-                        {"autoRollback", true}
+                        {"autoRollback", true},
+                        {"asyncJobPipeline", true}
                     }}
                 }}
             }}
@@ -801,6 +1059,12 @@ namespace bha::lsp
         if (command == "bha.applyAllSuggestions") {
             return execute_apply_all_suggestions(args);
         }
+        if (command == "bha.getJobStatus") {
+            return execute_get_job_status(args);
+        }
+        if (command == "bha.cancelJob") {
+            return execute_cancel_job(args);
+        }
         if (command == "bha.revertChanges") {
             return execute_revert_changes(args);
         }
@@ -836,7 +1100,11 @@ namespace bha::lsp
             uri = params["textDocument"]["uri"].get<std::string>();
         }
 
-        auto suggestions = suggestion_manager_->get_all_suggestions();
+        std::vector<Suggestion> suggestions;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            suggestions = suggestion_manager_->get_all_suggestions();
+        }
         for (const auto& sug : suggestions) {
             if (sug.target_uri && *sug.target_uri == uri) {
                 json code_action = {
@@ -928,22 +1196,35 @@ namespace bha::lsp
         send_progress(token, begin_json);
 
         try {
-            auto [analysis_id, suggestions, baseline_metrics, files_analyzed, duration_ms] = suggestion_manager_->analyze_project(
-                project_root,
-                build_dir,
-                rebuild,
-                [&token](const std::string& message, int percentage) {
-                    WorkDoneProgressReport report;
-                    report.message = message;
-                    if (percentage >= 0) {
-                        report.percentage = percentage;
-                    }
-                    json report_json;
-                    to_json(report_json, report);
-                    send_progress(token, report_json);
-                },
-                analyze_options
-            );
+            std::string analysis_id;
+            std::vector<Suggestion> suggestions;
+            BuildMetrics baseline_metrics;
+            int files_analyzed = 0;
+            int duration_ms = 0;
+            {
+                std::lock_guard lock(suggestion_manager_mutex_);
+                auto analysis_result = suggestion_manager_->analyze_project(
+                        project_root,
+                        build_dir,
+                        rebuild,
+                        [&token](const std::string& message, int percentage) {
+                            WorkDoneProgressReport report;
+                            report.message = message;
+                            if (percentage >= 0) {
+                                report.percentage = percentage;
+                            }
+                            json report_json;
+                            to_json(report_json, report);
+                            send_progress(token, report_json);
+                        },
+                        analyze_options
+                    );
+                analysis_id = std::move(analysis_result.analysis_id);
+                suggestions = std::move(analysis_result.suggestions);
+                baseline_metrics = analysis_result.baseline_metrics;
+                files_analyzed = analysis_result.files_analyzed;
+                duration_ms = analysis_result.duration_ms;
+            }
 
             WorkDoneProgressEnd end_progress;
             end_progress.message = "Analysis complete";
@@ -1083,6 +1364,10 @@ namespace bha::lsp
             throw std::runtime_error("Server not fully initialized");
         }
 
+        if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
+            return queue_async_command("bha.applyEdits", args);
+        }
+
         std::string project_root = workspace_root_;
         if (args.contains("projectRoot") && args["projectRoot"].is_string()) {
             project_root = args["projectRoot"].get<std::string>();
@@ -1160,7 +1445,11 @@ namespace bha::lsp
             skip_rebuild = args["skipRebuild"].get<bool>();
         }
 
-        auto result = suggestion_manager_->apply_edit_bundle(edits, true);
+        ApplySuggestionResult result;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            result = suggestion_manager_->apply_edit_bundle(edits, true);
+        }
 
         auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
             json out = json::array();
@@ -1199,7 +1488,11 @@ namespace bha::lsp
                 } else if (!result.backup_id.has_value() || result.backup_id->empty()) {
                     rollback_json["reason"] = "no-backup";
                 } else {
-                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
+                    RevertResult rollback_result;
+                    {
+                        std::lock_guard lock(suggestion_manager_mutex_);
+                        rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
+                    }
                     rollback_json["attempted"] = true;
                     rollback_json["success"] = rollback_result.success;
                     rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -1242,6 +1535,10 @@ namespace bha::lsp
             throw std::runtime_error("Server not fully initialized");
         }
 
+        if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
+            return queue_async_command("bha.applySuggestion", args);
+        }
+
         if (!args.contains("suggestionId")) {
             throw std::runtime_error("Missing suggestionId");
         }
@@ -1254,16 +1551,26 @@ namespace bha::lsp
         }
 
         std::optional<int> predicted_savings_ms;
-        if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
-            predicted_savings_ms = suggestion->estimated_impact.time_saved_ms;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
+                predicted_savings_ms = suggestion->estimated_impact.time_saved_ms;
+            }
         }
         std::optional<int> baseline_duration_ms;
-        if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
-            baseline_duration_ms = baseline->total_duration_ms;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
+                baseline_duration_ms = baseline->total_duration_ms;
+            }
         }
 
         if (bool skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
-            auto details = suggestion_manager_->get_suggestion_details(suggestion_id);
+            DetailedSuggestion details;
+            {
+                std::lock_guard lock(suggestion_manager_mutex_);
+                details = suggestion_manager_->get_suggestion_details(suggestion_id);
+            }
             std::string consent_message = "Apply optimization: " + details.title + "?\n";
             if (!details.files_to_modify.empty()) {
                 consent_message += "Files to modify: " + std::to_string(details.files_to_modify.size()) + "\n";
@@ -1299,12 +1606,16 @@ namespace bha::lsp
             }
         }
 
-        auto result = suggestion_manager_->apply_suggestion(
-            suggestion_id,
-            skip_validation,
-            true,
-            true
-        );
+        ApplySuggestionResult result;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            result = suggestion_manager_->apply_suggestion(
+                suggestion_id,
+                skip_validation,
+                true,
+                true
+            );
+        }
 
         auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
             json out = json::array();
@@ -1348,7 +1659,11 @@ namespace bha::lsp
                         {"message", "Build failed after applying suggestion. Rolling back changes..."}
                     });
 
-                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
+                    RevertResult rollback_result;
+                    {
+                        std::lock_guard lock(suggestion_manager_mutex_);
+                        rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
+                    }
                     rollback_json["attempted"] = true;
                     rollback_json["success"] = rollback_result.success;
                     rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -1416,6 +1731,10 @@ namespace bha::lsp
             throw std::runtime_error("Server not fully initialized");
         }
 
+        if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
+            return queue_async_command("bha.applyAllSuggestions", args);
+        }
+
         std::optional<std::string> min_priority;
         if (args.contains("minPriority")) {
             if (args["minPriority"].is_string()) {
@@ -1427,9 +1746,15 @@ namespace bha::lsp
         }
 
         bool safe_only = args.contains("safeOnly") && args["safeOnly"].get<bool>();
+        auto with_manager = [this](auto&& fn) -> decltype(auto) {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            return fn();
+        };
 
         if (bool skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
-            auto suggestions = suggestion_manager_->get_all_suggestions();
+            auto suggestions = with_manager([&]() {
+                return suggestion_manager_->get_all_suggestions();
+            });
             std::string consent_message = "Apply all " + std::to_string(suggestions.size()) +
                                          " optimization suggestions?";
             if (safe_only) {
@@ -1466,7 +1791,9 @@ namespace bha::lsp
             }
         }
 
-        auto apply_all_result = suggestion_manager_->apply_all_suggestions(min_priority, safe_only);
+        auto apply_all_result = with_manager([&]() {
+            return suggestion_manager_->apply_all_suggestions(min_priority, safe_only);
+        });
         bool success = apply_all_result.success;
         std::size_t applied_count = apply_all_result.applied_count;
         std::size_t skipped_count = apply_all_result.skipped_count;
@@ -1477,7 +1804,9 @@ namespace bha::lsp
         const bool atomic = args.contains("atomic") && args["atomic"].get<bool>();
 
         std::optional<int> baseline_duration_ms;
-        if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
+        if (const auto baseline = with_manager([&]() {
+                return suggestion_manager_->get_last_baseline_metrics();
+            }); baseline.has_value()) {
             baseline_duration_ms = baseline->total_duration_ms;
         }
 
@@ -1522,7 +1851,9 @@ namespace bha::lsp
         };
 
         if (!success && atomic && !backup_id.empty()) {
-            const auto rollback_result = suggestion_manager_->revert_changes_detailed(backup_id);
+            const auto rollback_result = with_manager([&]() {
+                return suggestion_manager_->revert_changes_detailed(backup_id);
+            });
             rollback_json["attempted"] = true;
             rollback_json["success"] = rollback_result.success;
             rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -1563,7 +1894,9 @@ namespace bha::lsp
                         {"message", "Build failed after applying suggestions. Rolling back all changes..."}
                     });
 
-                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                    const auto rollback_result = with_manager([&]() {
+                        return suggestion_manager_->revert_changes_detailed(backup_id);
+                    });
                     rollback_json["attempted"] = true;
                     rollback_json["success"] = rollback_result.success;
                     rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -1588,7 +1921,9 @@ namespace bha::lsp
                         {"message", "Build failed after applying suggestions. Running fault isolation to keep valid edits..."}
                     });
 
-                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                    const auto rollback_result = with_manager([&]() {
+                        return suggestion_manager_->revert_changes_detailed(backup_id);
+                    });
                     rollback_json["attempted"] = true;
                     rollback_json["success"] = rollback_result.success;
                     rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -1604,12 +1939,14 @@ namespace bha::lsp
 
                         for (const auto& suggestion_id : applied_suggestion_ids) {
                             for (const auto& retained_id : retained_ids) {
-                                auto retained_apply = suggestion_manager_->apply_suggestion(
-                                    retained_id,
-                                    false,
-                                    true,
-                                    false
-                                );
+                                auto retained_apply = with_manager([&]() {
+                                    return suggestion_manager_->apply_suggestion(
+                                        retained_id,
+                                        false,
+                                        true,
+                                        false
+                                    );
+                                });
                                 if (!retained_apply.success) {
                                     append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-replay");
                                     isolation_aborted = true;
@@ -1620,12 +1957,14 @@ namespace bha::lsp
                                 break;
                             }
 
-                            const auto candidate_apply = suggestion_manager_->apply_suggestion(
-                                suggestion_id,
-                                false,
-                                true,
-                                false
-                            );
+                            const auto candidate_apply = with_manager([&]() {
+                                return suggestion_manager_->apply_suggestion(
+                                    suggestion_id,
+                                    false,
+                                    true,
+                                    false
+                                );
+                            });
                             if (!candidate_apply.success) {
                                 append_contextual_errors(candidate_apply.errors, suggestion_id, "fault-isolation-apply");
                             } else {
@@ -1641,7 +1980,9 @@ namespace bha::lsp
                                 }
                             }
 
-                            const auto reset_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                            const auto reset_result = with_manager([&]() {
+                                return suggestion_manager_->revert_changes_detailed(backup_id);
+                            });
                             if (!reset_result.success) {
                                 rollback_json["success"] = false;
                                 rollback_json["reason"] = "fault-isolation-reset-failed";
@@ -1660,12 +2001,14 @@ namespace bha::lsp
                             applied_count = 0;
                         } else {
                             for (const auto& retained_id : retained_ids) {
-                                auto retained_apply = suggestion_manager_->apply_suggestion(
-                                    retained_id,
-                                    false,
-                                    true,
-                                    false
-                                );
+                                auto retained_apply = with_manager([&]() {
+                                    return suggestion_manager_->apply_suggestion(
+                                        retained_id,
+                                        false,
+                                        true,
+                                        false
+                                    );
+                                });
                                 if (!retained_apply.success) {
                                     append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-final-replay");
                                     isolation_aborted = true;
@@ -1688,7 +2031,9 @@ namespace bha::lsp
                                     append_contextual_errors(build_errors, "apply-all", "fault-isolation-final-build");
                                     success = false;
 
-                                    const auto final_reset = suggestion_manager_->revert_changes_detailed(backup_id);
+                                    const auto final_reset = with_manager([&]() {
+                                        return suggestion_manager_->revert_changes_detailed(backup_id);
+                                    });
                                     rollback_json["attempted"] = true;
                                     rollback_json["success"] = final_reset.success;
                                     rollback_json["restoredFiles"] = final_reset.restored_files;
@@ -1729,7 +2074,9 @@ namespace bha::lsp
         int predicted_savings_sum = 0;
         bool has_predicted_savings = false;
         for (const auto& suggestion_id : applied_suggestion_ids) {
-            if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
+            if (const auto suggestion = with_manager([&]() {
+                    return suggestion_manager_->get_suggestion(suggestion_id);
+                }); suggestion.has_value()) {
                 predicted_savings_sum += suggestion->estimated_impact.time_saved_ms;
                 has_predicted_savings = true;
             }
@@ -1774,6 +2121,59 @@ namespace bha::lsp
         };
     }
 
+    json LSPServer::execute_get_job_status(const json& args) const {
+        if (!args.contains("jobId") || !args["jobId"].is_string()) {
+            throw std::runtime_error("Missing jobId");
+        }
+
+        const std::string job_id = args["jobId"].get<std::string>();
+        std::lock_guard lock(async_jobs_mutex_);
+        const auto it = async_jobs_.find(job_id);
+        if (it == async_jobs_.end()) {
+            return {
+                {"found", false},
+                {"jobId", job_id}
+            };
+        }
+        json payload = build_async_job_payload(*it->second);
+        payload["found"] = true;
+        return payload;
+    }
+
+    json LSPServer::execute_cancel_job(const json& args) {
+        if (!args.contains("jobId") || !args["jobId"].is_string()) {
+            throw std::runtime_error("Missing jobId");
+        }
+
+        const std::string job_id = args["jobId"].get<std::string>();
+        std::shared_ptr<AsyncJob> job;
+        {
+            std::lock_guard lock(async_jobs_mutex_);
+            const auto it = async_jobs_.find(job_id);
+            if (it == async_jobs_.end()) {
+                return {
+                    {"found", false},
+                    {"jobId", job_id},
+                    {"cancelRequested", false}
+                };
+            }
+            job = it->second;
+            job->cancel_requested.store(true);
+        }
+
+        send_notification("bha/jobCancellationRequested", {
+            {"jobId", job_id},
+            {"status", async_job_status_to_string(job->status.load())}
+        });
+
+        return {
+            {"found", true},
+            {"jobId", job_id},
+            {"cancelRequested", true},
+            {"status", async_job_status_to_string(job->status.load())}
+        };
+    }
+
     json LSPServer::execute_revert_changes(const json& args) const
     {
         if (!suggestion_manager_) {
@@ -1785,7 +2185,12 @@ namespace bha::lsp
         }
 
         const std::string backup_id = args["backupId"].get<std::string>();
-        auto [success, restored_files, errors] = suggestion_manager_->revert_changes_detailed(backup_id);
+        RevertResult revert_result;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            revert_result = suggestion_manager_->revert_changes_detailed(backup_id);
+        }
+        auto [success, restored_files, errors] = revert_result;
 
         json errors_json = json::array();
         for (const auto& err : errors) {
@@ -1812,7 +2217,11 @@ namespace bha::lsp
         }
 
         const std::string suggestion_id = args["suggestionId"].get<std::string>();
-        auto details = suggestion_manager_->get_suggestion_details(suggestion_id);
+        DetailedSuggestion details;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            details = suggestion_manager_->get_suggestion_details(suggestion_id);
+        }
 
         json result;
         to_json(result, static_cast<const Suggestion&>(details));
@@ -1830,7 +2239,12 @@ namespace bha::lsp
             result["autoApplyBlockedReason"] = *details.auto_apply_blocked_reason;
         }
         json text_edits = json::array();
-        if (const auto* bha_suggestion = suggestion_manager_->get_bha_suggestion(suggestion_id)) {
+        const bha::Suggestion* bha_suggestion = nullptr;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            bha_suggestion = suggestion_manager_->get_bha_suggestion(suggestion_id);
+        }
+        if (bha_suggestion != nullptr) {
             for (const auto& edit : bha_suggestion->edits) {
                 json edit_json;
                 edit_json["file"] = edit.file.string();
@@ -1854,7 +2268,11 @@ namespace bha::lsp
             throw std::runtime_error("Server not fully initialized");
         }
 
-        auto suggestions = suggestion_manager_->get_all_suggestions();
+        std::vector<Suggestion> suggestions;
+        {
+            std::lock_guard lock(suggestion_manager_mutex_);
+            suggestions = suggestion_manager_->get_all_suggestions();
+        }
 
         json suggestions_json = json::array();
         for (const auto& sug : suggestions) {
