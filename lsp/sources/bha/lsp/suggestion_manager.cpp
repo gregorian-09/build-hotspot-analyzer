@@ -1766,6 +1766,9 @@ namespace bha::lsp
         } else {
             last_compile_commands_path_ = std::nullopt;
         }
+        last_project_root_ = project_root;
+        last_build_dir_ = build_dir;
+        last_analyze_options_ = analyze_options;
 
         // Evict old analysis cache entries if over limit
         evict_old_analysis_cache();
@@ -3222,10 +3225,8 @@ namespace bha::lsp
         const std::optional<std::string>& min_priority,
         const bool safe_only
     ) {
-        struct RankedSuggestionRef {
-            std::string id;
-            const bha::Suggestion* suggestion = nullptr;
-            int numeric_id = -1;
+        struct PendingSuggestion {
+            std::string key;
         };
 
         const auto parse_numeric_id = [](const std::string& id) -> int {
@@ -3241,6 +3242,73 @@ namespace bha::lsp
             } catch (...) {
                 return -1;
             }
+        };
+
+        const auto stable_suggestion_key = [](const bha::Suggestion& suggestion) {
+            struct EditKey {
+                std::string file;
+                std::size_t start_line = 0;
+                std::size_t start_col = 0;
+                std::size_t end_line = 0;
+                std::size_t end_col = 0;
+                std::size_t new_text_hash = 0;
+            };
+
+            struct SecondaryFileKey {
+                std::string path;
+                int action = 0;
+            };
+
+            std::vector<EditKey> edits;
+            edits.reserve(suggestion.edits.size());
+            for (const auto& edit : suggestion.edits) {
+                edits.push_back(EditKey{
+                    edit.file.lexically_normal().generic_string(),
+                    edit.start_line,
+                    edit.start_col,
+                    edit.end_line,
+                    edit.end_col,
+                    std::hash<std::string>{}(edit.new_text)
+                });
+            }
+            std::ranges::sort(edits, [](const EditKey& lhs, const EditKey& rhs) {
+                if (lhs.file != rhs.file) return lhs.file < rhs.file;
+                if (lhs.start_line != rhs.start_line) return lhs.start_line < rhs.start_line;
+                if (lhs.start_col != rhs.start_col) return lhs.start_col < rhs.start_col;
+                if (lhs.end_line != rhs.end_line) return lhs.end_line < rhs.end_line;
+                if (lhs.end_col != rhs.end_col) return lhs.end_col < rhs.end_col;
+                return lhs.new_text_hash < rhs.new_text_hash;
+            });
+
+            std::vector<SecondaryFileKey> secondary;
+            secondary.reserve(suggestion.secondary_files.size());
+            for (const auto& file : suggestion.secondary_files) {
+                secondary.push_back(SecondaryFileKey{
+                    file.path.lexically_normal().generic_string(),
+                    static_cast<int>(file.action)
+                });
+            }
+            std::ranges::sort(secondary, [](const SecondaryFileKey& lhs, const SecondaryFileKey& rhs) {
+                if (lhs.path != rhs.path) return lhs.path < rhs.path;
+                return lhs.action < rhs.action;
+            });
+
+            std::ostringstream key;
+            key << static_cast<int>(suggestion.type)
+                << "|" << suggestion.target_file.path.lexically_normal().generic_string()
+                << "|" << static_cast<int>(suggestion.target_file.action);
+            for (const auto& edit : edits) {
+                key << "|e:" << edit.file
+                    << ":" << edit.start_line
+                    << ":" << edit.start_col
+                    << ":" << edit.end_line
+                    << ":" << edit.end_col
+                    << ":" << edit.new_text_hash;
+            }
+            for (const auto& file : secondary) {
+                key << "|s:" << file.path << ":" << file.action;
+            }
+            return key.str();
         };
 
         ApplyAllResult result;
@@ -3263,45 +3331,87 @@ namespace bha::lsp
             }
         }
 
+        const auto meets_priority_threshold = [&](const bha::Suggestion& suggestion) {
+            if (!priority_threshold) {
+                return true;
+            }
+            switch (*priority_threshold) {
+                case bha::Priority::Low:
+                    return true;
+                case bha::Priority::Medium:
+                    return suggestion.priority == bha::Priority::Medium ||
+                        suggestion.priority == bha::Priority::High ||
+                        suggestion.priority == bha::Priority::Critical;
+                case bha::Priority::High:
+                    return suggestion.priority == bha::Priority::High ||
+                        suggestion.priority == bha::Priority::Critical;
+                case bha::Priority::Critical:
+                    return suggestion.priority == bha::Priority::Critical;
+            }
+            return false;
+        };
+
+        const auto is_candidate_enabled = [&](const bha::Suggestion& suggestion) {
+            if (safe_only && !is_auto_applicable_suggestion(suggestion)) {
+                return false;
+            }
+            return meets_priority_threshold(suggestion);
+        };
+
+        const auto is_higher_ranked = [&](const std::string& lhs_id, const std::string& rhs_id) {
+            const auto lhs_it = bha_suggestions_.find(lhs_id);
+            const auto rhs_it = bha_suggestions_.find(rhs_id);
+            if (lhs_it == bha_suggestions_.end() || rhs_it == bha_suggestions_.end()) {
+                return lhs_id < rhs_id;
+            }
+            const auto& lhs = lhs_it->second;
+            const auto& rhs = rhs_it->second;
+            if (lhs.priority != rhs.priority) {
+                return lhs.priority < rhs.priority;
+            }
+            if (lhs.estimated_savings != rhs.estimated_savings) {
+                return lhs.estimated_savings > rhs.estimated_savings;
+            }
+            if (lhs.confidence != rhs.confidence) {
+                return lhs.confidence > rhs.confidence;
+            }
+            const int lhs_numeric = parse_numeric_id(lhs_id);
+            const int rhs_numeric = parse_numeric_id(rhs_id);
+            if (lhs_numeric >= 0 && rhs_numeric >= 0) {
+                return lhs_numeric < rhs_numeric;
+            }
+            return lhs_id < rhs_id;
+        };
+
+        const auto build_key_index = [&]() {
+            std::unordered_map<std::string, std::string> index;
+            for (const auto& [id, suggestion] : bha_suggestions_) {
+                if (!is_candidate_enabled(suggestion)) {
+                    continue;
+                }
+                const std::string key = stable_suggestion_key(suggestion);
+                if (auto it = index.find(key); it == index.end() || is_higher_ranked(id, it->second)) {
+                    index[key] = id;
+                }
+            }
+            return index;
+        };
+
         std::vector<fs::path> all_files_to_backup;
-        std::vector<RankedSuggestionRef> ranked_to_apply;
+        std::vector<PendingSuggestion> pending;
+        std::unordered_set<std::string> seen_pending_keys;
 
         for (const auto& [id, bha_sug] : bha_suggestions_) {
-            if (safe_only && !is_auto_applicable_suggestion(bha_sug)) {
+            if (!is_candidate_enabled(bha_sug)) {
                 result.skipped_count++;
                 continue;
             }
 
-            if (priority_threshold) {
-                bool meets_threshold = false;
-                switch (*priority_threshold) {
-                    case bha::Priority::Low:
-                        meets_threshold = true;
-                        break;
-                    case bha::Priority::Medium:
-                        meets_threshold = (bha_sug.priority == bha::Priority::Medium ||
-                                          bha_sug.priority == bha::Priority::High ||
-                                          bha_sug.priority == bha::Priority::Critical);
-                        break;
-                    case bha::Priority::High:
-                        meets_threshold = (bha_sug.priority == bha::Priority::High ||
-                                          bha_sug.priority == bha::Priority::Critical);
-                        break;
-                    case bha::Priority::Critical:
-                        meets_threshold = (bha_sug.priority == bha::Priority::Critical);
-                        break;
-                }
-                if (!meets_threshold) {
-                    result.skipped_count++;
-                    continue;
-                }
+            const std::string key = stable_suggestion_key(bha_sug);
+            if (!seen_pending_keys.insert(key).second) {
+                continue;
             }
-
-            ranked_to_apply.push_back({
-                id,
-                &bha_sug,
-                parse_numeric_id(id)
-            });
+            pending.push_back(PendingSuggestion{key});
 
             if (bha_sug.target_file.action == bha::FileAction::Modify ||
                 bha_sug.target_file.action == bha::FileAction::AddInclude) {
@@ -3315,42 +3425,104 @@ namespace bha::lsp
             }
         }
 
-        std::ranges::sort(
-            ranked_to_apply,
-            [](const RankedSuggestionRef& lhs, const RankedSuggestionRef& rhs) {
-                if (lhs.suggestion->priority != rhs.suggestion->priority) {
-                    return lhs.suggestion->priority < rhs.suggestion->priority;
+        {
+            const auto index = build_key_index();
+            std::ranges::sort(
+                pending,
+                [&](const PendingSuggestion& lhs, const PendingSuggestion& rhs) {
+                    const auto lhs_it = index.find(lhs.key);
+                    const auto rhs_it = index.find(rhs.key);
+                    if (lhs_it == index.end() && rhs_it == index.end()) {
+                        return lhs.key < rhs.key;
+                    }
+                    if (lhs_it == index.end()) {
+                        return false;
+                    }
+                    if (rhs_it == index.end()) {
+                        return true;
+                    }
+                    return is_higher_ranked(lhs_it->second, rhs_it->second);
                 }
-                if (lhs.suggestion->estimated_savings != rhs.suggestion->estimated_savings) {
-                    return lhs.suggestion->estimated_savings > rhs.suggestion->estimated_savings;
-                }
-                if (lhs.suggestion->confidence != rhs.suggestion->confidence) {
-                    return lhs.suggestion->confidence > rhs.suggestion->confidence;
-                }
-                if (lhs.numeric_id >= 0 && rhs.numeric_id >= 0) {
-                    return lhs.numeric_id < rhs.numeric_id;
-                }
-                return lhs.id < rhs.id;
-            }
-        );
+            );
+        }
 
         // Single backup for all changes
         if (!all_files_to_backup.empty()) {
             result.backup_id = create_backup(all_files_to_backup);
         }
 
-        for (const auto& ranked : ranked_to_apply) {
-            if (auto apply_result = apply_suggestion(ranked.id, false, true, false); apply_result.success) {
+        std::unordered_set<std::string> changed_file_set;
+        const bool can_rerank = config_.rerank_remaining_after_each_apply &&
+            last_project_root_.has_value() && !last_project_root_->empty();
+
+        while (!pending.empty()) {
+            auto key_index = build_key_index();
+            pending.erase(
+                std::remove_if(
+                    pending.begin(),
+                    pending.end(),
+                    [&](const PendingSuggestion& item) {
+                        if (key_index.contains(item.key)) {
+                            return false;
+                        }
+                        result.skipped_count++;
+                        return true;
+                    }
+                ),
+                pending.end()
+            );
+            if (pending.empty()) {
+                break;
+            }
+
+            auto best_it = pending.begin();
+            std::string best_id = key_index.at(best_it->key);
+            for (auto it = std::next(pending.begin()); it != pending.end(); ++it) {
+                const std::string candidate_id = key_index.at(it->key);
+                if (is_higher_ranked(candidate_id, best_id)) {
+                    best_it = it;
+                    best_id = candidate_id;
+                }
+            }
+
+            const std::string selected_key = best_it->key;
+            pending.erase(best_it);
+
+            auto apply_result = apply_suggestion(best_id, false, true, false);
+            if (apply_result.success) {
                 result.applied_count++;
-                result.applied_suggestion_ids.push_back(ranked.id);
-                result.changed_files.insert(result.changed_files.end(),
-                                           apply_result.changed_files.begin(),
-                                           apply_result.changed_files.end());
+                result.applied_suggestion_ids.push_back(best_id);
+                for (const auto& file : apply_result.changed_files) {
+                    if (changed_file_set.insert(file).second) {
+                        result.changed_files.push_back(file);
+                    }
+                }
+
+                if (!pending.empty() && can_rerank) {
+                    try {
+                        analyze_project(
+                            *last_project_root_,
+                            last_build_dir_,
+                            true,
+                            nullptr,
+                            last_analyze_options_
+                        );
+                    } catch (const std::exception& e) {
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.source = "bha-lsp";
+                        diag.message =
+                            "Failed to re-analyze project after applying suggestion " +
+                            best_id + " (" + selected_key + "): " + e.what();
+                        result.errors.push_back(std::move(diag));
+                        break;
+                    }
+                }
             } else {
                 result.skipped_count++;
                 result.errors.insert(result.errors.end(),
-                                    apply_result.errors.begin(),
-                                    apply_result.errors.end());
+                                     apply_result.errors.begin(),
+                                     apply_result.errors.end());
             }
         }
 

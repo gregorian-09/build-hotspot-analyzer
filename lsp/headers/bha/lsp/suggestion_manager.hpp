@@ -59,6 +59,7 @@ namespace bha::lsp
         bool enforce_forward_decl_syntax_gate = true;
         int forward_decl_validation_timeout_seconds = 120;
         std::size_t max_forward_decl_validation_units = 3;
+        bool rerank_remaining_after_each_apply = true;
 
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
@@ -226,6 +227,9 @@ namespace bha::lsp
         std::map<std::string, Backup> backups_;
         std::string last_analysis_id_;
         std::optional<fs::path> last_compile_commands_path_;
+        std::optional<fs::path> last_project_root_;
+        std::optional<fs::path> last_build_dir_;
+        AnalyzeSuggestionOptions last_analyze_options_;
 
         /// LRU tracking: front = oldest, back = newest
         std::list<std::string> backup_lru_;
