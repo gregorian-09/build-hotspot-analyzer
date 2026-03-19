@@ -5,6 +5,8 @@
 #include "bha/suggestions/include_suggester.hpp"
 
 #include <algorithm>
+#include <chrono>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -15,7 +17,10 @@ namespace bha::suggestions
     protected:
         void SetUp() override {
             suggester_ = std::make_unique<IncludeSuggester>();
-            temp_root_ = std::filesystem::temp_directory_path() / "bha-include-suggester-test";
+            const auto unique_suffix = std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ) + "-" + std::to_string(reinterpret_cast<std::uintptr_t>(this));
+            temp_root_ = std::filesystem::temp_directory_path() / ("bha-include-suggester-test-" + unique_suffix);
             std::error_code ec;
             std::filesystem::remove_all(temp_root_, ec);
             std::filesystem::create_directories(temp_root_, ec);
