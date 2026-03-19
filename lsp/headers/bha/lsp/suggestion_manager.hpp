@@ -8,6 +8,7 @@
 #include <list>
 #include <filesystem>
 #include <functional>
+#include <optional>
 
 namespace bha::lsp
 {
@@ -55,6 +56,9 @@ namespace bha::lsp
         bool include_unsafe_suggestions = false;
 
         bool allow_missing_compile_commands = false;
+        bool enforce_forward_decl_syntax_gate = true;
+        int forward_decl_validation_timeout_seconds = 120;
+        std::size_t max_forward_decl_validation_units = 3;
 
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
@@ -192,6 +196,11 @@ namespace bha::lsp
         std::string create_backup(const std::vector<fs::path>& files);
         static bool validate_files_exist(const std::vector<fs::path>& files);
         static bool apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files);
+        bool validate_forward_decl_suggestion(
+            const bha::Suggestion& suggestion,
+            const std::vector<fs::path>& changed_files,
+            std::vector<Diagnostic>& errors
+        ) const;
 
         std::string create_disk_backup(const std::vector<fs::path>& files);
         bool restore_disk_backup(const std::string& backup_id) const;
@@ -216,6 +225,7 @@ namespace bha::lsp
         std::map<std::string, bha::Suggestion> bha_suggestions_;
         std::map<std::string, Backup> backups_;
         std::string last_analysis_id_;
+        std::optional<fs::path> last_compile_commands_path_;
 
         /// LRU tracking: front = oldest, back = newest
         std::list<std::string> backup_lru_;

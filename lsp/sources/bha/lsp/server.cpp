@@ -753,6 +753,8 @@ namespace bha::lsp
         sm_config.allow_missing_compile_commands = config_.allow_missing_compile_commands;
         sm_config.include_unsafe_suggestions = config_.include_unsafe_suggestions;
         sm_config.min_confidence = config_.min_confidence;
+        sm_config.enforce_forward_decl_syntax_gate = true;
+        sm_config.forward_decl_validation_timeout_seconds = config_.build_timeout_seconds;
         if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
             if (root.starts_with("file://")) {
@@ -1468,23 +1470,11 @@ namespace bha::lsp
         bool success = apply_all_result.success;
         std::size_t applied_count = apply_all_result.applied_count;
         std::size_t skipped_count = apply_all_result.skipped_count;
+        auto applied_suggestion_ids = apply_all_result.applied_suggestion_ids;
         auto changed_files = apply_all_result.changed_files;
         auto errors = apply_all_result.errors;
         const std::string backup_id = apply_all_result.backup_id;
         const bool atomic = args.contains("atomic") && args["atomic"].get<bool>();
-
-        std::optional<int> predicted_savings_ms;
-        int predicted_savings_sum = 0;
-        bool has_predicted_savings = false;
-        for (const auto& suggestion_id : apply_all_result.applied_suggestion_ids) {
-            if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
-                predicted_savings_sum += suggestion->estimated_impact.time_saved_ms;
-                has_predicted_savings = true;
-            }
-        }
-        if (has_predicted_savings) {
-            predicted_savings_ms = predicted_savings_sum;
-        }
 
         std::optional<int> baseline_duration_ms;
         if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
@@ -1509,6 +1499,28 @@ namespace bha::lsp
             {"errors", json::array()}
         };
 
+        auto append_unique_changed_files = [](std::vector<std::string>& dest, const std::vector<std::string>& src) {
+            std::unordered_set<std::string> seen(dest.begin(), dest.end());
+            for (const auto& file : src) {
+                if (seen.insert(file).second) {
+                    dest.push_back(file);
+                }
+            }
+        };
+
+        auto append_contextual_errors = [&errors](const std::vector<Diagnostic>& source,
+                                                  const std::string& suggestion_id,
+                                                  const std::string& stage) {
+            for (auto diag : source) {
+                if (diag.message.empty()) {
+                    diag.message = "[" + suggestion_id + "][" + stage + "] apply failed";
+                } else {
+                    diag.message = "[" + suggestion_id + "][" + stage + "] " + diag.message;
+                }
+                errors.push_back(std::move(diag));
+            }
+        };
+
         if (!success && atomic && !backup_id.empty()) {
             const auto rollback_result = suggestion_manager_->revert_changes_detailed(backup_id);
             rollback_json["attempted"] = true;
@@ -1519,13 +1531,15 @@ namespace bha::lsp
 
             if (rollback_result.success) {
                 changed_files.clear();
+                applied_suggestion_ids.clear();
+                applied_count = 0;
             } else {
                 errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
             }
             success = false;
         }
 
-        const bool build_validation_requested = success && config_.rebuild_after_apply;
+        bool build_validation_requested = success && config_.rebuild_after_apply;
         bool build_validation_ran = false;
         bool build_validation_success = true;
         std::optional<int> measured_rebuild_duration_ms;
@@ -1535,6 +1549,7 @@ namespace bha::lsp
             build_validation_ran = true;
             build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
             if (!build_validation_success) {
+                const std::size_t error_count_before_batch_validation = errors.size();
                 success = false;
                 errors.insert(errors.end(), build_errors.begin(), build_errors.end());
 
@@ -1542,7 +1557,7 @@ namespace bha::lsp
                     rollback_json["reason"] = "rollback-disabled";
                 } else if (backup_id.empty()) {
                     rollback_json["reason"] = "no-backup";
-                } else {
+                } else if (atomic) {
                     send_notification("window/showMessage", {
                         {"type", static_cast<int>(MessageType::Warning)},
                         {"message", "Build failed after applying suggestions. Rolling back all changes..."}
@@ -1557,8 +1572,150 @@ namespace bha::lsp
 
                     if (rollback_result.success) {
                         changed_files.clear();
+                        applied_suggestion_ids.clear();
+                        applied_count = 0;
                     } else {
                         errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
+                    }
+                } else {
+                    // Remove the initial aggregate build-failure diagnostics before
+                    // entering fault isolation; candidate-specific failures are added back
+                    // with suggestion context.
+                    errors.resize(error_count_before_batch_validation);
+
+                    send_notification("window/showMessage", {
+                        {"type", static_cast<int>(MessageType::Warning)},
+                        {"message", "Build failed after applying suggestions. Running fault isolation to keep valid edits..."}
+                    });
+
+                    const auto rollback_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                    rollback_json["attempted"] = true;
+                    rollback_json["success"] = rollback_result.success;
+                    rollback_json["restoredFiles"] = rollback_result.restored_files;
+                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
+                    rollback_json["reason"] = rollback_result.success ? "fault-isolation-started" : "rollback-failed";
+
+                    if (!rollback_result.success) {
+                        errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
+                    } else {
+                        std::vector<std::string> retained_ids;
+                        std::vector<std::string> retained_changed_files;
+                        bool isolation_aborted = false;
+
+                        for (const auto& suggestion_id : applied_suggestion_ids) {
+                            for (const auto& retained_id : retained_ids) {
+                                auto retained_apply = suggestion_manager_->apply_suggestion(
+                                    retained_id,
+                                    false,
+                                    true,
+                                    false
+                                );
+                                if (!retained_apply.success) {
+                                    append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-replay");
+                                    isolation_aborted = true;
+                                    break;
+                                }
+                            }
+                            if (isolation_aborted) {
+                                break;
+                            }
+
+                            const auto candidate_apply = suggestion_manager_->apply_suggestion(
+                                suggestion_id,
+                                false,
+                                true,
+                                false
+                            );
+                            if (!candidate_apply.success) {
+                                append_contextual_errors(candidate_apply.errors, suggestion_id, "fault-isolation-apply");
+                            } else {
+                                std::vector<Diagnostic> candidate_build_errors;
+                                std::optional<int> candidate_duration_ms;
+                                const bool candidate_valid = run_build_validation(candidate_build_errors, candidate_duration_ms);
+                                if (candidate_valid) {
+                                    retained_ids.push_back(suggestion_id);
+                                    append_unique_changed_files(retained_changed_files, candidate_apply.changed_files);
+                                    measured_rebuild_duration_ms = candidate_duration_ms;
+                                } else {
+                                    append_contextual_errors(candidate_build_errors, suggestion_id, "fault-isolation-build");
+                                }
+                            }
+
+                            const auto reset_result = suggestion_manager_->revert_changes_detailed(backup_id);
+                            if (!reset_result.success) {
+                                rollback_json["success"] = false;
+                                rollback_json["reason"] = "fault-isolation-reset-failed";
+                                rollback_json["restoredFiles"] = reset_result.restored_files;
+                                rollback_json["errors"] = diagnostics_to_json(reset_result.errors);
+                                errors.insert(errors.end(), reset_result.errors.begin(), reset_result.errors.end());
+                                isolation_aborted = true;
+                                break;
+                            }
+                        }
+
+                        if (isolation_aborted) {
+                            success = false;
+                            changed_files.clear();
+                            applied_suggestion_ids.clear();
+                            applied_count = 0;
+                        } else {
+                            for (const auto& retained_id : retained_ids) {
+                                auto retained_apply = suggestion_manager_->apply_suggestion(
+                                    retained_id,
+                                    false,
+                                    true,
+                                    false
+                                );
+                                if (!retained_apply.success) {
+                                    append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-final-replay");
+                                    isolation_aborted = true;
+                                    break;
+                                }
+                            }
+
+                            if (isolation_aborted) {
+                                success = false;
+                                rollback_json["reason"] = "fault-isolation-final-replay-failed";
+                                changed_files.clear();
+                                applied_suggestion_ids.clear();
+                                applied_count = 0;
+                            } else {
+                                build_errors.clear();
+                                build_validation_ran = true;
+                                build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
+
+                                if (!build_validation_success) {
+                                    append_contextual_errors(build_errors, "apply-all", "fault-isolation-final-build");
+                                    success = false;
+
+                                    const auto final_reset = suggestion_manager_->revert_changes_detailed(backup_id);
+                                    rollback_json["attempted"] = true;
+                                    rollback_json["success"] = final_reset.success;
+                                    rollback_json["restoredFiles"] = final_reset.restored_files;
+                                    rollback_json["errors"] = diagnostics_to_json(final_reset.errors);
+                                    rollback_json["reason"] = final_reset.success
+                                        ? "fault-isolation-final-build-failed-rolled-back"
+                                        : "fault-isolation-final-build-failed-rollback-failed";
+                                    if (final_reset.success) {
+                                        changed_files.clear();
+                                        applied_suggestion_ids.clear();
+                                        applied_count = 0;
+                                    } else {
+                                        errors.insert(errors.end(), final_reset.errors.begin(), final_reset.errors.end());
+                                    }
+                                } else {
+                                    const std::size_t previous_applied_count = applied_count;
+                                    applied_suggestion_ids = retained_ids;
+                                    applied_count = retained_ids.size();
+                                    skipped_count += previous_applied_count - applied_count;
+                                    changed_files = std::move(retained_changed_files);
+                                    success = errors.empty() && applied_count > 0;
+                                    rollback_json["reason"] = applied_count > 0
+                                        ? "fault-isolation-partial-apply"
+                                        : "fault-isolation-no-survivors";
+                                }
+                            }
+                        }
                     }
                 }
             } else if (rollback_json["reason"] == "not-required") {
@@ -1566,6 +1723,19 @@ namespace bha::lsp
             }
         } else if (rollback_json["reason"] == "not-required") {
             rollback_json["reason"] = config_.rebuild_after_apply ? "validation-skipped" : "validation-disabled";
+        }
+
+        std::optional<int> predicted_savings_ms;
+        int predicted_savings_sum = 0;
+        bool has_predicted_savings = false;
+        for (const auto& suggestion_id : applied_suggestion_ids) {
+            if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
+                predicted_savings_sum += suggestion->estimated_impact.time_saved_ms;
+                has_predicted_savings = true;
+            }
+        }
+        if (has_predicted_savings) {
+            predicted_savings_ms = predicted_savings_sum;
         }
 
         json errors_json = json::array();
@@ -1589,7 +1759,7 @@ namespace bha::lsp
             {"appliedCount", applied_count},
             {"skippedCount", skipped_count},
             {"failedCount", errors.size()},
-            {"appliedSuggestionIds", apply_all_result.applied_suggestion_ids},
+            {"appliedSuggestionIds", applied_suggestion_ids},
             {"changedFiles", changed_files},
             {"errors", errors_json},
             {"backupId", backup_id},

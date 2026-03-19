@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iomanip>
+#include <regex>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -26,6 +27,7 @@
 #define pclose _pclose
 #elif defined(__linux__)
 #include <limits.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #endif
 
@@ -394,6 +396,314 @@ namespace bha::lsp
         escaped.push_back('\'');
         return escaped;
 #endif
+    }
+
+    std::string to_lower_ascii(std::string text) {
+        std::ranges::transform(text, text.begin(), [](const unsigned char ch) {
+            return static_cast<char>(std::tolower(ch));
+        });
+        return text;
+    }
+
+    std::vector<std::string> split_shell_command(const std::string& command) {
+        std::vector<std::string> parts;
+        std::string current;
+        char quote = '\0';
+        bool escaped = false;
+
+        for (const char ch : command) {
+            if (escaped) {
+                current.push_back(ch);
+                escaped = false;
+                continue;
+            }
+            if (ch == '\\') {
+                escaped = true;
+                continue;
+            }
+            if (quote != '\0') {
+                if (ch == quote) {
+                    quote = '\0';
+                } else {
+                    current.push_back(ch);
+                }
+                continue;
+            }
+            if (ch == '"' || ch == '\'') {
+                quote = ch;
+                continue;
+            }
+            if (std::isspace(static_cast<unsigned char>(ch))) {
+                if (!current.empty()) {
+                    parts.push_back(std::move(current));
+                    current.clear();
+                }
+                continue;
+            }
+            current.push_back(ch);
+        }
+
+        if (!current.empty()) {
+            parts.push_back(std::move(current));
+        }
+        return parts;
+    }
+
+    bool is_cpp_source_path(const fs::path& path) {
+        const std::string ext = to_lower_ascii(path.extension().string());
+        return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".c++" || ext == ".cu";
+    }
+
+    fs::path normalize_path_for_match(fs::path path, const std::optional<fs::path>& base = std::nullopt) {
+        if (path.empty()) {
+            return path;
+        }
+        if (path.is_relative() && base.has_value() && !base->empty()) {
+            path = *base / path;
+        }
+        std::error_code ec;
+        if (path.is_relative()) {
+            path = fs::absolute(path, ec);
+        }
+        return path.lexically_normal();
+    }
+
+    bool is_compiler_wrapper(const std::string& arg) {
+        static const std::unordered_set<std::string> wrappers = {
+            "ccache", "sccache", "distcc", "icecc", "gomacc"
+        };
+        const std::string name = to_lower_ascii(fs::path(arg).filename().string());
+        return wrappers.contains(name);
+    }
+
+    std::string select_primary_compiler_token(const std::vector<std::string>& args) {
+        if (args.empty()) {
+            return {};
+        }
+        for (std::size_t i = 0; i < args.size(); ++i) {
+            if (!is_compiler_wrapper(args[i])) {
+                return args[i];
+            }
+        }
+        return args.front();
+    }
+
+    bool is_msvc_driver(const std::string& compiler_token) {
+        const std::string name = to_lower_ascii(fs::path(compiler_token).filename().string());
+        if (name.find("clang-cl") != std::string::npos) {
+            return false;
+        }
+        return name == "cl" || name == "cl.exe";
+    }
+
+    std::vector<std::string> load_compile_command_args_for_source(
+        const std::optional<fs::path>& compile_commands_path,
+        const fs::path& source_file
+    ) {
+        std::vector<std::string> args;
+        if (!compile_commands_path.has_value() || compile_commands_path->empty() || !fs::exists(*compile_commands_path)) {
+            return args;
+        }
+
+        std::ifstream in(*compile_commands_path);
+        if (!in) {
+            return args;
+        }
+
+        nlohmann::json compile_db;
+        try {
+            in >> compile_db;
+        } catch (const nlohmann::json::exception&) {
+            return args;
+        }
+        if (!compile_db.is_array()) {
+            return args;
+        }
+
+        const fs::path needle = normalize_path_for_match(source_file);
+        for (const auto& entry : compile_db) {
+            if (!entry.is_object()) {
+                continue;
+            }
+
+            std::optional<fs::path> directory;
+            if (entry.contains("directory") && entry["directory"].is_string()) {
+                directory = fs::path(entry["directory"].get<std::string>());
+            }
+
+            fs::path candidate;
+            if (entry.contains("file") && entry["file"].is_string()) {
+                candidate = entry["file"].get<std::string>();
+            } else {
+                continue;
+            }
+
+            const fs::path normalized_candidate = normalize_path_for_match(candidate, directory);
+            if (normalized_candidate != needle && normalized_candidate.filename() != needle.filename()) {
+                continue;
+            }
+
+            if (entry.contains("arguments") && entry["arguments"].is_array()) {
+                for (const auto& arg : entry["arguments"]) {
+                    if (arg.is_string()) {
+                        args.push_back(arg.get<std::string>());
+                    }
+                }
+            } else if (entry.contains("command") && entry["command"].is_string()) {
+                args = split_shell_command(entry["command"].get<std::string>());
+            }
+
+            if (!args.empty() && directory.has_value()) {
+                for (auto& arg : args) {
+                    fs::path path_arg(arg);
+                    if (path_arg.is_relative() && is_cpp_source_path(path_arg)) {
+                        arg = normalize_path_for_match(path_arg, directory).string();
+                    }
+                }
+            }
+            return args;
+        }
+
+        return args;
+    }
+
+    std::vector<std::string> filter_compile_args_for_syntax_check(
+        const std::vector<std::string>& args,
+        const fs::path& source_file
+    ) {
+        std::vector<std::string> filtered;
+        if (args.empty()) {
+            return filtered;
+        }
+
+        filtered.reserve(args.size() + 2);
+        filtered.push_back(args.front());
+
+        const fs::path normalized_source = normalize_path_for_match(source_file);
+        for (std::size_t i = 1; i < args.size(); ++i) {
+            const std::string& arg = args[i];
+            const std::string arg_lower = to_lower_ascii(arg);
+
+            const auto skip_next_value_flag = [&](const std::string& flag) {
+                return arg == flag;
+            };
+
+            if (skip_next_value_flag("-o") || skip_next_value_flag("-MF") || skip_next_value_flag("-MT") ||
+                skip_next_value_flag("-MQ") || skip_next_value_flag("-MJ") ||
+                skip_next_value_flag("/Fo") || skip_next_value_flag("/Fe")) {
+                if (i + 1 < args.size()) {
+                    ++i;
+                }
+                continue;
+            }
+
+            if (arg == "-c" || arg == "-S" || arg == "-E" || arg == "/c" ||
+                arg == "-Winvalid-pch" || arg == "-MD" || arg == "-MMD") {
+                continue;
+            }
+
+            if (arg.starts_with("-o") || arg.starts_with("-MF") || arg.starts_with("-MT") ||
+                arg.starts_with("-MQ") || arg.starts_with("-MJ") ||
+                arg.starts_with("/Fo") || arg.starts_with("/Fe")) {
+                continue;
+            }
+
+            const fs::path arg_path(arg);
+            if (is_cpp_source_path(arg_path)) {
+                if (normalize_path_for_match(arg_path) == normalized_source ||
+                    arg_path.filename() == normalized_source.filename()) {
+                    continue;
+                }
+            }
+
+            // Skip linker-like flags when present in compile database commands.
+            if (arg == "-Wl" || arg.starts_with("-Wl,") || arg_lower == "/link") {
+                continue;
+            }
+
+            filtered.push_back(arg);
+        }
+
+        return filtered;
+    }
+
+    std::optional<std::string> build_syntax_check_command(
+        const std::vector<std::string>& compile_args,
+        const fs::path& source_file
+    ) {
+        if (compile_args.empty()) {
+            return std::nullopt;
+        }
+
+        auto command_args = filter_compile_args_for_syntax_check(compile_args, source_file);
+        if (command_args.empty()) {
+            return std::nullopt;
+        }
+
+        const std::string compiler_token = select_primary_compiler_token(command_args);
+        if (compiler_token.empty()) {
+            return std::nullopt;
+        }
+
+        if (is_msvc_driver(compiler_token)) {
+            command_args.push_back("/Zs");
+        } else {
+            command_args.push_back("-fsyntax-only");
+        }
+        command_args.push_back(normalize_path_for_match(source_file).string());
+
+        std::ostringstream cmd;
+        for (std::size_t i = 0; i < command_args.size(); ++i) {
+            if (i > 0) {
+                cmd << ' ';
+            }
+            cmd << shell_quote(command_args[i]);
+        }
+        return cmd.str();
+    }
+
+    int run_command_collect_output(
+        const std::string& command,
+        const int timeout_seconds,
+        std::string& output
+    ) {
+        output.clear();
+        std::string effective_command = command;
+#ifndef _WIN32
+        if (timeout_seconds > 0 && std::system("command -v timeout >/dev/null 2>&1") == 0) {
+            effective_command = "timeout --signal=TERM " +
+                std::to_string(timeout_seconds) + "s /bin/bash -lc " + shell_quote(command);
+        }
+#endif
+
+        FILE* pipe = popen((effective_command + " 2>&1").c_str(), "r");
+        if (!pipe) {
+            return -1;
+        }
+
+        std::array<char, 4096> buffer{};
+        while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
+            output += buffer.data();
+            if (output.size() > 1024 * 1024) {
+                break;
+            }
+        }
+
+        int raw_status = pclose(pipe);
+        int exit_code = raw_status;
+#ifndef _WIN32
+        if (WIFEXITED(raw_status)) {
+            exit_code = WEXITSTATUS(raw_status);
+        }
+#endif
+        return exit_code;
+    }
+
+    std::string truncate_for_diagnostic(const std::string& text, const std::size_t max_chars = 1200) {
+        if (text.size() <= max_chars) {
+            return text;
+        }
+        return text.substr(0, max_chars) + "\n... (truncated)";
     }
 
     std::string resolve_bha_cli_binary() {
@@ -1445,6 +1755,17 @@ namespace bha::lsp
         last_analysis_id_ = analysis_id;
         analysis_cache_[analysis_id] = std::move(build_trace);
         analysis_lru_.push_back(analysis_id);
+        if (compile_commands_path.has_value()) {
+            fs::path compile_commands = *compile_commands_path;
+            if (compile_commands.is_relative() && !project_root.empty()) {
+                compile_commands = (project_root / compile_commands).lexically_normal();
+            } else {
+                compile_commands = compile_commands.lexically_normal();
+            }
+            last_compile_commands_path_ = compile_commands;
+        } else {
+            last_compile_commands_path_ = std::nullopt;
+        }
 
         // Evict old analysis cache entries if over limit
         evict_old_analysis_cache();
@@ -1471,6 +1792,190 @@ namespace bha::lsp
         return it->second;
     }
 
+    bool SuggestionManager::validate_forward_decl_suggestion(
+        const bha::Suggestion& suggestion,
+        const std::vector<fs::path>& changed_files,
+        std::vector<Diagnostic>& errors
+    ) const {
+        if (!config_.enforce_forward_decl_syntax_gate) {
+            return true;
+        }
+
+        if (!last_compile_commands_path_.has_value() || !fs::exists(*last_compile_commands_path_)) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Forward declaration apply blocked: compile_commands.json is unavailable for syntax validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        if (last_analysis_id_.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Forward declaration apply blocked: no prior analysis context is available for validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const auto analysis_it = analysis_cache_.find(last_analysis_id_);
+        if (analysis_it == analysis_cache_.end()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Forward declaration apply blocked: cached analysis trace is no longer available";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        std::unordered_set<std::string> touched_paths;
+        const auto add_touched = [&touched_paths](const fs::path& path) {
+            const fs::path normalized = normalize_path_for_match(path);
+            if (!normalized.empty()) {
+                touched_paths.insert(normalized.generic_string());
+            }
+        };
+
+        for (const auto& file : changed_files) {
+            add_touched(file);
+        }
+        add_touched(suggestion.target_file.path);
+        for (const auto& secondary : suggestion.secondary_files) {
+            add_touched(secondary.path);
+        }
+
+        if (touched_paths.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Forward declaration apply blocked: could not determine affected files for validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        std::vector<fs::path> candidate_sources;
+        std::unordered_set<std::string> seen_sources;
+        for (const auto& unit : analysis_it->second.units) {
+            const fs::path source = normalize_path_for_match(unit.source_file);
+            if (source.empty() || !is_cpp_source_path(source)) {
+                continue;
+            }
+
+            bool impacted = touched_paths.contains(source.generic_string());
+            if (!impacted) {
+                for (const auto& include : unit.includes) {
+                    const fs::path header = normalize_path_for_match(include.header);
+                    if (!header.empty() && touched_paths.contains(header.generic_string())) {
+                        impacted = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!impacted) {
+                continue;
+            }
+
+            const std::string key = source.generic_string();
+            if (seen_sources.insert(key).second) {
+                candidate_sources.push_back(source);
+            }
+        }
+
+        if (candidate_sources.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Forward declaration apply blocked: no affected translation units were found for syntax validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const std::size_t validation_cap = config_.max_forward_decl_validation_units == 0
+            ? candidate_sources.size()
+            : std::min(candidate_sources.size(), config_.max_forward_decl_validation_units);
+
+        std::regex diagnostic_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+        for (std::size_t i = 0; i < validation_cap; ++i) {
+            const fs::path& source = candidate_sources[i];
+            auto compile_args = load_compile_command_args_for_source(last_compile_commands_path_, source);
+            if (compile_args.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Forward declaration apply blocked: no compile command found for " + source.string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            const auto syntax_cmd = build_syntax_check_command(compile_args, source);
+            if (!syntax_cmd.has_value()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Forward declaration apply blocked: failed to construct syntax check command for " +
+                    source.string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            std::string syntax_output;
+            const int exit_code = run_command_collect_output(
+                *syntax_cmd,
+                config_.forward_decl_validation_timeout_seconds,
+                syntax_output
+            );
+
+            if (exit_code == 0) {
+                continue;
+            }
+
+            bool emitted_compiler_diag = false;
+            std::smatch match;
+            auto search_start = syntax_output.cbegin();
+            while (std::regex_search(search_start, syntax_output.cend(), match, diagnostic_regex)) {
+                Diagnostic diag;
+                diag.range.start.line = std::stoi(match[2]) - 1;
+                diag.range.start.character = std::stoi(match[3]) - 1;
+                diag.range.end = diag.range.start;
+                diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
+                diag.source = "compiler";
+                diag.message = match[5];
+                errors.push_back(std::move(diag));
+                emitted_compiler_diag = true;
+                search_start = match.suffix().first;
+            }
+
+            if (!emitted_compiler_diag) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                if (config_.forward_decl_validation_timeout_seconds > 0 && exit_code == 124) {
+                    diag.message = "Forward declaration syntax validation timed out for " + source.string();
+                } else if (!syntax_output.empty()) {
+                    diag.message = "Forward declaration syntax validation failed for " + source.string() +
+                        ":\n" + truncate_for_diagnostic(syntax_output);
+                } else if (exit_code == -1) {
+                    diag.message = "Forward declaration syntax validation failed to launch compiler process";
+                } else {
+                    diag.message = "Forward declaration syntax validation failed for " + source.string() +
+                        " with exit code " + std::to_string(exit_code);
+                }
+                errors.push_back(std::move(diag));
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     ApplySuggestionResult SuggestionManager::apply_suggestion(
         const std::string& suggestion_id,
         bool /*skip_validation*/,
@@ -1491,6 +1996,66 @@ namespace bha::lsp
 
         const auto& bha_sug = bha_it->second;
         const auto application_mode = bha::resolve_application_mode(bha_sug);
+        const bool enforce_forward_decl_validation =
+            bha_sug.type == bha::SuggestionType::ForwardDeclaration &&
+            config_.enforce_forward_decl_syntax_gate;
+
+        std::vector<FileBackup> transactional_snapshot;
+        const auto capture_transactional_snapshot = [&](const std::vector<fs::path>& files) -> bool {
+            std::unordered_set<std::string> seen;
+            for (const auto& file : files) {
+                const fs::path normalized = file.lexically_normal();
+                const std::string key = normalized.generic_string();
+                if (!seen.insert(key).second) {
+                    continue;
+                }
+
+                std::ifstream in(normalized, std::ios::binary);
+                if (!in) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Failed to capture rollback snapshot for " + normalized.string();
+                    result.errors.push_back(std::move(diag));
+                    return false;
+                }
+
+                transactional_snapshot.push_back(FileBackup{
+                    normalized,
+                    std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>())
+                });
+            }
+            return true;
+        };
+        const auto restore_transactional_snapshot = [&]() -> bool {
+            bool success = true;
+            for (const auto& backup : transactional_snapshot) {
+                try {
+                    if (const fs::path parent = backup.path.parent_path(); !parent.empty()) {
+                        fs::create_directories(parent);
+                    }
+                    std::ofstream out(backup.path, std::ios::binary | std::ios::trunc);
+                    if (!out) {
+                        success = false;
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.source = "bha-lsp";
+                        diag.message = "Failed to restore snapshot file: " + backup.path.string();
+                        result.errors.push_back(std::move(diag));
+                        continue;
+                    }
+                    out << backup.content;
+                } catch (const std::exception& e) {
+                    success = false;
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Exception while restoring snapshot for " + backup.path.string() + ": " + e.what();
+                    result.errors.push_back(std::move(diag));
+                }
+            }
+            return success;
+        };
 
         std::vector<fs::path> changed_files;
         if (application_mode == bha::SuggestionApplicationMode::ExternalRefactor) {
@@ -1647,6 +2212,10 @@ namespace bha::lsp
             if (create_backup_flag && !files_to_backup.empty()) {
                 result.backup_id = create_backup(files_to_backup);
             }
+            if (enforce_forward_decl_validation && !files_to_backup.empty() &&
+                !capture_transactional_snapshot(files_to_backup)) {
+                return result;
+            }
 
             if (!apply_file_changes(bha_sug, changed_files)) {
                 Diagnostic diag;
@@ -1666,9 +2235,42 @@ namespace bha::lsp
                         rollback_diag.source = "bha-lsp";
                         result.errors.push_back(std::move(rollback_diag));
                     }
+                } else if (enforce_forward_decl_validation && !transactional_snapshot.empty()) {
+                    if (!restore_transactional_snapshot()) {
+                        Diagnostic rollback_diag;
+                        rollback_diag.severity = DiagnosticSeverity::Error;
+                        rollback_diag.message =
+                            "Automatic rollback failed after forward-declaration apply failure";
+                        rollback_diag.source = "bha-lsp";
+                        result.errors.push_back(std::move(rollback_diag));
+                    }
                 }
                 return result;
             }
+        }
+
+        if (enforce_forward_decl_validation &&
+            !validate_forward_decl_suggestion(bha_sug, changed_files, result.errors)) {
+            bool rollback_success = !result.backup_id.has_value() && transactional_snapshot.empty();
+            if (result.backup_id) {
+                const auto rollback = revert_changes_detailed(*result.backup_id);
+                rollback_success = rollback.success;
+                if (!rollback.success) {
+                    result.errors.insert(result.errors.end(), rollback.errors.begin(), rollback.errors.end());
+                }
+            } else if (!transactional_snapshot.empty()) {
+                rollback_success = restore_transactional_snapshot();
+            }
+
+            if (!rollback_success) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message =
+                    "Forward declaration syntax validation failed and automatic rollback did not complete";
+                result.errors.push_back(std::move(diag));
+            }
+            return result;
         }
 
         for (const auto& file : changed_files) {
@@ -2620,6 +3222,27 @@ namespace bha::lsp
         const std::optional<std::string>& min_priority,
         const bool safe_only
     ) {
+        struct RankedSuggestionRef {
+            std::string id;
+            const bha::Suggestion* suggestion = nullptr;
+            int numeric_id = -1;
+        };
+
+        const auto parse_numeric_id = [](const std::string& id) -> int {
+            if (!id.starts_with("ana-")) {
+                return -1;
+            }
+            const std::string suffix = id.substr(4);
+            if (suffix.empty()) {
+                return -1;
+            }
+            try {
+                return std::stoi(suffix);
+            } catch (...) {
+                return -1;
+            }
+        };
+
         ApplyAllResult result;
         result.success = true;
         result.applied_count = 0;
@@ -2641,7 +3264,7 @@ namespace bha::lsp
         }
 
         std::vector<fs::path> all_files_to_backup;
-        std::vector<std::string> ids_to_apply;
+        std::vector<RankedSuggestionRef> ranked_to_apply;
 
         for (const auto& [id, bha_sug] : bha_suggestions_) {
             if (safe_only && !is_auto_applicable_suggestion(bha_sug)) {
@@ -2674,7 +3297,11 @@ namespace bha::lsp
                 }
             }
 
-            ids_to_apply.push_back(id);
+            ranked_to_apply.push_back({
+                id,
+                &bha_sug,
+                parse_numeric_id(id)
+            });
 
             if (bha_sug.target_file.action == bha::FileAction::Modify ||
                 bha_sug.target_file.action == bha::FileAction::AddInclude) {
@@ -2688,15 +3315,34 @@ namespace bha::lsp
             }
         }
 
+        std::ranges::sort(
+            ranked_to_apply,
+            [](const RankedSuggestionRef& lhs, const RankedSuggestionRef& rhs) {
+                if (lhs.suggestion->priority != rhs.suggestion->priority) {
+                    return lhs.suggestion->priority < rhs.suggestion->priority;
+                }
+                if (lhs.suggestion->estimated_savings != rhs.suggestion->estimated_savings) {
+                    return lhs.suggestion->estimated_savings > rhs.suggestion->estimated_savings;
+                }
+                if (lhs.suggestion->confidence != rhs.suggestion->confidence) {
+                    return lhs.suggestion->confidence > rhs.suggestion->confidence;
+                }
+                if (lhs.numeric_id >= 0 && rhs.numeric_id >= 0) {
+                    return lhs.numeric_id < rhs.numeric_id;
+                }
+                return lhs.id < rhs.id;
+            }
+        );
+
         // Single backup for all changes
         if (!all_files_to_backup.empty()) {
             result.backup_id = create_backup(all_files_to_backup);
         }
 
-        for (const auto& id : ids_to_apply) {
-            if (auto apply_result = apply_suggestion(id, false, true, false); apply_result.success) {
+        for (const auto& ranked : ranked_to_apply) {
+            if (auto apply_result = apply_suggestion(ranked.id, false, true, false); apply_result.success) {
                 result.applied_count++;
-                result.applied_suggestion_ids.push_back(id);
+                result.applied_suggestion_ids.push_back(ranked.id);
                 result.changed_files.insert(result.changed_files.end(),
                                            apply_result.changed_files.begin(),
                                            apply_result.changed_files.end());
