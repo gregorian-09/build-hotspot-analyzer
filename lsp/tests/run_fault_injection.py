@@ -355,6 +355,144 @@ def scenario_kill_mid_apply_recovery(server_path: Path, workspace_root: Path):
     print("  ✓ scenario 3 passed")
 
 
+def scenario_apply_all_skip_rebuild(server_path: Path, workspace_root: Path):
+    print("[scenario 4] applyAllSuggestions honors skipRebuild")
+    project_root = workspace_root / "scenario_apply_all_skip_rebuild"
+    create_link_fail_fixture(project_root)
+    build_dir = project_root / "build"
+    configure_and_build_fixture(project_root, build_dir)
+
+    settings = optimization_settings(
+        project_root,
+        build_command=f"cmake --build \"{build_dir}\" -j4",
+        build_timeout=300,
+    )
+    client = setup_client(server_path, project_root, settings, "lsp-scenario4.err")
+    try:
+        apply_all = execute_command_with_timeout(
+            client,
+            "bha.applyAllSuggestions",
+            [{
+                "skipConsent": True,
+                "safeOnly": False,
+                "skipRebuild": True,
+            }],
+            timeout_seconds=300,
+            timeout_label="scenario4 applyAllSuggestions",
+        )
+        ensure(apply_all is not None and "result" in apply_all, "Scenario 4 applyAllSuggestions failed")
+        result = apply_all["result"]
+        ensure(result.get("success", False), "Scenario 4 expected applyAllSuggestions success")
+
+        build_validation = result.get("buildValidation", {})
+        ensure(
+            build_validation.get("requested") is False and build_validation.get("ran") is False,
+            f"Scenario 4 expected skipRebuild to disable validation, got: {build_validation}",
+        )
+    finally:
+        try:
+            client.shutdown()
+        except Exception:
+            pass
+        client.stop()
+
+    print("  ✓ scenario 4 passed")
+
+
+def scenario_async_job_retention_bound(server_path: Path, workspace_root: Path):
+    print("[scenario 5] async finished jobs are pruned to bounded retention")
+    project_root = workspace_root / "scenario_async_job_retention"
+    create_link_fail_fixture(project_root)
+    build_dir = project_root / "build"
+    configure_and_build_fixture(project_root, build_dir)
+
+    settings = optimization_settings(
+        project_root,
+        build_command=f"cmake --build \"{build_dir}\" -j4",
+        build_timeout=300,
+    )
+    client = setup_client(server_path, project_root, settings, "lsp-scenario5.err")
+    try:
+        total_jobs = 150
+        job_ids: list[str] = []
+        for _ in range(total_jobs):
+            queued = execute_command_with_timeout(
+                client,
+                "bha.applyAllSuggestions",
+                [{
+                    "skipConsent": True,
+                    "safeOnly": False,
+                    "skipRebuild": True,
+                    "async": True,
+                }],
+                timeout_seconds=30,
+                timeout_label="scenario5 queue applyAllSuggestions",
+            )
+            ensure(queued is not None and "result" in queued, "Scenario 5 failed to queue async applyAllSuggestions")
+            result = queued["result"]
+            ensure(result.get("accepted", False), "Scenario 5 async applyAllSuggestions not accepted")
+            job_id = result.get("jobId", "")
+            ensure(bool(job_id), "Scenario 5 queued job missing jobId")
+            job_ids.append(job_id)
+
+        def wait_for_finished(job_id: str, timeout_seconds: int = 120):
+            deadline = time.time() + timeout_seconds
+            while time.time() < deadline:
+                status = execute_command_with_timeout(
+                    client,
+                    "bha.getJobStatus",
+                    [{"jobId": job_id}],
+                    timeout_seconds=15,
+                    timeout_label="scenario5 getJobStatus",
+                )
+                ensure(status is not None and "result" in status, "Scenario 5 getJobStatus failed")
+                payload = status["result"]
+                if payload.get("found") and payload.get("finished"):
+                    return
+                time.sleep(0.05)
+            raise RuntimeError(f"Scenario 5 timeout waiting for job completion: {job_id}")
+
+        wait_for_finished(job_ids[-1])
+        wait_for_finished(job_ids[len(job_ids) // 2])
+
+        for _ in range(10):
+            execute_command_with_timeout(
+                client,
+                "bha.getJobStatus",
+                [{"jobId": job_ids[-1]}],
+                timeout_seconds=15,
+                timeout_label="scenario5 trigger cleanup",
+            )
+
+        oldest = execute_command_with_timeout(
+            client,
+            "bha.getJobStatus",
+            [{"jobId": job_ids[0]}],
+            timeout_seconds=15,
+            timeout_label="scenario5 oldest status",
+        )
+        newest = execute_command_with_timeout(
+            client,
+            "bha.getJobStatus",
+            [{"jobId": job_ids[-1]}],
+            timeout_seconds=15,
+            timeout_label="scenario5 newest status",
+        )
+
+        ensure(oldest is not None and "result" in oldest, "Scenario 5 missing oldest status response")
+        ensure(newest is not None and "result" in newest, "Scenario 5 missing newest status response")
+        ensure(newest["result"].get("found", False), "Scenario 5 expected newest job to remain queryable")
+        ensure(not oldest["result"].get("found", False), "Scenario 5 expected oldest finished job to be pruned")
+    finally:
+        try:
+            client.shutdown()
+        except Exception:
+            pass
+        client.stop()
+
+    print("  ✓ scenario 5 passed")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run LSP fault-injection rollback tests")
     parser.add_argument("--server-path", type=Path, default=default_server_path(), help="Path to bha-lsp executable")
@@ -376,6 +514,8 @@ def main() -> int:
         scenario_semantic_forward_decl_rollback(server_path, bha_bin, temp_dir)
         scenario_build_failure_rollback(server_path, temp_dir)
         scenario_kill_mid_apply_recovery(server_path, temp_dir)
+        scenario_apply_all_skip_rebuild(server_path, temp_dir)
+        scenario_async_job_retention_bound(server_path, temp_dir)
     finally:
         if args.keep_workdir:
             print(f"kept workspace: {temp_dir}")
@@ -388,4 +528,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

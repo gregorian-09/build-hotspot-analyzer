@@ -3,6 +3,7 @@
 #include "bha/build_systems/adapter.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
 #include "bha/suggestions/unreal_context.hpp"
+#include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
@@ -30,6 +31,7 @@ namespace bha::lsp
 {
     namespace {
         std::mutex g_lsp_write_mutex;
+        constexpr std::size_t kMaxRetainedFinishedAsyncJobs = 128;
     }
 
     std::string shell_quote_for_shell(const std::string& input) {
@@ -547,11 +549,59 @@ namespace bha::lsp
     }
 
     void LSPServer::cleanup_finished_jobs() {
-        std::lock_guard lock(async_jobs_mutex_);
-        for (auto& [_, job] : async_jobs_) {
-            if (job->finished.load() && job->worker.joinable()) {
+        std::vector<std::shared_ptr<AsyncJob>> jobs_to_join;
+        {
+            std::lock_guard lock(async_jobs_mutex_);
+            jobs_to_join.reserve(async_jobs_.size());
+            for (const auto& [_, job] : async_jobs_) {
+                if (job->finished.load() && job->worker.joinable()) {
+                    jobs_to_join.push_back(job);
+                }
+            }
+        }
+
+        for (const auto& job : jobs_to_join) {
+            if (job->worker.joinable()) {
                 job->worker.join();
             }
+        }
+
+        std::lock_guard lock(async_jobs_mutex_);
+        std::vector<std::pair<std::string, std::chrono::system_clock::time_point>> finished_jobs;
+        finished_jobs.reserve(async_jobs_.size());
+
+        for (const auto& [job_id, job] : async_jobs_) {
+            if (!job->finished.load()) {
+                continue;
+            }
+            finished_jobs.emplace_back(job_id, job->created_at);
+        }
+
+        if (finished_jobs.size() <= kMaxRetainedFinishedAsyncJobs) {
+            return;
+        }
+
+        std::sort(
+            finished_jobs.begin(),
+            finished_jobs.end(),
+            [](const auto& lhs, const auto& rhs) {
+                return lhs.second > rhs.second;
+            }
+        );
+
+        for (std::size_t idx = kMaxRetainedFinishedAsyncJobs; idx < finished_jobs.size(); ++idx) {
+            const auto& job_id = finished_jobs[idx].first;
+            const auto it = async_jobs_.find(job_id);
+            if (it == async_jobs_.end()) {
+                continue;
+            }
+            if (!it->second->finished.load()) {
+                continue;
+            }
+            if (it->second->worker.joinable()) {
+                continue;
+            }
+            async_jobs_.erase(it);
         }
     }
 
@@ -1746,6 +1796,10 @@ namespace bha::lsp
         }
 
         bool safe_only = args.contains("safeOnly") && args["safeOnly"].get<bool>();
+        bool skip_rebuild = !config_.rebuild_after_apply;
+        if (args.contains("skipRebuild")) {
+            skip_rebuild = args["skipRebuild"].get<bool>();
+        }
         auto with_manager = [this](auto&& fn) -> decltype(auto) {
             std::lock_guard lock(suggestion_manager_mutex_);
             return fn();
@@ -1870,7 +1924,7 @@ namespace bha::lsp
             success = false;
         }
 
-        bool build_validation_requested = success && config_.rebuild_after_apply;
+        bool build_validation_requested = success && config_.rebuild_after_apply && !skip_rebuild;
         bool build_validation_ran = false;
         bool build_validation_success = true;
         std::optional<int> measured_rebuild_duration_ms;
@@ -2067,7 +2121,9 @@ namespace bha::lsp
                 rollback_json["reason"] = "build-succeeded";
             }
         } else if (rollback_json["reason"] == "not-required") {
-            rollback_json["reason"] = config_.rebuild_after_apply ? "validation-skipped" : "validation-disabled";
+            rollback_json["reason"] = (config_.rebuild_after_apply && !skip_rebuild)
+                ? "validation-skipped"
+                : "validation-disabled";
         }
 
         std::optional<int> predicted_savings_ms;

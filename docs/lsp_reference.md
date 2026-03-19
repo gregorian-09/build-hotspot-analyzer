@@ -151,6 +151,7 @@ Output mirrors apply workflow:
 Input:
 - `minPriority` (string or numeric)
 - `safeOnly` (bool)
+- `skipRebuild` (bool)
 - `skipConsent` (bool)
 - `atomic` (bool)
 
@@ -254,4 +255,3 @@ Checks cover:
 - build tooling discovery
 - module/target rules presence
 - optional IDE metadata hints
-
