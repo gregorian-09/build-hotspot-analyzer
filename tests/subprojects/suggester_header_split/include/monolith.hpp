@@ -8,6 +8,8 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include "monolith_fwd.hpp"
+#include "monolith_fwd.hpp"
 
 namespace splitproj {
 
