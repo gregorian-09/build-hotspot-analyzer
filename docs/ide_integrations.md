@@ -1,6 +1,6 @@
 # IDE Integrations
 
-This guide documents how to use, package, and distribute the in-tree BHA IDE integrations.
+This guide documents how to use, package, and distribute the in-tree BHA IDE integrations as a user.
 
 Supported clients:
 - VS Code: `lsp/ide-integrations/vscode`
@@ -92,32 +92,6 @@ If Marketplace publication is blocked, ship the `.vsix` through GitHub Releases:
 
 That is enough for users to install the extension without Marketplace publication.
 
-### Marketplace publication
-
-Required pieces:
-- Microsoft account
-- Visual Studio Marketplace publisher
-- publisher ID matching the extension `publisher`
-- PAT with `Marketplace > Manage`
-
-Current publisher choice:
-- `build-hotspot-analyzer`
-
-If Microsoft Marketplace forces Azure DevOps organization creation and billing setup, defer Marketplace publication and continue with GitHub-first distribution. That is an acceptable production path for this project.
-
-### Open VSX publication
-
-Required pieces:
-- Open VSX account
-- namespace matching `build-hotspot-analyzer`
-- `OVSX_PAT`
-
-Publish command:
-
-```bash
-npx ovsx publish build-hotspot-analyzer-0.1.0.vsix -p "$OVSX_PAT"
-```
-
 ## Neovim
 
 Client file:
@@ -154,32 +128,6 @@ Recommended distribution:
 - MELPA only after the package API is stable
 
 No external publishing token is required for direct usage.
-
-## Accounts And Secrets Matrix
-
-### Required for local use
-
-- VS Code local `.vsix`: no account required
-- Neovim direct GitHub install: no account required
-- Emacs direct file usage: no account required
-
-### Required for registry publication
-
-- Visual Studio Marketplace:
-  - Microsoft account
-  - Marketplace publisher
-  - PAT with `Marketplace > Manage`
-- Open VSX:
-  - Open VSX account
-  - `OVSX_PAT`
-- MELPA:
-  - GitHub account
-  - recipe PR
-
-### Suggested CI secret names
-
-- `VSCE_PAT`
-- `OVSX_PAT`
 
 ## Other IDEs
 

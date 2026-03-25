@@ -256,7 +256,7 @@ The VS Code extension icon is synchronized from:
 - `docs/quickstart.md`: end-to-end workflows
 - `docs/cli_reference.md`: CLI reference
 - `docs/lsp_reference.md`: LSP commands, settings, and apply flow
-- `docs/ide_integrations.md`: VS Code, Neovim, Emacs, packaging, accounts, and distribution
+- `docs/ide_integrations.md`: VS Code, Neovim, Emacs, local setup, and user-facing distribution
 - `docs/suggestions_reference.md`: suggester behavior, guardrails, and constraints
 - `docs/export_ci.md`: exporters, SARIF, PR annotations, and CI usage
 - `docs/architecture.md`: internal architecture and component layout
