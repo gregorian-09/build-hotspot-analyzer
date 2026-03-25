@@ -371,8 +371,8 @@ namespace bha::suggestions
             }
 
             const auto& lines = lines_result.value();
-            std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
-            std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
+            const std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
+            const std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
             std::smatch match;
 
             std::string guard_macro;
@@ -695,10 +695,10 @@ namespace bha::suggestions
             const std::string fwd_header_name = suggest_split_name(header.path, "fwd");
 
             // Check if already split
-            std::string filename = header.path.filename().string();
+            const std::string filename = header.path.filename().string();
             std::string lower_filename;
             lower_filename.reserve(filename.size());
-            for (char c : filename) {
+            for (const char c : filename) {
                 lower_filename += static_cast<char>(
                     std::tolower(static_cast<unsigned char>(c)));
             }
@@ -719,20 +719,20 @@ namespace bha::suggestions
                 continue;
             }
 
-            SplitPattern pattern = determine_split_pattern(header.path, header.including_files);
+            const SplitPattern pattern = determine_split_pattern(header.path, header.including_files);
 
-            double confidence = calculate_confidence(
+            const double confidence = calculate_confidence(
                 header.total_parse_time,
                 header.including_files,
                 header.inclusion_count
             );
 
-            Priority priority = calculate_priority(
+            const Priority priority = calculate_priority(
                 header.total_parse_time,
                 header.including_files
             );
 
-            Duration savings = estimate_savings(
+            const Duration savings = estimate_savings(
                 header.total_parse_time,
                 header.including_files,
                 pattern
@@ -751,7 +751,7 @@ namespace bha::suggestions
             auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 header.total_parse_time).count();
 
-            std::string types_header_name = suggest_split_name(header.path, "types");
+            const std::string types_header_name = suggest_split_name(header.path, "types");
 
             std::ostringstream desc;
             desc << "Header '" << make_repo_relative(header.path) << "' takes "
