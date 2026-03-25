@@ -207,11 +207,11 @@ namespace bha::suggestions
         fs::path compute_common_directory(const std::unordered_set<std::string>& files) {
             fs::path common_dir;
             for (const auto& file : files) {
-                fs::path path(file);
+                const fs::path path(file);
                 if (!path.is_absolute()) {
                     continue;
                 }
-                fs::path dir = path.parent_path();
+                const fs::path dir = path.parent_path();
                 if (dir.empty()) {
                     continue;
                 }
@@ -234,7 +234,7 @@ namespace bha::suggestions
         }
 
         std::string resolve_unity_include_path(const fs::path& path) {
-            fs::path resolved = resolve_source_path(path);
+            const fs::path resolved = resolve_source_path(path);
             std::string rel = make_repo_relative(resolved);
             if (!fs::path(rel).parent_path().empty()) {
                 return rel;
@@ -265,7 +265,9 @@ namespace bha::suggestions
             SuggestionType::MoveToCpp
         }) {
             auto group = group_by_type(suggestions, type);
-            if (group.empty()) continue;
+            if (group.empty()) {
+                continue;
+            }
 
             std::optional<Suggestion> result;
 
@@ -356,7 +358,7 @@ namespace bha::suggestions
                     repo_root = find_repository_root(sug.target_file.path);
                 }
 
-                std::string header_str = sug.target_file.path.string();
+                const std::string header_str = sug.target_file.path.string();
                 if (header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
@@ -377,7 +379,7 @@ namespace bha::suggestions
                     repo_root = find_repository_root(secondary.path);
                 }
 
-                std::string header_str = secondary.path.string();
+                const std::string header_str = secondary.path.string();
                 if (header_str.ends_with("pch.h") || header_str.ends_with("stdafx.h")) {
                     continue;
                 }
@@ -505,7 +507,7 @@ namespace bha::suggestions
             std::vector sorted_external(external_headers.begin(), external_headers.end());
             std::ranges::sort(sorted_external);
             for (const auto& header : sorted_external) {
-                std::string include_header = normalize_external_header(header);
+                const std::string include_header = normalize_external_header(header);
                 if (include_header.find('<') == 0 || include_header.find('>') != std::string::npos) {
                     pch_content << "#include " << include_header << "\n";
                 } else {
@@ -559,7 +561,7 @@ namespace bha::suggestions
             if (sug.priority >= Priority::High) {
                 consolidated.priority = Priority::High;
             }
-            std::string key = make_repo_relative(sug.target_file.path);
+            const std::string key = make_repo_relative(sug.target_file.path);
             by_file[key].push_back(&sug);
         }
 
@@ -755,7 +757,7 @@ namespace bha::suggestions
 
         std::unordered_map<std::string, std::vector<std::string>> by_source;
         for (const auto& sug : suggestions) {
-            std::string source = make_repo_relative(sug.target_file.path);
+            const std::string source = make_repo_relative(sug.target_file.path);
             if (!sug.description.empty()) {
                 by_source[source].push_back(sug.description);
             }
@@ -896,7 +898,7 @@ namespace bha::suggestions
         }
 
         // Generate the template_instantiations.cpp edit
-        TextEdit tmpl_edit = make_replace_file_edit(inst_path, tmpl_content.str());
+        const TextEdit tmpl_edit = make_replace_file_edit(inst_path, tmpl_content.str());
 
         std::ostringstream desc;
         desc << "Explicitly instantiate frequently-used templates to reduce instantiation overhead.\n\n";
@@ -1027,7 +1029,7 @@ namespace bha::suggestions
                     continue;
                 }
 
-                bool overlaps =
+                const bool overlaps =
                     (edit.start_line < existing.end_line ||
                      (edit.start_line == existing.end_line && edit.start_col < existing.end_col)) &&
                     (edit.end_line > existing.start_line ||
@@ -1186,7 +1188,7 @@ namespace bha::suggestions
                 consolidated.priority = Priority::Medium;
             }
 
-            std::string header = make_repo_relative(sug.target_file.path);
+            const std::string header = make_repo_relative(sug.target_file.path);
             if (!sug.description.empty()) {
                 by_header[header].push_back(sug.description);
             }
