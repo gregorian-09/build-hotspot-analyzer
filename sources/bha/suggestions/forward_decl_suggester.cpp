@@ -541,7 +541,7 @@ namespace bha::suggestions
                     fs::directory_options::skip_permission_denied,
                     ec
                 );
-                fs::recursive_directory_iterator end;
+                const fs::recursive_directory_iterator end;
                 for (; it != end; it.increment(ec)) {
                     if (ec) {
                         continue;
@@ -607,7 +607,7 @@ namespace bha::suggestions
                 fs::directory_options::skip_permission_denied,
                 ec
             );
-            fs::recursive_directory_iterator end;
+            const fs::recursive_directory_iterator end;
             for (; it != end; it.increment(ec)) {
                 if (ec) {
                     continue;
