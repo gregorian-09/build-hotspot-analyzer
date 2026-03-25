@@ -1,74 +1,125 @@
-# Build Hotspot Analyzer (BHA)
+# Build Hotspot Analyzer
 
-Build Hotspot Analyzer is a C++20 toolchain for measuring, explaining, and improving C/C++ build performance.
+<p align="center">
+  <img src="docs/assets/logo.png" alt="Build Hotspot Analyzer banner" width="960">
+</p>
 
-It combines:
-- multi-compiler trace ingestion
-- structured performance analysis
-- actionable optimization suggestions
-- optional safe auto-apply and rollback workflows (CLI + LSP)
-- CI-oriented outputs (SARIF, GitHub/GitLab annotations, regression gates)
+<p align="center">
+  <img src="docs/assets/logo-icon.png" alt="Build Hotspot Analyzer icon" width="128">
+</p>
+
+Build Hotspot Analyzer (`bha`) is a C++20 toolchain for measuring, explaining, and improving C and C++ build performance.
 
 Current version: `v0.1.0`
 
-## What BHA Covers
+It combines:
+- multi-compiler trace ingestion
+- structured build-time analysis
+- actionable optimization suggestions
+- optional safe auto-apply and rollback workflows
+- export pipelines for HTML, JSON, SARIF, CSV, Markdown, and PR annotations
+- LSP-powered IDE integrations for editor-driven workflows
 
-BHA is designed for production build optimization loops:
-1. Capture traces from real builds.
-2. Identify expensive translation units, headers, templates, and symbols.
-3. Generate optimization suggestions with estimated savings.
-4. Optionally apply edits and validate via rebuild.
-5. Export outputs for developers, CI, and code-scanning platforms.
-6. Track regressions over time using snapshots and gates.
+## Why BHA Exists
 
-## Core Features
+Modern C++ builds fail slowly for many different reasons:
+- expensive translation units
+- pathological include graphs
+- repeated template instantiations
+- ineffective or missing precompiled headers
+- poor unity build partitioning
+- bloated headers and unstable implementation boundaries
+- weak cache and distributed-build suitability
 
-- Parsers: Clang, GCC, MSVC, Intel, NVCC traces.
-- Analyzers: file, dependency, template, symbol, PCH, performance, cache/distribution suitability.
-- Suggesters:
-  - `pch`
-  - `forward-decl`
-  - `include-removal`
-  - `move-to-cpp`
-  - `template-instantiation`
-  - `unity-build`
-  - `header-split`
-  - `pimpl`
-- Build adapters:
-  - `cmake`, `ninja`, `make` (including autotools flows), `msbuild`, `meson`, `bazel`, `buck2`, `scons`, `xcode`, `unreal`
-- Exporters: `json`, `html`, `csv`, `sarif`, `md`, plus PR-native annotations.
-- Comparison gates:
-  - global threshold
-  - category gates for TU/header/template regressions
-- Optional LSP server + IDE clients (`vscode`, `neovim`, `emacs`).
+BHA is built to close that gap with a single workflow:
+1. record or ingest traces from real builds
+2. analyze where time and memory go
+3. explain why those hotspots exist
+4. generate targeted suggestions
+5. optionally apply safe edits
+6. rebuild, compare, and export results for humans and CI
+
+## Core Capabilities
+
+### Trace ingestion
+- Clang time-trace JSON
+- GCC time-trace JSON
+- MSVC traces
+- Intel Classic traces
+- Intel oneAPI traces
+- NVCC traces
+
+### Analysis
+- translation unit hotspots
+- include/dependency cost
+- template-instantiation cost
+- symbol and function cost
+- circular dependency detection
+- stack and memory summaries when present
+- cache hit/miss opportunity analysis
+- distributed-build suitability
+- regression comparison against saved baselines
+
+### Suggestions
+- `pch`
+- `forward-decl`
+- `include-removal`
+- `move-to-cpp`
+- `template-instantiation`
+- `unity-build`
+- `header-split`
+- `pimpl`
+
+### Build-system coverage
+- `cmake`
+- `ninja`
+- `make` and autotools flows
+- `msbuild`
+- `meson`
+- `bazel`
+- `buck2`
+- `scons`
+- `xcode`
+- `unreal`
+
+### Outputs
+- `html`
+- `json`
+- `csv`
+- `sarif`
+- `md`
+- GitHub and GitLab annotation formats
 
 ## Project Layout
 
-- `headers/` public and internal C++ headers
-- `sources/` core implementations
-- `cli/` command implementations for `bha`
-- `lsp/` optional language-server module (`bha-lsp`)
-- `tools/refactor/` optional semantic refactor helper (`bha-refactor`)
-- `resources/` HTML/CSS/JS templates and embedded assets
-- `tests/` unit tests, integration harnesses, subprojects, benchmark runners
+- `headers/`: public and internal C++ headers
+- `sources/`: core implementation
+- `cli/`: command implementation for `bha`
+- `lsp/`: optional language server and editor integrations
+- `resources/`: HTML/CSS/JS templates and assets
+- `tests/`: unit tests, integration harnesses, fixtures, subprojects
+- `docs/`: user, architecture, CI, exporter, IDE, and contributor documentation
 
 ## Build
+
+### Core build
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ```
 
-Enable optional modules:
+### Enable optional modules
 
 ```bash
 cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
   -DBHA_ENABLE_LSP=ON \
   -DBHA_BUILD_REFACTOR_TOOLS=ON
 cmake --build build -j
 ```
 
-Run tests:
+### Run tests
 
 ```bash
 ctest --test-dir build --output-on-failure
@@ -76,34 +127,31 @@ ctest --test-dir build --output-on-failure
 
 ## Quick Start
 
-1. Build with traces:
+### Analyze a build and emit suggestions
 
 ```bash
 ./build/bha build --clean --output traces --analyze
-```
-
-2. Generate suggestions:
-
-```bash
 ./build/bha suggest traces --detailed -o suggestions.json --format json
-```
-
-3. Export report:
-
-```bash
 ./build/bha export traces --format html --dark-mode -o report.html
 ```
 
-4. Save and compare snapshots:
+### Save and compare snapshots
 
 ```bash
 ./build/bha snapshot save baseline build/trace.json
 ./build/bha snapshot baseline set baseline
-./build/bha snapshot save after_opt build/trace_after.json
-./build/bha compare --baseline after_opt --gate-tu 5 --gate-header 8 --gate-template 10
+./build/bha snapshot save optimized build/trace_after.json
+./build/bha compare --baseline optimized --gate-tu 5 --gate-header 8 --gate-template 10
 ```
 
-## CLI Commands
+### Discover available commands
+
+```bash
+./build/bha --help
+./build/bha <command> --help
+```
+
+## CLI Command Surface
 
 - `analyze`
 - `suggest`
@@ -114,41 +162,113 @@ ctest --test-dir build --output-on-failure
 - `snapshot`
 - `compare`
 
-Run:
+## IDE Integrations
+
+BHA ships editor clients around the `bha-lsp` server.
+
+Supported in-tree clients:
+- VS Code: `lsp/ide-integrations/vscode`
+- Neovim: `lsp/ide-integrations/neovim`
+- Emacs: `lsp/ide-integrations/emacs`
+
+### Build the server
 
 ```bash
-./build/bha --help
-./build/bha <command> --help
+cmake -S . -B build -DBHA_ENABLE_LSP=ON
+cmake --build build -j
 ```
 
-## Optional LSP Workflow
+### VS Code
 
-When built with `-DBHA_ENABLE_LSP=ON`, BHA exposes:
-- `bha.analyze`
-- `bha.applySuggestion`
-- `bha.applyEdits`
-- `bha.applyAllSuggestions`
-- `bha.getSuggestionDetails`
-- `bha.revertChanges`
-- `bha.listSuggesters`
-- `bha.runSuggester`
-- `bha.explainSuggestion`
+Package and install locally:
 
-LSP backups default to `.lsp-optimization-backup/` and can include rollback + trust-loop metrics.
+```bash
+cd lsp/ide-integrations/vscode
+npm ci
+npm run package
+code --install-extension build-hotspot-analyzer-0.1.0.vsix
+```
+
+Runtime settings:
+- `buildHotspotAnalyzer.serverPath`
+- `buildHotspotAnalyzer.autoAnalyze`
+- `buildHotspotAnalyzer.trace.server`
+
+Main commands:
+- `BHA: Analyze Build Performance`
+- `BHA: Show Suggestions`
+- `BHA: Apply Suggestion`
+- `BHA: Apply All Suggestions`
+- `BHA: Revert Changes`
+- `BHA: Restart Language Server`
+
+### Neovim
+
+Client module:
+- `lsp/ide-integrations/neovim/lua/bha/init.lua`
+
+Requirements:
+- `nvim-lspconfig`
+- `bha-lsp` on `PATH` or configured explicitly
+
+### Emacs
+
+Client module:
+- `lsp/ide-integrations/emacs/bha-lsp.el`
+
+Requirements:
+- `lsp-mode`
+- `bha-lsp` on `PATH` or configured explicitly
+
+### Distribution strategy
+
+BHA does not require Marketplace publication to be usable.
+
+Recommended order:
+1. GitHub-first distribution
+2. local or release-attached `.vsix` install for VS Code
+3. direct GitHub install for Neovim and Emacs
+4. Marketplace / Open VSX publication later, when needed
+
+This keeps the product usable even when Microsoft Marketplace account setup is blocked by Azure billing or organization requirements.
+
+For the full IDE guide, see `docs/ide_integrations.md`.
+
+## Brand Assets
+
+Primary assets:
+- banner: `docs/assets/logo.png`
+- square icon: `docs/assets/logo-icon.png`
+- monochrome banner: `docs/assets/logo-mono.png`
+
+Source assets:
+- banner SVG: `docs/assets/logo.svg`
+- square icon SVG: `docs/assets/logo-icon.svg`
+- monochrome SVG: `docs/assets/logo-mono.svg`
+
+The VS Code extension icon is synchronized from:
+- `lsp/ide-integrations/vscode/media/icon.png`
 
 ## Documentation Map
 
-- `docs/readme.md` docs index
-- `docs/installation.md` installation and build profiles
-- `docs/quickstart.md` end-to-end workflows
-- `docs/cli_reference.md` complete CLI reference
-- `docs/lsp_reference.md` LSP command and config reference
-- `docs/ide_integrations.md` VS Code/Neovim/Emacs usage and distribution
-- `docs/suggestions_reference.md` suggester behavior and guardrails
-- `docs/export_ci.md` exporters, annotations, SARIF, CI gates
-- `docs/architecture.md` internal architecture and extension points
-- `docs/development.md` contributor workflow and testing
-- `docs/coverage_matrix.md` feature-to-doc coverage status
-- `docs/troubleshooting.md` common failures and fixes
-- `docs/repo_validation.md` large-repo validation methodology and benchmark artifacts
-- `docs/docs_strategy.md` production documentation strategy used for this repo
+- `docs/readme.md`: documentation index
+- `docs/installation.md`: installation and build profiles
+- `docs/quickstart.md`: end-to-end workflows
+- `docs/cli_reference.md`: CLI reference
+- `docs/lsp_reference.md`: LSP commands, settings, and apply flow
+- `docs/ide_integrations.md`: VS Code, Neovim, Emacs, packaging, accounts, and distribution
+- `docs/suggestions_reference.md`: suggester behavior, guardrails, and constraints
+- `docs/export_ci.md`: exporters, SARIF, PR annotations, and CI usage
+- `docs/architecture.md`: internal architecture and component layout
+- `docs/development.md`: contributor workflow and testing
+- `docs/coverage_matrix.md`: documentation coverage status
+- `docs/troubleshooting.md`: common failures and fixes
+- `docs/repo_validation.md`: large-repo validation and benchmark notes
+- `docs/docs_strategy.md`: documentation strategy used for this repository
+
+## Repository
+
+- Repository: `https://github.com/gregorian-09/build-hotspot-analyzer`
+- Issues: `https://github.com/gregorian-09/build-hotspot-analyzer/issues`
+
+Maintainer: Gregorian Rayne
