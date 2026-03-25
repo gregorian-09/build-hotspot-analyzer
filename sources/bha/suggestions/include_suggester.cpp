@@ -320,7 +320,7 @@ namespace bha::suggestions
 
             static const auto clang_tidy_binary = [] {
                 if (const char* env = std::getenv("BHA_CLANG_TIDY")) {
-                    fs::path path = env;
+                    const fs::path path = env;
                     if (!path.empty()) {
                         return path.string();
                     }
@@ -712,7 +712,7 @@ namespace bha::suggestions
             if (!project_root.empty()) {
                 const fs::path include_root = (project_root / "include").lexically_normal();
                 if (path_utils::is_under(normalized, include_root)) {
-                    fs::path rel = normalized.lexically_relative(include_root);
+                    const fs::path rel = normalized.lexically_relative(include_root);
                     if (!rel.empty()) {
                         for (const auto& ext : source_exts) {
                             fs::path candidate = project_root / "src" / rel;
@@ -741,7 +741,7 @@ namespace bha::suggestions
             const fs::path& including_file,
             const fs::path& project_root
         ) {
-            fs::path include_path(include_name);
+            const fs::path include_path(include_name);
             if (include_path.is_absolute()) {
                 if (fs::exists(include_path)) {
                     return include_path.lexically_normal();
@@ -913,7 +913,7 @@ namespace bha::suggestions
                 continue;
             }
 
-            fs::path header = resolve_project_path(header_info.path, context.project_root);
+            const fs::path header = resolve_project_path(header_info.path, context.project_root);
             const std::string header_key = header.generic_string();
             if (header_seen.insert(header_key).second) {
                 candidate_headers.push_back(header);
