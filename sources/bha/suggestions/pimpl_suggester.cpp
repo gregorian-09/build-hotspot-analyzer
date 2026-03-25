@@ -2307,7 +2307,8 @@ namespace bha::suggestions
                 }
             }
 
-            std::string rewritten_body = trim_copy(rewrite_copy_body_for_pimpl(ctor_block.body, private_fields));
+            const std::string rewritten_body =
+                trim_copy(rewrite_copy_body_for_pimpl(ctor_block.body, private_fields));
 
             std::string rewritten;
             rewritten.reserve(ctor_block.prefix.size() + ctor_block.signature.size() + rewritten_body.size() + 256);
@@ -2524,8 +2525,8 @@ namespace bha::suggestions
                 class_info.private_section_line == 0) {
                 return std::nullopt;
             }
-            bool copy_ctor_deleted = eligibility.copy_ctor_deleted;
-            bool copy_assign_deleted = eligibility.copy_assign_deleted;
+            const bool copy_ctor_deleted = eligibility.copy_ctor_deleted;
+            const bool copy_assign_deleted = eligibility.copy_assign_deleted;
             if (is_template_class) {
                 if (copy_ctor_deleted != copy_assign_deleted) {
                     return std::nullopt;
@@ -3219,7 +3220,7 @@ namespace bha::suggestions
         // Build a map of header -> files that include it
         std::unordered_map<std::string, std::unordered_set<std::string>> header_dependents;
         for (const auto& header : headers) {
-            std::string header_path = header.path.string();
+            const std::string header_path = header.path.string();
             for (const auto& includer : header.included_by) {
                 header_dependents[header_path].insert(includer.string());
             }
@@ -3252,10 +3253,10 @@ namespace bha::suggestions
             }
 
             // Check if already using PIMPL pattern
-            std::string filename = file.file.filename().string();
+            const std::string filename = file.file.filename().string();
             std::string lower_filename;
             lower_filename.reserve(filename.size());
-            for (char c : filename) {
+            for (const char c : filename) {
                 lower_filename += static_cast<char>(
                     std::tolower(static_cast<unsigned char>(c)));
             }
@@ -3290,13 +3291,13 @@ namespace bha::suggestions
                 if (existing_header_path.empty() && fs::exists(candidate_path)) {
                     existing_header_path = candidate_path;
                 }
-                if (std::string h_str = h.string(); header_dependents.contains(h_str)) {
+                if (const std::string h_str = h.string(); header_dependents.contains(h_str)) {
                     header_path = candidate_path;
                     dependent_count = header_dependents[h_str].size();
                     break;
                 }
 
-                if (std::string absolute_h_str = candidate_path.string();
+                if (const std::string absolute_h_str = candidate_path.string();
                     header_dependents.contains(absolute_h_str)) {
                     header_path = candidate_path;
                     dependent_count = header_dependents[absolute_h_str].size();
@@ -3372,7 +3373,7 @@ namespace bha::suggestions
             std::size_t total_includes = file.include_count;
 
             // Also count from dependency headers (for backward compatibility with tests)
-            std::string source_filename = file.file.filename().string();
+            const std::string source_filename = file.file.filename().string();
             for (const auto& header : headers) {
                 for (const auto& includer : header.included_by) {
                     if (fs::path(includer).filename().string() == source_filename) {
@@ -3392,7 +3393,7 @@ namespace bha::suggestions
                 if (auto compile_args = load_compile_command_args(context, file.file);
                     !compile_args.empty()) {
                     for (auto it = compile_args.rbegin(); it != compile_args.rend(); ++it) {
-                        fs::path candidate_path(*it);
+                        const fs::path candidate_path(*it);
                         if (!is_source_file(candidate_path) || !fs::exists(candidate_path)) {
                             continue;
                         }
@@ -3728,16 +3729,11 @@ namespace bha::suggestions
             );
         }
 
-        BuildTrace trace;
-        analyzers::AnalysisResult analysis;
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
         SuggesterOptions options;
         options.compile_commands_path = compile_commands_path;
-        const SuggestionContext context{
-            .trace = trace,
-            .analysis = analysis,
-            .options = options,
-            .project_root = header_file.parent_path()
-        };
+        const SuggestionContext context(trace, analysis, options, header_file.parent_path());
 
         const std::string class_name_str(class_name);
         std::optional<ClassInfo> class_info;

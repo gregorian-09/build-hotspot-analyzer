@@ -375,10 +375,14 @@ namespace bha::suggestions
                 bool found = false;
 
                 for (std::size_t i = 0; i < clusters.size(); ++i) {
-                    if (!active[i]) continue;
+                    if (!active[i]) {
+                        continue;
+                    }
 
                     for (std::size_t j = i + 1; j < clusters.size(); ++j) {
-                        if (!active[j]) continue;
+                        if (!active[j]) {
+                            continue;
+                        }
 
                         // Check size constraint
                         if (clusters[i].size() + clusters[j].size() > max_cluster_size) {
@@ -407,7 +411,7 @@ namespace bha::suggestions
                 }
 
                 // Merge clusters
-                for (std::size_t idx : clusters[best_j]) {
+                for (const std::size_t idx : clusters[best_j]) {
                     clusters[best_i].push_back(idx);
                 }
                 active[best_j] = false;
@@ -532,7 +536,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
             const unsigned char first = static_cast<unsigned char>(line.front());
-            if (!(std::isalpha(first) || line.front() == '_')) {
+            if (!std::isalpha(first) && line.front() != '_') {
                 return std::nullopt;
             }
             std::size_t i = 1;
@@ -678,7 +682,7 @@ namespace bha::suggestions
         }
 
         bool is_macro_keyword(std::string_view token) {
-            std::string key = to_lower_ascii(token);
+            const std::string key = to_lower_ascii(token);
             static const std::unordered_set<std::string> kKeywords = {
                 "name", "hdrs", "srcs", "sources", "src", "source",
                 "copts", "defines", "linkopts", "deps",
@@ -941,7 +945,7 @@ namespace bha::suggestions
             if (token.empty()) {
                 return {};
             }
-            fs::path candidate(token);
+            const fs::path candidate(token);
             if (candidate.is_absolute()) {
                 return candidate.lexically_normal();
             }
@@ -1036,8 +1040,8 @@ namespace bha::suggestions
                 if (!in) {
                     continue;
                 }
-                std::string content((std::istreambuf_iterator<char>(in)),
-                                    std::istreambuf_iterator<char>());
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
                 if (cmake_has_global_unity_enabled(content)) {
                     return true;
                 }
@@ -1085,8 +1089,8 @@ namespace bha::suggestions
                 if (!in) {
                     continue;
                 }
-                std::string content((std::istreambuf_iterator<char>(in)),
-                                    std::istreambuf_iterator<char>());
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
                 auto targets = parse_cmake_targets(content);
                 for (const auto& target : targets) {
                     const auto target_score = score_cmake_target_for_group(
@@ -1144,8 +1148,8 @@ namespace bha::suggestions
                 return true;
             }
 
-            std::regex guard_ifndef(R"(^\s*#\s*ifndef\s+([A-Za-z_]\w+))");
-            std::regex guard_define(R"(^\s*#\s*define\s+([A-Za-z_]\w+))");
+            const std::regex guard_ifndef(R"(^\s*#\s*ifndef\s+([A-Za-z_]\w+))");
+            const std::regex guard_define(R"(^\s*#\s*define\s+([A-Za-z_]\w+))");
             std::smatch match;
             std::string guard_name;
 
@@ -1174,13 +1178,13 @@ namespace bha::suggestions
                 return;
             }
 
-            std::regex static_func(R"(^\s*static\s+(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
-            std::regex static_var(R"(^\s*static\s+(?:const\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*(=|;|\[))");
-            std::regex func_decl(R"(^\s*(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
-            std::regex macro_def(R"(^\s*#\s*define\s+([A-Za-z_]\w*)(?:\s+(.*))?$)");
-            std::regex macro_undef(R"(^\s*#\s*undef\s+([A-Za-z_]\w+))");
-            std::regex anon_ns(R"(\bnamespace\s*\{)");
-            std::regex include_re(R"(^\s*#\s*include\s+[<\"]([^>\"]+)[>\"])");
+            const std::regex static_func(R"(^\s*static\s+(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
+            const std::regex static_var(R"(^\s*static\s+(?:const\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*(=|;|\[))");
+            const std::regex func_decl(R"(^\s*(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
+            const std::regex macro_def(R"(^\s*#\s*define\s+([A-Za-z_]\w*)(?:\s+(.*))?$)");
+            const std::regex macro_undef(R"(^\s*#\s*undef\s+([A-Za-z_]\w+))");
+            const std::regex anon_ns(R"(\bnamespace\s*\{)");
+            const std::regex include_re(R"(^\s*#\s*include\s+[<\"]([^>\"]+)[>\"])");
 
             bool in_block = false;
             int brace_depth = 0;
@@ -1189,7 +1193,7 @@ namespace bha::suggestions
 
             while (std::getline(in, line)) {
                 const std::string cleaned = strip_comments(line, in_block);
-                std::string trimmed = trim_left(cleaned);
+                const std::string trimmed = trim_left(cleaned);
                 if (trimmed.empty()) {
                     continue;
                 }
@@ -1220,9 +1224,8 @@ namespace bha::suggestions
 
                 if (trimmed.find("static_assert") == std::string::npos) {
                     std::smatch match;
-                    if (std::regex_search(trimmed, match, static_func)) {
-                        meta.static_symbols.insert(match[1].str());
-                    } else if (std::regex_search(trimmed, match, static_var)) {
+                    if (std::regex_search(trimmed, match, static_func) ||
+                        std::regex_search(trimmed, match, static_var)) {
                         meta.static_symbols.insert(match[1].str());
                     }
                 }
@@ -1230,8 +1233,8 @@ namespace bha::suggestions
                 if (std::regex_search(trimmed, include_re)) {
                     std::smatch match;
                     if (std::regex_search(trimmed, match, include_re)) {
-                        fs::path include_path(match[1].str());
-                        std::string ext = include_path.extension().string();
+                        const fs::path include_path(match[1].str());
+                        const std::string ext = include_path.extension().string();
                         if (ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".c++") {
                             meta.included_sources.insert(match[1].str());
                         }
@@ -1242,7 +1245,7 @@ namespace bha::suggestions
                     anon_start_depth = brace_depth;
                 }
 
-                for (char c : trimmed) {
+                for (const char c : trimmed) {
                     if (c == '{') {
                         ++brace_depth;
                     } else if (c == '}') {
@@ -1289,7 +1292,7 @@ namespace bha::suggestions
             std::unordered_map<std::string, std::unordered_set<std::string>> file_anon_symbols;
 
             for (const auto& sym : symbols.symbols) {
-                std::string file_key = sym.defined_in.string();
+                const std::string file_key = sym.defined_in.string();
 
                 bool likely_internal = false;
                 bool likely_anon_namespace = false;
@@ -1331,7 +1334,7 @@ namespace bha::suggestions
                 meta.path = resolved_path;
                 meta.compile_time = file.compile_time;
 
-                std::string file_key = resolved_path.string();
+                const std::string file_key = resolved_path.string();
 
                 if (file_includes.contains(file_key)) {
                     meta.includes = file_includes[file_key];
@@ -1348,7 +1351,7 @@ namespace bha::suggestions
                 scan_source_for_conflicts(resolved_path, meta);
 
                 for (const auto& include_path : meta.includes) {
-                    fs::path header_path(include_path);
+                    const fs::path header_path(include_path);
                     if (header_path.extension() != ".h" &&
                         header_path.extension() != ".hpp" &&
                         header_path.extension() != ".hh" &&
@@ -1478,7 +1481,7 @@ namespace bha::suggestions
 
             std::unordered_map<std::string, std::vector<std::size_t>> dir_groups;
             for (std::size_t i = 0; i < files.size(); ++i) {
-                std::string dir = get_module_name(files[i].path);
+                const std::string dir = get_module_name(files[i].path);
                 dir_groups[dir].push_back(i);
             }
 
@@ -1490,7 +1493,7 @@ namespace bha::suggestions
                 }
 
                 std::vector<FileMetadata> dir_files;
-                for (std::size_t idx : indices) {
+                for (const std::size_t idx : indices) {
                     dir_files.push_back(files[idx]);
                 }
 
@@ -1507,7 +1510,7 @@ namespace bha::suggestions
 
                     // Compute common includes (intersection)
                     bool first = true;
-                    for (std::size_t idx : cluster) {
+                    for (const std::size_t idx : cluster) {
                         const auto& file = dir_files[idx];
                         group.files.push_back(file);
                         group.total_compile_time += file.compile_time;
@@ -1531,7 +1534,8 @@ namespace bha::suggestions
                         continue;  // Skip groups that are too expensive
                     }
 
-                    if (std::size_t peak_memory = estimate_memory_usage(group); peak_memory > max_memory_per_group) {
+                    if (const std::size_t peak_memory = estimate_memory_usage(group);
+                        peak_memory > max_memory_per_group) {
                         continue;  // Skip groups that use too much memory
                     }
 
@@ -1875,12 +1879,12 @@ namespace bha::suggestions
             );
         }
 
-        std::size_t max_files = unity_config.files_per_unit;
-        Duration max_time = std::chrono::seconds(30);
-        std::size_t max_memory = 4ULL * 1024 * 1024 * 1024;
+        const std::size_t max_files = unity_config.files_per_unit;
+        const Duration max_time = std::chrono::seconds(30);
+        const std::size_t max_memory = 4ULL * 1024 * 1024 * 1024;
         auto groups = create_unity_groups(metadata, max_files, max_time, max_memory, unity_config.max_conflict_risk);
 
-        std::size_t analyzed = files.size();
+        const std::size_t analyzed = files.size();
         std::size_t skipped = 0;
         std::size_t group_counter = 0;
         std::unordered_set<std::string> seen_group_fingerprints;
@@ -2076,8 +2080,8 @@ namespace bha::suggestions
                 }
 
                 std::ifstream cmake_in(selected_target->cmake_path);
-                std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
-                                          std::istreambuf_iterator<char>());
+                const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
+                                                std::istreambuf_iterator<char>());
                 if (cmake_target_has_unity_enabled(cmake_content, selected_target->target.name)) {
                     ++skipped;
                     continue;

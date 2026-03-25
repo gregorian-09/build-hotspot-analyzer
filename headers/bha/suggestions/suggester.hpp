@@ -67,12 +67,31 @@ namespace bha::suggestions {
         /// in long-running loops and return early if canceled.
         std::atomic<bool>* cancelled = nullptr;
 
-        std::optional<std::chrono::steady_clock::time_point> deadline{};
+        std::optional<std::chrono::steady_clock::time_point> deadline;
 
         /// Optional filter for incremental analysis. When set, only analyze
         /// files in this list. Empty means analyze all files.
-        std::vector<fs::path> target_files{};
-        std::unordered_set<std::string> target_files_lookup{};
+        std::vector<fs::path> target_files;
+        std::unordered_set<std::string> target_files_lookup;
+
+        SuggestionContext(
+            const BuildTrace& trace_ref,
+            const analyzers::AnalysisResult& analysis_ref,
+            const SuggesterOptions& options_ref,
+            fs::path root,
+            std::atomic<bool>* cancelled_ptr = nullptr,
+            std::optional<std::chrono::steady_clock::time_point> deadline_value = std::nullopt,
+            std::vector<fs::path> files = {},
+            std::unordered_set<std::string> lookup = {}
+        )
+            : trace(trace_ref),
+              analysis(analysis_ref),
+              options(options_ref),
+              project_root(std::move(root)),
+              cancelled(cancelled_ptr),
+              deadline(std::move(deadline_value)),
+              target_files(std::move(files)),
+              target_files_lookup(std::move(lookup)) {}
 
         /// Check if the operation has been canceled.
         [[nodiscard]] bool is_cancelled() const noexcept {
@@ -136,8 +155,12 @@ namespace bha::suggestions {
 
         std::error_code ec;
         for (const auto& entry : fs::directory_iterator(dir, ec)) {
-            if (ec) break;
-            if (!entry.is_regular_file()) continue;
+            if (ec) {
+                break;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
             const auto ext = entry.path().extension().string();
             if (ext == ".sln" || ext == ".vcxproj" || ext == ".xcodeproj" || ext == ".xcworkspace") {
                 return true;
@@ -199,7 +222,9 @@ namespace bha::suggestions {
         const fs::path& filename
     ) {
         static std::unordered_map<std::string, fs::path> cache;
-        if (repo_root.empty() || filename.empty()) return std::nullopt;
+        if (repo_root.empty() || filename.empty()) {
+            return std::nullopt;
+        }
 
         const std::string key = repo_root.string() + "|" + filename.string();
         if (auto it = cache.find(key); it != cache.end()) {
@@ -208,8 +233,12 @@ namespace bha::suggestions {
 
         std::error_code ec;
         for (const auto& entry : fs::recursive_directory_iterator(repo_root, ec)) {
-            if (ec) break;
-            if (!entry.is_regular_file()) continue;
+            if (ec) {
+                break;
+            }
+            if (!entry.is_regular_file()) {
+                continue;
+            }
             if (entry.path().filename() == filename) {
                 cache.emplace(key, entry.path());
                 return entry.path();
@@ -341,9 +370,15 @@ namespace bha::suggestions {
             queue.reserve(256);
             std::size_t checked = 0;
             for (const auto& entry : fs::directory_iterator(current, ec)) {
-                if (ec) break;
-                if (!entry.is_directory()) continue;
-                if (++checked > 200) break;
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_directory()) {
+                    continue;
+                }
+                if (++checked > 200) {
+                    break;
+                }
                 queue.emplace_back(entry.path(), 0);
             }
 
@@ -358,9 +393,15 @@ namespace bha::suggestions {
                 }
                 std::error_code child_ec;
                 for (const auto& child : fs::directory_iterator(path, child_ec)) {
-                    if (child_ec) break;
-                    if (!child.is_directory()) continue;
-                    if (++checked > 500) break;
+                    if (child_ec) {
+                        break;
+                    }
+                    if (!child.is_directory()) {
+                        continue;
+                    }
+                    if (++checked > 500) {
+                        break;
+                    }
                     queue.emplace_back(child.path(), depth + 1);
                 }
             }
@@ -382,9 +423,15 @@ namespace bha::suggestions {
             std::error_code ec;
             std::size_t checked = 0;
             for (const auto& entry : fs::recursive_directory_iterator(sample, ec)) {
-                if (ec) break;
-                if (!entry.is_regular_file()) continue;
-                if (++checked > 200) break;
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (++checked > 200) {
+                    break;
+                }
                 if (entry.path().extension() == ".json") {
                     return entry.path();
                 }
@@ -405,9 +452,15 @@ namespace bha::suggestions {
             for (fs::path current = dir; !current.empty();) {
                 std::error_code ec;
                 for (const auto& entry : fs::directory_iterator(current, ec)) {
-                    if (ec) break;
-                    if (!entry.is_directory()) continue;
-                    if (++checked_dirs > 300) break;
+                    if (ec) {
+                        break;
+                    }
+                    if (!entry.is_directory()) {
+                        continue;
+                    }
+                    if (++checked_dirs > 300) {
+                        break;
+                    }
                     const fs::path candidate = entry.path();
                     if (!has_build_system_marker_fast(candidate)) {
                         continue;
@@ -546,9 +599,11 @@ namespace bha::suggestions {
         std::vector<IncludeDirective> result;
 
         std::ifstream in(file);
-        if (!in) return result;
+        if (!in) {
+            return result;
+        }
 
-        std::regex include_regex(R"(^\s*#\s*include\s*([<"])([^">]+)[">])", std::regex::ECMAScript);
+        const std::regex include_regex(R"(^\s*#\s*include\s*([<"])([^">]+)[">])", std::regex::ECMAScript);
         std::string line;
         std::size_t line_num = 0;
 
@@ -642,23 +697,29 @@ namespace bha::suggestions {
 
     [[nodiscard]] inline std::size_t find_first_include_line(const fs::path& file) {
         const auto directives = find_include_directives(file);
-        if (directives.empty()) return 0;
+        if (directives.empty()) {
+            return 0;
+        }
         return directives.front().line;
     }
 
     [[nodiscard]] inline std::size_t find_last_include_line(const fs::path& file) {
         const auto directives = find_include_directives(file);
-        if (directives.empty()) return 0;
+        if (directives.empty()) {
+            return 0;
+        }
         return directives.back().line;
     }
 
     [[nodiscard]] inline std::optional<std::size_t> find_pragma_once_line(const fs::path& file) {
         std::ifstream in(file);
-        if (!in) return std::nullopt;
+        if (!in) {
+            return std::nullopt;
+        }
 
         std::string line;
         std::size_t line_num = 0;
-        std::regex pragma_regex(R"(^\s*#\s*pragma\s+once\b)");
+        const std::regex pragma_regex(R"(^\s*#\s*pragma\s+once\b)");
         while (std::getline(in, line)) {
             if (std::regex_search(line, pragma_regex)) {
                 return line_num;
@@ -723,13 +784,15 @@ namespace bha::suggestions {
                 pclose(test);
             }
         });
-        if (!clang_available) return std::nullopt;
+        if (!clang_available) {
+            return std::nullopt;
+        }
 
 #ifdef _WIN32
         auto escape_path = [](const std::string& input) {
             std::string escaped;
             escaped.reserve(input.size());
-            for (char c : input) {
+            for (const char c : input) {
                 if (c == '"') {
                     escaped += "\\\"";
                 } else {
@@ -738,14 +801,14 @@ namespace bha::suggestions {
             }
             return escaped;
         };
-        std::string escaped_path = escape_path(file.string());
-        std::string cmd = "clang -Xclang -ast-dump=json -fsyntax-only \"" + escaped_path + "\" 2>NUL";
+        const std::string escaped_path = escape_path(file.string());
+        const std::string cmd = "clang -Xclang -ast-dump=json -fsyntax-only \"" + escaped_path + "\" 2>NUL";
 #else
         auto escape_path = [](const std::string& input) {
             std::string escaped;
             escaped.reserve(input.size() + 2);
             escaped.push_back('\'');
-            for (char c : input) {
+            for (const char c : input) {
                 if (c == '\'') {
                     escaped += "'\\''";
                 } else {
@@ -755,12 +818,14 @@ namespace bha::suggestions {
             escaped.push_back('\'');
             return escaped;
         };
-        std::string escaped_path = escape_path(file.string());
-        std::string cmd = "clang -Xclang -ast-dump=json -fsyntax-only " + escaped_path + " 2>/dev/null";
+        const std::string escaped_path = escape_path(file.string());
+        const std::string cmd = "clang -Xclang -ast-dump=json -fsyntax-only " + escaped_path + " 2>/dev/null";
 #endif
 
         FILE* pipe = popen(cmd.c_str(), "r");
-        if (!pipe) return std::nullopt;
+        if (!pipe) {
+            return std::nullopt;
+        }
 
         std::string output;
         char buffer[4096];
@@ -772,23 +837,28 @@ namespace bha::suggestions {
                 return std::nullopt;
             }
         }
-        if (int status = pclose(pipe); status != 0 || output.empty()) return std::nullopt;
+        if (const int status = pclose(pipe); status != 0 || output.empty()) {
+            return std::nullopt;
+        }
 
         ClassInfo info;
         info.name = class_name;
         info.file = file;
 
-        if (std::regex class_regex(R"("kind"\s*:\s*"CXXRecordDecl"[^}]*"name"\s*:\s*")" + class_name + R"(")"); !std::regex_search(output, class_regex)) {
+        if (const std::regex class_regex(
+                R"("kind"\s*:\s*"CXXRecordDecl"[^}]*"name"\s*:\s*")" + class_name + R"(")"
+            );
+            !std::regex_search(output, class_regex)) {
             return std::nullopt;
         }
 
-        std::regex line_regex(R"("line"\s*:\s*(\d+))");
+        const std::regex line_regex(R"("line"\s*:\s*(\d+))");
         std::smatch match;
         if (std::regex_search(output, match, line_regex)) {
             info.class_start_line = std::stoul(match[1].str());
         }
 
-        std::regex field_regex(R"re("kind"\s*:\s*"FieldDecl"[^}]*"name"\s*:\s*"([^"]+)"[^}]*"line"\s*:\s*(\d+))re");
+        const std::regex field_regex(R"re("kind"\s*:\s*"FieldDecl"[^}]*"name"\s*:\s*"([^"]+)"[^}]*"line"\s*:\s*(\d+))re");
         auto search_start = output.cbegin();
         while (std::regex_search(search_start, output.cend(), match, field_regex)) {
             ClassMemberInfo member;
@@ -807,7 +877,9 @@ namespace bha::suggestions {
         const std::string& class_name
     ) {
         std::ifstream in(file);
-        if (!in) return std::nullopt;
+        if (!in) {
+            return std::nullopt;
+        }
 
         ClassInfo info;
         info.name = class_name;
@@ -816,7 +888,7 @@ namespace bha::suggestions {
         std::string content((std::istreambuf_iterator<char>(in)),
                             std::istreambuf_iterator<char>());
 
-        std::regex class_regex(R"(\bclass\s+)" + class_name + R"(\s*(?::\s*[^{]+)?\s*\{)");
+        const std::regex class_regex(R"(\bclass\s+)" + class_name + R"(\s*(?::\s*[^{]+)?\s*\{)");
         std::smatch class_match;
         if (!std::regex_search(content, class_match, class_regex)) {
             return std::nullopt;
@@ -825,26 +897,35 @@ namespace bha::suggestions {
         auto class_pos = static_cast<std::size_t>(class_match.position());
         std::size_t line_num = 1;
         for (std::size_t i = 0; i < class_pos; ++i) {
-            if (content[i] == '\n') ++line_num;
+            if (content[i] == '\n') {
+                ++line_num;
+            }
         }
         info.class_start_line = line_num;
 
-        std::size_t brace_pos = content.find('{', class_pos);
-        if (brace_pos == std::string::npos) return std::nullopt;
+        const std::size_t brace_pos = content.find('{', class_pos);
+        if (brace_pos == std::string::npos) {
+            return std::nullopt;
+        }
 
         int brace_count = 1;
         std::size_t end_pos = brace_pos + 1;
         while (end_pos < content.size() && brace_count > 0) {
-            if (content[end_pos] == '{') ++brace_count;
-            else if (content[end_pos] == '}') --brace_count;
+            if (content[end_pos] == '{') {
+                ++brace_count;
+            } else if (content[end_pos] == '}') {
+                --brace_count;
+            }
             ++end_pos;
         }
 
-        std::string class_body = content.substr(brace_pos + 1, end_pos - brace_pos - 2);
+        const std::string class_body = content.substr(brace_pos + 1, end_pos - brace_pos - 2);
 
         line_num = info.class_start_line;
         for (std::size_t i = class_pos; i < brace_pos; ++i) {
-            if (content[i] == '\n') ++line_num;
+            if (content[i] == '\n') {
+                ++line_num;
+            }
         }
 
         bool in_private = false;
@@ -872,7 +953,9 @@ namespace bha::suggestions {
             }
 
             if (in_private && !trimmed.empty() && trimmed[0] != '/' && trimmed.find("//") != 0) {
-                std::regex member_regex(R"(^\s*([a-zA-Z_][a-zA-Z0-9_:<>,\s\*&]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*[;=])");
+                const std::regex member_regex(
+                    R"(^\s*([a-zA-Z_][a-zA-Z0-9_:<>,\s\*&]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*[;=])"
+                );
                 std::smatch member_match;
                 if (std::regex_search(trimmed, member_match, member_regex)) {
                     ClassMemberInfo member;
@@ -884,7 +967,10 @@ namespace bha::suggestions {
                     info.members.push_back(member);
                 }
 
-                if (std::regex method_regex(R"(^\s*(?:virtual\s+)?([a-zA-Z_][a-zA-Z0-9_:<>,\s\*&]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\()"); std::regex_search(trimmed, member_match, method_regex)) {
+                const std::regex method_regex(
+                    R"(^\s*(?:virtual\s+)?([a-zA-Z_][a-zA-Z0-9_:<>,\s\*&]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\()"
+                );
+                if (std::regex_search(trimmed, member_match, method_regex)) {
                     ClassMemberInfo member;
                     member.type = member_match[1].str();
                     member.name = member_match[2].str();
@@ -920,7 +1006,9 @@ namespace bha::suggestions {
     ) {
         std::vector<TextEdit> edits;
 
-        if (class_info.members.empty()) return edits;
+        if (class_info.members.empty()) {
+            return edits;
+        }
 
         std::vector<ClassMemberInfo> private_data_members;
         std::vector<ClassMemberInfo> private_methods;
@@ -935,7 +1023,9 @@ namespace bha::suggestions {
             }
         }
 
-        if (private_data_members.empty()) return edits;
+        if (private_data_members.empty()) {
+            return edits;
+        }
 
         std::ostringstream pimpl_decl;
         pimpl_decl << "    struct Impl;\n";
@@ -960,7 +1050,7 @@ namespace bha::suggestions {
             edits.push_back(replace_private);
         }
 
-        std::size_t first_include = find_first_include_line(header_file);
+        const std::size_t first_include = find_first_include_line(header_file);
         bool has_memory_include = false;
 
         for (auto includes = find_include_directives(header_file); const auto& inc : includes) {
@@ -1002,11 +1092,11 @@ namespace bha::suggestions {
 
         if (fs::exists(source_file)) {
             std::ifstream src_in(source_file);
-            std::string src_content((std::istreambuf_iterator<char>(src_in)),
-                                    std::istreambuf_iterator<char>());
+            const std::string src_content((std::istreambuf_iterator<char>(src_in)),
+                                          std::istreambuf_iterator<char>());
             src_in.close();
 
-            std::size_t last_line = end_of_file_insert_line(src_content);
+            const std::size_t last_line = end_of_file_insert_line(src_content);
 
             TextEdit add_impl;
             add_impl.file = source_file;
@@ -1038,7 +1128,7 @@ namespace bha::suggestions {
      * Result of suggestion generation.
      */
     struct SuggestionResult {
-        std::vector<Suggestion> suggestions{};
+        std::vector<Suggestion> suggestions;
         Duration generation_time = Duration::zero();
         std::size_t items_analyzed = 0;
         std::size_t items_skipped = 0;

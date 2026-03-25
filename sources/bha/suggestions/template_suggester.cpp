@@ -38,8 +38,10 @@ namespace bha::suggestions
         };
 
         std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
-            std::regex target_regex(R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
-                                    std::regex::icase);
+            const std::regex target_regex(
+                R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
+                std::regex::icase
+            );
 
             std::vector<std::string> lines;
             lines.reserve(128);
@@ -81,8 +83,10 @@ namespace bha::suggestions
         }
 
         std::optional<MesonTargetSpan> find_first_meson_target(const std::string& content) {
-            std::regex target_regex(R"(^\s*(executable|library|shared_library|static_library)\s*\()",
-                                    std::regex::icase);
+            const std::regex target_regex(
+                R"(^\s*(executable|library|shared_library|static_library)\s*\()",
+                std::regex::icase
+            );
 
             std::vector<std::string> lines;
             lines.reserve(128);
@@ -104,8 +108,12 @@ namespace bha::suggestions
 
                 int paren_depth = 0;
                 for (std::size_t j = open_pos; j < lines[i].size(); ++j) {
-                    if (lines[i][j] == '(') ++paren_depth;
-                    if (lines[i][j] == ')') --paren_depth;
+                    if (lines[i][j] == '(') {
+                        ++paren_depth;
+                    }
+                    if (lines[i][j] == ')') {
+                        --paren_depth;
+                    }
                 }
 
                 MesonTargetSpan span;
@@ -116,9 +124,13 @@ namespace bha::suggestions
                     span.single_line = true;
                 } else {
                     for (std::size_t k = i + 1; k < lines.size(); ++k) {
-                        for (char c : lines[k]) {
-                            if (c == '(') ++paren_depth;
-                            if (c == ')') --paren_depth;
+                        for (const char c : lines[k]) {
+                            if (c == '(') {
+                                ++paren_depth;
+                            }
+                            if (c == ')') {
+                                --paren_depth;
+                            }
                         }
                         if (paren_depth <= 0) {
                             span.end_line = k;
@@ -135,9 +147,8 @@ namespace bha::suggestions
 
         fs::path find_project_root_for_templates(const fs::path& path) {
             fs::path current = path;
-            if (fs::exists(current) && fs::is_regular_file(current)) {
-                current = current.parent_path();
-            } else if (!fs::exists(current) && current.has_parent_path()) {
+            if ((fs::exists(current) && fs::is_regular_file(current)) ||
+                (!fs::exists(current) && current.has_parent_path())) {
                 current = current.parent_path();
             }
 
@@ -321,10 +332,7 @@ namespace bha::suggestions
                 return true;
             }
             const std::string base = base_template_name(trimmed);
-            if (base.rfind("__", 0) == 0) {
-                return true;
-            }
-            return false;
+            return base.rfind("__", 0) == 0;
         }
 
         bool looks_like_function_template(const std::string& name) {
@@ -375,10 +383,10 @@ namespace bha::suggestions
             if (!in) {
                 return std::nullopt;
             }
-            std::string content((std::istreambuf_iterator<char>(in)),
-                                std::istreambuf_iterator<char>());
+            const std::string content((std::istreambuf_iterator<char>(in)),
+                                      std::istreambuf_iterator<char>());
             const std::string escaped_name = regex_escape(base_name);
-            std::regex tmpl_regex(
+            const std::regex tmpl_regex(
                 "\\btemplate\\s*<[^>]*>\\s*(class|struct)\\s+" + escaped_name + "\\b",
                 std::regex::icase
             );
@@ -422,7 +430,7 @@ namespace bha::suggestions
             const std::string& include_name,
             const fs::path& project_root
         ) {
-            fs::path include_path(include_name);
+            const fs::path include_path(include_name);
             if (include_path.is_absolute()) {
                 if (fs::exists(include_path)) {
                     return include_path.lexically_normal();
@@ -666,8 +674,8 @@ namespace bha::suggestions
                 "instantiate a template in a single translation unit, while extern template "
                 "prevents duplicate instantiations in other units.";
 
-            Duration savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
-                              tmpl.instantiation_count;
+            const Duration savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
+                                     tmpl.instantiation_count;
             suggestion.estimated_savings = savings;
 
             if (context.trace.total_time.count() > 0) {
@@ -712,7 +720,7 @@ namespace bha::suggestions
                 project_root_dir = fs::absolute(project_root_dir);
             }
             if (!project_root_dir.empty() && !tmpl.files_using.empty()) {
-                fs::path derived_root = find_repository_root(resolve_source_path(tmpl.files_using[0]));
+                const fs::path derived_root = find_repository_root(resolve_source_path(tmpl.files_using[0]));
                 if (!derived_root.empty() &&
                     path_utils::is_under(derived_root, project_root_dir) &&
                     derived_root != project_root_dir) {
@@ -758,7 +766,7 @@ namespace bha::suggestions
                     ? generate_explicit_function_instantiation(normalized_template_name)
                     : generate_explicit_instantiation(class_key, normalized_template_name);
                 if (inst_content.find(inst_line) == std::string::npos) {
-                    std::size_t last_line = end_of_file_insert_line(inst_content);
+                    const std::size_t last_line = end_of_file_insert_line(inst_content);
 
                     TextEdit add_inst;
                     add_inst.file = inst_file;
@@ -809,8 +817,8 @@ namespace bha::suggestions
                     if (context.project_root.empty() ||
                         path_utils::is_under(cmake_path, project_root_dir)) {
                         std::ifstream cmake_in(cmake_path);
-                        std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
-                                                  std::istreambuf_iterator<char>());
+                        const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
+                                                        std::istreambuf_iterator<char>());
                         if (cmake_content.find(inst_filename) == std::string::npos) {
                             if (auto target = find_first_cmake_target(cmake_content)) {
                                 std::error_code ec;
@@ -850,8 +858,8 @@ namespace bha::suggestions
                     if (context.project_root.empty() ||
                         path_utils::is_under(meson_path, project_root_dir)) {
                         std::ifstream meson_in(meson_path);
-                        std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
-                                                  std::istreambuf_iterator<char>());
+                        const std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
+                                                        std::istreambuf_iterator<char>());
                         if (meson_content.find(inst_filename) == std::string::npos) {
                             if (auto span = find_first_meson_target(meson_content)) {
                                 if (!span->single_line) {
@@ -882,8 +890,8 @@ namespace bha::suggestions
                     const fs::path path = entry.path();
                     if (path.extension() == ".pro") {
                         std::ifstream in(path);
-                        std::string content((std::istreambuf_iterator<char>(in)),
-                                            std::istreambuf_iterator<char>());
+                        const std::string content((std::istreambuf_iterator<char>(in)),
+                                                  std::istreambuf_iterator<char>());
                         if (content.find(inst_filename) == std::string::npos) {
                             TextEdit pro_edit;
                             pro_edit.file = path;
@@ -907,8 +915,8 @@ namespace bha::suggestions
                     if (fs::exists(project_root_dir / name)) {
                         const fs::path make_path = project_root_dir / name;
                         std::ifstream make_in(make_path);
-                        std::string make_content((std::istreambuf_iterator<char>(make_in)),
-                                                 std::istreambuf_iterator<char>());
+                        const std::string make_content((std::istreambuf_iterator<char>(make_in)),
+                                                       std::istreambuf_iterator<char>());
                         if (make_content.find(inst_filename) == std::string::npos) {
                             TextEdit make_edit;
                             make_edit.file = make_path;
@@ -934,8 +942,8 @@ namespace bha::suggestions
                         continue;
                     }
                     std::ifstream proj_in(entry.path());
-                    std::string proj_content((std::istreambuf_iterator<char>(proj_in)),
-                                             std::istreambuf_iterator<char>());
+                    const std::string proj_content((std::istreambuf_iterator<char>(proj_in)),
+                                                   std::istreambuf_iterator<char>());
                     if (proj_content.find(inst_filename) != std::string::npos) {
                         continue;
                     }

@@ -193,7 +193,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            fs::path include_path = include.name;
+            const fs::path include_path = include.name;
             std::error_code ec;
             if (include_path.is_absolute()) {
                 if (fs::exists(include_path, ec) && fs::is_regular_file(include_path, ec)) {
@@ -203,21 +203,21 @@ namespace bha::suggestions
             }
 
             if (!include.is_system) {
-                fs::path local = including_file.parent_path() / include_path;
+                const fs::path local = including_file.parent_path() / include_path;
                 if (fs::exists(local, ec) && fs::is_regular_file(local, ec)) {
                     return local.lexically_normal();
                 }
             }
 
             for (const auto& dir : include_dirs) {
-                fs::path candidate = dir / include_path;
+                const fs::path candidate = dir / include_path;
                 if (fs::exists(candidate, ec) && fs::is_regular_file(candidate, ec)) {
                     return candidate.lexically_normal();
                 }
             }
 
             if (!project_root.empty()) {
-                fs::path repo_candidate = project_root / include_path;
+                const fs::path repo_candidate = project_root / include_path;
                 if (fs::exists(repo_candidate, ec) && fs::is_regular_file(repo_candidate, ec)) {
                     return repo_candidate.lexically_normal();
                 }
@@ -297,7 +297,7 @@ namespace bha::suggestions
                     return {};
                 }
 
-                fs::path current = queue.front();
+                const fs::path current = queue.front();
                 queue.pop();
                 ++explored_nodes;
 
@@ -370,7 +370,7 @@ namespace bha::suggestions
                 if (path.empty()) {
                     return;
                 }
-                fs::path normalized = normalize_path(path, project_root);
+                const fs::path normalized = normalize_path(path, project_root);
                 if (normalized.empty()) {
                     return;
                 }
@@ -419,7 +419,7 @@ namespace bha::suggestions
                 if (path.empty()) {
                     return;
                 }
-                fs::path normalized = normalize_path(path, project_root);
+                const fs::path normalized = normalize_path(path, project_root);
                 if (!normalized.empty() && is_header_file(normalized)) {
                     headers.push_back(normalized);
                 }
@@ -707,7 +707,7 @@ namespace bha::suggestions
             std::vector<std::string> queue;
             queue.reserve(analysis.files.size());
             for (const auto& file : analysis.files) {
-                std::string key = normalize(file.file);
+                const std::string key = normalize(file.file);
                 if (targets.insert(key).second) {
                     queue.push_back(std::move(key));
                 }
@@ -717,7 +717,7 @@ namespace bha::suggestions
             included_by_map.reserve(analysis.dependencies.headers.size());
             for (const auto& header : analysis.dependencies.headers) {
                 for (const auto& includer : header.included_by) {
-                    std::string key = normalize(includer);
+                    const std::string key = normalize(includer);
                     included_by_map[key].push_back(header.path);
                 }
             }
@@ -730,7 +730,7 @@ namespace bha::suggestions
                     continue;
                 }
                 for (const auto& header_path : it->second) {
-                    std::string header_key = normalize(header_path);
+                    const std::string header_key = normalize(header_path);
                     if (targets.insert(header_key).second) {
                         queue.push_back(header_key);
                     }

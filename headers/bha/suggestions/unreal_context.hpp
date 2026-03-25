@@ -172,7 +172,7 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
-        std::string line_text = setting_name + " = " + assigned_value + ";";
+        const std::string line_text = setting_name + " = " + assigned_value + ";";
         if (existing_line.has_value() && *existing_line > 0 && *existing_line <= lines.size()) {
             const std::string indent = leading_whitespace(lines[*existing_line - 1]);
             return make_replace_line_edit(rules_file, *existing_line - 1, indent + line_text);
