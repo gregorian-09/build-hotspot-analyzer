@@ -4,10 +4,6 @@
   <img src="docs/assets/logo.png" alt="Build Hotspot Analyzer banner" width="960">
 </p>
 
-<p align="center">
-  <img src="docs/assets/logo-icon.png" alt="Build Hotspot Analyzer icon" width="128">
-</p>
-
 Build Hotspot Analyzer (`bha`) is a C++20 toolchain for measuring, explaining, and improving C and C++ build performance.
 
 Current version: `v0.1.0`
