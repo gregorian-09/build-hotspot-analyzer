@@ -79,7 +79,7 @@ namespace bha::exporters
         std::string html_title = "Build Hotspot Analysis Report";
 
         // JSON-specific options
-        std::string json_schema_version = "1.0.0";
+        std::string json_schema_version = "0.1.0";
         bool json_streaming = false;        // Stream large arrays
     };
 
@@ -87,8 +87,8 @@ namespace bha::exporters
      * Export metadata included in output.
      */
     struct ExportMetadata {
-        std::string bha_version = "2.0.0";
-        std::string schema_version = "1.0.0";
+        std::string bha_version = "0.1.0";
+        std::string schema_version = "0.1.0";
         Timestamp generated_at{};
         std::string project_name;
         std::string project_path;

@@ -642,7 +642,7 @@ namespace bha::exporters
         if (options.include_metadata) {
             output["$schema"] = "https://bha.dev/schemas/analysis-v" + options.json_schema_version + ".json";
             output["schema_version"] = options.json_schema_version;
-            output["bha_version"] = "1.0.0";
+            output["bha_version"] = "0.1.0";
             output["generated_at"] = format_timestamp(std::chrono::system_clock::now());
         }
 
@@ -1536,7 +1536,7 @@ namespace bha::exporters
 
         json run;
         run["tool"]["driver"]["name"] = "Build Hotspot Analyzer";
-        run["tool"]["driver"]["version"] = "2.0.0";
+        run["tool"]["driver"]["version"] = "0.1.0";
         run["tool"]["driver"]["rules"] = json::array();
         run["results"] = json::array();
         run["invocations"] = json::array({json{{"executionSuccessful", true}}});

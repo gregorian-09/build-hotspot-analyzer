@@ -1032,7 +1032,7 @@ namespace bha::git
             std::ofstream hook_file(hook_path);
             hook_file << "#!/bin/sh\n";
             hook_file << "# BHA Hook - Build Hotspot Analyzer\n";
-            hook_file << "# Version: 1.0.0\n";
+            hook_file << "# Version: 0.1.0\n";
             hook_file << "# Type: " << hook_name << "\n\n";
 
             switch (type) {

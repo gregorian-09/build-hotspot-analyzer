@@ -1043,7 +1043,7 @@ namespace bha::lsp
             {"capabilities", capabilities},
             {"serverInfo", {
                 {"name", "bha-lsp"},
-                {"version", "1.0.0"}
+                {"version", "0.1.0"}
             }}
         };
 

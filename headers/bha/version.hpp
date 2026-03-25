@@ -18,13 +18,13 @@ namespace bha {
      * Major version number.
      * Incremented for breaking API changes.
      */
-    constexpr int VERSION_MAJOR = 1;
+    constexpr int VERSION_MAJOR = 0;
 
     /**
      * Minor version number.
      * Incremented for new features with backward compatibility.
      */
-    constexpr int VERSION_MINOR = 0;
+    constexpr int VERSION_MINOR = 1;
 
     /**
      * Patch version number.
@@ -35,7 +35,7 @@ namespace bha {
     /**
      * Full version string in "major.minor.patch" format.
      */
-    constexpr auto VERSION_STRING = "1.0.0";
+    constexpr auto VERSION_STRING = "0.1.0";
 
     /**
      * Project name.

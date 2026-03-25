@@ -3,10 +3,10 @@
 ;; Copyright (C) 2026 Build Hotspot Analyzer Contributors
 
 ;; Author: Build Hotspot Analyzer Contributors
-;; Version: 0.2.0
+;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.1") (lsp-mode "8.0") (cl-lib "0.5"))
 ;; Keywords: languages, c, cpp, lsp, performance
-;; URL: https://github.com/yourusername/build-hotspot-analyzer
+;; URL: https://github.com/gregorian-09/build-hotspot-analyzer
 
 ;;; Commentary:
 

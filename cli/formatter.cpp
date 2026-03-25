@@ -653,7 +653,7 @@ namespace bha::cli
 
             ss << "{" << nl;
 
-            ss << indent << R"("bha_version": "1.0.0",)" << nl;
+            ss << indent << R"("bha_version": "0.1.0",)" << nl;
 
             ss << indent << "\"performance\": {" << nl;
             ss << indent << indent << "\"total_build_time_ns\": " << result.performance.total_build_time.count() << "," << nl;

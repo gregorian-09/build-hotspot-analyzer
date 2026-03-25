@@ -9,7 +9,7 @@ It combines:
 - optional safe auto-apply and rollback workflows (CLI + LSP)
 - CI-oriented outputs (SARIF, GitHub/GitLab annotations, regression gates)
 
-Current version: `v1.0.0`
+Current version: `v0.1.0`
 
 ## What BHA Covers
 

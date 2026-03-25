@@ -1,23 +1,49 @@
 {
   "name": "build-hotspot-analyzer",
   "displayName": "Build Hotspot Analyzer",
-  "description": "C++ build time optimization suggestions via LSP",
+  "description": "C/C++ build performance analysis and optimization suggestions via LSP",
   "version": "0.1.0",
   "publisher": "build-hotspot-analyzer",
+  "author": "Gregorian Rayne",
   "license": "MIT",
+  "icon": "media/icon.png",
+  "homepage": "https://github.com/gregorian-09/build-hotspot-analyzer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gregorian-09/build-hotspot-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gregorian-09/build-hotspot-analyzer/issues"
+  },
+  "files": [
+    "out/**",
+    "media/**",
+    "README.md",
+    "LICENSE.txt",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "galleryBanner": {
+    "color": "#10161c",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
     "Programming Languages",
-    "Linters"
+    "Linters",
+    "Other"
   ],
   "keywords": [
-    "C++",
+    "c++",
+    "c",
     "build",
     "optimization",
     "performance",
-    "LSP"
+    "lsp",
+    "compile",
+    "tooling"
   ],
   "activationEvents": [
     "onLanguage:cpp",
@@ -82,10 +108,12 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "vscode:prepublish": "npm run typecheck && npm run bundle",
+    "typecheck": "tsc -p ./ --noEmit",
+    "bundle": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=out/extension.js --sourcemap",
+    "compile": "npm run bundle",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package"
+    "package": "vsce package --no-dependencies"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
@@ -94,6 +122,7 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.75.0",
     "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.27.4",
     "typescript": "^5.3.0"
   }
 }
