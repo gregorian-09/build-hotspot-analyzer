@@ -43,11 +43,21 @@ namespace bha::suggestions
                 return std::nullopt;
             }
             const std::string_view value = token.substr(kPrefix.size());
-            if (value == "c++11" || value == "gnu++11") return 11;
-            if (value == "c++14" || value == "gnu++14") return 14;
-            if (value == "c++17" || value == "gnu++17") return 17;
-            if (value == "c++20" || value == "gnu++20" || value == "c++2a" || value == "gnu++2a") return 20;
-            if (value == "c++23" || value == "gnu++23" || value == "c++2b" || value == "gnu++2b") return 23;
+            if (value == "c++11" || value == "gnu++11") {
+                return 11;
+            }
+            if (value == "c++14" || value == "gnu++14") {
+                return 14;
+            }
+            if (value == "c++17" || value == "gnu++17") {
+                return 17;
+            }
+            if (value == "c++20" || value == "gnu++20" || value == "c++2a" || value == "gnu++2a") {
+                return 20;
+            }
+            if (value == "c++23" || value == "gnu++23" || value == "c++2b" || value == "gnu++2b") {
+                return 23;
+            }
             return std::nullopt;
         }
 
@@ -80,10 +90,7 @@ namespace bha::suggestions
             std::string lower = path.generic_string();
             std::ranges::transform(lower, lower.begin(),
                                    [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
-            if (lower.find("/bits/fs_") != std::string::npos) {
-                return true;
-            }
-            return false;
+            return lower.find("/bits/fs_") != std::string::npos;
         }
 
         bool is_unstable_external_header(const fs::path& path) {
@@ -97,10 +104,7 @@ namespace bha::suggestions
                 return true;
             }
             const std::string ext = path.extension().string();
-            if (ext == ".tcc" || ext == ".inc" || ext == ".inl" || ext == ".ipp" || ext == ".def") {
-                return true;
-            }
-            return false;
+            return ext == ".tcc" || ext == ".inc" || ext == ".inl" || ext == ".ipp" || ext == ".def";
         }
 
         bool has_header_extension(const fs::path& path) {
@@ -146,10 +150,7 @@ namespace bha::suggestions
                 return true;
             }
             const std::string ext = path.extension().string();
-            if (ext == ".txt" || ext == ".cmake" || ext == ".mk") {
-                return true;
-            }
-            return false;
+            return ext == ".txt" || ext == ".cmake" || ext == ".mk";
         }
 
         std::optional<CMakeCommandStart> parse_cmake_command_start(std::string_view line) {
@@ -157,7 +158,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
             const unsigned char first = static_cast<unsigned char>(line.front());
-            if (!(std::isalpha(first) || line.front() == '_')) {
+            if (!std::isalpha(first) && line.front() != '_') {
                 return std::nullopt;
             }
             std::size_t i = 1;
@@ -236,7 +237,7 @@ namespace bha::suggestions
         }
 
         std::optional<std::string> find_project_name(const std::string& content) {
-            std::regex project_regex(R"(^\s*project\s*\(\s*([A-Za-z0-9_\-\.]+))", std::regex::icase);
+            const std::regex project_regex(R"(^\s*project\s*\(\s*([A-Za-z0-9_\-\.]+))", std::regex::icase);
             std::istringstream input(content);
             std::string line;
             while (std::getline(input, line)) {
@@ -296,8 +297,10 @@ namespace bha::suggestions
         }
 
         std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
-            std::regex target_regex(R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
-                                    std::regex::icase);
+            const std::regex target_regex(
+                R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
+                std::regex::icase
+            );
 
             const auto project_name = find_project_name(content);
             std::vector<CMakeTargetInfo> candidates;
@@ -331,8 +334,10 @@ namespace bha::suggestions
         }
 
         std::optional<MesonTargetSpan> find_first_meson_target(const std::string& content) {
-            std::regex target_regex(R"(^\s*(executable|library|shared_library|static_library)\s*\()",
-                                    std::regex::icase);
+            const std::regex target_regex(
+                R"(^\s*(executable|library|shared_library|static_library)\s*\()",
+                std::regex::icase
+            );
 
             std::vector<std::string> lines;
             lines.reserve(128);
@@ -354,8 +359,12 @@ namespace bha::suggestions
 
                 int paren_depth = 0;
                 for (std::size_t j = open_pos; j < lines[i].size(); ++j) {
-                    if (lines[i][j] == '(') ++paren_depth;
-                    if (lines[i][j] == ')') --paren_depth;
+                    if (lines[i][j] == '(') {
+                        ++paren_depth;
+                    }
+                    if (lines[i][j] == ')') {
+                        --paren_depth;
+                    }
                 }
 
                 MesonTargetSpan span;
@@ -366,9 +375,13 @@ namespace bha::suggestions
                     span.single_line = true;
                 } else {
                     for (std::size_t k = i + 1; k < lines.size(); ++k) {
-                        for (char c : lines[k]) {
-                            if (c == '(') ++paren_depth;
-                            if (c == ')') --paren_depth;
+                        for (const char c : lines[k]) {
+                            if (c == '(') {
+                                ++paren_depth;
+                            }
+                            if (c == ')') {
+                                --paren_depth;
+                            }
                         }
                         if (paren_depth <= 0) {
                             span.end_line = k;
@@ -491,7 +504,7 @@ namespace bha::suggestions
                 if (rel.empty()) {
                     continue;
                 }
-                std::string rel_str = rel.generic_string();
+                const std::string rel_str = rel.generic_string();
                 std::string lower_rel = rel_str;
                 std::ranges::transform(lower_rel, lower_rel.begin(),
                                        [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
@@ -507,8 +520,8 @@ namespace bha::suggestions
                 if (!in) {
                     continue;
                 }
-                std::string content((std::istreambuf_iterator<char>(in)),
-                                    std::istreambuf_iterator<char>());
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
                 std::vector<CMakeTargetInfo> file_targets = find_macro_targets(content);
                 if (file_targets.empty()) {
                     if (auto target = find_first_cmake_target(content)) {
@@ -562,8 +575,8 @@ namespace bha::suggestions
                 if (!in) {
                     continue;
                 }
-                std::string content((std::istreambuf_iterator<char>(in)),
-                                    std::istreambuf_iterator<char>());
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
                 if (content.find("target_precompile_headers") != std::string::npos) {
                     return true;
                 }
@@ -631,13 +644,10 @@ namespace bha::suggestions
             std::string lower = name;
             std::ranges::transform(lower, lower.begin(),
                                    [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
-            if (lower.find("library") != std::string::npos ||
-                lower.find("executable") != std::string::npos ||
-                lower.find("binary") != std::string::npos ||
-                lower.find("target") != std::string::npos) {
-                return true;
-            }
-            return false;
+            return lower.find("library") != std::string::npos ||
+                   lower.find("executable") != std::string::npos ||
+                   lower.find("binary") != std::string::npos ||
+                   lower.find("target") != std::string::npos;
         }
 
         std::vector<std::string> tokenize_cmake_args(std::string_view args) {
@@ -820,16 +830,16 @@ namespace bha::suggestions
                         std::string name = pending.substr(0, open);
                         name.erase(0, name.find_first_not_of(" \t"));
                         name.erase(name.find_last_not_of(" \t") + 1);
-                std::string args = pending.substr(open + 1, close - open - 1);
-                const auto tokens = tokenize_cmake_args(args);
-                if (macro_args_have_sources(tokens) && !macro_args_has_testonly(tokens)) {
-                    if (auto target = extract_macro_target_name(args)) {
-                        if (is_cmake_target_candidate(*target, pending)) {
-                            results.push_back(CMakeTargetInfo{*target, pending_line, line_num, true});
+                        const std::string args = pending.substr(open + 1, close - open - 1);
+                        const auto tokens = tokenize_cmake_args(args);
+                        if (macro_args_have_sources(tokens) && !macro_args_has_testonly(tokens)) {
+                            if (auto target = extract_macro_target_name(args)) {
+                                if (is_cmake_target_candidate(*target, pending)) {
+                                    results.push_back(CMakeTargetInfo{*target, pending_line, line_num, true});
+                                }
+                            }
                         }
                     }
-                }
-            }
                     collecting = false;
                     pending.clear();
                 }
@@ -861,12 +871,18 @@ namespace bha::suggestions
             if (project_root.empty()) {
                 return BuildSystemType::Unknown;
             }
-            if (fs::exists(project_root / "CMakeLists.txt")) return BuildSystemType::CMake;
-            if (fs::exists(project_root / "meson.build")) return BuildSystemType::Meson;
+            if (fs::exists(project_root / "CMakeLists.txt")) {
+                return BuildSystemType::CMake;
+            }
+            if (fs::exists(project_root / "meson.build")) {
+                return BuildSystemType::Meson;
+            }
             if (fs::exists(project_root / "Makefile") || fs::exists(project_root / "makefile")) {
                 return BuildSystemType::Make;
             }
-            if (fs::exists(project_root / "SConstruct")) return BuildSystemType::SCons;
+            if (fs::exists(project_root / "SConstruct")) {
+                return BuildSystemType::SCons;
+            }
             if (fs::exists(project_root / "BUILD") || fs::exists(project_root / "BUILD.bazel")) {
                 return BuildSystemType::Bazel;
             }
@@ -1010,8 +1026,10 @@ namespace bha::suggestions
         }
 
         std::vector<CMakeTargetInfo> find_direct_cmake_targets(const std::string& content) {
-            std::regex target_regex(R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
-                                    std::regex::icase);
+            const std::regex target_regex(
+                R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
+                std::regex::icase
+            );
             std::vector<CMakeTargetInfo> targets;
 
             std::istringstream input(content);
@@ -1057,7 +1075,7 @@ namespace bha::suggestions
                 if (rel.empty()) {
                     continue;
                 }
-                std::string rel_str = rel.generic_string();
+                const std::string rel_str = rel.generic_string();
                 std::string lower_rel = rel_str;
                 std::ranges::transform(lower_rel, lower_rel.begin(),
                                        [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
@@ -1071,8 +1089,8 @@ namespace bha::suggestions
                 if (!in) {
                     continue;
                 }
-                std::string content((std::istreambuf_iterator<char>(in)),
-                                    std::istreambuf_iterator<char>());
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
                 auto macro_targets = find_macro_targets(content);
                 auto direct_targets = find_direct_cmake_targets(content);
                 macro_targets.insert(macro_targets.end(), direct_targets.begin(), direct_targets.end());
@@ -1123,8 +1141,8 @@ namespace bha::suggestions
         };
 
         std::optional<RuleSpan> find_bazel_rule_span(const std::string& content) {
-            std::regex rule_regex(R"(^\s*(cc_library|cc_binary|cc_test)\s*\()",
-                                  std::regex::icase);
+            const std::regex rule_regex(R"(^\s*(cc_library|cc_binary|cc_test)\s*\()",
+                                        std::regex::icase);
             std::istringstream input(content);
             std::vector<std::string> lines;
             std::string line;
@@ -1141,14 +1159,22 @@ namespace bha::suggestions
                 span.start_line = i;
                 int paren_depth = 0;
                 for (std::size_t j = lines[i].find('('); j < lines[i].size(); ++j) {
-                    if (lines[i][j] == '(') ++paren_depth;
-                    if (lines[i][j] == ')') --paren_depth;
+                    if (lines[i][j] == '(') {
+                        ++paren_depth;
+                    }
+                    if (lines[i][j] == ')') {
+                        --paren_depth;
+                    }
                 }
 
                 for (std::size_t k = i + 1; k < lines.size() && paren_depth > 0; ++k) {
-                    for (char c : lines[k]) {
-                        if (c == '(') ++paren_depth;
-                        if (c == ')') --paren_depth;
+                    for (const char c : lines[k]) {
+                        if (c == '(') {
+                            ++paren_depth;
+                        }
+                        if (c == ')') {
+                            --paren_depth;
+                        }
                     }
                     if (paren_depth <= 0) {
                         span.end_line = k;
@@ -1174,8 +1200,8 @@ namespace bha::suggestions
         }
 
         std::optional<RuleSpan> find_buck2_rule_span(const std::string& content) {
-            std::regex rule_regex(R"(^\s*(cxx_library|cxx_binary|cxx_test)\s*\()",
-                                  std::regex::icase);
+            const std::regex rule_regex(R"(^\s*(cxx_library|cxx_binary|cxx_test)\s*\()",
+                                        std::regex::icase);
             std::istringstream input(content);
             std::vector<std::string> lines;
             std::string line;
@@ -1192,14 +1218,22 @@ namespace bha::suggestions
                 span.start_line = i;
                 int paren_depth = 0;
                 for (std::size_t j = lines[i].find('('); j < lines[i].size(); ++j) {
-                    if (lines[i][j] == '(') ++paren_depth;
-                    if (lines[i][j] == ')') --paren_depth;
+                    if (lines[i][j] == '(') {
+                        ++paren_depth;
+                    }
+                    if (lines[i][j] == ')') {
+                        --paren_depth;
+                    }
                 }
 
                 for (std::size_t k = i + 1; k < lines.size() && paren_depth > 0; ++k) {
-                    for (char c : lines[k]) {
-                        if (c == '(') ++paren_depth;
-                        if (c == ')') --paren_depth;
+                    for (const char c : lines[k]) {
+                        if (c == '(') {
+                            ++paren_depth;
+                        }
+                        if (c == ')') {
+                            --paren_depth;
+                        }
                     }
                     if (paren_depth <= 0) {
                         span.end_line = k;
@@ -1240,11 +1274,11 @@ namespace bha::suggestions
             if (header.inclusion_count >= config.priority.critical_includes &&
                 time_ratio > config.priority.critical_time_ratio) {
                 return Priority::Critical;
-                }
+            }
             if (header.inclusion_count >= config.priority.high_includes &&
                 time_ratio > config.priority.high_time_ratio) {
                 return Priority::High;
-                }
+            }
             if (header.inclusion_count >= config.min_include_count) {
                 return Priority::Medium;
             }
@@ -1464,9 +1498,9 @@ namespace bha::suggestions
         const bool c_only_trace = is_c_only_trace(context.trace);
 
         fs::path project_root = context.project_root;
-        if (!project_root.empty() && project_root.is_relative()) {
-            project_root = fs::absolute(project_root);
-        }
+            if (!project_root.empty() && project_root.is_relative()) {
+                project_root = fs::absolute(project_root);
+            }
             if (project_root.empty()) {
                 for (const auto& unit : context.trace.units) {
                     const auto resolved = resolve_source_path(unit.source_file);
@@ -1501,10 +1535,9 @@ namespace bha::suggestions
                 break;
             }
             if (header.inclusion_count >= pch_config.min_include_count &&
-                header.total_parse_time >= pch_config.min_aggregate_time)
-                {
-                    pch_candidates.push_back(header.path);
-                }
+                header.total_parse_time >= pch_config.min_aggregate_time) {
+                pch_candidates.push_back(header.path);
+            }
         }
 
         std::size_t analyzed = 0;
@@ -1550,9 +1583,9 @@ namespace bha::suggestions
                 continue;
             }
 
-            std::string filename = header.path.filename().string();
-            bool is_std_header = filename.find('.') == std::string::npos ||
-                                 filename.find("std") == 0;
+            const std::string filename = header.path.filename().string();
+            const bool is_std_header = filename.find('.') == std::string::npos ||
+                                       filename.find("std") == 0;
             if (is_std_header) {
                 ++skipped;
                 continue;
@@ -1803,12 +1836,16 @@ namespace bha::suggestions
                     if (context.is_cancelled()) {
                         break;
                     }
-                    if (!entry.is_regular_file()) continue;
-                    if (entry.path().extension() != ".pro") continue;
+                    if (!entry.is_regular_file()) {
+                        continue;
+                    }
+                    if (entry.path().extension() != ".pro") {
+                        continue;
+                    }
 
                     std::ifstream pro_in(entry.path());
-                    std::string pro_content((std::istreambuf_iterator<char>(pro_in)),
-                                            std::istreambuf_iterator<char>());
+                    const std::string pro_content((std::istreambuf_iterator<char>(pro_in)),
+                                                  std::istreambuf_iterator<char>());
                     pro_in.close();
 
                     if (has_qmake_pch_config(pro_content)) {
@@ -1851,8 +1888,8 @@ namespace bha::suggestions
                 const fs::path meson_path = project_root / "meson.build";
                 if (fs::exists(meson_path)) {
                     std::ifstream meson_in(meson_path);
-                    std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
-                                              std::istreambuf_iterator<char>());
+                    const std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
+                                                    std::istreambuf_iterator<char>());
                     meson_in.close();
 
                     if (auto target_span = find_first_meson_target(meson_content); target_span && !target_span->has_pch) {
@@ -1874,17 +1911,13 @@ namespace bha::suggestions
                         }
 
                         if (target_span->single_line && target_span->start_line < meson_lines.size()) {
-                            std::string target_line = meson_lines[target_span->start_line];
+                            const std::string target_line = meson_lines[target_span->start_line];
                             const std::size_t close_pos = target_line.rfind(')');
                             if (close_pos != std::string::npos) {
                                 const std::string before = target_line.substr(0, close_pos);
                                 const std::string after = target_line.substr(close_pos);
                                 std::string updated = before;
-                                if (before.find('(') != std::string::npos && before.find(',') == std::string::npos) {
-                                    updated += ", " + pch_arg;
-                                } else {
-                                    updated += ", " + pch_arg;
-                                }
+                                updated += ", " + pch_arg;
                                 updated += after;
 
                                 suggestion.edits.push_back(make_replace_line_edit(
@@ -1916,8 +1949,8 @@ namespace bha::suggestions
                 const fs::path scons_path = project_root / "SConstruct";
                 if (fs::exists(scons_path)) {
                     std::ifstream scons_in(scons_path);
-                    std::string scons_content((std::istreambuf_iterator<char>(scons_in)),
-                                              std::istreambuf_iterator<char>());
+                    const std::string scons_content((std::istreambuf_iterator<char>(scons_in)),
+                                                    std::istreambuf_iterator<char>());
                     scons_in.close();
 
                     if (!has_scons_pch_config(scons_content)) {
@@ -1976,8 +2009,8 @@ namespace bha::suggestions
                 const fs::path makefile_path = project_root / "Makefile";
                 if (fs::exists(makefile_path)) {
                     std::ifstream mk_in(makefile_path);
-                    std::string mk_content((std::istreambuf_iterator<char>(mk_in)),
-                                           std::istreambuf_iterator<char>());
+                    const std::string mk_content((std::istreambuf_iterator<char>(mk_in)),
+                                                 std::istreambuf_iterator<char>());
                     mk_in.close();
 
                     if (!has_make_pch_config(mk_content)) {
@@ -2021,8 +2054,8 @@ namespace bha::suggestions
                 const fs::path ninja_path = project_root / "build.ninja";
                 if (fs::exists(ninja_path)) {
                     std::ifstream ninja_in(ninja_path);
-                    std::string ninja_content((std::istreambuf_iterator<char>(ninja_in)),
-                                              std::istreambuf_iterator<char>());
+                    const std::string ninja_content((std::istreambuf_iterator<char>(ninja_in)),
+                                                    std::istreambuf_iterator<char>());
                     ninja_in.close();
 
                     if (!has_ninja_pch_config(ninja_content)) {
@@ -2035,7 +2068,7 @@ namespace bha::suggestions
                             }
                         }
 
-                        std::regex cxxflags_regex(R"(^\s*cxxflags\s*=)");
+                        const std::regex cxxflags_regex(R"(^\s*cxxflags\s*=)");
                         if (auto line_idx = find_first_line_matching(ninja_content, cxxflags_regex)) {
                             std::istringstream ninja_lines_in(ninja_content);
                             std::vector<std::string> ninja_lines;
@@ -2092,11 +2125,13 @@ namespace bha::suggestions
                     if (context.is_cancelled()) {
                         break;
                     }
-                    if (!entry.is_regular_file()) continue;
+                    if (!entry.is_regular_file()) {
+                        continue;
+                    }
                     if (entry.path().extension() == ".vcxproj") {
                         std::ifstream vcx_in(entry.path());
-                        std::string vcx_content((std::istreambuf_iterator<char>(vcx_in)),
-                                                std::istreambuf_iterator<char>());
+                        const std::string vcx_content((std::istreambuf_iterator<char>(vcx_in)),
+                                                      std::istreambuf_iterator<char>());
                         vcx_in.close();
 
                         if (vcx_content.find("PrecompiledHeaderFile") == std::string::npos) {
@@ -2122,7 +2157,7 @@ namespace bha::suggestions
                                 "    </ClCompile>\n"
                                 "  </ItemGroup>\n";
 
-                            std::regex project_end_regex(R"(^\s*</Project>)");
+                            const std::regex project_end_regex(R"(^\s*</Project>)");
                             std::size_t insert_line = end_of_file_insert_line(vcx_content);
                             if (auto end_line = find_first_line_matching(vcx_content, project_end_regex)) {
                                 insert_line = *end_line;
@@ -2172,13 +2207,17 @@ namespace bha::suggestions
                     if (context.is_cancelled()) {
                         break;
                     }
-                    if (!entry.is_regular_file()) continue;
+                    if (!entry.is_regular_file()) {
+                        continue;
+                    }
                     const std::string build_filename = entry.path().filename().string();
-                    if (build_filename != "BUILD" && build_filename != "BUILD.bazel") continue;
+                    if (build_filename != "BUILD" && build_filename != "BUILD.bazel") {
+                        continue;
+                    }
 
                     std::ifstream bazel_in(entry.path());
-                    std::string bazel_content((std::istreambuf_iterator<char>(bazel_in)),
-                                              std::istreambuf_iterator<char>());
+                    const std::string bazel_content((std::istreambuf_iterator<char>(bazel_in)),
+                                                    std::istreambuf_iterator<char>());
                     bazel_in.close();
 
                     if (auto span = find_bazel_rule_span(bazel_content); span && !span->has_key) {
@@ -2213,13 +2252,17 @@ namespace bha::suggestions
                     if (context.is_cancelled()) {
                         break;
                     }
-                    if (!entry.is_regular_file()) continue;
+                    if (!entry.is_regular_file()) {
+                        continue;
+                    }
                     const std::string buck_filename = entry.path().filename().string();
-                    if (buck_filename != "BUCK" && buck_filename != "BUCK2") continue;
+                    if (buck_filename != "BUCK" && buck_filename != "BUCK2") {
+                        continue;
+                    }
 
                     std::ifstream buck_in(entry.path());
-                    std::string buck_content((std::istreambuf_iterator<char>(buck_in)),
-                                             std::istreambuf_iterator<char>());
+                    const std::string buck_content((std::istreambuf_iterator<char>(buck_in)),
+                                                   std::istreambuf_iterator<char>());
                     buck_in.close();
 
                     if (has_buck2_pch_config(buck_content)) {
@@ -2281,15 +2324,21 @@ namespace bha::suggestions
                     if (context.is_cancelled()) {
                         break;
                     }
-                    if (!entry.is_directory()) continue;
-                    if (entry.path().extension() != ".xcodeproj") continue;
+                    if (!entry.is_directory()) {
+                        continue;
+                    }
+                    if (entry.path().extension() != ".xcodeproj") {
+                        continue;
+                    }
 
                     const fs::path pbxproj_path = entry.path() / "project.pbxproj";
-                    if (!fs::exists(pbxproj_path)) continue;
+                    if (!fs::exists(pbxproj_path)) {
+                        continue;
+                    }
 
                     std::ifstream pbx_in(pbxproj_path);
-                    std::string pbx_content((std::istreambuf_iterator<char>(pbx_in)),
-                                            std::istreambuf_iterator<char>());
+                    const std::string pbx_content((std::istreambuf_iterator<char>(pbx_in)),
+                                                  std::istreambuf_iterator<char>());
                     pbx_in.close();
 
                     if (pbx_content.find("GCC_PREFIX_HEADER") != std::string::npos ||
@@ -2306,7 +2355,7 @@ namespace bha::suggestions
                         }
                     }
 
-                    std::regex build_settings_regex(R"(^\s*buildSettings\s*=\s*\{)");
+                    const std::regex build_settings_regex(R"(^\s*buildSettings\s*=\s*\{)");
                     if (auto line_idx = find_first_line_matching(pbx_content, build_settings_regex)) {
                         suggestion.edits.push_back(make_insert_after_line_edit(
                             pbxproj_path,
