@@ -43,7 +43,7 @@ namespace bha::suggestions
             };
 
             const fs::path base = source.parent_path() / source.stem();
-            std::vector<std::string> exts = {".h", ".hpp", ".hxx", ".H", ".hh"};
+            const std::vector<std::string> exts = {".h", ".hpp", ".hxx", ".H", ".hh"};
 
             for (const auto& ext : exts) {
                 add_candidate(fs::path(base.string() + ext));
@@ -52,13 +52,13 @@ namespace bha::suggestions
             const std::vector<std::string> src_dirs = {"/src/", "/source/", "/sources/"};
             const std::vector<std::string> include_dirs = {"/include/", "/header/", "/headers/"};
 
-            std::string path_str = source.string();
+            const std::string path_str = source.string();
 
             for (const auto& src_dir : src_dirs) {
                 if (const auto src_pos = path_str.find(src_dir); src_pos != std::string::npos) {
                     for (const auto& inc_dir : include_dirs) {
-                        std::string include_path = path_str.substr(0, src_pos) + inc_dir +
-                                                   path_str.substr(src_pos + src_dir.size());
+                        const std::string include_path = path_str.substr(0, src_pos) + inc_dir +
+                                                         path_str.substr(src_pos + src_dir.size());
                         for (const auto& ext : exts) {
                             fs::path h = include_path;
                             h.replace_extension(ext);
@@ -313,7 +313,7 @@ namespace bha::suggestions
                 if (!args.empty() && entry.contains("directory") && entry["directory"].is_string()) {
                     const fs::path directory = entry["directory"].get<std::string>();
                     for (auto& arg : args) {
-                        fs::path path_arg(arg);
+                        const fs::path path_arg(arg);
                         if (path_arg.is_relative() &&
                             (path_arg.extension() == ".c" || path_arg.extension() == ".cc" ||
                              path_arg.extension() == ".cpp" || path_arg.extension() == ".cxx")) {
@@ -387,7 +387,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            std::string compiler = args.front();
+            const std::string compiler = args.front();
             auto filtered = filter_compile_args_for_ast_probe(args);
 
             const auto tmp_name = "bha-pimpl-ast-" +
@@ -413,7 +413,7 @@ namespace bha::suggestions
                         fs::remove(path, ec);
                     }
                 }
-            } cleanup{ast_path};
+            } const cleanup{ast_path};
 
             if (std::system(cmd.str().c_str()) != 0 || !fs::exists(ast_path)) {
                 return std::nullopt;
@@ -479,13 +479,28 @@ namespace bha::suggestions
                     class_indent = indent;
                     in_class = true;
 
-                    if (std::smatch match;
-                        std::regex_search(line, match, std::regex(R"(<(?:[^:>]+:)?line:(\d+):\d+,\s*line:(\d+):\d+>)"))) {
-                        extraction.info.class_start_line = std::stoul(match[1].str());
-                        extraction.info.class_end_line = std::stoul(match[2].str());
-                    } else if (std::regex_search(line, match, std::regex(R"(<line:(\d+):\d+,\s*line:(\d+):\d+>)"))) {
-                        extraction.info.class_start_line = std::stoul(match[1].str());
-                        extraction.info.class_end_line = std::stoul(match[2].str());
+                    const auto parse_line_range = [](const std::string& text)
+                        -> std::optional<std::pair<std::size_t, std::size_t>> {
+                        static const std::regex kQualifiedLineRange(
+                            R"(<(?:[^:>]+:)?line:(\d+):\d+,\s*line:(\d+):\d+>)"
+                        );
+                        static const std::regex kLocalLineRange(
+                            R"(<line:(\d+):\d+,\s*line:(\d+):\d+>)"
+                        );
+                        std::smatch match;
+                        for (const auto* pattern : {&kQualifiedLineRange, &kLocalLineRange}) {
+                            if (std::regex_search(text, match, *pattern)) {
+                                return std::pair<std::size_t, std::size_t>{
+                                    std::stoul(match[1].str()),
+                                    std::stoul(match[2].str())
+                                };
+                            }
+                        }
+                        return std::nullopt;
+                    };
+                    if (const auto line_range = parse_line_range(line)) {
+                        extraction.info.class_start_line = line_range->first;
+                        extraction.info.class_end_line = line_range->second;
                     }
                     continue;
                 }
@@ -513,11 +528,24 @@ namespace bha::suggestions
                     if (line.find(" private") != std::string::npos || line.ends_with(" private")) {
                         in_private = true;
                         if (extraction.info.private_section_line == 0) {
-                            if (std::smatch match;
-                                std::regex_search(line, match, std::regex(R"(<(?:[^:>]+:)?line:(\d+):\d+)"))) {
-                                extraction.info.private_section_line = std::stoul(match[1].str());
-                            } else if (std::regex_search(line, match, std::regex(R"(<line:(\d+):\d+)"))) {
-                                extraction.info.private_section_line = std::stoul(match[1].str());
+                            const auto parse_line_number = [](const std::string& text)
+                                -> std::optional<std::size_t> {
+                                static const std::regex kQualifiedLine(
+                                    R"(<(?:[^:>]+:)?line:(\d+):\d+)"
+                                );
+                                static const std::regex kLocalLine(
+                                    R"(<line:(\d+):\d+)"
+                                );
+                                std::smatch match;
+                                for (const auto* pattern : {&kQualifiedLine, &kLocalLine}) {
+                                    if (std::regex_search(text, match, *pattern)) {
+                                        return std::stoul(match[1].str());
+                                    }
+                                }
+                                return std::nullopt;
+                            };
+                            if (const auto private_line = parse_line_number(line)) {
+                                extraction.info.private_section_line = *private_line;
                             }
                         }
                     } else if (line.find(" public") != std::string::npos || line.find(" protected") != std::string::npos) {
@@ -586,13 +614,25 @@ namespace bha::suggestions
                         member.is_private = true;
                         member.is_method = true;
                         member.is_virtual = is_virtual;
-                        if (std::smatch match;
-                            std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"))) {
-                            member.line = std::stoul(match[1].str());
-                            member.name = match[2].str();
-                        } else if (std::regex_search(line, match, std::regex(R"(CXXMethodDecl [^ ]+ <line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"))) {
-                            member.line = std::stoul(match[1].str());
-                            member.name = match[2].str();
+                        const auto parse_method_member = [](const std::string& text, ClassMemberInfo& output) {
+                            static const std::regex kQualifiedMethod(
+                                R"(CXXMethodDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"
+                            );
+                            static const std::regex kLocalMethod(
+                                R"(CXXMethodDecl [^ ]+ <line:(\d+):\d+.* (?:col:\d+ )?([A-Za-z_][A-Za-z0-9_]*) ')"
+                            );
+                            std::smatch match;
+                            for (const auto* pattern : {&kQualifiedMethod, &kLocalMethod}) {
+                                if (std::regex_search(text, match, *pattern)) {
+                                    output.line = std::stoul(match[1].str());
+                                    output.name = match[2].str();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+                        if (!parse_method_member(line, member)) {
+                            continue;
                         }
                         extraction.info.members.push_back(std::move(member));
                     }
@@ -622,16 +662,25 @@ namespace bha::suggestions
                     ClassMemberInfo member;
                     member.is_private = true;
                     member.is_method = false;
-                    std::smatch match;
-                    if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
-                        member.line = std::stoul(match[1].str());
-                        member.name = match[2].str();
-                        member.type = match[3].str();
-                    } else if (std::regex_search(line, match, std::regex(R"(FieldDecl [^ ]+ <line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"))) {
-                        member.line = std::stoul(match[1].str());
-                        member.name = match[2].str();
-                        member.type = match[3].str();
-                    } else {
+                    const auto parse_field_member = [](const std::string& text, ClassMemberInfo& output) {
+                        static const std::regex kQualifiedField(
+                            R"(FieldDecl [^ ]+ <(?:[^:>]+:)?line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"
+                        );
+                        static const std::regex kLocalField(
+                            R"(FieldDecl [^ ]+ <line:(\d+):\d+.* col:\d+(?: [A-Za-z_][A-Za-z0-9_]*)* ([A-Za-z_][A-Za-z0-9_]*) '([^']+)')"
+                        );
+                        std::smatch match;
+                        for (const auto* pattern : {&kQualifiedField, &kLocalField}) {
+                            if (std::regex_search(text, match, *pattern)) {
+                                output.line = std::stoul(match[1].str());
+                                output.name = match[2].str();
+                                output.type = match[3].str();
+                                return true;
+                            }
+                        }
+                        return false;
+                    };
+                    if (!parse_field_member(line, member)) {
                         continue;
                     }
                     extraction.info.members.push_back(std::move(member));
@@ -681,7 +730,7 @@ namespace bha::suggestions
                         fs::remove(path, ec);
                     }
                 }
-            } cleanup{ast_path};
+            } const cleanup{ast_path};
 
             if (std::system(cmd.str().c_str()) != 0 || !fs::exists(ast_path)) {
                 return std::nullopt;
@@ -2280,23 +2329,33 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
+            const auto parse_initializer_entry = [](const std::string& entry)
+                -> std::optional<std::pair<std::string, std::string>> {
+                static const std::regex kParenInit(
+                    R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*$)"
+                );
+                static const std::regex kBraceInit(
+                    R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\{(.*)\}\s*$)"
+                );
+                std::smatch match;
+                for (const auto* pattern : {&kParenInit, &kBraceInit}) {
+                    if (std::regex_match(entry, match, *pattern)) {
+                        return std::pair<std::string, std::string>{match[1].str(), match[2].str()};
+                    }
+                }
+                return std::nullopt;
+            };
+
             std::vector<std::string> assignments;
             if (!ctor_block.initializer.empty()) {
                 const auto entries = split_top_level_initializer_entries(ctor_block.initializer);
                 assignments.reserve(entries.size());
                 for (const auto& entry : entries) {
-                    std::smatch match;
-                    std::string field_name;
-                    std::string expression;
-                    if (std::regex_match(entry, match, std::regex(R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*$)"))) {
-                        field_name = match[1].str();
-                        expression = match[2].str();
-                    } else if (std::regex_match(entry, match, std::regex(R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*\{(.*)\}\s*$)"))) {
-                        field_name = match[1].str();
-                        expression = match[2].str();
-                    } else {
+                    const auto initializer = parse_initializer_entry(entry);
+                    if (!initializer) {
                         return std::nullopt;
                     }
+                    const auto& [field_name, expression] = *initializer;
                     if (!private_fields.contains(field_name)) {
                         return std::nullopt;
                     }
