@@ -23,29 +23,31 @@
     </filter>
   </defs>
 
-  <rect x="0" y="0" width="1280" height="320" rx="28" fill="#0F1724"/>
+  <g transform="translate(32 8) scale(0.95)">
+    <rect x="0" y="0" width="1280" height="320" rx="28" fill="#0F1724"/>
 
-  <!-- Icon -->
-  <g transform="translate(72,40)">
-    <rect x="0" y="0" width="240" height="240" rx="34" fill="#101D31" stroke="#1A2A44" stroke-width="3"/>
+    <!-- Icon -->
+    <g transform="translate(72,40)">
+      <rect x="0" y="0" width="240" height="240" rx="34" fill="#101D31" stroke="#1A2A44" stroke-width="3"/>
 
-    <circle cx="120" cy="120" r="78" fill="none" stroke="url(#ring)" stroke-width="14"/>
-    <circle cx="120" cy="120" r="44" fill="url(#hot)" filter="url(#softGlow)"/>
+      <circle cx="120" cy="120" r="78" fill="none" stroke="url(#ring)" stroke-width="14"/>
+      <circle cx="120" cy="120" r="44" fill="url(#hot)" filter="url(#softGlow)"/>
 
-    <rect x="58" y="154" width="16" height="38" rx="4" fill="url(#bars)"/>
-    <rect x="84" y="138" width="16" height="54" rx="4" fill="url(#bars)"/>
-    <rect x="110" y="124" width="16" height="68" rx="4" fill="url(#bars)"/>
-    <rect x="136" y="142" width="16" height="50" rx="4" fill="url(#bars)"/>
-    <rect x="162" y="130" width="16" height="62" rx="4" fill="url(#bars)"/>
+      <rect x="58" y="154" width="16" height="38" rx="4" fill="url(#bars)"/>
+      <rect x="84" y="138" width="16" height="54" rx="4" fill="url(#bars)"/>
+      <rect x="110" y="124" width="16" height="68" rx="4" fill="url(#bars)"/>
+      <rect x="136" y="142" width="16" height="50" rx="4" fill="url(#bars)"/>
+      <rect x="162" y="130" width="16" height="62" rx="4" fill="url(#bars)"/>
 
-    <path d="M46 106 L84 106 L98 86 L122 130 L145 98 L168 120 L194 120"
-          fill="none" stroke="#D9F6FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+      <path d="M46 106 L84 106 L98 86 L122 130 L145 98 L168 120 L194 120"
+            fill="none" stroke="#D9F6FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
 
-  <!-- Wordmark -->
-  <g transform="translate(356,102)">
-    <text x="0" y="0" font-family="Segoe UI, Ubuntu, Cantarell, Arial, sans-serif" font-size="58" font-weight="700" fill="#F4F8FF">Build Hotspot Analyzer</text>
-    <text x="0" y="52" font-family="Segoe UI, Ubuntu, Cantarell, Arial, sans-serif" font-size="24" font-weight="500" fill="#9FC4DB" letter-spacing="1.2">TRACE. EXPLAIN. OPTIMIZE.</text>
-    <rect x="0" y="82" width="748" height="6" rx="3" fill="url(#ring)"/>
+    <!-- Wordmark -->
+    <g transform="translate(356,102)">
+      <text x="0" y="0" font-family="Segoe UI, Ubuntu, Cantarell, Arial, sans-serif" font-size="58" font-weight="700" fill="#F4F8FF">Build Hotspot Analyzer</text>
+      <text x="0" y="52" font-family="Segoe UI, Ubuntu, Cantarell, Arial, sans-serif" font-size="24" font-weight="500" fill="#9FC4DB" letter-spacing="1.2">TRACE. EXPLAIN. OPTIMIZE.</text>
+      <rect x="0" y="82" width="748" height="6" rx="3" fill="url(#ring)"/>
+    </g>
   </g>
 </svg>
