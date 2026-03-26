@@ -61,6 +61,24 @@ interface AnalysisResult {
         totalDurationMs: number;
         filesCompiled: number;
     };
+    filesAnalyzed?: number;
+}
+
+interface SuggestionTextEdit {
+    file: string;
+    startLine: number;
+    startCol: number;
+    endLine: number;
+    endCol: number;
+    newText: string;
+}
+
+interface SuggestionDetails extends Suggestion {
+    rationale?: string;
+    filesToCreate?: string[];
+    filesToModify?: string[];
+    dependencies?: string[];
+    textEdits?: SuggestionTextEdit[];
 }
 
 interface RecordBuildResult {
@@ -237,6 +255,14 @@ function isValidRecordBuildResult(result: unknown): result is RecordBuildResult 
     return typeof obj.success === 'boolean';
 }
 
+function isValidSuggestionDetails(result: unknown): result is SuggestionDetails {
+    if (!result || typeof result !== 'object') {
+        return false;
+    }
+    const obj = result as Record<string, unknown>;
+    return typeof obj.id === 'string' && typeof obj.description === 'string';
+}
+
 function safeGetPriority(priority: number): number {
     if (typeof priority !== 'number' || priority < 0 || priority > 2) {
         return 2; // Default to Low
@@ -376,6 +402,21 @@ async function withBhaProgress<T>(
         },
         task
     );
+}
+
+async function fetchSuggestionDetails(suggestionId: string): Promise<SuggestionDetails | undefined> {
+    try {
+        const result = await client.sendRequest<unknown>('workspace/executeCommand', {
+            command: 'bha.getSuggestionDetails',
+            arguments: [{ suggestionId }]
+        });
+        if (isValidSuggestionDetails(result)) {
+            return result;
+        }
+    } catch {
+        return undefined;
+    }
+    return undefined;
 }
 
 function splitShellArgs(input: string): string[] {
@@ -599,7 +640,7 @@ async function runAnalysis(
         );
 
         if (validSuggestions.length > 0) {
-            showSuggestionsPanel(result);
+            await showSuggestionsPanel(result);
         }
         return result;
     } catch (error) {
@@ -712,7 +753,7 @@ async function cmdShowSuggestions(): Promise<void> {
         result.suggestions = validSuggestions;
 
         if (validSuggestions.length > 0) {
-            showSuggestionsPanel(result);
+            await showSuggestionsPanel(result);
         } else {
             vscode.window.showInformationMessage('No suggestions available. Run analysis first.');
         }
@@ -1044,7 +1085,7 @@ async function cmdRestartServer(): Promise<void> {
 // UI Components
 // ============================================================================
 
-function showSuggestionsPanel(result: AnalysisResult): void {
+async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
     const panel = vscode.window.createWebviewPanel(
         'bhaSuggestions',
         'Build Optimization Suggestions',
@@ -1052,11 +1093,17 @@ function showSuggestionsPanel(result: AnalysisResult): void {
         { enableScripts: true }
     );
 
-    const suggestions = result.suggestions || [];
+    const suggestionDetails = await Promise.all(
+        (result.suggestions || []).map(async (suggestion) => {
+            const details = await fetchSuggestionDetails(suggestion.id);
+            return { ...suggestion, ...details } as SuggestionDetails;
+        })
+    );
+    const suggestions = suggestionDetails;
     const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
 
     const totalDuration = safeGetNumber(metrics.totalDurationMs, 0);
-    const filesCompiled = safeGetNumber(metrics.filesCompiled, 0);
+    const filesCompiled = safeGetNumber(result.filesAnalyzed ?? metrics.filesCompiled, 0);
 
     panel.webview.html = `
         <!DOCTYPE html>
@@ -1243,7 +1290,7 @@ function showSuggestionsPanel(result: AnalysisResult): void {
             <div class="metrics">
                 <h2>Build Metrics</h2>
                 <p><strong>Total Build Time:</strong> ${(totalDuration / 1000).toFixed(2)}s</p>
-                <p><strong>Files Compiled:</strong> ${filesCompiled}</p>
+                <p><strong>Compilation Units Analyzed:</strong> ${filesCompiled}</p>
             </div>
 
             <div class="actions">
@@ -1254,7 +1301,7 @@ function showSuggestionsPanel(result: AnalysisResult): void {
 
             <h2>Optimization Suggestions (${suggestions.length})</h2>
             ${suggestions.length === 0 ? '<div class="empty-state">No suggestions are available for the current analysis.</div>' : ''}
-            ${suggestions.map((s: Suggestion) => {
+            ${suggestions.map((s: SuggestionDetails) => {
                 const priority = safeGetPriority(s.priority);
                 const confidence = safeGetConfidence(s.confidence);
                 const impact = s.estimatedImpact || { timeSavedMs: 0, percentage: 0, filesAffected: 0 };
@@ -1270,6 +1317,10 @@ function showSuggestionsPanel(result: AnalysisResult): void {
                 const blockedReason = safeGetString(s.autoApplyBlockedReason, '');
                 const summary = extractSuggestionSummary(s.description);
                 const detailsHtml = renderSuggestionSections(s.description);
+                const rationale = safeGetString(s.rationale, '');
+                const textEditsHtml = renderTextEdits(s.textEdits);
+                const filesToCreate = Array.isArray(s.filesToCreate) ? s.filesToCreate : [];
+                const filesToModify = Array.isArray(s.filesToModify) ? s.filesToModify : [];
 
                 return `
                 <div class="suggestion ${PRIORITY_CLASSES[priority] || 'low'}">
@@ -1301,9 +1352,14 @@ function showSuggestionsPanel(result: AnalysisResult): void {
                         ${s.refactorClassName ? `<div class="meta-item"><strong>Class:</strong> ${escapeHtml(s.refactorClassName)}</div>` : ''}
                         ${s.targetUri ? `<div class="meta-item"><strong>Target:</strong> ${escapeHtml(s.targetUri.replace('file://', ''))}</div>` : ''}
                         ${guidance ? `<div class="meta-item"><strong>Guidance:</strong> ${escapeHtml(guidance)}</div>` : ''}
+                        ${rationale ? `<div class="meta-item"><strong>Rationale:</strong> ${escapeHtml(rationale)}</div>` : ''}
+                        ${filesToCreate.length > 0 ? `<div class="meta-item"><strong>Files to create:</strong> ${escapeHtml(filesToCreate.join(', '))}</div>` : ''}
+                        ${filesToModify.length > 0 ? `<div class="meta-item"><strong>Files to modify:</strong> ${escapeHtml(filesToModify.join(', '))}</div>` : ''}
                         ${isAdvisory ? `<div class="meta-item"><strong>Apply Mode:</strong> Manual review required${blockedReason ? ` — ${escapeHtml(blockedReason)}` : ''}</div>` : ''}
                     </div>
-                    ${detailsHtml ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}</details>` : ''}
+                    ${(detailsHtml || textEditsHtml)
+                        ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}${textEditsHtml ? `<div class="section-title" style="margin-top:12px;">Text Edits</div>${textEditsHtml}` : ''}</details>`
+                        : ''}
                     <div class="card-actions">
                         ${isAdvisory
                             ? '<button class="secondary" disabled>Manual Review Required</button>'
@@ -1457,6 +1513,23 @@ function renderSuggestionSections(description: string): string {
             <div class="section">
                 <div class="section-title">${escapedTitle}</div>
                 <div class="${bodyClass}">${escapedBody}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderTextEdits(edits?: SuggestionTextEdit[]): string {
+    if (!Array.isArray(edits) || edits.length === 0) {
+        return '';
+    }
+
+    return edits.map((edit) => {
+        const location = `${escapeHtml(edit.file)}:${edit.startLine + 1}:${edit.startCol + 1}`;
+        const snippet = edit.newText.trim().length > 0 ? edit.newText : '[delete]';
+        return `
+            <div class="section">
+                <div class="section-title">${location}</div>
+                <div class="section-body code">${escapeHtml(snippet)}</div>
             </div>
         `;
     }).join('');

@@ -18070,6 +18070,13 @@ function isValidRecordBuildResult(result) {
   const obj = result;
   return typeof obj.success === "boolean";
 }
+function isValidSuggestionDetails(result) {
+  if (!result || typeof result !== "object") {
+    return false;
+  }
+  const obj = result;
+  return typeof obj.id === "string" && typeof obj.description === "string";
+}
 function safeGetPriority(priority) {
   if (typeof priority !== "number" || priority < 0 || priority > 2) {
     return 2;
@@ -18176,6 +18183,20 @@ async function withBhaProgress(title, task) {
     },
     task
   );
+}
+async function fetchSuggestionDetails(suggestionId) {
+  try {
+    const result = await client.sendRequest("workspace/executeCommand", {
+      command: "bha.getSuggestionDetails",
+      arguments: [{ suggestionId }]
+    });
+    if (isValidSuggestionDetails(result)) {
+      return result;
+    }
+  } catch {
+    return void 0;
+  }
+  return void 0;
 }
 function splitShellArgs(input) {
   const args = [];
@@ -18369,7 +18390,7 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
       `Analysis complete: ${validSuggestions.length} suggestions found`
     );
     if (validSuggestions.length > 0) {
-      showSuggestionsPanel(result);
+      await showSuggestionsPanel(result);
     }
     return result;
   } catch (error) {
@@ -18468,7 +18489,7 @@ async function cmdShowSuggestions() {
     const validSuggestions = result.suggestions.filter(isValidSuggestion);
     result.suggestions = validSuggestions;
     if (validSuggestions.length > 0) {
-      showSuggestionsPanel(result);
+      await showSuggestionsPanel(result);
     } else {
       vscode.window.showInformationMessage("No suggestions available. Run analysis first.");
     }
@@ -18730,17 +18751,23 @@ async function cmdRestartServer() {
     }
   }
 }
-function showSuggestionsPanel(result) {
+async function showSuggestionsPanel(result) {
   const panel = vscode.window.createWebviewPanel(
     "bhaSuggestions",
     "Build Optimization Suggestions",
     CONFIG.WEBVIEW_COLUMN,
     { enableScripts: true }
   );
-  const suggestions = result.suggestions || [];
+  const suggestionDetails = await Promise.all(
+    (result.suggestions || []).map(async (suggestion) => {
+      const details = await fetchSuggestionDetails(suggestion.id);
+      return { ...suggestion, ...details };
+    })
+  );
+  const suggestions = suggestionDetails;
   const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
   const totalDuration = safeGetNumber(metrics.totalDurationMs, 0);
-  const filesCompiled = safeGetNumber(metrics.filesCompiled, 0);
+  const filesCompiled = safeGetNumber(result.filesAnalyzed ?? metrics.filesCompiled, 0);
   panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -18926,7 +18953,7 @@ function showSuggestionsPanel(result) {
             <div class="metrics">
                 <h2>Build Metrics</h2>
                 <p><strong>Total Build Time:</strong> ${(totalDuration / 1e3).toFixed(2)}s</p>
-                <p><strong>Files Compiled:</strong> ${filesCompiled}</p>
+                <p><strong>Compilation Units Analyzed:</strong> ${filesCompiled}</p>
             </div>
 
             <div class="actions">
@@ -18951,6 +18978,10 @@ function showSuggestionsPanel(result) {
     const blockedReason = safeGetString(s.autoApplyBlockedReason, "");
     const summary = extractSuggestionSummary(s.description);
     const detailsHtml = renderSuggestionSections(s.description);
+    const rationale = safeGetString(s.rationale, "");
+    const textEditsHtml = renderTextEdits(s.textEdits);
+    const filesToCreate = Array.isArray(s.filesToCreate) ? s.filesToCreate : [];
+    const filesToModify = Array.isArray(s.filesToModify) ? s.filesToModify : [];
     return `
                 <div class="suggestion ${PRIORITY_CLASSES[priority] || "low"}">
                     <div class="suggestion-header">
@@ -18981,9 +19012,12 @@ function showSuggestionsPanel(result) {
                         ${s.refactorClassName ? `<div class="meta-item"><strong>Class:</strong> ${escapeHtml(s.refactorClassName)}</div>` : ""}
                         ${s.targetUri ? `<div class="meta-item"><strong>Target:</strong> ${escapeHtml(s.targetUri.replace("file://", ""))}</div>` : ""}
                         ${guidance ? `<div class="meta-item"><strong>Guidance:</strong> ${escapeHtml(guidance)}</div>` : ""}
+                        ${rationale ? `<div class="meta-item"><strong>Rationale:</strong> ${escapeHtml(rationale)}</div>` : ""}
+                        ${filesToCreate.length > 0 ? `<div class="meta-item"><strong>Files to create:</strong> ${escapeHtml(filesToCreate.join(", "))}</div>` : ""}
+                        ${filesToModify.length > 0 ? `<div class="meta-item"><strong>Files to modify:</strong> ${escapeHtml(filesToModify.join(", "))}</div>` : ""}
                         ${isAdvisory ? `<div class="meta-item"><strong>Apply Mode:</strong> Manual review required${blockedReason ? ` \u2014 ${escapeHtml(blockedReason)}` : ""}</div>` : ""}
                     </div>
-                    ${detailsHtml ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}</details>` : ""}
+                    ${detailsHtml || textEditsHtml ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}${textEditsHtml ? `<div class="section-title" style="margin-top:12px;">Text Edits</div>${textEditsHtml}` : ""}</details>` : ""}
                     <div class="card-actions">
                         ${isAdvisory ? '<button class="secondary" disabled>Manual Review Required</button>' : `<button onclick="applySuggestion('${escapeHtml(s.id)}')">${escapeHtml(buttonLabel)}</button>`}
                     </div>
@@ -19109,6 +19143,21 @@ function renderSuggestionSections(description) {
             <div class="section">
                 <div class="section-title">${escapedTitle}</div>
                 <div class="${bodyClass}">${escapedBody}</div>
+            </div>
+        `;
+  }).join("");
+}
+function renderTextEdits(edits) {
+  if (!Array.isArray(edits) || edits.length === 0) {
+    return "";
+  }
+  return edits.map((edit) => {
+    const location = `${escapeHtml(edit.file)}:${edit.startLine + 1}:${edit.startCol + 1}`;
+    const snippet = edit.newText.trim().length > 0 ? edit.newText : "[delete]";
+    return `
+            <div class="section">
+                <div class="section-title">${location}</div>
+                <div class="section-body code">${escapeHtml(snippet)}</div>
             </div>
         `;
   }).join("");
