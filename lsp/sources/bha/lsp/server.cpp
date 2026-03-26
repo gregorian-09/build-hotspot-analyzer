@@ -53,6 +53,19 @@ namespace bha::lsp
             }
             return path;
         }
+
+        std::optional<std::filesystem::path> infer_trace_output_dir(
+            const build_systems::BuildResult& build_result,
+            const build_systems::BuildOptions& options
+        ) {
+            if (!options.trace_output_dir.empty()) {
+                return options.trace_output_dir;
+            }
+            if (!build_result.trace_files.empty()) {
+                return build_result.trace_files.front().parent_path();
+            }
+            return std::nullopt;
+        }
     }
 
     std::string shell_quote_for_shell(const std::string& input) {
@@ -1358,6 +1371,8 @@ namespace bha::lsp
                 memory_files.push_back(memory_file.string());
             }
 
+            const auto effective_trace_output_dir = infer_trace_output_dir(build, options);
+
             return {
                 {"success", true},
                 {"buildSystem", adapter->name()},
@@ -1365,7 +1380,9 @@ namespace bha::lsp
                 {"compiler", options.compiler},
                 {"parallelJobs", options.parallel_jobs},
                 {"buildDir", options.build_dir.empty() ? json(nullptr) : json(options.build_dir.string())},
-                {"traceOutputDir", options.trace_output_dir.empty() ? json(nullptr) : json(options.trace_output_dir.string())},
+                {"traceOutputDir", effective_trace_output_dir.has_value()
+                    ? json(effective_trace_output_dir->string())
+                    : json(nullptr)},
                 {"traceFiles", trace_files},
                 {"traceFileCount", build.trace_files.size()},
                 {"memoryFiles", memory_files},

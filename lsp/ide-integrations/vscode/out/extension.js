@@ -18114,6 +18114,7 @@ function formatApplicationMode(mode) {
 }
 var client;
 var lastBackupId;
+var lastBuildDirByWorkspace = /* @__PURE__ */ new Map();
 var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
 function getWorkspaceRootPath() {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
@@ -18168,10 +18169,21 @@ function deactivate() {
   }
   return client.stop();
 }
-async function promptForBuildDir() {
+function rememberWorkspaceBuildDir(workspaceRoot, buildDir) {
+  const normalized = buildDir?.trim();
+  if (!normalized) {
+    return;
+  }
+  lastBuildDirByWorkspace.set(workspaceRoot, normalized);
+}
+function getWorkspaceBuildDir(workspaceRoot) {
+  return lastBuildDirByWorkspace.get(workspaceRoot) ?? "build";
+}
+async function promptForBuildDir(defaultValue) {
   return vscode.window.showInputBox({
     prompt: "Build directory (optional, leave empty for auto-detect)",
-    placeHolder: "build"
+    placeHolder: "build",
+    value: defaultValue
   });
 }
 async function withBhaProgress(title, task) {
@@ -18240,7 +18252,8 @@ function splitShellArgs(input) {
   return args;
 }
 async function promptForRecordBuildOptions(advanced) {
-  const buildDir = await promptForBuildDir();
+  const workspaceRoot = getWorkspaceRootPath();
+  const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : "build");
   if (buildDir === void 0) {
     return void 0;
   }
@@ -18360,6 +18373,7 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
     vscode.window.showErrorMessage("No workspace folder open");
     return void 0;
   }
+  rememberWorkspaceBuildDir(workspaceRoot, buildDir);
   const operationId = generateOperationId(rebuild ? "build-and-analyze" : "analyze");
   try {
     const executeAnalysis = async (progress) => {
@@ -18443,6 +18457,7 @@ async function recordBuildTraces(advanced) {
     const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
     const workspaceRoot = getWorkspaceRootPath();
     if (workspaceRoot) {
+      rememberWorkspaceBuildDir(workspaceRoot, safeGetString(result.buildDir, "").trim() || options.buildDir);
       const chosenTraceDir = safeGetString(result.traceOutputDir, "").trim();
       if (chosenTraceDir.length > 0) {
         lastTraceDirByWorkspace.set(workspaceRoot, chosenTraceDir);
@@ -18468,11 +18483,11 @@ async function cmdRecordBuildTracesAdvanced() {
   await recordBuildTraces(true);
 }
 async function cmdAnalyzeProject() {
-  const buildDir = await promptForBuildDir();
+  const workspaceRoot = getWorkspaceRootPath();
+  const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : "build");
   if (buildDir === void 0) {
     return;
   }
-  const workspaceRoot = getWorkspaceRootPath();
   const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : void 0;
   await runAnalysis(buildDir || void 0, false, traceDir);
 }

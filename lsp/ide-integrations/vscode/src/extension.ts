@@ -309,6 +309,7 @@ function formatApplicationMode(mode?: string): string {
 
 let client: LanguageClient;
 let lastBackupId: string | undefined;
+const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
 
 function getWorkspaceRootPath(): string | undefined {
@@ -383,10 +384,23 @@ export function deactivate(): Thenable<void> | undefined {
 // Command Handlers
 // ============================================================================
 
-async function promptForBuildDir(): Promise<string | undefined> {
+function rememberWorkspaceBuildDir(workspaceRoot: string, buildDir?: string): void {
+    const normalized = buildDir?.trim();
+    if (!normalized) {
+        return;
+    }
+    lastBuildDirByWorkspace.set(workspaceRoot, normalized);
+}
+
+function getWorkspaceBuildDir(workspaceRoot: string): string | undefined {
+    return lastBuildDirByWorkspace.get(workspaceRoot) ?? 'build';
+}
+
+async function promptForBuildDir(defaultValue?: string): Promise<string | undefined> {
     return vscode.window.showInputBox({
         prompt: 'Build directory (optional, leave empty for auto-detect)',
-        placeHolder: 'build'
+        placeHolder: 'build',
+        value: defaultValue
     });
 }
 
@@ -465,7 +479,8 @@ function splitShellArgs(input: string): string[] {
 }
 
 async function promptForRecordBuildOptions(advanced: boolean): Promise<RecordBuildOptions | undefined> {
-    const buildDir = await promptForBuildDir();
+    const workspaceRoot = getWorkspaceRootPath();
+    const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : 'build');
     if (buildDir === undefined) {
         return undefined;
     }
@@ -601,6 +616,7 @@ async function runAnalysis(
         vscode.window.showErrorMessage('No workspace folder open');
         return undefined;
     }
+    rememberWorkspaceBuildDir(workspaceRoot, buildDir);
 
     const operationId = generateOperationId(rebuild ? 'build-and-analyze' : 'analyze');
 
@@ -700,6 +716,7 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
         const workspaceRoot = getWorkspaceRootPath();
         if (workspaceRoot) {
+            rememberWorkspaceBuildDir(workspaceRoot, safeGetString(result.buildDir, '').trim() || options.buildDir);
             const chosenTraceDir = safeGetString(result.traceOutputDir, '').trim();
             if (chosenTraceDir.length > 0) {
                 lastTraceDirByWorkspace.set(workspaceRoot, chosenTraceDir);
@@ -728,11 +745,11 @@ async function cmdRecordBuildTracesAdvanced(): Promise<void> {
 }
 
 async function cmdAnalyzeProject(): Promise<void> {
-    const buildDir = await promptForBuildDir();
+    const workspaceRoot = getWorkspaceRootPath();
+    const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : 'build');
     if (buildDir === undefined) {
         return;
     }
-    const workspaceRoot = getWorkspaceRootPath();
     const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : undefined;
     await runAnalysis(buildDir || undefined, false, traceDir);
 }

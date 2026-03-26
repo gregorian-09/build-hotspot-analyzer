@@ -98,7 +98,22 @@ namespace bha::lsp
 
     fs::path resolve_trace_root(const fs::path& project_root, const std::optional<fs::path>& build_dir) {
         if (!build_dir.has_value()) {
-            return project_root / "build";
+            const fs::path default_build_traces = project_root / "build" / "traces";
+            if (fs::exists(default_build_traces)) {
+                return default_build_traces;
+            }
+
+            const fs::path sibling_traces = project_root / "traces";
+            if (fs::exists(sibling_traces)) {
+                return sibling_traces;
+            }
+
+            const fs::path default_build_dir = project_root / "build";
+            if (fs::exists(default_build_dir)) {
+                return default_build_dir;
+            }
+
+            return default_build_traces;
         }
 
         const fs::path direct_traces = *build_dir / "traces";
