@@ -18761,20 +18761,23 @@ function showSuggestionsPanel(result) {
                 .metrics {
                     background: var(--vscode-editorWidget-background);
                     padding: 15px;
-                    border-radius: 5px;
+                    border-radius: 8px;
                     margin-bottom: 20px;
+                    border: 1px solid var(--vscode-widget-border);
                 }
                 .actions {
                     margin-bottom: 20px;
                     display: flex;
                     gap: 10px;
+                    flex-wrap: wrap;
                 }
                 .suggestion {
                     background: var(--vscode-editorWidget-background);
                     border-left: 4px solid var(--vscode-activityBarBadge-background);
-                    padding: 15px;
+                    padding: 16px;
                     margin-bottom: 15px;
-                    border-radius: 3px;
+                    border-radius: 8px;
+                    border: 1px solid var(--vscode-widget-border);
                 }
                 .suggestion.high { border-left-color: #f14c4c; }
                 .suggestion.medium { border-left-color: #cca700; }
@@ -18791,10 +18794,14 @@ function showSuggestionsPanel(result) {
                     font-size: 16px;
                     font-weight: bold;
                 }
+                .summary {
+                    margin: 10px 0 0 0;
+                    color: var(--vscode-foreground);
+                }
                 .badge {
                     display: inline-block;
                     padding: 2px 8px;
-                    border-radius: 3px;
+                    border-radius: 999px;
                     font-size: 12px;
                     margin-left: 5px;
                 }
@@ -18805,7 +18812,81 @@ function showSuggestionsPanel(result) {
                 .badge.manual { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
                 .impact {
                     color: var(--vscode-descriptionForeground);
-                    margin: 10px 0;
+                    margin: 14px 0 0 0;
+                    padding: 12px;
+                    border-radius: 6px;
+                    background: var(--vscode-sideBar-background);
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                    gap: 10px;
+                }
+                .impact-item { display: flex; flex-direction: column; gap: 3px; }
+                .impact-label {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.04em;
+                    color: var(--vscode-descriptionForeground);
+                }
+                .impact-value { font-size: 14px; font-weight: 600; color: var(--vscode-foreground); }
+                .meta-list {
+                    display: grid;
+                    gap: 6px;
+                    margin-top: 12px;
+                }
+                .meta-item {
+                    font-size: 12px;
+                    color: var(--vscode-descriptionForeground);
+                }
+                .details {
+                    margin-top: 14px;
+                    border-top: 1px solid var(--vscode-widget-border);
+                    padding-top: 10px;
+                }
+                .details summary {
+                    cursor: pointer;
+                    font-weight: 600;
+                    color: var(--vscode-foreground);
+                    list-style: none;
+                }
+                .details summary::-webkit-details-marker {
+                    display: none;
+                }
+                .details summary::before {
+                    content: '\u25B8';
+                    display: inline-block;
+                    margin-right: 8px;
+                }
+                .details[open] summary::before {
+                    content: '\u25BE';
+                }
+                .section {
+                    margin-top: 10px;
+                    padding: 10px 12px;
+                    border-radius: 6px;
+                    background: var(--vscode-sideBar-background);
+                }
+                .section-title {
+                    font-size: 12px;
+                    font-weight: 700;
+                    margin-bottom: 6px;
+                    color: var(--vscode-foreground);
+                }
+                .section-body {
+                    font-size: 12px;
+                    line-height: 1.55;
+                    color: var(--vscode-descriptionForeground);
+                    white-space: pre-wrap;
+                    word-break: break-word;
+                }
+                .section-body.code {
+                    font-family: var(--vscode-editor-font-family), monospace;
+                    color: var(--vscode-editor-foreground);
+                }
+                .card-actions {
+                    margin-top: 14px;
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
                 }
                 button {
                     background: var(--vscode-button-background);
@@ -18819,6 +18900,10 @@ function showSuggestionsPanel(result) {
                 button:hover {
                     background: var(--vscode-button-hoverBackground);
                 }
+                button:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.6;
+                }
                 button.secondary {
                     background: var(--vscode-button-secondaryBackground);
                     color: var(--vscode-button-secondaryForeground);
@@ -18826,10 +18911,12 @@ function showSuggestionsPanel(result) {
                 button.secondary:hover {
                     background: var(--vscode-button-secondaryHoverBackground);
                 }
-                .target-file {
-                    font-size: 12px;
+                .empty-state {
+                    padding: 18px;
+                    border-radius: 8px;
+                    background: var(--vscode-editorWidget-background);
+                    border: 1px solid var(--vscode-widget-border);
                     color: var(--vscode-descriptionForeground);
-                    margin-top: 5px;
                 }
             </style>
         </head>
@@ -18849,6 +18936,7 @@ function showSuggestionsPanel(result) {
             </div>
 
             <h2>Optimization Suggestions (${suggestions.length})</h2>
+            ${suggestions.length === 0 ? '<div class="empty-state">No suggestions are available for the current analysis.</div>' : ""}
             ${suggestions.map((s) => {
     const priority = safeGetPriority(s.priority);
     const confidence = safeGetConfidence(s.confidence);
@@ -18861,6 +18949,8 @@ function showSuggestionsPanel(result) {
     const buttonLabel = s.applicationMode === "external-refactor" ? "Apply via Refactor Tool" : "Apply Suggestion";
     const guidance = safeGetString(s.applicationGuidance, "");
     const blockedReason = safeGetString(s.autoApplyBlockedReason, "");
+    const summary = extractSuggestionSummary(s.description);
+    const detailsHtml = renderSuggestionSections(s.description);
     return `
                 <div class="suggestion ${PRIORITY_CLASSES[priority] || "low"}">
                     <div class="suggestion-header">
@@ -18872,17 +18962,31 @@ function showSuggestionsPanel(result) {
                             ${s.autoApplicable ? '<span class="badge auto">Auto</span>' : ""}
                         </div>
                     </div>
-                    <p>${escapeHtml(s.description)}</p>
-                    ${s.refactorClassName ? `<div class="target-file">Class: ${escapeHtml(s.refactorClassName)}</div>` : ""}
-                    ${s.targetUri ? `<div class="target-file">Target: ${escapeHtml(s.targetUri.replace("file://", ""))}</div>` : ""}
-                    ${guidance ? `<div class="target-file">Apply guidance: ${escapeHtml(guidance)}</div>` : ""}
+                    ${summary ? `<p class="summary">${escapeHtml(summary)}</p>` : ""}
                     <div class="impact">
-                        <strong>Estimated Impact:</strong>
-                        ${timeSaved > 0 ? (timeSaved / 1e3).toFixed(2) + "s" : "N/A"}
-                        (${percentage.toFixed(1)}%)
-                        \u2022 ${filesAffected} files affected
+                        <div class="impact-item">
+                            <span class="impact-label">Estimated Savings</span>
+                            <span class="impact-value">${timeSaved > 0 ? (timeSaved / 1e3).toFixed(2) + "s" : "N/A"}</span>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Build Reduction</span>
+                            <span class="impact-value">${percentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Files Affected</span>
+                            <span class="impact-value">${filesAffected}</span>
+                        </div>
                     </div>
-                    ${isAdvisory ? `<div class="target-file">Manual review only.${blockedReason ? ` Blocker: ${escapeHtml(blockedReason)}` : ""}</div>` : `<button onclick="applySuggestion('${escapeHtml(s.id)}')">${escapeHtml(buttonLabel)}</button>`}
+                    <div class="meta-list">
+                        ${s.refactorClassName ? `<div class="meta-item"><strong>Class:</strong> ${escapeHtml(s.refactorClassName)}</div>` : ""}
+                        ${s.targetUri ? `<div class="meta-item"><strong>Target:</strong> ${escapeHtml(s.targetUri.replace("file://", ""))}</div>` : ""}
+                        ${guidance ? `<div class="meta-item"><strong>Guidance:</strong> ${escapeHtml(guidance)}</div>` : ""}
+                        ${isAdvisory ? `<div class="meta-item"><strong>Apply Mode:</strong> Manual review required${blockedReason ? ` \u2014 ${escapeHtml(blockedReason)}` : ""}</div>` : ""}
+                    </div>
+                    ${detailsHtml ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}</details>` : ""}
+                    <div class="card-actions">
+                        ${isAdvisory ? '<button class="secondary" disabled>Manual Review Required</button>' : `<button onclick="applySuggestion('${escapeHtml(s.id)}')">${escapeHtml(buttonLabel)}</button>`}
+                    </div>
                 </div>
             `;
   }).join("")}
@@ -18944,6 +19048,70 @@ function escapeHtml(text) {
     return "";
   }
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+function stripMarkdownMarkers(text) {
+  return text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1");
+}
+function collapseWhitespace(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+function truncateText(text, maxLength) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, Math.max(0, maxLength - 1)).trimEnd()}...`;
+}
+function extractSuggestionSummary(description) {
+  const firstHeading = description.indexOf("**");
+  const prefix = firstHeading >= 0 ? description.slice(0, firstHeading) : description;
+  const normalizedPrefix = collapseWhitespace(stripMarkdownMarkers(prefix));
+  if (normalizedPrefix.length > 0) {
+    return truncateText(normalizedPrefix, 220);
+  }
+  const normalizedDescription = collapseWhitespace(stripMarkdownMarkers(description));
+  return truncateText(normalizedDescription, 220);
+}
+function parseSuggestionSections(description) {
+  const matches = [...description.matchAll(/\*\*(.*?)\*\*/g)];
+  if (matches.length === 0) {
+    const body = description.trim();
+    return body.length > 0 ? [{ title: "Details", body }] : [];
+  }
+  const sections = [];
+  for (let index = 0; index < matches.length; index += 1) {
+    const title = (matches[index][1] || "").trim();
+    const bodyStart = matches[index].index + matches[index][0].length;
+    const bodyEnd = index + 1 < matches.length ? matches[index + 1].index : description.length;
+    const body = description.slice(bodyStart, bodyEnd).trim();
+    if (title.length === 0 && body.length === 0) {
+      continue;
+    }
+    sections.push({ title: title || "Details", body });
+  }
+  return sections;
+}
+function isCodeLikeSection(title, body) {
+  const lowerTitle = title.toLowerCase();
+  return lowerTitle.includes("pattern") || lowerTitle.includes("edit") || lowerTitle.includes("patch") || body.includes("#include") || body.includes("target_") || body.includes("class ") || body.includes("struct ") || body.includes("//");
+}
+function renderSuggestionSections(description) {
+  const sections = parseSuggestionSections(description);
+  if (sections.length === 0) {
+    return "";
+  }
+  return sections.map((section) => {
+    const body = section.body.trim();
+    const normalizedBody = body.length > 0 ? body : "No additional details.";
+    const escapedTitle = escapeHtml(stripMarkdownMarkers(section.title));
+    const escapedBody = escapeHtml(stripMarkdownMarkers(normalizedBody));
+    const bodyClass = isCodeLikeSection(section.title, normalizedBody) ? "section-body code" : "section-body";
+    return `
+            <div class="section">
+                <div class="section-title">${escapedTitle}</div>
+                <div class="${bodyClass}">${escapedBody}</div>
+            </div>
+        `;
+  }).join("");
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
