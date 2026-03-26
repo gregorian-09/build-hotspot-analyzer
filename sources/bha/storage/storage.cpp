@@ -87,7 +87,9 @@ namespace bha::storage
             FILE* pipe = popen(cmd.c_str(), "r");
 #endif
 
-            if (!pipe) return "";
+            if (!pipe) {
+                return "";
+            }
 
             char buffer[128];
             while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
@@ -485,7 +487,7 @@ namespace bha::storage
         }
         j["suggestions"] = sugg_array;
 
-        fs::path path = snapshot_path(name);
+        const fs::path path = snapshot_path(name);
         try {
             std::ofstream file(path);
             if (!file.is_open()) {
@@ -503,7 +505,7 @@ namespace bha::storage
     }
 
     Result<Snapshot, Error> SnapshotStore::load(const std::string& name) const {
-        fs::path path = snapshot_path(name);
+        const fs::path path = snapshot_path(name);
 
         if (!fs::exists(path)) {
             return Result<Snapshot, Error>::failure(
@@ -588,9 +590,11 @@ namespace bha::storage
         try {
             for (const auto& entry : fs::directory_iterator(root_)) {
                 if (entry.is_regular_file() && entry.path().extension() == ".json") {
-                    std::string name = entry.path().stem().string();
+                    const std::string name = entry.path().stem().string();
 
-                    if (name == ".baseline") continue;
+                    if (name == ".baseline") {
+                        continue;
+                    }
 
                     if (auto result = load(name); result.is_ok()) {
                         snapshots.push_back(result.value().metadata);
