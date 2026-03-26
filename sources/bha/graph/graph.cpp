@@ -50,7 +50,9 @@ namespace bha::graph {
 
     bool DirectedGraph::has_edge(const std::string& from, const std::string& to) const {
         const auto it = adjacency_.find(from);
-        if (it == adjacency_.end()) return false;
+        if (it == adjacency_.end()) {
+            return false;
+        }
         return it->second.successors.contains(to);
     }
 
@@ -94,17 +96,23 @@ namespace bha::graph {
     std::optional<EdgeWeight> DirectedGraph::edge_weight(
         const std::string& from, const std::string& to) const {
         const auto it = adjacency_.find(from);
-        if (it == adjacency_.end()) return std::nullopt;
+        if (it == adjacency_.end()) {
+            return std::nullopt;
+        }
 
         const auto edge_it = it->second.successors.find(to);
-        if (edge_it == it->second.successors.end()) return std::nullopt;
+        if (edge_it == it->second.successors.end()) {
+            return std::nullopt;
+        }
 
         return edge_it->second;
     }
 
     Duration DirectedGraph::node_time(const std::string& node) const {
         const auto it = adjacency_.find(node);
-        if (it == adjacency_.end()) return Duration::zero();
+        if (it == adjacency_.end()) {
+            return Duration::zero();
+        }
         return it->second.time;
     }
 
@@ -151,15 +159,15 @@ namespace bha::graph {
         CycleDetectionResult result;
 
         std::unordered_map<std::string, int> color;
-        std::unordered_map<std::string, std::string> parent;
-
         for (const auto& node : graph.nodes()) {
             color[node] = 0;
         }
 
         std::function<void(const std::string&, std::vector<std::string>&)> dfs =
             [&](const std::string& node, std::vector<std::string>& path) {
-                if (result.cycles.size() >= max_cycles) return;
+                if (result.cycles.size() >= max_cycles) {
+                    return;
+                }
 
                 color[node] = 1;
                 path.push_back(node);
@@ -169,7 +177,9 @@ namespace bha::graph {
                         Cycle cycle;
                         bool in_cycle = false;
                         for (const auto& n : path) {
-                            if (n == succ) in_cycle = true;
+                            if (n == succ) {
+                                in_cycle = true;
+                            }
                             if (in_cycle) {
                                 cycle.nodes.push_back(n);
                                 cycle.total_time += graph.node_time(n);
@@ -250,12 +260,13 @@ namespace bha::graph {
         }
 
         for (const auto& node : topo_order) {
-            Duration node_time = graph.node_time(node);
+            const Duration node_time = graph.node_time(node);
             for (const auto& succ : graph.successors(node)) {
-                auto edge = graph.edge_weight(node, succ);
-                Duration edge_time = edge ? edge->time : Duration::zero();
+                const auto edge = graph.edge_weight(node, succ);
+                const Duration edge_time = edge ? edge->time : Duration::zero();
 
-                if (Duration new_dist = dist[node] + node_time + edge_time; new_dist > dist[succ]) {
+                if (const Duration new_dist = dist[node] + node_time + edge_time;
+                    new_dist > dist[succ]) {
                     dist[succ] = new_dist;
                     prev[succ] = node;
                 }
@@ -265,7 +276,7 @@ namespace bha::graph {
         std::string end_node;
         Duration max_dist = Duration::zero();
         for (const auto& [node, d] : dist) {
-            if (Duration total = d + graph.node_time(node); total > max_dist) {
+            if (const Duration total = d + graph.node_time(node); total > max_dist) {
                 max_dist = total;
                 end_node = node;
             }
@@ -302,7 +313,9 @@ namespace bha::graph {
 
         std::function<void(const std::string&, Path&, std::unordered_set<std::string>&)> dfs =
             [&](const std::string& node, Path& current, std::unordered_set<std::string>& visited) {
-                if (result.size() >= max_paths) return;
+                if (result.size() >= max_paths) {
+                    return;
+                }
 
                 current.nodes.push_back(node);
                 current.total_time += graph.node_time(node);
@@ -405,7 +418,8 @@ namespace bha::graph {
             queue.pop();
 
             for (const auto& succ : graph.successors(node)) {
-                if (std::size_t new_depth = depth + 1; !depths.contains(succ) || depths[succ] < new_depth) {
+                if (const std::size_t new_depth = depth + 1;
+                    !depths.contains(succ) || depths[succ] < new_depth) {
                     depths[succ] = new_depth;
                     queue.emplace(succ, new_depth);
                 }
