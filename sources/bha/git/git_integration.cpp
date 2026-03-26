@@ -198,7 +198,7 @@ namespace bha::git
                 }
 
                 // Has process finished?
-                pid_t wpid = waitpid(pid, &status, WNOHANG);
+                const pid_t wpid = waitpid(pid, &status, WNOHANG);
                 if (wpid > 0) {
                     while ((n = read(stdout_pipe[0], buffer, sizeof(buffer) - 1)) > 0) {
                         buffer[n] = '\0';
@@ -372,7 +372,7 @@ namespace bha::git
 
     Result<CommitInfo, Error> parse_commit(std::string_view git_output) {
         CommitInfo info;
-        std::string output(git_output);
+        const std::string output(git_output);
         std::istringstream ss(output);
         std::string line;
 
@@ -459,7 +459,9 @@ namespace bha::git
         std::string line;
 
         while (std::getline(ss, line)) {
-            if (line.empty()) continue;
+            if (line.empty()) {
+                continue;
+            }
             if (auto commit_result = parse_commit(line); commit_result.is_ok()) {
                 commits.push_back(std::move(commit_result.value()));
             }
@@ -566,10 +568,10 @@ namespace bha::git
             std::istringstream ss(result.value().stdout_output);
             std::string line;
             BlameEntry current_entry;
-            std::unordered_map<std::string, BlameEntry> commit_cache;
-
             while (std::getline(ss, line)) {
-                if (line.empty()) continue;
+                if (line.empty()) {
+                    continue;
+                }
 
                 // New blame entry starts with commit hash
                 if (line.size() >= 40 && std::isxdigit(static_cast<unsigned char>(line[0]))) {
@@ -741,7 +743,7 @@ namespace bha::git
                     return Result<BisectResult, Error>::failure(test_result.error());
                 }
 
-                std::string verdict = test_result.value() ? "good" : "bad";
+                const std::string verdict = test_result.value() ? "good" : "bad";
                 auto mark_result = execute_git({"bisect", verdict}, repo_dir_);
 
                 if (mark_result.is_err()) {
@@ -749,9 +751,9 @@ namespace bha::git
                     return Result<BisectResult, Error>::failure(mark_result.error());
                 }
 
-                if (std::string output = mark_result.value().stdout_output; output.find("is the first bad commit") != std::string::npos) {
+                if (const std::string output = mark_result.value().stdout_output; output.find("is the first bad commit") != std::string::npos) {
                     // Extract commit hash
-                    std::regex hash_regex("([0-9a-f]{40}) is the first bad commit");
+                    const std::regex hash_regex("([0-9a-f]{40}) is the first bad commit");
                     if (std::smatch match; std::regex_search(output, match, hash_regex)) {
                         result.first_bad_commit = match[1].str();
                     }
@@ -834,7 +836,7 @@ namespace bha::git
 
             for (const auto& commit : commits_result.value()) {
                 auto it = build_times_.find(commit.hash);
-                Duration build_time = (it != build_times_.end()) ? it->second : Duration::zero();
+                const Duration build_time = (it != build_times_.end()) ? it->second : Duration::zero();
                 history.emplace_back(commit, build_time);
             }
 
@@ -877,7 +879,9 @@ namespace bha::git
 
     private:
         void load_database() {
-            if (!fs::exists(db_path_)) return;
+            if (!fs::exists(db_path_)) {
+                return;
+            }
 
             std::ifstream file(db_path_);
             std::string line;
@@ -956,9 +960,11 @@ namespace bha::git
                 std::istringstream ss(diff_result.value().stdout_output);
                 std::string line;
                 while (std::getline(ss, line)) {
-                    if (line.empty()) continue;
-                    char status = line[0];
-                    std::string file = trim(line.substr(1));
+                    if (line.empty()) {
+                        continue;
+                    }
+                    const char status = line[0];
+                    const std::string file = trim(line.substr(1));
 
                     switch (status) {
                     case 'A':
@@ -1015,11 +1021,11 @@ namespace bha::git
 
         Result<void, Error> install(HookType type) override {
             auto hook_name = std::string(hook_type_to_string(type));
-            fs::path hook_path = hooks_dir_ / hook_name;
+            const fs::path hook_path = hooks_dir_ / hook_name;
 
             if (fs::exists(hook_path)) {
                 std::ifstream file(hook_path);
-                std::string content((std::istreambuf_iterator<char>(file)),
+                const std::string content((std::istreambuf_iterator<char>(file)),
                                     std::istreambuf_iterator<char>());
 
                 if (content.find("# BHA Hook") != std::string::npos) {
@@ -1081,14 +1087,14 @@ namespace bha::git
 
         Result<void, Error> uninstall(HookType type) override {
             auto hook_name = std::string(hook_type_to_string(type));
-            fs::path hook_path = hooks_dir_ / hook_name;
+            const fs::path hook_path = hooks_dir_ / hook_name;
 
             if (!fs::exists(hook_path)) {
                 return Result<void, Error>::success();
             }
 
             std::ifstream file(hook_path);
-            std::string content((std::istreambuf_iterator(file)),
+            const std::string content((std::istreambuf_iterator(file)),
                                 std::istreambuf_iterator<char>());
             file.close();
 
@@ -1101,7 +1107,7 @@ namespace bha::git
             fs::remove(hook_path);
 
             // Restore backup if exists
-            if (fs::path backup_path = hook_path.string() + ".bak"; fs::exists(backup_path)) {
+            if (const fs::path backup_path = hook_path.string() + ".bak"; fs::exists(backup_path)) {
                 fs::rename(backup_path, hook_path);
             }
 
@@ -1118,12 +1124,12 @@ namespace bha::git
 
             if (result.installed) {
                 std::ifstream file(result.path);
-                std::string content((std::istreambuf_iterator<char>(file)),
+                const std::string content((std::istreambuf_iterator<char>(file)),
                                     std::istreambuf_iterator<char>());
 
                 result.is_bha_hook = content.find("# BHA Hook") != std::string::npos;
 
-                std::regex version_regex("# Version: ([0-9.]+)");
+                const std::regex version_regex("# Version: ([0-9.]+)");
                 if (std::smatch match; std::regex_search(content, match, version_regex)) {
                     result.version = match[1].str();
                 }
@@ -1171,11 +1177,21 @@ namespace bha::git
     }
 
     std::optional<HookType> string_to_hook_type(std::string_view str) {
-        if (str == "pre-commit") return HookType::PreCommit;
-        if (str == "pre-push") return HookType::PrePush;
-        if (str == "post-merge") return HookType::PostMerge;
-        if (str == "post-checkout") return HookType::PostCheckout;
-        if (str == "prepare-commit-msg") return HookType::PrepareCommitMsg;
+        if (str == "pre-commit") {
+            return HookType::PreCommit;
+        }
+        if (str == "pre-push") {
+            return HookType::PrePush;
+        }
+        if (str == "post-merge") {
+            return HookType::PostMerge;
+        }
+        if (str == "post-checkout") {
+            return HookType::PostCheckout;
+        }
+        if (str == "prepare-commit-msg") {
+            return HookType::PrepareCommitMsg;
+        }
         return std::nullopt;
     }
 
