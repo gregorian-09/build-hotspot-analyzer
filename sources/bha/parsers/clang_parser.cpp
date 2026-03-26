@@ -76,7 +76,9 @@ namespace bha::parsers {
         bool is_source_file(const std::string& path) {
             // Check if path looks like a C/C++ source file (not a header)
             const auto pos = path.rfind('.');
-            if (pos == std::string::npos) return false;
+            if (pos == std::string::npos) {
+                return false;
+            }
 
             const std::string ext = path.substr(pos);
             return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" ||
@@ -138,7 +140,8 @@ namespace bha::parsers {
                 if (event.name == "ParseDeclarationOrFunctionDefinition" && !event.detail.empty()) {
                     // Detail format: "/path/to/file.cc:line:col" or with spelling info
                     if (const auto colon_pos = event.detail.find(':'); colon_pos != std::string::npos) {
-                        if (std::string file_path = event.detail.substr(0, colon_pos); is_source_file(file_path)) {
+                        if (const std::string file_path = event.detail.substr(0, colon_pos);
+                            is_source_file(file_path)) {
                             return fs::path(file_path);
                         }
                     }

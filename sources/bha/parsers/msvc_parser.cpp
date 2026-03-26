@@ -134,7 +134,9 @@ namespace bha::parsers {
 
         for (const auto lines = string_utils::split(content, '\n'); const auto& line : lines) {
             const auto timing = parse_msvc_line(line);
-            if (!timing) continue;
+            if (!timing) {
+                continue;
+            }
 
             auto lower_target = string_utils::to_lower(timing->target);
 

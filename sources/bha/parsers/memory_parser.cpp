@@ -48,9 +48,10 @@ namespace bha::parsers
             }
 
             if (std::smatch match; std::regex_match(line, match, su_regex)) {
-                std::size_t stack_size = std::stoull(match[2].str());
+                const std::size_t stack_size = std::stoull(match[2].str());
 
-                if (std::string qualifier = match[3].str(); qualifier == "static" || qualifier == "dynamic,bounded" || qualifier == "bounded") {
+                if (const std::string qualifier = match[3].str();
+                    qualifier == "static" || qualifier == "dynamic,bounded" || qualifier == "bounded") {
                     max_stack = std::max(max_stack, stack_size);
                     ++parsed_lines;
                 } else if (qualifier == "dynamic") {
