@@ -167,17 +167,17 @@ namespace bha::analyzers
 
             // First pass: add all source files as nodes with their compile times
             for (const auto& unit : trace.units) {
-                std::string source = unit.source_file.string();
+                const std::string source = unit.source_file.string();
                 file_times[source] = unit.metrics.total_time;
                 g.add_node(source, unit.metrics.total_time);
             }
 
             // Second pass: add headers and include edges
             for (const auto& unit : trace.units) {
-                std::string source = unit.source_file.string();
+                const std::string source = unit.source_file.string();
 
                 for (const auto& inc : unit.includes) {
-                    std::string header = inc.header.string();
+                    const std::string header = inc.header.string();
 
                     // Add header node if not already added
                     if (!g.has_node(header)) {
@@ -230,7 +230,7 @@ namespace bha::analyzers
 
             for (const auto& node : g.nodes()) {
                 auto successors = g.successors(node);
-                Duration node_time = g.node_time(node);
+                const Duration node_time = g.node_time(node);
                 const std::size_t dep_count = successors.size();
 
                 // Calculate bottleneck score
@@ -302,7 +302,7 @@ namespace bha::analyzers
         cache.total_compilations = trace.units.size();
 
         for (const auto& unit : trace.units) {
-            Duration compile_time = unit.metrics.total_time;
+            const Duration compile_time = unit.metrics.total_time;
             compile_times.push_back(compile_time);
             sequential_total += compile_time;
 
@@ -431,7 +431,7 @@ namespace bha::analyzers
                               return a.compile_time > b.compile_time;
                           });
 
-        Duration slow_threshold = options.min_duration_threshold;
+        const Duration slow_threshold = options.min_duration_threshold;
         std::size_t slowest_count = 0;
         auto bottlenecks = identify_bottlenecks(dep_graph, critical_path_nodes, 20);
 

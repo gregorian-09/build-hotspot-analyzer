@@ -209,7 +209,7 @@ namespace bha::analyzers
         // Collect header statistics from all compilation units
         for (const auto& unit : trace.units) {
             for (const auto& inc : unit.includes) {
-                std::string header_path = inc.header.string();
+                const std::string header_path = inc.header.string();
 
                 auto& [total_parse_time, inclusion_count, including_files] = header_map[header_path];
                 total_parse_time += inc.parse_time;
@@ -221,7 +221,7 @@ namespace bha::analyzers
         result.total_headers_analyzed = header_map.size();
 
         for (const auto& [header_path, stats] : header_map) {
-            fs::path path(header_path);
+            const fs::path path(header_path);
 
             // Skip headers included only once or twice (not worth precompiling)
             if (stats.including_files.size() < 3) {

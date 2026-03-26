@@ -44,7 +44,7 @@ namespace bha::analyzers
 
         struct FileModificationInfo {
             std::size_t modification_count = 0;
-            Timestamp last_modified = Timestamp{};
+            Timestamp last_modified;
             Duration time_since_modification = Duration::zero();
         };
 
@@ -64,13 +64,15 @@ namespace bha::analyzers
                 return info;
             }
 
-            std::string output = log_result.value().stdout_output;
+            const std::string output = log_result.value().stdout_output;
             std::istringstream ss(output);
             std::string line;
 
             std::vector<Timestamp> modification_dates;
             while (std::getline(ss, line)) {
-                if (line.empty()) continue;
+                if (line.empty()) {
+                    continue;
+                }
 
                 std::tm tm{};
                 std::istringstream date_ss(line);
@@ -319,7 +321,7 @@ namespace bha::analyzers
                 }
 
                 std::ranges::sort(scc);
-                std::unordered_set<std::size_t> members(scc.begin(), scc.end());
+                const std::unordered_set<std::size_t> members(scc.begin(), scc.end());
                 std::optional<std::pair<std::size_t, std::size_t>> chosen_edge;
 
                 for (const auto u : scc) {
@@ -372,10 +374,10 @@ namespace bha::analyzers
         Duration total_include_time = Duration::zero();
 
         for (const auto& unit : trace.units) {
-            std::string source_key = path_key(unit.source_file);
+            const std::string source_key = path_key(unit.source_file);
 
             for (const auto& include : unit.includes) {
-                std::string header_key = path_key(include.header);
+                const std::string header_key = path_key(include.header);
 
                 auto& [path, total_parse_time, inclusion_count, including_files] = header_map[header_key];
                 if (path.empty()) {

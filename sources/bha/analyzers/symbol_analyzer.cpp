@@ -250,7 +250,9 @@ namespace bha::analyzers
         // First pass: collect symbol definitions and their properties
         for (const auto& unit : trace.units) {
             for (const auto& symbol : unit.symbols_defined) {
-                if (symbol.empty()) continue;
+                if (symbol.empty()) {
+                    continue;
+                }
 
                 auto& data = symbol_map[symbol];
                 data.defined_in.push_back(unit.source_file);
@@ -263,7 +265,7 @@ namespace bha::analyzers
 
             // Templates: track instantiations with timing
             for (const auto& tmpl : unit.templates) {
-                std::string symbol = tmpl.name;
+                const std::string symbol = tmpl.name;
                 auto& data = symbol_map[symbol];
 
                 if (data.type.empty()) {

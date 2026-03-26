@@ -74,7 +74,7 @@ namespace bha::analyzers
 
             if (!partial.files.empty()) {
                 for (auto& file : partial.files) {
-                    std::string key = file.file.string();
+                    const std::string key = file.file.string();
 
                     if (auto it = file_map.find(key); it != file_map.end()) {
                         auto& existing = it->second;
