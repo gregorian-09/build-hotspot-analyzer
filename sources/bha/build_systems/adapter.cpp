@@ -41,7 +41,7 @@ namespace bha::build_systems
             std::string escaped;
             escaped.reserve(input.size() + 2);
             escaped.push_back('\'');
-            for (char c : input) {
+            for (const char c : input) {
                 if (c == '\'') {
                     escaped += "'\\''";
                 } else {
@@ -54,7 +54,9 @@ namespace bha::build_systems
 #endif
 
         fs::path find_compiler_path(const std::string& compiler_name) {
-            if (compiler_name.empty()) return {};
+            if (compiler_name.empty()) {
+                return {};
+            }
 
             if (fs::path p(compiler_name); p.is_absolute() && fs::exists(p)) {
                 return p;
@@ -82,7 +84,9 @@ namespace bha::build_systems
         }
 
         CompilerType detect_compiler_type(const std::string& compiler) {
-            if (compiler.empty()) return CompilerType::GCC;
+            if (compiler.empty()) {
+                return CompilerType::GCC;
+            }
 
             std::string lower = compiler;
             std::ranges::transform(lower, lower.begin(),
@@ -230,8 +234,12 @@ namespace bha::build_systems
             }
 
             [[nodiscard]] std::string combined() const {
-                if (tracing_flags.empty()) return memory_flags;
-                if (memory_flags.empty()) return tracing_flags;
+                if (tracing_flags.empty()) {
+                    return memory_flags;
+                }
+                if (memory_flags.empty()) {
+                    return tracing_flags;
+                }
                 return tracing_flags + " " + memory_flags;
             }
 
@@ -335,7 +343,7 @@ namespace bha::build_systems
             std::ostringstream summary;
 
             if (!error_lines.empty()) {
-                size_t count = std::min(error_lines.size(), max_lines);
+                const size_t count = std::min(error_lines.size(), max_lines);
                 for (size_t i = 0; i < count; ++i) {
                     summary << error_lines[i] << "\n";
                 }
@@ -343,7 +351,7 @@ namespace bha::build_systems
                     summary << "... (" << (error_lines.size() - max_lines) << " more errors)\n";
                 }
             } else if (!all_lines.empty()) {
-                size_t start = all_lines.size() > max_lines ? all_lines.size() - max_lines : 0;
+                const size_t start = all_lines.size() > max_lines ? all_lines.size() - max_lines : 0;
                 for (size_t i = start; i < all_lines.size(); ++i) {
                     summary << all_lines[i] << "\n";
                 }
@@ -461,20 +469,24 @@ namespace bha::build_systems
             }
 
             for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
-                if (ec) break;
-                if (!entry.is_regular_file()) continue;
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
 
-                std::string filename = entry.path().filename().string();
-                std::string ext = entry.path().extension().string();
+                const std::string filename = entry.path().filename().string();
+                const std::string ext = entry.path().extension().string();
 
                 if (ext == ".json") {
-                    if (std::string stem = entry.path().stem().string(); stem.ends_with(".c") || stem.ends_with(".cc") ||
+                    if (const std::string stem = entry.path().stem().string(); stem.ends_with(".c") || stem.ends_with(".cc") ||
                         stem.ends_with(".cpp") || stem.ends_with(".cxx") ||
                         stem.ends_with(".C") || stem.ends_with(".c++") ||
                         stem.ends_with(".m") || stem.ends_with(".mm")) {
                         traces.push_back(entry.path());
                     } else {
-                        if (fs::path parent = entry.path().parent_path(); fs::exists(parent / (stem + ".o")) ||
+                        if (const fs::path parent = entry.path().parent_path(); fs::exists(parent / (stem + ".o")) ||
                             fs::exists(parent / (stem + ".obj"))) {
                             traces.push_back(entry.path());
                         }
@@ -501,8 +513,12 @@ namespace bha::build_systems
             }
 
             for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
-                if (ec) break;
-                if (!entry.is_regular_file()) continue;
+                if (ec) {
+                    break;
+                }
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
 
                 if (entry.path().extension() == ".su") {
                     memory_files.push_back(entry.path());
@@ -520,13 +536,17 @@ namespace bha::build_systems
 
             std::error_code ec;
             fs::create_directories(dest_dir, ec);
-            if (ec) return;
+            if (ec) {
+                return;
+            }
 
             std::vector<fs::path> new_trace_files;
             std::vector<fs::path> new_memory_files;
 
             const auto normalized_dest = fs::absolute(dest_dir, ec).lexically_normal();
-            if (ec) return;
+            if (ec) {
+                return;
+            }
 
             for (const auto& trace_file : trace_files) {
                 auto normalized_file = fs::absolute(trace_file, ec).lexically_normal();
@@ -539,7 +559,7 @@ namespace bha::build_systems
                 if (normalized_file.parent_path() == normalized_dest) {
                     new_trace_files.push_back(trace_file);
                 } else {
-                    fs::path dest_file = dest_dir / trace_file.filename();
+                    const fs::path dest_file = dest_dir / trace_file.filename();
                     fs::copy_file(trace_file, dest_file, fs::copy_options::overwrite_existing, ec);
                     new_trace_files.push_back(ec ? trace_file : dest_file);
                     ec.clear();
@@ -557,7 +577,7 @@ namespace bha::build_systems
                 if (normalized_file.parent_path() == normalized_dest) {
                     new_memory_files.push_back(memory_file);
                 } else {
-                    fs::path dest_file = dest_dir / memory_file.filename();
+                    const fs::path dest_file = dest_dir / memory_file.filename();
                     fs::copy_file(memory_file, dest_file, fs::copy_options::overwrite_existing, ec);
                     new_memory_files.push_back(ec ? memory_file : dest_file);
                     ec.clear();
@@ -826,7 +846,7 @@ namespace bha::build_systems
                 init_git_submodules(project_path);
             }
 
-            fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
+            const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
             fs::create_directories(build_dir);
 
             const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
@@ -856,7 +876,7 @@ namespace bha::build_systems
             }
 
             if (!flags.empty()) {
-                std::string combined = flags.combined();
+                const std::string combined = flags.combined();
                 cmd << " \"-DCMAKE_CXX_FLAGS=" << combined << "\"";
                 cmd << " \"-DCMAKE_C_FLAGS=" << combined << "\"";
             }
@@ -881,8 +901,8 @@ namespace bha::build_systems
             BuildResult result;
             auto start = std::chrono::steady_clock::now();
 
-            fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
-            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+            const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
+            const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? build_dir / "traces" : options.trace_output_dir;
 
             // For clean builds, build directory should be removed to ensure fresh configuration
@@ -923,7 +943,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
@@ -1024,7 +1044,7 @@ namespace bha::build_systems
                     init_git_submodules(project_path);
                 }
 
-                fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
+                const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
                 fs::create_directories(build_dir);
 
                 auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
@@ -1054,7 +1074,7 @@ namespace bha::build_systems
                 }
 
                 if (!flags.empty()) {
-                    std::string combined = flags.combined();
+                    const std::string combined = flags.combined();
                     cmd << " \"-DCMAKE_CXX_FLAGS=" << combined << "\"";
                     cmd << " \"-DCMAKE_C_FLAGS=" << combined << "\"";
                 }
@@ -1096,7 +1116,7 @@ namespace bha::build_systems
             std::ostringstream cmd;
             cmd << "ninja -C \"" << build_dir.string() << "\"";
 
-            int jobs = options.parallel_jobs > 0 ?
+            const int jobs = options.parallel_jobs > 0 ?
                        options.parallel_jobs : get_cpu_count();
             cmd << " -j " << jobs;
 
@@ -1110,7 +1130,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed with no specific error output" : error_summary;
             }
 
@@ -1304,7 +1324,7 @@ namespace bha::build_systems
             }
 
             std::ostringstream summary;
-            size_t count = std::min(error_lines.size(), static_cast<size_t>(20));
+            const size_t count = std::min(error_lines.size(), static_cast<size_t>(20));
             for (size_t i = 0; i < count; ++i) {
                 summary << error_lines[i] << "\n";
             }
@@ -1315,7 +1335,9 @@ namespace bha::build_systems
             if (!info.missing_packages.empty()) {
                 summary << "\nMissing packages: ";
                 for (size_t i = 0; i < info.missing_packages.size(); ++i) {
-                    if (i > 0) summary << ", ";
+                    if (i > 0) {
+                        summary << ", ";
+                    }
                     summary << info.missing_packages[i];
                 }
                 summary << "\n";
@@ -1416,7 +1438,7 @@ namespace bha::build_systems
             if (build_dir.is_relative()) {
                 build_dir = fs::absolute(project_abs / build_dir);
             }
-            bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path;
+            const bool use_vpath = !options.build_dir.empty() && options.build_dir != project_path;
 
             if (use_vpath) {
                 std::error_code ec;
@@ -1481,7 +1503,7 @@ namespace bha::build_systems
                 }
             }
 
-            bool makefile_created = fs::exists(work_dir / "Makefile") ||
+            const bool makefile_created = fs::exists(work_dir / "Makefile") ||
                                     fs::exists(work_dir / "makefile") ||
                                     fs::exists(work_dir / "GNUmakefile");
             if (!makefile_created) {
@@ -1503,7 +1525,7 @@ namespace bha::build_systems
 
             auto info = AutotoolsInfo::detect(project_path);
 
-            bool needs_configure = info.is_autotools ||
+            const bool needs_configure = info.is_autotools ||
                                    info.has_configure ||
                                    !info.bootstrap_script.empty();
 
@@ -1558,7 +1580,7 @@ namespace bha::build_systems
             const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
-            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+            const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? work_dir / "traces" : options.trace_output_dir;
 
             std::ostringstream cmd;
@@ -1705,7 +1727,7 @@ namespace bha::build_systems
 
             // Also check common subdirectories for these files
             for (const auto& subdir : {"src", "deps"}) {
-                if (fs::path subdir_path = project_abs / subdir; fs::exists(subdir_path)) {
+                if (const fs::path subdir_path = project_abs / subdir; fs::exists(subdir_path)) {
                     for (const auto& settings_file : {".make-settings", ".make-prerequisites", ".make-*"}) {
                         fs::remove(subdir_path / settings_file, ec);
                     }
@@ -1840,7 +1862,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed with no specific error output" : error_summary;
             }
 
@@ -1935,7 +1957,7 @@ namespace bha::build_systems
             const fs::path& project_path,
             const BuildOptions& options
         ) override {
-            fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
+            const fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
 
             if (fs::exists(build_dir / "meson-private")) {
                 return Result<void, Error>::success();
@@ -1992,7 +2014,7 @@ namespace bha::build_systems
             BuildResult result;
             auto start = std::chrono::steady_clock::now();
 
-            fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
+            const fs::path build_dir = options.build_dir.empty() ? project_path / "builddir" : options.build_dir;
 
             // For clean builds, remove the build directory to ensure fresh configuration
             if (options.clean_first && fs::exists(build_dir)) {
@@ -2009,7 +2031,7 @@ namespace bha::build_systems
 
             auto compiler = get_compiler_info(options.compiler);
 
-            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+            const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? build_dir / "traces" : options.trace_output_dir;
 
             std::ostringstream cmd;
@@ -2035,7 +2057,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
@@ -2164,8 +2186,8 @@ namespace bha::build_systems
                 cmd << " -c opt";
             }
 
-            fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
-            fs::path profile_path = trace_output_dir / "bazel_profile.json";
+            const fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
+            const fs::path profile_path = trace_output_dir / "bazel_profile.json";
 
             if (options.enable_tracing) {
                 std::error_code ec;
@@ -2199,7 +2221,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
@@ -2299,8 +2321,8 @@ namespace bha::build_systems
                 clean(project_path, options);
             }
 
-            fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
-            fs::path profile_path = trace_output_dir / "buck2_profile.json";
+            const fs::path trace_output_dir = options.trace_output_dir.empty() ? project_path : options.trace_output_dir;
+            const fs::path profile_path = trace_output_dir / "buck2_profile.json";
 
             std::ostringstream cmd;
             cmd << "buck2 build //...";
@@ -2330,7 +2352,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
@@ -2423,7 +2445,7 @@ namespace bha::build_systems
             auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
-            fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
+            const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? project_path / "traces" : options.trace_output_dir;
 
             std::ostringstream cmd;
@@ -2470,7 +2492,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
@@ -2789,7 +2811,7 @@ namespace bha::build_systems
             result.success = (exit_code == 0);
 
             if (!result.success) {
-                std::string error_summary = extract_error_summary(output);
+                const std::string error_summary = extract_error_summary(output);
                 result.error_message = error_summary.empty() ? "Build failed" : error_summary;
             }
 
