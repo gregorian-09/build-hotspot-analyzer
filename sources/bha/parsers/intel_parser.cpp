@@ -103,17 +103,16 @@ namespace bha::parsers {
         Duration total_time = Duration::zero();
 
         for (const auto& line : lines) {
-            std::string line_str(line);
+            const std::string line_str(line);
 
-            if (std::smatch loop_match;
-                unit.source_file.empty() && std::regex_search(line_str, loop_match, loop_paren_regex) &&
-                loop_match.size() > 1) {
-                unit.source_file = string_utils::trim(loop_match[1].str());
-                unit.metrics.path = unit.source_file;
-            } else if (unit.source_file.empty() && std::regex_search(line_str, loop_match, loop_colon_regex) &&
-                       loop_match.size() > 1) {
-                unit.source_file = string_utils::trim(loop_match[1].str());
-                unit.metrics.path = unit.source_file;
+            if (unit.source_file.empty()) {
+                std::smatch loop_match;
+                if ((std::regex_search(line_str, loop_match, loop_paren_regex) ||
+                     std::regex_search(line_str, loop_match, loop_colon_regex)) &&
+                    loop_match.size() > 1) {
+                    unit.source_file = string_utils::trim(loop_match[1].str());
+                    unit.metrics.path = unit.source_file;
+                }
             }
 
             if (std::smatch time_match; std::regex_search(line_str, time_match, time_regex)) {

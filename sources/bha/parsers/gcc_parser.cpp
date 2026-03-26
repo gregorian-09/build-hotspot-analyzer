@@ -44,12 +44,12 @@ namespace bha::parsers {
         };
 
         std::optional<TimingLine> parse_timing_line(std::string_view line) {
-            auto trimmed = string_utils::trim(line);
+            const auto trimmed = string_utils::trim(line);
 
             if (!string_utils::starts_with(trimmed, GCC_PHASE_PREFIX) &&
                 !string_utils::contains(trimmed, ":")) {
                 return std::nullopt;
-                }
+            }
 
             const auto colon_pos = trimmed.find(':');
             if (colon_pos == std::string_view::npos) {
@@ -69,7 +69,7 @@ namespace bha::parsers {
             auto it = times_str.cbegin();
             while (std::regex_search(it, times_str.cend(), match, time_regex)) {
                 double val = 0.0;
-                std::string num = match[1].str();
+                const std::string num = match[1].str();
                 std::from_chars(num.data(), num.data() + num.size(), val);
                 times.push_back(val);
                 it = match.suffix().first;
@@ -93,17 +93,20 @@ namespace bha::parsers {
 
         void map_phase_to_breakdown(const TimingLine& timing, TimeBreakdown& breakdown) {
             const auto& name = timing.phase_name;
+            const auto add_parsing_time = [&breakdown, &timing]() {
+                breakdown.parsing += timing.wall_time;
+            };
+            const auto add_code_generation_time = [&breakdown, &timing]() {
+                breakdown.code_generation += timing.wall_time;
+            };
 
             // Official GCC phase names (must match exactly from timevar.def)
-            if (name == "phase parsing") {
-                breakdown.parsing += timing.wall_time;
+            if (name == "phase parsing" || name == "phase late parsing cleanups") {
+                add_parsing_time();
             }
             else if (name == "phase lang. deferred") {
                 // Language-specific deferred work includes template instantiation
                 breakdown.semantic_analysis += timing.wall_time;
-            }
-            else if (name == "phase late parsing cleanups") {
-                breakdown.parsing += timing.wall_time;
             }
             else if (name == "phase opt and generate") {
                 // This combines optimization and code generation
@@ -118,7 +121,7 @@ namespace bha::parsers {
                 breakdown.optimization += timing.wall_time;
             }
             else if (name == "phase finalize") {
-                breakdown.code_generation += timing.wall_time;
+                add_code_generation_time();
             }
             else {
                 // For non-phase timing variables, heuristic matching is employed
@@ -133,23 +136,23 @@ namespace bha::parsers {
                 else if (string_utils::contains(lower, "template") ||
                          string_utils::contains(lower, "instantiat")) {
                     breakdown.template_instantiation += timing.wall_time;
-                         }
+                }
                 else if (string_utils::contains(lower, "semantic") ||
                          string_utils::contains(lower, "name lookup") ||
                          string_utils::contains(lower, "overload")) {
                     breakdown.semantic_analysis += timing.wall_time;
-                         }
+                }
                 else if (string_utils::contains(lower, "optim") ||
                          string_utils::contains(lower, "inline")) {
                     breakdown.optimization += timing.wall_time;
-                         }
+                }
                 else if (string_utils::contains(lower, "expand") ||
                          string_utils::contains(lower, "rtl") ||
                          string_utils::contains(lower, "codegen") ||
                          string_utils::contains(lower, "final") ||
                          string_utils::contains(lower, "assemb")) {
-                    breakdown.code_generation += timing.wall_time;
-                         }
+                    add_code_generation_time();
+                }
             }
         }
     }  // namespace
