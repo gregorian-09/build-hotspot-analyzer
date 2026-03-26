@@ -32,6 +32,27 @@ namespace bha::lsp
     namespace {
         std::mutex g_lsp_write_mutex;
         constexpr std::size_t kMaxRetainedFinishedAsyncJobs = 128;
+
+        std::optional<std::filesystem::path> resolve_project_relative_path(
+            const std::string& project_root,
+            const json& args,
+            const char* key
+        ) {
+            if (!args.contains(key) || args[key].is_null() || !args[key].is_string()) {
+                return std::nullopt;
+            }
+
+            const std::string value = args[key].get<std::string>();
+            if (value.empty()) {
+                return std::nullopt;
+            }
+
+            std::filesystem::path path(value);
+            if (path.is_relative()) {
+                path = (std::filesystem::path(project_root) / path).lexically_normal();
+            }
+            return path;
+        }
     }
 
     std::string shell_quote_for_shell(const std::string& input) {
@@ -1222,13 +1243,8 @@ namespace bha::lsp
             throw std::runtime_error("Missing project root");
         }
 
-        std::optional<std::filesystem::path> build_dir;
-        if (args.contains("buildDir") && !args["buildDir"].is_null()) {
-            const std::string build_dir_value = args["buildDir"].get<std::string>();
-            if (!build_dir_value.empty()) {
-                build_dir = build_dir_value;
-            }
-        }
+        const std::optional<std::filesystem::path> build_dir =
+            resolve_project_relative_path(project_root, args, "buildDir");
 
         const bool clean_first = args.contains("cleanFirst") && args["cleanFirst"].is_boolean() &&
             args["cleanFirst"].get<bool>();
@@ -1288,11 +1304,10 @@ namespace bha::lsp
             if (build_dir.has_value()) {
                 options.build_dir = *build_dir;
             }
-            if (args.contains("traceOutputDir") && args["traceOutputDir"].is_string()) {
-                const std::string trace_output_dir = args["traceOutputDir"].get<std::string>();
-                if (!trace_output_dir.empty()) {
-                    options.trace_output_dir = trace_output_dir;
-                }
+            if (const auto trace_output_dir =
+                resolve_project_relative_path(project_root, args, "traceOutputDir");
+                trace_output_dir.has_value()) {
+                options.trace_output_dir = *trace_output_dir;
             }
             if (args.contains("extraArgs") && args["extraArgs"].is_array()) {
                 for (const auto& arg : args["extraArgs"]) {
@@ -1382,17 +1397,10 @@ namespace bha::lsp
             project_root = project_root.substr(7);
         }
 
-        std::optional<std::filesystem::path> build_dir;
-        if (args.contains("buildDir") && !args["buildDir"].is_null()) {
-            build_dir = args["buildDir"].get<std::string>();
-        }
-        std::optional<std::filesystem::path> trace_dir;
-        if (args.contains("traceDir") && !args["traceDir"].is_null()) {
-            const std::string trace_dir_value = args["traceDir"].get<std::string>();
-            if (!trace_dir_value.empty()) {
-                trace_dir = trace_dir_value;
-            }
-        }
+        const std::optional<std::filesystem::path> build_dir =
+            resolve_project_relative_path(project_root, args, "buildDir");
+        const std::optional<std::filesystem::path> trace_dir =
+            resolve_project_relative_path(project_root, args, "traceDir");
 
         bool const rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
 
