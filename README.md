@@ -195,12 +195,16 @@ Main commands:
 - `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
+- `BHA: Show Activity Log`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
 Long-running VS Code commands show progress notifications so build recording, analysis, apply, and revert operations are visible while they run.
+
+VS Code also writes command activity, build output summaries, and server/runtime diagnostics to the
+`Build Hotspot Analyzer` output channel. Open it with `BHA: Show Activity Log` or through the Output panel.
 
 When VS Code records traces into a custom directory, follow-up analysis reuses that directory for the current workspace.
 

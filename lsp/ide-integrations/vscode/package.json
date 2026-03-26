@@ -98,6 +98,10 @@
         "title": "BHA: Show Suggestions"
       },
       {
+        "command": "buildHotspotAnalyzer.showActivityLog",
+        "title": "BHA: Show Activity Log"
+      },
+      {
         "command": "buildHotspotAnalyzer.applySuggestion",
         "title": "BHA: Apply Suggestion"
       },

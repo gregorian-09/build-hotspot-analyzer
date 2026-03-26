@@ -1637,13 +1637,13 @@ var require_connection = __commonJS({
       log: () => {
       }
     });
-    var Trace;
-    (function(Trace2) {
-      Trace2[Trace2["Off"] = 0] = "Off";
-      Trace2[Trace2["Messages"] = 1] = "Messages";
-      Trace2[Trace2["Compact"] = 2] = "Compact";
-      Trace2[Trace2["Verbose"] = 3] = "Verbose";
-    })(Trace || (exports2.Trace = Trace = {}));
+    var Trace2;
+    (function(Trace3) {
+      Trace3[Trace3["Off"] = 0] = "Off";
+      Trace3[Trace3["Messages"] = 1] = "Messages";
+      Trace3[Trace3["Compact"] = 2] = "Compact";
+      Trace3[Trace3["Verbose"] = 3] = "Verbose";
+    })(Trace2 || (exports2.Trace = Trace2 = {}));
     var TraceValues;
     (function(TraceValues2) {
       TraceValues2.Off = "off";
@@ -1651,42 +1651,42 @@ var require_connection = __commonJS({
       TraceValues2.Compact = "compact";
       TraceValues2.Verbose = "verbose";
     })(TraceValues || (exports2.TraceValues = TraceValues = {}));
-    (function(Trace2) {
+    (function(Trace3) {
       function fromString(value) {
         if (!Is.string(value)) {
-          return Trace2.Off;
+          return Trace3.Off;
         }
         value = value.toLowerCase();
         switch (value) {
           case "off":
-            return Trace2.Off;
+            return Trace3.Off;
           case "messages":
-            return Trace2.Messages;
+            return Trace3.Messages;
           case "compact":
-            return Trace2.Compact;
+            return Trace3.Compact;
           case "verbose":
-            return Trace2.Verbose;
+            return Trace3.Verbose;
           default:
-            return Trace2.Off;
+            return Trace3.Off;
         }
       }
-      Trace2.fromString = fromString;
+      Trace3.fromString = fromString;
       function toString(value) {
         switch (value) {
-          case Trace2.Off:
+          case Trace3.Off:
             return "off";
-          case Trace2.Messages:
+          case Trace3.Messages:
             return "messages";
-          case Trace2.Compact:
+          case Trace3.Compact:
             return "compact";
-          case Trace2.Verbose:
+          case Trace3.Verbose:
             return "verbose";
           default:
             return "off";
         }
       }
-      Trace2.toString = toString;
-    })(Trace || (exports2.Trace = Trace = {}));
+      Trace3.toString = toString;
+    })(Trace2 || (exports2.Trace = Trace2 = {}));
     var TraceFormat;
     (function(TraceFormat2) {
       TraceFormat2["Text"] = "text";
@@ -1830,7 +1830,7 @@ var require_connection = __commonJS({
       let responsePromises = /* @__PURE__ */ new Map();
       let knownCanceledRequests = /* @__PURE__ */ new Set();
       let requestTokens = /* @__PURE__ */ new Map();
-      let trace = Trace.Off;
+      let trace = Trace2.Off;
       let traceFormat = TraceFormat.Text;
       let tracer;
       let state = ConnectionState.New;
@@ -2199,21 +2199,21 @@ ${JSON.stringify(message, null, 4)}`);
           return void 0;
         }
         switch (trace) {
-          case Trace.Verbose:
+          case Trace2.Verbose:
             return JSON.stringify(params, null, 4);
-          case Trace.Compact:
+          case Trace2.Compact:
             return JSON.stringify(params);
           default:
             return void 0;
         }
       }
       function traceSendingRequest(message) {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if ((trace === Trace.Verbose || trace === Trace.Compact) && message.params) {
+          if ((trace === Trace2.Verbose || trace === Trace2.Compact) && message.params) {
             data = `Params: ${stringifyTrace(message.params)}
 
 `;
@@ -2224,12 +2224,12 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function traceSendingNotification(message) {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose || trace === Trace.Compact) {
+          if (trace === Trace2.Verbose || trace === Trace2.Compact) {
             if (message.params) {
               data = `Params: ${stringifyTrace(message.params)}
 
@@ -2244,12 +2244,12 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function traceSendingResponse(message, method, startTime) {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose || trace === Trace.Compact) {
+          if (trace === Trace2.Verbose || trace === Trace2.Compact) {
             if (message.error && message.error.data) {
               data = `Error data: ${stringifyTrace(message.error.data)}
 
@@ -2270,12 +2270,12 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function traceReceivedRequest(message) {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if ((trace === Trace.Verbose || trace === Trace.Compact) && message.params) {
+          if ((trace === Trace2.Verbose || trace === Trace2.Compact) && message.params) {
             data = `Params: ${stringifyTrace(message.params)}
 
 `;
@@ -2286,12 +2286,12 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function traceReceivedNotification(message) {
-        if (trace === Trace.Off || !tracer || message.method === LogTraceNotification.type.method) {
+        if (trace === Trace2.Off || !tracer || message.method === LogTraceNotification.type.method) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose || trace === Trace.Compact) {
+          if (trace === Trace2.Verbose || trace === Trace2.Compact) {
             if (message.params) {
               data = `Params: ${stringifyTrace(message.params)}
 
@@ -2306,12 +2306,12 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function traceReceivedResponse(message, responsePromise) {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose || trace === Trace.Compact) {
+          if (trace === Trace2.Verbose || trace === Trace2.Compact) {
             if (message.error && message.error.data) {
               data = `Error data: ${stringifyTrace(message.error.data)}
 
@@ -2337,7 +2337,7 @@ ${JSON.stringify(message, null, 4)}`);
         }
       }
       function logLSPMessage(type, message) {
-        if (!tracer || trace === Trace.Off) {
+        if (!tracer || trace === Trace2.Off) {
           return;
         }
         const lspMessage = {
@@ -2648,13 +2648,13 @@ ${JSON.stringify(message, null, 4)}`);
           }
           trace = _value;
           traceFormat = _traceFormat;
-          if (trace === Trace.Off) {
+          if (trace === Trace2.Off) {
             tracer = void 0;
           } else {
             tracer = _tracer;
           }
           if (_sendNotification && !isClosed() && !isDisposed()) {
-            await connection.sendNotification(SetTraceNotification.type, { value: Trace.toString(_value) });
+            await connection.sendNotification(SetTraceNotification.type, { value: Trace2.toString(_value) });
           }
         },
         onError: errorEmitter.event,
@@ -2696,10 +2696,10 @@ ${JSON.stringify(message, null, 4)}`);
         }
       };
       connection.onNotification(LogTraceNotification.type, (params) => {
-        if (trace === Trace.Off || !tracer) {
+        if (trace === Trace2.Off || !tracer) {
           return;
         }
-        const verbose = trace === Trace.Verbose || trace === Trace.Compact;
+        const verbose = trace === Trace2.Verbose || trace === Trace2.Compact;
         tracer.log(params.message, verbose ? params.verbose : void 0);
       });
       connection.onNotification(ProgressNotification.type, (params) => {
@@ -14851,14 +14851,14 @@ var require_client = __commonJS({
     var inlineValue_1 = require_inlineValue();
     var inlayHint_1 = require_inlayHint();
     var inlineCompletion_1 = require_inlineCompletion();
-    var RevealOutputChannelOn;
-    (function(RevealOutputChannelOn2) {
-      RevealOutputChannelOn2[RevealOutputChannelOn2["Debug"] = 0] = "Debug";
-      RevealOutputChannelOn2[RevealOutputChannelOn2["Info"] = 1] = "Info";
-      RevealOutputChannelOn2[RevealOutputChannelOn2["Warn"] = 2] = "Warn";
-      RevealOutputChannelOn2[RevealOutputChannelOn2["Error"] = 3] = "Error";
-      RevealOutputChannelOn2[RevealOutputChannelOn2["Never"] = 4] = "Never";
-    })(RevealOutputChannelOn || (exports2.RevealOutputChannelOn = RevealOutputChannelOn = {}));
+    var RevealOutputChannelOn2;
+    (function(RevealOutputChannelOn3) {
+      RevealOutputChannelOn3[RevealOutputChannelOn3["Debug"] = 0] = "Debug";
+      RevealOutputChannelOn3[RevealOutputChannelOn3["Info"] = 1] = "Info";
+      RevealOutputChannelOn3[RevealOutputChannelOn3["Warn"] = 2] = "Warn";
+      RevealOutputChannelOn3[RevealOutputChannelOn3["Error"] = 3] = "Error";
+      RevealOutputChannelOn3[RevealOutputChannelOn3["Never"] = 4] = "Never";
+    })(RevealOutputChannelOn2 || (exports2.RevealOutputChannelOn = RevealOutputChannelOn2 = {}));
     var ErrorAction;
     (function(ErrorAction2) {
       ErrorAction2[ErrorAction2["Continue"] = 1] = "Continue";
@@ -14958,7 +14958,7 @@ var require_client = __commonJS({
           synchronize: clientOptions.synchronize ?? {},
           diagnosticCollectionName: clientOptions.diagnosticCollectionName,
           outputChannelName: clientOptions.outputChannelName ?? this._name,
-          revealOutputChannelOn: clientOptions.revealOutputChannelOn ?? RevealOutputChannelOn.Error,
+          revealOutputChannelOn: clientOptions.revealOutputChannelOn ?? RevealOutputChannelOn2.Error,
           stdioEncoding: clientOptions.stdioEncoding ?? "utf8",
           initializationOptions: clientOptions.initializationOptions,
           initializationFailedHandler: clientOptions.initializationFailedHandler,
@@ -15300,16 +15300,16 @@ var require_client = __commonJS({
         return data.toString();
       }
       debug(message, data, showNotification = true) {
-        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Debug, RevealOutputChannelOn.Debug, "Debug", message, data, showNotification);
+        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Debug, RevealOutputChannelOn2.Debug, "Debug", message, data, showNotification);
       }
       info(message, data, showNotification = true) {
-        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Info, RevealOutputChannelOn.Info, "Info", message, data, showNotification);
+        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Info, RevealOutputChannelOn2.Info, "Info", message, data, showNotification);
       }
       warn(message, data, showNotification = true) {
-        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Warning, RevealOutputChannelOn.Warn, "Warn", message, data, showNotification);
+        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Warning, RevealOutputChannelOn2.Warn, "Warn", message, data, showNotification);
       }
       error(message, data, showNotification = true) {
-        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Error, RevealOutputChannelOn.Error, "Error", message, data, showNotification);
+        this.logOutputMessage(vscode_languageserver_protocol_1.MessageType.Error, RevealOutputChannelOn2.Error, "Error", message, data, showNotification);
       }
       logOutputMessage(type, reveal, name, message, data, showNotification) {
         this.outputChannel.appendLine(`[${name.padEnd(5)} - ${(/* @__PURE__ */ new Date()).toLocaleTimeString()}] ${message}`);
@@ -18114,18 +18114,54 @@ function formatApplicationMode(mode) {
 }
 var client;
 var lastBackupId;
+var outputChannel;
+var traceOutputChannel;
 var lastBuildDirByWorkspace = /* @__PURE__ */ new Map();
 var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
 function getWorkspaceRootPath() {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
+function timestamp() {
+  return (/* @__PURE__ */ new Date()).toLocaleTimeString();
+}
+function logLine(message) {
+  outputChannel.appendLine(`[${timestamp()}] ${message}`);
+}
+function logBlock(title, content) {
+  if (!content || content.trim().length === 0) {
+    return;
+  }
+  outputChannel.appendLine(`[${timestamp()}] ${title}`);
+  for (const line of content.replace(/\r\n/g, "\n").split("\n")) {
+    outputChannel.appendLine(line);
+  }
+}
+function showOutput(preserveFocus = true) {
+  outputChannel.show(preserveFocus);
+}
+function traceSettingToProtocol(value) {
+  switch (value) {
+    case "messages":
+      return import_node.Trace.Messages;
+    case "verbose":
+      return import_node.Trace.Verbose;
+    case "off":
+    default:
+      return import_node.Trace.Off;
+  }
+}
 function activate(context) {
   const config = vscode.workspace.getConfiguration("buildHotspotAnalyzer");
   const serverPath = config.get("serverPath", CONFIG.DEFAULT_SERVER_PATH);
+  outputChannel = vscode.window.createOutputChannel("Build Hotspot Analyzer");
+  traceOutputChannel = vscode.window.createOutputChannel("Build Hotspot Analyzer Trace");
+  context.subscriptions.push(outputChannel, traceOutputChannel);
   if (!serverPath || serverPath.trim().length === 0) {
+    logLine("Server path is not configured");
     vscode.window.showErrorMessage("BHA: Server path is not configured");
     return;
   }
+  logLine(`Activating extension with server: ${serverPath}`);
   const serverOptions = {
     command: serverPath,
     args: [],
@@ -18136,6 +18172,9 @@ function activate(context) {
       { scheme: "file", language: "cpp" },
       { scheme: "file", language: "c" }
     ],
+    outputChannel,
+    traceOutputChannel,
+    revealOutputChannelOn: import_node.RevealOutputChannelOn.Error,
     synchronize: {
       fileEvents: vscode.workspace.createFileSystemWatcher("**/*.{cpp,cc,cxx,c,h,hpp,hxx}")
     }
@@ -18151,12 +18190,20 @@ function activate(context) {
     vscode.commands.registerCommand("buildHotspotAnalyzer.recordBuildTracesAdvanced", cmdRecordBuildTracesAdvanced),
     vscode.commands.registerCommand("buildHotspotAnalyzer.analyzeProject", cmdAnalyzeProject),
     vscode.commands.registerCommand("buildHotspotAnalyzer.showSuggestions", cmdShowSuggestions),
+    vscode.commands.registerCommand("buildHotspotAnalyzer.showActivityLog", cmdShowActivityLog),
     vscode.commands.registerCommand("buildHotspotAnalyzer.applySuggestion", cmdApplySuggestion),
     vscode.commands.registerCommand("buildHotspotAnalyzer.applyAllSuggestions", cmdApplyAllSuggestions),
     vscode.commands.registerCommand("buildHotspotAnalyzer.revertChanges", cmdRevertChanges),
     vscode.commands.registerCommand("buildHotspotAnalyzer.restartServer", cmdRestartServer)
   );
-  client.start();
+  void client.start().then(async () => {
+    const traceSetting = config.get("trace.server", "off");
+    await client.setTrace(traceSettingToProtocol(traceSetting));
+    logLine(`Language client ready (trace=${traceSetting})`);
+  }).catch((error) => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Language client failed to initialize: ${errorMessage}`);
+  });
   if (config.get("autoAnalyze", false)) {
     setTimeout(() => {
       vscode.commands.executeCommand("buildHotspotAnalyzer.analyzeProject");
@@ -18167,6 +18214,7 @@ function deactivate() {
   if (!client) {
     return void 0;
   }
+  logLine("Deactivating extension");
   return client.stop();
 }
 function rememberWorkspaceBuildDir(workspaceRoot, buildDir) {
@@ -18187,6 +18235,8 @@ async function promptForBuildDir(defaultValue) {
   });
 }
 async function withBhaProgress(title, task) {
+  logLine(`${title} started`);
+  showOutput(true);
   return vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
@@ -18209,6 +18259,9 @@ async function fetchSuggestionDetails(suggestionId) {
     return void 0;
   }
   return void 0;
+}
+async function cmdShowActivityLog() {
+  showOutput(false);
 }
 function splitShellArgs(input) {
   const args = [];
@@ -18374,6 +18427,7 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
     return void 0;
   }
   rememberWorkspaceBuildDir(workspaceRoot, buildDir);
+  logLine(`Analyze request: projectRoot=${workspaceRoot}, buildDir=${buildDir ?? "<auto>"}, traceDir=${traceDir ?? "<auto>"}, rebuild=${rebuild}`);
   const operationId = generateOperationId(rebuild ? "build-and-analyze" : "analyze");
   try {
     const executeAnalysis = async (progress) => {
@@ -18395,6 +18449,7 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
       executeAnalysis
     );
     if (!isValidAnalysisResult(result)) {
+      logLine("Analyze request returned an invalid result");
       vscode.window.showErrorMessage("Analysis returned invalid result");
       return;
     }
@@ -18403,12 +18458,17 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
     vscode.window.showInformationMessage(
       `Analysis complete: ${validSuggestions.length} suggestions found`
     );
+    const metrics = result.baselineMetrics;
+    logLine(
+      `Analysis complete: suggestions=${validSuggestions.length}, totalBuildTimeMs=${safeGetNumber(metrics?.totalDurationMs, 0)}, filesAnalyzed=${safeGetNumber(result.filesAnalyzed, safeGetNumber(metrics?.filesCompiled, 0))}`
+    );
     if (validSuggestions.length > 0) {
       await showSuggestionsPanel(result);
     }
     return result;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Analysis failed: ${errorMessage}`);
     vscode.window.showErrorMessage(`Analysis failed: ${errorMessage}`);
     return void 0;
   }
@@ -18424,6 +18484,9 @@ async function recordBuildTraces(advanced) {
     return;
   }
   try {
+    logLine(
+      `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? "<auto>"}, buildSystem=${options.buildSystem ?? "auto"}, compiler=${options.compiler ?? "auto"}, buildType=${options.buildType ?? "default"}, clean=${options.cleanFirst}, verbose=${options.verbose}`
+    );
     const executeRecordBuild = async (progress) => {
       progress.report({ message: "Running traced build..." });
       const result2 = await client.sendRequest("workspace/executeCommand", {
@@ -18449,12 +18512,17 @@ async function recordBuildTraces(advanced) {
       executeRecordBuild
     );
     if (!isValidRecordBuildResult(result)) {
+      logLine("Record traces request returned an invalid result");
       vscode.window.showErrorMessage("Build trace recording returned invalid result");
       return;
     }
     const traceFileCount = safeGetNumber(result.traceFileCount, 0);
     const buildSystem = safeGetString(result.buildSystem, "unknown build system");
     const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+    logLine(
+      `Recorded traces: buildSystem=${safeGetString(result.buildSystem, "unknown")}, traceFileCount=${traceFileCount}, traceOutputDir=${safeGetString(result.traceOutputDir, "<auto>")}, buildTimeMs=${buildTimeMs}`
+    );
+    logBlock("Build output", safeGetString(result.output, ""));
     const workspaceRoot = getWorkspaceRootPath();
     if (workspaceRoot) {
       rememberWorkspaceBuildDir(workspaceRoot, safeGetString(result.buildDir, "").trim() || options.buildDir);
@@ -18473,6 +18541,7 @@ async function recordBuildTraces(advanced) {
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Build trace recording failed: ${errorMessage}`);
     vscode.window.showErrorMessage(`Build trace recording failed: ${errorMessage}`);
   }
 }
@@ -18493,23 +18562,28 @@ async function cmdAnalyzeProject() {
 }
 async function cmdShowSuggestions() {
   try {
+    logLine("Fetching suggestions for current analysis");
     const result = await client.sendRequest("workspace/executeCommand", {
       command: "bha.showMetrics",
       arguments: []
     });
     if (!isValidAnalysisResult(result)) {
+      logLine("No valid analysis result available for suggestions");
       vscode.window.showInformationMessage("No valid suggestions available. Run analysis first.");
       return;
     }
     const validSuggestions = result.suggestions.filter(isValidSuggestion);
     result.suggestions = validSuggestions;
     if (validSuggestions.length > 0) {
+      logLine(`Showing suggestions panel with ${validSuggestions.length} suggestions`);
       await showSuggestionsPanel(result);
     } else {
+      logLine("No suggestions available to show");
       vscode.window.showInformationMessage("No suggestions available. Run analysis first.");
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Failed to get suggestions: ${errorMessage}`);
     vscode.window.showErrorMessage(`Failed to get suggestions: ${errorMessage}`);
   }
 }
@@ -18555,6 +18629,7 @@ async function cmdApplySuggestion(suggestionId) {
     suggestionId = selected.suggestionId;
   }
   if (!suggestionId || suggestionId.trim().length === 0) {
+    logLine("Apply suggestion aborted: invalid suggestion ID");
     vscode.window.showErrorMessage("Invalid suggestion ID");
     return;
   }
@@ -18565,6 +18640,7 @@ async function cmdApplySuggestion(suggestionId) {
   );
   if (confirm !== "Apply") return;
   try {
+    logLine(`Applying suggestion: id=${suggestionId}`);
     const executeApplySuggestion = async (progress) => {
       progress.report({ message: "Applying edits and validating result..." });
       const result = await client.sendRequest("workspace/executeCommand", {
@@ -18578,12 +18654,14 @@ async function cmdApplySuggestion(suggestionId) {
       executeApplySuggestion
     );
     if (!isValidApplyResult(applyResult)) {
+      logLine("Apply suggestion returned an invalid result");
       vscode.window.showErrorMessage("Apply returned invalid result");
       return;
     }
     if (applyResult.success) {
       lastBackupId = applyResult.backupId;
       const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
+      logLine(`Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? "<none>"}`);
       vscode.window.showInformationMessage(
         `Suggestion applied successfully. Modified ${numFiles} files.`
       );
@@ -18592,12 +18670,14 @@ async function cmdApplySuggestion(suggestionId) {
       const errorMsgs = errors.map((e) => safeGetString(e?.message, "Unknown error"));
       const rollback = applyResult.rollback;
       const rollbackSuffix = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
+      logLine(`Apply suggestion failed: id=${suggestionId}, errors=${errorMsgs.join("; ") || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
         `Failed to apply suggestion: ${errorMsgs.join(", ") || "Unknown error"}.${rollbackSuffix}`
       );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Failed to apply suggestion: ${errorMessage}`);
     vscode.window.showErrorMessage(`Failed to apply suggestion: ${errorMessage}`);
   }
 }
@@ -18643,6 +18723,7 @@ async function cmdApplyAllSuggestions() {
     return s.priority <= minPriority;
   }).length;
   if (affectedCount === 0) {
+    logLine("Apply all aborted: no suggestions matched selected criteria");
     vscode.window.showInformationMessage("No suggestions match the selected criteria");
     return;
   }
@@ -18653,6 +18734,7 @@ async function cmdApplyAllSuggestions() {
   );
   if (confirm !== "Apply All") return;
   try {
+    logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
     const executeApplyAll = async (progress) => {
       progress.report({ message: "Applying edits and validating transaction..." });
       const result2 = await client.sendRequest("workspace/executeCommand", {
@@ -18672,11 +18754,13 @@ async function cmdApplyAllSuggestions() {
       executeApplyAll
     );
     if (!isValidApplyAllResult(applyResult)) {
+      logLine("Apply all returned an invalid result");
       vscode.window.showErrorMessage("Apply all returned invalid result");
       return;
     }
     lastBackupId = applyResult.backupId;
     if (applyResult.success) {
+      logLine(`Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, backupId=${applyResult.backupId ?? "<none>"}`);
       const message = `Applied ${applyResult.appliedCount} suggestions successfully.` + (applyResult.skippedCount > 0 ? ` Skipped ${applyResult.skippedCount}.` : "");
       const action = await vscode.window.showInformationMessage(
         message,
@@ -18698,18 +18782,21 @@ async function cmdApplyAllSuggestions() {
       }
       const rollback = applyResult.rollback;
       const rollbackDetails = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
+      logLine(`Apply all failed: failed=${failedCount}, errors=${errorDetails || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
         `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}`
       );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Failed to apply suggestions: ${errorMessage}`);
     vscode.window.showErrorMessage(`Failed to apply suggestions: ${errorMessage}`);
   }
 }
 async function cmdRevertChanges() {
   const operationId = generateOperationId("revert");
   if (!lastBackupId) {
+    logLine("Revert skipped: no backup available");
     vscode.window.showInformationMessage("No backup available to revert");
     return;
   }
@@ -18720,6 +18807,7 @@ async function cmdRevertChanges() {
   );
   if (confirm !== "Revert") return;
   try {
+    logLine(`Reverting changes from backup: ${lastBackupId}`);
     const executeRevert = async (progress) => {
       progress.report({ message: "Restoring files from backup..." });
       const result = await client.sendRequest("workspace/executeCommand", {
@@ -18733,11 +18821,13 @@ async function cmdRevertChanges() {
       executeRevert
     );
     if (!isValidRevertResult(revertResult)) {
+      logLine("Revert returned an invalid result");
       vscode.window.showErrorMessage("Revert returned invalid result");
       return;
     }
     if (revertResult.success) {
       const numFiles = Array.isArray(revertResult.restoredFiles) ? revertResult.restoredFiles.length : 0;
+      logLine(`Revert succeeded: restoredFiles=${numFiles}`);
       vscode.window.showInformationMessage(
         `Reverted successfully. Restored ${numFiles} files.`
       );
@@ -18745,23 +18835,30 @@ async function cmdRevertChanges() {
     } else {
       const errors = Array.isArray(revertResult.errors) ? revertResult.errors : [];
       const errorMsgs = errors.map((e) => safeGetString(e?.message, "Unknown error"));
+      logLine(`Revert failed: ${errorMsgs.join("; ") || "unknown"}`);
       vscode.window.showErrorMessage(
         `Failed to revert: ${errorMsgs.join(", ") || "Unknown error"}`
       );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logLine(`Failed to revert changes: ${errorMessage}`);
     vscode.window.showErrorMessage(`Failed to revert changes: ${errorMessage}`);
   }
 }
 async function cmdRestartServer() {
   if (client) {
     try {
+      logLine("Restarting language server");
       await client.stop();
       await client.start();
+      const traceSetting = vscode.workspace.getConfiguration("buildHotspotAnalyzer").get("trace.server", "off");
+      await client.setTrace(traceSettingToProtocol(traceSetting));
+      logLine(`Language server restarted (trace=${traceSetting})`);
       vscode.window.showInformationMessage("BHA language server restarted");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
+      logLine(`Failed to restart server: ${errorMessage}`);
       vscode.window.showErrorMessage(`Failed to restart server: ${errorMessage}`);
     }
   }

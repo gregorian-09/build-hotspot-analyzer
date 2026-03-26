@@ -1,5 +1,12 @@
 import * as vscode from 'vscode';
-import {LanguageClient, LanguageClientOptions, ServerOptions, TransportKind} from 'vscode-languageclient/node';
+import {
+    LanguageClient,
+    LanguageClientOptions,
+    RevealOutputChannelOn,
+    ServerOptions,
+    Trace,
+    TransportKind
+} from 'vscode-languageclient/node';
 
 // ============================================================================
 // Configuration Constants
@@ -309,11 +316,47 @@ function formatApplicationMode(mode?: string): string {
 
 let client: LanguageClient;
 let lastBackupId: string | undefined;
+let outputChannel: vscode.OutputChannel;
+let traceOutputChannel: vscode.OutputChannel;
 const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
 
 function getWorkspaceRootPath(): string | undefined {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
+
+function timestamp(): string {
+    return new Date().toLocaleTimeString();
+}
+
+function logLine(message: string): void {
+    outputChannel.appendLine(`[${timestamp()}] ${message}`);
+}
+
+function logBlock(title: string, content?: string): void {
+    if (!content || content.trim().length === 0) {
+        return;
+    }
+    outputChannel.appendLine(`[${timestamp()}] ${title}`);
+    for (const line of content.replace(/\r\n/g, '\n').split('\n')) {
+        outputChannel.appendLine(line);
+    }
+}
+
+function showOutput(preserveFocus = true): void {
+    outputChannel.show(preserveFocus);
+}
+
+function traceSettingToProtocol(value: string): Trace {
+    switch (value) {
+        case 'messages':
+            return Trace.Messages;
+        case 'verbose':
+            return Trace.Verbose;
+        case 'off':
+        default:
+            return Trace.Off;
+    }
 }
 
 // ============================================================================
@@ -324,10 +367,17 @@ export function activate(context: vscode.ExtensionContext) {
     const config = vscode.workspace.getConfiguration('buildHotspotAnalyzer');
     const serverPath = config.get<string>('serverPath', CONFIG.DEFAULT_SERVER_PATH);
 
+    outputChannel = vscode.window.createOutputChannel('Build Hotspot Analyzer');
+    traceOutputChannel = vscode.window.createOutputChannel('Build Hotspot Analyzer Trace');
+    context.subscriptions.push(outputChannel, traceOutputChannel);
+
     if (!serverPath || serverPath.trim().length === 0) {
+        logLine('Server path is not configured');
         vscode.window.showErrorMessage('BHA: Server path is not configured');
         return;
     }
+
+    logLine(`Activating extension with server: ${serverPath}`);
 
     const serverOptions: ServerOptions = {
         command: serverPath,
@@ -340,6 +390,9 @@ export function activate(context: vscode.ExtensionContext) {
             { scheme: 'file', language: 'cpp' },
             { scheme: 'file', language: 'c' }
         ],
+        outputChannel,
+        traceOutputChannel,
+        revealOutputChannelOn: RevealOutputChannelOn.Error,
         synchronize: {
             fileEvents: vscode.workspace.createFileSystemWatcher('**/*.{cpp,cc,cxx,c,h,hpp,hxx}')
         }
@@ -358,13 +411,21 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('buildHotspotAnalyzer.recordBuildTracesAdvanced', cmdRecordBuildTracesAdvanced),
         vscode.commands.registerCommand('buildHotspotAnalyzer.analyzeProject', cmdAnalyzeProject),
         vscode.commands.registerCommand('buildHotspotAnalyzer.showSuggestions', cmdShowSuggestions),
+        vscode.commands.registerCommand('buildHotspotAnalyzer.showActivityLog', cmdShowActivityLog),
         vscode.commands.registerCommand('buildHotspotAnalyzer.applySuggestion', cmdApplySuggestion),
         vscode.commands.registerCommand('buildHotspotAnalyzer.applyAllSuggestions', cmdApplyAllSuggestions),
         vscode.commands.registerCommand('buildHotspotAnalyzer.revertChanges', cmdRevertChanges),
         vscode.commands.registerCommand('buildHotspotAnalyzer.restartServer', cmdRestartServer)
     );
 
-    client.start();
+    void client.start().then(async () => {
+        const traceSetting = config.get<string>('trace.server', 'off');
+        await client.setTrace(traceSettingToProtocol(traceSetting));
+        logLine(`Language client ready (trace=${traceSetting})`);
+    }).catch((error: unknown) => {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Language client failed to initialize: ${errorMessage}`);
+    });
 
     if (config.get<boolean>('autoAnalyze', false)) {
         setTimeout(() => {
@@ -377,6 +438,7 @@ export function deactivate(): Thenable<void> | undefined {
     if (!client) {
         return undefined;
     }
+    logLine('Deactivating extension');
     return client.stop();
 }
 
@@ -408,6 +470,8 @@ async function withBhaProgress<T>(
     title: string,
     task: (progress: vscode.Progress<{ message?: string; increment?: number }>) => Promise<T>
 ): Promise<T> {
+    logLine(`${title} started`);
+    showOutput(true);
     return vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
@@ -431,6 +495,10 @@ async function fetchSuggestionDetails(suggestionId: string): Promise<SuggestionD
         return undefined;
     }
     return undefined;
+}
+
+async function cmdShowActivityLog(): Promise<void> {
+    showOutput(false);
 }
 
 function splitShellArgs(input: string): string[] {
@@ -617,6 +685,7 @@ async function runAnalysis(
         return undefined;
     }
     rememberWorkspaceBuildDir(workspaceRoot, buildDir);
+    logLine(`Analyze request: projectRoot=${workspaceRoot}, buildDir=${buildDir ?? '<auto>'}, traceDir=${traceDir ?? '<auto>'}, rebuild=${rebuild}`);
 
     const operationId = generateOperationId(rebuild ? 'build-and-analyze' : 'analyze');
 
@@ -643,6 +712,7 @@ async function runAnalysis(
         );
 
         if (!isValidAnalysisResult(result)) {
+            logLine('Analyze request returned an invalid result');
             vscode.window.showErrorMessage('Analysis returned invalid result');
             return;
         }
@@ -654,6 +724,10 @@ async function runAnalysis(
         vscode.window.showInformationMessage(
             `Analysis complete: ${validSuggestions.length} suggestions found`
         );
+        const metrics = result.baselineMetrics;
+        logLine(
+            `Analysis complete: suggestions=${validSuggestions.length}, totalBuildTimeMs=${safeGetNumber(metrics?.totalDurationMs, 0)}, filesAnalyzed=${safeGetNumber(result.filesAnalyzed, safeGetNumber(metrics?.filesCompiled, 0))}`
+        );
 
         if (validSuggestions.length > 0) {
             await showSuggestionsPanel(result);
@@ -661,6 +735,7 @@ async function runAnalysis(
         return result;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Analysis failed: ${errorMessage}`);
         vscode.window.showErrorMessage(`Analysis failed: ${errorMessage}`);
         return undefined;
     }
@@ -679,6 +754,9 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
     }
 
     try {
+        logLine(
+            `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? '<auto>'}, buildSystem=${options.buildSystem ?? 'auto'}, compiler=${options.compiler ?? 'auto'}, buildType=${options.buildType ?? 'default'}, clean=${options.cleanFirst}, verbose=${options.verbose}`
+        );
         const executeRecordBuild = async (
             progress: vscode.Progress<{ message?: string; increment?: number }>
         ): Promise<unknown> => {
@@ -707,6 +785,7 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         );
 
         if (!isValidRecordBuildResult(result)) {
+            logLine('Record traces request returned an invalid result');
             vscode.window.showErrorMessage('Build trace recording returned invalid result');
             return;
         }
@@ -714,6 +793,10 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         const traceFileCount = safeGetNumber(result.traceFileCount, 0);
         const buildSystem = safeGetString(result.buildSystem, 'unknown build system');
         const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+        logLine(
+            `Recorded traces: buildSystem=${safeGetString(result.buildSystem, 'unknown')}, traceFileCount=${traceFileCount}, traceOutputDir=${safeGetString(result.traceOutputDir, '<auto>')}, buildTimeMs=${buildTimeMs}`
+        );
+        logBlock('Build output', safeGetString(result.output, ''));
         const workspaceRoot = getWorkspaceRootPath();
         if (workspaceRoot) {
             rememberWorkspaceBuildDir(workspaceRoot, safeGetString(result.buildDir, '').trim() || options.buildDir);
@@ -732,6 +815,7 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Build trace recording failed: ${errorMessage}`);
         vscode.window.showErrorMessage(`Build trace recording failed: ${errorMessage}`);
     }
 }
@@ -756,12 +840,14 @@ async function cmdAnalyzeProject(): Promise<void> {
 
 async function cmdShowSuggestions(): Promise<void> {
     try {
+        logLine('Fetching suggestions for current analysis');
         const result = await client.sendRequest<unknown>('workspace/executeCommand', {
             command: 'bha.showMetrics',
             arguments: []
         });
 
         if (!isValidAnalysisResult(result)) {
+            logLine('No valid analysis result available for suggestions');
             vscode.window.showInformationMessage('No valid suggestions available. Run analysis first.');
             return;
         }
@@ -770,12 +856,15 @@ async function cmdShowSuggestions(): Promise<void> {
         result.suggestions = validSuggestions;
 
         if (validSuggestions.length > 0) {
+            logLine(`Showing suggestions panel with ${validSuggestions.length} suggestions`);
             await showSuggestionsPanel(result);
         } else {
+            logLine('No suggestions available to show');
             vscode.window.showInformationMessage('No suggestions available. Run analysis first.');
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Failed to get suggestions: ${errorMessage}`);
         vscode.window.showErrorMessage(`Failed to get suggestions: ${errorMessage}`);
     }
 }
@@ -836,6 +925,7 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
 
     // Validate suggestion ID
     if (!suggestionId || suggestionId.trim().length === 0) {
+        logLine('Apply suggestion aborted: invalid suggestion ID');
         vscode.window.showErrorMessage('Invalid suggestion ID');
         return;
     }
@@ -849,6 +939,7 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
     if (confirm !== 'Apply') return;
 
     try {
+        logLine(`Applying suggestion: id=${suggestionId}`);
         const executeApplySuggestion = async (
             progress: vscode.Progress<{ message?: string; increment?: number }>
         ): Promise<unknown> => {
@@ -865,6 +956,7 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
         );
 
         if (!isValidApplyResult(applyResult)) {
+            logLine('Apply suggestion returned an invalid result');
             vscode.window.showErrorMessage('Apply returned invalid result');
             return;
         }
@@ -872,6 +964,7 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
         if (applyResult.success) {
             lastBackupId = applyResult.backupId;
             const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
+            logLine(`Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? '<none>'}`);
             vscode.window.showInformationMessage(
                 `Suggestion applied successfully. Modified ${numFiles} files.`
             );
@@ -882,12 +975,14 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
             const rollbackSuffix = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
                 : '';
+            logLine(`Apply suggestion failed: id=${suggestionId}, errors=${errorMsgs.join('; ') || 'unknown'}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, 'unknown') : 'not-attempted'}`);
             vscode.window.showErrorMessage(
                 `Failed to apply suggestion: ${errorMsgs.join(', ') || 'Unknown error'}.${rollbackSuffix}`
             );
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Failed to apply suggestion: ${errorMessage}`);
         vscode.window.showErrorMessage(`Failed to apply suggestion: ${errorMessage}`);
     }
 }
@@ -946,6 +1041,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
     }).length;
 
     if (affectedCount === 0) {
+        logLine('Apply all aborted: no suggestions matched selected criteria');
         vscode.window.showInformationMessage('No suggestions match the selected criteria');
         return;
     }
@@ -959,6 +1055,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
     if (confirm !== 'Apply All') return;
 
     try {
+        logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
         // Use atomic apply with transaction semantics
         const executeApplyAll = async (
             progress: vscode.Progress<{ message?: string; increment?: number }>
@@ -981,6 +1078,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         );
 
         if (!isValidApplyAllResult(applyResult)) {
+            logLine('Apply all returned an invalid result');
             vscode.window.showErrorMessage('Apply all returned invalid result');
             return;
         }
@@ -988,6 +1086,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         lastBackupId = applyResult.backupId;
 
         if (applyResult.success) {
+            logLine(`Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, backupId=${applyResult.backupId ?? '<none>'}`);
             const message = `Applied ${applyResult.appliedCount} suggestions successfully.` +
                 (applyResult.skippedCount > 0 ? ` Skipped ${applyResult.skippedCount}.` : '');
 
@@ -1018,6 +1117,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             const rollbackDetails = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
                 : '';
+            logLine(`Apply all failed: failed=${failedCount}, errors=${errorDetails || 'unknown'}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, 'unknown') : 'not-attempted'}`);
 
             vscode.window.showErrorMessage(
                 `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}`
@@ -1025,6 +1125,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Failed to apply suggestions: ${errorMessage}`);
         vscode.window.showErrorMessage(`Failed to apply suggestions: ${errorMessage}`);
     }
 }
@@ -1033,6 +1134,7 @@ async function cmdRevertChanges(): Promise<void> {
     const operationId = generateOperationId('revert');
 
     if (!lastBackupId) {
+        logLine('Revert skipped: no backup available');
         vscode.window.showInformationMessage('No backup available to revert');
         return;
     }
@@ -1046,6 +1148,7 @@ async function cmdRevertChanges(): Promise<void> {
     if (confirm !== 'Revert') return;
 
     try {
+        logLine(`Reverting changes from backup: ${lastBackupId}`);
         const executeRevert = async (
             progress: vscode.Progress<{ message?: string; increment?: number }>
         ): Promise<unknown> => {
@@ -1062,12 +1165,14 @@ async function cmdRevertChanges(): Promise<void> {
         );
 
         if (!isValidRevertResult(revertResult)) {
+            logLine('Revert returned an invalid result');
             vscode.window.showErrorMessage('Revert returned invalid result');
             return;
         }
 
         if (revertResult.success) {
             const numFiles = Array.isArray(revertResult.restoredFiles) ? revertResult.restoredFiles.length : 0;
+            logLine(`Revert succeeded: restoredFiles=${numFiles}`);
             vscode.window.showInformationMessage(
                 `Reverted successfully. Restored ${numFiles} files.`
             );
@@ -1075,12 +1180,14 @@ async function cmdRevertChanges(): Promise<void> {
         } else {
             const errors = Array.isArray(revertResult.errors) ? revertResult.errors : [];
             const errorMsgs = errors.map((e) => safeGetString(e?.message, 'Unknown error'));
+            logLine(`Revert failed: ${errorMsgs.join('; ') || 'unknown'}`);
             vscode.window.showErrorMessage(
                 `Failed to revert: ${errorMsgs.join(', ') || 'Unknown error'}`
             );
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        logLine(`Failed to revert changes: ${errorMessage}`);
         vscode.window.showErrorMessage(`Failed to revert changes: ${errorMessage}`);
     }
 }
@@ -1088,11 +1195,16 @@ async function cmdRevertChanges(): Promise<void> {
 async function cmdRestartServer(): Promise<void> {
     if (client) {
         try {
+            logLine('Restarting language server');
             await client.stop();
             await client.start();
+            const traceSetting = vscode.workspace.getConfiguration('buildHotspotAnalyzer').get<string>('trace.server', 'off');
+            await client.setTrace(traceSettingToProtocol(traceSetting));
+            logLine(`Language server restarted (trace=${traceSetting})`);
             vscode.window.showInformationMessage('BHA language server restarted');
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
+            logLine(`Failed to restart server: ${errorMessage}`);
             vscode.window.showErrorMessage(`Failed to restart server: ${errorMessage}`);
         }
     }

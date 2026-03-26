@@ -27,12 +27,16 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 - `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
+- `BHA: Show Activity Log`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
 Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations remain visible while they run.
+
+The extension also writes command activity, build summaries, and server/runtime diagnostics to the `Build Hotspot Analyzer`
+output channel. Use `BHA: Show Activity Log` or open the Output panel and select `Build Hotspot Analyzer`.
 
 If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
 

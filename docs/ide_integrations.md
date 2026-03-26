@@ -68,12 +68,16 @@ code --install-extension build-hotspot-analyzer-0.1.0.vsix
 - `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
+- `BHA: Show Activity Log`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
 Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations are visible while they run.
+
+VS Code also writes command activity, build output summaries, and server/runtime diagnostics to the
+`Build Hotspot Analyzer` output channel. Open it with `BHA: Show Activity Log` or through the Output panel.
 
 If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
 
