@@ -18065,6 +18065,11 @@ function isValidRevertResult(result) {
   const obj = result;
   return typeof obj.success === "boolean";
 }
+function isValidRecordBuildResult(result) {
+  if (!result || typeof result !== "object") return false;
+  const obj = result;
+  return typeof obj.success === "boolean";
+}
 function safeGetPriority(priority) {
   if (typeof priority !== "number" || priority < 0 || priority > 2) {
     return 2;
@@ -18130,6 +18135,8 @@ function activate(context) {
     clientOptions
   );
   context.subscriptions.push(
+    vscode.commands.registerCommand("buildHotspotAnalyzer.recordBuildTraces", cmdRecordBuildTraces),
+    vscode.commands.registerCommand("buildHotspotAnalyzer.recordBuildTracesAdvanced", cmdRecordBuildTracesAdvanced),
     vscode.commands.registerCommand("buildHotspotAnalyzer.analyzeProject", cmdAnalyzeProject),
     vscode.commands.registerCommand("buildHotspotAnalyzer.showSuggestions", cmdShowSuggestions),
     vscode.commands.registerCommand("buildHotspotAnalyzer.applySuggestion", cmdApplySuggestion),
@@ -18150,24 +18157,182 @@ function deactivate() {
   }
   return client.stop();
 }
-async function cmdAnalyzeProject() {
-  const operationId = generateOperationId("analyze");
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-  if (!workspaceFolder) {
-    vscode.window.showErrorMessage("No workspace folder open");
-    return;
-  }
-  const buildDir = await vscode.window.showInputBox({
+async function promptForBuildDir() {
+  return vscode.window.showInputBox({
     prompt: "Build directory (optional, leave empty for auto-detect)",
     placeHolder: "build"
   });
+}
+function splitShellArgs(input) {
+  const args = [];
+  let current = "";
+  let quote = null;
+  let escape = false;
+  for (const ch of input) {
+    if (escape) {
+      current += ch;
+      escape = false;
+      continue;
+    }
+    if (ch === "\\") {
+      escape = true;
+      continue;
+    }
+    if (quote) {
+      if (ch === quote) {
+        quote = null;
+      } else {
+        current += ch;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      continue;
+    }
+    if (/\s/.test(ch)) {
+      if (current.length > 0) {
+        args.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current += ch;
+  }
+  if (current.length > 0) {
+    args.push(current);
+  }
+  return args;
+}
+async function promptForRecordBuildOptions(advanced) {
+  const buildDir = await promptForBuildDir();
+  if (buildDir === void 0) {
+    return void 0;
+  }
+  const options = {
+    buildDir: buildDir || void 0,
+    cleanFirst: false,
+    verbose: false,
+    extraArgs: []
+  };
+  if (!advanced) {
+    return options;
+  }
+  const buildSystem = await vscode.window.showQuickPick([
+    { label: "Auto-detect", value: "" },
+    { label: "CMake", value: "CMake" },
+    { label: "Ninja", value: "Ninja" },
+    { label: "Make", value: "Make" },
+    { label: "Meson", value: "Meson" },
+    { label: "Bazel", value: "Bazel" },
+    { label: "Buck2", value: "Buck2" },
+    { label: "SCons", value: "SCons" },
+    { label: "Unreal", value: "Unreal" },
+    { label: "XCode", value: "XCode" },
+    { label: "MSBuild", value: "MSBuild" }
+  ], {
+    title: "Build System",
+    placeHolder: "Choose a build system override or keep auto-detect"
+  });
+  if (buildSystem === void 0) {
+    return void 0;
+  }
+  options.buildSystem = buildSystem.value || void 0;
+  const buildType = await vscode.window.showQuickPick([
+    { label: "Release", value: "Release" },
+    { label: "Debug", value: "Debug" },
+    { label: "RelWithDebInfo", value: "RelWithDebInfo" },
+    { label: "MinSizeRel", value: "MinSizeRel" },
+    { label: "Development", value: "Development" }
+  ], {
+    title: "Build Type",
+    placeHolder: "Choose a build type"
+  });
+  if (buildType === void 0) {
+    return void 0;
+  }
+  options.buildType = buildType.value;
+  const compiler = await vscode.window.showInputBox({
+    title: "Compiler Override",
+    prompt: "Compiler executable or absolute path (optional)",
+    placeHolder: "clang++, g++, icpx, /usr/bin/clang++"
+  });
+  if (compiler === void 0) {
+    return void 0;
+  }
+  options.compiler = compiler.trim() || void 0;
+  const parallelJobs = await vscode.window.showInputBox({
+    title: "Parallel Jobs",
+    prompt: "Number of parallel jobs (optional, leave empty for auto-detect)",
+    placeHolder: "8",
+    validateInput: (value) => {
+      if (value.trim().length === 0) {
+        return void 0;
+      }
+      const parsed = Number(value);
+      return Number.isInteger(parsed) && parsed > 0 ? void 0 : "Enter a positive integer";
+    }
+  });
+  if (parallelJobs === void 0) {
+    return void 0;
+  }
+  options.parallelJobs = parallelJobs.trim().length > 0 ? Number(parallelJobs) : void 0;
+  const traceOutputDir = await vscode.window.showInputBox({
+    title: "Trace Output Directory",
+    prompt: "Directory for trace files (optional, leave empty to use the adapter default)",
+    placeHolder: "traces"
+  });
+  if (traceOutputDir === void 0) {
+    return void 0;
+  }
+  options.traceOutputDir = traceOutputDir.trim() || void 0;
+  const extraArgs = await vscode.window.showInputBox({
+    title: "Extra Build Arguments",
+    prompt: "Additional build-system arguments (optional)",
+    placeHolder: "--config Debug -DENABLE_SOMETHING=ON"
+  });
+  if (extraArgs === void 0) {
+    return void 0;
+  }
+  options.extraArgs = splitShellArgs(extraArgs);
+  const cleanFirst = await vscode.window.showQuickPick([
+    { label: "No", value: false },
+    { label: "Yes", value: true }
+  ], {
+    title: "Clean Before Build",
+    placeHolder: "Run a clean build before recording traces?"
+  });
+  if (cleanFirst === void 0) {
+    return void 0;
+  }
+  options.cleanFirst = cleanFirst.value;
+  const verbose = await vscode.window.showQuickPick([
+    { label: "No", value: false },
+    { label: "Yes", value: true }
+  ], {
+    title: "Verbose Build Output",
+    placeHolder: "Enable verbose build output while recording traces?"
+  });
+  if (verbose === void 0) {
+    return void 0;
+  }
+  options.verbose = verbose.value;
+  return options;
+}
+async function runAnalysis(buildDir, rebuild) {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    vscode.window.showErrorMessage("No workspace folder open");
+    return void 0;
+  }
+  const operationId = generateOperationId(rebuild ? "build-and-analyze" : "analyze");
   try {
     const result = await client.sendRequest("workspace/executeCommand", {
       command: "bha.analyze",
       arguments: [{
         projectRoot: workspaceFolder.uri.fsPath,
         buildDir: buildDir || void 0,
-        rebuild: false,
+        rebuild,
         operationId
       }]
     });
@@ -18183,10 +18348,70 @@ async function cmdAnalyzeProject() {
     if (validSuggestions.length > 0) {
       showSuggestionsPanel(result);
     }
+    return result;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     vscode.window.showErrorMessage(`Analysis failed: ${errorMessage}`);
+    return void 0;
   }
+}
+async function recordBuildTraces(advanced) {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    vscode.window.showErrorMessage("No workspace folder open");
+    return;
+  }
+  const options = await promptForRecordBuildOptions(advanced);
+  if (!options) {
+    return;
+  }
+  try {
+    const result = await client.sendRequest("workspace/executeCommand", {
+      command: "bha.recordBuildTraces",
+      arguments: [{
+        projectRoot: workspaceFolder.uri.fsPath,
+        buildDir: options.buildDir,
+        cleanFirst: options.cleanFirst,
+        verbose: options.verbose,
+        buildSystem: options.buildSystem,
+        buildType: options.buildType,
+        compiler: options.compiler,
+        parallelJobs: options.parallelJobs,
+        traceOutputDir: options.traceOutputDir,
+        extraArgs: options.extraArgs,
+        operationId: generateOperationId(advanced ? "record-build-traces-advanced" : "record-build-traces")
+      }]
+    });
+    if (!isValidRecordBuildResult(result)) {
+      vscode.window.showErrorMessage("Build trace recording returned invalid result");
+      return;
+    }
+    const traceFileCount = safeGetNumber(result.traceFileCount, 0);
+    const buildSystem = safeGetString(result.buildSystem, "unknown build system");
+    const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+    const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1e3).toFixed(2)}s`;
+    const analyzeNow = "Analyze Now";
+    const choice = await vscode.window.showInformationMessage(message, analyzeNow);
+    if (choice === analyzeNow) {
+      await runAnalysis(options.buildDir, false);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Build trace recording failed: ${errorMessage}`);
+  }
+}
+async function cmdRecordBuildTraces() {
+  await recordBuildTraces(false);
+}
+async function cmdRecordBuildTracesAdvanced() {
+  await recordBuildTraces(true);
+}
+async function cmdAnalyzeProject() {
+  const buildDir = await promptForBuildDir();
+  if (buildDir === void 0) {
+    return;
+  }
+  await runAnalysis(buildDir || void 0, false);
 }
 async function cmdShowSuggestions() {
   try {

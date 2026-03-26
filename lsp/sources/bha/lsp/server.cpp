@@ -338,35 +338,55 @@ namespace bha::lsp
         LSPConfig config;
         if (j.contains("optimization")) {
             const auto& opt = j["optimization"];
-            if (opt.contains("autoApplyAll")) config.auto_apply_all = opt["autoApplyAll"].get<bool>();
-            if (opt.contains("showPreviewBeforeApply")) config.show_preview_before_apply = opt["showPreviewBeforeApply"].get<bool>();
-            if (opt.contains("rebuildAfterApply")) config.rebuild_after_apply = opt["rebuildAfterApply"].get<bool>();
-            if (opt.contains("rollbackOnBuildFailure")) config.rollback_on_build_failure = opt["rollbackOnBuildFailure"].get<bool>();
-            if (opt.contains("buildCommand")) config.build_command = opt["buildCommand"].get<std::string>();
-            if (opt.contains("buildTimeout")) config.build_timeout_seconds = opt["buildTimeout"].get<int>();
-            if (opt.contains("keepBackups")) config.keep_backups = opt["keepBackups"].get<bool>();
-            if (opt.contains("backupDirectory")) config.backup_directory = opt["backupDirectory"].get<std::string>();
-            if (opt.contains("persistTrustLoop")) config.persist_trust_loop = opt["persistTrustLoop"].get<bool>();
-            if (opt.contains("allowMissingCompileCommands")) config.allow_missing_compile_commands = opt["allowMissingCompileCommands"].get<bool>();
-            if (opt.contains("includeUnsafeSuggestions")) config.include_unsafe_suggestions = opt["includeUnsafeSuggestions"].get<bool>();
-            if (opt.contains("minConfidence")) config.min_confidence = opt["minConfidence"].get<double>();
+            if (opt.contains("autoApplyAll")) { config.auto_apply_all = opt["autoApplyAll"].get<bool>();
+}
+            if (opt.contains("showPreviewBeforeApply")) { config.show_preview_before_apply = opt["showPreviewBeforeApply"].get<bool>();
+}
+            if (opt.contains("rebuildAfterApply")) { config.rebuild_after_apply = opt["rebuildAfterApply"].get<bool>();
+}
+            if (opt.contains("rollbackOnBuildFailure")) { config.rollback_on_build_failure = opt["rollbackOnBuildFailure"].get<bool>();
+}
+            if (opt.contains("buildCommand")) { config.build_command = opt["buildCommand"].get<std::string>();
+}
+            if (opt.contains("buildTimeout")) { config.build_timeout_seconds = opt["buildTimeout"].get<int>();
+}
+            if (opt.contains("keepBackups")) { config.keep_backups = opt["keepBackups"].get<bool>();
+}
+            if (opt.contains("backupDirectory")) { config.backup_directory = opt["backupDirectory"].get<std::string>();
+}
+            if (opt.contains("persistTrustLoop")) { config.persist_trust_loop = opt["persistTrustLoop"].get<bool>();
+}
+            if (opt.contains("allowMissingCompileCommands")) { config.allow_missing_compile_commands = opt["allowMissingCompileCommands"].get<bool>();
+}
+            if (opt.contains("includeUnsafeSuggestions")) { config.include_unsafe_suggestions = opt["includeUnsafeSuggestions"].get<bool>();
+}
+            if (opt.contains("minConfidence")) { config.min_confidence = opt["minConfidence"].get<double>();
+}
 
-            if (opt.contains("pch") && opt["pch"].contains("autoApply"))
+            if (opt.contains("pch") && opt["pch"].contains("autoApply")) {
                 config.per_optimization.pch_auto_apply = opt["pch"]["autoApply"].get<bool>();
-            if (opt.contains("headerSplitting") && opt["headerSplitting"].contains("autoApply"))
+}
+            if (opt.contains("headerSplitting") && opt["headerSplitting"].contains("autoApply")) {
                 config.per_optimization.header_splitting_auto_apply = opt["headerSplitting"]["autoApply"].get<bool>();
-            if (opt.contains("unityBuild") && opt["unityBuild"].contains("autoApply"))
+}
+            if (opt.contains("unityBuild") && opt["unityBuild"].contains("autoApply")) {
                 config.per_optimization.unity_build_auto_apply = opt["unityBuild"]["autoApply"].get<bool>();
-            if (opt.contains("templateOptimization") && opt["templateOptimization"].contains("autoApply"))
+}
+            if (opt.contains("templateOptimization") && opt["templateOptimization"].contains("autoApply")) {
                 config.per_optimization.template_optimization_auto_apply = opt["templateOptimization"]["autoApply"].get<bool>();
-            if (opt.contains("includeReduction") && opt["includeReduction"].contains("autoApply"))
+}
+            if (opt.contains("includeReduction") && opt["includeReduction"].contains("autoApply")) {
                 config.per_optimization.include_reduction_auto_apply = opt["includeReduction"]["autoApply"].get<bool>();
-            if (opt.contains("forwardDeclaration") && opt["forwardDeclaration"].contains("autoApply"))
+}
+            if (opt.contains("forwardDeclaration") && opt["forwardDeclaration"].contains("autoApply")) {
                 config.per_optimization.forward_declaration_auto_apply = opt["forwardDeclaration"]["autoApply"].get<bool>();
-            if (opt.contains("pimpl") && opt["pimpl"].contains("autoApply"))
+}
+            if (opt.contains("pimpl") && opt["pimpl"].contains("autoApply")) {
                 config.per_optimization.pimpl_auto_apply = opt["pimpl"]["autoApply"].get<bool>();
-            if (opt.contains("moveToCpp") && opt["moveToCpp"].contains("autoApply"))
+}
+            if (opt.contains("moveToCpp") && opt["moveToCpp"].contains("autoApply")) {
                 config.per_optimization.move_to_cpp_auto_apply = opt["moveToCpp"]["autoApply"].get<bool>();
+}
         }
         return config;
     }
@@ -409,7 +429,7 @@ namespace bha::lsp
     void LSPServer::run() {
         while (running_) {
             try {
-                if (std::string message = read_message(); !message.empty()) {
+                if (std::string const message = read_message(); !message.empty()) {
                     handle_message(message);
                 }
                 cleanup_finished_jobs();
@@ -425,7 +445,7 @@ namespace bha::lsp
 
         std::vector<std::shared_ptr<AsyncJob>> jobs;
         {
-            std::lock_guard lock(async_jobs_mutex_);
+            std::lock_guard const lock(async_jobs_mutex_);
             for (const auto& [_, job] : async_jobs_) {
                 job->cancel_requested.store(true);
                 jobs.push_back(job);
@@ -511,7 +531,7 @@ namespace bha::lsp
     }
 
     json LSPServer::build_async_job_payload(const AsyncJob& job) const {
-        std::lock_guard state_lock(job.mutex);
+        std::lock_guard const state_lock(job.mutex);
         const auto to_iso = [](const std::chrono::system_clock::time_point& tp) -> std::string {
             if (tp.time_since_epoch().count() == 0) {
                 return "";
@@ -551,7 +571,7 @@ namespace bha::lsp
     void LSPServer::cleanup_finished_jobs() {
         std::vector<std::shared_ptr<AsyncJob>> jobs_to_join;
         {
-            std::lock_guard lock(async_jobs_mutex_);
+            std::lock_guard const lock(async_jobs_mutex_);
             jobs_to_join.reserve(async_jobs_.size());
             for (const auto& [_, job] : async_jobs_) {
                 if (job->finished.load() && job->worker.joinable()) {
@@ -566,7 +586,7 @@ namespace bha::lsp
             }
         }
 
-        std::lock_guard lock(async_jobs_mutex_);
+        std::lock_guard const lock(async_jobs_mutex_);
         std::vector<std::pair<std::string, std::chrono::system_clock::time_point>> finished_jobs;
         finished_jobs.reserve(async_jobs_.size());
 
@@ -614,7 +634,7 @@ namespace bha::lsp
         job->progress_token = create_progress_token();
 
         {
-            std::lock_guard lock(async_jobs_mutex_);
+            std::lock_guard const lock(async_jobs_mutex_);
             async_jobs_[job->id] = job;
         }
 
@@ -654,7 +674,7 @@ namespace bha::lsp
             job->status = AsyncJobStatus::Cancelled;
             job->finished = true;
             {
-                std::lock_guard lock(job->mutex);
+                std::lock_guard const lock(job->mutex);
                 job->started_at = std::chrono::system_clock::now();
                 job->finished_at = job->started_at;
             }
@@ -669,7 +689,7 @@ namespace bha::lsp
 
         job->status = AsyncJobStatus::Running;
         {
-            std::lock_guard lock(job->mutex);
+            std::lock_guard const lock(job->mutex);
             job->started_at = std::chrono::system_clock::now();
         }
 
@@ -702,7 +722,7 @@ namespace bha::lsp
                     if (!backup_id.empty() && suggestion_manager_) {
                         RevertResult revert_result;
                         {
-                            std::lock_guard lock(suggestion_manager_mutex_);
+                            std::lock_guard const lock(suggestion_manager_mutex_);
                             revert_result = suggestion_manager_->revert_changes_detailed(backup_id);
                         }
                         result["cancelRollback"] = {
@@ -714,7 +734,7 @@ namespace bha::lsp
                 }
                 job->status = AsyncJobStatus::Cancelled;
                 {
-                    std::lock_guard lock(job->mutex);
+                    std::lock_guard const lock(job->mutex);
                     job->error = "Cancellation was requested while job was running";
                 }
             } else {
@@ -722,20 +742,20 @@ namespace bha::lsp
             }
 
             {
-                std::lock_guard lock(job->mutex);
+                std::lock_guard const lock(job->mutex);
                 job->result = std::move(result);
             }
         } catch (const std::exception& e) {
             job->status = job->cancel_requested.load() ? AsyncJobStatus::Cancelled : AsyncJobStatus::Failed;
             {
-                std::lock_guard lock(job->mutex);
+                std::lock_guard const lock(job->mutex);
                 job->error = e.what();
             }
         }
 
         job->finished = true;
         {
-            std::lock_guard lock(job->mutex);
+            std::lock_guard const lock(job->mutex);
             job->finished_at = std::chrono::system_clock::now();
         }
 
@@ -756,7 +776,7 @@ namespace bha::lsp
 
     void LSPServer::handle_message(const std::string& message) {
         try {
-            if (json j = json::parse(message); j.contains("id")) {
+            if (json const j = json::parse(message); j.contains("id")) {
                 if (j.contains("method")) {
                     auto request = j.get<RequestMessage>();
                     handle_request(request);
@@ -787,7 +807,7 @@ namespace bha::lsp
             }
         }
 
-        std::lock_guard lock(pending_mutex_);
+        std::lock_guard const lock(pending_mutex_);
         if (const auto it = pending_requests_.find(id); it != pending_requests_.end()) {
             it->second.response = response.result;
             it->second.received = true;
@@ -796,10 +816,10 @@ namespace bha::lsp
     }
 
     json LSPServer::send_request(const std::string& method, const json& params) {
-        int id = ++request_id_counter_;
+        int const id = ++request_id_counter_;
 
         {
-            std::lock_guard lock(pending_mutex_);
+            std::lock_guard const lock(pending_mutex_);
             pending_requests_[id] = PendingRequest{};
         }
 
@@ -898,7 +918,7 @@ namespace bha::lsp
             const json params = notification.params.value_or(json::object());
             if (params.contains("id") && params["id"].is_string()) {
                 const std::string id = params["id"].get<std::string>();
-                json cancel_args = {
+                json const cancel_args = {
                     {"jobId", id}
                 };
                 try {
@@ -954,7 +974,7 @@ namespace bha::lsp
     }
 
     void LSPServer::write_message(const std::string& content) {
-        std::lock_guard lock(g_lsp_write_mutex);
+        std::lock_guard const lock(g_lsp_write_mutex);
         std::ostringstream header;
         header << "Content-Length: " << content.length() << "\r\n\r\n";
 
@@ -1010,6 +1030,7 @@ namespace bha::lsp
             {"codeActionProvider", true},
             {"executeCommandProvider", {
                 {"commands", json::array({
+                    "bha.recordBuildTraces",
                     "bha.analyze",
                     "bha.applySuggestion",
                     "bha.applyEdits",
@@ -1100,6 +1121,9 @@ namespace bha::lsp
         if (command == "bha.analyze") {
             return execute_analyze(args);
         }
+        if (command == "bha.recordBuildTraces") {
+            return execute_record_build_traces(args);
+        }
         if (command == "bha.applySuggestion") {
             return execute_apply_suggestion(args);
         }
@@ -1152,7 +1176,7 @@ namespace bha::lsp
 
         std::vector<Suggestion> suggestions;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             suggestions = suggestion_manager_->get_all_suggestions();
         }
         for (const auto& sug : suggestions) {
@@ -1185,6 +1209,165 @@ namespace bha::lsp
         return result;
     }
 
+    json LSPServer::execute_record_build_traces(const json& args) {
+        std::string project_root = workspace_root_;
+        if (args.contains("projectRoot")) {
+            project_root = args["projectRoot"].get<std::string>();
+        }
+
+        if (project_root.starts_with("file://")) {
+            project_root = project_root.substr(7);
+        }
+        if (project_root.empty()) {
+            throw std::runtime_error("Missing project root");
+        }
+
+        std::optional<std::filesystem::path> build_dir;
+        if (args.contains("buildDir") && !args["buildDir"].is_null()) {
+            const std::string build_dir_value = args["buildDir"].get<std::string>();
+            if (!build_dir_value.empty()) {
+                build_dir = build_dir_value;
+            }
+        }
+
+        const bool clean_first = args.contains("cleanFirst") && args["cleanFirst"].is_boolean() &&
+            args["cleanFirst"].get<bool>();
+        const bool verbose = args.contains("verbose") && args["verbose"].is_boolean() &&
+            args["verbose"].get<bool>();
+        const std::string build_system_override = args.contains("buildSystem") && args["buildSystem"].is_string()
+            ? args["buildSystem"].get<std::string>()
+            : std::string();
+        const std::string build_type = args.contains("buildType") && args["buildType"].is_string()
+            ? args["buildType"].get<std::string>()
+            : std::string();
+        const std::string compiler = args.contains("compiler") && args["compiler"].is_string()
+            ? args["compiler"].get<std::string>()
+            : std::string();
+        const int parallel_jobs = args.contains("parallelJobs") && args["parallelJobs"].is_number_integer()
+            ? args["parallelJobs"].get<int>()
+            : 0;
+
+        ProgressToken const token = create_progress_token();
+
+        WorkDoneProgressBegin begin_progress;
+        begin_progress.title = "Recording build traces";
+        begin_progress.cancellable = false;
+        begin_progress.percentage = 0;
+        json begin_json;
+        to_json(begin_json, begin_progress);
+        send_progress(token, begin_json);
+
+        try {
+            send_progress(token, json{
+                {"kind", "report"},
+                {"message", "Detecting build system..."},
+                {"percentage", 10}
+            });
+
+            const fs::path project_path(project_root);
+            auto& registry = build_systems::BuildSystemRegistry::instance();
+            build_systems::IBuildSystemAdapter* adapter = nullptr;
+            if (!build_system_override.empty()) {
+                adapter = registry.get(build_system_override);
+            }
+            if (adapter == nullptr) {
+                adapter = registry.detect(project_path);
+            }
+            if (adapter == nullptr) {
+                throw std::runtime_error("Could not detect build system");
+            }
+
+            build_systems::BuildOptions options;
+            options.build_type = build_type.empty() ? options.build_type : build_type;
+            options.parallel_jobs = parallel_jobs > 0 ? parallel_jobs : 0;
+            options.enable_tracing = true;
+            options.enable_memory_profiling = false;
+            options.clean_first = clean_first;
+            options.verbose = verbose;
+            options.compiler = compiler;
+            if (build_dir.has_value()) {
+                options.build_dir = *build_dir;
+            }
+            if (args.contains("traceOutputDir") && args["traceOutputDir"].is_string()) {
+                const std::string trace_output_dir = args["traceOutputDir"].get<std::string>();
+                if (!trace_output_dir.empty()) {
+                    options.trace_output_dir = trace_output_dir;
+                }
+            }
+            if (args.contains("extraArgs") && args["extraArgs"].is_array()) {
+                for (const auto& arg : args["extraArgs"]) {
+                    if (arg.is_string()) {
+                        options.extra_args.push_back(arg.get<std::string>());
+                    }
+                }
+            }
+
+            send_progress(token, json{
+                {"kind", "report"},
+                {"message", "Running build with trace capture..."},
+                {"percentage", 30}
+            });
+
+            auto build_result = adapter->build(project_path, options);
+            if (build_result.is_err()) {
+                throw std::runtime_error("Build failed: " + build_result.error().message());
+            }
+
+            const auto& build = build_result.value();
+            if (!build.success) {
+                const std::string message = build.error_message.empty()
+                    ? "Build failed"
+                    : build.error_message;
+                throw std::runtime_error(message);
+            }
+
+            send_progress(token, json{
+                {"kind", "report"},
+                {"message", "Trace collection complete"},
+                {"percentage", 100}
+            });
+
+            WorkDoneProgressEnd end_progress;
+            end_progress.message = "Build traces recorded";
+            json end_json;
+            to_json(end_json, end_progress);
+            send_progress(token, end_json);
+
+            json trace_files = json::array();
+            for (const auto& trace_file : build.trace_files) {
+                trace_files.push_back(trace_file.string());
+            }
+
+            json memory_files = json::array();
+            for (const auto& memory_file : build.memory_files) {
+                memory_files.push_back(memory_file.string());
+            }
+
+            return {
+                {"success", true},
+                {"buildSystem", adapter->name()},
+                {"buildType", options.build_type},
+                {"compiler", options.compiler},
+                {"parallelJobs", options.parallel_jobs},
+                {"buildDir", options.build_dir.empty() ? json(nullptr) : json(options.build_dir.string())},
+                {"traceOutputDir", options.trace_output_dir.empty() ? json(nullptr) : json(options.trace_output_dir.string())},
+                {"traceFiles", trace_files},
+                {"traceFileCount", build.trace_files.size()},
+                {"memoryFiles", memory_files},
+                {"memoryFileCount", build.memory_files.size()},
+                {"buildTimeMs", std::chrono::duration_cast<std::chrono::milliseconds>(build.build_time).count()},
+                {"output", build.output}
+            };
+        } catch (...) {
+            WorkDoneProgressEnd end_progress;
+            end_progress.message = "Build trace recording failed";
+            json end_json;
+            to_json(end_json, end_progress);
+            send_progress(token, end_json);
+            throw;
+        }
+    }
+
     json LSPServer::execute_analyze(const json& args) {
         if (!suggestion_manager_) {
             throw std::runtime_error("Server not fully initialized");
@@ -1204,7 +1387,7 @@ namespace bha::lsp
             build_dir = args["buildDir"].get<std::string>();
         }
 
-        bool rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
+        bool const rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
 
         AnalyzeSuggestionOptions analyze_options;
         if (args.contains("enabledTypes") && args["enabledTypes"].is_array()) {
@@ -1252,7 +1435,7 @@ namespace bha::lsp
             int files_analyzed = 0;
             int duration_ms = 0;
             {
-                std::lock_guard lock(suggestion_manager_mutex_);
+                std::lock_guard const lock(suggestion_manager_mutex_);
                 auto analysis_result = suggestion_manager_->analyze_project(
                         project_root,
                         build_dir,
@@ -1497,7 +1680,7 @@ namespace bha::lsp
 
         ApplySuggestionResult result;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             result = suggestion_manager_->apply_edit_bundle(edits, true);
         }
 
@@ -1540,7 +1723,7 @@ namespace bha::lsp
                 } else {
                     RevertResult rollback_result;
                     {
-                        std::lock_guard lock(suggestion_manager_mutex_);
+                        std::lock_guard const lock(suggestion_manager_mutex_);
                         rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
                     }
                     rollback_json["attempted"] = true;
@@ -1594,7 +1777,7 @@ namespace bha::lsp
         }
 
         const std::string suggestion_id = args["suggestionId"].get<std::string>();
-        bool skip_validation = args.contains("skipValidation") && args["skipValidation"].get<bool>();
+        bool const skip_validation = args.contains("skipValidation") && args["skipValidation"].get<bool>();
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
             skip_rebuild = args["skipRebuild"].get<bool>();
@@ -1602,23 +1785,23 @@ namespace bha::lsp
 
         std::optional<int> predicted_savings_ms;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             if (const auto suggestion = suggestion_manager_->get_suggestion(suggestion_id); suggestion.has_value()) {
                 predicted_savings_ms = suggestion->estimated_impact.time_saved_ms;
             }
         }
         std::optional<int> baseline_duration_ms;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
                 baseline_duration_ms = baseline->total_duration_ms;
             }
         }
 
-        if (bool skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
+        if (bool const skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
             DetailedSuggestion details;
             {
-                std::lock_guard lock(suggestion_manager_mutex_);
+                std::lock_guard const lock(suggestion_manager_mutex_);
                 details = suggestion_manager_->get_suggestion_details(suggestion_id);
             }
             std::string consent_message = "Apply optimization: " + details.title + "?\n";
@@ -1658,7 +1841,7 @@ namespace bha::lsp
 
         ApplySuggestionResult result;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             result = suggestion_manager_->apply_suggestion(
                 suggestion_id,
                 skip_validation,
@@ -1711,7 +1894,7 @@ namespace bha::lsp
 
                     RevertResult rollback_result;
                     {
-                        std::lock_guard lock(suggestion_manager_mutex_);
+                        std::lock_guard const lock(suggestion_manager_mutex_);
                         rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
                     }
                     rollback_json["attempted"] = true;
@@ -1790,7 +1973,7 @@ namespace bha::lsp
             if (args["minPriority"].is_string()) {
                 min_priority = args["minPriority"].get<std::string>();
             } else if (args["minPriority"].is_number()) {
-                int prio = args["minPriority"].get<int>();
+                int const prio = args["minPriority"].get<int>();
                 min_priority = prio == 0 ? "high" : (prio == 1 ? "medium" : "low");
             }
         }
@@ -1801,11 +1984,11 @@ namespace bha::lsp
             skip_rebuild = args["skipRebuild"].get<bool>();
         }
         auto with_manager = [this](auto&& fn) -> decltype(auto) {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             return fn();
         };
 
-        if (bool skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
+        if (bool const skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
             auto suggestions = with_manager([&]() {
                 return suggestion_manager_->get_all_suggestions();
             });
@@ -2183,7 +2366,7 @@ namespace bha::lsp
         }
 
         const std::string job_id = args["jobId"].get<std::string>();
-        std::lock_guard lock(async_jobs_mutex_);
+        std::lock_guard const lock(async_jobs_mutex_);
         const auto it = async_jobs_.find(job_id);
         if (it == async_jobs_.end()) {
             return {
@@ -2204,7 +2387,7 @@ namespace bha::lsp
         const std::string job_id = args["jobId"].get<std::string>();
         std::shared_ptr<AsyncJob> job;
         {
-            std::lock_guard lock(async_jobs_mutex_);
+            std::lock_guard const lock(async_jobs_mutex_);
             const auto it = async_jobs_.find(job_id);
             if (it == async_jobs_.end()) {
                 return {
@@ -2243,7 +2426,7 @@ namespace bha::lsp
         const std::string backup_id = args["backupId"].get<std::string>();
         RevertResult revert_result;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             revert_result = suggestion_manager_->revert_changes_detailed(backup_id);
         }
         auto [success, restored_files, errors] = revert_result;
@@ -2275,7 +2458,7 @@ namespace bha::lsp
         const std::string suggestion_id = args["suggestionId"].get<std::string>();
         DetailedSuggestion details;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             details = suggestion_manager_->get_suggestion_details(suggestion_id);
         }
 
@@ -2297,7 +2480,7 @@ namespace bha::lsp
         json text_edits = json::array();
         const bha::Suggestion* bha_suggestion = nullptr;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             bha_suggestion = suggestion_manager_->get_bha_suggestion(suggestion_id);
         }
         if (bha_suggestion != nullptr) {
@@ -2326,7 +2509,7 @@ namespace bha::lsp
 
         std::vector<Suggestion> suggestions;
         {
-            std::lock_guard lock(suggestion_manager_mutex_);
+            std::lock_guard const lock(suggestion_manager_mutex_);
             suggestions = suggestion_manager_->get_all_suggestions();
         }
 
@@ -2441,7 +2624,7 @@ namespace bha::lsp
                     return true;
                 }
 
-                std::regex error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+                std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
                 std::smatch match;
                 auto search_start = build.output.cbegin();
                 while (std::regex_search(search_start, build.output.cend(), match, error_regex)) {
@@ -2510,7 +2693,7 @@ namespace bha::lsp
             output += buffer.data();
         }
 
-        int raw_status = pclose(pipe);
+        int const raw_status = pclose(pipe);
         const auto end = std::chrono::steady_clock::now();
         measured_duration_ms = static_cast<int>(
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
@@ -2521,10 +2704,10 @@ namespace bha::lsp
             exit_code = WEXITSTATUS(raw_status);
         }
 #endif
-        bool success = (exit_code == 0);
+        bool const success = (exit_code == 0);
 
         if (!success) {
-            std::regex error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+            std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
             std::smatch match;
             auto search_start = output.cbegin();
 

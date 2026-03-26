@@ -191,12 +191,22 @@ Runtime settings:
 - `buildHotspotAnalyzer.trace.server`
 
 Main commands:
+- `BHA: Record Build Traces`
+- `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
+
+Recommended workflow:
+1. `BHA: Record Build Traces`
+2. `BHA: Analyze Build Performance`
+3. `BHA: Show Suggestions`
+
+Advanced trace recording supports explicit overrides for compiler, build type, parallel jobs, extra build arguments,
+trace output directory, and an optional build-system override when auto-detection is not what you want.
 
 ### Neovim
 

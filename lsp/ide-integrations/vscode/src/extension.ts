@@ -63,6 +63,22 @@ interface AnalysisResult {
     };
 }
 
+interface RecordBuildResult {
+    success: boolean;
+    buildSystem?: string;
+    buildType?: string;
+    compiler?: string;
+    parallelJobs?: number;
+    buildDir?: string | null;
+    traceOutputDir?: string | null;
+    traceFiles?: string[];
+    traceFileCount?: number;
+    memoryFiles?: string[];
+    memoryFileCount?: number;
+    buildTimeMs?: number;
+    output?: string;
+}
+
 interface ApplyResult {
     success: boolean;
     changedFiles: string[];
@@ -142,6 +158,18 @@ interface QuickPickItemWithId extends vscode.QuickPickItem {
     applicationGuidance?: string;
 }
 
+interface RecordBuildOptions {
+    buildDir?: string;
+    cleanFirst: boolean;
+    verbose: boolean;
+    buildSystem?: string;
+    buildType?: string;
+    compiler?: string;
+    parallelJobs?: number;
+    traceOutputDir?: string;
+    extraArgs: string[];
+}
+
 // ============================================================================
 // UUID Generation
 // ============================================================================
@@ -198,6 +226,12 @@ function isValidApplyAllResult(result: unknown): result is ApplyAllResult {
 }
 
 function isValidRevertResult(result: unknown): result is RevertResult {
+    if (!result || typeof result !== 'object') return false;
+    const obj = result as Record<string, unknown>;
+    return typeof obj.success === 'boolean';
+}
+
+function isValidRecordBuildResult(result: unknown): result is RecordBuildResult {
     if (!result || typeof result !== 'object') return false;
     const obj = result as Record<string, unknown>;
     return typeof obj.success === 'boolean';
@@ -288,6 +322,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register commands
     context.subscriptions.push(
+        vscode.commands.registerCommand('buildHotspotAnalyzer.recordBuildTraces', cmdRecordBuildTraces),
+        vscode.commands.registerCommand('buildHotspotAnalyzer.recordBuildTracesAdvanced', cmdRecordBuildTracesAdvanced),
         vscode.commands.registerCommand('buildHotspotAnalyzer.analyzeProject', cmdAnalyzeProject),
         vscode.commands.registerCommand('buildHotspotAnalyzer.showSuggestions', cmdShowSuggestions),
         vscode.commands.registerCommand('buildHotspotAnalyzer.applySuggestion', cmdApplySuggestion),
@@ -316,19 +352,193 @@ export function deactivate(): Thenable<void> | undefined {
 // Command Handlers
 // ============================================================================
 
-async function cmdAnalyzeProject(): Promise<void> {
-    const operationId = generateOperationId('analyze');
-
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) {
-        vscode.window.showErrorMessage('No workspace folder open');
-        return;
-    }
-
-    const buildDir = await vscode.window.showInputBox({
+async function promptForBuildDir(): Promise<string | undefined> {
+    return vscode.window.showInputBox({
         prompt: 'Build directory (optional, leave empty for auto-detect)',
         placeHolder: 'build'
     });
+}
+
+function splitShellArgs(input: string): string[] {
+    const args: string[] = [];
+    let current = '';
+    let quote: '"' | '\'' | null = null;
+    let escape = false;
+
+    for (const ch of input) {
+        if (escape) {
+            current += ch;
+            escape = false;
+            continue;
+        }
+        if (ch === '\\') {
+            escape = true;
+            continue;
+        }
+        if (quote) {
+            if (ch === quote) {
+                quote = null;
+            } else {
+                current += ch;
+            }
+            continue;
+        }
+        if (ch === '"' || ch === '\'') {
+            quote = ch;
+            continue;
+        }
+        if (/\s/.test(ch)) {
+            if (current.length > 0) {
+                args.push(current);
+                current = '';
+            }
+            continue;
+        }
+        current += ch;
+    }
+
+    if (current.length > 0) {
+        args.push(current);
+    }
+
+    return args;
+}
+
+async function promptForRecordBuildOptions(advanced: boolean): Promise<RecordBuildOptions | undefined> {
+    const buildDir = await promptForBuildDir();
+    if (buildDir === undefined) {
+        return undefined;
+    }
+
+    const options: RecordBuildOptions = {
+        buildDir: buildDir || undefined,
+        cleanFirst: false,
+        verbose: false,
+        extraArgs: []
+    };
+
+    if (!advanced) {
+        return options;
+    }
+
+    const buildSystem = await vscode.window.showQuickPick([
+        { label: 'Auto-detect', value: '' },
+        { label: 'CMake', value: 'CMake' },
+        { label: 'Ninja', value: 'Ninja' },
+        { label: 'Make', value: 'Make' },
+        { label: 'Meson', value: 'Meson' },
+        { label: 'Bazel', value: 'Bazel' },
+        { label: 'Buck2', value: 'Buck2' },
+        { label: 'SCons', value: 'SCons' },
+        { label: 'Unreal', value: 'Unreal' },
+        { label: 'XCode', value: 'XCode' },
+        { label: 'MSBuild', value: 'MSBuild' }
+    ], {
+        title: 'Build System',
+        placeHolder: 'Choose a build system override or keep auto-detect'
+    });
+    if (buildSystem === undefined) {
+        return undefined;
+    }
+    options.buildSystem = buildSystem.value || undefined;
+
+    const buildType = await vscode.window.showQuickPick([
+        { label: 'Release', value: 'Release' },
+        { label: 'Debug', value: 'Debug' },
+        { label: 'RelWithDebInfo', value: 'RelWithDebInfo' },
+        { label: 'MinSizeRel', value: 'MinSizeRel' },
+        { label: 'Development', value: 'Development' }
+    ], {
+        title: 'Build Type',
+        placeHolder: 'Choose a build type'
+    });
+    if (buildType === undefined) {
+        return undefined;
+    }
+    options.buildType = buildType.value;
+
+    const compiler = await vscode.window.showInputBox({
+        title: 'Compiler Override',
+        prompt: 'Compiler executable or absolute path (optional)',
+        placeHolder: 'clang++, g++, icpx, /usr/bin/clang++'
+    });
+    if (compiler === undefined) {
+        return undefined;
+    }
+    options.compiler = compiler.trim() || undefined;
+
+    const parallelJobs = await vscode.window.showInputBox({
+        title: 'Parallel Jobs',
+        prompt: 'Number of parallel jobs (optional, leave empty for auto-detect)',
+        placeHolder: '8',
+        validateInput: (value) => {
+            if (value.trim().length === 0) {
+                return undefined;
+            }
+            const parsed = Number(value);
+            return Number.isInteger(parsed) && parsed > 0 ? undefined : 'Enter a positive integer';
+        }
+    });
+    if (parallelJobs === undefined) {
+        return undefined;
+    }
+    options.parallelJobs = parallelJobs.trim().length > 0 ? Number(parallelJobs) : undefined;
+
+    const traceOutputDir = await vscode.window.showInputBox({
+        title: 'Trace Output Directory',
+        prompt: 'Directory for trace files (optional, leave empty to use the adapter default)',
+        placeHolder: 'traces'
+    });
+    if (traceOutputDir === undefined) {
+        return undefined;
+    }
+    options.traceOutputDir = traceOutputDir.trim() || undefined;
+
+    const extraArgs = await vscode.window.showInputBox({
+        title: 'Extra Build Arguments',
+        prompt: 'Additional build-system arguments (optional)',
+        placeHolder: '--config Debug -DENABLE_SOMETHING=ON'
+    });
+    if (extraArgs === undefined) {
+        return undefined;
+    }
+    options.extraArgs = splitShellArgs(extraArgs);
+
+    const cleanFirst = await vscode.window.showQuickPick([
+        { label: 'No', value: false },
+        { label: 'Yes', value: true }
+    ], {
+        title: 'Clean Before Build',
+        placeHolder: 'Run a clean build before recording traces?'
+    });
+    if (cleanFirst === undefined) {
+        return undefined;
+    }
+    options.cleanFirst = cleanFirst.value;
+
+    const verbose = await vscode.window.showQuickPick([
+        { label: 'No', value: false },
+        { label: 'Yes', value: true }
+    ], {
+        title: 'Verbose Build Output',
+        placeHolder: 'Enable verbose build output while recording traces?'
+    });
+    if (verbose === undefined) {
+        return undefined;
+    }
+    options.verbose = verbose.value;
+
+    return options;
+}
+
+async function runAnalysis(buildDir: string | undefined, rebuild: boolean): Promise<AnalysisResult | undefined> {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open');
+        return undefined;
+    }
+
+    const operationId = generateOperationId(rebuild ? 'build-and-analyze' : 'analyze');
 
     try {
         const result = await client.sendRequest<unknown>('workspace/executeCommand', {
@@ -336,7 +546,7 @@ async function cmdAnalyzeProject(): Promise<void> {
             arguments: [{
                 projectRoot: workspaceFolder.uri.fsPath,
                 buildDir: buildDir || undefined,
-                rebuild: false,
+                rebuild,
                 operationId
             }]
         });
@@ -357,10 +567,78 @@ async function cmdAnalyzeProject(): Promise<void> {
         if (validSuggestions.length > 0) {
             showSuggestionsPanel(result);
         }
+        return result;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(`Analysis failed: ${errorMessage}`);
+        return undefined;
     }
+}
+
+async function recordBuildTraces(advanced: boolean): Promise<void> {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open');
+        return;
+    }
+
+    const options = await promptForRecordBuildOptions(advanced);
+    if (!options) {
+        return;
+    }
+
+    try {
+        const result = await client.sendRequest<unknown>('workspace/executeCommand', {
+            command: 'bha.recordBuildTraces',
+            arguments: [{
+                projectRoot: workspaceFolder.uri.fsPath,
+                buildDir: options.buildDir,
+                cleanFirst: options.cleanFirst,
+                verbose: options.verbose,
+                buildSystem: options.buildSystem,
+                buildType: options.buildType,
+                compiler: options.compiler,
+                parallelJobs: options.parallelJobs,
+                traceOutputDir: options.traceOutputDir,
+                extraArgs: options.extraArgs,
+                operationId: generateOperationId(advanced ? 'record-build-traces-advanced' : 'record-build-traces')
+            }]
+        });
+
+        if (!isValidRecordBuildResult(result)) {
+            vscode.window.showErrorMessage('Build trace recording returned invalid result');
+            return;
+        }
+
+        const traceFileCount = safeGetNumber(result.traceFileCount, 0);
+        const buildSystem = safeGetString(result.buildSystem, 'unknown build system');
+        const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+        const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1000).toFixed(2)}s`;
+        const analyzeNow = 'Analyze Now';
+        const choice = await vscode.window.showInformationMessage(message, analyzeNow);
+        if (choice === analyzeNow) {
+            await runAnalysis(options.buildDir, false);
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Build trace recording failed: ${errorMessage}`);
+    }
+}
+
+async function cmdRecordBuildTraces(): Promise<void> {
+    await recordBuildTraces(false);
+}
+
+async function cmdRecordBuildTracesAdvanced(): Promise<void> {
+    await recordBuildTraces(true);
+}
+
+async function cmdAnalyzeProject(): Promise<void> {
+    const buildDir = await promptForBuildDir();
+    if (buildDir === undefined) {
+        return;
+    }
+    await runAnalysis(buildDir || undefined, false);
 }
 
 async function cmdShowSuggestions(): Promise<void> {

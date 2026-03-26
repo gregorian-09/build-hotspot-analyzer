@@ -23,12 +23,22 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 
 ## Commands
 
+- `BHA: Record Build Traces`
+- `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
+
+Recommended workflow:
+1. Record traces
+2. Analyze traces
+3. Review and apply suggestions
+
+The advanced trace recording command exposes optional overrides for compiler, build type, parallel jobs, extra build
+arguments, trace output directory, and build-system selection when auto-detection is not appropriate.
 
 ## Project
 

@@ -64,12 +64,28 @@ code --install-extension build-hotspot-analyzer-0.1.0.vsix
 
 ### Commands
 
+- `BHA: Record Build Traces`
+- `BHA: Record Build Traces (Advanced)`
 - `BHA: Analyze Build Performance`
 - `BHA: Show Suggestions`
 - `BHA: Apply Suggestion`
 - `BHA: Apply All Suggestions`
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
+
+Recommended workflow:
+1. Record traces
+2. Analyze traces
+3. Review suggestions
+
+The advanced record command keeps auto-detection as the default path, but lets users override:
+- build system
+- compiler
+- build type
+- parallel jobs
+- extra build arguments
+- trace output directory
+- clean/verbose mode
 
 ### Metadata and branding
 

@@ -1,35 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Build Hotspot Analyzer icon</title>
-  <desc id="desc">Square icon with hotspot core, build bars, and pulse line.</desc>
+  <desc id="desc">Square icon with a simplified build telemetry mark optimized for small display sizes.</desc>
   <defs>
-    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#21A0A0"/>
-      <stop offset="100%" stop-color="#1463A9"/>
+    <linearGradient id="ring" x1="0%" y1="8%" x2="100%" y2="92%">
+      <stop offset="0%" stop-color="#2CC7C9"/>
+      <stop offset="100%" stop-color="#1A73D9"/>
     </linearGradient>
     <linearGradient id="core" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFB347"/>
-      <stop offset="100%" stop-color="#E65100"/>
+      <stop offset="0%" stop-color="#FFB54D"/>
+      <stop offset="100%" stop-color="#FF7A14"/>
     </linearGradient>
     <linearGradient id="bars" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#8AE3E3"/>
-      <stop offset="100%" stop-color="#2186C6"/>
+      <stop offset="0%" stop-color="#95F1F1"/>
+      <stop offset="100%" stop-color="#2893DB"/>
     </linearGradient>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
 
-  <g transform="translate(28 28) scale(0.890625)">
-    <rect x="0" y="0" width="512" height="512" rx="92" fill="#0F1724"/>
-    <rect x="42" y="42" width="428" height="428" rx="64" fill="#101D31" stroke="#1A2A44" stroke-width="6"/>
+  <rect x="26" y="26" width="460" height="460" rx="96" fill="#0F1724"/>
 
-    <circle cx="256" cy="256" r="140" fill="none" stroke="url(#ring)" stroke-width="26"/>
-    <circle cx="256" cy="256" r="80" fill="url(#core)"/>
+  <circle cx="256" cy="256" r="142" fill="none" stroke="url(#ring)" stroke-width="34"/>
+  <circle cx="256" cy="252" r="76" fill="url(#core)" filter="url(#glow)"/>
 
-    <rect x="146" y="318" width="26" height="68" rx="8" fill="url(#bars)"/>
-    <rect x="188" y="292" width="26" height="94" rx="8" fill="url(#bars)"/>
-    <rect x="230" y="268" width="26" height="118" rx="8" fill="url(#bars)"/>
-    <rect x="272" y="296" width="26" height="90" rx="8" fill="url(#bars)"/>
-    <rect x="314" y="276" width="26" height="110" rx="8" fill="url(#bars)"/>
+  <rect x="154" y="310" width="28" height="68" rx="10" fill="url(#bars)"/>
+  <rect x="196" y="284" width="28" height="94" rx="10" fill="url(#bars)"/>
+  <rect x="238" y="258" width="28" height="120" rx="10" fill="url(#bars)"/>
+  <rect x="280" y="286" width="28" height="92" rx="10" fill="url(#bars)"/>
+  <rect x="322" y="268" width="28" height="110" rx="10" fill="url(#bars)"/>
 
-    <path d="M120 230 L188 230 L214 194 L256 276 L296 214 L336 252 L392 252"
-          fill="none" stroke="#D9F6FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <path d="M134 226 H192 L220 184 L256 274 L294 206 L332 248 H390"
+        fill="none"
+        stroke="#E7FBFF"
+        stroke-width="14"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
 </svg>

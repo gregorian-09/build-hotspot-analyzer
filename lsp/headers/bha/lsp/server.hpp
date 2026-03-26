@@ -131,6 +131,7 @@ namespace bha::lsp
         json handle_execute_command(const json& params);
         json handle_text_document_code_action(const json& params) const;
 
+        json execute_record_build_traces(const json& args);
         json execute_analyze(const json& args);
         json execute_apply_suggestion(const json& args);
         json execute_apply_edits(const json& args);

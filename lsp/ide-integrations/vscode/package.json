@@ -82,6 +82,14 @@
     },
     "commands": [
       {
+        "command": "buildHotspotAnalyzer.recordBuildTraces",
+        "title": "BHA: Record Build Traces"
+      },
+      {
+        "command": "buildHotspotAnalyzer.recordBuildTracesAdvanced",
+        "title": "BHA: Record Build Traces (Advanced)"
+      },
+      {
         "command": "buildHotspotAnalyzer.analyzeProject",
         "title": "BHA: Analyze Build Performance"
       },
