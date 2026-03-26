@@ -18107,6 +18107,10 @@ function formatApplicationMode(mode) {
 }
 var client;
 var lastBackupId;
+var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
+function getWorkspaceRootPath() {
+  return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
 function activate(context) {
   const config = vscode.workspace.getConfiguration("buildHotspotAnalyzer");
   const serverPath = config.get("serverPath", CONFIG.DEFAULT_SERVER_PATH);
@@ -18329,9 +18333,9 @@ async function promptForRecordBuildOptions(advanced) {
   options.verbose = verbose.value;
   return options;
 }
-async function runAnalysis(buildDir, rebuild) {
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-  if (!workspaceFolder) {
+async function runAnalysis(buildDir, rebuild, traceDir) {
+  const workspaceRoot = getWorkspaceRootPath();
+  if (!workspaceRoot) {
     vscode.window.showErrorMessage("No workspace folder open");
     return void 0;
   }
@@ -18342,8 +18346,9 @@ async function runAnalysis(buildDir, rebuild) {
       const result2 = await client.sendRequest("workspace/executeCommand", {
         command: "bha.analyze",
         arguments: [{
-          projectRoot: workspaceFolder.uri.fsPath,
+          projectRoot: workspaceRoot,
           buildDir: buildDir || void 0,
+          traceDir: traceDir || void 0,
           rebuild,
           operationId
         }]
@@ -18415,11 +18420,20 @@ async function recordBuildTraces(advanced) {
     const traceFileCount = safeGetNumber(result.traceFileCount, 0);
     const buildSystem = safeGetString(result.buildSystem, "unknown build system");
     const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+    const workspaceRoot = getWorkspaceRootPath();
+    if (workspaceRoot) {
+      const chosenTraceDir = safeGetString(result.traceOutputDir, "").trim();
+      if (chosenTraceDir.length > 0) {
+        lastTraceDirByWorkspace.set(workspaceRoot, chosenTraceDir);
+      } else {
+        lastTraceDirByWorkspace.delete(workspaceRoot);
+      }
+    }
     const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1e3).toFixed(2)}s`;
     const analyzeNow = "Analyze Now";
     const choice = await vscode.window.showInformationMessage(message, analyzeNow);
     if (choice === analyzeNow) {
-      await runAnalysis(options.buildDir, false);
+      await runAnalysis(options.buildDir, false, options.traceOutputDir);
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -18437,7 +18451,9 @@ async function cmdAnalyzeProject() {
   if (buildDir === void 0) {
     return;
   }
-  await runAnalysis(buildDir || void 0, false);
+  const workspaceRoot = getWorkspaceRootPath();
+  const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : void 0;
+  await runAnalysis(buildDir || void 0, false, traceDir);
 }
 async function cmdShowSuggestions() {
   try {

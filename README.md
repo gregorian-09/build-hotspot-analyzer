@@ -202,6 +202,8 @@ Main commands:
 
 Long-running VS Code commands show progress notifications so build recording, analysis, apply, and revert operations are visible while they run.
 
+When VS Code records traces into a custom directory, follow-up analysis reuses that directory for the current workspace.
+
 Recommended workflow:
 1. `BHA: Record Build Traces`
 2. `BHA: Analyze Build Performance`

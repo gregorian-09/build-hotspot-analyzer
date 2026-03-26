@@ -283,6 +283,11 @@ function formatApplicationMode(mode?: string): string {
 
 let client: LanguageClient;
 let lastBackupId: string | undefined;
+const lastTraceDirByWorkspace = new Map<string, string>();
+
+function getWorkspaceRootPath(): string | undefined {
+    return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
 
 // ============================================================================
 // Activation
@@ -545,9 +550,13 @@ async function promptForRecordBuildOptions(advanced: boolean): Promise<RecordBui
     return options;
 }
 
-async function runAnalysis(buildDir: string | undefined, rebuild: boolean): Promise<AnalysisResult | undefined> {
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) {
+async function runAnalysis(
+    buildDir: string | undefined,
+    rebuild: boolean,
+    traceDir?: string
+): Promise<AnalysisResult | undefined> {
+    const workspaceRoot = getWorkspaceRootPath();
+    if (!workspaceRoot) {
         vscode.window.showErrorMessage('No workspace folder open');
         return undefined;
     }
@@ -562,8 +571,9 @@ async function runAnalysis(buildDir: string | undefined, rebuild: boolean): Prom
             const result = await client.sendRequest('workspace/executeCommand', {
                 command: 'bha.analyze',
                 arguments: [{
-                    projectRoot: workspaceFolder.uri.fsPath,
+                    projectRoot: workspaceRoot,
                     buildDir: buildDir || undefined,
+                    traceDir: traceDir || undefined,
                     rebuild,
                     operationId
                 }]
@@ -647,11 +657,20 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         const traceFileCount = safeGetNumber(result.traceFileCount, 0);
         const buildSystem = safeGetString(result.buildSystem, 'unknown build system');
         const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+        const workspaceRoot = getWorkspaceRootPath();
+        if (workspaceRoot) {
+            const chosenTraceDir = safeGetString(result.traceOutputDir, '').trim();
+            if (chosenTraceDir.length > 0) {
+                lastTraceDirByWorkspace.set(workspaceRoot, chosenTraceDir);
+            } else {
+                lastTraceDirByWorkspace.delete(workspaceRoot);
+            }
+        }
         const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1000).toFixed(2)}s`;
         const analyzeNow = 'Analyze Now';
         const choice = await vscode.window.showInformationMessage(message, analyzeNow);
         if (choice === analyzeNow) {
-            await runAnalysis(options.buildDir, false);
+            await runAnalysis(options.buildDir, false, options.traceOutputDir);
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -672,7 +691,9 @@ async function cmdAnalyzeProject(): Promise<void> {
     if (buildDir === undefined) {
         return;
     }
-    await runAnalysis(buildDir || undefined, false);
+    const workspaceRoot = getWorkspaceRootPath();
+    const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : undefined;
+    await runAnalysis(buildDir || undefined, false, traceDir);
 }
 
 async function cmdShowSuggestions(): Promise<void> {

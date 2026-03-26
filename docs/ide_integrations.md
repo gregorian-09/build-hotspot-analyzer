@@ -75,6 +75,8 @@ code --install-extension build-hotspot-analyzer-0.1.0.vsix
 
 Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations are visible while they run.
 
+If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
+
 Recommended workflow:
 1. Record traces
 2. Analyze traces

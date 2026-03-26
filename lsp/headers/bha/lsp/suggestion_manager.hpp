@@ -136,6 +136,7 @@ namespace bha::lsp
         AnalysisResult analyze_project(
             const fs::path& project_root,
             const std::optional<fs::path>& build_dir = std::nullopt,
+            const std::optional<fs::path>& trace_dir = std::nullopt,
             bool rebuild = false,
             const ProgressCallback& on_progress = nullptr,
             const AnalyzeSuggestionOptions& analyze_options = {}
@@ -230,6 +231,7 @@ namespace bha::lsp
         std::optional<fs::path> last_compile_commands_path_;
         std::optional<fs::path> last_project_root_;
         std::optional<fs::path> last_build_dir_;
+        std::optional<fs::path> last_trace_dir_;
         AnalyzeSuggestionOptions last_analyze_options_;
 
         /// LRU tracking: front = oldest, back = newest

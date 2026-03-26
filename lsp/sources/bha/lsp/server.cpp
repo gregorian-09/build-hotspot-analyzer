@@ -1386,6 +1386,13 @@ namespace bha::lsp
         if (args.contains("buildDir") && !args["buildDir"].is_null()) {
             build_dir = args["buildDir"].get<std::string>();
         }
+        std::optional<std::filesystem::path> trace_dir;
+        if (args.contains("traceDir") && !args["traceDir"].is_null()) {
+            const std::string trace_dir_value = args["traceDir"].get<std::string>();
+            if (!trace_dir_value.empty()) {
+                trace_dir = trace_dir_value;
+            }
+        }
 
         bool const rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
 
@@ -1439,6 +1446,7 @@ namespace bha::lsp
                 auto analysis_result = suggestion_manager_->analyze_project(
                         project_root,
                         build_dir,
+                        trace_dir,
                         rebuild,
                         [&token](const std::string& message, int percentage) {
                             WorkDoneProgressReport report;

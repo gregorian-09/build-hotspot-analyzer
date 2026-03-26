@@ -45,15 +45,33 @@ namespace bha::lsp
         std::ranges::transform(name, name.begin(), [](const unsigned char c) {
             return static_cast<char>(std::tolower(c));
         });
-        if (name == "cmake") return BuildSystemType::CMake;
-        if (name == "ninja") return BuildSystemType::Ninja;
-        if (name == "make") return BuildSystemType::Make;
-        if (name == "msbuild") return BuildSystemType::MSBuild;
-        if (name == "bazel") return BuildSystemType::Bazel;
-        if (name == "buck2") return BuildSystemType::Buck2;
-        if (name == "meson") return BuildSystemType::Meson;
-        if (name == "scons") return BuildSystemType::SCons;
-        if (name == "xcode") return BuildSystemType::XCode;
+        if (name == "cmake") {
+            return BuildSystemType::CMake;
+        }
+        if (name == "ninja") {
+            return BuildSystemType::Ninja;
+        }
+        if (name == "make") {
+            return BuildSystemType::Make;
+        }
+        if (name == "msbuild") {
+            return BuildSystemType::MSBuild;
+        }
+        if (name == "bazel") {
+            return BuildSystemType::Bazel;
+        }
+        if (name == "buck2") {
+            return BuildSystemType::Buck2;
+        }
+        if (name == "meson") {
+            return BuildSystemType::Meson;
+        }
+        if (name == "scons") {
+            return BuildSystemType::SCons;
+        }
+        if (name == "xcode") {
+            return BuildSystemType::XCode;
+        }
         return BuildSystemType::Unknown;
     }
 
@@ -76,6 +94,24 @@ namespace bha::lsp
             return BuildSystemType::Make;
         }
         return BuildSystemType::Unknown;
+    }
+
+    fs::path resolve_trace_root(const fs::path& project_root, const std::optional<fs::path>& build_dir) {
+        if (!build_dir.has_value()) {
+            return project_root / "build";
+        }
+
+        const fs::path direct_traces = *build_dir / "traces";
+        if (fs::exists(direct_traces)) {
+            return direct_traces;
+        }
+
+        const fs::path sibling_traces = build_dir->parent_path() / "traces";
+        if (fs::exists(sibling_traces)) {
+            return sibling_traces;
+        }
+
+        return *build_dir;
     }
 
     bool should_force_unreal_mode(
@@ -1546,6 +1582,7 @@ namespace bha::lsp
     AnalysisResult SuggestionManager::analyze_project(
         const fs::path& project_root,
         const std::optional<fs::path>& build_dir,
+        const std::optional<fs::path>& trace_dir,
         bool rebuild,
         const ProgressCallback& on_progress,
         const AnalyzeSuggestionOptions& analyze_options
@@ -1553,7 +1590,9 @@ namespace bha::lsp
         auto start = std::chrono::steady_clock::now();
 
         auto report = [&on_progress](const std::string& msg, const int pct) {
-            if (on_progress) on_progress(msg, pct);
+            if (on_progress) {
+                on_progress(msg, pct);
+            }
         };
 
         report("Detecting build system...", 5);
@@ -1603,13 +1642,9 @@ namespace bha::lsp
             build_trace.build_system = build_system_type_from_adapter_name(adapter->name());
         }
 
-        fs::path traces_dir = build_dir.value_or(project_root / "build");
-        if (build_dir) {
-            const fs::path sibling_traces = build_dir->parent_path() / "traces";
-            if (fs::exists(sibling_traces)) {
-                traces_dir = sibling_traces;
-            }
-        }
+        const fs::path traces_dir = trace_dir.has_value() && !trace_dir->empty()
+            ? *trace_dir
+            : resolve_trace_root(project_root, build_dir);
         int files_analyzed = 0;
 
         auto should_skip_unit = [](const fs::path& source_path) {
@@ -1841,6 +1876,7 @@ namespace bha::lsp
         }
         last_project_root_ = project_root;
         last_build_dir_ = build_dir;
+        last_trace_dir_ = trace_dir;
         last_analyze_options_ = analyze_options;
 
         // Evict old analysis cache entries if over limit
@@ -3662,6 +3698,7 @@ namespace bha::lsp
                         analyze_project(
                             *last_project_root_,
                             last_build_dir_,
+                            last_trace_dir_,
                             true,
                             nullptr,
                             last_analyze_options_

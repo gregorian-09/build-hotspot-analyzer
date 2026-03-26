@@ -34,6 +34,8 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 
 Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations remain visible while they run.
 
+If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
+
 Recommended workflow:
 1. Record traces
 2. Analyze traces
