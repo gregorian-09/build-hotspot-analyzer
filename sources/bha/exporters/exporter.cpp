@@ -146,7 +146,7 @@ namespace bha::exporters
                         html += "<ul style=\"margin: 8px 0; padding-left: 24px;\">\n";
                         in_list = true;
                     }
-                    std::string item = line.substr(line.find("- ") + 2);
+                    const std::string item = line.substr(line.find("- ") + 2);
                     html += "<li>" + escape_html(item) + "</li>\n";
                     continue;
                 }
@@ -159,9 +159,9 @@ namespace bha::exporters
                 std::string processed = line;
                 size_t pos = 0;
                 while ((pos = processed.find("**", pos)) != std::string::npos) {
-                    if (size_t end_pos = processed.find("**", pos + 2); end_pos != std::string::npos) {
-                        std::string bold_text = processed.substr(pos + 2, end_pos - pos - 2);
-                        std::string replacement = "<strong>" + bold_text + "</strong>";
+                    if (const size_t end_pos = processed.find("**", pos + 2); end_pos != std::string::npos) {
+                        const std::string bold_text = processed.substr(pos + 2, end_pos - pos - 2);
+                        const std::string replacement = "<strong>" + bold_text + "</strong>";
                         processed.replace(pos, end_pos - pos + 2, replacement);
                         pos += replacement.length();
                     } else {
@@ -186,12 +186,16 @@ namespace bha::exporters
         }
 
         std::size_t count_lines(const std::string& text) {
-            if (text.empty()) return 0;
+            if (text.empty()) {
+                return 0;
+            }
             return static_cast<std::size_t>(std::count(text.begin(), text.end(), '\n')) + 1;
         }
 
         std::string truncate_lines(const std::string& text, const std::size_t max_lines) {
-            if (max_lines == 0 || text.empty()) return {};
+            if (max_lines == 0 || text.empty()) {
+                return {};
+            }
             std::size_t line_count = 0;
             std::size_t pos = 0;
             for (; pos < text.size(); ++pos) {
@@ -377,7 +381,7 @@ namespace bha::exporters
         }
 
         std::string suggestion_type_slug(const SuggestionType type) {
-            std::string raw = to_string(type);
+            const std::string raw = to_string(type);
             std::string slug;
             slug.reserve(raw.size());
             bool prev_dash = false;
@@ -454,11 +458,21 @@ namespace bha::exporters
     }
 
     std::optional<ExportFormat> string_to_format(const std::string_view str) noexcept {
-        if (str == "json" || str == "JSON") return ExportFormat::JSON;
-        if (str == "html" || str == "HTML") return ExportFormat::HTML;
-        if (str == "csv" || str == "CSV") return ExportFormat::CSV;
-        if (str == "sarif" || str == "SARIF") return ExportFormat::SARIF;
-        if (str == "markdown" || str == "md" || str == "Markdown") return ExportFormat::Markdown;
+        if (str == "json" || str == "JSON") {
+            return ExportFormat::JSON;
+        }
+        if (str == "html" || str == "HTML") {
+            return ExportFormat::HTML;
+        }
+        if (str == "csv" || str == "CSV") {
+            return ExportFormat::CSV;
+        }
+        if (str == "sarif" || str == "SARIF") {
+            return ExportFormat::SARIF;
+        }
+        if (str == "markdown" || str == "md" || str == "Markdown") {
+            return ExportFormat::Markdown;
+        }
         return std::nullopt;
     }
 
@@ -586,11 +600,21 @@ namespace bha::exporters
         std::ranges::transform(ext, ext.begin(),
                                [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
-        if (ext == ".json") return create(ExportFormat::JSON);
-        if (ext == ".html" || ext == ".htm") return create(ExportFormat::HTML);
-        if (ext == ".csv") return create(ExportFormat::CSV);
-        if (ext == ".md" || ext == ".markdown") return create(ExportFormat::Markdown);
-        if (ext == ".sarif") return create(ExportFormat::SARIF);
+        if (ext == ".json") {
+            return create(ExportFormat::JSON);
+        }
+        if (ext == ".html" || ext == ".htm") {
+            return create(ExportFormat::HTML);
+        }
+        if (ext == ".csv") {
+            return create(ExportFormat::CSV);
+        }
+        if (ext == ".md" || ext == ".markdown") {
+            return create(ExportFormat::Markdown);
+        }
+        if (ext == ".sarif") {
+            return create(ExportFormat::SARIF);
+        }
 
         return Result<std::unique_ptr<IExporter>, Error>::failure(
             Error(ErrorCode::InvalidArgument, "Cannot determine format from extension: " + ext)
@@ -665,7 +689,7 @@ namespace bha::exporters
         if (options.include_file_details) {
             json files = json::array();
             std::size_t file_count = 0;
-            std::size_t total_files = analysis.files.size();
+            const std::size_t total_files = analysis.files.size();
 
             for (const auto& file : analysis.files) {
                 if (options.min_compile_time > Duration::zero() &&
@@ -878,7 +902,7 @@ namespace bha::exporters
         json_opts.pretty_print = false;
         json_opts.include_suggestions = false;
 
-        JsonExporter json_exporter;
+        const JsonExporter json_exporter;
         auto json_result = json_exporter.export_to_string(analysis, suggestions, json_opts);
         if (json_result.is_err()) {
             return Result<void, Error>::failure(json_result.error());
@@ -890,7 +914,7 @@ namespace bha::exporters
         // ==================================================================
         // 1. Build HTML HEAD section
         // ==================================================================
-        std::string head = replace_placeholders(REPORT_HEAD_HTML, {
+        const std::string head = replace_placeholders(REPORT_HEAD_HTML, {
             {"{{TITLE}}", escape_html(options.html_title)},
             {"{{FONTAWESOME_CSS}}", std::string(FONTAWESOME_CSS_DATA)},
             {"{{STYLES_CSS}}", std::string(STYLES_CSS)}
@@ -921,7 +945,7 @@ namespace bha::exporters
         summary_stats << analysis.cache_distribution.distributed_suitability_score;
         std::string distributed_suitability_str = summary_stats.str();
 
-        std::string body_start = replace_placeholders(REPORT_BODY_START_HTML, {
+        const std::string body_start = replace_placeholders(REPORT_BODY_START_HTML, {
             {"{{THEME_CLASS}}", theme_class},
             {"{{TITLE}}", escape_html(options.html_title)},
             {"{{TIMESTAMP}}", timestamp},
@@ -941,24 +965,30 @@ namespace bha::exporters
         std::ranges::sort(sorted_files,
                           [](const auto& a, const auto& b) { return a.compile_time > b.compile_time; });
 
-        Duration max_time = sorted_files.empty() ? Duration::zero() : sorted_files[0].compile_time;
+        const Duration max_time = sorted_files.empty() ? Duration::zero() : sorted_files[0].compile_time;
 
         auto format_bytes = [](size_t bytes) -> std::string {
-            if (bytes == 0) return "-";
-            if (bytes < 1024) return std::to_string(bytes) + " B";
-            if (bytes < 1024 * 1024) return std::to_string(bytes / 1024) + " KB";
+            if (bytes == 0) {
+                return "-";
+            }
+            if (bytes < 1024) {
+                return std::to_string(bytes) + " B";
+            }
+            if (bytes < 1024 * 1024) {
+                return std::to_string(bytes / 1024) + " KB";
+            }
             return std::to_string(bytes / (1024 * 1024)) + " MB";
         };
 
         for (const auto& file : sorted_files) {
-            double time_ms = duration_to_ms(file.compile_time);
-            double fe_ms = duration_to_ms(file.frontend_time);
-            double be_ms = duration_to_ms(file.backend_time);
-            double bar_width = max_time.count() > 0
+            const double time_ms = duration_to_ms(file.compile_time);
+            const double fe_ms = duration_to_ms(file.frontend_time);
+            const double be_ms = duration_to_ms(file.backend_time);
+            const double bar_width = max_time.count() > 0
                 ? 100.0 * static_cast<double>(file.compile_time.count()) / static_cast<double>(max_time.count())
                 : 0.0;
 
-            std::string stack_usage = format_bytes(file.memory.max_stack_bytes);
+            const std::string stack_usage = format_bytes(file.memory.max_stack_bytes);
 
             file_rows << "\n                            <tr data-time=\"" << time_ms << "\" data-name=\""
                       << escape_html(file.file.string()) << "\">\n"
@@ -1262,7 +1292,7 @@ namespace bha::exporters
                 suggestion_cards << "\n                    <div class=\"code-comparison\">";
 
                 if (!sugg.before_code.code.empty()) {
-                    std::string before_file_label = !sugg.before_code.file.empty()
+                    const std::string before_file_label = !sugg.before_code.file.empty()
                         ? escape_html(sugg.before_code.file.string())
                         : "Current Code";
 
@@ -1281,7 +1311,7 @@ namespace bha::exporters
                 }
 
                 if (!sugg.after_code.code.empty()) {
-                    std::string after_file_label = !sugg.after_code.file.empty()
+                    const std::string after_file_label = !sugg.after_code.file.empty()
                         ? escape_html(sugg.after_code.file.string())
                         : "Optimized Code";
 
@@ -1377,7 +1407,7 @@ namespace bha::exporters
             ? "var(--success-color)"
             : "var(--danger-color)";
 
-        std::string body_sections = replace_placeholders(REPORT_BODY_SECTIONS_HTML, {
+        const std::string body_sections = replace_placeholders(REPORT_BODY_SECTIONS_HTML, {
             {"{{FILE_TABLE_ROWS}}", file_rows.str()},
             {"{{SUGGESTION_CARDS}}", suggestion_cards.str()},
             {"{{TOTAL_INCLUDES}}", std::to_string(analysis.dependencies.total_includes)},
@@ -1390,7 +1420,7 @@ namespace bha::exporters
         // ==================================================================
         // 6. Build BODY END section (D3.js + visualization script)
         // ==================================================================
-        std::string body_end = replace_placeholders(REPORT_BODY_END_HTML, {
+        const std::string body_end = replace_placeholders(REPORT_BODY_END_HTML, {
             {"{{D3_JS}}", std::string(D3_JS_DATA)},
             {"{{ANALYSIS_JSON}}", json_result.value()},
             {"{{VISUALIZATION_JS}}", std::string(VISUALIZATION_JS)}
@@ -1699,8 +1729,12 @@ namespace bha::exporters
 
             std::size_t count = 0;
             for (const auto& file : sorted_files) {
-                if (options.max_files > 0 && count >= options.max_files) break;
-                if (count >= 20) break;  // Default limit for Markdown
+                if (options.max_files > 0 && count >= options.max_files) {
+                    break;
+                }
+                if (count >= 20) {
+                    break;
+                }
 
                 stream << "| " << file.file.filename().string()
                        << " | " << std::fixed << std::setprecision(1) << duration_to_ms(file.compile_time)
@@ -1715,7 +1749,9 @@ namespace bha::exporters
             stream << "## Optimization Suggestions\n\n";
 
             for (const auto& sugg : suggestions) {
-                if (sugg.confidence < options.min_confidence) continue;
+                if (sugg.confidence < options.min_confidence) {
+                    continue;
+                }
 
                 std::string priority;
                 switch (sugg.priority) {

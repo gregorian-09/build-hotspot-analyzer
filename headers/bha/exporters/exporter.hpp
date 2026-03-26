@@ -89,7 +89,7 @@ namespace bha::exporters
     struct ExportMetadata {
         std::string bha_version = "0.1.0";
         std::string schema_version = "0.1.0";
-        Timestamp generated_at{};
+        Timestamp generated_at;
         std::string project_name;
         std::string project_path;
         std::string git_commit;
