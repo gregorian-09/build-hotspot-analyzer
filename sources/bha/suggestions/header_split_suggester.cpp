@@ -762,34 +762,31 @@ namespace bha::suggestions
             }
             desc << ".\n\n";
 
-            desc << "**Suggested split pattern:**\n```\n";
+            desc << "**Suggested split pattern:**\n";
             switch (pattern) {
                 case SplitPattern::ForwardDecl:
-                    desc << "// " << fwd_header_name << " - Forward declarations\n";
-                    desc << "#pragma once\n\n";
-                    desc << "class MyClass;  // Forward declaration\n";
-                    desc << "struct MyStruct;  // Forward declaration\n\n";
-                    desc << "// " << filename << " - Full definitions\n";
-                    desc << "#pragma once\n";
-                    desc << "#include \"" << fwd_header_name << "\"\n\n";
-                    desc << "class MyClass { /* ... */ };  // Full definition\n";
-                    desc << "struct MyStruct { /* ... */ };  // Full definition\n";
+                    desc << "- Create `" << fwd_header_name << "` for forward declarations only.\n";
+                    desc << "- Keep full definitions in `" << filename << "` and include `" << fwd_header_name << "` there.\n";
+                    desc << "- Update includers that only need pointers/references to include `" << fwd_header_name << "`.\n";
                     break;
                 case SplitPattern::TypesAndFwd:
-                    desc << "// " << fwd_header_name << " - Forward declarations\n";
-                    desc << "// " << types_header_name << " - Type definitions\n";
-                    desc << "// " << filename << " - Full interface\n";
+                    desc << "- Create `" << fwd_header_name << "` for forward declarations.\n";
+                    desc << "- Create `" << types_header_name << "` for shared lightweight type definitions.\n";
+                    desc << "- Keep `" << filename << "` as the full interface that includes the smaller headers.\n";
                     break;
                 case SplitPattern::FunctionalGroups:
-                    desc << "// " << suggest_split_name(header.path, "group1") << " - Group 1 functionality\n";
-                    desc << "// " << suggest_split_name(header.path, "group2") << " - Group 2 functionality\n";
+                    desc << "- Split `" << filename << "` into focused headers such as `"
+                         << suggest_split_name(header.path, "group1") << "` and `"
+                         << suggest_split_name(header.path, "group2") << "`.\n";
+                    desc << "- Keep unrelated declarations out of translation units that do not need them.\n";
                     break;
                 case SplitPattern::PublicPrivate:
-                    desc << "// " << filename << " - Public API\n";
-                    desc << "// " << suggest_split_name(header.path, "internal") << " - Internal details\n";
+                    desc << "- Keep the public API in `" << filename << "`.\n";
+                    desc << "- Move internal details into `" << suggest_split_name(header.path, "internal") << "`.\n";
+                    desc << "- Limit internal includes to implementation files.\n";
                     break;
             }
-            desc << "```\n\n";
+            desc << "\n";
             desc << "Splitting into smaller, focused headers can reduce compile times when files only need a subset of declarations.";
             suggestion.description = desc.str();
 
