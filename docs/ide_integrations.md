@@ -73,6 +73,8 @@ code --install-extension build-hotspot-analyzer-0.1.0.vsix
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
+Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations are visible while they run.
+
 Recommended workflow:
 1. Record traces
 2. Analyze traces

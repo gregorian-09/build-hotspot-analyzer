@@ -32,6 +32,8 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
+Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations remain visible while they run.
+
 Recommended workflow:
 1. Record traces
 2. Analyze traces

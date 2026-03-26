@@ -359,6 +359,20 @@ async function promptForBuildDir(): Promise<string | undefined> {
     });
 }
 
+async function withBhaProgress<T>(
+    title: string,
+    task: (progress: vscode.Progress<{ message?: string; increment?: number }>) => Promise<T>
+): Promise<T> {
+    return vscode.window.withProgress(
+        {
+            location: vscode.ProgressLocation.Notification,
+            title,
+            cancellable: false
+        },
+        task
+    );
+}
+
 function splitShellArgs(input: string): string[] {
     const args: string[] = [];
     let current = '';
@@ -541,15 +555,25 @@ async function runAnalysis(buildDir: string | undefined, rebuild: boolean): Prom
     const operationId = generateOperationId(rebuild ? 'build-and-analyze' : 'analyze');
 
     try {
-        const result = await client.sendRequest<unknown>('workspace/executeCommand', {
-            command: 'bha.analyze',
-            arguments: [{
-                projectRoot: workspaceFolder.uri.fsPath,
-                buildDir: buildDir || undefined,
-                rebuild,
-                operationId
-            }]
-        });
+        const executeAnalysis = async (
+            progress: vscode.Progress<{ message?: string; increment?: number }>
+        ): Promise<unknown> => {
+            progress.report({ message: 'Analyzing traces and generating suggestions...' });
+            const result = await client.sendRequest('workspace/executeCommand', {
+                command: 'bha.analyze',
+                arguments: [{
+                    projectRoot: workspaceFolder.uri.fsPath,
+                    buildDir: buildDir || undefined,
+                    rebuild,
+                    operationId
+                }]
+            });
+            return result as unknown;
+        };
+        const result = await withBhaProgress(
+            rebuild ? 'BHA: Rebuilding and analyzing build performance' : 'BHA: Analyzing build performance',
+            executeAnalysis
+        );
 
         if (!isValidAnalysisResult(result)) {
             vscode.window.showErrorMessage('Analysis returned invalid result');
@@ -588,22 +612,32 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
     }
 
     try {
-        const result = await client.sendRequest<unknown>('workspace/executeCommand', {
-            command: 'bha.recordBuildTraces',
-            arguments: [{
-                projectRoot: workspaceFolder.uri.fsPath,
-                buildDir: options.buildDir,
-                cleanFirst: options.cleanFirst,
-                verbose: options.verbose,
-                buildSystem: options.buildSystem,
-                buildType: options.buildType,
-                compiler: options.compiler,
-                parallelJobs: options.parallelJobs,
-                traceOutputDir: options.traceOutputDir,
-                extraArgs: options.extraArgs,
-                operationId: generateOperationId(advanced ? 'record-build-traces-advanced' : 'record-build-traces')
-            }]
-        });
+        const executeRecordBuild = async (
+            progress: vscode.Progress<{ message?: string; increment?: number }>
+        ): Promise<unknown> => {
+            progress.report({ message: 'Running traced build...' });
+            const result = await client.sendRequest('workspace/executeCommand', {
+                command: 'bha.recordBuildTraces',
+                arguments: [{
+                    projectRoot: workspaceFolder.uri.fsPath,
+                    buildDir: options.buildDir,
+                    cleanFirst: options.cleanFirst,
+                    verbose: options.verbose,
+                    buildSystem: options.buildSystem,
+                    buildType: options.buildType,
+                    compiler: options.compiler,
+                    parallelJobs: options.parallelJobs,
+                    traceOutputDir: options.traceOutputDir,
+                    extraArgs: options.extraArgs,
+                    operationId: generateOperationId(advanced ? 'record-build-traces-advanced' : 'record-build-traces')
+                }]
+            });
+            return result as unknown;
+        };
+        const result = await withBhaProgress(
+            advanced ? 'BHA: Recording build traces (advanced)' : 'BHA: Recording build traces',
+            executeRecordBuild
+        );
 
         if (!isValidRecordBuildResult(result)) {
             vscode.window.showErrorMessage('Build trace recording returned invalid result');
@@ -736,10 +770,20 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
     if (confirm !== 'Apply') return;
 
     try {
-        const applyResult = await client.sendRequest<unknown>('workspace/executeCommand', {
-            command: 'bha.applySuggestion',
-            arguments: [{ suggestionId, operationId }]
-        });
+        const executeApplySuggestion = async (
+            progress: vscode.Progress<{ message?: string; increment?: number }>
+        ): Promise<unknown> => {
+            progress.report({ message: 'Applying edits and validating result...' });
+            const result = await client.sendRequest('workspace/executeCommand', {
+                command: 'bha.applySuggestion',
+                arguments: [{ suggestionId, operationId }]
+            });
+            return result as unknown;
+        };
+        const applyResult = await withBhaProgress(
+            'BHA: Applying suggestion',
+            executeApplySuggestion
+        );
 
         if (!isValidApplyResult(applyResult)) {
             vscode.window.showErrorMessage('Apply returned invalid result');
@@ -837,15 +881,25 @@ async function cmdApplyAllSuggestions(): Promise<void> {
 
     try {
         // Use atomic apply with transaction semantics
-        const applyResult = await client.sendRequest<unknown>('workspace/executeCommand', {
-            command: 'bha.applyAllSuggestions',
-            arguments: [{
-                minPriority,
-                safeOnly,
-                atomic: true, // Request atomic transaction
-                operationId
-            }]
-        });
+        const executeApplyAll = async (
+            progress: vscode.Progress<{ message?: string; increment?: number }>
+        ): Promise<unknown> => {
+            progress.report({ message: 'Applying edits and validating transaction...' });
+            const result = await client.sendRequest('workspace/executeCommand', {
+                command: 'bha.applyAllSuggestions',
+                arguments: [{
+                    minPriority,
+                    safeOnly,
+                    atomic: true, // Request atomic transaction
+                    operationId
+                }]
+            });
+            return result as unknown;
+        };
+        const applyResult = await withBhaProgress(
+            'BHA: Applying suggestions',
+            executeApplyAll
+        );
 
         if (!isValidApplyAllResult(applyResult)) {
             vscode.window.showErrorMessage('Apply all returned invalid result');
@@ -913,10 +967,20 @@ async function cmdRevertChanges(): Promise<void> {
     if (confirm !== 'Revert') return;
 
     try {
-        const revertResult = await client.sendRequest<unknown>('workspace/executeCommand', {
-            command: 'bha.revertChanges',
-            arguments: [{ backupId: lastBackupId, operationId }]
-        });
+        const executeRevert = async (
+            progress: vscode.Progress<{ message?: string; increment?: number }>
+        ): Promise<unknown> => {
+            progress.report({ message: 'Restoring files from backup...' });
+            const result = await client.sendRequest('workspace/executeCommand', {
+                command: 'bha.revertChanges',
+                arguments: [{ backupId: lastBackupId, operationId }]
+            });
+            return result as unknown;
+        };
+        const revertResult = await withBhaProgress(
+            'BHA: Reverting changes',
+            executeRevert
+        );
 
         if (!isValidRevertResult(revertResult)) {
             vscode.window.showErrorMessage('Revert returned invalid result');

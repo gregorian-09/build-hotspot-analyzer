@@ -200,6 +200,8 @@ Main commands:
 - `BHA: Revert Changes`
 - `BHA: Restart Language Server`
 
+Long-running VS Code commands show progress notifications so build recording, analysis, apply, and revert operations are visible while they run.
+
 Recommended workflow:
 1. `BHA: Record Build Traces`
 2. `BHA: Analyze Build Performance`
