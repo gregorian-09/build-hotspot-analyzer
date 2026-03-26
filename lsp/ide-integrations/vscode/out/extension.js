@@ -6384,9 +6384,9 @@ var require_async = __commonJS({
         this.onSuccess = void 0;
         this.task = void 0;
       }
-      trigger(task, delay = this.defaultDelay) {
+      trigger(task, delay2 = this.defaultDelay) {
         this.task = task;
-        if (delay >= 0) {
+        if (delay2 >= 0) {
           this.cancelTimeout();
         }
         if (!this.completionPromise) {
@@ -6400,11 +6400,11 @@ var require_async = __commonJS({
             return result;
           });
         }
-        if (delay >= 0 || this.timeout === void 0) {
+        if (delay2 >= 0 || this.timeout === void 0) {
           this.timeout = (0, vscode_languageserver_protocol_1.RAL)().timer.setTimeout(() => {
             this.timeout = void 0;
             this.onSuccess(void 0);
-          }, delay >= 0 ? delay : this.defaultDelay);
+          }, delay2 >= 0 ? delay2 : this.defaultDelay);
         }
         return this.completionPromise;
       }
@@ -18070,6 +18070,13 @@ function isValidRecordBuildResult(result) {
   const obj = result;
   return typeof obj.success === "boolean";
 }
+function isValidAsyncCommandAccepted(result) {
+  if (!result || typeof result !== "object") {
+    return false;
+  }
+  const obj = result;
+  return obj.accepted === true && obj.async === true && typeof obj.jobId === "string";
+}
 function isValidSuggestionDetails(result) {
   if (!result || typeof result !== "object") {
     return false;
@@ -18185,6 +18192,27 @@ function activate(context) {
     serverOptions,
     clientOptions
   );
+  client.onNotification("bha/jobLog", (params) => {
+    if (!params || typeof params !== "object") {
+      return;
+    }
+    const payload = params;
+    const jobId = safeGetString(payload.jobId, "");
+    const category = safeGetString(payload.category, "job");
+    const message = safeGetString(payload.message, "");
+    if (!message) {
+      return;
+    }
+    logLine(`[${category}${jobId ? ` ${jobId}` : ""}] ${message}`);
+  });
+  client.onNotification("bha/jobStarted", (params) => {
+    const payload = params && typeof params === "object" ? params : {};
+    logLine(`Background job started: ${safeGetString(payload.command, "unknown")} (${safeGetString(payload.jobId, "")})`);
+  });
+  client.onNotification("bha/jobCompleted", (params) => {
+    const payload = params && typeof params === "object" ? params : {};
+    logLine(`Background job completed: ${safeGetString(payload.command, "unknown")} (${safeGetString(payload.jobId, "")}) status=${safeGetString(payload.status, "unknown")}`);
+  });
   context.subscriptions.push(
     vscode.commands.registerCommand("buildHotspotAnalyzer.recordBuildTraces", cmdRecordBuildTraces),
     vscode.commands.registerCommand("buildHotspotAnalyzer.recordBuildTracesAdvanced", cmdRecordBuildTracesAdvanced),
@@ -18234,17 +18262,89 @@ async function promptForBuildDir(defaultValue) {
     value: defaultValue
   });
 }
-async function withBhaProgress(title, task) {
+async function withBhaProgress(title, cancellable, task) {
   logLine(`${title} started`);
   showOutput(true);
   return vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
       title,
-      cancellable: false
+      cancellable
     },
-    task
+    (progress, token) => task(progress, token)
   );
+}
+async function delay(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+async function runAsyncLspCommand(title, command, argumentsPayload, startedMessage) {
+  const accepted = await client.sendRequest("workspace/executeCommand", {
+    command,
+    arguments: [{ ...argumentsPayload, async: true }]
+  });
+  if (!isValidAsyncCommandAccepted(accepted)) {
+    throw new Error("Server did not accept async command");
+  }
+  const jobId = accepted.jobId;
+  let cancelRequested = false;
+  return withBhaProgress(title, true, async (progress, token) => {
+    progress.report({ message: startedMessage });
+    return new Promise(async (resolve, reject) => {
+      let finished = false;
+      const onCancel = async () => {
+        if (cancelRequested || finished) {
+          return;
+        }
+        cancelRequested = true;
+        logLine(`Cancellation requested for job ${jobId}`);
+        progress.report({ message: "Cancellation requested..." });
+        try {
+          await client.sendRequest("workspace/executeCommand", {
+            command: "bha.cancelJob",
+            arguments: [{ jobId }]
+          });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          logLine(`Failed to request cancellation for ${jobId}: ${errorMessage}`);
+        }
+      };
+      const subscription = token.onCancellationRequested(onCancel);
+      try {
+        while (!finished) {
+          const statusResult = await client.sendRequest("workspace/executeCommand", {
+            command: "bha.getJobStatus",
+            arguments: [{ jobId }]
+          });
+          const statusPayload = statusResult && typeof statusResult === "object" ? statusResult : {};
+          const status = safeGetString(statusPayload.status, "unknown");
+          const errorMessage = safeGetString(statusPayload.error, "");
+          const result = statusPayload.result;
+          if (status === "queued") {
+            progress.report({ message: "Queued..." });
+          } else if (status === "running") {
+            progress.report({ message: cancelRequested ? "Cancelling..." : "Running..." });
+          } else if (status === "completed") {
+            finished = true;
+            resolve(result);
+            return;
+          } else if (status === "cancelled") {
+            finished = true;
+            reject(new Error("Operation cancelled"));
+            return;
+          } else if (status === "failed") {
+            finished = true;
+            reject(new Error(errorMessage || "Operation failed"));
+            return;
+          }
+          await delay(250);
+        }
+      } catch (error) {
+        reject(error);
+      } finally {
+        subscription.dispose();
+      }
+    });
+  });
 }
 async function fetchSuggestionDetails(suggestionId) {
   try {
@@ -18430,23 +18530,17 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
   logLine(`Analyze request: projectRoot=${workspaceRoot}, buildDir=${buildDir ?? "<auto>"}, traceDir=${traceDir ?? "<auto>"}, rebuild=${rebuild}`);
   const operationId = generateOperationId(rebuild ? "build-and-analyze" : "analyze");
   try {
-    const executeAnalysis = async (progress) => {
-      progress.report({ message: "Analyzing traces and generating suggestions..." });
-      const result2 = await client.sendRequest("workspace/executeCommand", {
-        command: "bha.analyze",
-        arguments: [{
-          projectRoot: workspaceRoot,
-          buildDir: buildDir || void 0,
-          traceDir: traceDir || void 0,
-          rebuild,
-          operationId
-        }]
-      });
-      return result2;
-    };
-    const result = await withBhaProgress(
+    const result = await runAsyncLspCommand(
       rebuild ? "BHA: Rebuilding and analyzing build performance" : "BHA: Analyzing build performance",
-      executeAnalysis
+      "bha.analyze",
+      {
+        projectRoot: workspaceRoot,
+        buildDir: buildDir || void 0,
+        traceDir: traceDir || void 0,
+        rebuild,
+        operationId
+      },
+      "Analyzing traces and generating suggestions..."
     );
     if (!isValidAnalysisResult(result)) {
       logLine("Analyze request returned an invalid result");
@@ -18487,29 +18581,23 @@ async function recordBuildTraces(advanced) {
     logLine(
       `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? "<auto>"}, buildSystem=${options.buildSystem ?? "auto"}, compiler=${options.compiler ?? "auto"}, buildType=${options.buildType ?? "default"}, clean=${options.cleanFirst}, verbose=${options.verbose}`
     );
-    const executeRecordBuild = async (progress) => {
-      progress.report({ message: "Running traced build..." });
-      const result2 = await client.sendRequest("workspace/executeCommand", {
-        command: "bha.recordBuildTraces",
-        arguments: [{
-          projectRoot: workspaceFolder.uri.fsPath,
-          buildDir: options.buildDir,
-          cleanFirst: options.cleanFirst,
-          verbose: options.verbose,
-          buildSystem: options.buildSystem,
-          buildType: options.buildType,
-          compiler: options.compiler,
-          parallelJobs: options.parallelJobs,
-          traceOutputDir: options.traceOutputDir,
-          extraArgs: options.extraArgs,
-          operationId: generateOperationId(advanced ? "record-build-traces-advanced" : "record-build-traces")
-        }]
-      });
-      return result2;
-    };
-    const result = await withBhaProgress(
+    const result = await runAsyncLspCommand(
       advanced ? "BHA: Recording build traces (advanced)" : "BHA: Recording build traces",
-      executeRecordBuild
+      "bha.recordBuildTraces",
+      {
+        projectRoot: workspaceFolder.uri.fsPath,
+        buildDir: options.buildDir,
+        cleanFirst: options.cleanFirst,
+        verbose: options.verbose,
+        buildSystem: options.buildSystem,
+        buildType: options.buildType,
+        compiler: options.compiler,
+        parallelJobs: options.parallelJobs,
+        traceOutputDir: options.traceOutputDir,
+        extraArgs: options.extraArgs,
+        operationId: generateOperationId(advanced ? "record-build-traces-advanced" : "record-build-traces")
+      },
+      "Running traced build..."
     );
     if (!isValidRecordBuildResult(result)) {
       logLine("Record traces request returned an invalid result");
@@ -18651,7 +18739,8 @@ async function cmdApplySuggestion(suggestionId) {
     };
     const applyResult = await withBhaProgress(
       "BHA: Applying suggestion",
-      executeApplySuggestion
+      false,
+      async (progress) => executeApplySuggestion(progress)
     );
     if (!isValidApplyResult(applyResult)) {
       logLine("Apply suggestion returned an invalid result");
@@ -18751,7 +18840,8 @@ async function cmdApplyAllSuggestions() {
     };
     const applyResult = await withBhaProgress(
       "BHA: Applying suggestions",
-      executeApplyAll
+      false,
+      async (progress) => executeApplyAll(progress)
     );
     if (!isValidApplyAllResult(applyResult)) {
       logLine("Apply all returned an invalid result");
@@ -18818,7 +18908,8 @@ async function cmdRevertChanges() {
     };
     const revertResult = await withBhaProgress(
       "BHA: Reverting changes",
-      executeRevert
+      false,
+      async (progress) => executeRevert(progress)
     );
     if (!isValidRevertResult(revertResult)) {
       logLine("Revert returned an invalid result");

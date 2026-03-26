@@ -139,7 +139,8 @@ namespace bha::lsp
             const std::optional<fs::path>& trace_dir = std::nullopt,
             bool rebuild = false,
             const ProgressCallback& on_progress = nullptr,
-            const AnalyzeSuggestionOptions& analyze_options = {}
+            const AnalyzeSuggestionOptions& analyze_options = {},
+            const std::function<bool()>& is_cancelled = {}
         );
 
         DetailedSuggestion get_suggestion_details(const std::string& suggestion_id);

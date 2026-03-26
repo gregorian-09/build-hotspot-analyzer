@@ -564,6 +564,32 @@ namespace bha::lsp
         return "bha-job-" + std::to_string(++async_job_counter_);
     }
 
+    bool LSPServer::is_async_job_cancel_requested(const std::string& job_id) const {
+        if (job_id.empty()) {
+            return false;
+        }
+        std::lock_guard const lock(async_jobs_mutex_);
+        if (const auto it = async_jobs_.find(job_id); it != async_jobs_.end()) {
+            return it->second->cancel_requested.load();
+        }
+        return false;
+    }
+
+    void LSPServer::send_job_log(
+        const std::string& job_id,
+        const std::string& category,
+        const std::string& message
+    ) const {
+        if (job_id.empty() || message.empty()) {
+            return;
+        }
+        send_notification("bha/jobLog", {
+            {"jobId", job_id},
+            {"category", category},
+            {"message", message}
+        });
+    }
+
     json LSPServer::build_async_job_payload(const AsyncJob& job) const {
         std::lock_guard const state_lock(job.mutex);
         const auto to_iso = [](const std::chrono::system_clock::time_point& tp) -> std::string {
@@ -728,7 +754,7 @@ namespace bha::lsp
         }
 
         WorkDoneProgressReport report;
-        report.message = "Applying suggestions in background";
+        report.message = "Running background operation";
         report.percentage = 30;
         json report_json;
         to_json(report_json, report);
@@ -746,6 +772,10 @@ namespace bha::lsp
                 result = execute_apply_all_suggestions(run_args);
             } else if (job->command == "bha.applyEdits") {
                 result = execute_apply_edits(run_args);
+            } else if (job->command == "bha.recordBuildTraces") {
+                result = execute_record_build_traces(run_args);
+            } else if (job->command == "bha.analyze") {
+                result = execute_analyze(run_args);
             } else {
                 throw std::runtime_error("Unsupported async command: " + job->command);
             }
@@ -1244,6 +1274,10 @@ namespace bha::lsp
     }
 
     json LSPServer::execute_record_build_traces(const json& args) {
+        if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
+            return queue_async_command("bha.recordBuildTraces", args);
+        }
+
         std::string project_root = workspace_root_;
         if (args.contains("projectRoot")) {
             project_root = args["projectRoot"].get<std::string>();
@@ -1275,18 +1309,27 @@ namespace bha::lsp
         const int parallel_jobs = args.contains("parallelJobs") && args["parallelJobs"].is_number_integer()
             ? args["parallelJobs"].get<int>()
             : 0;
+        const std::string job_id = args.contains("jobId") && args["jobId"].is_string()
+            ? args["jobId"].get<std::string>()
+            : std::string();
+        const auto ensure_not_cancelled = [this, &job_id]() {
+            if (!job_id.empty() && is_async_job_cancel_requested(job_id)) {
+                throw std::runtime_error("Operation cancelled");
+            }
+        };
 
         ProgressToken const token = create_progress_token();
 
         WorkDoneProgressBegin begin_progress;
         begin_progress.title = "Recording build traces";
-        begin_progress.cancellable = false;
+        begin_progress.cancellable = !job_id.empty();
         begin_progress.percentage = 0;
         json begin_json;
         to_json(begin_json, begin_progress);
         send_progress(token, begin_json);
 
         try {
+            ensure_not_cancelled();
             send_progress(token, json{
                 {"kind", "report"},
                 {"message", "Detecting build system..."},
@@ -1314,6 +1357,12 @@ namespace bha::lsp
             options.clean_first = clean_first;
             options.verbose = verbose;
             options.compiler = compiler;
+            options.on_output_line = [this, job_id](const std::string& line) {
+                send_job_log(job_id, "build", line);
+            };
+            options.should_cancel = [this, job_id]() {
+                return !job_id.empty() && is_async_job_cancel_requested(job_id);
+            };
             if (build_dir.has_value()) {
                 options.build_dir = *build_dir;
             }
@@ -1330,6 +1379,7 @@ namespace bha::lsp
                 }
             }
 
+            ensure_not_cancelled();
             send_progress(token, json{
                 {"kind", "report"},
                 {"message", "Running build with trace capture..."},
@@ -1348,6 +1398,7 @@ namespace bha::lsp
                     : build.error_message;
                 throw std::runtime_error(message);
             }
+            ensure_not_cancelled();
 
             send_progress(token, json{
                 {"kind", "report"},
@@ -1405,6 +1456,10 @@ namespace bha::lsp
             throw std::runtime_error("Server not fully initialized");
         }
 
+        if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
+            return queue_async_command("bha.analyze", args);
+        }
+
         std::string project_root = workspace_root_;
         if (args.contains("projectRoot")) {
             project_root = args["projectRoot"].get<std::string>();
@@ -1418,6 +1473,9 @@ namespace bha::lsp
             resolve_project_relative_path(project_root, args, "buildDir");
         const std::optional<std::filesystem::path> trace_dir =
             resolve_project_relative_path(project_root, args, "traceDir");
+        const std::string job_id = args.contains("jobId") && args["jobId"].is_string()
+            ? args["jobId"].get<std::string>()
+            : std::string();
 
         bool const rebuild = args.contains("rebuild") && args["rebuild"].get<bool>();
 
@@ -1454,7 +1512,7 @@ namespace bha::lsp
 
         WorkDoneProgressBegin begin_progress;
         begin_progress.title = "Analyzing project";
-        begin_progress.cancellable = false;
+        begin_progress.cancellable = !job_id.empty();
         begin_progress.percentage = 0;
         json begin_json;
         to_json(begin_json, begin_progress);
@@ -1473,7 +1531,7 @@ namespace bha::lsp
                         build_dir,
                         trace_dir,
                         rebuild,
-                        [&token](const std::string& message, int percentage) {
+                        [this, &token, &job_id](const std::string& message, int percentage) {
                             WorkDoneProgressReport report;
                             report.message = message;
                             if (percentage >= 0) {
@@ -1482,8 +1540,12 @@ namespace bha::lsp
                             json report_json;
                             to_json(report_json, report);
                             send_progress(token, report_json);
+                            send_job_log(job_id, "analyze", message);
                         },
-                        analyze_options
+                        analyze_options,
+                        [this, &job_id]() {
+                            return !job_id.empty() && is_async_job_cancel_requested(job_id);
+                        }
                     );
                 analysis_id = std::move(analysis_result.analysis_id);
                 suggestions = std::move(analysis_result.suggestions);

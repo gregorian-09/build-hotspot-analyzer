@@ -1600,7 +1600,8 @@ namespace bha::lsp
         const std::optional<fs::path>& trace_dir,
         bool rebuild,
         const ProgressCallback& on_progress,
-        const AnalyzeSuggestionOptions& analyze_options
+        const AnalyzeSuggestionOptions& analyze_options,
+        const std::function<bool()>& is_cancelled
     ) {
         auto start = std::chrono::steady_clock::now();
 
@@ -1609,7 +1610,13 @@ namespace bha::lsp
                 on_progress(msg, pct);
             }
         };
+        const auto ensure_not_cancelled = [&is_cancelled]() {
+            if (is_cancelled && is_cancelled()) {
+                throw std::runtime_error("Operation cancelled");
+            }
+        };
 
+        ensure_not_cancelled();
         report("Detecting build system...", 5);
 
         auto& registry = build_systems::BuildSystemRegistry::instance();
@@ -1634,12 +1641,14 @@ namespace bha::lsp
         }
 
         if (rebuild) {
+            ensure_not_cancelled();
             report("Running build...", 10);
             if (auto build_result = adapter->build(project_root, options); !build_result.is_ok() || !build_result.value().success) {
                 throw std::runtime_error("Build failed");
             }
         }
 
+        ensure_not_cancelled();
         report("Loading compile commands...", 20);
         if (auto compile_commands_result = adapter->get_compile_commands(project_root, options); !compile_commands_result.is_ok()) {
             if (!config_.allow_missing_compile_commands) {
@@ -1649,6 +1658,7 @@ namespace bha::lsp
             compile_commands_path = compile_commands_result.value();
         }
 
+        ensure_not_cancelled();
         report("Parsing trace files...", 30);
         BuildTrace build_trace;
         build_trace.timestamp = std::chrono::system_clock::now();
@@ -1678,6 +1688,7 @@ namespace bha::lsp
 
         if (fs::exists(traces_dir)) {
             for (const auto& trace_file : parsers::collect_trace_files(traces_dir, true)) {
+                ensure_not_cancelled();
                 if (auto parse_result = parsers::parse_trace_file(trace_file); parse_result.is_ok()) {
                     auto unit = std::move(parse_result.value());
                     if (should_skip_unit(unit.source_file)) {
@@ -1735,6 +1746,7 @@ namespace bha::lsp
             }
         }
 
+        ensure_not_cancelled();
         report("Running analyzers...", 50);
 
         AnalysisOptions analysis_opts;
@@ -1744,6 +1756,7 @@ namespace bha::lsp
             throw std::runtime_error("Analysis failed: " + analysis_result.error().message());
         }
 
+        ensure_not_cancelled();
         report("Generating suggestions...", 70);
 
         // Configure suggester options
@@ -1824,6 +1837,7 @@ namespace bha::lsp
             }
         }
 
+        ensure_not_cancelled();
         if (!project_root.empty()) {
             for (auto& sug : bha_suggestions) {
                 sug.target_file.path = resolve_relative_path(sug.target_file.path, project_root);
@@ -1853,6 +1867,7 @@ namespace bha::lsp
             }
         }
 
+        ensure_not_cancelled();
         // Convert bha::Suggestion to lsp::Suggestion
         suggestions_.clear();
         bha_suggestions_.clear();

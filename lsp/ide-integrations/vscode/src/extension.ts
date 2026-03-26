@@ -195,6 +195,12 @@ interface RecordBuildOptions {
     extraArgs: string[];
 }
 
+interface AsyncCommandAccepted {
+    accepted: boolean;
+    async: boolean;
+    jobId: string;
+}
+
 // ============================================================================
 // UUID Generation
 // ============================================================================
@@ -260,6 +266,14 @@ function isValidRecordBuildResult(result: unknown): result is RecordBuildResult 
     if (!result || typeof result !== 'object') return false;
     const obj = result as Record<string, unknown>;
     return typeof obj.success === 'boolean';
+}
+
+function isValidAsyncCommandAccepted(result: unknown): result is AsyncCommandAccepted {
+    if (!result || typeof result !== 'object') {
+        return false;
+    }
+    const obj = result as Record<string, unknown>;
+    return obj.accepted === true && obj.async === true && typeof obj.jobId === 'string';
 }
 
 function isValidSuggestionDetails(result: unknown): result is SuggestionDetails {
@@ -405,6 +419,28 @@ export function activate(context: vscode.ExtensionContext) {
         clientOptions
     );
 
+    client.onNotification('bha/jobLog', (params: unknown) => {
+        if (!params || typeof params !== 'object') {
+            return;
+        }
+        const payload = params as Record<string, unknown>;
+        const jobId = safeGetString(payload.jobId, '');
+        const category = safeGetString(payload.category, 'job');
+        const message = safeGetString(payload.message, '');
+        if (!message) {
+            return;
+        }
+        logLine(`[${category}${jobId ? ` ${jobId}` : ''}] ${message}`);
+    });
+    client.onNotification('bha/jobStarted', (params: unknown) => {
+        const payload = (params && typeof params === 'object') ? params as Record<string, unknown> : {};
+        logLine(`Background job started: ${safeGetString(payload.command, 'unknown')} (${safeGetString(payload.jobId, '')})`);
+    });
+    client.onNotification('bha/jobCompleted', (params: unknown) => {
+        const payload = (params && typeof params === 'object') ? params as Record<string, unknown> : {};
+        logLine(`Background job completed: ${safeGetString(payload.command, 'unknown')} (${safeGetString(payload.jobId, '')}) status=${safeGetString(payload.status, 'unknown')}`);
+    });
+
     // Register commands
     context.subscriptions.push(
         vscode.commands.registerCommand('buildHotspotAnalyzer.recordBuildTraces', cmdRecordBuildTraces),
@@ -468,7 +504,11 @@ async function promptForBuildDir(defaultValue?: string): Promise<string | undefi
 
 async function withBhaProgress<T>(
     title: string,
-    task: (progress: vscode.Progress<{ message?: string; increment?: number }>) => Promise<T>
+    cancellable: boolean,
+    task: (
+        progress: vscode.Progress<{ message?: string; increment?: number }>,
+        token: vscode.CancellationToken
+    ) => Promise<T>
 ): Promise<T> {
     logLine(`${title} started`);
     showOutput(true);
@@ -476,10 +516,97 @@ async function withBhaProgress<T>(
         {
             location: vscode.ProgressLocation.Notification,
             title,
-            cancellable: false
+            cancellable
         },
-        task
+        (progress, token) => task(progress, token)
     );
+}
+
+async function delay(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runAsyncLspCommand<T>(
+    title: string,
+    command: string,
+    argumentsPayload: Record<string, unknown>,
+    startedMessage: string
+): Promise<T> {
+    const accepted = await client.sendRequest<unknown>('workspace/executeCommand', {
+        command,
+        arguments: [{ ...argumentsPayload, async: true }]
+    });
+    if (!isValidAsyncCommandAccepted(accepted)) {
+        throw new Error('Server did not accept async command');
+    }
+
+    const jobId = accepted.jobId;
+    let cancelRequested = false;
+
+    return withBhaProgress(title, true, async (progress, token) => {
+        progress.report({ message: startedMessage });
+        return new Promise<T>(async (resolve, reject) => {
+            let finished = false;
+            const onCancel = async () => {
+                if (cancelRequested || finished) {
+                    return;
+                }
+                cancelRequested = true;
+                logLine(`Cancellation requested for job ${jobId}`);
+                progress.report({ message: 'Cancellation requested...' });
+                try {
+                    await client.sendRequest('workspace/executeCommand', {
+                        command: 'bha.cancelJob',
+                        arguments: [{ jobId }]
+                    });
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    logLine(`Failed to request cancellation for ${jobId}: ${errorMessage}`);
+                }
+            };
+
+            const subscription = token.onCancellationRequested(onCancel);
+
+            try {
+                while (!finished) {
+                    const statusResult = await client.sendRequest<unknown>('workspace/executeCommand', {
+                        command: 'bha.getJobStatus',
+                        arguments: [{ jobId }]
+                    });
+                    const statusPayload = (statusResult && typeof statusResult === 'object')
+                        ? statusResult as Record<string, unknown>
+                        : {};
+                    const status = safeGetString(statusPayload.status, 'unknown');
+                    const errorMessage = safeGetString(statusPayload.error, '');
+                    const result = statusPayload.result;
+
+                    if (status === 'queued') {
+                        progress.report({ message: 'Queued...' });
+                    } else if (status === 'running') {
+                        progress.report({ message: cancelRequested ? 'Cancelling...' : 'Running...' });
+                    } else if (status === 'completed') {
+                        finished = true;
+                        resolve(result as T);
+                        return;
+                    } else if (status === 'cancelled') {
+                        finished = true;
+                        reject(new Error('Operation cancelled'));
+                        return;
+                    } else if (status === 'failed') {
+                        finished = true;
+                        reject(new Error(errorMessage || 'Operation failed'));
+                        return;
+                    }
+
+                    await delay(250);
+                }
+            } catch (error) {
+                reject(error);
+            } finally {
+                subscription.dispose();
+            }
+        });
+    });
 }
 
 async function fetchSuggestionDetails(suggestionId: string): Promise<SuggestionDetails | undefined> {
@@ -690,25 +817,17 @@ async function runAnalysis(
     const operationId = generateOperationId(rebuild ? 'build-and-analyze' : 'analyze');
 
     try {
-        const executeAnalysis = async (
-            progress: vscode.Progress<{ message?: string; increment?: number }>
-        ): Promise<unknown> => {
-            progress.report({ message: 'Analyzing traces and generating suggestions...' });
-            const result = await client.sendRequest('workspace/executeCommand', {
-                command: 'bha.analyze',
-                arguments: [{
-                    projectRoot: workspaceRoot,
-                    buildDir: buildDir || undefined,
-                    traceDir: traceDir || undefined,
-                    rebuild,
-                    operationId
-                }]
-            });
-            return result as unknown;
-        };
-        const result = await withBhaProgress(
+        const result = await runAsyncLspCommand<unknown>(
             rebuild ? 'BHA: Rebuilding and analyzing build performance' : 'BHA: Analyzing build performance',
-            executeAnalysis
+            'bha.analyze',
+            {
+                projectRoot: workspaceRoot,
+                buildDir: buildDir || undefined,
+                traceDir: traceDir || undefined,
+                rebuild,
+                operationId
+            },
+            'Analyzing traces and generating suggestions...'
         );
 
         if (!isValidAnalysisResult(result)) {
@@ -757,31 +876,23 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         logLine(
             `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? '<auto>'}, buildSystem=${options.buildSystem ?? 'auto'}, compiler=${options.compiler ?? 'auto'}, buildType=${options.buildType ?? 'default'}, clean=${options.cleanFirst}, verbose=${options.verbose}`
         );
-        const executeRecordBuild = async (
-            progress: vscode.Progress<{ message?: string; increment?: number }>
-        ): Promise<unknown> => {
-            progress.report({ message: 'Running traced build...' });
-            const result = await client.sendRequest('workspace/executeCommand', {
-                command: 'bha.recordBuildTraces',
-                arguments: [{
-                    projectRoot: workspaceFolder.uri.fsPath,
-                    buildDir: options.buildDir,
-                    cleanFirst: options.cleanFirst,
-                    verbose: options.verbose,
-                    buildSystem: options.buildSystem,
-                    buildType: options.buildType,
-                    compiler: options.compiler,
-                    parallelJobs: options.parallelJobs,
-                    traceOutputDir: options.traceOutputDir,
-                    extraArgs: options.extraArgs,
-                    operationId: generateOperationId(advanced ? 'record-build-traces-advanced' : 'record-build-traces')
-                }]
-            });
-            return result as unknown;
-        };
-        const result = await withBhaProgress(
+        const result = await runAsyncLspCommand<unknown>(
             advanced ? 'BHA: Recording build traces (advanced)' : 'BHA: Recording build traces',
-            executeRecordBuild
+            'bha.recordBuildTraces',
+            {
+                projectRoot: workspaceFolder.uri.fsPath,
+                buildDir: options.buildDir,
+                cleanFirst: options.cleanFirst,
+                verbose: options.verbose,
+                buildSystem: options.buildSystem,
+                buildType: options.buildType,
+                compiler: options.compiler,
+                parallelJobs: options.parallelJobs,
+                traceOutputDir: options.traceOutputDir,
+                extraArgs: options.extraArgs,
+                operationId: generateOperationId(advanced ? 'record-build-traces-advanced' : 'record-build-traces')
+            },
+            'Running traced build...'
         );
 
         if (!isValidRecordBuildResult(result)) {
@@ -952,7 +1063,8 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
         };
         const applyResult = await withBhaProgress(
             'BHA: Applying suggestion',
-            executeApplySuggestion
+            false,
+            async (progress) => executeApplySuggestion(progress)
         );
 
         if (!isValidApplyResult(applyResult)) {
@@ -1074,7 +1186,8 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         };
         const applyResult = await withBhaProgress(
             'BHA: Applying suggestions',
-            executeApplyAll
+            false,
+            async (progress) => executeApplyAll(progress)
         );
 
         if (!isValidApplyAllResult(applyResult)) {
@@ -1161,7 +1274,8 @@ async function cmdRevertChanges(): Promise<void> {
         };
         const revertResult = await withBhaProgress(
             'BHA: Reverting changes',
-            executeRevert
+            false,
+            async (progress) => executeRevert(progress)
         );
 
         if (!isValidRevertResult(revertResult)) {

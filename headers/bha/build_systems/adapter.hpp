@@ -10,6 +10,7 @@
 #include "bha/types.hpp"
 
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -51,6 +52,12 @@ namespace bha::build_systems
 
         /** Verbose output */
         bool verbose = false;
+
+        /** Optional callback for streaming build output */
+        std::function<void(const std::string&)> on_output_line;
+
+        /** Optional cancellation check for long-running commands */
+        std::function<bool()> should_cancel;
     };
 
     /**

@@ -6,17 +6,21 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <thread>
 #include <tuple>
 
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
 #else
+#include <fcntl.h>
+#include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #endif
@@ -33,7 +37,9 @@ namespace bha::build_systems
 
         std::pair<int, std::string> execute_command(
             const std::string& command,
-            const fs::path& working_dir = fs::path()
+            const fs::path& working_dir = fs::path(),
+            const std::function<void(const std::string&)>& on_output_line = {},
+            const std::function<bool()>& should_cancel = {}
         );
 
 #ifndef _WIN32
@@ -401,10 +407,34 @@ namespace bha::build_systems
 
         std::pair<int, std::string> execute_command(
             const std::string& command,
-            const fs::path& working_dir
+            const fs::path& working_dir,
+            const std::function<void(const std::string&)>& on_output_line,
+            const std::function<bool()>& should_cancel
         ) {
             std::string output;
             int exit_code = -1;
+            std::string pending_line;
+
+            const auto emit_output = [&](const std::string_view chunk) {
+                if (chunk.empty()) {
+                    return;
+                }
+                output.append(chunk);
+                if (!on_output_line) {
+                    return;
+                }
+
+                pending_line.append(chunk);
+                std::size_t newline_pos = 0;
+                while ((newline_pos = pending_line.find('\n')) != std::string::npos) {
+                    std::string line = pending_line.substr(0, newline_pos);
+                    if (!line.empty() && line.back() == '\r') {
+                        line.pop_back();
+                    }
+                    on_output_line(line);
+                    pending_line.erase(0, newline_pos + 1);
+                }
+            };
 
 #ifdef _WIN32
             SECURITY_ATTRIBUTES sa;
@@ -444,9 +474,15 @@ namespace bha::build_systems
             if (process_created) {
                 std::array<char, 4096> buffer{};
                 DWORD bytes_read;
-                while (ReadFile(read_pipe, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr)
-                       && bytes_read > 0) {
-                    output.append(buffer.data(), bytes_read);
+                while (true) {
+                    if (should_cancel && should_cancel()) {
+                        TerminateProcess(pi.hProcess, 130);
+                    }
+                    if (!ReadFile(read_pipe, buffer.data(), static_cast<DWORD>(buffer.size()), &bytes_read, nullptr)
+                        || bytes_read == 0) {
+                        break;
+                    }
+                    emit_output(std::string_view(buffer.data(), bytes_read));
                 }
 
                 WaitForSingleObject(pi.hProcess, INFINITE);
@@ -460,24 +496,117 @@ namespace bha::build_systems
 
             CloseHandle(read_pipe);
 #else
-            // Unix implementation
-            std::string full_command = command;
-            if (!working_dir.empty()) {
-                full_command = "cd " + shell_escape_posix(working_dir.string()) + " && " + command;
-            }
-            full_command += " 2>&1";
-
-            if (FILE* pipe = popen(full_command.c_str(), "r")) {
-                std::array<char, 4096> buffer{};
-                while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-                    output += buffer.data();
+            int pipe_fds[2]{-1, -1};
+            if (pipe(pipe_fds) == 0) {
+                const pid_t pid = fork();
+                if (pid == 0) {
+                    if (!working_dir.empty()) {
+                        (void)chdir(working_dir.c_str());
+                    }
+                    dup2(pipe_fds[1], STDOUT_FILENO);
+                    dup2(pipe_fds[1], STDERR_FILENO);
+                    close(pipe_fds[0]);
+                    close(pipe_fds[1]);
+                    execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char*>(nullptr));
+                    _exit(127);
                 }
-                exit_code = pclose(pipe);
-                if (WIFEXITED(exit_code)) {
-                    exit_code = WEXITSTATUS(exit_code);
+
+                close(pipe_fds[1]);
+                pipe_fds[1] = -1;
+
+                if (pid > 0) {
+                    const int flags = fcntl(pipe_fds[0], F_GETFL, 0);
+                    if (flags >= 0) {
+                        (void)fcntl(pipe_fds[0], F_SETFL, flags | O_NONBLOCK);
+                    }
+
+                    std::array<char, 4096> buffer{};
+                    bool child_running = true;
+                    bool terminated_for_cancel = false;
+
+                    while (child_running) {
+                        const ssize_t bytes_read = read(pipe_fds[0], buffer.data(), buffer.size());
+                        if (bytes_read > 0) {
+                            emit_output(std::string_view(buffer.data(), static_cast<std::size_t>(bytes_read)));
+                        } else if (bytes_read < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
+                            break;
+                        }
+
+                        int status = 0;
+                        const pid_t wait_result = waitpid(pid, &status, WNOHANG);
+                        if (wait_result == pid) {
+                            child_running = false;
+                            if (WIFEXITED(status)) {
+                                exit_code = WEXITSTATUS(status);
+                            } else if (WIFSIGNALED(status)) {
+                                exit_code = 128 + WTERMSIG(status);
+                            } else {
+                                exit_code = status;
+                            }
+                            continue;
+                        }
+
+                        if (should_cancel && should_cancel()) {
+                            terminated_for_cancel = true;
+                            kill(pid, SIGTERM);
+                            auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                            while (std::chrono::steady_clock::now() < deadline) {
+                                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                                const pid_t cancel_wait = waitpid(pid, &status, WNOHANG);
+                                if (cancel_wait == pid) {
+                                    child_running = false;
+                                    if (WIFEXITED(status)) {
+                                        exit_code = WEXITSTATUS(status);
+                                    } else if (WIFSIGNALED(status)) {
+                                        exit_code = 128 + WTERMSIG(status);
+                                    } else {
+                                        exit_code = status;
+                                    }
+                                    break;
+                                }
+                            }
+                            if (child_running) {
+                                kill(pid, SIGKILL);
+                                waitpid(pid, &status, 0);
+                                child_running = false;
+                                exit_code = WIFSIGNALED(status) ? 128 + WTERMSIG(status) : status;
+                            }
+                            break;
+                        }
+
+                        if (bytes_read <= 0) {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(25));
+                        }
+                    }
+
+                    while (true) {
+                        const ssize_t bytes_read = read(pipe_fds[0], buffer.data(), buffer.size());
+                        if (bytes_read <= 0) {
+                            break;
+                        }
+                        emit_output(std::string_view(buffer.data(), static_cast<std::size_t>(bytes_read)));
+                    }
+
+                    if (terminated_for_cancel && exit_code == -1) {
+                        exit_code = 130;
+                    }
+                } else {
+                    close(pipe_fds[0]);
+                    pipe_fds[0] = -1;
+                }
+
+                if (pipe_fds[0] >= 0) {
+                    close(pipe_fds[0]);
                 }
             }
 #endif
+
+            if (on_output_line && !pending_line.empty()) {
+                if (!pending_line.empty() && pending_line.back() == '\r') {
+                    pending_line.pop_back();
+                }
+                on_output_line(pending_line);
+            }
 
             if (const char* log_path = std::getenv("BHA_BUILD_LOG"); log_path && *log_path) {
                 std::ofstream log(log_path, std::ios::app);
@@ -986,7 +1115,12 @@ namespace bha::build_systems
                 cmd << " --verbose";
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -1173,7 +1307,12 @@ namespace bha::build_systems
                 cmd << " -v";
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -1674,7 +1813,12 @@ namespace bha::build_systems
                 cmd << " V=1";
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), work_dir);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                work_dir,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -1905,7 +2049,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -2100,7 +2249,12 @@ namespace bha::build_systems
                 cmd << " -v";
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -2264,7 +2418,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -2395,7 +2554,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -2535,7 +2699,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
@@ -2691,7 +2860,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            const auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            const auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
             result.output = output;
             result.success = (exit_code == 0);
 
@@ -2854,7 +3028,12 @@ namespace bha::build_systems
                 cmd << " " << arg;
             }
 
-            auto [exit_code, output] = execute_command(cmd.str(), project_path);
+            auto [exit_code, output] = execute_command(
+                cmd.str(),
+                project_path,
+                options.on_output_line,
+                options.should_cancel
+            );
 
             result.output = output;
             result.success = (exit_code == 0);
