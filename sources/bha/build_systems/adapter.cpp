@@ -83,6 +83,45 @@ namespace bha::build_systems
             return {};
         }
 
+        bool executable_on_path(const std::string& executable) {
+            if (executable.empty()) {
+                return false;
+            }
+            return !find_compiler_path(executable).empty();
+        }
+
+        bool adapter_tool_available(const IBuildSystemAdapter& adapter) {
+            const std::string adapter_name = adapter.name();
+            if (adapter_name == "CMake") {
+                return executable_on_path("cmake");
+            }
+            if (adapter_name == "Ninja") {
+                return executable_on_path("ninja");
+            }
+            if (adapter_name == "Make") {
+                return executable_on_path("make") || executable_on_path("gmake");
+            }
+            if (adapter_name == "Meson") {
+                return executable_on_path("meson");
+            }
+            if (adapter_name == "Bazel") {
+                return executable_on_path("bazel") || executable_on_path("bazelisk");
+            }
+            if (adapter_name == "Buck2") {
+                return executable_on_path("buck2") || executable_on_path("buck");
+            }
+            if (adapter_name == "SCons") {
+                return executable_on_path("scons");
+            }
+            if (adapter_name == "XCode") {
+                return executable_on_path("xcodebuild");
+            }
+            if (adapter_name == "MSBuild") {
+                return executable_on_path("msbuild");
+            }
+            return true;
+        }
+
         CompilerType detect_compiler_type(const std::string& compiler) {
             if (compiler.empty()) {
                 return CompilerType::GCC;
@@ -791,14 +830,24 @@ namespace bha::build_systems
     IBuildSystemAdapter* BuildSystemRegistry::detect(const fs::path& project_path) const {
         IBuildSystemAdapter* best = nullptr;
         double best_confidence = 0.0;
+        IBuildSystemAdapter* best_available = nullptr;
+        double best_available_confidence = 0.0;
 
         for (const auto& adapter : adapters_) {
-            if (const double confidence = adapter->detect(project_path); confidence > best_confidence) {
+            const double confidence = adapter->detect(project_path);
+            if (confidence > best_confidence) {
                 best_confidence = confidence;
                 best = adapter.get();
             }
+            if (confidence > best_available_confidence && adapter_tool_available(*adapter)) {
+                best_available_confidence = confidence;
+                best_available = adapter.get();
+            }
         }
 
+        if (best_available_confidence > 0.0) {
+            return best_available;
+        }
         return best_confidence > 0.0 ? best : nullptr;
     }
 

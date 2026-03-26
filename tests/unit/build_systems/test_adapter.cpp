@@ -115,3 +115,27 @@ TEST(BuildSystemRegistryTest, DetectsUnrealProjectFromUprojectAndTargetRules) {
     ASSERT_NE(adapter, nullptr);
     EXPECT_EQ(adapter->name(), "Unreal");
 }
+
+TEST(BuildSystemRegistryTest, PrefersAvailableAdapterWhenHigherConfidenceToolIsMissing) {
+    register_all_adapters();
+    const auto& registry = BuildSystemRegistry::instance();
+
+#ifdef _WIN32
+    if (std::system("where bazel >nul 2>nul") == 0 || std::system("where bazelisk >nul 2>nul") == 0) {
+        GTEST_SKIP() << "Bazel is installed; availability fallback is not exercised";
+    }
+#else
+    if (std::system("command -v bazel >/dev/null 2>&1") == 0 ||
+        std::system("command -v bazelisk >/dev/null 2>&1") == 0) {
+        GTEST_SKIP() << "Bazel is installed; availability fallback is not exercised";
+    }
+#endif
+
+    TempDir temp;
+    write_file(temp.root / "CMakeLists.txt", "cmake_minimum_required(VERSION 3.20)\nproject(sample)\n");
+    write_file(temp.root / "MODULE.bazel", "module(name = \"sample\")\n");
+
+    auto* adapter = registry.detect(temp.root);
+    ASSERT_NE(adapter, nullptr);
+    EXPECT_EQ(adapter->name(), "CMake");
+}
