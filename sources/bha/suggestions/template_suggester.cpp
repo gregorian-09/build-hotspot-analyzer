@@ -402,9 +402,29 @@ namespace bha::suggestions
             return suggestion;
         }
 
+        std::optional<std::size_t> find_top_level_paren(const std::string& text) {
+            std::size_t angle_depth = 0;
+            for (std::size_t i = 0; i < text.size(); ++i) {
+                const char ch = text[i];
+                if (ch == '<') {
+                    ++angle_depth;
+                    continue;
+                }
+                if (ch == '>') {
+                    if (angle_depth > 0) {
+                        --angle_depth;
+                    }
+                    continue;
+                }
+                if (ch == '(' && angle_depth == 0) {
+                    return i;
+                }
+            }
+            return std::nullopt;
+        }
+
         bool looks_like_function_template(const std::string& name) {
-            return name.find('(') != std::string::npos ||
-                   name.find("operator") != std::string::npos;
+            return find_top_level_paren(name).has_value();
         }
 
         bool header_declares_function_template(
