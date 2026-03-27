@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -15,6 +16,54 @@ namespace bha::suggestions
 {
     class IncludeSuggesterTest : public ::testing::Test {
     protected:
+        static void SetUpTestSuite() {
+            fake_clang_tidy_root_ = std::filesystem::temp_directory_path() / "bha-fake-clang-tidy";
+            std::error_code ec;
+            std::filesystem::remove_all(fake_clang_tidy_root_, ec);
+            std::filesystem::create_directories(fake_clang_tidy_root_, ec);
+            fake_clang_tidy_path_ = fake_clang_tidy_root_ / "clang-tidy";
+            write_file(
+                fake_clang_tidy_path_,
+                R"(#!/usr/bin/env bash
+mode="${BHA_FAKE_CLANG_TIDY_MODE:-}"
+file=""
+for arg in "$@"; do
+  if [[ "$arg" == *.cpp || "$arg" == *.cc || "$arg" == *.cxx || "$arg" == *.c ]]; then
+    file="$arg"
+  fi
+done
+case "$mode" in
+  conditional)
+    printf '%s\n' "$file:2:1: warning: included header platform/windows_only.hpp is not used directly [misc-include-cleaner]"
+    ;;
+  direct)
+    printf '%s\n' "$file:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]"
+    ;;
+  mixed)
+    printf '%s\n' "$file:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]"
+    printf '%s\n' "$file:4:1: warning: included header windows.h is not used directly [misc-include-cleaner]"
+    ;;
+esac
+)"
+            );
+            std::filesystem::permissions(
+                fake_clang_tidy_path_,
+                std::filesystem::perms::owner_exec |
+                    std::filesystem::perms::owner_read |
+                    std::filesystem::perms::owner_write,
+                std::filesystem::perm_options::add,
+                ec
+            );
+            ASSERT_EQ(setenv("BHA_CLANG_TIDY", fake_clang_tidy_path_.c_str(), 1), 0);
+        }
+
+        static void TearDownTestSuite() {
+            std::error_code ec;
+            std::filesystem::remove_all(fake_clang_tidy_root_, ec);
+            unsetenv("BHA_CLANG_TIDY");
+            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
+        }
+
         void SetUp() override {
             suggester_ = std::make_unique<IncludeSuggester>();
             const auto unique_suffix = std::to_string(
@@ -24,11 +73,13 @@ namespace bha::suggestions
             std::error_code ec;
             std::filesystem::remove_all(temp_root_, ec);
             std::filesystem::create_directories(temp_root_, ec);
+            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
         }
 
         void TearDown() override {
             std::error_code ec;
             std::filesystem::remove_all(temp_root_, ec);
+            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
         }
 
         static void write_file(const std::filesystem::path& path, const std::string& content) {
@@ -38,9 +89,27 @@ namespace bha::suggestions
             out << content;
         }
 
+        static void write_compile_commands(const std::filesystem::path& build_dir, const std::filesystem::path& source) {
+            write_file(
+                build_dir / "compile_commands.json",
+                "[\n"
+                "  {\n"
+                "    \"directory\": \"" + build_dir.generic_string() + "\",\n"
+                "    \"command\": \"clang++ -c " + source.generic_string() + "\",\n"
+                "    \"file\": \"" + source.generic_string() + "\"\n"
+                "  }\n"
+                "]\n"
+            );
+        }
+
         std::unique_ptr<IncludeSuggester> suggester_;
         std::filesystem::path temp_root_;
+        static std::filesystem::path fake_clang_tidy_root_;
+        static std::filesystem::path fake_clang_tidy_path_;
     };
+
+    std::filesystem::path IncludeSuggesterTest::fake_clang_tidy_root_;
+    std::filesystem::path IncludeSuggesterTest::fake_clang_tidy_path_;
 
     TEST_F(IncludeSuggesterTest, Name) {
         EXPECT_EQ(suggester_->name(), "IncludeSuggester");
@@ -166,8 +235,8 @@ namespace bha::suggestions
         dep_header.included_by = {widget_header};
         analysis.dependencies.headers.push_back(dep_header);
 
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, temp_root_};
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
 
         auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
@@ -185,7 +254,7 @@ namespace bha::suggestions
     }
 
     TEST_F(IncludeSuggesterTest, SkipsMoveToCppWhenByValueUsageRequiresCompleteType) {
-        BuildTrace trace;
+        const BuildTrace trace;
 
         const auto heavy_header = temp_root_ / "heavy.hpp";
         const auto widget_header = temp_root_ / "widget.hpp";
@@ -227,8 +296,8 @@ namespace bha::suggestions
         dep_header.included_by = {widget_header};
         analysis.dependencies.headers.push_back(dep_header);
 
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, temp_root_};
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
 
         auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
@@ -241,5 +310,96 @@ namespace bha::suggestions
             }
         );
         EXPECT_EQ(it, result.value().suggestions.end());
+    }
+
+    TEST_F(IncludeSuggesterTest, DowngradesConditionalPlatformIncludesToAdvisory) {
+        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "conditional", 1), 0);
+
+        const auto build_dir = temp_root_ / "build";
+        const auto source = temp_root_ / "main.cpp";
+        write_file(
+            source,
+            "#ifdef _WIN32\n"
+            "#include \"platform/windows_only.hpp\"\n"
+            "#endif\n"
+            "int main() { return 0; }\n"
+        );
+        write_compile_commands(build_dir, source);
+
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.compile_commands_path = build_dir / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const Suggestion& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.type, SuggestionType::IncludeRemoval);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(
+            suggestion.auto_apply_blocked_reason->find("conditional compilation"),
+            std::string::npos
+        );
+        EXPECT_NE(
+            suggestion.auto_apply_blocked_reason->find("platform-specific"),
+            std::string::npos
+        );
+    }
+
+    TEST_F(IncludeSuggesterTest, SplitsSafeAndPlatformSpecificUnusedIncludeSuggestions) {
+        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "mixed", 1), 0);
+
+        const auto build_dir = temp_root_ / "build";
+        const auto source = temp_root_ / "main.cpp";
+        write_file(
+            source,
+            "#include \"local_unused.hpp\"\n"
+            "int used = 0;\n"
+            "#ifdef _WIN32\n"
+            "#include <windows.h>\n"
+            "#endif\n"
+            "int main() { return used; }\n"
+        );
+        write_compile_commands(build_dir, source);
+
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.compile_commands_path = build_dir / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 2u);
+
+        const auto direct = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.application_mode == SuggestionApplicationMode::DirectEdits;
+            }
+        );
+        ASSERT_NE(direct, result.value().suggestions.end());
+        EXPECT_EQ(direct->edits.size(), 1u);
+        EXPECT_TRUE(direct->is_safe);
+        EXPECT_NE(direct->title.find("local_unused.hpp"), std::string::npos);
+
+        const auto advisory = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.application_mode == SuggestionApplicationMode::Advisory;
+            }
+        );
+        ASSERT_NE(advisory, result.value().suggestions.end());
+        EXPECT_FALSE(advisory->is_safe);
+        EXPECT_TRUE(advisory->edits.empty());
+        EXPECT_NE(advisory->title.find("windows.h"), std::string::npos);
     }
 }

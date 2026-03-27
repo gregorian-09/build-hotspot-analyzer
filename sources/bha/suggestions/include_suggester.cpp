@@ -25,6 +25,18 @@ namespace bha::suggestions
             std::string header_name;
         };
 
+        struct ConditionalContext {
+            bool inside_conditional = false;
+            bool platform_guarded = false;
+            std::vector<std::string> active_conditions;
+        };
+
+        struct IncludeRemovalAssessment {
+            bool allow_direct_edits = true;
+            bool platform_sensitive = false;
+            std::string blocked_reason;
+        };
+
         std::optional<Suggestion> build_unreal_iwyu_suggestion(const SuggestionContext& context) {
             if (!context.options.heuristics.unreal.emit_iwyu) {
                 return std::nullopt;
@@ -484,6 +496,213 @@ namespace bha::suggestions
             return resolved;
         }
 
+
+        [[nodiscard]] std::string trim_copy(const std::string& input) {
+            const auto begin = input.find_first_not_of(" \t\r\n");
+            if (begin == std::string::npos) {
+                return {};
+            }
+            const auto end = input.find_last_not_of(" \t\r\n");
+            return input.substr(begin, end - begin + 1);
+        }
+
+        [[nodiscard]] std::string uppercase_copy(std::string input) {
+            std::ranges::transform(
+                input,
+                input.begin(),
+                [](const unsigned char ch) {
+                    return static_cast<char>(std::toupper(ch));
+                }
+            );
+            return input;
+        }
+
+        [[nodiscard]] bool contains_any_token(
+            const std::string& haystack,
+            const std::initializer_list<std::string_view> tokens
+        ) {
+            for (const auto token : tokens) {
+                if (haystack.find(token) != std::string::npos) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        [[nodiscard]] bool condition_mentions_platform(const std::string& condition) {
+            const std::string upper = uppercase_copy(condition);
+            return contains_any_token(
+                upper,
+                {
+                    "_WIN32",
+                    "_WIN64",
+                    "WIN32",
+                    "WIN64",
+                    "__WINDOWS__",
+                    "__MINGW32__",
+                    "__MINGW64__",
+                    "__CYGWIN__",
+                    "__LINUX__",
+                    "__GNU_LINUX__",
+                    "__APPLE__",
+                    "__MACH__",
+                    "TARGET_OS_",
+                    "__ANDROID__",
+                    "__FREEBSD__",
+                    "__NETBSD__",
+                    "__OPENBSD__",
+                    "__UNIX__",
+                    "__UNIX",
+                    "__POSIX__",
+                    "_POSIX_"
+                }
+            );
+        }
+
+        [[nodiscard]] bool header_name_is_platform_specific(const std::string& header_name) {
+            const std::string normalized = uppercase_copy(fs::path(header_name).generic_string());
+            return contains_any_token(
+                normalized,
+                {
+                    "WINDOWS.H",
+                    "WINUSER.H",
+                    "WINSOCK",
+                    "WINNT.H",
+                    "WINBASE.H",
+                    "WINDEF.H",
+                    "AFX",
+                    "ATL",
+                    "LINUX/",
+                    "SYS/",
+                    "UNISTD.H",
+                    "PTHREAD.H",
+                    "MACH/",
+                    "COREFOUNDATION/",
+                    "IOKIT/",
+                    "X11/",
+                    "WAYLAND/",
+                    "ANDROID/"
+                }
+            );
+        }
+
+        std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment);
+
+        [[nodiscard]] ConditionalContext analyze_conditional_context(
+            const fs::path& file,
+            const std::size_t target_line
+        ) {
+            ConditionalContext context;
+            auto lines_result = file_utils::read_lines(file);
+            if (lines_result.is_err()) {
+                return context;
+            }
+
+            struct ConditionalFrame {
+                std::string expression;
+                bool platform_guarded = false;
+            };
+
+            std::vector<ConditionalFrame> stack;
+            stack.reserve(8);
+            bool in_block_comment = false;
+
+            for (std::size_t index = 0; index < lines_result.value().size(); ++index) {
+                if (index == target_line) {
+                    context.inside_conditional = !stack.empty();
+                    for (const auto& frame : stack) {
+                        context.active_conditions.push_back(frame.expression);
+                        context.platform_guarded = context.platform_guarded || frame.platform_guarded;
+                    }
+                    return context;
+                }
+
+                const std::string cleaned = trim_copy(
+                    strip_comments_and_strings(lines_result.value()[index], in_block_comment)
+                );
+                if (!cleaned.starts_with('#')) {
+                    continue;
+                }
+
+                auto directive = trim_copy(cleaned.substr(1));
+                if (directive.rfind("ifdef", 0) == 0) {
+                    directive = trim_copy(directive.substr(5));
+                    stack.push_back({directive, condition_mentions_platform(directive)});
+                    continue;
+                }
+                if (directive.rfind("ifndef", 0) == 0) {
+                    directive = trim_copy(directive.substr(6));
+                    const std::string expression = "!defined(" + directive + ")";
+                    stack.push_back({expression, condition_mentions_platform(directive)});
+                    continue;
+                }
+                if (directive.rfind("if", 0) == 0) {
+                    directive = trim_copy(directive.substr(2));
+                    stack.push_back({directive, condition_mentions_platform(directive)});
+                    continue;
+                }
+                if (directive.rfind("elif", 0) == 0) {
+                    directive = trim_copy(directive.substr(4));
+                    if (!stack.empty()) {
+                        stack.back() = {directive, condition_mentions_platform(directive)};
+                    }
+                    continue;
+                }
+                if (directive == "else") {
+                    if (!stack.empty()) {
+                        const bool platform_guarded = stack.back().platform_guarded;
+                        stack.back() = {"else", platform_guarded};
+                    }
+                    continue;
+                }
+                if (directive == "endif") {
+                    if (!stack.empty()) {
+                        stack.pop_back();
+                    }
+                }
+            }
+
+            return context;
+        }
+
+        [[nodiscard]] IncludeRemovalAssessment assess_include_removal_safety(
+            const TidyUnusedInclude& diag
+        ) {
+            IncludeRemovalAssessment assessment;
+            const ConditionalContext conditional = analyze_conditional_context(diag.file, diag.line);
+            const bool conditional_include = conditional.inside_conditional;
+            const bool platform_specific_header = header_name_is_platform_specific(diag.header_name);
+            assessment.platform_sensitive = conditional.platform_guarded || platform_specific_header;
+
+            if (!conditional_include && !assessment.platform_sensitive) {
+                return assessment;
+            }
+
+            assessment.allow_direct_edits = false;
+            std::ostringstream reason;
+            if (conditional_include) {
+                reason << "Include is inside conditional compilation";
+                if (!conditional.active_conditions.empty()) {
+                    reason << " (";
+                    for (std::size_t i = 0; i < conditional.active_conditions.size(); ++i) {
+                        if (i > 0) {
+                            reason << ", ";
+                        }
+                        reason << conditional.active_conditions[i];
+                    }
+                    reason << ")";
+                }
+            }
+            if (assessment.platform_sensitive) {
+                if (!assessment.blocked_reason.empty() || reason.tellp() > 0) {
+                    reason << "; ";
+                }
+                reason << "header appears platform-specific for the active toolchain/configuration";
+            }
+            assessment.blocked_reason = reason.str();
+            return assessment;
+        }
+
         std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment) {
             std::string cleaned;
             cleaned.reserve(line.size());
@@ -827,55 +1046,120 @@ namespace bha::suggestions
                     continue;
                 }
 
-                Suggestion suggestion;
-                suggestion.id = generate_suggestion_id("unused-explicit", fs::path(header_name));
-                suggestion.type = SuggestionType::IncludeRemoval;
-                suggestion.priority = diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
-                suggestion.confidence = 0.98;
-                suggestion.is_safe = true;
-                suggestion.title = "Remove unused include of " + fs::path(header_name).filename().string();
+                std::vector<TidyUnusedInclude> safe_diagnostics;
+                std::vector<TidyUnusedInclude> advisory_diagnostics;
+                std::vector<std::string> advisory_reasons;
+                safe_diagnostics.reserve(diagnostics.size());
+                advisory_diagnostics.reserve(diagnostics.size());
+                for (const auto& diag : diagnostics) {
+                    const IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                    if (assessment.allow_direct_edits) {
+                        safe_diagnostics.push_back(diag);
+                        continue;
+                    }
+                    advisory_diagnostics.push_back(diag);
+                    if (!assessment.blocked_reason.empty()) {
+                        advisory_reasons.push_back(assessment.blocked_reason);
+                    }
+                }
 
                 const auto* header_info = find_header_info(deps, header_name);
                 const auto estimated_savings = header_info != nullptr
                     ? header_info->total_parse_time / 4
                     : Duration::zero();
-                suggestion.estimated_savings = estimated_savings;
-                if (context.trace.total_time.count() > 0) {
-                    suggestion.estimated_savings_percent =
-                        100.0 * static_cast<double>(estimated_savings.count()) /
-                        static_cast<double>(context.trace.total_time.count());
-                }
 
-                std::ostringstream desc;
-                desc << "clang-tidy misc-include-cleaner reported '" << header_name
-                     << "' as unused in " << diagnostics.size() << " translation units.";
-                suggestion.description = desc.str();
-                suggestion.rationale = "This edit is based on explicit semantic diagnostics from clang-tidy, not include frequency alone.";
+                auto build_include_removal_suggestion = [&](const std::vector<TidyUnusedInclude>& selected_diagnostics,
+                                                           const bool direct_edits) {
+                    Suggestion suggestion;
+                    suggestion.id = generate_suggestion_id(
+                        direct_edits ? "unused-explicit" : "unused-explicit-advisory",
+                        fs::path(header_name)
+                    );
+                    suggestion.type = SuggestionType::IncludeRemoval;
+                    suggestion.priority = selected_diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
+                    suggestion.confidence = direct_edits ? 0.98 : 0.72;
+                    suggestion.title = (direct_edits
+                        ? "Remove unused include of "
+                        : "Review conditional/platform-specific include of ") +
+                        fs::path(header_name).filename().string();
+                    suggestion.estimated_savings = estimated_savings;
+                    if (context.trace.total_time.count() > 0) {
+                        suggestion.estimated_savings_percent =
+                            100.0 * static_cast<double>(estimated_savings.count()) /
+                            static_cast<double>(context.trace.total_time.count());
+                    }
 
-                for (const auto& diag : diagnostics) {
-                    suggestion.edits.push_back(make_delete_line_edit(diag.file, diag.line));
-                }
+                    std::ostringstream desc;
+                    desc << "clang-tidy misc-include-cleaner reported '" << header_name
+                         << "' as unused in " << selected_diagnostics.size() << " translation units.";
+                    suggestion.description = desc.str();
+                    suggestion.rationale =
+                        "This suggestion is based on explicit semantic diagnostics from clang-tidy, but BHA avoids auto-removing includes when the active build configuration may hide cross-platform or conditional dependencies.";
 
-                suggestion.target_file.path = diagnostics.front().file;
-                suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.line_start = diagnostics.front().line + 1;
-                suggestion.target_file.line_end = diagnostics.front().line + 1;
-                suggestion.target_file.note = "Remove unused include confirmed by clang-tidy";
+                    suggestion.target_file.path = selected_diagnostics.front().file;
+                    suggestion.target_file.action = FileAction::Modify;
+                    suggestion.target_file.line_start = selected_diagnostics.front().line + 1;
+                    suggestion.target_file.line_end = selected_diagnostics.front().line + 1;
+                    suggestion.target_file.note = direct_edits
+                        ? "Remove unused include confirmed by clang-tidy"
+                        : "Review include manually before removing it";
 
-                suggestion.impact.total_files_affected = diagnostics.size();
-                suggestion.impact.cumulative_savings = estimated_savings;
-                suggestion.implementation_steps = {
-                    "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
-                    "Rebuild and run tests",
-                    "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
+                    suggestion.impact.total_files_affected = selected_diagnostics.size();
+                    suggestion.impact.cumulative_savings = estimated_savings;
+                    suggestion.caveats = {
+                        "Diagnostics reflect the active compile_commands.json configuration",
+                        "Cross-platform and feature-gated builds may still require these includes in other variants"
+                    };
+                    suggestion.verification = "Compile all supported targets after applying the edits";
+
+                    if (direct_edits) {
+                        suggestion.is_safe = true;
+                        suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                        for (const auto& diag : selected_diagnostics) {
+                            suggestion.edits.push_back(make_delete_line_edit(diag.file, diag.line));
+                        }
+                        suggestion.implementation_steps = {
+                            "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
+                            "Rebuild and run tests",
+                            "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
+                        };
+                    } else {
+                        suggestion.is_safe = false;
+                        suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                        suggestion.application_summary = "Manual review only";
+                        suggestion.application_guidance =
+                            "Re-check these includes in other platform or feature configurations before removing them. Only auto-remove includes that are unused in all supported variants.";
+                        if (!advisory_reasons.empty()) {
+                            std::sort(advisory_reasons.begin(), advisory_reasons.end());
+                            advisory_reasons.erase(
+                                std::unique(advisory_reasons.begin(), advisory_reasons.end()),
+                                advisory_reasons.end()
+                            );
+                            std::ostringstream reason;
+                            for (std::size_t i = 0; i < advisory_reasons.size(); ++i) {
+                                if (i > 0) {
+                                    reason << "; ";
+                                }
+                                reason << advisory_reasons[i];
+                            }
+                            suggestion.auto_apply_blocked_reason = reason.str();
+                        }
+                        suggestion.implementation_steps = {
+                            "Verify the include across the project's supported platforms or feature sets",
+                            "Remove it manually only if it stays unused in each relevant configuration",
+                            "Rebuild and rerun clang-tidy for each supported variant"
+                        };
+                    }
+
+                    result.suggestions.push_back(std::move(suggestion));
                 };
-                suggestion.caveats = {
-                    "Diagnostics reflect the active compile_commands.json configuration",
-                    "Conditionally compiled includes may still be needed in other build variants"
-                };
-                suggestion.verification = "Compile all supported targets after applying the edits";
 
-                result.suggestions.push_back(std::move(suggestion));
+                if (!safe_diagnostics.empty()) {
+                    build_include_removal_suggestion(safe_diagnostics, true);
+                }
+                if (!advisory_diagnostics.empty()) {
+                    build_include_removal_suggestion(advisory_diagnostics, false);
+                }
             }
         }
 
