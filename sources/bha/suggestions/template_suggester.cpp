@@ -335,6 +335,22 @@ namespace bha::suggestions
             return base.rfind("__", 0) == 0;
         }
 
+        bool has_unspellable_instantiation_component(const std::string& name) {
+            static constexpr std::array<std::string_view, 8> markers{
+                "(lambda at ",
+                "{lambda(",
+                "<lambda",
+                "(anonymous namespace)",
+                "{anonymous}",
+                "(unnamed ",
+                "(anonymous ",
+                "<unnamed "
+            };
+            return std::ranges::any_of(markers, [&](const std::string_view marker) {
+                return name.find(marker) != std::string::npos;
+            });
+        }
+
         bool looks_like_function_template(const std::string& name) {
             return name.find('(') != std::string::npos ||
                    name.find("operator") != std::string::npos;
@@ -593,6 +609,10 @@ namespace bha::suggestions
 
             const bool is_function_template = looks_like_function_template(template_name);
             if (is_blacklisted_template(template_name)) {
+                ++skipped;
+                continue;
+            }
+            if (has_unspellable_instantiation_component(template_name)) {
                 ++skipped;
                 continue;
             }

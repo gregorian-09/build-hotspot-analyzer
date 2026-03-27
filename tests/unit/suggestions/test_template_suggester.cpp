@@ -95,8 +95,8 @@ namespace bha::suggestions
         tmpl.locations.push_back(SourceLocation{header_path, 2, 1});
         analysis.templates.templates.push_back(tmpl);
 
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, temp_root_};
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
 
         auto result = suggester_->suggest(context);
 
@@ -113,7 +113,7 @@ namespace bha::suggestions
     }
 
     TEST_F(TemplateSuggesterTest, SkipsStdTemplates) {
-        BuildTrace trace;
+        const BuildTrace trace;
 
         analyzers::AnalysisResult analysis;
         analyzers::TemplateAnalysisResult::TemplateStats tmpl;
@@ -122,8 +122,8 @@ namespace bha::suggestions
         tmpl.instantiation_count = 100;
         analysis.templates.templates.push_back(tmpl);
 
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -133,7 +133,7 @@ namespace bha::suggestions
     }
 
     TEST_F(TemplateSuggesterTest, SkipsLowCount) {
-        BuildTrace trace;
+        const BuildTrace trace;
 
         analyzers::AnalysisResult analysis;
         analyzers::TemplateAnalysisResult::TemplateStats tmpl;
@@ -142,8 +142,8 @@ namespace bha::suggestions
         tmpl.instantiation_count = 2;
         analysis.templates.templates.push_back(tmpl);
 
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, {}};
 
         auto result = suggester_->suggest(context);
 
@@ -185,7 +185,7 @@ namespace bha::suggestions
         SuggesterOptions options;
         options.heuristics.templates.min_instantiation_count = 2;
         options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
-        SuggestionContext context{trace, analysis, options, temp_root_};
+        const SuggestionContext context{trace, analysis, options, temp_root_};
 
         auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
@@ -211,5 +211,34 @@ namespace bha::suggestions
         }
         EXPECT_TRUE(has_extern);
         EXPECT_TRUE(has_explicit);
+    }
+
+    TEST_F(TemplateSuggesterTest, SkipsTemplatesWithLambdaClosureArguments) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name =
+            "absl::StringResizeAndOverwrite<std::basic_string<char>, "
+            "(lambda at /tmp/absl/strings/str_cat.h:476:29)>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {
+            (temp_root_ / "src" / "a.cpp").string(),
+            (temp_root_ / "src" / "b.cpp").string()
+        };
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
     }
 }
