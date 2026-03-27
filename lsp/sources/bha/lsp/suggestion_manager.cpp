@@ -41,6 +41,34 @@ namespace bha::lsp
     namespace fs = std::filesystem;
     namespace path_utils = bha::path_utils;
 
+    namespace {
+        [[nodiscard]] std::vector<fs::path> collect_backup_files(const bha::Suggestion& suggestion) {
+            std::vector<fs::path> files;
+            std::unordered_set<std::string> seen;
+
+            const auto add_file = [&](const fs::path& file) {
+                if (file.empty()) {
+                    return;
+                }
+                const fs::path normalized = file.lexically_normal();
+                const std::string key = normalized.generic_string();
+                if (seen.insert(key).second) {
+                    files.push_back(normalized);
+                }
+            };
+
+            for (const auto& edit : suggestion.edits) {
+                add_file(edit.file);
+            }
+            add_file(suggestion.target_file.path);
+            for (const auto& secondary : suggestion.secondary_files) {
+                add_file(secondary.path);
+            }
+
+            return files;
+        }
+    }
+
     BuildSystemType build_system_type_from_adapter_name(std::string name) {
         std::ranges::transform(name, name.begin(), [](const unsigned char c) {
             return static_cast<char>(std::tolower(c));
@@ -1587,8 +1615,8 @@ namespace bha::lsp
     std::size_t SuggestionManager::calculate_backup_size() const {
         std::size_t total = 0;
         for (const auto& backup : backups_ | std::views::values) {
-            for (const auto& [path, content] : backup.files) {
-                total += content.size();
+            for (const auto& file : backup.files) {
+                total += file.content.size();
             }
         }
         return total;
@@ -2164,6 +2192,7 @@ namespace bha::lsp
 
                 transactional_snapshot.push_back(FileBackup{
                     normalized,
+                    true,
                     std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>())
                 });
             }
@@ -2348,17 +2377,7 @@ namespace bha::lsp
                 return result;
             }
 
-            std::vector<fs::path> files_to_backup;
-            if (bha_sug.target_file.action == FileAction::Modify ||
-                bha_sug.target_file.action == FileAction::AddInclude) {
-                files_to_backup.push_back(bha_sug.target_file.path);
-            }
-            for (const auto& secondary : bha_sug.secondary_files) {
-                if (secondary.action == bha::FileAction::Modify ||
-                    secondary.action == bha::FileAction::AddInclude) {
-                    files_to_backup.push_back(secondary.path);
-                }
-            }
+            std::vector<fs::path> files_to_backup = collect_backup_files(bha_sug);
 
             if (create_backup_flag && !files_to_backup.empty()) {
                 const std::string backup_id = create_backup(files_to_backup);
@@ -2612,13 +2631,21 @@ namespace bha::lsp
                 cleanup_disk_backup(backup_id);
             }
         } else {
-            for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
+            for (const auto& backup = it->second; const auto& file : backup.files) {
                 try {
-                    std::ofstream out(path, std::ios::binary);
-                    if (!out) {
-                        return false;
+                    if (!file.existed_before) {
+                        std::error_code remove_ec;
+                        fs::remove(file.path, remove_ec);
+                        if (remove_ec) {
+                            return false;
+                        }
+                    } else {
+                        std::ofstream out(file.path, std::ios::binary);
+                        if (!out) {
+                            return false;
+                        }
+                        out << file.content;
                     }
-                    out << content;
                 } catch (...) {
                     return false;
                 }
@@ -2643,17 +2670,18 @@ namespace bha::lsp
         backup.timestamp = std::chrono::system_clock::now();
 
         for (const auto& file : files) {
-            if (fs::exists(file)) {
-                FileBackup file_backup;
-                file_backup.path = file;
+            FileBackup file_backup;
+            file_backup.path = file;
+            file_backup.existed_before = fs::exists(file);
 
+            if (file_backup.existed_before) {
                 if (std::ifstream in(file, std::ios::binary); in) {
                     std::ostringstream ss;
                     ss << in.rdbuf();
                     file_backup.content = ss.str();
-                    backup.files.push_back(std::move(file_backup));
                 }
             }
+            backup.files.push_back(std::move(file_backup));
         }
 
         backups_[backup.id] = std::move(backup);
@@ -2695,28 +2723,29 @@ namespace bha::lsp
         backup.timestamp = now;
 
         for (const auto& file : files) {
-            if (!fs::exists(file)) continue;
-
             FileBackup file_backup;
             file_backup.path = file;
+            file_backup.existed_before = fs::exists(file);
 
             fs::path relative = fs::relative(file, config_.workspace_root, ec);
             if (ec) {
                 fs::remove_all(backup_path, ec);
                 return {};
             }
-            fs::path dest = backup_path / "files" / relative;
-            if (const fs::path parent = dest.parent_path(); !parent.empty()) {
-                fs::create_directories(parent, ec);
-                if (ec) {
+            if (file_backup.existed_before) {
+                const fs::path dest = backup_path / "files" / relative;
+                if (const fs::path parent = dest.parent_path(); !parent.empty()) {
+                    fs::create_directories(parent, ec);
+                    if (ec) {
+                        fs::remove_all(backup_path, ec);
+                        return {};
+                    }
+                }
+
+                if (!copy_file_with_sync(file, dest)) {
                     fs::remove_all(backup_path, ec);
                     return {};
                 }
-            }
-
-            if (!copy_file_with_sync(file, dest)) {
-                fs::remove_all(backup_path, ec);
-                return {};
             }
             backup.files.push_back(std::move(file_backup));
         }
@@ -2754,8 +2783,9 @@ namespace bha::lsp
         out << "timestamp=" << time_t << "\n";
         out << "file_count=" << backup.files.size() << "\n";
 
-        for (const auto& [path, content] : backup.files) {
-            out << "file=" << path.string() << "\n";
+        for (const auto& file : backup.files) {
+            out << "file=" << file.path.string() << "\n";
+            out << "existed_before=" << (file.existed_before ? 1 : 0) << "\n";
         }
         out.flush();
         out.close();
@@ -2810,6 +2840,8 @@ namespace bha::lsp
                 FileBackup fb;
                 fb.path = value;
                 backup.files.push_back(std::move(fb));
+            } else if (key == "existed_before" && !backup.files.empty()) {
+                backup.files.back().existed_before = (value == "1" || value == "true");
             }
         }
 
@@ -2824,11 +2856,23 @@ namespace bha::lsp
         auto metadata = read_backup_metadata(backup_path);
         if (!metadata) return false;
 
-        for (const auto& [path, content] : metadata->files) {
-            fs::path relative = fs::relative(path, config_.workspace_root);
-            fs::path src = backup_path / "files" / relative;
+        for (const auto& file : metadata->files) {
+            const fs::path path = file.path;
+            if (!file.existed_before) {
+                std::error_code remove_ec;
+                fs::remove(path, remove_ec);
+                if (remove_ec) {
+                    return false;
+                }
+                continue;
+            }
 
-            if (!fs::exists(src)) continue;
+            const fs::path relative = fs::relative(path, config_.workspace_root);
+            const fs::path src = backup_path / "files" / relative;
+
+            if (!fs::exists(src)) {
+                return false;
+            }
 
             try {
                 if (const fs::path parent = path.parent_path(); !parent.empty()) {
@@ -3629,15 +3673,8 @@ namespace bha::lsp
             }
             pending.push_back(PendingSuggestion{key});
 
-            if (bha_sug.target_file.action == bha::FileAction::Modify ||
-                bha_sug.target_file.action == bha::FileAction::AddInclude) {
-                all_files_to_backup.push_back(bha_sug.target_file.path);
-            }
-            for (const auto& secondary : bha_sug.secondary_files) {
-                if (secondary.action == bha::FileAction::Modify ||
-                    secondary.action == bha::FileAction::AddInclude) {
-                    all_files_to_backup.push_back(secondary.path);
-                }
+            for (const auto& file : collect_backup_files(bha_sug)) {
+                all_files_to_backup.push_back(file);
             }
         }
 
@@ -3779,6 +3816,21 @@ namespace bha::lsp
             }
 
             for (const auto& file : metadata->files) {
+                if (!file.existed_before) {
+                    std::error_code remove_ec;
+                    fs::remove(file.path, remove_ec);
+                    if (remove_ec) {
+                        result.success = false;
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.message = "Failed to remove created file during rollback: " + file.path.string();
+                        result.errors.push_back(diag);
+                    } else {
+                        result.restored_files.push_back(file.path.string());
+                    }
+                    continue;
+                }
+
                 fs::path relative = fs::relative(file.path, config_.workspace_root);
                 fs::path src = backup_path / "files" / relative;
 
@@ -3809,23 +3861,35 @@ namespace bha::lsp
                 cleanup_disk_backup(backup_id);
             }
         } else if (it != backups_.end()) {
-            for (const auto& backup = it->second; const auto& [path, content] : backup.files) {
+            for (const auto& backup = it->second; const auto& file : backup.files) {
                 try {
-                    if (std::ofstream out(path, std::ios::binary); !out) {
+                    if (!file.existed_before) {
+                        std::error_code remove_ec;
+                        fs::remove(file.path, remove_ec);
+                        if (remove_ec) {
+                            result.success = false;
+                            Diagnostic diag;
+                            diag.severity = DiagnosticSeverity::Error;
+                            diag.message = "Failed to remove created file during rollback: " + file.path.string();
+                            result.errors.push_back(diag);
+                        } else {
+                            result.restored_files.push_back(file.path.string());
+                        }
+                    } else if (std::ofstream out(file.path, std::ios::binary); !out) {
                         result.success = false;
                         Diagnostic diag;
                         diag.severity = DiagnosticSeverity::Error;
-                        diag.message = "Failed to restore file: " + path.string();
+                        diag.message = "Failed to restore file: " + file.path.string();
                         result.errors.push_back(diag);
                     } else {
-                        out << content;
-                        result.restored_files.push_back(path.string());
+                        out << file.content;
+                        result.restored_files.push_back(file.path.string());
                     }
                 } catch (const std::exception& e) {
                     result.success = false;
                     Diagnostic diag;
                     diag.severity = DiagnosticSeverity::Error;
-                    diag.message = "Error restoring " + path.string() + ": " + e.what();
+                    diag.message = "Error restoring " + file.path.string() + ": " + e.what();
                     result.errors.push_back(diag);
                 }
             }

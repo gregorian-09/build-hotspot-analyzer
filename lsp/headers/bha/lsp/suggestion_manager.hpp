@@ -109,6 +109,7 @@ namespace bha::lsp
 
     struct FileBackup {
         fs::path path;
+        bool existed_before = false;
         std::string content;
     };
 
