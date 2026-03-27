@@ -351,6 +351,57 @@ namespace bha::suggestions
             });
         }
 
+        Suggestion make_unspellable_template_advisory(
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const std::string& template_name,
+            const fs::path& target_path,
+            const BuildTrace& trace
+        ) {
+            Suggestion suggestion;
+            const std::uint64_t signature_hash = std::hash<std::string>{}(template_name);
+            std::ostringstream id_suffix;
+            id_suffix << "unspellable-" << std::hex << signature_hash;
+            suggestion.id = generate_suggestion_id("template", target_path, id_suffix.str());
+            suggestion.type = SuggestionType::ExplicitTemplate;
+            suggestion.priority = calculate_priority(tmpl, trace.total_time);
+            suggestion.confidence = 0.6;
+            suggestion.title = "Refactor lambda-based template argument into a named callable";
+            suggestion.description =
+                "This expensive template instantiation uses a lambda closure type as a template argument. "
+                "Closure types are unnamed, so BHA cannot generate a valid extern/explicit template instantiation for it.";
+            suggestion.rationale =
+                "Explicit instantiation requires a spellable specialization name. Lambda closure types are unnamed, "
+                "so the callable must first be extracted into a named function object or another stable type.";
+            suggestion.target_file.path = target_path;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Refactor the lambda into a named callable before explicit instantiation";
+            suggestion.application_mode = SuggestionApplicationMode::Advisory;
+            suggestion.application_summary = "Manual refactor required before instantiation";
+            suggestion.application_guidance =
+                "Extract the lambda into a named functor or inline constexpr function object in a header, replace the lambda-based template argument, "
+                "then rerun BHA to generate explicit-instantiation edits for the now-spellable specialization.";
+            suggestion.auto_apply_blocked_reason =
+                "Template argument list contains an unnamed lambda closure type, which cannot be emitted as a valid explicit instantiation declaration.";
+            suggestion.caveats = {
+                "Requires a source refactor, not just a generated extern template declaration",
+                "The replacement callable type must be visible in every translation unit that uses the specialization",
+                "After refactoring, rerun analysis so BHA can propose explicit-instantiation edits for the named specialization"
+            };
+            suggestion.estimated_savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
+                                           tmpl.instantiation_count;
+            if (trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
+                    static_cast<double>(trace.total_time.count());
+            }
+            suggestion.impact.total_files_affected = tmpl.files_using.size();
+            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
+            suggestion.verification =
+                "After replacing the lambda with a named callable, rerun BHA and verify that an explicit-instantiation suggestion is emitted for the specialization.";
+            suggestion.is_safe = false;
+            return suggestion;
+        }
+
         bool looks_like_function_template(const std::string& name) {
             return name.find('(') != std::string::npos ||
                    name.find("operator") != std::string::npos;
@@ -613,7 +664,12 @@ namespace bha::suggestions
                 continue;
             }
             if (has_unspellable_instantiation_component(template_name)) {
-                ++skipped;
+                const fs::path advisory_target = !tmpl.locations.empty() && tmpl.locations.front().has_location()
+                    ? resolve_source_path(tmpl.locations.front().file)
+                    : (!tmpl.files_using.empty() ? resolve_source_path(tmpl.files_using.front()) : fs::path("template-instantiation"));
+                result.suggestions.push_back(
+                    make_unspellable_template_advisory(tmpl, template_name, advisory_target, context.trace)
+                );
                 continue;
             }
             if (is_function_template &&

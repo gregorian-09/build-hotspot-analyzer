@@ -213,7 +213,7 @@ namespace bha::suggestions
         EXPECT_TRUE(has_explicit);
     }
 
-    TEST_F(TemplateSuggesterTest, SkipsTemplatesWithLambdaClosureArguments) {
+    TEST_F(TemplateSuggesterTest, EmitsAdvisoryForTemplatesWithLambdaClosureArguments) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(45);
 
@@ -238,7 +238,13 @@ namespace bha::suggestions
 
         auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().suggestions.empty());
-        EXPECT_GT(result.value().items_skipped, 0u);
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.type, SuggestionType::ExplicitTemplate);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("lambda closure type"), std::string::npos);
     }
 }
