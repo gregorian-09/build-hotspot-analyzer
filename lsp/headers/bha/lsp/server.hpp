@@ -3,6 +3,7 @@
 #include "protocol.hpp"
 #include "types.hpp"
 #include "suggestion_manager.hpp"
+#include "bha/build_systems/adapter.hpp"
 #include <functional>
 #include <map>
 #include <memory>
@@ -154,11 +155,22 @@ namespace bha::lsp
             const std::string& stage = {}
         ) const;
         static std::string detect_build_command(const std::filesystem::path& project_root);
+        void remember_build_profile(
+            const std::filesystem::path& project_root,
+            const std::string& build_system,
+            const build_systems::BuildOptions& options
+        );
         void persist_trust_loop_metrics(
             const json& trust_loop,
             const std::optional<std::string>& suggestion_id,
             bool apply_all
         ) const;
+
+        struct LastBuildProfile {
+            std::filesystem::path project_root;
+            std::string build_system;
+            build_systems::BuildOptions options;
+        };
 
         std::map<std::string, RequestHandler> request_handlers_;
         std::map<std::string, NotificationHandler> notification_handlers_;
@@ -171,6 +183,8 @@ namespace bha::lsp
 
         std::unique_ptr<SuggestionManager> suggestion_manager_;
         LSPConfig config_;
+        mutable std::mutex build_profile_mutex_;
+        std::optional<LastBuildProfile> last_build_profile_;
         std::atomic<int> progress_token_counter_{0};
         std::atomic<int> request_id_counter_{0};
 

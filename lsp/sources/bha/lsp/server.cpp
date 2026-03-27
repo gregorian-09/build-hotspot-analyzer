@@ -635,6 +635,19 @@ namespace bha::lsp
         return payload;
     }
 
+    void LSPServer::remember_build_profile(
+        const std::filesystem::path& project_root,
+        const std::string& build_system,
+        const build_systems::BuildOptions& options
+    ) {
+        LastBuildProfile profile;
+        profile.project_root = project_root.lexically_normal();
+        profile.build_system = build_system;
+        profile.options = options;
+        std::lock_guard const lock(build_profile_mutex_);
+        last_build_profile_ = std::move(profile);
+    }
+
     void LSPServer::cleanup_finished_jobs() {
         std::vector<std::shared_ptr<AsyncJob>> jobs_to_join;
         {
@@ -1407,6 +1420,7 @@ namespace bha::lsp
                 throw std::runtime_error(message);
             }
             ensure_not_cancelled();
+            remember_build_profile(project_path, adapter->name(), options);
 
             send_progress(token, json{
                 {"kind", "report"},
@@ -2754,6 +2768,13 @@ namespace bha::lsp
         const auto emit_log = [&](const std::string& message) {
             send_job_log(job_id, log_category, message);
         };
+        std::optional<LastBuildProfile> cached_profile;
+        {
+            std::lock_guard const lock(build_profile_mutex_);
+            if (last_build_profile_.has_value()) {
+                cached_profile = last_build_profile_;
+            }
+        }
         std::optional<std::filesystem::path> workspace_path;
         if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
@@ -2766,6 +2787,76 @@ namespace bha::lsp
         }
 
         std::string build_cmd = config_.build_command;
+        if (workspace_path.has_value() &&
+            cached_profile.has_value() &&
+            cached_profile->project_root == workspace_path->lexically_normal()) {
+            auto& registry = build_systems::BuildSystemRegistry::instance();
+            if (auto* adapter = registry.get(cached_profile->build_system); adapter != nullptr) {
+                emit_log("Reusing cached build profile from trace recording");
+
+                auto options = cached_profile->options;
+                options.enable_tracing = false;
+                options.enable_memory_profiling = false;
+                options.clean_first = false;
+                options.on_output_line = [&](const std::string& line) {
+                    emit_log(line);
+                };
+                options.should_cancel = [&]() {
+                    return is_async_job_cancel_requested(job_id);
+                };
+
+                const auto started = std::chrono::steady_clock::now();
+                auto build_result = adapter->build(*workspace_path, options);
+                const auto ended = std::chrono::steady_clock::now();
+                measured_duration_ms = static_cast<int>(
+                    std::chrono::duration_cast<std::chrono::milliseconds>(ended - started).count()
+                );
+
+                if (build_result.is_err()) {
+                    emit_log("Cached-profile build validation failed before completion");
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Build adapter failed: " + build_result.error().message();
+                    errors.push_back(std::move(diag));
+                    return false;
+                }
+
+                const auto& build = build_result.value();
+                if (build.success) {
+                    emit_log("Build validation succeeded");
+                    return true;
+                }
+
+                std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+                std::smatch match;
+                auto search_start = build.output.cbegin();
+                while (std::regex_search(search_start, build.output.cend(), match, error_regex)) {
+                    Diagnostic diag;
+                    diag.range.start.line = std::stoi(match[2]) - 1;
+                    diag.range.start.character = std::stoi(match[3]) - 1;
+                    diag.range.end = diag.range.start;
+                    diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
+                    diag.message = match[5];
+                    diag.source = "compiler";
+                    errors.push_back(std::move(diag));
+                    search_start = match.suffix().first;
+                }
+
+                if (errors.empty()) {
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = !build.error_message.empty()
+                        ? build.error_message
+                        : "Build failed via cached adapter profile: " + adapter->name();
+                    errors.push_back(std::move(diag));
+                }
+                emit_log("Build validation failed");
+                return false;
+            }
+        }
+
         if (build_cmd.empty() && workspace_path.has_value()) {
             auto& registry = build_systems::BuildSystemRegistry::instance();
             if (auto* adapter = registry.detect(*workspace_path); adapter != nullptr) {
