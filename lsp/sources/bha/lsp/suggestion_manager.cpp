@@ -3677,7 +3677,7 @@ namespace bha::lsp
         }
 
         std::unordered_set<std::string> changed_file_set;
-        const bool can_rerank = config_.rerank_remaining_after_each_apply &&
+        bool rerank_remaining = config_.rerank_remaining_after_each_apply &&
             last_project_root_.has_value() && !last_project_root_->empty();
 
         while (!pending.empty()) {
@@ -3723,7 +3723,7 @@ namespace bha::lsp
                     }
                 }
 
-                if (!pending.empty() && can_rerank) {
+                if (!pending.empty() && rerank_remaining) {
                     try {
                         analyze_project(
                             *last_project_root_,
@@ -3733,15 +3733,8 @@ namespace bha::lsp
                             nullptr,
                             last_analyze_options_
                         );
-                    } catch (const std::exception& e) {
-                        Diagnostic diag;
-                        diag.severity = DiagnosticSeverity::Error;
-                        diag.source = "bha-lsp";
-                        diag.message =
-                            "Failed to re-analyze project after applying suggestion " +
-                            best_id + " (" + selected_key + "): " + e.what();
-                        result.errors.push_back(std::move(diag));
-                        break;
+                    } catch (const std::exception&) {
+                        rerank_remaining = false;
                     }
                 }
             } else {
