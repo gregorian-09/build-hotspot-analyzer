@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
     LanguageClient,
     LanguageClientOptions,
@@ -195,6 +197,18 @@ interface RecordBuildOptions {
     extraArgs: string[];
 }
 
+interface PersistedBuildProfile {
+    projectRoot: string;
+    buildSystem?: string;
+    buildDir?: string;
+    buildType?: string;
+    compiler?: string;
+    parallelJobs?: number;
+    traceOutputDir?: string;
+    extraArgs: string[];
+    recordedAt: string;
+}
+
 interface AsyncCommandAccepted {
     accepted: boolean;
     async: boolean;
@@ -332,11 +346,18 @@ let client: LanguageClient;
 let lastBackupId: string | undefined;
 let outputChannel: vscode.OutputChannel;
 let traceOutputChannel: vscode.OutputChannel;
+let extensionContext: vscode.ExtensionContext;
 const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
+const lastBuildProfileByWorkspace = new Map<string, PersistedBuildProfile>();
+const BUILD_PROFILE_STATE_PREFIX = 'bha.lastBuildProfile:';
 
 function getWorkspaceRootPath(): string | undefined {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
+
+function buildProfileStateKey(workspaceRoot: string): string {
+    return `${BUILD_PROFILE_STATE_PREFIX}${workspaceRoot}`;
 }
 
 function timestamp(): string {
@@ -373,17 +394,93 @@ function traceSettingToProtocol(value: string): Trace {
     }
 }
 
+function normalizeWorkspaceRelativePath(workspaceRoot: string, candidate?: string): string | undefined {
+    const trimmed = candidate?.trim();
+    if (!trimmed) {
+        return undefined;
+    }
+    return path.isAbsolute(trimmed) ? path.normalize(trimmed) : path.normalize(path.join(workspaceRoot, trimmed));
+}
+
+function validatePersistedBuildProfile(profile: PersistedBuildProfile | undefined, workspaceRoot: string): PersistedBuildProfile | undefined {
+    if (!profile || profile.projectRoot !== workspaceRoot) {
+        return undefined;
+    }
+
+    const resolvedBuildDir = normalizeWorkspaceRelativePath(workspaceRoot, profile.buildDir);
+    if (resolvedBuildDir && !fs.existsSync(resolvedBuildDir)) {
+        return undefined;
+    }
+
+    const resolvedTraceDir = normalizeWorkspaceRelativePath(workspaceRoot, profile.traceOutputDir);
+    if (resolvedTraceDir && !fs.existsSync(resolvedTraceDir)) {
+        return undefined;
+    }
+
+    const compiler = profile.compiler?.trim();
+    if (compiler && (compiler.includes(path.sep) || compiler.startsWith('.')) && !fs.existsSync(path.normalize(compiler))) {
+        return undefined;
+    }
+
+    return {
+        ...profile,
+        buildDir: profile.buildDir?.trim() || undefined,
+        traceOutputDir: profile.traceOutputDir?.trim() || undefined,
+        compiler: compiler || undefined,
+        extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : []
+    };
+}
+
+async function persistBuildProfile(workspaceRoot: string, profile: PersistedBuildProfile): Promise<void> {
+    lastBuildProfileByWorkspace.set(workspaceRoot, profile);
+    await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), profile);
+}
+
+async function clearPersistedBuildProfile(workspaceRoot: string): Promise<void> {
+    lastBuildProfileByWorkspace.delete(workspaceRoot);
+    await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), undefined);
+}
+
+function getReusableBuildProfile(workspaceRoot: string): PersistedBuildProfile | undefined {
+    const cached = validatePersistedBuildProfile(lastBuildProfileByWorkspace.get(workspaceRoot), workspaceRoot);
+    if (cached) {
+        return cached;
+    }
+    void clearPersistedBuildProfile(workspaceRoot);
+    return undefined;
+}
+
 // ============================================================================
 // Activation
 // ============================================================================
 
 export function activate(context: vscode.ExtensionContext) {
+    extensionContext = context;
     const config = vscode.workspace.getConfiguration('buildHotspotAnalyzer');
     const serverPath = config.get<string>('serverPath', CONFIG.DEFAULT_SERVER_PATH);
 
     outputChannel = vscode.window.createOutputChannel('Build Hotspot Analyzer');
     traceOutputChannel = vscode.window.createOutputChannel('Build Hotspot Analyzer Trace');
     context.subscriptions.push(outputChannel, traceOutputChannel);
+
+    for (const folder of vscode.workspace.workspaceFolders ?? []) {
+        const workspaceRoot = folder.uri.fsPath;
+        const cachedProfile = validatePersistedBuildProfile(
+            context.workspaceState.get<PersistedBuildProfile>(buildProfileStateKey(workspaceRoot)),
+            workspaceRoot
+        );
+        if (cachedProfile) {
+            lastBuildProfileByWorkspace.set(workspaceRoot, cachedProfile);
+            if (cachedProfile.buildDir) {
+                rememberWorkspaceBuildDir(workspaceRoot, cachedProfile.buildDir);
+            }
+            if (cachedProfile.traceOutputDir) {
+                lastTraceDirByWorkspace.set(workspaceRoot, cachedProfile.traceOutputDir);
+            }
+        } else {
+            void context.workspaceState.update(buildProfileStateKey(workspaceRoot), undefined);
+        }
+    }
 
     if (!serverPath || serverPath.trim().length === 0) {
         logLine('Server path is not configured');
@@ -917,6 +1014,17 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
             } else {
                 lastTraceDirByWorkspace.delete(workspaceRoot);
             }
+            await persistBuildProfile(workspaceRoot, {
+                projectRoot: workspaceRoot,
+                buildSystem: safeGetString(result.buildSystem, '').trim() || options.buildSystem,
+                buildDir: safeGetString(result.buildDir, '').trim() || options.buildDir,
+                buildType: safeGetString(result.buildType, '').trim() || options.buildType,
+                compiler: safeGetString(result.compiler, '').trim() || options.compiler,
+                parallelJobs: safeGetNumber(result.parallelJobs, 0) || options.parallelJobs,
+                traceOutputDir: chosenTraceDir || options.traceOutputDir,
+                extraArgs: options.extraArgs,
+                recordedAt: new Date().toISOString()
+            });
         }
         const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1000).toFixed(2)}s`;
         const analyzeNow = 'Analyze Now';
@@ -1051,10 +1159,12 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
 
     try {
         logLine(`Applying suggestion: id=${suggestionId}`);
+        const workspaceRoot = getWorkspaceRootPath();
+        const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
         const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestion',
             'bha.applySuggestion',
-            { suggestionId, operationId },
+            { suggestionId, operationId, buildProfile },
             'Applying edits and validating result...'
         );
 
@@ -1159,6 +1269,8 @@ async function cmdApplyAllSuggestions(): Promise<void> {
 
     try {
         logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
+        const workspaceRoot = getWorkspaceRootPath();
+        const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
         const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestions',
             'bha.applyAllSuggestions',
@@ -1166,7 +1278,8 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                 minPriority,
                 safeOnly,
                 atomic: true,
-                operationId
+                operationId,
+                buildProfile
             },
             'Applying edits and validating transaction...'
         );

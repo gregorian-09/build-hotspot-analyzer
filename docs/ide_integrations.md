@@ -82,6 +82,8 @@ VS Code also writes command activity, build output summaries, and server/runtime
 `Build Hotspot Analyzer` output channel. Open it with `BHA: Show Activity Log` or through the Output panel.
 
 If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
+The last successful traced build profile is also persisted per workspace and reused for apply-time rebuild validation across window reloads,
+as long as the cached build directory, trace directory, and explicit compiler path still validate.
 
 Recommended workflow:
 1. Record traces

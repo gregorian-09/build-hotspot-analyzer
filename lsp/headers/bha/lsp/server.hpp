@@ -160,6 +160,10 @@ namespace bha::lsp
             const std::string& build_system,
             const build_systems::BuildOptions& options
         );
+        void update_build_profile_from_json(
+            const std::filesystem::path& project_root,
+            const json& build_profile_json
+        );
         void persist_trust_loop_metrics(
             const json& trust_loop,
             const std::optional<std::string>& suggestion_id,

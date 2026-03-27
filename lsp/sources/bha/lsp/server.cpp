@@ -648,6 +648,61 @@ namespace bha::lsp
         last_build_profile_ = std::move(profile);
     }
 
+    void LSPServer::update_build_profile_from_json(
+        const std::filesystem::path& project_root,
+        const json& build_profile_json
+    ) {
+        if (!build_profile_json.is_object()) {
+            return;
+        }
+
+        build_systems::BuildOptions options;
+        if (build_profile_json.contains("buildDir") && build_profile_json["buildDir"].is_string()) {
+            const std::string build_dir = build_profile_json["buildDir"].get<std::string>();
+            if (!build_dir.empty()) {
+                std::filesystem::path resolved(build_dir);
+                if (resolved.is_relative()) {
+                    resolved = (project_root / resolved).lexically_normal();
+                }
+                options.build_dir = std::move(resolved);
+            }
+        }
+        if (build_profile_json.contains("traceOutputDir") && build_profile_json["traceOutputDir"].is_string()) {
+            const std::string trace_output_dir = build_profile_json["traceOutputDir"].get<std::string>();
+            if (!trace_output_dir.empty()) {
+                std::filesystem::path resolved(trace_output_dir);
+                if (resolved.is_relative()) {
+                    resolved = (project_root / resolved).lexically_normal();
+                }
+                options.trace_output_dir = std::move(resolved);
+            }
+        }
+        if (build_profile_json.contains("buildType") && build_profile_json["buildType"].is_string()) {
+            options.build_type = build_profile_json["buildType"].get<std::string>();
+        }
+        if (build_profile_json.contains("compiler") && build_profile_json["compiler"].is_string()) {
+            options.compiler = build_profile_json["compiler"].get<std::string>();
+        }
+        if (build_profile_json.contains("parallelJobs") && build_profile_json["parallelJobs"].is_number_integer()) {
+            options.parallel_jobs = build_profile_json["parallelJobs"].get<int>();
+        }
+        if (build_profile_json.contains("extraArgs") && build_profile_json["extraArgs"].is_array()) {
+            for (const auto& arg : build_profile_json["extraArgs"]) {
+                if (arg.is_string()) {
+                    options.extra_args.push_back(arg.get<std::string>());
+                }
+            }
+        }
+
+        const std::string build_system = build_profile_json.contains("buildSystem") && build_profile_json["buildSystem"].is_string()
+            ? build_profile_json["buildSystem"].get<std::string>()
+            : std::string();
+        if (build_system.empty()) {
+            return;
+        }
+        remember_build_profile(project_root, build_system, options);
+    }
+
     void LSPServer::cleanup_finished_jobs() {
         std::vector<std::shared_ptr<AsyncJob>> jobs_to_join;
         {
@@ -1895,6 +1950,12 @@ namespace bha::lsp
 
         const std::string suggestion_id = args["suggestionId"].get<std::string>();
         const std::string job_id = args.value("jobId", "");
+        if (const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
+            workspace_path.has_value() &&
+            args.contains("buildProfile") &&
+            args["buildProfile"].is_object()) {
+            update_build_profile_from_json(*workspace_path, args["buildProfile"]);
+        }
         bool const skip_validation = args.contains("skipValidation") && args["skipValidation"].get<bool>();
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
@@ -2124,6 +2185,12 @@ namespace bha::lsp
 
         bool safe_only = args.contains("safeOnly") && args["safeOnly"].get<bool>();
         const std::string job_id = args.value("jobId", "");
+        if (const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
+            workspace_path.has_value() &&
+            args.contains("buildProfile") &&
+            args["buildProfile"].is_object()) {
+            update_build_profile_from_json(*workspace_path, args["buildProfile"]);
+        }
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
             skip_rebuild = args["skipRebuild"].get<bool>();

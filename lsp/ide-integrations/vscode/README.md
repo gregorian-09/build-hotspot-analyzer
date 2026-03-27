@@ -41,6 +41,8 @@ The extension also writes command activity, build summaries, and server/runtime 
 output channel. Use `BHA: Show Activity Log` or open the Output panel and select `Build Hotspot Analyzer`.
 
 If trace recording uses a custom trace output directory, the VS Code client reuses that directory for follow-up analysis in the same workspace.
+The last successful traced build profile is persisted per workspace and reused for apply-time rebuild validation across reloads when the
+cached build directory, trace directory, and explicit compiler path are still valid.
 
 Recommended workflow:
 1. Record traces

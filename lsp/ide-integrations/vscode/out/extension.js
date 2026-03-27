@@ -3098,7 +3098,7 @@ var require_main = __commonJS({
     exports2.createMessageConnection = exports2.createServerSocketTransport = exports2.createClientSocketTransport = exports2.createServerPipeTransport = exports2.createClientPipeTransport = exports2.generateRandomPipeName = exports2.StreamMessageWriter = exports2.StreamMessageReader = exports2.SocketMessageWriter = exports2.SocketMessageReader = exports2.PortMessageWriter = exports2.PortMessageReader = exports2.IPCMessageWriter = exports2.IPCMessageReader = void 0;
     var ril_1 = require_ril();
     ril_1.default.install();
-    var path = require("path");
+    var path2 = require("path");
     var os = require("os");
     var crypto_1 = require("crypto");
     var net_1 = require("net");
@@ -3234,9 +3234,9 @@ var require_main = __commonJS({
       }
       let result;
       if (XDG_RUNTIME_DIR) {
-        result = path.join(XDG_RUNTIME_DIR, `vscode-ipc-${randomSuffix}.sock`);
+        result = path2.join(XDG_RUNTIME_DIR, `vscode-ipc-${randomSuffix}.sock`);
       } else {
-        result = path.join(os.tmpdir(), `vscode-${randomSuffix}.sock`);
+        result = path2.join(os.tmpdir(), `vscode-${randomSuffix}.sock`);
       }
       const limit = safeIpcPathLengths.get(process.platform);
       if (limit !== void 0 && result.length > limit) {
@@ -9417,8 +9417,8 @@ var require_minimatch = __commonJS({
       return new Minimatch(pattern, options).match(p);
     };
     module2.exports = minimatch;
-    var path = require_path();
-    minimatch.sep = path.sep;
+    var path2 = require_path();
+    minimatch.sep = path2.sep;
     var GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
     minimatch.GLOBSTAR = GLOBSTAR;
     var expand = require_brace_expansion();
@@ -9927,8 +9927,8 @@ var require_minimatch = __commonJS({
         if (this.empty) return f === "";
         if (f === "/" && partial) return true;
         const options = this.options;
-        if (path.sep !== "/") {
-          f = f.split(path.sep).join("/");
+        if (path2.sep !== "/") {
+          f = f.split(path2.sep).join("/");
         }
         f = f.split(slashSplit);
         this.debug(this.pattern, "split", f);
@@ -11653,13 +11653,13 @@ var require_configuration = __commonJS({
         });
       }
       extractSettingsInformation(keys) {
-        function ensurePath(config, path) {
+        function ensurePath(config, path2) {
           let current = config;
-          for (let i = 0; i < path.length - 1; i++) {
-            let obj = current[path[i]];
+          for (let i = 0; i < path2.length - 1; i++) {
+            let obj = current[path2[i]];
             if (!obj) {
               obj = /* @__PURE__ */ Object.create(null);
-              current[path[i]] = obj;
+              current[path2[i]] = obj;
             }
             current = obj;
           }
@@ -11677,8 +11677,8 @@ var require_configuration = __commonJS({
             config = vscode_1.workspace.getConfiguration(void 0, resource).get(key);
           }
           if (config) {
-            let path = keys[i].split(".");
-            ensurePath(result, path)[path[path.length - 1]] = toJSONObject(config);
+            let path2 = keys[i].split(".");
+            ensurePath(result, path2)[path2[path2.length - 1]] = toJSONObject(config);
           }
         }
         return result;
@@ -14245,13 +14245,13 @@ var require_fileOperations = __commonJS({
       async filter(event, prop) {
         const fileMatches = await Promise.all(event.files.map(async (item) => {
           const uri = prop(item);
-          const path = uri.fsPath.replace(/\\/g, "/");
+          const path2 = uri.fsPath.replace(/\\/g, "/");
           for (const filters of this._filters.values()) {
             for (const filter of filters) {
               if (filter.scheme !== void 0 && filter.scheme !== uri.scheme) {
                 continue;
               }
-              if (filter.matcher.match(path)) {
+              if (filter.matcher.match(path2)) {
                 if (filter.kind === void 0) {
                   return true;
                 }
@@ -14265,7 +14265,7 @@ var require_fileOperations = __commonJS({
                 }
               } else if (filter.kind === proto.FileOperationPatternKind.folder) {
                 const fileType = await _FileOperationFeature.getFileType(uri);
-                if (fileType === code.FileType.Directory && filter.matcher.match(`${path}/`)) {
+                if (fileType === code.FileType.Directory && filter.matcher.match(`${path2}/`)) {
                   return true;
                 }
               }
@@ -17491,8 +17491,8 @@ var require_main4 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.SettingMonitor = exports2.LanguageClient = exports2.TransportKind = void 0;
     var cp = require("child_process");
-    var fs = require("fs");
-    var path = require("path");
+    var fs2 = require("fs");
+    var path2 = require("path");
     var vscode_1 = require("vscode");
     var Is = require_is();
     var client_1 = require_client();
@@ -17910,19 +17910,19 @@ var require_main4 = __commonJS({
         });
       }
       _getRuntimePath(runtime, serverWorkingDirectory) {
-        if (path.isAbsolute(runtime)) {
+        if (path2.isAbsolute(runtime)) {
           return runtime;
         }
         const mainRootPath = this._mainGetRootPath();
         if (mainRootPath !== void 0) {
-          const result = path.join(mainRootPath, runtime);
-          if (fs.existsSync(result)) {
+          const result = path2.join(mainRootPath, runtime);
+          if (fs2.existsSync(result)) {
             return result;
           }
         }
         if (serverWorkingDirectory !== void 0) {
-          const result = path.join(serverWorkingDirectory, runtime);
-          if (fs.existsSync(result)) {
+          const result = path2.join(serverWorkingDirectory, runtime);
+          if (fs2.existsSync(result)) {
             return result;
           }
         }
@@ -17946,7 +17946,7 @@ var require_main4 = __commonJS({
         }
         if (cwd) {
           return new Promise((s) => {
-            fs.lstat(cwd, (err, stats) => {
+            fs2.lstat(cwd, (err, stats) => {
               s(!err && stats.isDirectory() ? cwd : void 0);
             });
           });
@@ -18013,6 +18013,8 @@ __export(extension_exports, {
 });
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
+var fs = __toESM(require("node:fs"));
+var path = __toESM(require("node:path"));
 var import_node = __toESM(require_node3());
 var CONFIG = {
   /** Delay before auto-analyze runs after activation (ms) */
@@ -18123,10 +18125,16 @@ var client;
 var lastBackupId;
 var outputChannel;
 var traceOutputChannel;
+var extensionContext;
 var lastBuildDirByWorkspace = /* @__PURE__ */ new Map();
 var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
+var lastBuildProfileByWorkspace = /* @__PURE__ */ new Map();
+var BUILD_PROFILE_STATE_PREFIX = "bha.lastBuildProfile:";
 function getWorkspaceRootPath() {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
+function buildProfileStateKey(workspaceRoot) {
+  return `${BUILD_PROFILE_STATE_PREFIX}${workspaceRoot}`;
 }
 function timestamp() {
   return (/* @__PURE__ */ new Date()).toLocaleTimeString();
@@ -18157,12 +18165,78 @@ function traceSettingToProtocol(value) {
       return import_node.Trace.Off;
   }
 }
+function normalizeWorkspaceRelativePath(workspaceRoot, candidate) {
+  const trimmed = candidate?.trim();
+  if (!trimmed) {
+    return void 0;
+  }
+  return path.isAbsolute(trimmed) ? path.normalize(trimmed) : path.normalize(path.join(workspaceRoot, trimmed));
+}
+function validatePersistedBuildProfile(profile, workspaceRoot) {
+  if (!profile || profile.projectRoot !== workspaceRoot) {
+    return void 0;
+  }
+  const resolvedBuildDir = normalizeWorkspaceRelativePath(workspaceRoot, profile.buildDir);
+  if (resolvedBuildDir && !fs.existsSync(resolvedBuildDir)) {
+    return void 0;
+  }
+  const resolvedTraceDir = normalizeWorkspaceRelativePath(workspaceRoot, profile.traceOutputDir);
+  if (resolvedTraceDir && !fs.existsSync(resolvedTraceDir)) {
+    return void 0;
+  }
+  const compiler = profile.compiler?.trim();
+  if (compiler && (compiler.includes(path.sep) || compiler.startsWith(".")) && !fs.existsSync(path.normalize(compiler))) {
+    return void 0;
+  }
+  return {
+    ...profile,
+    buildDir: profile.buildDir?.trim() || void 0,
+    traceOutputDir: profile.traceOutputDir?.trim() || void 0,
+    compiler: compiler || void 0,
+    extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : []
+  };
+}
+async function persistBuildProfile(workspaceRoot, profile) {
+  lastBuildProfileByWorkspace.set(workspaceRoot, profile);
+  await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), profile);
+}
+async function clearPersistedBuildProfile(workspaceRoot) {
+  lastBuildProfileByWorkspace.delete(workspaceRoot);
+  await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), void 0);
+}
+function getReusableBuildProfile(workspaceRoot) {
+  const cached = validatePersistedBuildProfile(lastBuildProfileByWorkspace.get(workspaceRoot), workspaceRoot);
+  if (cached) {
+    return cached;
+  }
+  void clearPersistedBuildProfile(workspaceRoot);
+  return void 0;
+}
 function activate(context) {
+  extensionContext = context;
   const config = vscode.workspace.getConfiguration("buildHotspotAnalyzer");
   const serverPath = config.get("serverPath", CONFIG.DEFAULT_SERVER_PATH);
   outputChannel = vscode.window.createOutputChannel("Build Hotspot Analyzer");
   traceOutputChannel = vscode.window.createOutputChannel("Build Hotspot Analyzer Trace");
   context.subscriptions.push(outputChannel, traceOutputChannel);
+  for (const folder of vscode.workspace.workspaceFolders ?? []) {
+    const workspaceRoot = folder.uri.fsPath;
+    const cachedProfile = validatePersistedBuildProfile(
+      context.workspaceState.get(buildProfileStateKey(workspaceRoot)),
+      workspaceRoot
+    );
+    if (cachedProfile) {
+      lastBuildProfileByWorkspace.set(workspaceRoot, cachedProfile);
+      if (cachedProfile.buildDir) {
+        rememberWorkspaceBuildDir(workspaceRoot, cachedProfile.buildDir);
+      }
+      if (cachedProfile.traceOutputDir) {
+        lastTraceDirByWorkspace.set(workspaceRoot, cachedProfile.traceOutputDir);
+      }
+    } else {
+      void context.workspaceState.update(buildProfileStateKey(workspaceRoot), void 0);
+    }
+  }
   if (!serverPath || serverPath.trim().length === 0) {
     logLine("Server path is not configured");
     vscode.window.showErrorMessage("BHA: Server path is not configured");
@@ -18620,6 +18694,17 @@ async function recordBuildTraces(advanced) {
       } else {
         lastTraceDirByWorkspace.delete(workspaceRoot);
       }
+      await persistBuildProfile(workspaceRoot, {
+        projectRoot: workspaceRoot,
+        buildSystem: safeGetString(result.buildSystem, "").trim() || options.buildSystem,
+        buildDir: safeGetString(result.buildDir, "").trim() || options.buildDir,
+        buildType: safeGetString(result.buildType, "").trim() || options.buildType,
+        compiler: safeGetString(result.compiler, "").trim() || options.compiler,
+        parallelJobs: safeGetNumber(result.parallelJobs, 0) || options.parallelJobs,
+        traceOutputDir: chosenTraceDir || options.traceOutputDir,
+        extraArgs: options.extraArgs,
+        recordedAt: (/* @__PURE__ */ new Date()).toISOString()
+      });
     }
     const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1e3).toFixed(2)}s`;
     const analyzeNow = "Analyze Now";
@@ -18729,10 +18814,12 @@ async function cmdApplySuggestion(suggestionId) {
   if (confirm !== "Apply") return;
   try {
     logLine(`Applying suggestion: id=${suggestionId}`);
+    const workspaceRoot = getWorkspaceRootPath();
+    const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : void 0;
     const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestion",
       "bha.applySuggestion",
-      { suggestionId, operationId },
+      { suggestionId, operationId, buildProfile },
       "Applying edits and validating result..."
     );
     if (!isValidApplyResult(applyResult)) {
@@ -18817,6 +18904,8 @@ async function cmdApplyAllSuggestions() {
   if (confirm !== "Apply All") return;
   try {
     logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
+    const workspaceRoot = getWorkspaceRootPath();
+    const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : void 0;
     const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestions",
       "bha.applyAllSuggestions",
@@ -18824,7 +18913,8 @@ async function cmdApplyAllSuggestions() {
         minPriority,
         safeOnly,
         atomic: true,
-        operationId
+        operationId,
+        buildProfile
       },
       "Applying edits and validating transaction..."
     );
