@@ -18729,18 +18729,11 @@ async function cmdApplySuggestion(suggestionId) {
   if (confirm !== "Apply") return;
   try {
     logLine(`Applying suggestion: id=${suggestionId}`);
-    const executeApplySuggestion = async (progress) => {
-      progress.report({ message: "Applying edits and validating result..." });
-      const result = await client.sendRequest("workspace/executeCommand", {
-        command: "bha.applySuggestion",
-        arguments: [{ suggestionId, operationId }]
-      });
-      return result;
-    };
-    const applyResult = await withBhaProgress(
+    const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestion",
-      false,
-      async (progress) => executeApplySuggestion(progress)
+      "bha.applySuggestion",
+      { suggestionId, operationId },
+      "Applying edits and validating result..."
     );
     if (!isValidApplyResult(applyResult)) {
       logLine("Apply suggestion returned an invalid result");
@@ -18824,24 +18817,16 @@ async function cmdApplyAllSuggestions() {
   if (confirm !== "Apply All") return;
   try {
     logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
-    const executeApplyAll = async (progress) => {
-      progress.report({ message: "Applying edits and validating transaction..." });
-      const result2 = await client.sendRequest("workspace/executeCommand", {
-        command: "bha.applyAllSuggestions",
-        arguments: [{
-          minPriority,
-          safeOnly,
-          atomic: true,
-          // Request atomic transaction
-          operationId
-        }]
-      });
-      return result2;
-    };
-    const applyResult = await withBhaProgress(
+    const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestions",
-      false,
-      async (progress) => executeApplyAll(progress)
+      "bha.applyAllSuggestions",
+      {
+        minPriority,
+        safeOnly,
+        atomic: true,
+        operationId
+      },
+      "Applying edits and validating transaction..."
     );
     if (!isValidApplyAllResult(applyResult)) {
       logLine("Apply all returned an invalid result");

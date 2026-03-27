@@ -34,8 +34,8 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 - `BHA: Restart Language Server`
 
 Long-running commands surface progress notifications in VS Code so recording, analysis, apply, and revert operations remain visible while they run.
-Record and analyze operations now expose a cancel button in the progress notification. Cancellation requests are forwarded to
-the language server and traced builds stream live output into the activity log while they run.
+Record, analyze, and apply operations expose a cancel button in the progress notification. Cancellation requests are forwarded to
+the language server, and build output streams into the activity log during trace recording and rebuild validation.
 
 The extension also writes command activity, build summaries, and server/runtime diagnostics to the `Build Hotspot Analyzer`
 output channel. Use `BHA: Show Activity Log` or open the Output panel and select `Build Hotspot Analyzer`.

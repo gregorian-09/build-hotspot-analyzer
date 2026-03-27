@@ -1051,20 +1051,11 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
 
     try {
         logLine(`Applying suggestion: id=${suggestionId}`);
-        const executeApplySuggestion = async (
-            progress: vscode.Progress<{ message?: string; increment?: number }>
-        ): Promise<unknown> => {
-            progress.report({ message: 'Applying edits and validating result...' });
-            const result = await client.sendRequest('workspace/executeCommand', {
-                command: 'bha.applySuggestion',
-                arguments: [{ suggestionId, operationId }]
-            });
-            return result as unknown;
-        };
-        const applyResult = await withBhaProgress(
+        const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestion',
-            false,
-            async (progress) => executeApplySuggestion(progress)
+            'bha.applySuggestion',
+            { suggestionId, operationId },
+            'Applying edits and validating result...'
         );
 
         if (!isValidApplyResult(applyResult)) {
@@ -1168,26 +1159,16 @@ async function cmdApplyAllSuggestions(): Promise<void> {
 
     try {
         logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
-        // Use atomic apply with transaction semantics
-        const executeApplyAll = async (
-            progress: vscode.Progress<{ message?: string; increment?: number }>
-        ): Promise<unknown> => {
-            progress.report({ message: 'Applying edits and validating transaction...' });
-            const result = await client.sendRequest('workspace/executeCommand', {
-                command: 'bha.applyAllSuggestions',
-                arguments: [{
-                    minPriority,
-                    safeOnly,
-                    atomic: true, // Request atomic transaction
-                    operationId
-                }]
-            });
-            return result as unknown;
-        };
-        const applyResult = await withBhaProgress(
+        const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestions',
-            false,
-            async (progress) => executeApplyAll(progress)
+            'bha.applyAllSuggestions',
+            {
+                minPriority,
+                safeOnly,
+                atomic: true,
+                operationId
+            },
+            'Applying edits and validating transaction...'
         );
 
         if (!isValidApplyAllResult(applyResult)) {

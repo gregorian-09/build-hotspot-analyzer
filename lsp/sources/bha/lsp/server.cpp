@@ -583,10 +583,17 @@ namespace bha::lsp
         if (job_id.empty() || message.empty()) {
             return;
         }
+        std::string normalized = message;
+        while (!normalized.empty() && (normalized.back() == '\n' || normalized.back() == '\r')) {
+            normalized.pop_back();
+        }
+        if (normalized.empty()) {
+            return;
+        }
         send_notification("bha/jobLog", {
             {"jobId", job_id},
             {"category", category},
-            {"message", message}
+            {"message", normalized}
         });
     }
 
@@ -764,6 +771,7 @@ namespace bha::lsp
             json run_args = job->args;
             run_args["async"] = false;
             run_args["skipConsent"] = true;
+            run_args["jobId"] = job->id;
 
             json result;
             if (job->command == "bha.applySuggestion") {
@@ -1872,11 +1880,13 @@ namespace bha::lsp
         }
 
         const std::string suggestion_id = args["suggestionId"].get<std::string>();
+        const std::string job_id = args.value("jobId", "");
         bool const skip_validation = args.contains("skipValidation") && args["skipValidation"].get<bool>();
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
             skip_rebuild = args["skipRebuild"].get<bool>();
         }
+        send_job_log(job_id, "apply", "Preparing suggestion " + suggestion_id);
 
         std::optional<int> predicted_savings_ms;
         {
@@ -1944,6 +1954,15 @@ namespace bha::lsp
                 true
             );
         }
+        if (result.success) {
+            send_job_log(
+                job_id,
+                "apply",
+                "Applied suggestion edits to " + std::to_string(result.changed_files.size()) + " file(s)"
+            );
+        } else {
+            send_job_log(job_id, "apply", "Suggestion edit application failed before build validation");
+        }
 
         auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
             json out = json::array();
@@ -1970,9 +1989,16 @@ namespace bha::lsp
         };
 
         if (result.success && build_validation_requested) {
+            send_job_log(job_id, "apply", "Starting rebuild validation");
             build_validation_ran = true;
-            build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
+            build_validation_success = run_build_validation(
+                build_errors,
+                measured_rebuild_duration_ms,
+                job_id,
+                "build"
+            );
             if (!build_validation_success) {
+                send_job_log(job_id, "apply", "Rebuild validation failed; evaluating rollback");
                 result.success = false;
                 result.errors.insert(result.errors.end(), build_errors.begin(), build_errors.end());
                 rollback_json["reason"] = "build-failed";
@@ -1982,6 +2008,7 @@ namespace bha::lsp
                 } else if (!result.backup_id.has_value() || result.backup_id->empty()) {
                     rollback_json["reason"] = "no-backup";
                 } else {
+                    send_job_log(job_id, "apply", "Rolling back applied edits after failed rebuild");
                     send_notification("window/showMessage", {
                         {"type", static_cast<int>(MessageType::Warning)},
                         {"message", "Build failed after applying suggestion. Rolling back changes..."}
@@ -1999,12 +2026,14 @@ namespace bha::lsp
                     rollback_json["reason"] = rollback_result.success ? "rollback-succeeded" : "rollback-failed";
 
                     if (rollback_result.success) {
+                        send_job_log(job_id, "apply", "Rollback completed successfully");
                         Diagnostic rollback_diag;
                         rollback_diag.severity = DiagnosticSeverity::Warning;
                         rollback_diag.source = "bha-lsp";
                         rollback_diag.message = "Build validation failed. Applied files were restored from backup.";
                         result.errors.push_back(std::move(rollback_diag));
                     } else {
+                        send_job_log(job_id, "apply", "Rollback failed after rebuild failure");
                         result.errors.insert(
                             result.errors.end(),
                             rollback_result.errors.begin(),
@@ -2020,6 +2049,7 @@ namespace bha::lsp
             }
         } else if (!build_validation_requested) {
             rollback_json["reason"] = "validation-skipped";
+            send_job_log(job_id, "apply", "Rebuild validation skipped");
         }
 
         json errors_json = json::array();
@@ -2037,6 +2067,11 @@ namespace bha::lsp
             measured_rebuild_duration_ms
         );
         persist_trust_loop_metrics(trust_loop, suggestion_id, false);
+        send_job_log(
+            job_id,
+            "apply",
+            result.success ? "Suggestion apply completed successfully" : "Suggestion apply completed with errors"
+        );
 
         return {
             {"success", result.success},
@@ -2074,6 +2109,7 @@ namespace bha::lsp
         }
 
         bool safe_only = args.contains("safeOnly") && args["safeOnly"].get<bool>();
+        const std::string job_id = args.value("jobId", "");
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
             skip_rebuild = args["skipRebuild"].get<bool>();
@@ -2126,6 +2162,13 @@ namespace bha::lsp
         auto apply_all_result = with_manager([&]() {
             return suggestion_manager_->apply_all_suggestions(min_priority, safe_only);
         });
+        send_job_log(
+            job_id,
+            "apply",
+            "Batch edit phase finished: applied=" + std::to_string(apply_all_result.applied_count) +
+                ", skipped=" + std::to_string(apply_all_result.skipped_count) +
+                ", success=" + std::string(apply_all_result.success ? "true" : "false")
+        );
         bool success = apply_all_result.success;
         std::size_t applied_count = apply_all_result.applied_count;
         std::size_t skipped_count = apply_all_result.skipped_count;
@@ -2183,6 +2226,7 @@ namespace bha::lsp
         };
 
         if (!success && atomic && !backup_id.empty()) {
+            send_job_log(job_id, "apply", "Atomic batch failed during edit phase; rolling back immediately");
             const auto rollback_result = with_manager([&]() {
                 return suggestion_manager_->revert_changes_detailed(backup_id);
             });
@@ -2209,9 +2253,16 @@ namespace bha::lsp
         std::vector<Diagnostic> build_errors;
 
         if (build_validation_requested) {
+            send_job_log(job_id, "apply", "Starting rebuild validation for applied suggestions");
             build_validation_ran = true;
-            build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
+            build_validation_success = run_build_validation(
+                build_errors,
+                measured_rebuild_duration_ms,
+                job_id,
+                "build"
+            );
             if (!build_validation_success) {
+                send_job_log(job_id, "apply", "Rebuild validation failed; evaluating rollback or fault isolation");
                 const std::size_t error_count_before_batch_validation = errors.size();
                 success = false;
                 errors.insert(errors.end(), build_errors.begin(), build_errors.end());
@@ -2221,6 +2272,7 @@ namespace bha::lsp
                 } else if (backup_id.empty()) {
                     rollback_json["reason"] = "no-backup";
                 } else if (atomic) {
+                    send_job_log(job_id, "apply", "Atomic rollback started after failed rebuild");
                     send_notification("window/showMessage", {
                         {"type", static_cast<int>(MessageType::Warning)},
                         {"message", "Build failed after applying suggestions. Rolling back all changes..."}
@@ -2243,6 +2295,7 @@ namespace bha::lsp
                         errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
                     }
                 } else {
+                    send_job_log(job_id, "apply", "Starting fault isolation over applied suggestions");
                     // Remove the initial aggregate build-failure diagnostics before
                     // entering fault isolation; candidate-specific failures are added back
                     // with suggestion context.
@@ -2270,6 +2323,7 @@ namespace bha::lsp
                         bool isolation_aborted = false;
 
                         for (const auto& suggestion_id : applied_suggestion_ids) {
+                            send_job_log(job_id, "apply", "Fault isolation: probing suggestion " + suggestion_id);
                             for (const auto& retained_id : retained_ids) {
                                 auto retained_apply = with_manager([&]() {
                                     return suggestion_manager_->apply_suggestion(
@@ -2302,7 +2356,12 @@ namespace bha::lsp
                             } else {
                                 std::vector<Diagnostic> candidate_build_errors;
                                 std::optional<int> candidate_duration_ms;
-                                const bool candidate_valid = run_build_validation(candidate_build_errors, candidate_duration_ms);
+                                const bool candidate_valid = run_build_validation(
+                                    candidate_build_errors,
+                                    candidate_duration_ms,
+                                    job_id,
+                                    "build"
+                                );
                                 if (candidate_valid) {
                                     retained_ids.push_back(suggestion_id);
                                     append_unique_changed_files(retained_changed_files, candidate_apply.changed_files);
@@ -2357,7 +2416,12 @@ namespace bha::lsp
                             } else {
                                 build_errors.clear();
                                 build_validation_ran = true;
-                                build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
+                                build_validation_success = run_build_validation(
+                                    build_errors,
+                                    measured_rebuild_duration_ms,
+                                    job_id,
+                                    "build"
+                                );
 
                                 if (!build_validation_success) {
                                     append_contextual_errors(build_errors, "apply-all", "fault-isolation-final-build");
@@ -2381,6 +2445,11 @@ namespace bha::lsp
                                         errors.insert(errors.end(), final_reset.errors.begin(), final_reset.errors.end());
                                     }
                                 } else {
+                                    send_job_log(
+                                        job_id,
+                                        "apply",
+                                        "Fault isolation retained " + std::to_string(retained_ids.size()) + " suggestion(s)"
+                                    );
                                     const std::size_t previous_applied_count = applied_count;
                                     applied_suggestion_ids = retained_ids;
                                     applied_count = retained_ids.size();
@@ -2402,6 +2471,7 @@ namespace bha::lsp
             rollback_json["reason"] = (config_.rebuild_after_apply && !skip_rebuild)
                 ? "validation-skipped"
                 : "validation-disabled";
+            send_job_log(job_id, "apply", "Rebuild validation skipped");
         }
 
         std::optional<int> predicted_savings_ms;
@@ -2434,6 +2504,13 @@ namespace bha::lsp
             measured_rebuild_duration_ms
         );
         persist_trust_loop_metrics(trust_loop, std::nullopt, true);
+        send_job_log(
+            job_id,
+            "apply",
+            success
+                ? "Apply-all completed successfully"
+                : "Apply-all completed with failures or rollback"
+        );
 
         return {
             {"success", success},
@@ -2668,9 +2745,15 @@ namespace bha::lsp
 
     bool LSPServer::run_build_validation(
         std::vector<Diagnostic>& errors,
-        std::optional<int>& measured_duration_ms
+        std::optional<int>& measured_duration_ms,
+        const std::string& job_id,
+        const std::string& stage
     ) const
     {
+        const std::string log_category = stage.empty() ? "build" : stage;
+        const auto emit_log = [&](const std::string& message) {
+            send_job_log(job_id, log_category, message);
+        };
         std::optional<std::filesystem::path> workspace_path;
         if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
@@ -2697,6 +2780,14 @@ namespace bha::lsp
                 options.enable_memory_profiling = false;
                 options.clean_first = false;
                 options.verbose = false;
+                options.on_output_line = [&](const std::string& line) {
+                    emit_log(line);
+                };
+                options.should_cancel = [&]() {
+                    return is_async_job_cancel_requested(job_id);
+                };
+
+                emit_log("Starting build validation via " + adapter->name());
 
                 const auto started = std::chrono::steady_clock::now();
                 auto build_result = adapter->build(*workspace_path, options);
@@ -2706,6 +2797,7 @@ namespace bha::lsp
                 );
 
                 if (build_result.is_err()) {
+                    emit_log("Build adapter failed before validation completed");
                     Diagnostic diag;
                     diag.severity = DiagnosticSeverity::Error;
                     diag.source = "bha-lsp";
@@ -2716,6 +2808,7 @@ namespace bha::lsp
 
                 const auto& build = build_result.value();
                 if (build.success) {
+                    emit_log("Build validation succeeded");
                     return true;
                 }
 
@@ -2745,6 +2838,7 @@ namespace bha::lsp
                     }
                     errors.push_back(std::move(diag));
                 }
+                emit_log("Build validation failed");
                 return false;
             }
             build_cmd = detect_build_command(*workspace_path);
@@ -2770,6 +2864,7 @@ namespace bha::lsp
             {"type", static_cast<int>(MessageType::Info)},
             {"message", "Running build validation: " + build_cmd}
         });
+        emit_log("Starting build validation command: " + build_cmd);
 
         std::array<char, 4096> buffer;
         std::string output;
@@ -2786,6 +2881,7 @@ namespace bha::lsp
 
         while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
             output += buffer.data();
+            emit_log(buffer.data());
         }
 
         int const raw_status = pclose(pipe);
@@ -2829,6 +2925,9 @@ namespace bha::lsp
                 }
                 errors.push_back(diag);
             }
+            emit_log("Build validation failed");
+        } else {
+            emit_log("Build validation succeeded");
         }
 
         return success;

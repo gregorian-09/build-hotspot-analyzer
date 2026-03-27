@@ -202,8 +202,8 @@ Main commands:
 - `BHA: Restart Language Server`
 
 Long-running VS Code commands show progress notifications so build recording, analysis, apply, and revert operations are visible while they run.
-Record and analyze operations expose a cancel button in the progress notification. Cancellation requests are forwarded to
-the language server, and traced builds stream live output into the activity log while they run.
+Record, analyze, and apply operations expose a cancel button in the progress notification. Cancellation requests are forwarded to
+the language server, and build output streams into the activity log during trace recording and rebuild validation.
 
 VS Code also writes command activity, build output summaries, and server/runtime diagnostics to the
 `Build Hotspot Analyzer` output channel. Open it with `BHA: Show Activity Log` or through the Output panel.

@@ -147,7 +147,12 @@ namespace bha::lsp
         [[nodiscard]] bool is_async_job_cancel_requested(const std::string& job_id) const;
         void send_job_log(const std::string& job_id, const std::string& category, const std::string& message) const;
 
-        bool run_build_validation(std::vector<Diagnostic>& errors, std::optional<int>& measured_duration_ms) const;
+        bool run_build_validation(
+            std::vector<Diagnostic>& errors,
+            std::optional<int>& measured_duration_ms,
+            const std::string& job_id = {},
+            const std::string& stage = {}
+        ) const;
         static std::string detect_build_command(const std::filesystem::path& project_root);
         void persist_trust_loop_metrics(
             const json& trust_loop,
