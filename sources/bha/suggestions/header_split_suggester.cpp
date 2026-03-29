@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <fstream>
 #include <regex>
 #include <sstream>
 #include <unordered_set>
@@ -14,6 +15,39 @@
 namespace bha::suggestions
 {
     namespace {
+
+        enum class ScopeFrameKind {
+            Namespace,
+            MacroWrapper
+        };
+
+        struct MacroWrapperScope {
+            std::string open_name;
+            std::string open_text;
+            std::string close_name;
+            std::string close_text;
+        };
+
+        struct ScopeFrame {
+            ScopeFrameKind kind = ScopeFrameKind::Namespace;
+            std::string name;
+            std::size_t open_depth = 0;
+            MacroWrapperScope macro;
+        };
+
+        std::string trim_copy(std::string value) {
+            if (const auto first = value.find_first_not_of(" \t\r\n"); first != std::string::npos) {
+                value.erase(0, first);
+            } else {
+                value.clear();
+            }
+            if (!value.empty()) {
+                if (const auto last = value.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                    value.erase(last + 1);
+                }
+            }
+            return value;
+        }
 
         /**
          * Checks if a path is a C++ header file.
@@ -451,23 +485,92 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
-        struct NamespaceScope {
-            std::vector<std::string> names;
-            std::size_t open_depth = 0;
-        };
-
         struct ForwardDeclSymbol {
             std::vector<std::string> namespaces;
+            std::vector<ScopeFrame> scopes;
             std::string kind;
             std::string name;
         };
 
-        std::vector<std::string> collect_active_namespaces(const std::vector<NamespaceScope>& scope_stack) {
+        std::vector<std::string> collect_active_namespaces(const std::vector<ScopeFrame>& scope_stack) {
             std::vector<std::string> result;
             for (const auto& scope : scope_stack) {
-                result.insert(result.end(), scope.names.begin(), scope.names.end());
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    result.push_back(scope.name);
+                }
             }
             return result;
+        }
+
+        std::optional<std::string> derive_matching_close_macro(std::string name) {
+            if (name.ends_with("_BEGIN")) {
+                name.replace(name.size() - 6, 6, "_END");
+                return name;
+            }
+            if (name.ends_with("_OPEN")) {
+                name.replace(name.size() - 5, 5, "_CLOSE");
+                return name;
+            }
+            if (name.ends_with("_PUSH")) {
+                name.replace(name.size() - 5, 5, "_POP");
+                return name;
+            }
+            if (name.starts_with("BEGIN_")) {
+                return "END_" + name.substr(6);
+            }
+            if (name.starts_with("OPEN_")) {
+                return "CLOSE_" + name.substr(5);
+            }
+            if (name.starts_with("PUSH_")) {
+                return "POP_" + name.substr(5);
+            }
+            return std::nullopt;
+        }
+
+        std::optional<std::string> parse_scope_macro_name(const std::string& line) {
+            static const std::regex macro_regex(
+                R"(^\s*([A-Z][A-Z0-9_]*|(?:BEGIN|OPEN|PUSH)_[A-Z0-9_]+)\s*(\([^;{}]*\))?\s*$)"
+            );
+
+            std::smatch match;
+            if (!std::regex_match(line, match, macro_regex)) {
+                return std::nullopt;
+            }
+            return match[1].str();
+        }
+
+        std::optional<MacroWrapperScope> parse_scope_macro_open(const std::string& line) {
+            const auto macro_name = parse_scope_macro_name(line);
+            if (!macro_name.has_value()) {
+                return std::nullopt;
+            }
+            const auto close_name = derive_matching_close_macro(*macro_name);
+            if (!close_name.has_value()) {
+                return std::nullopt;
+            }
+
+            MacroWrapperScope scope;
+            scope.open_name = *macro_name;
+            scope.open_text = trim_copy(line);
+            scope.close_name = *close_name;
+            scope.close_text = *close_name;
+            return scope;
+        }
+
+        std::optional<std::string> parse_scope_macro_close(const std::string& line) {
+            const auto macro_name = parse_scope_macro_name(line);
+            if (!macro_name.has_value()) {
+                return std::nullopt;
+            }
+            if (macro_name->ends_with("_END") ||
+                macro_name->ends_with("_CLOSE") ||
+                macro_name->ends_with("_POP") ||
+                macro_name->starts_with("END_") ||
+                macro_name->starts_with("CLOSE_") ||
+                macro_name->starts_with("POP_")) {
+                return *macro_name;
+            }
+            return std::nullopt;
         }
 
         std::string make_symbol_key(const ForwardDeclSymbol& symbol) {
@@ -572,7 +675,7 @@ namespace bha::suggestions
 
             std::vector<ForwardDeclSymbol> symbols;
             std::unordered_set<std::string> seen;
-            std::vector<NamespaceScope> namespace_stack;
+            std::vector<ScopeFrame> scope_stack;
             bool in_block_comment = false;
             std::size_t brace_depth = 0;
             bool template_pending = false;
@@ -582,8 +685,12 @@ namespace bha::suggestions
                 const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
 
                 std::size_t namespace_depth = 0;
-                if (!namespace_stack.empty()) {
-                    namespace_depth = namespace_stack.back().open_depth;
+                for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                    if (it->kind != ScopeFrameKind::Namespace) {
+                        continue;
+                    }
+                    namespace_depth = it->open_depth;
+                    break;
                 }
 
                 const std::string trimmed = [&]() {
@@ -595,14 +702,37 @@ namespace bha::suggestions
                     return line.substr(start, end - start + 1);
                 }();
 
-                std::optional<NamespaceScope> pending_namespace;
+                std::vector<ScopeFrame> pending_namespaces;
                 if (std::smatch namespace_match;
                     std::regex_search(trimmed, namespace_match, namespace_open_regex) &&
                     brace_depth == namespace_depth) {
-                    NamespaceScope scope;
-                    scope.names = split_namespace_path(namespace_match[1].str());
-                    scope.open_depth = brace_depth + 1;
-                    pending_namespace = std::move(scope);
+                    const auto parts = split_namespace_path(namespace_match[1].str());
+                    for (const auto& part : parts) {
+                        ScopeFrame scope;
+                        scope.kind = ScopeFrameKind::Namespace;
+                        scope.name = part;
+                        scope.open_depth = brace_depth + 1;
+                        pending_namespaces.push_back(std::move(scope));
+                    }
+                }
+
+                if (const auto macro_scope = parse_scope_macro_open(trimmed); macro_scope.has_value()) {
+                    ScopeFrame frame;
+                    frame.kind = ScopeFrameKind::MacroWrapper;
+                    frame.macro = *macro_scope;
+                    scope_stack.push_back(std::move(frame));
+                } else if (const auto close_macro = parse_scope_macro_close(trimmed); close_macro.has_value()) {
+                    for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                        if (it->kind != ScopeFrameKind::MacroWrapper) {
+                            continue;
+                        }
+                        if (it->macro.close_name != *close_macro) {
+                            continue;
+                        }
+                        it->macro.close_text = trimmed;
+                        scope_stack.erase(std::next(it).base());
+                        break;
+                    }
                 }
 
                 if (trimmed.rfind("template", 0) == 0) {
@@ -630,7 +760,8 @@ namespace bha::suggestions
                                 continue;
                             }
                             ForwardDeclSymbol symbol;
-                            symbol.namespaces = collect_active_namespaces(namespace_stack);
+                            symbol.scopes = scope_stack;
+                            symbol.namespaces = collect_active_namespaces(scope_stack);
                             symbol.kind = class_match[1].str();
                             symbol.name = *name;
                             if (seen.insert(make_symbol_key(symbol)).second) {
@@ -651,25 +782,168 @@ namespace bha::suggestions
                     }
                 }
 
-                if (pending_namespace.has_value() && brace_depth >= pending_namespace->open_depth) {
-                    namespace_stack.push_back(std::move(*pending_namespace));
+                if (!pending_namespaces.empty()) {
+                    for (auto& pending_namespace : pending_namespaces) {
+                        if (brace_depth >= pending_namespace.open_depth) {
+                            scope_stack.push_back(std::move(pending_namespace));
+                        }
+                    }
                 }
 
-                while (!namespace_stack.empty() && brace_depth < namespace_stack.back().open_depth) {
-                    namespace_stack.pop_back();
+                while (!scope_stack.empty()) {
+                    const auto& scope = scope_stack.back();
+                    if (scope.kind != ScopeFrameKind::Namespace) {
+                        break;
+                    }
+                    if (brace_depth >= scope.open_depth) {
+                        break;
+                    }
+                    scope_stack.pop_back();
                 }
             }
 
             return symbols;
         }
 
-        std::optional<std::string> generate_forward_header_content(const fs::path& header_path) {
+        bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
+            std::ifstream in(file);
+            if (!in) {
+                return false;
+            }
+
+            const std::regex define_regex(
+                "^\\s*#\\s*define\\s+" + std::regex_replace(
+                    macro_name,
+                    std::regex(R"([.^$|()\\[\]{}*+?])"),
+                    R"(\$&)"
+                ) + R"((?:\b|\s*\())"
+            );
+            std::string line;
+            while (std::getline(in, line)) {
+                if (std::regex_search(line, define_regex)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        std::optional<fs::path> resolve_include_target(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const IncludeDirective& include
+        ) {
+            const fs::path include_path(include.header_name);
+            const fs::path normalized_header = resolve_source_path(header_path).lexically_normal();
+            const fs::path repo_root = !project_root.empty()
+                ? project_root.lexically_normal()
+                : find_repository_root(normalized_header);
+
+            std::vector<fs::path> candidates;
+            if (!normalized_header.empty()) {
+                candidates.push_back((normalized_header.parent_path() / include_path).lexically_normal());
+            }
+            if (!repo_root.empty()) {
+                candidates.push_back((repo_root / include_path).lexically_normal());
+                if (auto found = find_file_in_repo(repo_root, include_path.filename()); found.has_value()) {
+                    candidates.push_back(found->lexically_normal());
+                }
+            }
+
+            for (const auto& candidate : candidates) {
+                if (!candidate.empty() && fs::exists(candidate)) {
+                    return candidate;
+                }
+            }
+            return std::nullopt;
+        }
+
+        std::optional<std::vector<IncludeDirective>> resolve_support_includes(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const std::vector<ForwardDeclSymbol>& symbols
+        ) {
+            std::unordered_set<std::string> unresolved_macros;
+            for (const auto& symbol : symbols) {
+                for (const auto& scope : symbol.scopes) {
+                    if (scope.kind != ScopeFrameKind::MacroWrapper) {
+                        continue;
+                    }
+                    unresolved_macros.insert(scope.macro.open_name);
+                    unresolved_macros.insert(scope.macro.close_name);
+                }
+            }
+            if (unresolved_macros.empty()) {
+                return std::vector<IncludeDirective>{};
+            }
+
+            std::vector<IncludeDirective> includes;
+            std::unordered_set<std::string> seen_headers;
+            for (const auto& include : find_include_directives(header_path)) {
+                const auto resolved = resolve_include_target(header_path, project_root, include);
+                if (!resolved.has_value()) {
+                    continue;
+                }
+
+                bool needed = false;
+                std::vector<std::string> satisfied;
+                for (const auto& macro_name : unresolved_macros) {
+                    if (!file_defines_macro(*resolved, macro_name)) {
+                        continue;
+                    }
+                    satisfied.push_back(macro_name);
+                    needed = true;
+                }
+
+                if (!needed) {
+                    continue;
+                }
+
+                if (seen_headers.insert(include.header_name).second) {
+                    IncludeDirective support;
+                    support.header_name = include.header_name;
+                    support.is_system = include.is_system;
+                    includes.push_back(std::move(support));
+                }
+
+                for (const auto& macro_name : satisfied) {
+                    unresolved_macros.erase(macro_name);
+                }
+                if (unresolved_macros.empty()) {
+                    break;
+                }
+            }
+
+            if (!unresolved_macros.empty()) {
+                return std::nullopt;
+            }
+            return includes;
+        }
+
+        std::string include_directive_text(const IncludeDirective& include) {
+            if (include.is_system) {
+                return "#include <" + include.header_name + ">";
+            }
+            return "#include \"" + include.header_name + "\"";
+        }
+
+        std::optional<std::string> generate_forward_header_content(
+            const fs::path& header_path,
+            const fs::path& project_root
+        ) {
             auto symbols = extract_forward_decl_symbols(header_path);
             if (symbols.empty()) {
                 return std::nullopt;
             }
 
+            const auto support_includes = resolve_support_includes(header_path, project_root, symbols);
+            if (!support_includes.has_value()) {
+                return std::nullopt;
+            }
+
             std::ranges::sort(symbols, [](const ForwardDeclSymbol& a, const ForwardDeclSymbol& b) {
+                if (a.scopes.size() != b.scopes.size()) {
+                    return a.scopes.size() < b.scopes.size();
+                }
                 if (a.namespaces != b.namespaces) {
                     return a.namespaces < b.namespaces;
                 }
@@ -681,41 +955,61 @@ namespace bha::suggestions
 
             std::ostringstream out;
             out << "#pragma once\n\n";
+            for (const auto& include : *support_includes) {
+                out << include_directive_text(include) << "\n";
+            }
+            if (!support_includes->empty()) {
+                out << "\n";
+            }
 
-            std::vector<std::string> opened_namespaces;
-            auto close_namespace = [&](const std::string& ns) {
-                out << "}  // namespace " << ns << "\n";
+            std::vector<ScopeFrame> opened_scopes;
+            auto render_scope_key = [](const ScopeFrame& scope) {
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    return "namespace:" + scope.name;
+                }
+                return "macro:" + scope.macro.open_text;
             };
-            auto open_namespace = [&](const std::string& ns) {
-                out << "namespace " << ns << " {\n";
+            auto close_scope = [&](const ScopeFrame& scope) {
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    out << "}  // namespace " << scope.name << "\n";
+                } else {
+                    out << scope.macro.close_text << "\n";
+                }
+            };
+            auto open_scope = [&](const ScopeFrame& scope) {
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    out << "namespace " << scope.name << " {\n";
+                } else {
+                    out << scope.macro.open_text << "\n";
+                }
             };
 
-            auto adjust_namespace_stack = [&](const std::vector<std::string>& target) {
+            auto adjust_scope_stack = [&](const std::vector<ScopeFrame>& target) {
                 std::size_t common_prefix = 0;
-                while (common_prefix < opened_namespaces.size() &&
+                while (common_prefix < opened_scopes.size() &&
                        common_prefix < target.size() &&
-                       opened_namespaces[common_prefix] == target[common_prefix]) {
+                       render_scope_key(opened_scopes[common_prefix]) == render_scope_key(target[common_prefix])) {
                     ++common_prefix;
                 }
 
-                for (std::size_t i = opened_namespaces.size(); i > common_prefix; --i) {
-                    close_namespace(opened_namespaces[i - 1]);
+                for (std::size_t i = opened_scopes.size(); i > common_prefix; --i) {
+                    close_scope(opened_scopes[i - 1]);
                 }
-                opened_namespaces.resize(common_prefix);
+                opened_scopes.resize(common_prefix);
 
                 for (std::size_t i = common_prefix; i < target.size(); ++i) {
-                    open_namespace(target[i]);
-                    opened_namespaces.push_back(target[i]);
+                    open_scope(target[i]);
+                    opened_scopes.push_back(target[i]);
                 }
             };
 
             for (const auto& symbol : symbols) {
-                adjust_namespace_stack(symbol.namespaces);
+                adjust_scope_stack(symbol.scopes);
                 out << symbol.kind << " " << symbol.name << ";\n";
             }
 
-            for (std::size_t i = opened_namespaces.size(); i > 0; --i) {
-                close_namespace(opened_namespaces[i - 1]);
+            for (std::size_t i = opened_scopes.size(); i > 0; --i) {
+                close_scope(opened_scopes[i - 1]);
             }
 
             return out.str();
@@ -1026,7 +1320,10 @@ namespace bha::suggestions
                     find_include_for_header(*resolved_header_path, fwd_header_name).has_value();
 
                 if (!fwd_exists) {
-                    if (auto fwd_content = generate_forward_header_content(*resolved_header_path)) {
+                    if (auto fwd_content = generate_forward_header_content(
+                            *resolved_header_path,
+                            context.project_root
+                        )) {
                         TextEdit create_fwd;
                         create_fwd.file = fwd_header_path;
                         create_fwd.start_line = 0;

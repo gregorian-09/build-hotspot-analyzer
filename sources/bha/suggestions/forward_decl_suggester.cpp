@@ -21,9 +21,30 @@ namespace bha::suggestions
 {
     namespace {
 
+        enum class ScopeFrameKind {
+            Namespace,
+            MacroWrapper
+        };
+
+        struct MacroWrapperScope {
+            std::string open_name;
+            std::string open_text;
+            std::string close_name;
+            std::string close_text;
+        };
+
+        struct ScopeFrame {
+            ScopeFrameKind kind = ScopeFrameKind::Namespace;
+            std::string name;
+            int open_depth = 0;
+            MacroWrapperScope macro;
+        };
+
         struct ForwardDeclType {
             std::string name;
             std::vector<std::string> namespaces;
+            std::vector<ScopeFrame> scopes;
+            std::vector<IncludeDirective> support_includes;
         };
 
         struct UsageAnalysis {
@@ -72,6 +93,77 @@ namespace bha::suggestions
                 }
             }
             return line;
+        }
+
+        std::optional<std::string> derive_matching_close_macro(std::string name) {
+            if (name.ends_with("_BEGIN")) {
+                name.replace(name.size() - 6, 6, "_END");
+                return name;
+            }
+            if (name.ends_with("_OPEN")) {
+                name.replace(name.size() - 5, 5, "_CLOSE");
+                return name;
+            }
+            if (name.ends_with("_PUSH")) {
+                name.replace(name.size() - 5, 5, "_POP");
+                return name;
+            }
+            if (name.starts_with("BEGIN_")) {
+                return "END_" + name.substr(6);
+            }
+            if (name.starts_with("OPEN_")) {
+                return "CLOSE_" + name.substr(5);
+            }
+            if (name.starts_with("PUSH_")) {
+                return "POP_" + name.substr(5);
+            }
+            return std::nullopt;
+        }
+
+        std::optional<std::string> parse_scope_macro_name(const std::string& line) {
+            static const std::regex macro_regex(
+                R"(^\s*([A-Z][A-Z0-9_]*|(?:BEGIN|OPEN|PUSH)_[A-Z0-9_]+)\s*(\([^;{}]*\))?\s*$)"
+            );
+
+            std::smatch match;
+            if (!std::regex_match(line, match, macro_regex)) {
+                return std::nullopt;
+            }
+            return match[1].str();
+        }
+
+        std::optional<MacroWrapperScope> parse_scope_macro_open(const std::string& line) {
+            const auto macro_name = parse_scope_macro_name(line);
+            if (!macro_name.has_value()) {
+                return std::nullopt;
+            }
+            const auto close_name = derive_matching_close_macro(*macro_name);
+            if (!close_name.has_value()) {
+                return std::nullopt;
+            }
+
+            MacroWrapperScope scope;
+            scope.open_name = *macro_name;
+            scope.open_text = trim_copy(line);
+            scope.close_name = *close_name;
+            scope.close_text = *close_name;
+            return scope;
+        }
+
+        std::optional<std::string> parse_scope_macro_close(const std::string& line) {
+            const auto macro_name = parse_scope_macro_name(line);
+            if (!macro_name.has_value()) {
+                return std::nullopt;
+            }
+            if (macro_name->ends_with("_END") ||
+                macro_name->ends_with("_CLOSE") ||
+                macro_name->ends_with("_POP") ||
+                macro_name->starts_with("END_") ||
+                macro_name->starts_with("CLOSE_") ||
+                macro_name->starts_with("POP_")) {
+                return *macro_name;
+            }
+            return std::nullopt;
         }
 
         bool is_macro_like_identifier(const std::string& token) {
@@ -293,17 +385,48 @@ namespace bha::suggestions
             return join_namespace(type.namespaces) + "::" + type.name;
         }
 
+        bool has_macro_wrappers(const ForwardDeclType& type) {
+            return std::ranges::any_of(type.scopes, [](const ScopeFrame& scope) {
+                return scope.kind == ScopeFrameKind::MacroWrapper;
+            });
+        }
+
+        std::string include_directive_text(const IncludeDirective& include) {
+            if (include.is_system) {
+                return "#include <" + include.header_name + ">";
+            }
+            return "#include \"" + include.header_name + "\"";
+        }
+
         std::string forward_declaration_text(const ForwardDeclType& type) {
-            if (type.namespaces.empty()) {
-                return "class " + type.name + ";";
-            }
             std::ostringstream out;
-            for (const auto& ns : type.namespaces) {
-                out << "namespace " << ns << " { ";
+            for (const auto& include : type.support_includes) {
+                out << include_directive_text(include) << "\n";
             }
-            out << "class " << type.name << "; ";
-            for (std::size_t i = type.namespaces.size(); i > 0; --i) {
-                out << "} ";
+            if (!type.support_includes.empty()) {
+                out << "\n";
+            }
+
+            if (type.scopes.empty()) {
+                out << "class " << type.name << ";";
+                return trim_copy(out.str());
+            }
+
+            for (const auto& scope : type.scopes) {
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    out << "namespace " << scope.name << " {\n";
+                } else {
+                    out << scope.macro.open_text << "\n";
+                }
+            }
+            out << "class " << type.name << ";\n";
+            for (std::size_t i = type.scopes.size(); i > 0; --i) {
+                const auto& scope = type.scopes[i - 1];
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    out << "}  // namespace " << scope.name << "\n";
+                } else {
+                    out << scope.macro.close_text << "\n";
+                }
             }
             return trim_copy(out.str());
         }
@@ -336,12 +459,7 @@ namespace bha::suggestions
                 return {};
             }
 
-            struct NamespaceScope {
-                std::string name;
-                int open_depth = 0;
-            };
-
-            std::vector<NamespaceScope> namespace_stack;
+            std::vector<ScopeFrame> scope_stack;
             std::vector<ForwardDeclType> types;
             std::unordered_set<std::string> seen_types;
             int brace_depth = 0;
@@ -363,10 +481,30 @@ namespace bha::suggestions
                      ++begin) {
                     const auto parts = split_namespace((*begin)[1].str());
                     for (const auto& part : parts) {
-                        namespace_stack.push_back(NamespaceScope{
-                            .name = part,
-                            .open_depth = brace_depth + 1,
-                        });
+                        ScopeFrame frame;
+                        frame.kind = ScopeFrameKind::Namespace;
+                        frame.name = part;
+                        frame.open_depth = brace_depth + 1;
+                        scope_stack.push_back(std::move(frame));
+                    }
+                }
+
+                if (const auto macro_scope = parse_scope_macro_open(line); macro_scope.has_value()) {
+                    ScopeFrame frame;
+                    frame.kind = ScopeFrameKind::MacroWrapper;
+                    frame.macro = *macro_scope;
+                    scope_stack.push_back(std::move(frame));
+                } else if (const auto close_macro = parse_scope_macro_close(line); close_macro.has_value()) {
+                    for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                        if (it->kind != ScopeFrameKind::MacroWrapper) {
+                            continue;
+                        }
+                        if (it->macro.close_name != *close_macro) {
+                            continue;
+                        }
+                        it->macro.close_text = line;
+                        scope_stack.erase(std::next(it).base());
+                        break;
                     }
                 }
 
@@ -382,8 +520,11 @@ namespace bha::suggestions
                             }
                             ForwardDeclType type;
                             type.name = *type_name;
-                            for (const auto& ns : namespace_stack) {
-                                type.namespaces.push_back(ns.name);
+                            for (const auto& scope : scope_stack) {
+                                type.scopes.push_back(scope);
+                                if (scope.kind == ScopeFrameKind::Namespace) {
+                                    type.namespaces.push_back(scope.name);
+                                }
                             }
                             const std::string key = qualified_type_name(type);
                             if (seen_types.insert(key).second) {
@@ -401,8 +542,15 @@ namespace bha::suggestions
                     brace_depth = 0;
                 }
 
-                while (!namespace_stack.empty() && brace_depth < namespace_stack.back().open_depth) {
-                    namespace_stack.pop_back();
+                while (!scope_stack.empty()) {
+                    const auto& scope = scope_stack.back();
+                    if (scope.kind != ScopeFrameKind::Namespace) {
+                        break;
+                    }
+                    if (brace_depth >= scope.open_depth) {
+                        break;
+                    }
+                    scope_stack.pop_back();
                 }
 
                 if (!line.empty() && line.back() == ';' && !line.starts_with("template")) {
@@ -411,6 +559,114 @@ namespace bha::suggestions
             }
 
             return types;
+        }
+
+        std::optional<fs::path> resolve_include_target(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const IncludeDirective& include
+        ) {
+            const fs::path include_path(include.header_name);
+            const fs::path normalized_header = resolve_source_path(header_path).lexically_normal();
+            const fs::path repo_root = !project_root.empty()
+                ? project_root.lexically_normal()
+                : find_repository_root(normalized_header);
+
+            std::vector<fs::path> candidates;
+            if (!normalized_header.empty()) {
+                candidates.push_back((normalized_header.parent_path() / include_path).lexically_normal());
+            }
+            if (!repo_root.empty()) {
+                candidates.push_back((repo_root / include_path).lexically_normal());
+                if (auto found = find_file_in_repo(repo_root, include_path.filename()); found.has_value()) {
+                    candidates.push_back(found->lexically_normal());
+                }
+            }
+
+            for (const auto& candidate : candidates) {
+                if (!candidate.empty() && fs::exists(candidate)) {
+                    return candidate;
+                }
+            }
+            return std::nullopt;
+        }
+
+        bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
+            std::ifstream in(file);
+            if (!in) {
+                return false;
+            }
+
+            const std::regex define_regex(
+                "^\\s*#\\s*define\\s+" + escape_regex(macro_name) + R"((?:\b|\s*\())"
+            );
+            std::string line;
+            while (std::getline(in, line)) {
+                if (std::regex_search(line, define_regex)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        std::optional<std::vector<IncludeDirective>> resolve_support_includes(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const std::vector<ScopeFrame>& scopes
+        ) {
+            std::unordered_set<std::string> unresolved_macros;
+            for (const auto& scope : scopes) {
+                if (scope.kind != ScopeFrameKind::MacroWrapper) {
+                    continue;
+                }
+                unresolved_macros.insert(scope.macro.open_name);
+                unresolved_macros.insert(scope.macro.close_name);
+            }
+            if (unresolved_macros.empty()) {
+                return std::vector<IncludeDirective>{};
+            }
+
+            std::vector<IncludeDirective> includes;
+            std::unordered_set<std::string> seen_headers;
+            for (const auto& include : find_include_directives(header_path)) {
+                const auto resolved = resolve_include_target(header_path, project_root, include);
+                if (!resolved.has_value()) {
+                    continue;
+                }
+
+                bool needed = false;
+                std::vector<std::string> satisfied;
+                for (const auto& macro_name : unresolved_macros) {
+                    if (!file_defines_macro(*resolved, macro_name)) {
+                        continue;
+                    }
+                    satisfied.push_back(macro_name);
+                    needed = true;
+                }
+
+                if (!needed) {
+                    continue;
+                }
+
+                if (seen_headers.insert(include.header_name).second) {
+                    IncludeDirective support;
+                    support.header_name = include.header_name;
+                    support.is_system = include.is_system;
+                    includes.push_back(std::move(support));
+                }
+
+                for (const auto& macro_name : satisfied) {
+                    unresolved_macros.erase(macro_name);
+                }
+                if (unresolved_macros.empty()) {
+                    break;
+                }
+            }
+
+            if (!unresolved_macros.empty()) {
+                return std::nullopt;
+            }
+            return includes;
         }
 
         bool is_reference_or_pointer_context(
@@ -830,15 +1086,27 @@ namespace bha::suggestions
             }
             processed.insert(header.path.string());
 
-            const auto forward_types = parse_forward_declarable_types_from_header(header.path);
+            auto forward_types = parse_forward_declarable_types_from_header(header.path);
             if (forward_types.size() != 1) {
                 ++skipped;
                 continue;
             }
-            const ForwardDeclType& target_type = forward_types.front();
+            ForwardDeclType target_type = std::move(forward_types.front());
             if (!target_type.namespaces.empty() && target_type.namespaces.front() == "std") {
                 ++skipped;
                 continue;
+            }
+            if (has_macro_wrappers(target_type)) {
+                const auto support_includes = resolve_support_includes(
+                    header.path,
+                    include_scan_root,
+                    target_type.scopes
+                );
+                if (!support_includes.has_value()) {
+                    ++skipped;
+                    continue;
+                }
+                target_type.support_includes = *support_includes;
             }
 
             std::vector<fs::path> candidate_includers;

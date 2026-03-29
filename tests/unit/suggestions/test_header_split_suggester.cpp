@@ -411,4 +411,101 @@ namespace bha::suggestions
                    edit.new_text.find("class ABSL_LOCKABLE;") == std::string::npos;
         }));
     }
+
+    TEST_F(HeaderSplitSuggesterTest, PreservesNamespaceWrapperMacrosWhenGeneratingForwardHeader) {
+        BuildTrace trace;
+
+        const auto config_header = temp_root_ / "project_config.h";
+        const auto header_path = temp_root_ / "widget.hpp";
+        write_file(
+            config_header,
+            "#pragma once\n"
+            "#define PROJECT_NAMESPACE_BEGIN inline namespace v1 {\n"
+            "#define PROJECT_NAMESPACE_END }\n"
+        );
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "#include \"project_config.h\"\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(600);
+        header.inclusion_count = 24;
+        header.including_files = 12;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto create_edit = std::ranges::find_if(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file.filename() == "widget_fwd.hpp";
+        });
+        ASSERT_NE(create_edit, suggestion.edits.end());
+        EXPECT_NE(create_edit->new_text.find("#include \"project_config.h\""), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("namespace demo {"), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("PROJECT_NAMESPACE_BEGIN"), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("namespace detail {"), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("class Widget;"), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("PROJECT_NAMESPACE_END"), std::string::npos);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, DowngradesMacroWrappedForwardHeaderWithoutResolvableSupportInclude) {
+        BuildTrace trace;
+
+        const auto header_path = temp_root_ / "widget.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "#define PROJECT_NAMESPACE_BEGIN inline namespace v1 {\n"
+            "#define PROJECT_NAMESPACE_END }\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(600);
+        header.inclusion_count = 24;
+        header.including_files = 12;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+    }
 }

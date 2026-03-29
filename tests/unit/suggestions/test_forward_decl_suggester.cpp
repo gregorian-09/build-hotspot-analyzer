@@ -179,6 +179,129 @@ namespace bha::suggestions
         EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
     }
 
+    TEST_F(ForwardDeclSuggesterTest, PreservesNamespaceWrapperMacrosWhenSupportIncludeExists) {
+        BuildTrace trace;
+
+        const auto config_header = temp_root_ / "project_config.h";
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.cpp";
+
+        write_file(
+            config_header,
+            "#pragma once\n"
+            "#define PROJECT_NAMESPACE_BEGIN inline namespace v1 {\n"
+            "#define PROJECT_NAMESPACE_END }\n"
+        );
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "#include \"project_config.h\"\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    demo::detail::Widget* ptr;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void use_widget(demo::detail::Widget* widget) { (void)widget; }\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(100);
+        header.inclusion_count = 5;
+        header.including_files = 3;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions[0];
+        const auto header_edit = std::ranges::find_if(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file == consumer_header;
+        });
+        ASSERT_NE(header_edit, suggestion.edits.end());
+        EXPECT_NE(header_edit->new_text.find("#include \"project_config.h\""), std::string::npos);
+        EXPECT_NE(header_edit->new_text.find("PROJECT_NAMESPACE_BEGIN"), std::string::npos);
+        EXPECT_NE(header_edit->new_text.find("namespace demo {"), std::string::npos);
+        EXPECT_NE(header_edit->new_text.find("namespace detail {"), std::string::npos);
+        EXPECT_NE(header_edit->new_text.find("class Widget;"), std::string::npos);
+        EXPECT_NE(header_edit->new_text.find("PROJECT_NAMESPACE_END"), std::string::npos);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SkipsNamespaceWrapperMacrosWithoutResolvableSupportInclude) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "#define PROJECT_NAMESPACE_BEGIN inline namespace v1 {\n"
+            "#define PROJECT_NAMESPACE_END }\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class Widget {};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    demo::detail::Widget* ptr;\n"
+            "};\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(100);
+        header.inclusion_count = 5;
+        header.including_files = 3;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
     TEST_F(ForwardDeclSuggesterTest, SkipsByValueTypeUsage) {
         BuildTrace trace;
 
