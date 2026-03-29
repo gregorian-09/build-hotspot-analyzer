@@ -2606,12 +2606,12 @@ namespace bha::lsp
         return combined_result;
     }
 
-    bool SuggestionManager::revert_changes(const std::string& backup_id) {
+    bool SuggestionManager::revert_changes(const std::string& backup_id, const bool preserve_backup) {
         const auto it = backups_.find(backup_id);
         if (it == backups_.end()) {
             if (config_.use_disk_backups && !config_.workspace_root.empty()) {
                 if (restore_disk_backup(backup_id)) {
-                    if (!config_.keep_backups) {
+                    if (!preserve_backup && !config_.keep_backups) {
                         cleanup_disk_backup(backup_id);
                     }
                     return true;
@@ -2627,7 +2627,7 @@ namespace bha::lsp
             if (!restore_disk_backup(backup_id)) {
                 return false;
             }
-            if (!config_.keep_backups) {
+            if (!preserve_backup && !config_.keep_backups) {
                 cleanup_disk_backup(backup_id);
             }
         } else {
@@ -2652,8 +2652,10 @@ namespace bha::lsp
             }
         }
 
-        backups_.erase(it);
-        backup_lru_.remove(backup_id);
+        if (!preserve_backup) {
+            backups_.erase(it);
+            backup_lru_.remove(backup_id);
+        }
         return true;
     }
 
@@ -3786,13 +3788,13 @@ namespace bha::lsp
         return result;
     }
 
-    RevertResult SuggestionManager::revert_changes_detailed(const std::string& backup_id) {
+    RevertResult SuggestionManager::revert_changes_detailed(const std::string& backup_id, const bool preserve_backup) {
         RevertResult result;
         result.success = true;
 
         const auto it = backups_.find(backup_id);
-        bool is_disk_backup = config_.use_disk_backups && !config_.workspace_root.empty() &&
-                              fs::exists(get_backup_path(backup_id));
+        const bool is_disk_backup = config_.use_disk_backups && !config_.workspace_root.empty() &&
+                                    fs::exists(get_backup_path(backup_id));
 
         if (it == backups_.end() && !is_disk_backup) {
             result.success = false;
@@ -3804,7 +3806,7 @@ namespace bha::lsp
         }
 
         if (is_disk_backup) {
-            fs::path backup_path = get_backup_path(backup_id);
+            const fs::path backup_path = get_backup_path(backup_id);
             auto metadata = read_backup_metadata(backup_path);
             if (!metadata) {
                 result.success = false;
@@ -3831,8 +3833,8 @@ namespace bha::lsp
                     continue;
                 }
 
-                fs::path relative = fs::relative(file.path, config_.workspace_root);
-                fs::path src = backup_path / "files" / relative;
+                const fs::path relative = fs::relative(file.path, config_.workspace_root);
+                const fs::path src = backup_path / "files" / relative;
 
                 try {
                     if (!fs::exists(src)) {
@@ -3857,7 +3859,7 @@ namespace bha::lsp
                 }
             }
 
-            if (result.success && !config_.keep_backups) {
+            if (result.success && !preserve_backup && !config_.keep_backups) {
                 cleanup_disk_backup(backup_id);
             }
         } else if (it != backups_.end()) {
@@ -3895,7 +3897,7 @@ namespace bha::lsp
             }
         }
 
-        if (result.success && it != backups_.end()) {
+        if (result.success && !preserve_backup && it != backups_.end()) {
             backups_.erase(it);
             backup_lru_.remove(backup_id);
         }

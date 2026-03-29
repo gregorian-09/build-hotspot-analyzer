@@ -2382,14 +2382,18 @@ namespace bha::lsp
                     // with suggestion context.
                     errors.resize(error_count_before_batch_validation);
 
+                    auto reset_to_fault_isolation_baseline = [&](const bool preserve_backup = true) {
+                        return with_manager([&]() {
+                            return suggestion_manager_->revert_changes_detailed(backup_id, preserve_backup);
+                        });
+                    };
+
                     send_notification("window/showMessage", {
                         {"type", static_cast<int>(MessageType::Warning)},
                         {"message", "Build failed after applying suggestions. Running fault isolation to keep valid edits..."}
                     });
 
-                    const auto rollback_result = with_manager([&]() {
-                        return suggestion_manager_->revert_changes_detailed(backup_id);
-                    });
+                    const auto rollback_result = reset_to_fault_isolation_baseline();
                     rollback_json["attempted"] = true;
                     rollback_json["success"] = rollback_result.success;
                     rollback_json["restoredFiles"] = rollback_result.restored_files;
@@ -2405,6 +2409,7 @@ namespace bha::lsp
 
                         for (const auto& suggestion_id : applied_suggestion_ids) {
                             send_job_log(job_id, "apply", "Fault isolation: probing suggestion " + suggestion_id);
+                            bool probe_dirty = false;
                             for (const auto& retained_id : retained_ids) {
                                 auto retained_apply = with_manager([&]() {
                                     return suggestion_manager_->apply_suggestion(
@@ -2419,49 +2424,53 @@ namespace bha::lsp
                                     isolation_aborted = true;
                                     break;
                                 }
-                            }
-                            if (isolation_aborted) {
-                                break;
+                                probe_dirty = true;
                             }
 
-                            const auto candidate_apply = with_manager([&]() {
-                                return suggestion_manager_->apply_suggestion(
-                                    suggestion_id,
-                                    false,
-                                    true,
-                                    false
-                                );
-                            });
-                            if (!candidate_apply.success) {
-                                append_contextual_errors(candidate_apply.errors, suggestion_id, "fault-isolation-apply");
-                            } else {
-                                std::vector<Diagnostic> candidate_build_errors;
-                                std::optional<int> candidate_duration_ms;
-                                const bool candidate_valid = run_build_validation(
-                                    candidate_build_errors,
-                                    candidate_duration_ms,
-                                    job_id,
-                                    "build"
-                                );
-                                if (candidate_valid) {
-                                    retained_ids.push_back(suggestion_id);
-                                    append_unique_changed_files(retained_changed_files, candidate_apply.changed_files);
-                                    measured_rebuild_duration_ms = candidate_duration_ms;
+                            if (!isolation_aborted) {
+                                const auto candidate_apply = with_manager([&]() {
+                                    return suggestion_manager_->apply_suggestion(
+                                        suggestion_id,
+                                        false,
+                                        true,
+                                        false
+                                    );
+                                });
+                                if (!candidate_apply.success) {
+                                    append_contextual_errors(candidate_apply.errors, suggestion_id, "fault-isolation-apply");
                                 } else {
-                                    append_contextual_errors(candidate_build_errors, suggestion_id, "fault-isolation-build");
+                                    probe_dirty = true;
+                                    std::vector<Diagnostic> candidate_build_errors;
+                                    std::optional<int> candidate_duration_ms;
+                                    const bool candidate_valid = run_build_validation(
+                                        candidate_build_errors,
+                                        candidate_duration_ms,
+                                        job_id,
+                                        "build"
+                                    );
+                                    if (candidate_valid) {
+                                        retained_ids.push_back(suggestion_id);
+                                        append_unique_changed_files(retained_changed_files, candidate_apply.changed_files);
+                                        measured_rebuild_duration_ms = candidate_duration_ms;
+                                    } else {
+                                        append_contextual_errors(candidate_build_errors, suggestion_id, "fault-isolation-build");
+                                    }
                                 }
                             }
 
-                            const auto reset_result = with_manager([&]() {
-                                return suggestion_manager_->revert_changes_detailed(backup_id);
-                            });
-                            if (!reset_result.success) {
-                                rollback_json["success"] = false;
-                                rollback_json["reason"] = "fault-isolation-reset-failed";
-                                rollback_json["restoredFiles"] = reset_result.restored_files;
-                                rollback_json["errors"] = diagnostics_to_json(reset_result.errors);
-                                errors.insert(errors.end(), reset_result.errors.begin(), reset_result.errors.end());
-                                isolation_aborted = true;
+                            if (probe_dirty) {
+                                const auto reset_result = reset_to_fault_isolation_baseline();
+                                if (!reset_result.success) {
+                                    rollback_json["success"] = false;
+                                    rollback_json["reason"] = "fault-isolation-reset-failed";
+                                    rollback_json["restoredFiles"] = reset_result.restored_files;
+                                    rollback_json["errors"] = diagnostics_to_json(reset_result.errors);
+                                    errors.insert(errors.end(), reset_result.errors.begin(), reset_result.errors.end());
+                                    isolation_aborted = true;
+                                }
+                            }
+
+                            if (isolation_aborted) {
                                 break;
                             }
                         }
@@ -2490,10 +2499,21 @@ namespace bha::lsp
 
                             if (isolation_aborted) {
                                 success = false;
-                                rollback_json["reason"] = "fault-isolation-final-replay-failed";
-                                changed_files.clear();
-                                applied_suggestion_ids.clear();
-                                applied_count = 0;
+                                const auto final_reset = reset_to_fault_isolation_baseline(false);
+                                rollback_json["attempted"] = true;
+                                rollback_json["success"] = final_reset.success;
+                                rollback_json["restoredFiles"] = final_reset.restored_files;
+                                rollback_json["errors"] = diagnostics_to_json(final_reset.errors);
+                                rollback_json["reason"] = final_reset.success
+                                    ? "fault-isolation-final-replay-failed-rolled-back"
+                                    : "fault-isolation-final-replay-failed-rollback-failed";
+                                if (final_reset.success) {
+                                    changed_files.clear();
+                                    applied_suggestion_ids.clear();
+                                    applied_count = 0;
+                                } else {
+                                    errors.insert(errors.end(), final_reset.errors.begin(), final_reset.errors.end());
+                                }
                             } else {
                                 build_errors.clear();
                                 build_validation_ran = true;
@@ -2508,9 +2528,7 @@ namespace bha::lsp
                                     append_contextual_errors(build_errors, "apply-all", "fault-isolation-final-build");
                                     success = false;
 
-                                    const auto final_reset = with_manager([&]() {
-                                        return suggestion_manager_->revert_changes_detailed(backup_id);
-                                    });
+                                    const auto final_reset = reset_to_fault_isolation_baseline(false);
                                     rollback_json["attempted"] = true;
                                     rollback_json["success"] = final_reset.success;
                                     rollback_json["restoredFiles"] = final_reset.restored_files;

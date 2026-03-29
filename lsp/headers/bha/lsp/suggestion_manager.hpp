@@ -174,12 +174,12 @@ namespace bha::lsp
             bool safe_only = true
         );
 
-        bool revert_changes(const std::string& backup_id);
+        bool revert_changes(const std::string& backup_id, bool preserve_backup = false);
 
         /**
          * Revert changes with detailed result.
          */
-        RevertResult revert_changes_detailed(const std::string& backup_id);
+        RevertResult revert_changes_detailed(const std::string& backup_id, bool preserve_backup = false);
 
         [[nodiscard]] std::vector<Suggestion> get_all_suggestions() const;
         [[nodiscard]] std::optional<Suggestion> get_suggestion(const std::string& id) const;
