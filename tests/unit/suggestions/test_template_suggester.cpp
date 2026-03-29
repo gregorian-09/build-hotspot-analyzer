@@ -296,4 +296,57 @@ namespace bha::suggestions
         }
         EXPECT_TRUE(has_class_extern);
     }
+
+    TEST_F(TemplateSuggesterTest, KeepsQualifiedNestedAbseilTypesInFunctionRefInstantiations) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto header_path = temp_root_ / "include" / "hash.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace absl {\n"
+            "class HashState {};\n"
+            "template <typename Sig>\n"
+            "class FunctionRef {};\n"
+            "}  // namespace absl\n"
+        );
+        write_file(source_a, "#include \"../include/hash.h\"\n");
+        write_file(source_b, "#include \"../include/hash.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name =
+            "absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{header_path, 4, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        ASSERT_FALSE(suggestion.edits.empty());
+
+        bool has_expected_extern = false;
+        for (const auto& edit : suggestion.edits) {
+            if (edit.new_text.find(
+                    "extern template class absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;")
+                != std::string::npos) {
+                has_expected_extern = true;
+            }
+        }
+        EXPECT_TRUE(has_expected_extern);
+    }
 }
