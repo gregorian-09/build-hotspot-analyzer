@@ -349,4 +349,73 @@ namespace bha::suggestions
         }
         EXPECT_TRUE(has_expected_extern);
     }
+
+    TEST_F(TemplateSuggesterTest, ChoosesHeaderThatExposesDependentTypesForExternTemplate) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto function_ref_header = temp_root_ / "absl" / "functional" / "function_ref.h";
+        const auto hash_header = temp_root_ / "absl" / "hash" / "hash.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            function_ref_header,
+            "#pragma once\n"
+            "namespace absl {\n"
+            "template <typename Sig>\n"
+            "class FunctionRef {};\n"
+            "}  // namespace absl\n"
+        );
+        write_file(
+            hash_header,
+            "#pragma once\n"
+            "#include \"../functional/function_ref.h\"\n"
+            "namespace absl {\n"
+            "class HashState {};\n"
+            "}  // namespace absl\n"
+        );
+        write_file(source_a, "#include \"../absl/hash/hash.h\"\n");
+        write_file(source_b, "#include \"../absl/hash/hash.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name =
+            "absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{function_ref_header, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+        EXPECT_FALSE(suggestion.edits.empty());
+
+        bool has_hash_header_extern = false;
+        bool instantiation_uses_hash_header = false;
+        for (const auto& edit : suggestion.edits) {
+            if (edit.file == hash_header &&
+                edit.new_text.find(
+                    "extern template class absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;")
+                    != std::string::npos) {
+                has_hash_header_extern = true;
+            }
+            if (edit.file.filename() == "template_instantiations.cpp" &&
+                edit.new_text.find("hash/hash.h\"") != std::string::npos) {
+                instantiation_uses_hash_header = true;
+            }
+        }
+        EXPECT_TRUE(has_hash_header_extern);
+        EXPECT_TRUE(instantiation_uses_hash_header);
+    }
 }

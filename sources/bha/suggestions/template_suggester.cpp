@@ -37,6 +37,13 @@ namespace bha::suggestions
             bool is_function_template = false;
         };
 
+        struct TemplateHeaderCandidate {
+            fs::path declaration_header;
+            fs::path insertion_header;
+            std::string class_key = "class";
+            bool is_function_template = false;
+        };
+
         std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
             const std::regex target_regex(
                 R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
@@ -593,6 +600,253 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
+        std::vector<std::string> extract_qualified_dependency_names(
+            const std::string& specialization_name,
+            const std::string& primary_template_name
+        ) {
+            static const std::regex qualified_name_regex(
+                R"(\b([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\b)"
+            );
+
+            std::vector<std::string> names;
+            std::unordered_set<std::string> seen;
+            for (std::sregex_iterator it(specialization_name.begin(), specialization_name.end(), qualified_name_regex),
+                 end; it != end; ++it) {
+                const std::string candidate = (*it)[1].str();
+                if (candidate == primary_template_name) {
+                    continue;
+                }
+                if (seen.insert(candidate).second) {
+                    names.push_back(candidate);
+                }
+            }
+            return names;
+        }
+
+        std::vector<fs::path> collect_header_closure(const fs::path& header_path, const fs::path& project_root) {
+            std::vector<fs::path> closure;
+            std::vector<fs::path> stack{header_path.lexically_normal()};
+            std::unordered_set<std::string> visited;
+
+            while (!stack.empty()) {
+                fs::path current = std::move(stack.back());
+                stack.pop_back();
+                current = current.lexically_normal();
+
+                if (!fs::exists(current)) {
+                    continue;
+                }
+
+                const std::string key = current.generic_string();
+                if (!visited.insert(key).second) {
+                    continue;
+                }
+
+                closure.push_back(current);
+                for (const auto& include_dir : find_include_directives(current)) {
+                    if (include_dir.is_system) {
+                        continue;
+                    }
+                    if (auto include_path =
+                            resolve_include_path_for_source(current, include_dir.header_name, project_root);
+                        include_path.has_value()) {
+                        stack.push_back(include_path->lexically_normal());
+                    }
+                }
+            }
+
+            return closure;
+        }
+
+        bool header_closure_exposes_template(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const std::string& base_name,
+            const bool is_function_template
+        ) {
+            for (const auto& candidate : collect_header_closure(header_path, project_root)) {
+                if (is_function_template) {
+                    if (header_declares_function_template(candidate, base_name)) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                if (header_template_kind(candidate, base_name).has_value()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool header_closure_exposes_symbol(
+            const fs::path& header_path,
+            const fs::path& project_root,
+            const std::string& qualified_name
+        ) {
+            const auto last_scope = qualified_name.rfind("::");
+            const std::string terminal_name =
+                last_scope == std::string::npos ? qualified_name : qualified_name.substr(last_scope + 2);
+            const std::regex exact_regex("\\b" + regex_escape(qualified_name) + "\\b");
+            const std::regex terminal_regex("\\b" + regex_escape(terminal_name) + "\\b");
+
+            for (const auto& candidate : collect_header_closure(header_path, project_root)) {
+                std::ifstream in(candidate);
+                if (!in) {
+                    continue;
+                }
+                const std::string content((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
+                if (std::regex_search(content, exact_regex) || std::regex_search(content, terminal_regex)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        std::optional<TemplateHeaderCandidate> select_template_header_candidate(
+            const analyzers::TemplateAnalysisResult::TemplateInfo& tmpl,
+            const fs::path& project_root,
+            const std::string& normalized_template_name,
+            const std::string& base_name,
+            const bool is_function_template
+        ) {
+            const auto declaration = resolve_template_declaration(
+                tmpl,
+                project_root,
+                base_name,
+                is_function_template
+            );
+            if (!declaration.has_value()) {
+                return std::nullopt;
+            }
+
+            std::vector<fs::path> candidates{declaration->header_path.lexically_normal()};
+            std::unordered_set<std::string> seen{declaration->header_path.lexically_normal().generic_string()};
+
+            for (const auto& file : tmpl.files_using) {
+                fs::path source_path = resolve_source_path(file).lexically_normal();
+                if (!fs::exists(source_path)) {
+                    const fs::path fallback_name = fs::path(file).filename();
+                    if (auto fallback = find_file_in_repo(project_root, fallback_name); fallback.has_value()) {
+                        source_path = fallback->lexically_normal();
+                    }
+                }
+                if (!fs::exists(source_path)) {
+                    continue;
+                }
+
+                for (const auto& include_dir : find_include_directives(source_path)) {
+                    if (include_dir.is_system) {
+                        continue;
+                    }
+
+                    const auto include_path =
+                        resolve_include_path_for_source(source_path, include_dir.header_name, project_root);
+                    if (!include_path.has_value()) {
+                        continue;
+                    }
+
+                    const fs::path normalized = include_path->lexically_normal();
+                    if (seen.insert(normalized.generic_string()).second) {
+                        candidates.push_back(normalized);
+                    }
+                }
+            }
+
+            const std::string primary_template_name = strip_leading_keywords(normalized_template_name).substr(
+                0,
+                strip_leading_keywords(normalized_template_name).find('<')
+            );
+            const auto dependent_types = extract_qualified_dependency_names(
+                normalized_template_name,
+                primary_template_name
+            );
+
+            for (const auto& candidate : candidates) {
+                if (!header_closure_exposes_template(candidate, project_root, base_name, is_function_template)) {
+                    continue;
+                }
+
+                bool dependencies_visible = true;
+                for (const auto& dependent_type : dependent_types) {
+                    if (!header_closure_exposes_symbol(candidate, project_root, dependent_type)) {
+                        dependencies_visible = false;
+                        break;
+                    }
+                }
+
+                if (dependencies_visible) {
+                    return TemplateHeaderCandidate{
+                        declaration->header_path,
+                        candidate,
+                        declaration->class_key,
+                        declaration->is_function_template
+                    };
+                }
+            }
+
+            return TemplateHeaderCandidate{
+                declaration->header_path,
+                fs::path{},
+                declaration->class_key,
+                declaration->is_function_template
+            };
+        }
+
+        Suggestion make_context_visibility_advisory(
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const std::string& template_name,
+            const fs::path& declaration_header,
+            const BuildTrace& trace
+        ) {
+            Suggestion suggestion;
+            const std::uint64_t signature_hash = std::hash<std::string>{}(template_name);
+            std::ostringstream id_suffix;
+            id_suffix << "visibility-" << std::hex << signature_hash;
+            suggestion.id = generate_suggestion_id("template", declaration_header, id_suffix.str());
+            suggestion.type = SuggestionType::ExplicitTemplate;
+            suggestion.priority = calculate_priority(tmpl, trace.total_time);
+            suggestion.confidence = 0.6;
+            suggestion.title = "Place explicit instantiation where dependent types are visible";
+            suggestion.description =
+                "This template specialization references additional types that are not visible from the template declaration header. "
+                "BHA cannot safely generate auto-apply edits for extern/explicit instantiation without choosing a compile-valid header context.";
+            suggestion.rationale =
+                "Extern template declarations and the explicit-instantiation translation unit must both see the primary template and all referenced dependent types. "
+                "If the declaration header does not expose those types, generated edits can fail to compile.";
+            suggestion.target_file.path = declaration_header;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Choose a header context that already includes the dependent types";
+            suggestion.application_mode = SuggestionApplicationMode::Advisory;
+            suggestion.application_summary = "Manual placement required";
+            suggestion.application_guidance =
+                "Move the extern template declaration to a header that already sees all dependent types, or add the required declarations/includes if that is architecturally safe. "
+                "Then place the explicit instantiation in a .cpp that includes that same header and rerun BHA.";
+            suggestion.auto_apply_blocked_reason =
+                "No safe destination header exposes both the template declaration and all dependent types referenced by the specialization.";
+            suggestion.caveats = {
+                "Adding includes to the declaration header may create layering or cycle issues",
+                "The explicit-instantiation .cpp must include a header where every dependent type is visible",
+                "Rerun BHA after moving the declaration or introducing a safe umbrella header"
+            };
+            suggestion.estimated_savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
+                                           tmpl.instantiation_count;
+            if (trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
+                    static_cast<double>(trace.total_time.count());
+            }
+            suggestion.impact.total_files_affected = tmpl.files_using.size();
+            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
+            suggestion.verification =
+                "After moving the declaration to a compile-valid header context, rerun BHA and verify that the generated explicit-instantiation edits build cleanly.";
+            suggestion.is_safe = false;
+            return suggestion;
+        }
+
         std::size_t find_extern_template_insertion_line(const fs::path& header_path) {
             auto lines_result = file_utils::read_lines(header_path);
             if (lines_result.is_err()) {
@@ -722,18 +976,30 @@ namespace bha::suggestions
                 ++skipped;
                 continue;
             }
-            auto declaration = resolve_template_declaration(
+            auto selected_header = select_template_header_candidate(
                 tmpl,
                 context.project_root,
+                normalized_template_name,
                 base_name,
                 is_function_template
             );
-            if (!declaration.has_value()) {
+            if (!selected_header.has_value()) {
                 ++skipped;
                 continue;
             }
-            const fs::path& header_path = declaration->header_path;
-            const std::string& class_key = declaration->class_key;
+            if (selected_header->insertion_header.empty()) {
+                result.suggestions.push_back(make_context_visibility_advisory(
+                    tmpl,
+                    template_name,
+                    selected_header->declaration_header,
+                    context.trace
+                ));
+                continue;
+            }
+
+            const fs::path& declaration_header = selected_header->declaration_header;
+            const fs::path& header_path = selected_header->insertion_header;
+            const std::string& class_key = selected_header->class_key;
 
             Suggestion suggestion;
             const std::uint64_t signature_hash = std::hash<std::string>{}(normalized_template_name);
@@ -743,6 +1009,8 @@ namespace bha::suggestions
             suggestion.type = SuggestionType::ExplicitTemplate;
             suggestion.priority = calculate_priority(tmpl, context.trace.total_time);
             suggestion.confidence = 0.7;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+            suggestion.application_summary = "Create explicit-instantiation edits";
 
             // Extract short name for title (just the class/function name)
             std::string short_name = template_name;
@@ -1107,7 +1375,9 @@ namespace bha::suggestions
                     header_target.action = FileAction::Modify;
                     header_target.line_start = insert_line + 1;
                     header_target.line_end = insert_line + 1;
-                    header_target.note = "Add extern template declaration";
+                    header_target.note = header_path == declaration_header
+                        ? "Add extern template declaration"
+                        : "Add extern template declaration in a header that already exposes dependent types";
                     suggestion.secondary_files.push_back(header_target);
                 }
             }
