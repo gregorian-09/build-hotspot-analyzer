@@ -2536,7 +2536,7 @@ namespace bha::lsp
                                     applied_count = retained_ids.size();
                                     skipped_count += previous_applied_count - applied_count;
                                     changed_files = std::move(retained_changed_files);
-                                    success = errors.empty() && applied_count > 0;
+                                    success = applied_count > 0;
                                     rollback_json["reason"] = applied_count > 0
                                         ? "fault-isolation-partial-apply"
                                         : "fault-isolation-no-survivors";
@@ -2589,7 +2589,9 @@ namespace bha::lsp
             job_id,
             "apply",
             success
-                ? "Apply-all completed successfully"
+                ? (errors.empty()
+                    ? "Apply-all completed successfully"
+                    : "Apply-all completed with retained edits and warnings")
                 : "Apply-all completed with failures or rollback"
         );
 

@@ -1259,16 +1259,23 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         return;
     }
 
-    const confirm = await vscode.window.showWarningMessage(
+    const modeChoice = await vscode.window.showWarningMessage(
         `Apply ${affectedCount} suggestions? This will modify your code. A backup will be created for rollback.`,
-        { modal: true },
-        'Apply All'
+        {
+            modal: true,
+            detail: 'Keep successful edits is recommended for bulk apply. Atomic apply rolls back everything if rebuild validation fails.'
+        },
+        'Keep Successful Edits',
+        'Atomic Apply'
     );
 
-    if (confirm !== 'Apply All') return;
+    if (!modeChoice) return;
+    const atomic = modeChoice === 'Atomic Apply';
 
     try {
-        logLine(`Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`);
+        logLine(
+            `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}, atomic=${atomic}`
+        );
         const workspaceRoot = getWorkspaceRootPath();
         const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
         const applyResult = await runAsyncLspCommand<unknown>(
@@ -1277,11 +1284,13 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             {
                 minPriority,
                 safeOnly,
-                atomic: true,
+                atomic,
                 operationId,
                 buildProfile
             },
-            'Applying edits and validating transaction...'
+            atomic
+                ? 'Applying edits and validating atomically...'
+                : 'Applying edits, isolating failures, and validating survivors...'
         );
 
         if (!isValidApplyAllResult(applyResult)) {
@@ -1293,15 +1302,22 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         lastBackupId = applyResult.backupId;
 
         if (applyResult.success) {
-            logLine(`Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, backupId=${applyResult.backupId ?? '<none>'}`);
-            const message = `Applied ${applyResult.appliedCount} suggestions successfully.` +
-                (applyResult.skippedCount > 0 ? ` Skipped ${applyResult.skippedCount}.` : '');
-
-            const action = await vscode.window.showInformationMessage(
-                message,
-                'OK',
-                'Revert All'
+            const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
+            const hasWarnings = errors.length > 0;
+            logLine(
+                `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? '<none>'}`
             );
+            let message = `Applied ${applyResult.appliedCount} suggestions successfully.`;
+            if (applyResult.skippedCount > 0) {
+                message += ` Skipped ${applyResult.skippedCount}.`;
+            }
+            if (hasWarnings) {
+                message += ` ${errors.length} suggestion(s) were not kept after validation.`;
+            }
+
+            const action = await (hasWarnings
+                ? vscode.window.showWarningMessage(message, 'OK', 'Revert All')
+                : vscode.window.showInformationMessage(message, 'OK', 'Revert All'));
 
             if (action === 'Revert All' && lastBackupId) {
                 await cmdRevertChanges();
