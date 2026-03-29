@@ -126,6 +126,59 @@ namespace bha::suggestions
         ));
     }
 
+    TEST_F(ForwardDeclSuggesterTest, IgnoresMacroAnnotationsWhenExtractingForwardDeclType) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "heavy_widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED HeavyWidget {\n"
+            "public:\n"
+            "    void ping();\n"
+            "};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"heavy_widget.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    HeavyWidget* ptr;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void use_widget(HeavyWidget* widget) { (void)widget; }\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(100);
+        header.inclusion_count = 5;
+        header.including_files = 3;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions[0];
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+    }
+
     TEST_F(ForwardDeclSuggesterTest, SkipsByValueTypeUsage) {
         BuildTrace trace;
 

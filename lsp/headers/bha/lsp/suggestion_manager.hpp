@@ -59,7 +59,7 @@ namespace bha::lsp
         bool enforce_forward_decl_syntax_gate = true;
         int forward_decl_validation_timeout_seconds = 120;
         std::size_t max_forward_decl_validation_units = 3;
-        bool rerank_remaining_after_each_apply = true;
+        bool rerank_remaining_after_each_apply = false;
 
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
@@ -171,7 +171,8 @@ namespace bha::lsp
          */
         ApplyAllResult apply_all_suggestions(
             const std::optional<std::string>& min_priority = std::nullopt,
-            bool safe_only = true
+            bool safe_only = true,
+            const std::function<void(const std::string&)>& progress_log = {}
         );
 
         bool revert_changes(const std::string& backup_id, bool preserve_backup = false);

@@ -2241,7 +2241,13 @@ namespace bha::lsp
         }
 
         auto apply_all_result = with_manager([&]() {
-            return suggestion_manager_->apply_all_suggestions(min_priority, safe_only);
+            return suggestion_manager_->apply_all_suggestions(
+                min_priority,
+                safe_only,
+                [&](const std::string& message) {
+                    send_job_log(job_id, "apply", message);
+                }
+            );
         });
         send_job_log(
             job_id,

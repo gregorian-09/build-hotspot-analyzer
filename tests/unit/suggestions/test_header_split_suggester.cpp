@@ -372,4 +372,43 @@ namespace bha::suggestions
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
     }
+
+    TEST_F(HeaderSplitSuggesterTest, IgnoresMacroAnnotationsWhenGeneratingForwardHeader) {
+        BuildTrace trace;
+
+        const auto header_path = temp_root_ / "spinlock.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {\n"
+            "public:\n"
+            "    void lock();\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(600);
+        header.inclusion_count = 24;
+        header.including_files = 12;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_TRUE(std::ranges::any_of(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file.filename() == "spinlock_fwd.hpp" &&
+                   edit.new_text.find("class SpinLock;") != std::string::npos &&
+                   edit.new_text.find("class ABSL_LOCKABLE;") == std::string::npos;
+        }));
+    }
 }

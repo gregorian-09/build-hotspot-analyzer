@@ -3485,7 +3485,8 @@ namespace bha::lsp
 
     ApplyAllResult SuggestionManager::apply_all_suggestions(
         const std::optional<std::string>& min_priority,
-        const bool safe_only
+        const bool safe_only,
+        const std::function<void(const std::string&)>& progress_log
     ) {
         struct PendingSuggestion {
             std::string key;
@@ -3764,6 +3765,11 @@ namespace bha::lsp
 
                 if (!pending.empty() && rerank_remaining) {
                     try {
+                        if (progress_log) {
+                            progress_log(
+                                "Re-analyzing project to rerank remaining suggestions after applying " + best_id
+                            );
+                        }
                         analyze_project(
                             *last_project_root_,
                             last_build_dir_,
@@ -3772,7 +3778,13 @@ namespace bha::lsp
                             nullptr,
                             last_analyze_options_
                         );
+                        if (progress_log) {
+                            progress_log("Rerank analysis complete");
+                        }
                     } catch (const std::exception&) {
+                        if (progress_log) {
+                            progress_log("Rerank analysis failed; continuing without reranking");
+                        }
                         rerank_remaining = false;
                     }
                 }
