@@ -18121,6 +18121,9 @@ function formatApplicationMode(mode) {
       return "Manual Review";
   }
 }
+function hasBulkApplyPath(suggestion) {
+  return suggestion.applicationMode !== "advisory";
+}
 function formatDurationMs(ms) {
   return `${(ms / 1e3).toFixed(2)}s`;
 }
@@ -18930,6 +18933,7 @@ async function cmdApplyAllSuggestions() {
       break;
   }
   const affectedCount = validSuggestions.filter((s) => {
+    if (!hasBulkApplyPath(s)) return false;
     if (safeOnly && !s.autoApplicable) return false;
     return s.priority <= minPriority;
   }).length;

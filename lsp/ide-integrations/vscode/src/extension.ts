@@ -345,6 +345,10 @@ function formatApplicationMode(mode?: string): string {
     }
 }
 
+function hasBulkApplyPath(suggestion: Suggestion): boolean {
+    return suggestion.applicationMode !== 'advisory';
+}
+
 function formatDurationMs(ms: number): string {
     return `${(ms / 1000).toFixed(2)}s`;
 }
@@ -1311,6 +1315,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
 
     // Count affected suggestions
     const affectedCount = validSuggestions.filter(s => {
+        if (!hasBulkApplyPath(s)) return false;
         if (safeOnly && !s.autoApplicable) return false;
         return s.priority <= minPriority;
     }).length;

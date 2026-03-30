@@ -974,6 +974,22 @@ namespace bha::lsp
         return false;
     }
 
+    bool has_bulk_apply_path(const bha::Suggestion& suggestion) {
+        switch (bha::resolve_application_mode(suggestion)) {
+            case bha::SuggestionApplicationMode::DirectEdits:
+                return !suggestion.edits.empty();
+            case bha::SuggestionApplicationMode::ExternalRefactor:
+                if (suggestion.auto_apply_blocked_reason &&
+                    !suggestion.auto_apply_blocked_reason->empty()) {
+                    return false;
+                }
+                return has_external_refactor_payload(suggestion);
+            case bha::SuggestionApplicationMode::Advisory:
+                return false;
+        }
+        return false;
+    }
+
     std::string format_application_guidance(const bha::Suggestion& suggestion) {
         if (suggestion.application_guidance && !suggestion.application_guidance->empty()) {
             return *suggestion.application_guidance;
@@ -3615,6 +3631,9 @@ namespace bha::lsp
         };
 
         const auto is_candidate_enabled = [&](const bha::Suggestion& suggestion) {
+            if (!has_bulk_apply_path(suggestion)) {
+                return false;
+            }
             if (safe_only && !is_auto_applicable_suggestion(suggestion)) {
                 return false;
             }
