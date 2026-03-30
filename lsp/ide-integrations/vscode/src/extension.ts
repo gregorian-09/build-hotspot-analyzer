@@ -178,6 +178,13 @@ interface RevertResult {
     errors: Array<{ message: string }>;
 }
 
+interface TrustLoopSummary {
+    message: string;
+    logSuffix: string;
+    improved: boolean;
+    regressedOrFlat: boolean;
+}
+
 interface QuickPickItemWithId extends vscode.QuickPickItem {
     suggestionId: string;
     applicationMode?: string;
@@ -336,6 +343,52 @@ function formatApplicationMode(mode?: string): string {
         default:
             return 'Manual Review';
     }
+}
+
+function formatDurationMs(ms: number): string {
+    return `${(ms / 1000).toFixed(2)}s`;
+}
+
+function buildTrustLoopSummary(trustLoop?: ApplyResult['trustLoop'] | ApplyAllResult['trustLoop']): TrustLoopSummary | undefined {
+    if (!trustLoop || trustLoop.available !== true) {
+        return undefined;
+    }
+
+    const actualSavingsMs = safeGetNumber(trustLoop.actualSavingsMs, 0);
+    const baselineBuildMs = safeGetNumber(trustLoop.baselineBuildMs, 0);
+    const rebuildBuildMs = safeGetNumber(trustLoop.rebuildBuildMs, 0);
+    const actualSavingsPercent = safeGetNumber(trustLoop.actualSavingsPercent, 0);
+    const predictedSavingsMs = safeGetNumber(trustLoop.predictedSavingsMs, 0);
+    const predictionDeltaMs = safeGetNumber(trustLoop.predictionDeltaMs, 0);
+
+    let headline = '';
+    if (actualSavingsMs > 0) {
+        headline = `Measured rebuild improvement: ${formatDurationMs(actualSavingsMs)} faster (${actualSavingsPercent.toFixed(1)}%).`;
+    } else if (actualSavingsMs < 0) {
+        headline = `Measured rebuild regression: ${formatDurationMs(Math.abs(actualSavingsMs))} slower (${Math.abs(actualSavingsPercent).toFixed(1)}%).`;
+    } else {
+        headline = 'Measured rebuild delta: no change.';
+    }
+
+    let baselineSegment = '';
+    if (baselineBuildMs > 0 || rebuildBuildMs > 0) {
+        baselineSegment = ` Baseline ${formatDurationMs(baselineBuildMs)} -> rebuild ${formatDurationMs(rebuildBuildMs)}.`;
+    }
+
+    let predictionSegment = '';
+    if (predictedSavingsMs !== 0 || predictionDeltaMs !== 0) {
+        const deltaPrefix = predictionDeltaMs >= 0 ? '+' : '-';
+        predictionSegment =
+            ` Predicted ${formatDurationMs(predictedSavingsMs)}; actual-vs-prediction ${deltaPrefix}${formatDurationMs(Math.abs(predictionDeltaMs))}.`;
+    }
+
+    return {
+        message: `${headline}${baselineSegment}${predictionSegment}`,
+        logSuffix:
+            ` trustLoop(actualSavingsMs=${actualSavingsMs}, actualSavingsPercent=${actualSavingsPercent.toFixed(1)}, baselineBuildMs=${baselineBuildMs}, rebuildBuildMs=${rebuildBuildMs}, predictedSavingsMs=${predictedSavingsMs}, predictionDeltaMs=${predictionDeltaMs})`,
+        improved: actualSavingsMs > 0,
+        regressedOrFlat: actualSavingsMs <= 0
+    };
 }
 
 // ============================================================================
@@ -1177,10 +1230,19 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
         if (applyResult.success) {
             lastBackupId = applyResult.backupId;
             const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
-            logLine(`Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? '<none>'}`);
-            vscode.window.showInformationMessage(
-                `Suggestion applied successfully. Modified ${numFiles} files.`
+            const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+            logLine(
+                `Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? '<none>'}${trustLoopSummary ? trustLoopSummary.logSuffix : ''}`
             );
+            const message = trustLoopSummary
+                ? `Suggestion applied successfully. Modified ${numFiles} files. ${trustLoopSummary.message}`
+                : `Suggestion applied successfully. Modified ${numFiles} files.`;
+            const action = await (trustLoopSummary?.regressedOrFlat
+                ? vscode.window.showWarningMessage(message, 'OK', 'Revert')
+                : vscode.window.showInformationMessage(message, 'OK', 'Revert'));
+            if (action === 'Revert' && lastBackupId) {
+                await cmdRevertChanges();
+            }
         } else {
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
             const errorMsgs = errors.map((e) => safeGetString(e?.message, 'Unknown error'));
@@ -1304,8 +1366,9 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         if (applyResult.success) {
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
             const hasWarnings = errors.length > 0;
+            const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
             logLine(
-                `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? '<none>'}`
+                `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? '<none>'}${trustLoopSummary ? trustLoopSummary.logSuffix : ''}`
             );
             let message = `Applied ${applyResult.appliedCount} suggestions successfully.`;
             if (applyResult.skippedCount > 0) {
@@ -1314,9 +1377,14 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             if (hasWarnings) {
                 message += ` ${errors.length} suggestion(s) were not kept after validation.`;
             }
+            if (trustLoopSummary) {
+                message += ` ${trustLoopSummary.message}`;
+            }
 
             const action = await (hasWarnings
                 ? vscode.window.showWarningMessage(message, 'OK', 'Revert All')
+                : trustLoopSummary?.regressedOrFlat
+                    ? vscode.window.showWarningMessage(message, 'OK', 'Revert All')
                 : vscode.window.showInformationMessage(message, 'OK', 'Revert All'));
 
             if (action === 'Revert All' && lastBackupId) {

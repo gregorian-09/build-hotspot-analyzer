@@ -402,7 +402,8 @@ namespace bha::suggestions
         EXPECT_FALSE(suggestion.edits.empty());
 
         bool has_hash_header_extern = false;
-        bool instantiation_uses_hash_header = false;
+        bool instantiation_uses_existing_source = false;
+        bool created_new_instantiation_tu = false;
         for (const auto& edit : suggestion.edits) {
             if (edit.file == hash_header &&
                 edit.new_text.find(
@@ -410,12 +411,80 @@ namespace bha::suggestions
                     != std::string::npos) {
                 has_hash_header_extern = true;
             }
-            if (edit.file.filename() == "template_instantiations.cpp" &&
-                edit.new_text.find("hash/hash.h\"") != std::string::npos) {
-                instantiation_uses_hash_header = true;
+            if (edit.file == source_a &&
+                edit.new_text.find(
+                    "template class absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;")
+                    != std::string::npos) {
+                instantiation_uses_existing_source = true;
+            }
+            if (edit.file.filename() == "template_instantiations.cpp") {
+                created_new_instantiation_tu = true;
             }
         }
         EXPECT_TRUE(has_hash_header_extern);
-        EXPECT_TRUE(instantiation_uses_hash_header);
+        EXPECT_TRUE(instantiation_uses_existing_source);
+        EXPECT_FALSE(created_new_instantiation_tu);
+    }
+
+    TEST_F(TemplateSuggesterTest, DowngradesWhenNoCompiledSourceOrBuildOwnershipIsProvable) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto header_path = temp_root_ / "include" / "my_template.hpp";
+        const auto wrapper_header = temp_root_ / "include" / "api.hpp";
+        const auto wrapper_header_b = temp_root_ / "include" / "api_extra.hpp";
+        const auto cmake_path = temp_root_ / "CMakeLists.txt";
+
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "template<typename T>\n"
+            "struct MyContainer {\n"
+            "    T value{};\n"
+            "};\n"
+        );
+        write_file(
+            wrapper_header,
+            "#pragma once\n"
+            "#include \"my_template.hpp\"\n"
+        );
+        write_file(
+            wrapper_header_b,
+            "#pragma once\n"
+            "#include \"my_template.hpp\"\n"
+        );
+        write_file(
+            cmake_path,
+            "custom_cc_library(\n"
+            "  NAME my_lib\n"
+            "  SRCS impl.cc\n"
+            ")\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "MyContainer<int>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(500);
+        tmpl.instantiation_count = 12;
+        tmpl.files_using = {wrapper_header.string(), wrapper_header_b.string()};
+        tmpl.locations.push_back(SourceLocation{header_path, 2, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("No existing compiled source file"), std::string::npos);
     }
 }
