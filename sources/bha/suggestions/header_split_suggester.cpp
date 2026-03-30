@@ -10,6 +10,7 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <string_view>
 #include <unordered_set>
 
 namespace bha::suggestions
@@ -805,6 +806,149 @@ namespace bha::suggestions
             return symbols;
         }
 
+        bool header_has_namespace_level_callable_api(const fs::path& header_path) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return false;
+            }
+
+            static const std::regex namespace_open_regex(
+                R"(^\s*(?:inline\s+)?namespace\s+([A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*)\s*\{)"
+            );
+
+            auto starts_with_any = [](const std::string& text, const std::initializer_list<std::string_view> prefixes) {
+                for (const auto prefix : prefixes) {
+                    if (text.rfind(prefix, 0) == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            std::vector<ScopeFrame> scope_stack;
+            bool in_block_comment = false;
+            std::size_t brace_depth = 0;
+            bool template_pending = false;
+            bool callable_pending = false;
+
+            for (const auto& raw_line : lines_result.value()) {
+                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+
+                std::size_t namespace_depth = 0;
+                for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                    if (it->kind != ScopeFrameKind::Namespace) {
+                        continue;
+                    }
+                    namespace_depth = it->open_depth;
+                    break;
+                }
+
+                const std::string trimmed = [&]() {
+                    const auto start = line.find_first_not_of(" \t\r\n");
+                    if (start == std::string::npos) {
+                        return std::string{};
+                    }
+                    const auto end = line.find_last_not_of(" \t\r\n");
+                    return line.substr(start, end - start + 1);
+                }();
+
+                std::vector<ScopeFrame> pending_namespaces;
+                if (std::smatch namespace_match;
+                    std::regex_search(trimmed, namespace_match, namespace_open_regex) &&
+                    brace_depth == namespace_depth) {
+                    const auto parts = split_namespace_path(namespace_match[1].str());
+                    for (const auto& part : parts) {
+                        ScopeFrame scope;
+                        scope.kind = ScopeFrameKind::Namespace;
+                        scope.name = part;
+                        scope.open_depth = brace_depth + 1;
+                        pending_namespaces.push_back(std::move(scope));
+                    }
+                }
+
+                if (trimmed.rfind("template", 0) == 0) {
+                    template_pending = true;
+                    if (trimmed.find('>') != std::string::npos) {
+                        template_pending = false;
+                    }
+                } else if (template_pending && trimmed.find('>') != std::string::npos) {
+                    template_pending = false;
+                }
+
+                const bool at_namespace_level = brace_depth == namespace_depth;
+                if (at_namespace_level && !trimmed.empty()) {
+                    if (trimmed.find("extern \"C\"") != std::string::npos ||
+                        trimmed.find("extern 'C'") != std::string::npos) {
+                        return true;
+                    }
+
+                    const bool looks_like_callable_line =
+                        trimmed.find('(') != std::string::npos &&
+                        !starts_with_any(
+                            trimmed,
+                            {
+                                "#",
+                                "if",
+                                "for",
+                                "while",
+                                "switch",
+                                "return",
+                                "class ",
+                                "struct ",
+                                "enum ",
+                                "using ",
+                                "typedef ",
+                                "static_assert",
+                                "namespace ",
+                                "friend "
+                            }
+                        );
+
+                    if (!template_pending && (callable_pending || looks_like_callable_line)) {
+                        callable_pending = true;
+                        if (trimmed.find(';') != std::string::npos || trimmed.find('{') != std::string::npos) {
+                            return true;
+                        }
+                    }
+                }
+
+                for (const char ch : line) {
+                    if (ch == '{') {
+                        ++brace_depth;
+                    } else if (ch == '}') {
+                        if (brace_depth > 0) {
+                            --brace_depth;
+                        }
+                    }
+                }
+
+                if (!pending_namespaces.empty()) {
+                    for (auto& pending_namespace : pending_namespaces) {
+                        if (brace_depth >= pending_namespace.open_depth) {
+                            scope_stack.push_back(std::move(pending_namespace));
+                        }
+                    }
+                }
+
+                while (!scope_stack.empty()) {
+                    const auto& scope = scope_stack.back();
+                    if (scope.kind != ScopeFrameKind::Namespace) {
+                        break;
+                    }
+                    if (brace_depth >= scope.open_depth) {
+                        break;
+                    }
+                    scope_stack.pop_back();
+                }
+
+                if (callable_pending && trimmed.find(';') != std::string::npos) {
+                    callable_pending = false;
+                }
+            }
+
+            return false;
+        }
+
         bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
             std::ifstream in(file);
             if (!in) {
@@ -1312,8 +1456,13 @@ namespace bha::suggestions
                 "3. Measure compile times before and after to verify improvement\n"
                 "4. Run full test suite to ensure no functionality changes";
 
+            const bool blocked_by_callable_api =
+                resolved_header_path.has_value() &&
+                header_has_namespace_level_callable_api(*resolved_header_path);
             const bool supports_direct_edits =
-                pattern == SplitPattern::ForwardDecl && resolved_header_path.has_value();
+                pattern == SplitPattern::ForwardDecl &&
+                resolved_header_path.has_value() &&
+                !blocked_by_callable_api;
             bool created_fwd_header = false;
 
             if (supports_direct_edits) {
@@ -1374,8 +1523,15 @@ namespace bha::suggestions
             } else {
                 suggestion.application_mode = SuggestionApplicationMode::Advisory;
                 suggestion.application_summary = "Manual refactor recommended";
-                suggestion.application_guidance =
-                    "This split shape requires manual symbol partitioning. Keep headers self-contained and compile-validated after each step.";
+                if (blocked_by_callable_api) {
+                    suggestion.application_guidance =
+                        "This header exports forward-declarable types and callable API from the same surface. Split it manually only after separating the callable API from the type-only surface and validating every includer.";
+                    suggestion.auto_apply_blocked_reason =
+                        "The header declares namespace-level callable API, so a generated _fwd companion would not be a type-only replacement.";
+                } else {
+                    suggestion.application_guidance =
+                        "This split shape requires manual symbol partitioning. Keep headers self-contained and compile-validated after each step.";
+                }
             }
 
             result.suggestions.push_back(std::move(suggestion));

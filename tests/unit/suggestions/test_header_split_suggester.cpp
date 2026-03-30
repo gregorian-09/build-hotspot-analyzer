@@ -533,4 +533,42 @@ namespace bha::suggestions
         ASSERT_TRUE(insertion_line.has_value());
         EXPECT_EQ(*insertion_line, 2u);
     }
+
+    TEST_F(HeaderSplitSuggesterTest, DowngradesDirectEditsWhenHeaderExportsCallableApi) {
+        BuildTrace trace;
+
+        const auto header_path = temp_root_ / "spinlock_wait.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "#include <atomic>\n"
+            "namespace demo {\n"
+            "class SpinLockWaitHandle;\n"
+            "void SpinLockWake(std::atomic<int>* word, bool all);\n"
+            "void SpinLockDelay(std::atomic<int>* word, int loop);\n"
+            "}  // namespace demo\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(600);
+        header.inclusion_count = 24;
+        header.including_files = 12;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("callable API"), std::string::npos);
+    }
 }
