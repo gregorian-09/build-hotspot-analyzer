@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <optional>
 
 namespace bha::suggestions
 {
@@ -459,12 +460,14 @@ namespace bha::suggestions
             return edit.file.filename() == "widget_fwd.hpp";
         });
         ASSERT_NE(create_edit, suggestion.edits.end());
+        EXPECT_NE(create_edit->new_text.find("#ifdef __cplusplus"), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("#include \"project_config.h\""), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("namespace demo {"), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("PROJECT_NAMESPACE_BEGIN"), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("namespace detail {"), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("class Widget;"), std::string::npos);
         EXPECT_NE(create_edit->new_text.find("PROJECT_NAMESPACE_END"), std::string::npos);
+        EXPECT_NE(create_edit->new_text.find("#endif  // __cplusplus"), std::string::npos);
     }
 
     TEST_F(HeaderSplitSuggesterTest, DowngradesMacroWrappedForwardHeaderWithoutResolvableSupportInclude) {
@@ -507,5 +510,27 @@ namespace bha::suggestions
         EXPECT_FALSE(suggestion.is_safe);
         EXPECT_TRUE(suggestion.edits.empty());
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, FindsOnlyPrimaryIncludeBlockForInsertion) {
+        const auto header_path = temp_root_ / "feature_header.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "\n"
+            "#include \"base.hpp\"\n"
+            "\n"
+            "#if defined(ENABLE_FEATURE)\n"
+            "#include \"feature.hpp\"\n"
+            "#endif\n"
+            "\n"
+            "namespace demo {\n"
+            "class Widget;\n"
+            "}\n"
+        );
+
+        const std::optional<std::size_t> insertion_line = find_include_insertion_line(header_path);
+        ASSERT_TRUE(insertion_line.has_value());
+        EXPECT_EQ(*insertion_line, 2u);
     }
 }

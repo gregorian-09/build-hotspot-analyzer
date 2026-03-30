@@ -600,22 +600,16 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
-        std::vector<std::string> extract_qualified_dependency_names(
-            const std::string& specialization_name,
-            const std::string& primary_template_name
-        ) {
+        std::vector<std::string> extract_qualified_names(const std::string& text) {
             static const std::regex qualified_name_regex(
                 R"(\b([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\b)"
             );
 
             std::vector<std::string> names;
             std::unordered_set<std::string> seen;
-            for (std::sregex_iterator it(specialization_name.begin(), specialization_name.end(), qualified_name_regex),
+            for (std::sregex_iterator it(text.begin(), text.end(), qualified_name_regex),
                  end; it != end; ++it) {
                 const std::string candidate = (*it)[1].str();
-                if (candidate == primary_template_name) {
-                    continue;
-                }
                 if (seen.insert(candidate).second) {
                     names.push_back(candidate);
                 }
@@ -760,10 +754,11 @@ namespace bha::suggestions
                 0,
                 strip_leading_keywords(normalized_template_name).find('<')
             );
-            const auto dependent_types = extract_qualified_dependency_names(
-                normalized_template_name,
-                primary_template_name
-            );
+            const std::string extern_declaration = is_function_template
+                ? generate_extern_function_instantiation(normalized_template_name)
+                : generate_extern_template(declaration->class_key, normalized_template_name);
+            auto required_symbols = extract_qualified_names(extern_declaration);
+            std::erase(required_symbols, primary_template_name);
 
             for (const auto& candidate : candidates) {
                 if (!header_closure_exposes_template(candidate, project_root, base_name, is_function_template)) {
@@ -771,8 +766,8 @@ namespace bha::suggestions
                 }
 
                 bool dependencies_visible = true;
-                for (const auto& dependent_type : dependent_types) {
-                    if (!header_closure_exposes_symbol(candidate, project_root, dependent_type)) {
+                for (const auto& required_symbol : required_symbols) {
+                    if (!header_closure_exposes_symbol(candidate, project_root, required_symbol)) {
                         dependencies_visible = false;
                         break;
                     }

@@ -730,11 +730,111 @@ namespace bha::suggestions {
     }
 
     [[nodiscard]] inline std::optional<std::size_t> find_include_insertion_line(const fs::path& file) {
-        const auto directives = find_include_directives(file);
-        if (!directives.empty()) {
-            return directives.back().line;
+        std::ifstream in(file);
+        if (!in) {
+            return std::nullopt;
         }
-        return find_pragma_once_line(file);
+
+        auto trim = [](std::string_view text) {
+            const auto first = text.find_first_not_of(" \t\r\n");
+            if (first == std::string_view::npos) {
+                return std::string_view{};
+            }
+            const auto last = text.find_last_not_of(" \t\r\n");
+            return text.substr(first, last - first + 1);
+        };
+        auto consume_leading_block_comment = [&trim](std::string_view text, bool& in_block_comment) {
+            std::string_view current = text;
+            while (true) {
+                if (in_block_comment) {
+                    const auto end = current.find("*/");
+                    if (end == std::string_view::npos) {
+                        return std::string_view{};
+                    }
+                    current.remove_prefix(end + 2);
+                    in_block_comment = false;
+                }
+
+                current = trim(current);
+                if (!current.starts_with("/*")) {
+                    return current;
+                }
+
+                current.remove_prefix(2);
+                const auto end = current.find("*/");
+                if (end == std::string_view::npos) {
+                    in_block_comment = true;
+                    return std::string_view{};
+                }
+                current.remove_prefix(end + 2);
+            }
+        };
+
+        const std::regex include_regex(R"(^#\s*include\s*([<"])([^">]+)[">])", std::regex::ECMAScript);
+        const std::regex pragma_regex(R"(^#\s*pragma\s+once\b)", std::regex::ECMAScript);
+        const std::regex guard_ifndef_regex(R"(^#\s*ifndef\b)", std::regex::ECMAScript);
+        const std::regex guard_if_defined_regex(R"(^#\s*if\s*!?\s*defined\s*\()", std::regex::ECMAScript);
+        const std::regex define_regex(R"(^#\s*define\b)", std::regex::ECMAScript);
+
+        std::string line;
+        std::size_t line_num = 0;
+        bool in_block_comment = false;
+        bool in_include_block = false;
+        bool expecting_guard_define = false;
+        std::optional<std::size_t> pragma_once_line;
+        std::optional<std::size_t> last_include_line;
+
+        while (std::getline(in, line)) {
+            std::string_view trimmed = consume_leading_block_comment(line, in_block_comment);
+            if (trimmed.empty() || trimmed.starts_with("//")) {
+                ++line_num;
+                continue;
+            }
+
+            if (std::regex_search(trimmed.begin(), trimmed.end(), pragma_regex) && !in_include_block &&
+                !last_include_line.has_value()) {
+                pragma_once_line = line_num;
+                ++line_num;
+                continue;
+            }
+
+            if (std::regex_search(trimmed.begin(), trimmed.end(), guard_ifndef_regex) ||
+                std::regex_search(trimmed.begin(), trimmed.end(), guard_if_defined_regex)) {
+                if (!in_include_block && !last_include_line.has_value()) {
+                    expecting_guard_define = true;
+                    ++line_num;
+                    continue;
+                }
+                break;
+            }
+
+            if (expecting_guard_define && std::regex_search(trimmed.begin(), trimmed.end(), define_regex)) {
+                expecting_guard_define = false;
+                ++line_num;
+                continue;
+            }
+
+            if (std::regex_search(trimmed.begin(), trimmed.end(), include_regex)) {
+                in_include_block = true;
+                last_include_line = line_num;
+                ++line_num;
+                continue;
+            }
+
+            if (in_include_block) {
+                break;
+            }
+
+            if (trimmed.starts_with("#")) {
+                break;
+            }
+            break;
+        }
+
+        if (last_include_line.has_value()) {
+            return last_include_line;
+        }
+        return pragma_once_line;
     }
 
     [[nodiscard]] inline std::size_t end_of_file_insert_line(const std::string& content) {

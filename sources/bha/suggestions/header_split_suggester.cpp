@@ -955,6 +955,7 @@ namespace bha::suggestions
 
             std::ostringstream out;
             out << "#pragma once\n\n";
+            out << "#ifdef __cplusplus\n";
             for (const auto& include : *support_includes) {
                 out << include_directive_text(include) << "\n";
             }
@@ -1011,6 +1012,8 @@ namespace bha::suggestions
             for (std::size_t i = opened_scopes.size(); i > 0; --i) {
                 close_scope(opened_scopes[i - 1]);
             }
+
+            out << "#endif  // __cplusplus\n";
 
             return out.str();
         }
