@@ -8,10 +8,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdlib>
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -813,6 +815,240 @@ namespace bha::suggestions
             return names;
         }
 
+        bool looks_like_macro_identifier(const std::string& identifier) {
+            bool saw_alpha = false;
+            for (const char ch : identifier) {
+                const auto value = static_cast<unsigned char>(ch);
+                if (std::isalpha(value)) {
+                    saw_alpha = true;
+                    if (!std::isupper(value)) {
+                        return false;
+                    }
+                } else if (!std::isdigit(value) && ch != '_') {
+                    return false;
+                }
+            }
+            return saw_alpha;
+        }
+
+        std::optional<std::pair<std::size_t, std::size_t>> find_outer_paren_span(
+            const std::string& text
+        ) {
+            std::size_t template_depth = 0;
+            std::size_t paren_depth = 0;
+            std::optional<std::size_t> open_paren;
+
+            for (std::size_t i = 0; i < text.size(); ++i) {
+                const char ch = text[i];
+                if (ch == '<') {
+                    ++template_depth;
+                    continue;
+                }
+                if (ch == '>' && template_depth > 0) {
+                    --template_depth;
+                    continue;
+                }
+                if (template_depth > 0) {
+                    continue;
+                }
+                if (ch == '(') {
+                    if (paren_depth == 0) {
+                        open_paren = i;
+                    }
+                    ++paren_depth;
+                    continue;
+                }
+                if (ch == ')' && paren_depth > 0) {
+                    --paren_depth;
+                    if (paren_depth == 0 && open_paren.has_value()) {
+                        return std::pair{*open_paren, i};
+                    }
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        bool callable_tail_looks_valid(std::string tail) {
+            tail = trim_copy(tail);
+            while (!tail.empty()) {
+                if (tail[0] == ';' || tail[0] == '{') {
+                    return true;
+                }
+                if (tail.rfind("noexcept", 0) == 0) {
+                    tail.erase(0, std::string("noexcept").size());
+                    tail = trim_copy(tail);
+                    if (!tail.empty() && tail[0] == '(') {
+                        if (const auto span = find_outer_paren_span(tail)) {
+                            tail.erase(0, span->second + 1);
+                            tail = trim_copy(tail);
+                            continue;
+                        }
+                        return false;
+                    }
+                    continue;
+                }
+                if (tail.rfind("[[", 0) == 0) {
+                    const auto close = tail.find("]]");
+                    if (close == std::string::npos) {
+                        return false;
+                    }
+                    tail.erase(0, close + 2);
+                    tail = trim_copy(tail);
+                    continue;
+                }
+                if (tail.rfind("__attribute__", 0) == 0) {
+                    tail.erase(0, std::string("__attribute__").size());
+                    tail = trim_copy(tail);
+                    if (!tail.empty() && tail[0] == '(') {
+                        if (const auto span = find_outer_paren_span(tail)) {
+                            tail.erase(0, span->second + 1);
+                            tail = trim_copy(tail);
+                            continue;
+                        }
+                    }
+                    return false;
+                }
+
+                std::size_t token_end = 0;
+                while (token_end < tail.size() &&
+                       (std::isalnum(static_cast<unsigned char>(tail[token_end])) ||
+                        tail[token_end] == '_')) {
+                    ++token_end;
+                }
+                if (token_end == 0) {
+                    return false;
+                }
+
+                const std::string token = tail.substr(0, token_end);
+                if (!looks_like_macro_identifier(token)) {
+                    return false;
+                }
+                tail.erase(0, token_end);
+                tail = trim_copy(tail);
+            }
+
+            return false;
+        }
+
+        std::optional<std::string> extract_callable_name_from_declaration(
+            const std::string& declaration
+        ) {
+            static const std::array<std::string_view, 12> kRejectedPrefixes{
+                "#",       "if",       "for",      "while",    "switch",   "return",
+                "class ",  "struct ",  "enum ",    "using ",   "typedef ", "static_assert"
+            };
+
+            const std::string trimmed = trim_copy(declaration);
+            if (trimmed.empty()) {
+                return std::nullopt;
+            }
+            for (const auto prefix : kRejectedPrefixes) {
+                if (trimmed.rfind(prefix, 0) == 0) {
+                    return std::nullopt;
+                }
+            }
+
+            const auto paren_span = find_outer_paren_span(trimmed);
+            if (!paren_span.has_value()) {
+                return std::nullopt;
+            }
+            if (!callable_tail_looks_valid(trim_copy(trimmed.substr(paren_span->second + 1)))) {
+                return std::nullopt;
+            }
+
+            static const std::regex callable_name_regex(
+                R"((?:[A-Za-z_][A-Za-z0-9_]*::)*([A-Za-z_][A-Za-z0-9_]*)\s*$)"
+            );
+
+            const std::string head = trimmed.substr(0, paren_span->first);
+            std::smatch match;
+            if (!std::regex_search(head, match, callable_name_regex)) {
+                return std::nullopt;
+            }
+
+            const std::string name = match[1].str();
+            if (name == "operator" || looks_like_macro_identifier(name)) {
+                return std::nullopt;
+            }
+            return name;
+        }
+
+        std::vector<std::string> extract_declared_callable_names(const fs::path& header_path) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return {};
+            }
+
+            std::vector<std::string> names;
+            std::unordered_set<std::string> seen;
+            bool in_block_comment = false;
+            bool declaration_pending = false;
+            std::string declaration;
+
+            for (const auto& raw_line : lines_result.value()) {
+                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+                const std::string trimmed = trim_copy(line);
+                if (trimmed.empty()) {
+                    continue;
+                }
+
+                const bool starts_candidate =
+                    !declaration_pending &&
+                    trimmed.find('(') != std::string::npos;
+                if (!declaration_pending && !starts_candidate) {
+                    continue;
+                }
+
+                declaration_pending = true;
+                if (!declaration.empty()) {
+                    declaration.push_back(' ');
+                }
+                declaration += trimmed;
+
+                if (trimmed.find(';') == std::string::npos && trimmed.find('{') == std::string::npos) {
+                    continue;
+                }
+
+                if (auto callable_name = extract_callable_name_from_declaration(declaration);
+                    callable_name.has_value() && seen.insert(*callable_name).second) {
+                    names.push_back(*callable_name);
+                }
+                declaration_pending = false;
+                declaration.clear();
+            }
+
+            return names;
+        }
+
+        bool contains_identifier(const std::string& line, const std::string& symbol);
+
+        bool file_references_any_identifier(
+            const fs::path& file_path,
+            const std::vector<std::string>& identifiers
+        ) {
+            if (identifiers.empty()) {
+                return false;
+            }
+
+            auto lines_result = file_utils::read_lines(file_path);
+            if (lines_result.is_err()) {
+                return false;
+            }
+
+            bool in_block_comment = false;
+            for (const auto& raw_line : lines_result.value()) {
+                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+                for (const auto& identifier : identifiers) {
+                    if (contains_identifier(line, identifier)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         struct MoveToCppAssessment {
             bool has_forward_decl = false;
             bool mentions_symbol = false;
@@ -1049,10 +1285,45 @@ namespace bha::suggestions
                 std::vector<TidyUnusedInclude> safe_diagnostics;
                 std::vector<TidyUnusedInclude> advisory_diagnostics;
                 std::vector<std::string> advisory_reasons;
+                std::unordered_map<std::string, std::vector<std::string>> callable_symbol_cache;
                 safe_diagnostics.reserve(diagnostics.size());
                 advisory_diagnostics.reserve(diagnostics.size());
                 for (const auto& diag : diagnostics) {
-                    const IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                    IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                    if (assessment.allow_direct_edits) {
+                        std::optional<fs::path> resolved_header;
+                        if (const auto* resolved_header_info = find_header_info(deps, diag.header_name);
+                            resolved_header_info != nullptr) {
+                            resolved_header = resolve_project_path(
+                                resolved_header_info->path,
+                                context.project_root
+                            );
+                        } else {
+                            resolved_header = resolve_local_include_path(
+                                diag.header_name,
+                                diag.file,
+                                context.project_root
+                            );
+                        }
+
+                        if (resolved_header.has_value()) {
+                            const std::string cache_key = resolved_header->lexically_normal().generic_string();
+                            auto cache_it = callable_symbol_cache.find(cache_key);
+                            if (cache_it == callable_symbol_cache.end()) {
+                                cache_it = callable_symbol_cache.emplace(
+                                    cache_key,
+                                    extract_declared_callable_names(*resolved_header)
+                                ).first;
+                            }
+
+                            if (!cache_it->second.empty() &&
+                                file_references_any_identifier(diag.file, cache_it->second)) {
+                                assessment.allow_direct_edits = false;
+                                assessment.blocked_reason =
+                                    "source file references callable API declared by the included header";
+                            }
+                        }
+                    }
                     if (assessment.allow_direct_edits) {
                         safe_diagnostics.push_back(diag);
                         continue;
@@ -1063,7 +1334,8 @@ namespace bha::suggestions
                     }
                 }
 
-                const auto* header_info = find_header_info(deps, header_name);
+                const std::string header_name_copy = header_name;
+                const auto* header_info = find_header_info(deps, header_name_copy);
                 const auto estimated_savings = header_info != nullptr
                     ? header_info->total_parse_time / 4
                     : Duration::zero();
@@ -1073,7 +1345,7 @@ namespace bha::suggestions
                     Suggestion suggestion;
                     suggestion.id = generate_suggestion_id(
                         direct_edits ? "unused-explicit" : "unused-explicit-advisory",
-                        fs::path(header_name)
+                        fs::path(header_name_copy)
                     );
                     suggestion.type = SuggestionType::IncludeRemoval;
                     suggestion.priority = selected_diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
@@ -1081,7 +1353,7 @@ namespace bha::suggestions
                     suggestion.title = (direct_edits
                         ? "Remove unused include of "
                         : "Review conditional/platform-specific include of ") +
-                        fs::path(header_name).filename().string();
+                        fs::path(header_name_copy).filename().string();
                     suggestion.estimated_savings = estimated_savings;
                     if (context.trace.total_time.count() > 0) {
                         suggestion.estimated_savings_percent =
@@ -1090,7 +1362,7 @@ namespace bha::suggestions
                     }
 
                     std::ostringstream desc;
-                    desc << "clang-tidy misc-include-cleaner reported '" << header_name
+                    desc << "clang-tidy misc-include-cleaner reported '" << header_name_copy
                          << "' as unused in " << selected_diagnostics.size() << " translation units.";
                     suggestion.description = desc.str();
                     suggestion.rationale =

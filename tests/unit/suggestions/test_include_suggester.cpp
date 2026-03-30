@@ -402,4 +402,52 @@ esac
         EXPECT_TRUE(advisory->edits.empty());
         EXPECT_NE(advisory->title.find("windows.h"), std::string::npos);
     }
+
+    TEST_F(IncludeSuggesterTest, DowngradesUnusedIncludeRemovalWhenSourceCallsHeaderApi) {
+        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "direct", 1), 0);
+
+        const auto build_dir = temp_root_ / "build";
+        const auto source = temp_root_ / "spinlock.cc";
+        const auto header = temp_root_ / "local_unused.hpp";
+        write_file(
+            header,
+            "#pragma once\n"
+            "#include <atomic>\n"
+            "namespace demo {\n"
+            "void SpinLockWake(std::atomic<int>* word, bool all);\n"
+            "}\n"
+        );
+        write_file(
+            source,
+            "#include \"local_unused.hpp\"\n"
+            "#include <atomic>\n"
+            "int main() {\n"
+            "  std::atomic<int> word{0};\n"
+            "  demo::SpinLockWake(&word, false);\n"
+            "  return 0;\n"
+            "}\n"
+        );
+        write_compile_commands(build_dir, source);
+
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.compile_commands_path = build_dir / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const Suggestion& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.type, SuggestionType::IncludeRemoval);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(
+            suggestion.auto_apply_blocked_reason->find("callable API"),
+            std::string::npos
+        );
+    }
 }
