@@ -291,10 +291,14 @@ namespace bha::lsp
             {"message", "Detected Unreal project markers (.uproject or ModuleRules/TargetRules)."}
         });
 
+        auto has_non_empty_env = [](const char* name) {
+            const char* value = std::getenv(name);
+            return value != nullptr && *value != '\0';
+        };
         const bool has_engine_env =
-            (std::getenv("BHA_UE_BUILD_SCRIPT") && *std::getenv("BHA_UE_BUILD_SCRIPT")) ||
-            (std::getenv("UE_ENGINE_ROOT") && *std::getenv("UE_ENGINE_ROOT")) ||
-            (std::getenv("UNREAL_ENGINE_ROOT") && *std::getenv("UNREAL_ENGINE_ROOT"));
+            has_non_empty_env("BHA_UE_BUILD_SCRIPT") ||
+            has_non_empty_env("UE_ENGINE_ROOT") ||
+            has_non_empty_env("UNREAL_ENGINE_ROOT");
         const bool has_ubt_on_path = command_exists("UnrealBuildTool");
         if (has_engine_env || has_ubt_on_path) {
             checks.push_back({
