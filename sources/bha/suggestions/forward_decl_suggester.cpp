@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/forward_decl_suggester.hpp"
+#include "bha/suggestions/scope_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -20,25 +21,6 @@
 namespace bha::suggestions
 {
     namespace {
-
-        enum class ScopeFrameKind {
-            Namespace,
-            MacroWrapper
-        };
-
-        struct MacroWrapperScope {
-            std::string open_name;
-            std::string open_text;
-            std::string close_name;
-            std::string close_text;
-        };
-
-        struct ScopeFrame {
-            ScopeFrameKind kind = ScopeFrameKind::Namespace;
-            std::string name;
-            int open_depth = 0;
-            MacroWrapperScope macro;
-        };
 
         struct ForwardDeclType {
             std::string name;
@@ -79,77 +61,6 @@ namespace bha::suggestions
                 }
             }
             return line;
-        }
-
-        std::optional<std::string> derive_matching_close_macro(std::string name) {
-            if (name.ends_with("_BEGIN")) {
-                name.replace(name.size() - 6, 6, "_END");
-                return name;
-            }
-            if (name.ends_with("_OPEN")) {
-                name.replace(name.size() - 5, 5, "_CLOSE");
-                return name;
-            }
-            if (name.ends_with("_PUSH")) {
-                name.replace(name.size() - 5, 5, "_POP");
-                return name;
-            }
-            if (name.starts_with("BEGIN_")) {
-                return "END_" + name.substr(6);
-            }
-            if (name.starts_with("OPEN_")) {
-                return "CLOSE_" + name.substr(5);
-            }
-            if (name.starts_with("PUSH_")) {
-                return "POP_" + name.substr(5);
-            }
-            return std::nullopt;
-        }
-
-        std::optional<std::string> parse_scope_macro_name(const std::string& line) {
-            static const std::regex macro_regex(
-                R"(^\s*([A-Z][A-Z0-9_]*|(?:BEGIN|OPEN|PUSH)_[A-Z0-9_]+)\s*(\([^;{}]*\))?\s*$)"
-            );
-
-            std::smatch match;
-            if (!std::regex_match(line, match, macro_regex)) {
-                return std::nullopt;
-            }
-            return match[1].str();
-        }
-
-        std::optional<MacroWrapperScope> parse_scope_macro_open(const std::string& line) {
-            const auto macro_name = parse_scope_macro_name(line);
-            if (!macro_name.has_value()) {
-                return std::nullopt;
-            }
-            const auto close_name = derive_matching_close_macro(*macro_name);
-            if (!close_name.has_value()) {
-                return std::nullopt;
-            }
-
-            MacroWrapperScope scope;
-            scope.open_name = *macro_name;
-            scope.open_text = trim_whitespace_copy(line);
-            scope.close_name = *close_name;
-            scope.close_text = *close_name;
-            return scope;
-        }
-
-        std::optional<std::string> parse_scope_macro_close(const std::string& line) {
-            const auto macro_name = parse_scope_macro_name(line);
-            if (!macro_name.has_value()) {
-                return std::nullopt;
-            }
-            if (macro_name->ends_with("_END") ||
-                macro_name->ends_with("_CLOSE") ||
-                macro_name->ends_with("_POP") ||
-                macro_name->starts_with("END_") ||
-                macro_name->starts_with("CLOSE_") ||
-                macro_name->starts_with("POP_")) {
-                return *macro_name;
-            }
-            return std::nullopt;
         }
 
         bool is_macro_like_identifier(const std::string& token) {
@@ -419,28 +330,6 @@ namespace bha::suggestions
             return trim_whitespace_copy(out.str());
         }
 
-        std::vector<std::string> split_namespace(std::string ns_path) {
-            std::vector<std::string> result;
-            std::size_t offset = 0;
-            while (offset < ns_path.size()) {
-                const auto pos = ns_path.find("::", offset);
-                if (pos == std::string::npos) {
-                    result.push_back(ns_path.substr(offset));
-                    break;
-                }
-                result.push_back(ns_path.substr(offset, pos - offset));
-                offset = pos + 2;
-            }
-            for (auto& part : result) {
-                part = trim_whitespace_copy(std::move(part));
-            }
-            result.erase(
-                std::remove_if(result.begin(), result.end(), [](const std::string& part) { return part.empty(); }),
-                result.end()
-            );
-            return result;
-        }
-
         std::vector<ForwardDeclType> parse_forward_declarable_types_from_header(const fs::path& header_path) {
             std::ifstream in(header_path);
             if (!in) {
@@ -450,7 +339,7 @@ namespace bha::suggestions
             std::vector<ScopeFrame> scope_stack;
             std::vector<ForwardDeclType> types;
             std::unordered_set<std::string> seen_types;
-            int brace_depth = 0;
+            std::size_t brace_depth = 0;
             bool pending_template = false;
 
             std::string raw_line;
@@ -467,7 +356,7 @@ namespace bha::suggestions
                           end = std::sregex_iterator();
                      begin != end;
                      ++begin) {
-                    const auto parts = split_namespace((*begin)[1].str());
+                    const auto parts = split_namespace_path((*begin)[1].str());
                     for (const auto& part : parts) {
                         ScopeFrame frame;
                         frame.kind = ScopeFrameKind::Namespace;
@@ -523,11 +412,13 @@ namespace bha::suggestions
                     }
                 }
 
-                const int opens = static_cast<int>(std::count(no_comment.begin(), no_comment.end(), '{'));
-                const int closes = static_cast<int>(std::count(no_comment.begin(), no_comment.end(), '}'));
-                brace_depth += opens - closes;
-                if (brace_depth < 0) {
+                const auto opens = static_cast<std::size_t>(std::count(no_comment.begin(), no_comment.end(), '{'));
+                const auto closes = static_cast<std::size_t>(std::count(no_comment.begin(), no_comment.end(), '}'));
+                brace_depth += opens;
+                if (closes >= brace_depth) {
                     brace_depth = 0;
+                } else {
+                    brace_depth -= closes;
                 }
 
                 while (!scope_stack.empty()) {
