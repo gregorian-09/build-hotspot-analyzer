@@ -39,6 +39,12 @@ namespace bha::suggestions
             std::string blocked_reason;
         };
 
+        struct ClassifiedUnusedIncludes {
+            std::vector<TidyUnusedInclude> safe_diagnostics;
+            std::vector<TidyUnusedInclude> advisory_diagnostics;
+            std::vector<std::string> advisory_reasons;
+        };
+
         std::optional<Suggestion> build_unreal_iwyu_suggestion(const SuggestionContext& context) {
             if (!context.options.heuristics.unreal.emit_iwyu) {
                 return std::nullopt;
@@ -1150,6 +1156,378 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
+        std::optional<fs::path> resolve_unused_include_header_path(
+            const analyzers::DependencyAnalysisResult& deps,
+            const TidyUnusedInclude& diag,
+            const fs::path& project_root
+        ) {
+            if (const auto* resolved_header_info = find_header_info(deps, diag.header_name);
+                resolved_header_info != nullptr) {
+                return resolve_project_path(resolved_header_info->path, project_root);
+            }
+            return resolve_local_include_path(diag.header_name, diag.file, project_root);
+        }
+
+        ClassifiedUnusedIncludes classify_unused_include_diagnostics(
+            const analyzers::DependencyAnalysisResult& deps,
+            const std::vector<TidyUnusedInclude>& diagnostics,
+            const fs::path& project_root
+        ) {
+            ClassifiedUnusedIncludes classified;
+            std::unordered_map<std::string, std::vector<std::string>> callable_symbol_cache;
+            classified.safe_diagnostics.reserve(diagnostics.size());
+            classified.advisory_diagnostics.reserve(diagnostics.size());
+
+            for (const auto& diag : diagnostics) {
+                IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                if (assessment.allow_direct_edits) {
+                    const auto resolved_header = resolve_unused_include_header_path(
+                        deps,
+                        diag,
+                        project_root
+                    );
+                    if (resolved_header.has_value()) {
+                        const std::string cache_key = resolved_header->lexically_normal().generic_string();
+                        auto cache_it = callable_symbol_cache.find(cache_key);
+                        if (cache_it == callable_symbol_cache.end()) {
+                            cache_it = callable_symbol_cache.emplace(
+                                cache_key,
+                                extract_declared_callable_names(*resolved_header)
+                            ).first;
+                        }
+
+                        if (!cache_it->second.empty() &&
+                            file_references_any_identifier(diag.file, cache_it->second)) {
+                            assessment.allow_direct_edits = false;
+                            assessment.blocked_reason =
+                                "source file references callable API declared by the included header";
+                        }
+                    }
+                }
+
+                if (assessment.allow_direct_edits) {
+                    classified.safe_diagnostics.push_back(diag);
+                    continue;
+                }
+                classified.advisory_diagnostics.push_back(diag);
+                if (!assessment.blocked_reason.empty()) {
+                    classified.advisory_reasons.push_back(assessment.blocked_reason);
+                }
+            }
+
+            return classified;
+        }
+
+        Suggestion build_include_removal_suggestion(
+            const SuggestionContext& context,
+            const std::string& header_name,
+            const std::vector<TidyUnusedInclude>& selected_diagnostics,
+            std::vector<std::string> advisory_reasons,
+            const Duration estimated_savings,
+            const bool direct_edits
+        ) {
+            Suggestion suggestion;
+            suggestion.id = generate_suggestion_id(
+                direct_edits ? "unused-explicit" : "unused-explicit-advisory",
+                fs::path(header_name)
+            );
+            suggestion.type = SuggestionType::IncludeRemoval;
+            suggestion.priority = selected_diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
+            suggestion.confidence = direct_edits ? 0.98 : 0.72;
+            suggestion.title = (direct_edits
+                ? "Remove unused include of "
+                : "Review conditional/platform-specific include of ") +
+                fs::path(header_name).filename().string();
+            suggestion.estimated_savings = estimated_savings;
+            if (context.trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(estimated_savings.count()) /
+                    static_cast<double>(context.trace.total_time.count());
+            }
+
+            std::ostringstream desc;
+            desc << "clang-tidy misc-include-cleaner reported '" << header_name
+                 << "' as unused in " << selected_diagnostics.size() << " translation units.";
+            suggestion.description = desc.str();
+            suggestion.rationale =
+                "This suggestion is based on explicit semantic diagnostics from clang-tidy, but BHA avoids auto-removing includes when the active build configuration may hide cross-platform or conditional dependencies.";
+
+            suggestion.target_file.path = selected_diagnostics.front().file;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.line_start = selected_diagnostics.front().line + 1;
+            suggestion.target_file.line_end = selected_diagnostics.front().line + 1;
+            suggestion.target_file.note = direct_edits
+                ? "Remove unused include confirmed by clang-tidy"
+                : "Review include manually before removing it";
+
+            suggestion.impact.total_files_affected = selected_diagnostics.size();
+            suggestion.impact.cumulative_savings = estimated_savings;
+            suggestion.caveats = {
+                "Diagnostics reflect the active compile_commands.json configuration",
+                "Cross-platform and feature-gated builds may still require these includes in other variants"
+            };
+            suggestion.verification = "Compile all supported targets after applying the edits";
+
+            if (direct_edits) {
+                suggestion.is_safe = true;
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                for (const auto& diag : selected_diagnostics) {
+                    suggestion.edits.push_back(make_delete_line_edit(diag.file, diag.line));
+                }
+                suggestion.implementation_steps = {
+                    "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
+                    "Rebuild and run tests",
+                    "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
+                };
+            } else {
+                suggestion.is_safe = false;
+                suggestion.application_mode = SuggestionApplicationMode::Advisory;
+                suggestion.application_summary = "Manual review only";
+                suggestion.application_guidance =
+                    "Re-check these includes in other platform or feature configurations before removing them. Only auto-remove includes that are unused in all supported variants.";
+                if (!advisory_reasons.empty()) {
+                    std::sort(advisory_reasons.begin(), advisory_reasons.end());
+                    advisory_reasons.erase(
+                        std::unique(advisory_reasons.begin(), advisory_reasons.end()),
+                        advisory_reasons.end()
+                    );
+                    std::ostringstream reason;
+                    for (std::size_t i = 0; i < advisory_reasons.size(); ++i) {
+                        if (i > 0) {
+                            reason << "; ";
+                        }
+                        reason << advisory_reasons[i];
+                    }
+                    suggestion.auto_apply_blocked_reason = reason.str();
+                }
+                suggestion.implementation_steps = {
+                    "Verify the include across the project's supported platforms or feature sets",
+                    "Remove it manually only if it stays unused in each relevant configuration",
+                    "Rebuild and rerun clang-tidy for each supported variant"
+                };
+            }
+
+            return suggestion;
+        }
+
+        std::vector<fs::path> collect_source_files(
+            const analyzers::AnalysisResult& analysis,
+            const fs::path& project_root,
+            std::unordered_set<std::string>& source_seen
+        ) {
+            std::vector<fs::path> source_files;
+            source_files.reserve(analysis.files.size());
+
+            for (const auto& file_result : analysis.files) {
+                if (!is_source_file(file_result.file)) {
+                    continue;
+                }
+                fs::path resolved_source = resolve_project_path(file_result.file, project_root);
+                const std::string key = resolved_source.generic_string();
+                if (source_seen.insert(key).second) {
+                    source_files.push_back(std::move(resolved_source));
+                }
+            }
+
+            return source_files;
+        }
+
+        std::vector<fs::path> collect_candidate_headers(
+            const SuggestionContext& context,
+            const analyzers::DependencyAnalysisResult& deps,
+            std::vector<fs::path>& source_files,
+            std::unordered_set<std::string>& source_seen,
+            std::unordered_map<std::string, std::vector<fs::path>>& header_includers
+        ) {
+            std::vector<fs::path> candidate_headers;
+            std::unordered_set<std::string> header_seen;
+
+            for (const auto& file_result : context.analysis.files) {
+                if (!is_header_file(file_result.file)) {
+                    continue;
+                }
+                fs::path header = resolve_project_path(file_result.file, context.project_root);
+                const std::string key = header.generic_string();
+                if (header_seen.insert(key).second) {
+                    candidate_headers.push_back(std::move(header));
+                }
+            }
+
+            for (const auto& header_info : deps.headers) {
+                if (!is_header_file(header_info.path)) {
+                    continue;
+                }
+
+                const fs::path header = resolve_project_path(header_info.path, context.project_root);
+                const std::string header_key = header.generic_string();
+                if (header_seen.insert(header_key).second) {
+                    candidate_headers.push_back(header);
+                }
+
+                auto& includers = header_includers[header_key];
+                includers.reserve(includers.size() + header_info.included_by.size());
+                for (const auto& includer : header_info.included_by) {
+                    fs::path resolved_includer = resolve_project_path(includer, context.project_root);
+                    if (!is_source_file(resolved_includer)) {
+                        continue;
+                    }
+                    const std::string key = resolved_includer.generic_string();
+                    if (source_seen.insert(key).second) {
+                        source_files.push_back(resolved_includer);
+                    }
+                    includers.push_back(std::move(resolved_includer));
+                }
+            }
+
+            for (const auto& source_file : source_files) {
+                if (!fs::exists(source_file)) {
+                    continue;
+                }
+                const auto source_includes = find_include_directives(source_file);
+                for (const auto& include_dir : source_includes) {
+                    if (include_dir.is_system) {
+                        continue;
+                    }
+                    const auto included_header = resolve_local_include_path(
+                        include_dir.header_name,
+                        source_file,
+                        context.project_root
+                    );
+                    if (!included_header.has_value() || !is_header_file(*included_header)) {
+                        continue;
+                    }
+                    const std::string key = included_header->generic_string();
+                    if (header_seen.insert(key).second) {
+                        candidate_headers.push_back(*included_header);
+                    }
+                }
+            }
+
+            return candidate_headers;
+        }
+
+        std::optional<Suggestion> build_move_to_cpp_suggestion(
+            const SuggestionContext& context,
+            const fs::path& including_header,
+            const fs::path& source_file,
+            const IncludeDirective& include_dir,
+            const fs::path& included_header,
+            const analyzers::DependencyAnalysisResult::HeaderInfo* header_info,
+            const std::vector<std::string>& declared_symbols
+        ) {
+            if (find_include_for_header(source_file, include_dir.header_name).has_value()) {
+                return std::nullopt;
+            }
+            if (find_include_for_header(source_file, included_header.filename().string()).has_value()) {
+                return std::nullopt;
+            }
+
+            const auto assessment = assess_move_to_cpp(including_header, declared_symbols);
+            if (!assessment.mentions_symbol || !assessment.has_forward_decl || assessment.unsafe_usage) {
+                return std::nullopt;
+            }
+
+            auto include_decl = find_include_for_header(including_header, include_dir.header_name);
+            if (!include_decl.has_value()) {
+                include_decl = find_include_for_header(including_header, included_header.filename().string());
+            }
+            if (!include_decl.has_value()) {
+                return std::nullopt;
+            }
+
+            Suggestion suggestion;
+            suggestion.id = generate_suggestion_id("move", included_header, including_header.filename().string());
+            suggestion.type = SuggestionType::MoveToCpp;
+            const Duration include_parse_time = header_info != nullptr
+                ? header_info->total_parse_time
+                : Duration::zero();
+            const std::size_t include_count = header_info != nullptr
+                ? std::max<std::size_t>(header_info->inclusion_count, 1)
+                : 1;
+            suggestion.priority = include_parse_time > std::chrono::milliseconds(200)
+                ? Priority::Medium
+                : Priority::Low;
+            suggestion.confidence = 0.82;
+            suggestion.is_safe = true;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+
+            std::ostringstream title;
+            title << "Move " << included_header.filename().string()
+                  << " include from " << including_header.filename().string()
+                  << " to " << source_file.filename().string();
+            suggestion.title = title.str();
+
+            std::ostringstream desc;
+            desc << "Header '" << make_repo_relative(including_header)
+                 << "' already forward-declares symbols from '"
+                 << make_repo_relative(included_header)
+                 << "' and only uses them in incomplete-type-safe contexts. "
+                 << "Move the include to '" << make_repo_relative(source_file)
+                 << "' to reduce transitive dependencies.";
+            suggestion.description = desc.str();
+
+            suggestion.rationale =
+                "When a header only needs forward declarations, placing heavy includes in the .cpp "
+                "reduces incremental rebuild fanout while keeping translation units self-sufficient.";
+
+            suggestion.estimated_savings = include_parse_time / include_count;
+            if (context.trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
+                    static_cast<double>(context.trace.total_time.count());
+            }
+
+            suggestion.target_file.path = including_header;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.line_start = include_decl->line + 1;
+            suggestion.target_file.line_end = include_decl->line + 1;
+            suggestion.target_file.note = "Remove header include after confirming forward declaration coverage";
+
+            suggestion.edits.push_back(make_delete_line_edit(including_header, include_decl->line));
+
+            const std::string include_line = "#include \"" + include_dir.header_name + "\"";
+            if (auto insert_line = find_include_insertion_line(source_file)) {
+                suggestion.edits.push_back(make_insert_after_line_edit(
+                    source_file,
+                    *insert_line,
+                    include_line
+                ));
+
+                FileTarget cpp_target;
+                cpp_target.path = source_file;
+                cpp_target.action = FileAction::AddInclude;
+                cpp_target.line_start = *insert_line + 2;
+                cpp_target.line_end = *insert_line + 2;
+                cpp_target.note = "Add moved include to source file";
+                suggestion.secondary_files.push_back(std::move(cpp_target));
+            } else {
+                suggestion.edits.push_back(make_insert_at_start_edit(source_file, include_line));
+
+                FileTarget cpp_target;
+                cpp_target.path = source_file;
+                cpp_target.action = FileAction::AddInclude;
+                cpp_target.line_start = 1;
+                cpp_target.line_end = 1;
+                cpp_target.note = "Add moved include to source file";
+                suggestion.secondary_files.push_back(std::move(cpp_target));
+            }
+
+            suggestion.impact.total_files_affected = 2;
+            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
+            suggestion.implementation_steps = {
+                "Remove the include from the header",
+                "Add the include to the corresponding source file",
+                "Rebuild to verify the header still compiles with forward declarations only"
+            };
+            suggestion.caveats = {
+                "Do not move includes required by inline definitions or templates in the header",
+                "Re-verify after API changes in the moved header"
+            };
+            suggestion.verification = "Run a full rebuild and unit tests after applying the edit";
+
+            return suggestion;
+        }
+
     }  // namespace
 
     Result<SuggestionResult, Error> IncludeSuggester::suggest(
@@ -1169,7 +1547,6 @@ namespace bha::suggestions
         }
 
         const auto& deps = context.analysis.dependencies;
-        const auto& files = context.analysis.files;
         const auto compile_commands_dir = resolve_compile_commands_dir(context);
         std::unordered_map<std::string, std::vector<TidyUnusedInclude>> tidy_unused_cache;
         std::unordered_set<std::string> clang_tidy_scanned;
@@ -1211,57 +1588,11 @@ namespace bha::suggestions
                     continue;
                 }
 
-                std::vector<TidyUnusedInclude> safe_diagnostics;
-                std::vector<TidyUnusedInclude> advisory_diagnostics;
-                std::vector<std::string> advisory_reasons;
-                std::unordered_map<std::string, std::vector<std::string>> callable_symbol_cache;
-                safe_diagnostics.reserve(diagnostics.size());
-                advisory_diagnostics.reserve(diagnostics.size());
-                for (const auto& diag : diagnostics) {
-                    IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
-                    if (assessment.allow_direct_edits) {
-                        std::optional<fs::path> resolved_header;
-                        if (const auto* resolved_header_info = find_header_info(deps, diag.header_name);
-                            resolved_header_info != nullptr) {
-                            resolved_header = resolve_project_path(
-                                resolved_header_info->path,
-                                context.project_root
-                            );
-                        } else {
-                            resolved_header = resolve_local_include_path(
-                                diag.header_name,
-                                diag.file,
-                                context.project_root
-                            );
-                        }
-
-                        if (resolved_header.has_value()) {
-                            const std::string cache_key = resolved_header->lexically_normal().generic_string();
-                            auto cache_it = callable_symbol_cache.find(cache_key);
-                            if (cache_it == callable_symbol_cache.end()) {
-                                cache_it = callable_symbol_cache.emplace(
-                                    cache_key,
-                                    extract_declared_callable_names(*resolved_header)
-                                ).first;
-                            }
-
-                            if (!cache_it->second.empty() &&
-                                file_references_any_identifier(diag.file, cache_it->second)) {
-                                assessment.allow_direct_edits = false;
-                                assessment.blocked_reason =
-                                    "source file references callable API declared by the included header";
-                            }
-                        }
-                    }
-                    if (assessment.allow_direct_edits) {
-                        safe_diagnostics.push_back(diag);
-                        continue;
-                    }
-                    advisory_diagnostics.push_back(diag);
-                    if (!assessment.blocked_reason.empty()) {
-                        advisory_reasons.push_back(assessment.blocked_reason);
-                    }
-                }
+                auto classified = classify_unused_include_diagnostics(
+                    deps,
+                    diagnostics,
+                    context.project_root
+                );
 
                 const std::string header_name_copy = header_name;
                 const auto* header_info = find_header_info(deps, header_name_copy);
@@ -1269,179 +1600,43 @@ namespace bha::suggestions
                     ? header_info->total_parse_time / 4
                     : Duration::zero();
 
-                auto build_include_removal_suggestion = [&](const std::vector<TidyUnusedInclude>& selected_diagnostics,
-                                                           const bool direct_edits) {
-                    Suggestion suggestion;
-                    suggestion.id = generate_suggestion_id(
-                        direct_edits ? "unused-explicit" : "unused-explicit-advisory",
-                        fs::path(header_name_copy)
-                    );
-                    suggestion.type = SuggestionType::IncludeRemoval;
-                    suggestion.priority = selected_diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
-                    suggestion.confidence = direct_edits ? 0.98 : 0.72;
-                    suggestion.title = (direct_edits
-                        ? "Remove unused include of "
-                        : "Review conditional/platform-specific include of ") +
-                        fs::path(header_name_copy).filename().string();
-                    suggestion.estimated_savings = estimated_savings;
-                    if (context.trace.total_time.count() > 0) {
-                        suggestion.estimated_savings_percent =
-                            100.0 * static_cast<double>(estimated_savings.count()) /
-                            static_cast<double>(context.trace.total_time.count());
-                    }
-
-                    std::ostringstream desc;
-                    desc << "clang-tidy misc-include-cleaner reported '" << header_name_copy
-                         << "' as unused in " << selected_diagnostics.size() << " translation units.";
-                    suggestion.description = desc.str();
-                    suggestion.rationale =
-                        "This suggestion is based on explicit semantic diagnostics from clang-tidy, but BHA avoids auto-removing includes when the active build configuration may hide cross-platform or conditional dependencies.";
-
-                    suggestion.target_file.path = selected_diagnostics.front().file;
-                    suggestion.target_file.action = FileAction::Modify;
-                    suggestion.target_file.line_start = selected_diagnostics.front().line + 1;
-                    suggestion.target_file.line_end = selected_diagnostics.front().line + 1;
-                    suggestion.target_file.note = direct_edits
-                        ? "Remove unused include confirmed by clang-tidy"
-                        : "Review include manually before removing it";
-
-                    suggestion.impact.total_files_affected = selected_diagnostics.size();
-                    suggestion.impact.cumulative_savings = estimated_savings;
-                    suggestion.caveats = {
-                        "Diagnostics reflect the active compile_commands.json configuration",
-                        "Cross-platform and feature-gated builds may still require these includes in other variants"
-                    };
-                    suggestion.verification = "Compile all supported targets after applying the edits";
-
-                    if (direct_edits) {
-                        suggestion.is_safe = true;
-                        suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-                        for (const auto& diag : selected_diagnostics) {
-                            suggestion.edits.push_back(make_delete_line_edit(diag.file, diag.line));
-                        }
-                        suggestion.implementation_steps = {
-                            "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
-                            "Rebuild and run tests",
-                            "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
-                        };
-                    } else {
-                        suggestion.is_safe = false;
-                        suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                        suggestion.application_summary = "Manual review only";
-                        suggestion.application_guidance =
-                            "Re-check these includes in other platform or feature configurations before removing them. Only auto-remove includes that are unused in all supported variants.";
-                        if (!advisory_reasons.empty()) {
-                            std::sort(advisory_reasons.begin(), advisory_reasons.end());
-                            advisory_reasons.erase(
-                                std::unique(advisory_reasons.begin(), advisory_reasons.end()),
-                                advisory_reasons.end()
-                            );
-                            std::ostringstream reason;
-                            for (std::size_t i = 0; i < advisory_reasons.size(); ++i) {
-                                if (i > 0) {
-                                    reason << "; ";
-                                }
-                                reason << advisory_reasons[i];
-                            }
-                            suggestion.auto_apply_blocked_reason = reason.str();
-                        }
-                        suggestion.implementation_steps = {
-                            "Verify the include across the project's supported platforms or feature sets",
-                            "Remove it manually only if it stays unused in each relevant configuration",
-                            "Rebuild and rerun clang-tidy for each supported variant"
-                        };
-                    }
-
-                    result.suggestions.push_back(std::move(suggestion));
-                };
-
-                if (!safe_diagnostics.empty()) {
-                    build_include_removal_suggestion(safe_diagnostics, true);
+                if (!classified.safe_diagnostics.empty()) {
+                    result.suggestions.push_back(build_include_removal_suggestion(
+                        context,
+                        header_name_copy,
+                        classified.safe_diagnostics,
+                        {},
+                        estimated_savings,
+                        true
+                    ));
                 }
-                if (!advisory_diagnostics.empty()) {
-                    build_include_removal_suggestion(advisory_diagnostics, false);
+                if (!classified.advisory_diagnostics.empty()) {
+                    result.suggestions.push_back(build_include_removal_suggestion(
+                        context,
+                        header_name_copy,
+                        classified.advisory_diagnostics,
+                        classified.advisory_reasons,
+                        estimated_savings,
+                        false
+                    ));
                 }
             }
         }
 
-        std::vector<fs::path> source_files;
-        source_files.reserve(files.size());
         std::unordered_set<std::string> source_seen;
-        for (const auto& file_result : files) {
-            if (!is_source_file(file_result.file)) {
-                continue;
-            }
-            fs::path resolved_source = resolve_project_path(file_result.file, context.project_root);
-            const std::string key = resolved_source.generic_string();
-            if (source_seen.insert(key).second) {
-                source_files.push_back(std::move(resolved_source));
-            }
-        }
-
-        std::vector<fs::path> candidate_headers;
-        std::unordered_set<std::string> header_seen;
+        std::vector<fs::path> source_files = collect_source_files(
+            context.analysis,
+            context.project_root,
+            source_seen
+        );
         std::unordered_map<std::string, std::vector<fs::path>> header_includers;
-
-        for (const auto& file_result : files) {
-            if (!is_header_file(file_result.file)) {
-                continue;
-            }
-            fs::path header = resolve_project_path(file_result.file, context.project_root);
-            const std::string key = header.generic_string();
-            if (header_seen.insert(key).second) {
-                candidate_headers.push_back(std::move(header));
-            }
-        }
-
-        for (const auto& header_info : deps.headers) {
-            if (!is_header_file(header_info.path)) {
-                continue;
-            }
-
-            const fs::path header = resolve_project_path(header_info.path, context.project_root);
-            const std::string header_key = header.generic_string();
-            if (header_seen.insert(header_key).second) {
-                candidate_headers.push_back(header);
-            }
-
-            auto& includers = header_includers[header_key];
-            includers.reserve(includers.size() + header_info.included_by.size());
-            for (const auto& includer : header_info.included_by) {
-                fs::path resolved_includer = resolve_project_path(includer, context.project_root);
-                if (!is_source_file(resolved_includer)) {
-                    continue;
-                }
-                const std::string key = resolved_includer.generic_string();
-                if (source_seen.insert(key).second) {
-                    source_files.push_back(resolved_includer);
-                }
-                includers.push_back(std::move(resolved_includer));
-            }
-        }
-
-        for (const auto& source_file : source_files) {
-            if (!fs::exists(source_file)) {
-                continue;
-            }
-            const auto source_includes = find_include_directives(source_file);
-            for (const auto& include_dir : source_includes) {
-                if (include_dir.is_system) {
-                    continue;
-                }
-                const auto included_header = resolve_local_include_path(
-                    include_dir.header_name,
-                    source_file,
-                    context.project_root
-                );
-                if (!included_header.has_value() || !is_header_file(*included_header)) {
-                    continue;
-                }
-                const std::string key = included_header->generic_string();
-                if (header_seen.insert(key).second) {
-                    candidate_headers.push_back(*included_header);
-                }
-            }
-        }
+        std::vector<fs::path> candidate_headers = collect_candidate_headers(
+            context,
+            deps,
+            source_files,
+            source_seen,
+            header_includers
+        );
 
         std::unordered_set<std::string> emitted_move_keys;
         std::unordered_map<std::string, std::vector<std::string>> declared_symbol_cache;
@@ -1516,13 +1711,6 @@ namespace bha::suggestions
                     continue;
                 }
 
-                if (find_include_for_header(*source_file, include_dir.header_name).has_value()) {
-                    continue;
-                }
-                if (find_include_for_header(*source_file, included_header.filename().string()).has_value()) {
-                    continue;
-                }
-
                 const std::string cache_key = included_header.generic_string();
                 auto cache_it = declared_symbol_cache.find(cache_key);
                 if (cache_it == declared_symbol_cache.end()) {
@@ -1532,111 +1720,18 @@ namespace bha::suggestions
                     ).first;
                 }
 
-                const auto assessment = assess_move_to_cpp(including_header, cache_it->second);
-                if (!assessment.mentions_symbol || !assessment.has_forward_decl || assessment.unsafe_usage) {
-                    continue;
-                }
-
-                auto include_decl = find_include_for_header(including_header, include_dir.header_name);
-                if (!include_decl.has_value()) {
-                    include_decl = find_include_for_header(including_header, included_header.filename().string());
-                }
-                if (!include_decl.has_value()) {
-                    continue;
-                }
-
-                Suggestion suggestion;
-                suggestion.id = generate_suggestion_id("move", included_header, including_header.filename().string());
-                suggestion.type = SuggestionType::MoveToCpp;
-                const Duration include_parse_time = header_info != nullptr
-                    ? header_info->total_parse_time
-                    : Duration::zero();
-                const std::size_t include_count = header_info != nullptr
-                    ? std::max<std::size_t>(header_info->inclusion_count, 1)
-                    : 1;
-                suggestion.priority = include_parse_time > std::chrono::milliseconds(200)
-                    ? Priority::Medium
-                    : Priority::Low;
-                suggestion.confidence = 0.82;
-                suggestion.is_safe = true;
-                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-
-                std::ostringstream title;
-                title << "Move " << included_header.filename().string()
-                      << " include from " << including_header.filename().string()
-                      << " to " << source_file->filename().string();
-                suggestion.title = title.str();
-
-                std::ostringstream desc;
-                desc << "Header '" << make_repo_relative(including_header)
-                     << "' already forward-declares symbols from '"
-                     << make_repo_relative(included_header)
-                     << "' and only uses them in incomplete-type-safe contexts. "
-                     << "Move the include to '" << make_repo_relative(*source_file)
-                     << "' to reduce transitive dependencies.";
-                suggestion.description = desc.str();
-
-                suggestion.rationale =
-                    "When a header only needs forward declarations, placing heavy includes in the .cpp "
-                    "reduces incremental rebuild fanout while keeping translation units self-sufficient.";
-
-                suggestion.estimated_savings = include_parse_time / include_count;
-                if (context.trace.total_time.count() > 0) {
-                    suggestion.estimated_savings_percent =
-                        100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                        static_cast<double>(context.trace.total_time.count());
-                }
-
-                suggestion.target_file.path = including_header;
-                suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.line_start = include_decl->line + 1;
-                suggestion.target_file.line_end = include_decl->line + 1;
-                suggestion.target_file.note = "Remove header include after confirming forward declaration coverage";
-
-                suggestion.edits.push_back(make_delete_line_edit(including_header, include_decl->line));
-
-                const std::string include_line = "#include \"" + include_dir.header_name + "\"";
-                if (auto insert_line = find_include_insertion_line(*source_file)) {
-                    suggestion.edits.push_back(make_insert_after_line_edit(
+                if (auto suggestion = build_move_to_cpp_suggestion(
+                        context,
+                        including_header,
                         *source_file,
-                        *insert_line,
-                        include_line
-                    ));
-
-                    FileTarget cpp_target;
-                    cpp_target.path = *source_file;
-                    cpp_target.action = FileAction::AddInclude;
-                    cpp_target.line_start = *insert_line + 2;
-                    cpp_target.line_end = *insert_line + 2;
-                    cpp_target.note = "Add moved include to source file";
-                    suggestion.secondary_files.push_back(std::move(cpp_target));
-                } else {
-                    suggestion.edits.push_back(make_insert_at_start_edit(*source_file, include_line));
-
-                    FileTarget cpp_target;
-                    cpp_target.path = *source_file;
-                    cpp_target.action = FileAction::AddInclude;
-                    cpp_target.line_start = 1;
-                    cpp_target.line_end = 1;
-                    cpp_target.note = "Add moved include to source file";
-                    suggestion.secondary_files.push_back(std::move(cpp_target));
+                        include_dir,
+                        included_header,
+                        header_info,
+                        cache_it->second
+                    )) {
+                    result.suggestions.push_back(std::move(*suggestion));
+                    emitted_from_header = true;
                 }
-
-                suggestion.impact.total_files_affected = 2;
-                suggestion.impact.cumulative_savings = suggestion.estimated_savings;
-                suggestion.implementation_steps = {
-                    "Remove the include from the header",
-                    "Add the include to the corresponding source file",
-                    "Rebuild to verify the header still compiles with forward declarations only"
-                };
-                suggestion.caveats = {
-                    "Do not move includes required by inline definitions or templates in the header",
-                    "Re-verify after API changes in the moved header"
-                };
-                suggestion.verification = "Run a full rebuild and unit tests after applying the edit";
-
-                result.suggestions.push_back(std::move(suggestion));
-                emitted_from_header = true;
             }
 
             if (!emitted_from_header) {
