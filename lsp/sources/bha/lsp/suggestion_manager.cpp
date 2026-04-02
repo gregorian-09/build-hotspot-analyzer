@@ -958,6 +958,21 @@ namespace bha::lsp
                !suggestion.secondary_files.empty();
     }
 
+    std::vector<fs::path> collect_unique_edit_files(const std::vector<bha::TextEdit>& edits) {
+        std::vector<fs::path> files_to_backup;
+        std::unordered_set<std::string> seen;
+        files_to_backup.reserve(edits.size());
+        for (const auto& edit : edits) {
+            const fs::path file = edit.file;
+            const std::string key = file.lexically_normal().generic_string();
+            if (!seen.insert(key).second) {
+                continue;
+            }
+            files_to_backup.push_back(file);
+        }
+        return files_to_backup;
+    }
+
     struct SuggestionApplyCapabilities {
         bha::SuggestionApplicationMode mode = bha::SuggestionApplicationMode::Advisory;
         bool is_auto_applicable = false;
@@ -2838,29 +2853,14 @@ namespace bha::lsp
             return result;
         }
 
-        std::vector<fs::path> files_to_backup;
-        std::unordered_set<std::string> seen;
-        files_to_backup.reserve(edits.size());
-        for (const auto& edit : edits) {
-            const fs::path file = edit.file;
-            const std::string key = file.lexically_normal().generic_string();
-            if (!seen.insert(key).second) {
-                continue;
-            }
-            files_to_backup.push_back(file);
-        }
-
-        if (create_backup_flag && !files_to_backup.empty()) {
-            const std::string backup_id = create_backup(files_to_backup);
-            if (backup_id.empty()) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.source = "bha-lsp";
-                diag.message = "Failed to create durable backup before applying edit bundle";
-                result.errors.push_back(std::move(diag));
-                return result;
-            }
-            result.backup_id = backup_id;
+        const auto files_to_backup = collect_unique_edit_files(edits);
+        if (create_backup_flag &&
+            !create_backup_for_files(
+                files_to_backup,
+                "Failed to create durable backup before applying edit bundle",
+                result
+            )) {
+            return result;
         }
 
         bha::Suggestion synthetic;
@@ -2877,23 +2877,16 @@ namespace bha::lsp
             diag.message = "Failed to apply edit bundle";
             result.errors.push_back(std::move(diag));
             if (result.backup_id) {
-                if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
-                    for (auto& revert_error : revert.errors) {
-                        result.errors.push_back(std::move(revert_error));
-                    }
-                    Diagnostic rollback_diag;
-                    rollback_diag.severity = DiagnosticSeverity::Error;
-                    rollback_diag.message = "Automatic rollback failed after edit-bundle apply failure";
-                    rollback_diag.source = "bha-lsp";
-                    result.errors.push_back(std::move(rollback_diag));
-                }
+                rollback_apply_suggestion(
+                    result,
+                    {},
+                    "Automatic rollback failed after edit-bundle apply failure"
+                );
             }
             return result;
         }
 
-        for (const auto& file : changed_files) {
-            result.changed_files.push_back(file.string());
-        }
+        append_changed_files(result, changed_files);
         result.success = true;
         return result;
     }
