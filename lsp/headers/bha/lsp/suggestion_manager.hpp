@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <functional>
 #include <optional>
+#include <string_view>
+#include <unordered_set>
 
 namespace bha::lsp
 {
@@ -202,6 +204,35 @@ namespace bha::lsp
         std::string create_memory_backup(const std::vector<fs::path>& files);
         static bool validate_files_exist(const std::vector<fs::path>& files);
         static bool apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files);
+        static bool capture_transactional_snapshot(
+            const std::vector<fs::path>& files,
+            std::vector<FileBackup>& snapshot,
+            std::vector<Diagnostic>& errors
+        );
+        static bool restore_transactional_snapshot(
+            const std::vector<FileBackup>& snapshot,
+            std::vector<Diagnostic>& errors
+        );
+        static void append_changed_files(
+            ApplySuggestionResult& result,
+            const std::vector<fs::path>& changed_files
+        );
+        static void merge_apply_all_success(
+            ApplyAllResult& result,
+            const std::string& suggestion_id,
+            const ApplySuggestionResult& apply_result,
+            std::unordered_set<std::string>& changed_file_set
+        );
+        static void merge_apply_all_failure(
+            ApplyAllResult& result,
+            const ApplySuggestionResult& apply_result
+        );
+        bool rollback_apply_suggestion(
+            ApplySuggestionResult& result,
+            const std::vector<FileBackup>& transactional_snapshot,
+            std::string_view rollback_failure_message
+        );
+        bool validate_post_apply_rebuild(ApplySuggestionResult& result);
         bool validate_forward_decl_suggestion(
             const bha::Suggestion& suggestion,
             const std::vector<fs::path>& changed_files,

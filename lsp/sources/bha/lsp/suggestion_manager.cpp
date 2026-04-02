@@ -2177,6 +2177,176 @@ namespace bha::lsp
         return it->second;
     }
 
+    bool SuggestionManager::capture_transactional_snapshot(
+        const std::vector<fs::path>& files,
+        std::vector<FileBackup>& snapshot,
+        std::vector<Diagnostic>& errors
+    ) {
+        std::unordered_set<std::string> seen;
+        for (const auto& file : files) {
+            const fs::path normalized = file.lexically_normal();
+            const std::string key = normalized.generic_string();
+            if (!seen.insert(key).second) {
+                continue;
+            }
+
+            std::ifstream in(normalized, std::ios::binary);
+            if (!in) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Failed to capture rollback snapshot for " + normalized.string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            snapshot.push_back(FileBackup{
+                normalized,
+                true,
+                std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>())
+            });
+        }
+        return true;
+    }
+
+    bool SuggestionManager::restore_transactional_snapshot(
+        const std::vector<FileBackup>& snapshot,
+        std::vector<Diagnostic>& errors
+    ) {
+        bool success = true;
+        for (const auto& backup : snapshot) {
+            try {
+                if (const fs::path parent = backup.path.parent_path(); !parent.empty()) {
+                    fs::create_directories(parent);
+                }
+                std::ofstream out(backup.path, std::ios::binary | std::ios::trunc);
+                if (!out) {
+                    success = false;
+                    Diagnostic diag;
+                    diag.severity = DiagnosticSeverity::Error;
+                    diag.source = "bha-lsp";
+                    diag.message = "Failed to restore snapshot file: " + backup.path.string();
+                    errors.push_back(std::move(diag));
+                    continue;
+                }
+                out << backup.content;
+            } catch (const std::exception& e) {
+                success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Exception while restoring snapshot for " + backup.path.string() + ": " + e.what();
+                errors.push_back(std::move(diag));
+            }
+        }
+        return success;
+    }
+
+    void SuggestionManager::append_changed_files(
+        ApplySuggestionResult& result,
+        const std::vector<fs::path>& changed_files
+    ) {
+        for (const auto& file : changed_files) {
+            result.changed_files.push_back(file.string());
+        }
+    }
+
+    void SuggestionManager::merge_apply_all_success(
+        ApplyAllResult& result,
+        const std::string& suggestion_id,
+        const ApplySuggestionResult& apply_result,
+        std::unordered_set<std::string>& changed_file_set
+    ) {
+        result.applied_count++;
+        result.applied_suggestion_ids.push_back(suggestion_id);
+        for (const auto& file : apply_result.changed_files) {
+            if (changed_file_set.insert(file).second) {
+                result.changed_files.push_back(file);
+            }
+        }
+    }
+
+    void SuggestionManager::merge_apply_all_failure(
+        ApplyAllResult& result,
+        const ApplySuggestionResult& apply_result
+    ) {
+        result.skipped_count++;
+        result.errors.insert(
+            result.errors.end(),
+            apply_result.errors.begin(),
+            apply_result.errors.end()
+        );
+    }
+
+    bool SuggestionManager::rollback_apply_suggestion(
+        ApplySuggestionResult& result,
+        const std::vector<FileBackup>& transactional_snapshot,
+        const std::string_view rollback_failure_message
+    ) {
+        bool rollback_success = true;
+        if (result.backup_id) {
+            if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
+                rollback_success = false;
+                for (auto& revert_error : revert.errors) {
+                    result.errors.push_back(std::move(revert_error));
+                }
+            }
+        } else if (!transactional_snapshot.empty()) {
+            rollback_success = restore_transactional_snapshot(transactional_snapshot, result.errors);
+        }
+
+        if (!rollback_success) {
+            Diagnostic rollback_diag;
+            rollback_diag.severity = DiagnosticSeverity::Error;
+            rollback_diag.message = std::string(rollback_failure_message);
+            rollback_diag.source = "bha-lsp";
+            result.errors.push_back(std::move(rollback_diag));
+        }
+
+        return rollback_success;
+    }
+
+    bool SuggestionManager::validate_post_apply_rebuild(ApplySuggestionResult& result) {
+        if (last_analysis_id_.empty()) {
+            return true;
+        }
+
+        auto& analysis = analysis_cache_[last_analysis_id_];
+        auto& registry = build_systems::BuildSystemRegistry::instance();
+
+        if (analysis.units.empty()) {
+            return true;
+        }
+
+        const fs::path source_dir = analysis.units[0].source_file.parent_path();
+        const auto project_root = detect_project_root_with_registered_adapters(source_dir, registry);
+        build_systems::IBuildSystemAdapter* adapter =
+            project_root.has_value() ? registry.detect(*project_root) : nullptr;
+
+        if (!project_root.has_value() || adapter == nullptr) {
+            return true;
+        }
+
+        build_systems::BuildOptions options;
+        if (auto build_result = adapter->build(*project_root, options);
+            build_result.is_ok() && build_result.value().success) {
+            BuildResult lsp_build_result;
+            lsp_build_result.success = true;
+            result.build_result = lsp_build_result;
+            return true;
+        }
+
+        BuildResult lsp_build_result;
+        lsp_build_result.success = false;
+        result.build_result = lsp_build_result;
+
+        Diagnostic diag;
+        diag.severity = DiagnosticSeverity::Error;
+        diag.message = "Build failed after applying suggestion";
+        result.errors.push_back(std::move(diag));
+        return false;
+    }
+
     bool SuggestionManager::validate_forward_decl_suggestion(
         const bha::Suggestion& suggestion,
         const std::vector<fs::path>& changed_files,
@@ -2386,62 +2556,6 @@ namespace bha::lsp
             config_.enforce_forward_decl_syntax_gate;
 
         std::vector<FileBackup> transactional_snapshot;
-        const auto capture_transactional_snapshot = [&](const std::vector<fs::path>& files) -> bool {
-            std::unordered_set<std::string> seen;
-            for (const auto& file : files) {
-                const fs::path normalized = file.lexically_normal();
-                const std::string key = normalized.generic_string();
-                if (!seen.insert(key).second) {
-                    continue;
-                }
-
-                std::ifstream in(normalized, std::ios::binary);
-                if (!in) {
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.source = "bha-lsp";
-                    diag.message = "Failed to capture rollback snapshot for " + normalized.string();
-                    result.errors.push_back(std::move(diag));
-                    return false;
-                }
-
-                transactional_snapshot.push_back(FileBackup{
-                    normalized,
-                    true,
-                    std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>())
-                });
-            }
-            return true;
-        };
-        const auto restore_transactional_snapshot = [&]() -> bool {
-            bool success = true;
-            for (const auto& backup : transactional_snapshot) {
-                try {
-                    if (const fs::path parent = backup.path.parent_path(); !parent.empty()) {
-                        fs::create_directories(parent);
-                    }
-                    std::ofstream out(backup.path, std::ios::binary | std::ios::trunc);
-                    if (!out) {
-                        success = false;
-                        Diagnostic diag;
-                        diag.severity = DiagnosticSeverity::Error;
-                        diag.source = "bha-lsp";
-                        diag.message = "Failed to restore snapshot file: " + backup.path.string();
-                        result.errors.push_back(std::move(diag));
-                        continue;
-                    }
-                    out << backup.content;
-                } catch (const std::exception& e) {
-                    success = false;
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.source = "bha-lsp";
-                    diag.message = "Exception while restoring snapshot for " + backup.path.string() + ": " + e.what();
-                    result.errors.push_back(std::move(diag));
-                }
-            }
-            return success;
-        };
 
         std::vector<fs::path> changed_files;
         if (application_mode == bha::SuggestionApplicationMode::ExternalRefactor) {
@@ -2607,7 +2721,7 @@ namespace bha::lsp
                 result.backup_id = backup_id;
             }
             if (enforce_forward_decl_validation && !files_to_backup.empty() &&
-                !capture_transactional_snapshot(files_to_backup)) {
+                !capture_transactional_snapshot(files_to_backup, transactional_snapshot, result.errors)) {
                 return result;
             }
 
@@ -2618,26 +2732,14 @@ namespace bha::lsp
                                " (" + bha_sug.title + ")";
                 result.errors.push_back(diag);
 
-                if (result.backup_id) {
-                    if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
-                        for (auto& revert_error : revert.errors) {
-                            result.errors.push_back(std::move(revert_error));
-                        }
-                        Diagnostic rollback_diag;
-                        rollback_diag.severity = DiagnosticSeverity::Error;
-                        rollback_diag.message = "Automatic rollback failed after apply failure";
-                        rollback_diag.source = "bha-lsp";
-                        result.errors.push_back(std::move(rollback_diag));
-                    }
-                } else if (enforce_forward_decl_validation && !transactional_snapshot.empty()) {
-                    if (!restore_transactional_snapshot()) {
-                        Diagnostic rollback_diag;
-                        rollback_diag.severity = DiagnosticSeverity::Error;
-                        rollback_diag.message =
-                            "Automatic rollback failed after forward-declaration apply failure";
-                        rollback_diag.source = "bha-lsp";
-                        result.errors.push_back(std::move(rollback_diag));
-                    }
+                if (result.backup_id || (enforce_forward_decl_validation && !transactional_snapshot.empty())) {
+                    rollback_apply_suggestion(
+                        result,
+                        transactional_snapshot,
+                        enforce_forward_decl_validation
+                            ? "Automatic rollback failed after forward-declaration apply failure"
+                            : "Automatic rollback failed after apply failure"
+                    );
                 }
                 return result;
             }
@@ -2645,75 +2747,25 @@ namespace bha::lsp
 
         if (enforce_forward_decl_validation &&
             !validate_forward_decl_suggestion(bha_sug, changed_files, result.errors)) {
-            bool rollback_success = !result.backup_id.has_value() && transactional_snapshot.empty();
-            if (result.backup_id) {
-                const auto rollback = revert_changes_detailed(*result.backup_id);
-                rollback_success = rollback.success;
-                if (!rollback.success) {
-                    result.errors.insert(result.errors.end(), rollback.errors.begin(), rollback.errors.end());
-                }
-            } else if (!transactional_snapshot.empty()) {
-                rollback_success = restore_transactional_snapshot();
-            }
-
-            if (!rollback_success) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.source = "bha-lsp";
-                diag.message =
-                    "Forward declaration syntax validation failed and automatic rollback did not complete";
-                result.errors.push_back(std::move(diag));
-            }
+            rollback_apply_suggestion(
+                result,
+                transactional_snapshot,
+                "Forward declaration syntax validation failed and automatic rollback did not complete"
+            );
             return result;
         }
 
-        for (const auto& file : changed_files) {
-            result.changed_files.push_back(file.string());
-        }
+        append_changed_files(result, changed_files);
 
-        if (!skip_rebuild && !last_analysis_id_.empty()) {
-            auto& analysis = analysis_cache_[last_analysis_id_];
-            auto& registry = build_systems::BuildSystemRegistry::instance();
-
-            if (!analysis.units.empty()) {
-                const fs::path source_dir = analysis.units[0].source_file.parent_path();
-                const auto project_root = detect_project_root_with_registered_adapters(source_dir, registry);
-                build_systems::IBuildSystemAdapter* adapter =
-                    project_root.has_value() ? registry.detect(*project_root) : nullptr;
-
-                if (project_root.has_value() && adapter != nullptr) {
-                    build_systems::BuildOptions options;
-
-                    if (auto build_result = adapter->build(*project_root, options); build_result.is_ok() && build_result.value().success) {
-                        BuildResult lsp_build_result;
-                        lsp_build_result.success = true;
-                        result.build_result = lsp_build_result;
-                    } else {
-                        BuildResult lsp_build_result;
-                        lsp_build_result.success = false;
-                        result.build_result = lsp_build_result;
-
-                        Diagnostic diag;
-                        diag.severity = DiagnosticSeverity::Error;
-                        diag.message = "Build failed after applying suggestion";
-                        result.errors.push_back(diag);
-
-                        if (result.backup_id) {
-                            if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
-                                for (auto& revert_error : revert.errors) {
-                                    result.errors.push_back(std::move(revert_error));
-                                }
-                                Diagnostic rollback_diag;
-                                rollback_diag.severity = DiagnosticSeverity::Error;
-                                rollback_diag.message = "Automatic rollback failed after build failure";
-                                rollback_diag.source = "bha-lsp";
-                                result.errors.push_back(std::move(rollback_diag));
-                            }
-                        }
-                        return result;
-                    }
-                }
+        if (!skip_rebuild && !validate_post_apply_rebuild(result)) {
+            if (result.backup_id) {
+                rollback_apply_suggestion(
+                    result,
+                    transactional_snapshot,
+                    "Automatic rollback failed after build failure"
+                );
             }
+            return result;
         }
 
         result.success = true;
@@ -3818,13 +3870,7 @@ namespace bha::lsp
 
             auto apply_result = apply_suggestion(best_id, false, true, false);
             if (apply_result.success) {
-                result.applied_count++;
-                result.applied_suggestion_ids.push_back(best_id);
-                for (const auto& file : apply_result.changed_files) {
-                    if (changed_file_set.insert(file).second) {
-                        result.changed_files.push_back(file);
-                    }
-                }
+                merge_apply_all_success(result, best_id, apply_result, changed_file_set);
 
                 if (!pending.empty() && rerank_remaining) {
                     try {
@@ -3852,10 +3898,7 @@ namespace bha::lsp
                     }
                 }
             } else {
-                result.skipped_count++;
-                result.errors.insert(result.errors.end(),
-                                     apply_result.errors.begin(),
-                                     apply_result.errors.end());
+                merge_apply_all_failure(result, apply_result);
             }
         }
 
