@@ -30,6 +30,7 @@
 #include <atomic>
 #include <cstdio>
 #include <cstdint>
+#include <cmath>
 #include <fstream>
 #include <functional>
 #include <optional>
@@ -1032,6 +1033,39 @@ namespace bha::suggestions {
             return {make_insert_after_line_edit(file, *line, content), *line + 2};
         }
         return {make_insert_at_start_edit(file, content), 1};
+    }
+
+    [[nodiscard]] inline double saturating_count_factor(
+        const std::size_t count,
+        const std::size_t saturation_count
+    ) {
+        if (count == 0) {
+            return 0.0;
+        }
+        if (saturation_count <= 1) {
+            return 1.0;
+        }
+
+        const double numerator = std::log1p(static_cast<double>(count));
+        const double denominator = std::log1p(static_cast<double>(saturation_count));
+        if (denominator <= 0.0) {
+            return 1.0;
+        }
+        return std::clamp(numerator / denominator, 0.0, 1.0);
+    }
+
+    [[nodiscard]] inline Duration scaled_duration(
+        const Duration duration,
+        const double factor
+    ) {
+        if (duration <= Duration::zero() || factor <= 0.0) {
+            return Duration::zero();
+        }
+
+        const auto scaled = static_cast<Duration::rep>(
+            static_cast<double>(duration.count()) * factor
+        );
+        return Duration(std::max<Duration::rep>(0, scaled));
     }
 
     [[nodiscard]] inline std::size_t end_of_file_insert_line(const std::string& content) {

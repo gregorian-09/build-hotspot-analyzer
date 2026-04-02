@@ -193,36 +193,33 @@ namespace bha::suggestions
             const std::size_t includer_count,
             const SplitPattern pattern
         ) {
-            // Base forward-declaration-only ratio: 30% of includers typically only need fwd decls
             constexpr double fwd_only_ratio = 0.30;
             double reduction_factor = fwd_only_ratio;
             switch (pattern) {
                 case SplitPattern::ForwardDecl:
-                    // 30-40% of includers might only need forward decls
                     reduction_factor = fwd_only_ratio;
                     break;
                 case SplitPattern::TypesAndFwd:
-                    // Types+fwd gives more options
                     reduction_factor = 0.25;
                     break;
                 case SplitPattern::FunctionalGroups:
-                    // Groups allow targeted includes
                     reduction_factor = 0.20;
                     break;
                 case SplitPattern::PublicPrivate:
-                    // Public/private split helps internal vs external
                     reduction_factor = 0.15;
                     break;
             }
 
-            const auto parse_ns = parse_time.count();
-            const double includer_factor = std::log(static_cast<double>(includer_count) + 1); // Log scale for includers (diminishing returns)
-
-            const auto savings_ns = static_cast<Duration::rep>(
-                static_cast<double>(parse_ns) * reduction_factor * includer_factor
+            // Aggregate parse time already captures repeated parsing work, so only
+            // apply a bounded fanout factor here to avoid over-crediting wide but
+            // shallow include graphs.
+            constexpr std::size_t kHeaderSplitFanoutSaturation = 48;
+            const double fanout_factor = saturating_count_factor(
+                includer_count,
+                kHeaderSplitFanoutSaturation
             );
 
-            return Duration(savings_ns);
+            return scaled_duration(parse_time, reduction_factor * fanout_factor);
         }
 
         /**

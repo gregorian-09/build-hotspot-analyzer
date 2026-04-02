@@ -224,6 +224,29 @@ namespace bha::suggestions
                   result.value().suggestions[1].estimated_savings);
     }
 
+    TEST_F(HeaderSplitSuggesterTest, EstimatedSavingsRemainBoundedByAggregateParseTime) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(20);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = "huge_header.h";
+        header.total_parse_time = std::chrono::seconds(2);
+        header.including_files = 200;
+        header.inclusion_count = 260;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, {}};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+        EXPECT_LT(result.value().suggestions.front().estimated_savings,
+                  std::chrono::milliseconds(650));
+    }
+
     TEST_F(HeaderSplitSuggesterTest, CalculatesCorrectPriority) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(120);

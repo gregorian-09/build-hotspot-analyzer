@@ -1301,18 +1301,17 @@ namespace bha::suggestions
                 return Duration::zero();
             }
 
-            const Duration per_unit = total_parse_time / inclusion_count;
-
-            constexpr double load_overhead = 0.15;
-            constexpr double effective_savings = 1.0 - load_overhead;
-
-            const auto savings_ns = static_cast<Duration::rep>(
-                static_cast<double>(per_unit.count()) *
-                static_cast<double>(inclusion_count - 1) *
-                effective_savings
+            // Aggregate parse time already includes all repeated work for this
+            // header. PCH can only reclaim a bounded fraction of that cost in a
+            // real build because cache creation, force-include overhead, and
+            // non-uniform header usage remain.
+            constexpr double kPchMaxSavingsFraction = 0.35;
+            constexpr std::size_t kPchReuseSaturation = 64;
+            const double reuse_factor = saturating_count_factor(
+                inclusion_count - 1,
+                kPchReuseSaturation
             );
-
-            return Duration(savings_ns);
+            return scaled_duration(total_parse_time, kPchMaxSavingsFraction * reuse_factor);
         }
 
         std::optional<Suggestion> build_unreal_module_pch_suggestion(const SuggestionContext& context) {

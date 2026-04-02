@@ -73,6 +73,30 @@ namespace bha::suggestions
         }
     }
 
+    TEST_F(PCHSuggesterTest, EstimatedSavingsRemainBoundedByAggregateParseTime) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(30);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = "pch_candidate.h";
+        header.total_parse_time = std::chrono::seconds(4);
+        header.inclusion_count = 200;
+        header.including_files = 160;
+        header.is_stable = true;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, {}};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+        EXPECT_LT(result.value().suggestions.front().estimated_savings,
+                  std::chrono::milliseconds(1500));
+    }
+
     TEST_F(PCHSuggesterTest, SkipsLowInclusionCount) {
         BuildTrace trace;
         analyzers::AnalysisResult analysis;
