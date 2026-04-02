@@ -896,6 +896,496 @@ namespace bha::suggestions
             return lines.size();
         }
 
+        struct TemplateRenderInfo {
+            std::string template_name;
+            std::string normalized_template_name;
+            std::string base_name;
+            std::string short_name;
+            std::string class_key = "class";
+            bool is_function_template = false;
+            std::string instantiation_line;
+            std::string extern_line;
+        };
+
+        std::string make_short_template_name(const std::string& template_name) {
+            std::string short_name = template_name;
+            if (const auto angle_pos = template_name.find('<'); angle_pos != std::string::npos) {
+                if (const auto last_colon = template_name.rfind("::", angle_pos); last_colon != std::string::npos) {
+                    short_name = template_name.substr(last_colon + 2, angle_pos - last_colon - 2);
+                } else {
+                    short_name = template_name.substr(0, angle_pos);
+                }
+            }
+            return short_name;
+        }
+
+        TemplateRenderInfo make_template_render_info(
+            const std::string& template_name,
+            const std::string& normalized_template_name,
+            const std::string& base_name,
+            const std::string& class_key,
+            const bool is_function_template
+        ) {
+            TemplateRenderInfo render;
+            render.template_name = template_name;
+            render.normalized_template_name = normalized_template_name;
+            render.base_name = base_name;
+            render.short_name = make_short_template_name(template_name);
+            render.class_key = class_key;
+            render.is_function_template = is_function_template;
+            render.instantiation_line = is_function_template
+                ? generate_explicit_function_instantiation(normalized_template_name)
+                : generate_explicit_instantiation(class_key, normalized_template_name);
+            render.extern_line = is_function_template
+                ? generate_extern_function_instantiation(normalized_template_name)
+                : generate_extern_template(class_key, normalized_template_name);
+            return render;
+        }
+
+        fs::path resolve_project_root_dir(
+            const SuggestionContext& context,
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl
+        ) {
+            fs::path project_root_dir = context.project_root;
+            if (!project_root_dir.empty() && project_root_dir.is_relative()) {
+                project_root_dir = fs::absolute(project_root_dir);
+            }
+            if (!project_root_dir.empty() && !tmpl.files_using.empty()) {
+                const fs::path derived_root = find_repository_root(resolve_source_path(tmpl.files_using[0]));
+                if (!derived_root.empty() &&
+                    path_utils::is_under(derived_root, project_root_dir) &&
+                    derived_root != project_root_dir) {
+                    project_root_dir = derived_root;
+                }
+            }
+            if (project_root_dir.empty() && !tmpl.files_using.empty()) {
+                project_root_dir = resolve_source_path(tmpl.files_using[0]).parent_path();
+                while (project_root_dir.has_parent_path() &&
+                       !fs::exists(project_root_dir / "CMakeLists.txt") &&
+                       !fs::exists(project_root_dir / "meson.build")) {
+                    project_root_dir = project_root_dir.parent_path();
+                }
+            }
+            if (project_root_dir.empty() && !context.trace.units.empty()) {
+                const fs::path source_path = context.trace.units.front().source_file;
+                if (!source_path.empty()) {
+                    project_root_dir = find_project_root_for_templates(source_path);
+                    if (project_root_dir.empty()) {
+                        project_root_dir = find_repository_root(source_path);
+                    }
+                    if (project_root_dir.empty()) {
+                        project_root_dir = source_path.parent_path();
+                    }
+                }
+            }
+            return project_root_dir;
+        }
+
+        void populate_template_suggestion_metadata(
+            Suggestion& suggestion,
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const TemplateRenderInfo& render,
+            const BuildTrace& trace,
+            const fs::path& header_path
+        ) {
+            const std::uint64_t signature_hash = std::hash<std::string>{}(render.normalized_template_name);
+            std::ostringstream id_suffix;
+            id_suffix << render.base_name << "-" << std::hex << signature_hash;
+            suggestion.id = generate_suggestion_id("template", header_path, id_suffix.str());
+            suggestion.type = SuggestionType::ExplicitTemplate;
+            suggestion.priority = calculate_priority(tmpl, trace.total_time);
+            suggestion.confidence = 0.7;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+            suggestion.application_summary = "Create explicit-instantiation edits";
+            suggestion.title = "Add explicit instantiation for " + render.short_name;
+
+            std::ostringstream desc;
+            desc << "Template '" << render.template_name << "' is instantiated "
+                 << tmpl.instantiation_count << " times with total time of "
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(tmpl.total_time).count()
+                 << "ms.\n\n";
+            desc << "Suggested explicit instantiation is listed in the **Text Edits** section below.";
+            suggestion.description = desc.str();
+
+            suggestion.rationale = "Explicit template instantiation forces the compiler to "
+                "instantiate a template in a single translation unit, while extern template "
+                "prevents duplicate instantiations in other units.";
+
+            const Duration savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
+                                     tmpl.instantiation_count;
+            suggestion.estimated_savings = savings;
+
+            if (trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
+                    static_cast<double>(trace.total_time.count());
+            }
+
+            suggestion.implementation_steps = {
+                "Add explicit instantiation definition in a compiled source file: " + render.instantiation_line,
+                "Add extern template in header: " + render.extern_line,
+                "Rebuild and verify link succeeds"
+            };
+
+            suggestion.impact.total_files_affected = tmpl.files_using.size();
+            suggestion.impact.cumulative_savings = savings;
+
+            suggestion.caveats = {
+                "Requires identifying all type arguments used",
+                "Must instantiate for each combination of template arguments",
+                "Header users must see extern template before implicit use"
+            };
+
+            suggestion.verification = "Check that total template time decreases in next trace";
+            suggestion.is_safe = true;
+        }
+
+        bool add_existing_instantiation_source_edits(
+            Suggestion& suggestion,
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const fs::path& project_root_dir,
+            const fs::path& header_path,
+            const std::string& instantiation_line
+        ) {
+            const auto inst_source = resolve_existing_instantiation_source(tmpl, project_root_dir);
+            if (!inst_source.has_value()) {
+                return false;
+            }
+
+            suggestion.target_file.path = *inst_source;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Add explicit instantiation to an existing compiled source file";
+
+            if (fs::exists(*inst_source) && fs::exists(header_path) &&
+                !find_include_for_header(*inst_source, header_path.filename().string()).has_value()) {
+                const std::string include_line =
+                    "#include \"" + include_path_for_source(*inst_source, header_path) + "\"";
+                if (auto insert_line = find_include_insertion_line(*inst_source)) {
+                    suggestion.edits.push_back(make_insert_after_line_edit(
+                        *inst_source,
+                        *insert_line,
+                        include_line
+                    ));
+                } else {
+                    suggestion.edits.push_back(make_insert_at_start_edit(*inst_source, include_line));
+                }
+            }
+
+            std::ifstream in(*inst_source);
+            const std::string source_content((std::istreambuf_iterator<char>(in)),
+                                             std::istreambuf_iterator<char>());
+            if (source_content.find(instantiation_line) == std::string::npos) {
+                const std::size_t last_line = end_of_file_insert_line(source_content);
+
+                TextEdit add_inst;
+                add_inst.file = *inst_source;
+                add_inst.start_line = last_line;
+                add_inst.start_col = 0;
+                add_inst.end_line = last_line;
+                add_inst.end_col = 0;
+                add_inst.new_text = "\n" + instantiation_line + "\n";
+                suggestion.edits.push_back(add_inst);
+            }
+
+            return true;
+        }
+
+        bool add_new_instantiation_unit_edits(
+            Suggestion& suggestion,
+            const SuggestionContext& context,
+            const fs::path& project_root_dir,
+            const fs::path& header_path,
+            const std::string& instantiation_line
+        ) {
+            fs::path inst_file = project_root_dir / "src" / "template_instantiations.cpp";
+            if (!project_root_dir.empty() && !fs::exists(inst_file.parent_path())) {
+                inst_file = project_root_dir / "template_instantiations.cpp";
+            }
+            if (project_root_dir.empty()) {
+                inst_file = "template_instantiations.cpp";
+            }
+
+            suggestion.target_file.path = inst_file;
+            suggestion.target_file.action = FileAction::Create;
+            suggestion.target_file.note = "Create explicit instantiation file";
+
+            if (fs::exists(inst_file)) {
+                std::ifstream in(inst_file);
+                const std::string inst_content((std::istreambuf_iterator<char>(in)),
+                                               std::istreambuf_iterator<char>());
+
+                if (inst_content.find(instantiation_line) == std::string::npos) {
+                    const std::size_t last_line = end_of_file_insert_line(inst_content);
+
+                    TextEdit add_inst;
+                    add_inst.file = inst_file;
+                    add_inst.start_line = last_line;
+                    add_inst.start_col = 0;
+                    add_inst.end_line = last_line;
+                    add_inst.end_col = 0;
+                    add_inst.new_text = "\n" + instantiation_line + "\n";
+                    suggestion.edits.push_back(add_inst);
+                }
+            } else {
+                std::ostringstream new_file_content;
+                new_file_content << "// Explicit template instantiations\n";
+                new_file_content << "// Auto-generated by BHA\n\n";
+                if (fs::exists(header_path)) {
+                    new_file_content << "#include \""
+                                     << include_path_for_source(inst_file, header_path) << "\"\n\n";
+                }
+                new_file_content << instantiation_line << "\n";
+
+                TextEdit create_inst;
+                create_inst.file = inst_file;
+                create_inst.start_line = 0;
+                create_inst.start_col = 0;
+                create_inst.end_line = 0;
+                create_inst.end_col = 0;
+                create_inst.new_text = new_file_content.str();
+                suggestion.edits.push_back(create_inst);
+            }
+
+            const std::string inst_filename = inst_file.filename().string();
+            bool build_wiring_proven = false;
+            if (project_root_dir.empty()) {
+                return build_wiring_proven;
+            }
+
+            if (fs::exists(project_root_dir / "CMakeLists.txt")) {
+                const fs::path cmake_path = project_root_dir / "CMakeLists.txt";
+                if (context.project_root.empty() ||
+                    path_utils::is_under(cmake_path, project_root_dir)) {
+                    std::ifstream cmake_in(cmake_path);
+                    const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
+                                                    std::istreambuf_iterator<char>());
+                    if (cmake_content.find(inst_filename) == std::string::npos) {
+                        if (auto target = find_first_cmake_target(cmake_content)) {
+                            std::error_code ec;
+                            fs::path rel_inst = inst_file;
+                            if (rel_inst.is_absolute()) {
+                                if (auto rel = fs::relative(inst_file, cmake_path.parent_path(), ec); !ec) {
+                                    rel_inst = rel;
+                                } else {
+                                    rel_inst = inst_file.filename();
+                                }
+                            }
+
+                            TextEdit cmake_edit;
+                            cmake_edit.file = cmake_path;
+                            cmake_edit.start_line = target->end_line + 1;
+                            cmake_edit.start_col = 0;
+                            cmake_edit.end_line = target->end_line + 1;
+                            cmake_edit.end_col = 0;
+                            cmake_edit.new_text = "\n\nif(TARGET " + target->name + ")\n"
+                                                  "  target_sources(" + target->name +
+                                                  " PRIVATE \"" + rel_inst.generic_string() + "\")\n"
+                                                  "endif()\n";
+                            suggestion.edits.push_back(cmake_edit);
+                            build_wiring_proven = true;
+
+                            FileTarget cmake_target;
+                            cmake_target.path = cmake_path;
+                            cmake_target.action = FileAction::Modify;
+                            cmake_target.note = "Add template_instantiations.cpp to target sources";
+                            suggestion.secondary_files.push_back(cmake_target);
+                        }
+                    }
+                }
+            }
+
+            if (fs::exists(project_root_dir / "meson.build")) {
+                const fs::path meson_path = project_root_dir / "meson.build";
+                if (context.project_root.empty() ||
+                    path_utils::is_under(meson_path, project_root_dir)) {
+                    std::ifstream meson_in(meson_path);
+                    const std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
+                                                    std::istreambuf_iterator<char>());
+                    if (meson_content.find(inst_filename) == std::string::npos) {
+                        if (auto span = find_first_meson_target(meson_content)) {
+                            if (!span->single_line) {
+                                TextEdit meson_edit;
+                                meson_edit.file = meson_path;
+                                meson_edit.start_line = span->end_line;
+                                meson_edit.start_col = 0;
+                                meson_edit.end_line = span->end_line;
+                                meson_edit.end_col = 0;
+                                meson_edit.new_text = "  '" + inst_filename + "',\n";
+                                suggestion.edits.push_back(meson_edit);
+                                build_wiring_proven = true;
+
+                                FileTarget meson_target;
+                                meson_target.path = meson_path;
+                                meson_target.action = FileAction::Modify;
+                                meson_target.note = "Add template_instantiations.cpp to Meson target";
+                                suggestion.secondary_files.push_back(meson_target);
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (const auto& entry : fs::directory_iterator(project_root_dir)) {
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                const fs::path path = entry.path();
+                if (path.extension() == ".pro") {
+                    std::ifstream in(path);
+                    const std::string content((std::istreambuf_iterator<char>(in)),
+                                              std::istreambuf_iterator<char>());
+                    if (content.find(inst_filename) == std::string::npos) {
+                        TextEdit pro_edit;
+                        pro_edit.file = path;
+                        pro_edit.start_line = count_lines_until(content, content.size());
+                        pro_edit.start_col = 0;
+                        pro_edit.end_line = pro_edit.start_line;
+                        pro_edit.end_col = 0;
+                        pro_edit.new_text = "\nSOURCES += " + inst_filename + "\n";
+                        suggestion.edits.push_back(pro_edit);
+                        build_wiring_proven = true;
+
+                        FileTarget pro_target;
+                        pro_target.path = path;
+                        pro_target.action = FileAction::Modify;
+                        pro_target.note = "Add template_instantiations.cpp to qmake sources";
+                        suggestion.secondary_files.push_back(pro_target);
+                    }
+                }
+            }
+
+            for (const auto& name : {"Makefile", "makefile", "GNUmakefile"}) {
+                if (fs::exists(project_root_dir / name)) {
+                    const fs::path make_path = project_root_dir / name;
+                    std::ifstream make_in(make_path);
+                    const std::string make_content((std::istreambuf_iterator<char>(make_in)),
+                                                   std::istreambuf_iterator<char>());
+                    if (make_content.find(inst_filename) == std::string::npos) {
+                        TextEdit make_edit;
+                        make_edit.file = make_path;
+                        make_edit.start_line = count_lines_until(make_content, make_content.size());
+                        make_edit.start_col = 0;
+                        make_edit.end_line = make_edit.start_line;
+                        make_edit.end_col = 0;
+                        make_edit.new_text = "\nSRCS += " + inst_filename + "\n";
+                        suggestion.edits.push_back(make_edit);
+                        build_wiring_proven = true;
+
+                        FileTarget make_target;
+                        make_target.path = make_path;
+                        make_target.action = FileAction::Modify;
+                        make_target.note = "Add template_instantiations.cpp to Make sources";
+                        suggestion.secondary_files.push_back(make_target);
+                    }
+                    break;
+                }
+            }
+
+            for (const auto& entry : fs::directory_iterator(project_root_dir)) {
+                if (entry.path().extension() != ".vcxproj") {
+                    continue;
+                }
+                std::ifstream proj_in(entry.path());
+                const std::string proj_content((std::istreambuf_iterator<char>(proj_in)),
+                                               std::istreambuf_iterator<char>());
+                if (proj_content.find(inst_filename) != std::string::npos) {
+                    continue;
+                }
+                const std::size_t cl_pos = proj_content.find("<ClCompile");
+                if (cl_pos == std::string::npos) {
+                    continue;
+                }
+                const std::size_t item_group_pos = proj_content.find("</ItemGroup>", cl_pos);
+                if (item_group_pos == std::string::npos) {
+                    continue;
+                }
+
+                TextEdit vcx_edit;
+                vcx_edit.file = entry.path();
+                vcx_edit.start_line = count_lines_until(proj_content, item_group_pos);
+                vcx_edit.start_col = 0;
+                vcx_edit.end_line = vcx_edit.start_line;
+                vcx_edit.end_col = 0;
+                vcx_edit.new_text = "  <ClCompile Include=\"" + inst_filename + "\" />\n";
+                suggestion.edits.push_back(vcx_edit);
+                build_wiring_proven = true;
+
+                FileTarget vcx_target;
+                vcx_target.path = entry.path();
+                vcx_target.action = FileAction::Modify;
+                vcx_target.note = "Add template_instantiations.cpp to MSBuild project";
+                suggestion.secondary_files.push_back(vcx_target);
+                break;
+            }
+
+            return build_wiring_proven;
+        }
+
+        void add_extern_template_edit(
+            Suggestion& suggestion,
+            const fs::path& declaration_header,
+            const fs::path& header_path,
+            const std::string& extern_line
+        ) {
+            if (!fs::exists(header_path)) {
+                return;
+            }
+
+            std::ifstream header_in(header_path);
+            const std::string header_content((std::istreambuf_iterator<char>(header_in)),
+                                             std::istreambuf_iterator<char>());
+            if (header_content.find(extern_line) != std::string::npos) {
+                return;
+            }
+
+            const std::size_t insert_line = find_extern_template_insertion_line(header_path);
+            const auto header_lines = file_utils::read_lines(header_path);
+            const std::size_t line_count = header_lines.is_ok()
+                ? header_lines.value().size()
+                : 0;
+
+            TextEdit extern_edit;
+            extern_edit.file = header_path;
+            if (insert_line >= line_count) {
+                const std::size_t last_line = end_of_file_insert_line(header_content);
+                extern_edit.start_line = last_line;
+                extern_edit.start_col = 0;
+                extern_edit.end_line = last_line;
+                extern_edit.end_col = 0;
+                extern_edit.new_text = "\n" + extern_line + "\n";
+            } else {
+                extern_edit.start_line = insert_line;
+                extern_edit.start_col = 0;
+                extern_edit.end_line = insert_line;
+                extern_edit.end_col = 0;
+                extern_edit.new_text = extern_line + "\n";
+            }
+            suggestion.edits.push_back(extern_edit);
+
+            FileTarget header_target;
+            header_target.path = header_path;
+            header_target.action = FileAction::Modify;
+            header_target.line_start = insert_line + 1;
+            header_target.line_end = insert_line + 1;
+            header_target.note = header_path == declaration_header
+                ? "Add extern template declaration"
+                : "Add extern template declaration in a header that already exposes dependent types";
+            suggestion.secondary_files.push_back(header_target);
+        }
+
+        void mark_manual_integration_advisory(Suggestion& suggestion) {
+            suggestion.application_mode = SuggestionApplicationMode::Advisory;
+            suggestion.application_summary = "Manual integration required";
+            suggestion.application_guidance =
+                "BHA could place the extern template declaration in a compile-valid header context, but it could not prove that a generated explicit-instantiation translation unit would be compiled. "
+                "Place the explicit instantiation in an existing compiled source file, or add the generated file to the owning target manually, then rerun BHA.";
+            suggestion.auto_apply_blocked_reason =
+                "No existing compiled source file was available for the explicit instantiation, and BHA could not prove build-system ownership for a new translation unit.";
+            suggestion.is_safe = false;
+            suggestion.edits.clear();
+            suggestion.secondary_files.clear();
+        }
+
     }  // namespace
 
     Result<SuggestionResult, Error> TemplateSuggester::suggest(
@@ -1028,437 +1518,52 @@ namespace bha::suggestions
 
             const fs::path& declaration_header = selected_header->declaration_header;
             const fs::path& header_path = selected_header->insertion_header;
-            const std::string& class_key = selected_header->class_key;
+            const auto render = make_template_render_info(
+                template_name,
+                normalized_template_name,
+                base_name,
+                selected_header->class_key,
+                is_function_template
+            );
 
             Suggestion suggestion;
-            const std::uint64_t signature_hash = std::hash<std::string>{}(normalized_template_name);
-            std::ostringstream id_suffix;
-            id_suffix << base_name << "-" << std::hex << signature_hash;
-            suggestion.id = generate_suggestion_id("template", header_path, id_suffix.str());
-            suggestion.type = SuggestionType::ExplicitTemplate;
-            suggestion.priority = calculate_priority(tmpl, context.trace.total_time);
-            suggestion.confidence = 0.7;
-            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-            suggestion.application_summary = "Create explicit-instantiation edits";
+            populate_template_suggestion_metadata(
+                suggestion,
+                tmpl,
+                render,
+                context.trace,
+                header_path
+            );
 
-            // Extract short name for title (just the class/function name)
-            std::string short_name = template_name;
-            if (auto angle_pos = template_name.find('<'); angle_pos != std::string::npos) {
-                if (auto last_colon = template_name.rfind("::", angle_pos); last_colon != std::string::npos) {
-                    short_name = template_name.substr(last_colon + 2, angle_pos - last_colon - 2);
-                } else {
-                    short_name = template_name.substr(0, angle_pos);
-                }
-            }
-
-            std::ostringstream title;
-            title << "Add explicit instantiation for " << short_name;
-            suggestion.title = title.str();
-
-            std::ostringstream desc;
-            desc << "Template '" << template_name << "' is instantiated "
-                 << tmpl.instantiation_count << " times with total time of "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(tmpl.total_time).count()
-                 << "ms.\n\n";
-            desc << "Suggested explicit instantiation is listed in the **Text Edits** section below.";
-            suggestion.description = desc.str();
-
-            suggestion.rationale = "Explicit template instantiation forces the compiler to "
-                "instantiate a template in a single translation unit, while extern template "
-                "prevents duplicate instantiations in other units.";
-
-            const Duration savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
-                                     tmpl.instantiation_count;
-            suggestion.estimated_savings = savings;
-
-            if (context.trace.total_time.count() > 0) {
-                suggestion.estimated_savings_percent =
-                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                    static_cast<double>(context.trace.total_time.count());
-            }
-
-            suggestion.implementation_steps = {
-                "Add explicit instantiation definition in a compiled source file: " + (
-                    is_function_template
-                        ? generate_explicit_function_instantiation(normalized_template_name)
-                        : generate_explicit_instantiation(class_key, normalized_template_name)
-                ),
-                "Add extern template in header: " + (
-                    is_function_template
-                        ? generate_extern_function_instantiation(normalized_template_name)
-                        : generate_extern_template(class_key, normalized_template_name)
-                ),
-                "Rebuild and verify link succeeds"
-            };
-
-            suggestion.impact.total_files_affected = tmpl.files_using.size();
-            suggestion.impact.cumulative_savings = savings;
-
-            suggestion.caveats = {
-                "Requires identifying all type arguments used",
-                "Must instantiate for each combination of template arguments",
-                "Header users must see extern template before implicit use"
-            };
-
-            suggestion.verification = "Check that total template time decreases in next trace";
-            suggestion.is_safe = true;
-
-            fs::path project_root_dir = context.project_root;
-            if (!project_root_dir.empty() && project_root_dir.is_relative()) {
-                project_root_dir = fs::absolute(project_root_dir);
-            }
-            if (!project_root_dir.empty() && !tmpl.files_using.empty()) {
-                const fs::path derived_root = find_repository_root(resolve_source_path(tmpl.files_using[0]));
-                if (!derived_root.empty() &&
-                    path_utils::is_under(derived_root, project_root_dir) &&
-                    derived_root != project_root_dir) {
-                    project_root_dir = derived_root;
-                }
-            }
-            if (project_root_dir.empty() && !tmpl.files_using.empty()) {
-                project_root_dir = resolve_source_path(tmpl.files_using[0]).parent_path();
-                while (project_root_dir.has_parent_path() &&
-                       !fs::exists(project_root_dir / "CMakeLists.txt") &&
-                       !fs::exists(project_root_dir / "meson.build")) {
-                    project_root_dir = project_root_dir.parent_path();
-                }
-            }
-            if (project_root_dir.empty() && !context.trace.units.empty()) {
-                const fs::path source_path = context.trace.units.front().source_file;
-                if (!source_path.empty()) {
-                    project_root_dir = find_project_root_for_templates(source_path);
-                    if (project_root_dir.empty()) {
-                        project_root_dir = find_repository_root(source_path);
-                    }
-                    if (project_root_dir.empty()) {
-                        project_root_dir = source_path.parent_path();
-                    }
-                }
-            }
-
-            const std::string inst_line = is_function_template
-                ? generate_explicit_function_instantiation(normalized_template_name)
-                : generate_explicit_instantiation(class_key, normalized_template_name);
-
-            bool has_existing_instantiation_unit = false;
-            if (auto inst_source = resolve_existing_instantiation_source(tmpl, project_root_dir);
-                inst_source.has_value()) {
-                has_existing_instantiation_unit = true;
-                suggestion.target_file.path = *inst_source;
-                suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.note = "Add explicit instantiation to an existing compiled source file";
-
-                if (fs::exists(*inst_source) && fs::exists(header_path) &&
-                    !find_include_for_header(*inst_source, header_path.filename().string()).has_value()) {
-                    const std::string include_line =
-                        "#include \"" + include_path_for_source(*inst_source, header_path) + "\"";
-                    if (auto insert_line = find_include_insertion_line(*inst_source)) {
-                        suggestion.edits.push_back(make_insert_after_line_edit(
-                            *inst_source,
-                            *insert_line,
-                            include_line
-                        ));
-                    } else {
-                        suggestion.edits.push_back(make_insert_at_start_edit(*inst_source, include_line));
-                    }
-                }
-
-                std::string source_content;
-                std::ifstream in(*inst_source);
-                source_content = std::string((std::istreambuf_iterator<char>(in)),
-                                             std::istreambuf_iterator<char>());
-                if (source_content.find(inst_line) == std::string::npos) {
-                    const std::size_t last_line = end_of_file_insert_line(source_content);
-
-                    TextEdit add_inst;
-                    add_inst.file = *inst_source;
-                    add_inst.start_line = last_line;
-                    add_inst.start_col = 0;
-                    add_inst.end_line = last_line;
-                    add_inst.end_col = 0;
-                    add_inst.new_text = "\n" + inst_line + "\n";
-                    suggestion.edits.push_back(add_inst);
-                }
-            }
+            const fs::path project_root_dir = resolve_project_root_dir(context, tmpl);
+            const bool has_existing_instantiation_unit = add_existing_instantiation_source_edits(
+                suggestion,
+                tmpl,
+                project_root_dir,
+                header_path,
+                render.instantiation_line
+            );
 
             bool build_wiring_proven = has_existing_instantiation_unit;
             if (!has_existing_instantiation_unit) {
-                fs::path inst_file = project_root_dir / "src" / "template_instantiations.cpp";
-                if (!project_root_dir.empty() && !fs::exists(inst_file.parent_path())) {
-                    inst_file = project_root_dir / "template_instantiations.cpp";
-                }
-                if (project_root_dir.empty()) {
-                    inst_file = "template_instantiations.cpp";
-                }
-
-                suggestion.target_file.path = inst_file;
-                suggestion.target_file.action = FileAction::Create;
-                suggestion.target_file.note = "Create explicit instantiation file";
-
-                if (fs::exists(inst_file)) {
-                    std::string inst_content;
-                    std::ifstream in(inst_file);
-                    inst_content = std::string((std::istreambuf_iterator<char>(in)),
-                                               std::istreambuf_iterator<char>());
-
-                    if (inst_content.find(inst_line) == std::string::npos) {
-                        const std::size_t last_line = end_of_file_insert_line(inst_content);
-
-                        TextEdit add_inst;
-                        add_inst.file = inst_file;
-                        add_inst.start_line = last_line;
-                        add_inst.start_col = 0;
-                        add_inst.end_line = last_line;
-                        add_inst.end_col = 0;
-                        add_inst.new_text = "\n" + inst_line + "\n";
-                        suggestion.edits.push_back(add_inst);
-                    }
-                } else {
-                    std::ostringstream new_file_content;
-                    new_file_content << "// Explicit template instantiations\n";
-                    new_file_content << "// Auto-generated by BHA\n\n";
-                    if (fs::exists(header_path)) {
-                        new_file_content << "#include \""
-                                         << include_path_for_source(inst_file, header_path) << "\"\n\n";
-                    }
-                    new_file_content << inst_line << "\n";
-
-                    TextEdit create_inst;
-                    create_inst.file = inst_file;
-                    create_inst.start_line = 0;
-                    create_inst.start_col = 0;
-                    create_inst.end_line = 0;
-                    create_inst.end_col = 0;
-                    create_inst.new_text = new_file_content.str();
-                    suggestion.edits.push_back(create_inst);
-                }
-
-                const std::string inst_filename = inst_file.filename().string();
-
-                if (!project_root_dir.empty()) {
-                    if (fs::exists(project_root_dir / "CMakeLists.txt")) {
-                        const fs::path cmake_path = project_root_dir / "CMakeLists.txt";
-                        if (context.project_root.empty() ||
-                            path_utils::is_under(cmake_path, project_root_dir)) {
-                            std::ifstream cmake_in(cmake_path);
-                            const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
-                                                            std::istreambuf_iterator<char>());
-                            if (cmake_content.find(inst_filename) == std::string::npos) {
-                                if (auto target = find_first_cmake_target(cmake_content)) {
-                                    std::error_code ec;
-                                    fs::path rel_inst = inst_file;
-                                    if (rel_inst.is_absolute()) {
-                                        if (auto rel = fs::relative(inst_file, cmake_path.parent_path(), ec); !ec) {
-                                            rel_inst = rel;
-                                        } else {
-                                            rel_inst = inst_file.filename();
-                                        }
-                                    }
-
-                                    TextEdit cmake_edit;
-                                    cmake_edit.file = cmake_path;
-                                    cmake_edit.start_line = target->end_line + 1;
-                                    cmake_edit.start_col = 0;
-                                    cmake_edit.end_line = target->end_line + 1;
-                                    cmake_edit.end_col = 0;
-                                    cmake_edit.new_text = "\n\nif(TARGET " + target->name + ")\n"
-                                                          "  target_sources(" + target->name +
-                                                          " PRIVATE \"" + rel_inst.generic_string() + "\")\n"
-                                                          "endif()\n";
-                                    suggestion.edits.push_back(cmake_edit);
-                                    build_wiring_proven = true;
-
-                                    FileTarget cmake_target;
-                                    cmake_target.path = cmake_path;
-                                    cmake_target.action = FileAction::Modify;
-                                    cmake_target.note = "Add template_instantiations.cpp to target sources";
-                                    suggestion.secondary_files.push_back(cmake_target);
-                                }
-                            }
-                        }
-                    }
-
-                    if (fs::exists(project_root_dir / "meson.build")) {
-                        const fs::path meson_path = project_root_dir / "meson.build";
-                        if (context.project_root.empty() ||
-                            path_utils::is_under(meson_path, project_root_dir)) {
-                            std::ifstream meson_in(meson_path);
-                            const std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
-                                                            std::istreambuf_iterator<char>());
-                            if (meson_content.find(inst_filename) == std::string::npos) {
-                                if (auto span = find_first_meson_target(meson_content)) {
-                                    if (!span->single_line) {
-                                        TextEdit meson_edit;
-                                        meson_edit.file = meson_path;
-                                        meson_edit.start_line = span->end_line;
-                                        meson_edit.start_col = 0;
-                                        meson_edit.end_line = span->end_line;
-                                        meson_edit.end_col = 0;
-                                        meson_edit.new_text = "  '" + inst_filename + "',\n";
-                                        suggestion.edits.push_back(meson_edit);
-                                        build_wiring_proven = true;
-
-                                        FileTarget meson_target;
-                                        meson_target.path = meson_path;
-                                        meson_target.action = FileAction::Modify;
-                                        meson_target.note = "Add template_instantiations.cpp to Meson target";
-                                        suggestion.secondary_files.push_back(meson_target);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    for (const auto& entry : fs::directory_iterator(project_root_dir)) {
-                        if (!entry.is_regular_file()) {
-                            continue;
-                        }
-                        const fs::path path = entry.path();
-                        if (path.extension() == ".pro") {
-                            std::ifstream in(path);
-                            const std::string content((std::istreambuf_iterator<char>(in)),
-                                                      std::istreambuf_iterator<char>());
-                            if (content.find(inst_filename) == std::string::npos) {
-                                TextEdit pro_edit;
-                                pro_edit.file = path;
-                                pro_edit.start_line = count_lines_until(content, content.size());
-                                pro_edit.start_col = 0;
-                                pro_edit.end_line = pro_edit.start_line;
-                                pro_edit.end_col = 0;
-                                pro_edit.new_text = "\nSOURCES += " + inst_filename + "\n";
-                                suggestion.edits.push_back(pro_edit);
-                                build_wiring_proven = true;
-
-                                FileTarget pro_target;
-                                pro_target.path = path;
-                                pro_target.action = FileAction::Modify;
-                                pro_target.note = "Add template_instantiations.cpp to qmake sources";
-                                suggestion.secondary_files.push_back(pro_target);
-                            }
-                        }
-                    }
-
-                    for (const auto& name : {"Makefile", "makefile", "GNUmakefile"}) {
-                        if (fs::exists(project_root_dir / name)) {
-                            const fs::path make_path = project_root_dir / name;
-                            std::ifstream make_in(make_path);
-                            const std::string make_content((std::istreambuf_iterator<char>(make_in)),
-                                                           std::istreambuf_iterator<char>());
-                            if (make_content.find(inst_filename) == std::string::npos) {
-                                TextEdit make_edit;
-                                make_edit.file = make_path;
-                                make_edit.start_line = count_lines_until(make_content, make_content.size());
-                                make_edit.start_col = 0;
-                                make_edit.end_line = make_edit.start_line;
-                                make_edit.end_col = 0;
-                                make_edit.new_text = "\nSRCS += " + inst_filename + "\n";
-                                suggestion.edits.push_back(make_edit);
-                                build_wiring_proven = true;
-
-                                FileTarget make_target;
-                                make_target.path = make_path;
-                                make_target.action = FileAction::Modify;
-                                make_target.note = "Add template_instantiations.cpp to Make sources";
-                                suggestion.secondary_files.push_back(make_target);
-                            }
-                            break;
-                        }
-                    }
-
-                    for (const auto& entry : fs::directory_iterator(project_root_dir)) {
-                        if (entry.path().extension() != ".vcxproj") {
-                            continue;
-                        }
-                        std::ifstream proj_in(entry.path());
-                        const std::string proj_content((std::istreambuf_iterator<char>(proj_in)),
-                                                       std::istreambuf_iterator<char>());
-                        if (proj_content.find(inst_filename) != std::string::npos) {
-                            continue;
-                        }
-                        const std::size_t cl_pos = proj_content.find("<ClCompile");
-                        if (cl_pos == std::string::npos) {
-                            continue;
-                        }
-                        const std::size_t item_group_pos = proj_content.find("</ItemGroup>", cl_pos);
-                        if (item_group_pos == std::string::npos) {
-                            continue;
-                        }
-
-                        TextEdit vcx_edit;
-                        vcx_edit.file = entry.path();
-                        vcx_edit.start_line = count_lines_until(proj_content, item_group_pos);
-                        vcx_edit.start_col = 0;
-                        vcx_edit.end_line = vcx_edit.start_line;
-                        vcx_edit.end_col = 0;
-                        vcx_edit.new_text = "  <ClCompile Include=\"" + inst_filename + "\" />\n";
-                        suggestion.edits.push_back(vcx_edit);
-                        build_wiring_proven = true;
-
-                        FileTarget vcx_target;
-                        vcx_target.path = entry.path();
-                        vcx_target.action = FileAction::Modify;
-                        vcx_target.note = "Add template_instantiations.cpp to MSBuild project";
-                        suggestion.secondary_files.push_back(vcx_target);
-                        break;
-                    }
-                }
+                build_wiring_proven = add_new_instantiation_unit_edits(
+                    suggestion,
+                    context,
+                    project_root_dir,
+                    header_path,
+                    render.instantiation_line
+                );
             }
 
-            if (fs::exists(header_path)) {
-                std::ifstream header_in(header_path);
-                const std::string header_content((std::istreambuf_iterator<char>(header_in)),
-                                                 std::istreambuf_iterator<char>());
-                const std::string extern_line = is_function_template
-                    ? generate_extern_function_instantiation(normalized_template_name)
-                    : generate_extern_template(class_key, normalized_template_name);
-                if (header_content.find(extern_line) == std::string::npos) {
-                    const std::size_t insert_line = find_extern_template_insertion_line(header_path);
-                    const auto header_lines = file_utils::read_lines(header_path);
-                    const std::size_t line_count = header_lines.is_ok()
-                        ? header_lines.value().size()
-                        : 0;
-
-                    TextEdit extern_edit;
-                    extern_edit.file = header_path;
-                    if (insert_line >= line_count) {
-                        const std::size_t last_line = end_of_file_insert_line(header_content);
-                        extern_edit.start_line = last_line;
-                        extern_edit.start_col = 0;
-                        extern_edit.end_line = last_line;
-                        extern_edit.end_col = 0;
-                        extern_edit.new_text = "\n" + extern_line + "\n";
-                    } else {
-                        extern_edit.start_line = insert_line;
-                        extern_edit.start_col = 0;
-                        extern_edit.end_line = insert_line;
-                        extern_edit.end_col = 0;
-                        extern_edit.new_text = extern_line + "\n";
-                    }
-                    suggestion.edits.push_back(extern_edit);
-
-                    FileTarget header_target;
-                    header_target.path = header_path;
-                    header_target.action = FileAction::Modify;
-                    header_target.line_start = insert_line + 1;
-                    header_target.line_end = insert_line + 1;
-                    header_target.note = header_path == declaration_header
-                        ? "Add extern template declaration"
-                        : "Add extern template declaration in a header that already exposes dependent types";
-                    suggestion.secondary_files.push_back(header_target);
-                }
-            }
+            add_extern_template_edit(
+                suggestion,
+                declaration_header,
+                header_path,
+                render.extern_line
+            );
 
             if (!build_wiring_proven) {
-                suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                suggestion.application_summary = "Manual integration required";
-                suggestion.application_guidance =
-                    "BHA could place the extern template declaration in a compile-valid header context, but it could not prove that a generated explicit-instantiation translation unit would be compiled. "
-                    "Place the explicit instantiation in an existing compiled source file, or add the generated file to the owning target manually, then rerun BHA.";
-                suggestion.auto_apply_blocked_reason =
-                    "No existing compiled source file was available for the explicit instantiation, and BHA could not prove build-system ownership for a new translation unit.";
-                suggestion.is_safe = false;
-                suggestion.edits.clear();
-                suggestion.secondary_files.clear();
+                mark_manual_integration_advisory(suggestion);
             }
 
             if (suggestion.edits.empty() &&
