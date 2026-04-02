@@ -1695,10 +1695,17 @@ namespace bha::lsp
             json metrics_json;
             to_json(metrics_json, baseline_metrics);
 
+            const auto [display_build_time_ms, display_build_time_source] =
+                resolve_trust_loop_baseline(std::filesystem::path(project_root));
+
             json response = {
                 {"analysisId", analysis_id},
                 {"suggestions", suggestions_json},
                 {"baselineMetrics", metrics_json},
+                {"buildTiming", {
+                    {"totalBuildTimeMs", display_build_time_ms.value_or(baseline_metrics.total_duration_ms)},
+                    {"source", display_build_time_source.value_or("trace-aggregate")}
+                }},
                 {"filesAnalyzed", files_analyzed},
                 {"durationMs", duration_ms}
             };

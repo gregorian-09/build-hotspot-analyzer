@@ -70,6 +70,10 @@ interface AnalysisResult {
         totalDurationMs: number;
         filesCompiled: number;
     };
+    buildTiming?: {
+        totalBuildTimeMs?: number;
+        source?: string;
+    };
     filesAnalyzed?: number;
 }
 
@@ -402,6 +406,17 @@ function buildTrustLoopSummary(trustLoop?: ApplyResult['trustLoop'] | ApplyAllRe
         improved: actualSavingsMs > 0,
         regressedOrFlat: actualSavingsMs <= 0
     };
+}
+
+function resolveAnalysisBuildTiming(result: AnalysisResult): { totalBuildTimeMs: number; source: string } {
+    const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
+    const fallbackBuildTimeMs = safeGetNumber(metrics.totalDurationMs, 0);
+    const totalBuildTimeMs = safeGetNumber(result.buildTiming?.totalBuildTimeMs, fallbackBuildTimeMs);
+    const source = safeGetString(
+        result.buildTiming?.source,
+        totalBuildTimeMs === fallbackBuildTimeMs ? 'trace-aggregate' : ''
+    );
+    return { totalBuildTimeMs, source };
 }
 
 // ============================================================================
@@ -1010,8 +1025,9 @@ async function runAnalysis(
             `Analysis complete: ${validSuggestions.length} suggestions found`
         );
         const metrics = result.baselineMetrics;
+        const buildTiming = resolveAnalysisBuildTiming(result);
         logLine(
-            `Analysis complete: suggestions=${validSuggestions.length}, totalBuildTimeMs=${safeGetNumber(metrics?.totalDurationMs, 0)}, filesAnalyzed=${safeGetNumber(result.filesAnalyzed, safeGetNumber(metrics?.filesCompiled, 0))}`
+            `Analysis complete: suggestions=${validSuggestions.length}, totalBuildTimeMs=${buildTiming.totalBuildTimeMs}, totalBuildTimeSource=${buildTiming.source || 'unknown'}, filesAnalyzed=${safeGetNumber(result.filesAnalyzed, safeGetNumber(metrics?.filesCompiled, 0))}`
         );
 
         if (validSuggestions.length > 0) {
@@ -1540,9 +1556,14 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
     );
     const suggestions = suggestionDetails;
     const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
-
-    const totalDuration = safeGetNumber(metrics.totalDurationMs, 0);
+    const buildTiming = resolveAnalysisBuildTiming(result);
+    const totalDuration = buildTiming.totalBuildTimeMs;
     const filesCompiled = safeGetNumber(result.filesAnalyzed ?? metrics.filesCompiled, 0);
+    const totalBuildTimeLabel = buildTiming.source === 'recorded-build'
+        ? 'Recorded Build Time'
+        : buildTiming.source === 'trace-aggregate'
+            ? 'Trace Aggregate Time'
+            : 'Total Build Time';
 
     panel.webview.html = `
         <!DOCTYPE html>
@@ -1728,7 +1749,7 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
 
             <div class="metrics">
                 <h2>Build Metrics</h2>
-                <p><strong>Total Build Time:</strong> ${(totalDuration / 1000).toFixed(2)}s</p>
+                <p><strong>${totalBuildTimeLabel}:</strong> ${(totalDuration / 1000).toFixed(2)}s</p>
                 <p><strong>Compilation Units Analyzed:</strong> ${filesCompiled}</p>
             </div>
 
