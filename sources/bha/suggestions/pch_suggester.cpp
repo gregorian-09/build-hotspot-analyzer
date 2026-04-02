@@ -1727,11 +1727,7 @@ namespace bha::suggestions
             }
 
             if (fs::exists(pch_path)) {
-                if (auto insert_line = find_preferred_include_insertion_line(pch_path)) {
-                    suggestion.edits.push_back(make_insert_after_line_edit(pch_path, *insert_line, include_line));
-                } else {
-                    suggestion.edits.push_back(make_insert_at_start_edit(pch_path, include_line));
-                }
+                suggestion.edits.push_back(make_preferred_include_insertion_edit(pch_path, include_line).edit);
             } else {
                 TextEdit create_pch;
                 create_pch.file = pch_path;

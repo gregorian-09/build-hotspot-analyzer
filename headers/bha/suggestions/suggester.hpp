@@ -789,6 +789,50 @@ namespace bha::suggestions {
         return edit;
     }
 
+    struct IncludeInsertionEdit {
+        TextEdit edit;
+        std::size_t inserted_line_one_based = 1;
+    };
+
+    [[nodiscard]] inline std::string_view trim_whitespace_view(const std::string_view text) {
+        const auto first = text.find_first_not_of(" \t\r\n");
+        if (first == std::string_view::npos) {
+            return std::string_view{};
+        }
+        const auto last = text.find_last_not_of(" \t\r\n");
+        return text.substr(first, last - first + 1);
+    }
+
+    [[nodiscard]] inline std::string_view consume_leading_block_comments(
+        std::string_view text,
+        bool& in_block_comment
+    ) {
+        std::string_view current = text;
+        while (true) {
+            if (in_block_comment) {
+                const auto end = current.find("*/");
+                if (end == std::string_view::npos) {
+                    return std::string_view{};
+                }
+                current.remove_prefix(end + 2);
+                in_block_comment = false;
+            }
+
+            current = trim_whitespace_view(current);
+            if (!current.starts_with("/*")) {
+                return current;
+            }
+
+            current.remove_prefix(2);
+            const auto end = current.find("*/");
+            if (end == std::string_view::npos) {
+                in_block_comment = true;
+                return std::string_view{};
+            }
+            current.remove_prefix(end + 2);
+        }
+    }
+
     [[nodiscard]] inline std::size_t find_first_include_line(const fs::path& file) {
         const auto directives = find_include_directives(file);
         if (directives.empty()) {
@@ -829,41 +873,6 @@ namespace bha::suggestions {
             return std::nullopt;
         }
 
-        auto trim = [](std::string_view text) {
-            const auto first = text.find_first_not_of(" \t\r\n");
-            if (first == std::string_view::npos) {
-                return std::string_view{};
-            }
-            const auto last = text.find_last_not_of(" \t\r\n");
-            return text.substr(first, last - first + 1);
-        };
-        auto consume_leading_block_comment = [&trim](std::string_view text, bool& in_block_comment) {
-            std::string_view current = text;
-            while (true) {
-                if (in_block_comment) {
-                    const auto end = current.find("*/");
-                    if (end == std::string_view::npos) {
-                        return std::string_view{};
-                    }
-                    current.remove_prefix(end + 2);
-                    in_block_comment = false;
-                }
-
-                current = trim(current);
-                if (!current.starts_with("/*")) {
-                    return current;
-                }
-
-                current.remove_prefix(2);
-                const auto end = current.find("*/");
-                if (end == std::string_view::npos) {
-                    in_block_comment = true;
-                    return std::string_view{};
-                }
-                current.remove_prefix(end + 2);
-            }
-        };
-
         const std::regex include_regex(R"(^#\s*include\s*([<"])([^">]+)[">])", std::regex::ECMAScript);
         const std::regex pragma_regex(R"(^#\s*pragma\s+once\b)", std::regex::ECMAScript);
         const std::regex guard_ifndef_regex(R"(^#\s*ifndef\b)", std::regex::ECMAScript);
@@ -879,7 +888,7 @@ namespace bha::suggestions {
         std::optional<std::size_t> last_include_line;
 
         while (std::getline(in, line)) {
-            std::string_view trimmed = consume_leading_block_comment(line, in_block_comment);
+            std::string_view trimmed = consume_leading_block_comments(line, in_block_comment);
             if (trimmed.empty() || trimmed.starts_with("//")) {
                 ++line_num;
                 continue;
@@ -944,22 +953,32 @@ namespace bha::suggestions {
         std::size_t line_num = 0;
         std::string guard_macro;
         bool found_ifndef = false;
+        bool in_block_comment = false;
 
         while (std::getline(in, line)) {
-            std::smatch match;
+            const std::string_view trimmed = consume_leading_block_comments(line, in_block_comment);
+            std::match_results<std::string_view::const_iterator> match;
 
             if (!found_ifndef) {
-                if (std::regex_match(line, match, ifndef_regex)) {
+                if (trimmed.empty() || trimmed.starts_with("//")) {
+                    ++line_num;
+                    continue;
+                }
+                if (std::regex_match(trimmed.begin(), trimmed.end(), match, ifndef_regex)) {
                     guard_macro = match[1].str();
                     found_ifndef = true;
-                } else if (!line.empty() && line.find("#pragma once") == std::string::npos) {
+                } else if (!trimmed.empty() && !trimmed.starts_with("#pragma once")) {
                     break;
                 }
                 ++line_num;
                 continue;
             }
 
-            if (std::regex_match(line, match, define_regex)) {
+            if (trimmed.empty() || trimmed.starts_with("//")) {
+                ++line_num;
+                continue;
+            }
+            if (std::regex_match(trimmed.begin(), trimmed.end(), match, define_regex)) {
                 if (match[1].str() == guard_macro) {
                     return line_num;
                 }
@@ -976,6 +995,43 @@ namespace bha::suggestions {
             return include_line;
         }
         return find_header_guard_define_line(file);
+    }
+
+    [[nodiscard]] inline std::optional<std::size_t> find_leading_preamble_line(const fs::path& file) {
+        std::ifstream in(file);
+        if (!in) {
+            return std::nullopt;
+        }
+
+        std::string line;
+        std::size_t line_num = 0;
+        bool in_block_comment = false;
+        std::optional<std::size_t> last_preamble_line;
+
+        while (std::getline(in, line)) {
+            std::string_view trimmed = consume_leading_block_comments(line, in_block_comment);
+            if (trimmed.empty() || trimmed.starts_with("//")) {
+                last_preamble_line = line_num;
+                ++line_num;
+                continue;
+            }
+            break;
+        }
+
+        return last_preamble_line;
+    }
+
+    [[nodiscard]] inline IncludeInsertionEdit make_preferred_include_insertion_edit(
+        const fs::path& file,
+        const std::string& content
+    ) {
+        if (auto line = find_preferred_include_insertion_line(file)) {
+            return {make_insert_after_line_edit(file, *line, content), *line + 2};
+        }
+        if (auto line = find_leading_preamble_line(file)) {
+            return {make_insert_after_line_edit(file, *line, content), *line + 2};
+        }
+        return {make_insert_at_start_edit(file, content), 1};
     }
 
     [[nodiscard]] inline std::size_t end_of_file_insert_line(const std::string& content) {

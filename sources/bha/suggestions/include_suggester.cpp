@@ -1486,31 +1486,16 @@ namespace bha::suggestions
             suggestion.edits.push_back(make_delete_line_edit(including_header, include_decl->line));
 
             const std::string include_line = "#include \"" + include_dir.header_name + "\"";
-            if (auto insert_line = find_preferred_include_insertion_line(source_file)) {
-                suggestion.edits.push_back(make_insert_after_line_edit(
-                    source_file,
-                    *insert_line,
-                    include_line
-                ));
+            const auto insertion = make_preferred_include_insertion_edit(source_file, include_line);
+            suggestion.edits.push_back(insertion.edit);
 
-                FileTarget cpp_target;
-                cpp_target.path = source_file;
-                cpp_target.action = FileAction::AddInclude;
-                cpp_target.line_start = *insert_line + 2;
-                cpp_target.line_end = *insert_line + 2;
-                cpp_target.note = "Add moved include to source file";
-                suggestion.secondary_files.push_back(std::move(cpp_target));
-            } else {
-                suggestion.edits.push_back(make_insert_at_start_edit(source_file, include_line));
-
-                FileTarget cpp_target;
-                cpp_target.path = source_file;
-                cpp_target.action = FileAction::AddInclude;
-                cpp_target.line_start = 1;
-                cpp_target.line_end = 1;
-                cpp_target.note = "Add moved include to source file";
-                suggestion.secondary_files.push_back(std::move(cpp_target));
-            }
+            FileTarget cpp_target;
+            cpp_target.path = source_file;
+            cpp_target.action = FileAction::AddInclude;
+            cpp_target.line_start = insertion.inserted_line_one_based;
+            cpp_target.line_end = insertion.inserted_line_one_based;
+            cpp_target.note = "Add moved include to source file";
+            suggestion.secondary_files.push_back(std::move(cpp_target));
 
             suggestion.impact.total_files_affected = 2;
             suggestion.impact.cumulative_savings = suggestion.estimated_savings;

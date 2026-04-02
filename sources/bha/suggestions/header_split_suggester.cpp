@@ -1123,18 +1123,11 @@ namespace bha::suggestions
 
                 if (!include_exists && (fwd_exists || created_fwd_header)) {
                     const std::string include_line = "#include \"" + fwd_header_name + "\"";
-                    if (auto insert_line = find_preferred_include_insertion_line(*resolved_header_path)) {
-                        suggestion.edits.push_back(make_insert_after_line_edit(
-                            *resolved_header_path,
-                            *insert_line,
-                            include_line
-                        ));
-                    } else {
-                        suggestion.edits.push_back(make_insert_at_start_edit(
-                            *resolved_header_path,
-                            include_line
-                        ));
-                    }
+                    const auto insertion = make_preferred_include_insertion_edit(
+                        *resolved_header_path,
+                        include_line
+                    );
+                    suggestion.edits.push_back(insertion.edit);
                 }
             }
 

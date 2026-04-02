@@ -2144,7 +2144,6 @@ namespace bha::suggestions
                 int brace_depth = 0;
                 bool saw_open = false;
                 std::string body;
-                std::size_t end_line = open_line;
                 for (std::size_t line_index = open_line; line_index < lines.size(); ++line_index) {
                     const std::string& line = lines[line_index];
                     std::size_t col_begin = 0;
@@ -2168,8 +2167,7 @@ namespace bha::suggestions
                         if (ch == '}') {
                             --brace_depth;
                             if (brace_depth == 0) {
-                                end_line = line_index + 1;
-                                block.end_line = end_line;
+                                block.end_line = line_index + 1;
                                 block.body = trim_copy(body);
                                 return block;
                             }
@@ -2620,11 +2618,7 @@ namespace bha::suggestions
                 }
             }
             if (!has_memory_include) {
-                if (auto insert_line = find_preferred_include_insertion_line(header_file)) {
-                    edits.push_back(make_insert_after_line_edit(header_file, *insert_line, "#include <memory>"));
-                } else {
-                    edits.push_back(make_insert_at_start_edit(header_file, "#include <memory>"));
-                }
+                edits.push_back(make_preferred_include_insertion_edit(header_file, "#include <memory>").edit);
             }
 
             if (eligibility.copy_ctor_defaulted_in_class) {

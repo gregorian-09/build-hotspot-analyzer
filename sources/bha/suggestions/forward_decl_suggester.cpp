@@ -297,12 +297,29 @@ namespace bha::suggestions
             return "#include \"" + include.header_name + "\"";
         }
 
-        std::string forward_declaration_text(const ForwardDeclType& type) {
-            std::ostringstream out;
+        std::vector<IncludeDirective> missing_support_includes(
+            const ForwardDeclType& type,
+            const fs::path& includer_path
+        ) {
+            std::vector<IncludeDirective> filtered;
+            filtered.reserve(type.support_includes.size());
             for (const auto& include : type.support_includes) {
+                if (!find_include_for_header(includer_path, include.header_name).has_value()) {
+                    filtered.push_back(include);
+                }
+            }
+            return filtered;
+        }
+
+        std::string forward_declaration_text(
+            const ForwardDeclType& type,
+            const std::vector<IncludeDirective>& support_includes
+        ) {
+            std::ostringstream out;
+            for (const auto& include : support_includes) {
                 out << include_directive_text(include) << "\n";
             }
-            if (!type.support_includes.empty()) {
+            if (!support_includes.empty()) {
                 out << "\n";
             }
 
@@ -895,7 +912,7 @@ namespace bha::suggestions
             const ForwardDeclType& type
         ) {
             const std::string type_name = qualified_type_name(type);
-            const std::string declaration = forward_declaration_text(type);
+            const std::string declaration = forward_declaration_text(type, type.support_includes);
 
             std::ostringstream oss;
             oss << "// " << includer_path.filename().string() << " (header)\n";
@@ -1148,39 +1165,27 @@ namespace bha::suggestions
                 suggestion.edits.push_back(make_replace_line_edit(
                     includer_path,
                     include_dir->line,
-                    forward_declaration_text(target_type)
+                    forward_declaration_text(
+                        target_type,
+                        missing_support_includes(target_type, includer_path)
+                    )
                 ));
 
                 if (auto source_file = find_matching_source_file(includer_path, include_scan_root)) {
                     if (!find_include_for_header(*source_file, header_filename).has_value()) {
-                        if (auto insert_line = find_preferred_include_insertion_line(*source_file)) {
-                            suggestion.edits.push_back(make_insert_after_line_edit(
-                                *source_file,
-                                *insert_line,
-                                "#include \"" + header_filename + "\""
-                            ));
+                        const auto insertion = make_preferred_include_insertion_edit(
+                            *source_file,
+                            "#include \"" + header_filename + "\""
+                        );
+                        suggestion.edits.push_back(insertion.edit);
 
-                            FileTarget source_target;
-                            source_target.path = *source_file;
-                            source_target.action = FileAction::AddInclude;
-                            source_target.line_start = *insert_line + 2;
-                            source_target.line_end = *insert_line + 2;
-                            source_target.note = "Add full include for complete type usage";
-                            suggestion.secondary_files.push_back(source_target);
-                        } else {
-                            suggestion.edits.push_back(make_insert_at_start_edit(
-                                *source_file,
-                                "#include \"" + header_filename + "\""
-                            ));
-
-                            FileTarget source_target;
-                            source_target.path = *source_file;
-                            source_target.action = FileAction::AddInclude;
-                            source_target.line_start = 1;
-                            source_target.line_end = 1;
-                            source_target.note = "Add full include for complete type usage";
-                            suggestion.secondary_files.push_back(source_target);
-                        }
+                        FileTarget source_target;
+                        source_target.path = *source_file;
+                        source_target.action = FileAction::AddInclude;
+                        source_target.line_start = insertion.inserted_line_one_based;
+                        source_target.line_end = insertion.inserted_line_one_based;
+                        source_target.note = "Add full include for complete type usage";
+                        suggestion.secondary_files.push_back(source_target);
                     }
                 }
 

@@ -558,4 +558,25 @@ namespace bha::suggestions
         EXPECT_EQ(*insertion_line, 4u);
     }
 
+    TEST_F(HeaderSplitSuggesterTest, FallsBackToLeadingPreambleForPreferredIncludeInsertion) {
+        const auto header_path = temp_root_ / "banner_only.hpp";
+        write_file(
+            header_path,
+            "// Copyright example\n"
+            "// Header banner\n"
+            "\n"
+            "namespace demo {\n"
+            "class Widget;\n"
+            "}  // namespace demo\n"
+        );
+
+        const std::optional<std::size_t> insertion_line = find_leading_preamble_line(header_path);
+        ASSERT_TRUE(insertion_line.has_value());
+        EXPECT_EQ(*insertion_line, 2u);
+
+        const auto insertion = make_preferred_include_insertion_edit(header_path, "#include \"widget_fwd.h\"");
+        EXPECT_EQ(insertion.edit.start_line, 3u);
+        EXPECT_EQ(insertion.inserted_line_one_based, 4u);
+    }
+
 }
