@@ -2620,7 +2620,7 @@ namespace bha::suggestions
                 }
             }
             if (!has_memory_include) {
-                if (auto insert_line = find_include_insertion_line(header_file)) {
+                if (auto insert_line = find_preferred_include_insertion_line(header_file)) {
                     edits.push_back(make_insert_after_line_edit(header_file, *insert_line, "#include <memory>"));
                 } else {
                     edits.push_back(make_insert_at_start_edit(header_file, "#include <memory>"));

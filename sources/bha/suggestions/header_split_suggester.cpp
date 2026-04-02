@@ -298,53 +298,6 @@ namespace bha::suggestions
             return steps;
         }
 
-        std::optional<std::size_t> find_guard_define_line(const fs::path& header_path) {
-            auto lines_result = file_utils::read_lines(header_path);
-            if (lines_result.is_err()) {
-                return std::nullopt;
-            }
-
-            const auto& lines = lines_result.value();
-            const std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
-            const std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
-            std::smatch match;
-
-            std::string guard_macro;
-            bool found_ifndef = false;
-
-            const std::size_t scan_limit = std::min<std::size_t>(lines.size(), 80);
-            for (std::size_t i = 0; i < scan_limit; ++i) {
-                if (!found_ifndef) {
-                    if (std::regex_match(lines[i], match, ifndef_regex)) {
-                        guard_macro = match[1].str();
-                        found_ifndef = true;
-                    } else if (!lines[i].empty() && lines[i].find("#pragma once") == std::string::npos) {
-                        break;
-                    }
-                    continue;
-                }
-
-                if (std::regex_match(lines[i], match, define_regex)) {
-                    if (match[1].str() == guard_macro) {
-                        return i;
-                    }
-                    break;
-                }
-            }
-
-            return std::nullopt;
-        }
-
-        std::optional<std::size_t> find_safe_include_insertion_line(const fs::path& header_path) {
-            if (auto include_line = find_include_insertion_line(header_path)) {
-                return include_line;
-            }
-            if (const auto guard_line = find_guard_define_line(header_path)) {
-                return *guard_line;
-            }
-            return std::nullopt;
-        }
-
         std::optional<fs::path> resolve_header_path_for_edits(
             const fs::path& header_path,
             const fs::path& project_root
@@ -1170,7 +1123,7 @@ namespace bha::suggestions
 
                 if (!include_exists && (fwd_exists || created_fwd_header)) {
                     const std::string include_line = "#include \"" + fwd_header_name + "\"";
-                    if (auto insert_line = find_safe_include_insertion_line(*resolved_header_path)) {
+                    if (auto insert_line = find_preferred_include_insertion_line(*resolved_header_path)) {
                         suggestion.edits.push_back(make_insert_after_line_edit(
                             *resolved_header_path,
                             *insert_line,

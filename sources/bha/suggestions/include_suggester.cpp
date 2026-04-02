@@ -1486,7 +1486,7 @@ namespace bha::suggestions
             suggestion.edits.push_back(make_delete_line_edit(including_header, include_decl->line));
 
             const std::string include_line = "#include \"" + include_dir.header_name + "\"";
-            if (auto insert_line = find_include_insertion_line(source_file)) {
+            if (auto insert_line = find_preferred_include_insertion_line(source_file)) {
                 suggestion.edits.push_back(make_insert_after_line_edit(
                     source_file,
                     *insert_line,

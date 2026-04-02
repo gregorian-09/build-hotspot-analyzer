@@ -534,4 +534,28 @@ namespace bha::suggestions
         EXPECT_EQ(*insertion_line, 2u);
     }
 
+    TEST_F(HeaderSplitSuggesterTest, FallsBackToHeaderGuardForPreferredIncludeInsertion) {
+        const auto header_path = temp_root_ / "guarded_header.hpp";
+        write_file(
+            header_path,
+            "// Copyright example\n"
+            "// Header banner\n"
+            "\n"
+            "#ifndef DEMO_GUARDED_HEADER_HPP_\n"
+            "#define DEMO_GUARDED_HEADER_HPP_\n"
+            "\n"
+            "#ifdef __cplusplus\n"
+            "namespace demo {\n"
+            "class Widget;\n"
+            "}  // namespace demo\n"
+            "#endif\n"
+            "\n"
+            "#endif  // DEMO_GUARDED_HEADER_HPP_\n"
+        );
+
+        const std::optional<std::size_t> insertion_line = find_preferred_include_insertion_line(header_path);
+        ASSERT_TRUE(insertion_line.has_value());
+        EXPECT_EQ(*insertion_line, 4u);
+    }
+
 }

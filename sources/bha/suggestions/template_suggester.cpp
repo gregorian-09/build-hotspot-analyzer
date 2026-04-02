@@ -1060,7 +1060,7 @@ namespace bha::suggestions
                 !find_include_for_header(*inst_source, header_path.filename().string()).has_value()) {
                 const std::string include_line =
                     "#include \"" + include_path_for_source(*inst_source, header_path) + "\"";
-                if (auto insert_line = find_include_insertion_line(*inst_source)) {
+                if (auto insert_line = find_preferred_include_insertion_line(*inst_source)) {
                     suggestion.edits.push_back(make_insert_after_line_edit(
                         *inst_source,
                         *insert_line,

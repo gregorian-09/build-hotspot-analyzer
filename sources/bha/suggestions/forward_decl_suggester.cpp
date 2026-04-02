@@ -1153,7 +1153,7 @@ namespace bha::suggestions
 
                 if (auto source_file = find_matching_source_file(includer_path, include_scan_root)) {
                     if (!find_include_for_header(*source_file, header_filename).has_value()) {
-                        if (auto insert_line = find_include_insertion_line(*source_file)) {
+                        if (auto insert_line = find_preferred_include_insertion_line(*source_file)) {
                             suggestion.edits.push_back(make_insert_after_line_edit(
                                 *source_file,
                                 *insert_line,

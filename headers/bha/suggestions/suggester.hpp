@@ -931,6 +931,53 @@ namespace bha::suggestions {
         return pragma_once_line;
     }
 
+    [[nodiscard]] inline std::optional<std::size_t> find_header_guard_define_line(const fs::path& file) {
+        std::ifstream in(file);
+        if (!in) {
+            return std::nullopt;
+        }
+
+        const std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
+        const std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
+
+        std::string line;
+        std::size_t line_num = 0;
+        std::string guard_macro;
+        bool found_ifndef = false;
+
+        while (std::getline(in, line)) {
+            std::smatch match;
+
+            if (!found_ifndef) {
+                if (std::regex_match(line, match, ifndef_regex)) {
+                    guard_macro = match[1].str();
+                    found_ifndef = true;
+                } else if (!line.empty() && line.find("#pragma once") == std::string::npos) {
+                    break;
+                }
+                ++line_num;
+                continue;
+            }
+
+            if (std::regex_match(line, match, define_regex)) {
+                if (match[1].str() == guard_macro) {
+                    return line_num;
+                }
+                break;
+            }
+            ++line_num;
+        }
+
+        return std::nullopt;
+    }
+
+    [[nodiscard]] inline std::optional<std::size_t> find_preferred_include_insertion_line(const fs::path& file) {
+        if (auto include_line = find_include_insertion_line(file)) {
+            return include_line;
+        }
+        return find_header_guard_define_line(file);
+    }
+
     [[nodiscard]] inline std::size_t end_of_file_insert_line(const std::string& content) {
         return static_cast<std::size_t>(std::count(content.begin(), content.end(), '\n')) + 1;
     }
