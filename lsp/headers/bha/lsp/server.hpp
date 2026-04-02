@@ -158,12 +158,16 @@ namespace bha::lsp
         void remember_build_profile(
             const std::filesystem::path& project_root,
             const std::string& build_system,
-            const build_systems::BuildOptions& options
+            const build_systems::BuildOptions& options,
+            std::optional<int> recorded_build_time_ms = std::nullopt
         );
         void update_build_profile_from_json(
             const std::filesystem::path& project_root,
             const json& build_profile_json
         );
+        [[nodiscard]] std::pair<std::optional<int>, std::optional<std::string>> resolve_trust_loop_baseline(
+            const std::optional<std::filesystem::path>& project_root_hint = std::nullopt
+        ) const;
         void persist_trust_loop_metrics(
             const json& trust_loop,
             const std::optional<std::string>& suggestion_id,
@@ -174,6 +178,7 @@ namespace bha::lsp
             std::filesystem::path project_root;
             std::string build_system;
             build_systems::BuildOptions options;
+            std::optional<int> recorded_build_time_ms;
         };
 
         std::map<std::string, RequestHandler> request_handlers_;

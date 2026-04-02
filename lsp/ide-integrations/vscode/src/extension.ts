@@ -132,6 +132,7 @@ interface ApplyResult {
         predictionDeltaMs?: number;
         predictionErrorPercent?: number;
         baselineBuildMs?: number;
+        baselineSource?: string;
         rebuildBuildMs?: number;
         actualSavingsPercent?: number;
         status?: string;
@@ -166,6 +167,7 @@ interface ApplyAllResult {
         predictionDeltaMs?: number;
         predictionErrorPercent?: number;
         baselineBuildMs?: number;
+        baselineSource?: string;
         rebuildBuildMs?: number;
         actualSavingsPercent?: number;
         status?: string;
@@ -214,6 +216,7 @@ interface PersistedBuildProfile {
     traceOutputDir?: string;
     extraArgs: string[];
     recordedAt: string;
+    buildTimeMs?: number;
 }
 
 interface AsyncCommandAccepted {
@@ -360,6 +363,7 @@ function buildTrustLoopSummary(trustLoop?: ApplyResult['trustLoop'] | ApplyAllRe
 
     const actualSavingsMs = safeGetNumber(trustLoop.actualSavingsMs, 0);
     const baselineBuildMs = safeGetNumber(trustLoop.baselineBuildMs, 0);
+    const baselineSource = safeGetString(trustLoop.baselineSource, '');
     const rebuildBuildMs = safeGetNumber(trustLoop.rebuildBuildMs, 0);
     const actualSavingsPercent = safeGetNumber(trustLoop.actualSavingsPercent, 0);
     const predictedSavingsMs = safeGetNumber(trustLoop.predictedSavingsMs, 0);
@@ -376,20 +380,25 @@ function buildTrustLoopSummary(trustLoop?: ApplyResult['trustLoop'] | ApplyAllRe
 
     let baselineSegment = '';
     if (baselineBuildMs > 0 || rebuildBuildMs > 0) {
-        baselineSegment = ` Baseline ${formatDurationMs(baselineBuildMs)} -> rebuild ${formatDurationMs(rebuildBuildMs)}.`;
+        const baselineLabel = baselineSource === 'recorded-build'
+            ? 'Recorded baseline'
+            : baselineSource === 'trace-aggregate'
+                ? 'Trace aggregate baseline'
+                : 'Baseline';
+        baselineSegment = ` ${baselineLabel} ${formatDurationMs(baselineBuildMs)} -> measured rebuild ${formatDurationMs(rebuildBuildMs)}.`;
     }
 
     let predictionSegment = '';
     if (predictedSavingsMs !== 0 || predictionDeltaMs !== 0) {
         const deltaPrefix = predictionDeltaMs >= 0 ? '+' : '-';
         predictionSegment =
-            ` Predicted ${formatDurationMs(predictedSavingsMs)}; actual-vs-prediction ${deltaPrefix}${formatDurationMs(Math.abs(predictionDeltaMs))}.`;
+            ` Estimated ${formatDurationMs(predictedSavingsMs)}; measured-vs-estimate ${deltaPrefix}${formatDurationMs(Math.abs(predictionDeltaMs))}.`;
     }
 
     return {
-        message: `${headline}${baselineSegment}${predictionSegment}`,
+        message: `${headline}${baselineSegment}${predictionSegment} Measured rebuild is authoritative; estimate is heuristic.`,
         logSuffix:
-            ` trustLoop(actualSavingsMs=${actualSavingsMs}, actualSavingsPercent=${actualSavingsPercent.toFixed(1)}, baselineBuildMs=${baselineBuildMs}, rebuildBuildMs=${rebuildBuildMs}, predictedSavingsMs=${predictedSavingsMs}, predictionDeltaMs=${predictionDeltaMs})`,
+            ` trustLoop(actualSavingsMs=${actualSavingsMs}, actualSavingsPercent=${actualSavingsPercent.toFixed(1)}, baselineBuildMs=${baselineBuildMs}, baselineSource=${baselineSource || 'unknown'}, rebuildBuildMs=${rebuildBuildMs}, predictedSavingsMs=${predictedSavingsMs}, predictionDeltaMs=${predictionDeltaMs})`,
         improved: actualSavingsMs > 0,
         regressedOrFlat: actualSavingsMs <= 0
     };
@@ -484,7 +493,10 @@ function validatePersistedBuildProfile(profile: PersistedBuildProfile | undefine
         buildDir: profile.buildDir?.trim() || undefined,
         traceOutputDir: profile.traceOutputDir?.trim() || undefined,
         compiler: compiler || undefined,
-        extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : []
+        extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : [],
+        buildTimeMs: typeof profile.buildTimeMs === 'number' && Number.isFinite(profile.buildTimeMs) && profile.buildTimeMs >= 0
+            ? profile.buildTimeMs
+            : undefined
     };
 }
 
@@ -1080,7 +1092,8 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
                 parallelJobs: safeGetNumber(result.parallelJobs, 0) || options.parallelJobs,
                 traceOutputDir: chosenTraceDir || options.traceOutputDir,
                 extraArgs: options.extraArgs,
-                recordedAt: new Date().toISOString()
+                recordedAt: new Date().toISOString(),
+                buildTimeMs
             });
         }
         const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1000).toFixed(2)}s`;

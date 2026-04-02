@@ -107,6 +107,7 @@ namespace bha::lsp
     json build_trust_loop_payload(
         const std::optional<int>& predicted_savings_ms,
         const std::optional<int>& baseline_duration_ms,
+        const std::optional<std::string>& baseline_source,
         const bool validation_ran,
         const bool validation_success,
         const std::optional<int>& measured_rebuild_duration_ms
@@ -154,6 +155,7 @@ namespace bha::lsp
             {"actualSavingsMs", actual_savings_ms},
             {"predictionDeltaMs", prediction_delta_ms},
             {"baselineBuildMs", baseline_ms},
+            {"baselineSource", baseline_source.value_or("unknown")},
             {"rebuildBuildMs", rebuild_ms},
             {"actualSavingsPercent", baseline_ms > 0
                 ? (static_cast<double>(actual_savings_ms) / static_cast<double>(baseline_ms)) * 100.0
@@ -638,12 +640,14 @@ namespace bha::lsp
     void LSPServer::remember_build_profile(
         const std::filesystem::path& project_root,
         const std::string& build_system,
-        const build_systems::BuildOptions& options
+        const build_systems::BuildOptions& options,
+        std::optional<int> recorded_build_time_ms
     ) {
         LastBuildProfile profile;
         profile.project_root = project_root.lexically_normal();
         profile.build_system = build_system;
         profile.options = options;
+        profile.recorded_build_time_ms = recorded_build_time_ms;
         std::lock_guard const lock(build_profile_mutex_);
         last_build_profile_ = std::move(profile);
     }
@@ -700,7 +704,42 @@ namespace bha::lsp
         if (build_system.empty()) {
             return;
         }
-        remember_build_profile(project_root, build_system, options);
+        std::optional<int> recorded_build_time_ms;
+        if (build_profile_json.contains("buildTimeMs") && build_profile_json["buildTimeMs"].is_number_integer()) {
+            recorded_build_time_ms = build_profile_json["buildTimeMs"].get<int>();
+        }
+        remember_build_profile(project_root, build_system, options, recorded_build_time_ms);
+    }
+
+    std::pair<std::optional<int>, std::optional<std::string>> LSPServer::resolve_trust_loop_baseline(
+        const std::optional<std::filesystem::path>& project_root_hint
+    ) const {
+        const std::optional<std::filesystem::path> normalized_hint = project_root_hint.has_value()
+            ? std::make_optional(project_root_hint->lexically_normal())
+            : std::nullopt;
+
+        {
+            std::lock_guard const lock(build_profile_mutex_);
+            if (last_build_profile_.has_value()) {
+                const bool same_workspace = !normalized_hint.has_value() ||
+                    last_build_profile_->project_root == *normalized_hint;
+                if (same_workspace && last_build_profile_->recorded_build_time_ms.has_value()) {
+                    return {
+                        last_build_profile_->recorded_build_time_ms,
+                        std::make_optional<std::string>("recorded-build")
+                    };
+                }
+            }
+        }
+
+        std::lock_guard const lock(suggestion_manager_mutex_);
+        if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
+            return {
+                std::make_optional(baseline->total_duration_ms),
+                std::make_optional<std::string>("trace-aggregate")
+            };
+        }
+        return {std::nullopt, std::nullopt};
     }
 
     void LSPServer::cleanup_finished_jobs() {
@@ -1475,7 +1514,12 @@ namespace bha::lsp
                 throw std::runtime_error(message);
             }
             ensure_not_cancelled();
-            remember_build_profile(project_path, adapter->name(), options);
+            remember_build_profile(
+                project_path,
+                adapter->name(),
+                options,
+                std::chrono::duration_cast<std::chrono::milliseconds>(build.build_time).count()
+            );
 
             send_progress(token, json{
                 {"kind", "report"},
@@ -1970,13 +2014,8 @@ namespace bha::lsp
                 predicted_savings_ms = suggestion->estimated_impact.time_saved_ms;
             }
         }
-        std::optional<int> baseline_duration_ms;
-        {
-            std::lock_guard const lock(suggestion_manager_mutex_);
-            if (const auto baseline = suggestion_manager_->get_last_baseline_metrics(); baseline.has_value()) {
-                baseline_duration_ms = baseline->total_duration_ms;
-            }
-        }
+        const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
+        const auto [baseline_duration_ms, baseline_source] = resolve_trust_loop_baseline(workspace_path);
 
         if (bool const skip_consent = args.contains("skipConsent") && args["skipConsent"].get<bool>(); !skip_consent && config_.show_preview_before_apply && !config_.auto_apply_all) {
             DetailedSuggestion details;
@@ -2137,6 +2176,7 @@ namespace bha::lsp
         const json trust_loop = build_trust_loop_payload(
             predicted_savings_ms,
             baseline_duration_ms,
+            baseline_source,
             build_validation_ran,
             build_validation_success,
             measured_rebuild_duration_ms
@@ -2265,12 +2305,8 @@ namespace bha::lsp
         const std::string backup_id = apply_all_result.backup_id;
         const bool atomic = args.contains("atomic") && args["atomic"].get<bool>();
 
-        std::optional<int> baseline_duration_ms;
-        if (const auto baseline = with_manager([&]() {
-                return suggestion_manager_->get_last_baseline_metrics();
-            }); baseline.has_value()) {
-            baseline_duration_ms = baseline->total_duration_ms;
-        }
+        const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
+        const auto [baseline_duration_ms, baseline_source] = resolve_trust_loop_baseline(workspace_path);
 
         auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
             json out = json::array();
@@ -2604,6 +2640,7 @@ namespace bha::lsp
         const json trust_loop = build_trust_loop_payload(
             predicted_savings_ms,
             baseline_duration_ms,
+            baseline_source,
             build_validation_ran,
             build_validation_success,
             measured_rebuild_duration_ms

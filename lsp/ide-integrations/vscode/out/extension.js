@@ -18133,6 +18133,7 @@ function buildTrustLoopSummary(trustLoop) {
   }
   const actualSavingsMs = safeGetNumber(trustLoop.actualSavingsMs, 0);
   const baselineBuildMs = safeGetNumber(trustLoop.baselineBuildMs, 0);
+  const baselineSource = safeGetString(trustLoop.baselineSource, "");
   const rebuildBuildMs = safeGetNumber(trustLoop.rebuildBuildMs, 0);
   const actualSavingsPercent = safeGetNumber(trustLoop.actualSavingsPercent, 0);
   const predictedSavingsMs = safeGetNumber(trustLoop.predictedSavingsMs, 0);
@@ -18147,16 +18148,17 @@ function buildTrustLoopSummary(trustLoop) {
   }
   let baselineSegment = "";
   if (baselineBuildMs > 0 || rebuildBuildMs > 0) {
-    baselineSegment = ` Baseline ${formatDurationMs(baselineBuildMs)} -> rebuild ${formatDurationMs(rebuildBuildMs)}.`;
+    const baselineLabel = baselineSource === "recorded-build" ? "Recorded baseline" : baselineSource === "trace-aggregate" ? "Trace aggregate baseline" : "Baseline";
+    baselineSegment = ` ${baselineLabel} ${formatDurationMs(baselineBuildMs)} -> measured rebuild ${formatDurationMs(rebuildBuildMs)}.`;
   }
   let predictionSegment = "";
   if (predictedSavingsMs !== 0 || predictionDeltaMs !== 0) {
     const deltaPrefix = predictionDeltaMs >= 0 ? "+" : "-";
-    predictionSegment = ` Predicted ${formatDurationMs(predictedSavingsMs)}; actual-vs-prediction ${deltaPrefix}${formatDurationMs(Math.abs(predictionDeltaMs))}.`;
+    predictionSegment = ` Estimated ${formatDurationMs(predictedSavingsMs)}; measured-vs-estimate ${deltaPrefix}${formatDurationMs(Math.abs(predictionDeltaMs))}.`;
   }
   return {
-    message: `${headline}${baselineSegment}${predictionSegment}`,
-    logSuffix: ` trustLoop(actualSavingsMs=${actualSavingsMs}, actualSavingsPercent=${actualSavingsPercent.toFixed(1)}, baselineBuildMs=${baselineBuildMs}, rebuildBuildMs=${rebuildBuildMs}, predictedSavingsMs=${predictedSavingsMs}, predictionDeltaMs=${predictionDeltaMs})`,
+    message: `${headline}${baselineSegment}${predictionSegment} Measured rebuild is authoritative; estimate is heuristic.`,
+    logSuffix: ` trustLoop(actualSavingsMs=${actualSavingsMs}, actualSavingsPercent=${actualSavingsPercent.toFixed(1)}, baselineBuildMs=${baselineBuildMs}, baselineSource=${baselineSource || "unknown"}, rebuildBuildMs=${rebuildBuildMs}, predictedSavingsMs=${predictedSavingsMs}, predictionDeltaMs=${predictionDeltaMs})`,
     improved: actualSavingsMs > 0,
     regressedOrFlat: actualSavingsMs <= 0
   };
@@ -18233,7 +18235,8 @@ function validatePersistedBuildProfile(profile, workspaceRoot) {
     buildDir: profile.buildDir?.trim() || void 0,
     traceOutputDir: profile.traceOutputDir?.trim() || void 0,
     compiler: compiler || void 0,
-    extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : []
+    extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : [],
+    buildTimeMs: typeof profile.buildTimeMs === "number" && Number.isFinite(profile.buildTimeMs) && profile.buildTimeMs >= 0 ? profile.buildTimeMs : void 0
   };
 }
 async function persistBuildProfile(workspaceRoot, profile) {
@@ -18743,7 +18746,8 @@ async function recordBuildTraces(advanced) {
         parallelJobs: safeGetNumber(result.parallelJobs, 0) || options.parallelJobs,
         traceOutputDir: chosenTraceDir || options.traceOutputDir,
         extraArgs: options.extraArgs,
-        recordedAt: (/* @__PURE__ */ new Date()).toISOString()
+        recordedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        buildTimeMs
       });
     }
     const message = `Build traces recorded: ${traceFileCount} trace files via ${buildSystem} in ${(buildTimeMs / 1e3).toFixed(2)}s`;
