@@ -56,20 +56,6 @@ namespace bha::suggestions
 
         bool should_skip_index_directory(const fs::path& dir);
 
-        std::string trim_copy(std::string value) {
-            if (const auto first = value.find_first_not_of(" \t\r\n"); first != std::string::npos) {
-                value.erase(0, first);
-            } else {
-                value.clear();
-            }
-            if (!value.empty()) {
-                if (const auto last = value.find_last_not_of(" \t\r\n"); last != std::string::npos) {
-                    value.erase(last + 1);
-                }
-            }
-            return value;
-        }
-
         std::string strip_line_comments(const std::string& line) {
             bool in_single_quote = false;
             bool in_double_quote = false;
@@ -144,7 +130,7 @@ namespace bha::suggestions
 
             MacroWrapperScope scope;
             scope.open_name = *macro_name;
-            scope.open_text = trim_copy(line);
+            scope.open_text = trim_whitespace_copy(line);
             scope.close_name = *close_name;
             scope.close_text = *close_name;
             return scope;
@@ -363,8 +349,10 @@ namespace bha::suggestions
         }
 
         bool is_header_file(const fs::path& path) {
-            const std::string ext = path.extension().string();
-            return ext == ".h" || ext == ".hpp" || ext == ".hxx" || ext == ".H";
+            static constexpr std::array<std::string_view, 4> kHeaderExts = {
+                ".h", ".hpp", ".hxx", ".H"
+            };
+            return path_has_extension(path, kHeaderExts);
         }
 
         std::string join_namespace(const std::vector<std::string>& parts) {
@@ -409,7 +397,7 @@ namespace bha::suggestions
 
             if (type.scopes.empty()) {
                 out << "class " << type.name << ";";
-                return trim_copy(out.str());
+                return trim_whitespace_copy(out.str());
             }
 
             for (const auto& scope : type.scopes) {
@@ -428,7 +416,7 @@ namespace bha::suggestions
                     out << scope.macro.close_text << "\n";
                 }
             }
-            return trim_copy(out.str());
+            return trim_whitespace_copy(out.str());
         }
 
         std::vector<std::string> split_namespace(std::string ns_path) {
@@ -444,7 +432,7 @@ namespace bha::suggestions
                 offset = pos + 2;
             }
             for (auto& part : result) {
-                part = trim_copy(std::move(part));
+                part = trim_whitespace_copy(std::move(part));
             }
             result.erase(
                 std::remove_if(result.begin(), result.end(), [](const std::string& part) { return part.empty(); }),
@@ -468,7 +456,7 @@ namespace bha::suggestions
             std::string raw_line;
             while (std::getline(in, raw_line)) {
                 const std::string no_comment = strip_line_comments(raw_line);
-                const std::string line = trim_copy(no_comment);
+                const std::string line = trim_whitespace_copy(no_comment);
 
                 if (line.starts_with("template<") || line.starts_with("template <")) {
                     pending_template = true;
@@ -724,7 +712,7 @@ namespace bha::suggestions
             const auto line_end = text.find('\n', match_end);
             const std::size_t begin = line_start == std::string::npos ? 0 : line_start + 1;
             const std::size_t end = line_end == std::string::npos ? text.size() : line_end;
-            const std::string line = trim_copy(text.substr(begin, end - begin));
+            const std::string line = trim_whitespace_copy(text.substr(begin, end - begin));
             return line.starts_with("class ") || line.starts_with("struct ");
         }
 
@@ -821,10 +809,7 @@ namespace bha::suggestions
             static constexpr std::array<std::string_view, 5> kSourceExts = {
                 ".cpp", ".cc", ".cxx", ".c++", ".C"
             };
-            const std::string ext = path.extension().string();
-            return std::ranges::any_of(kSourceExts, [&](std::string_view source_ext) {
-                return ext == source_ext;
-            });
+            return path_has_extension(path, kSourceExts);
         }
 
         std::optional<fs::path> find_matching_source_file(const fs::path& header_path, const fs::path& project_root) {

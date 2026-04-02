@@ -120,9 +120,10 @@ namespace bha::suggestions
          * Checks if a file is a C++ source file (not a header).
          */
         bool is_source_file(const fs::path& path) {
-            const std::string ext = path.extension().string();
-            return ext == ".cpp" || ext == ".cc" || ext == ".cxx" ||
-                   ext == ".c" || ext == ".C" || ext == ".c++";
+            static constexpr std::array<std::string_view, 6> kSourceExts = {
+                ".cpp", ".cc", ".cxx", ".c", ".C", ".c++"
+            };
+            return path_has_extension(path, kSourceExts);
         }
 
         /**

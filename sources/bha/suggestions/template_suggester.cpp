@@ -186,9 +186,10 @@ namespace bha::suggestions
         }
 
         bool is_source_file(const fs::path& path) {
-            const std::string ext = path.extension().string();
-            return ext == ".cpp" || ext == ".cc" || ext == ".cxx" || ext == ".c++" || ext == ".C" ||
-                   ext == ".cp" || ext == ".mm" || ext == ".m";
+            static constexpr std::array<std::string_view, 8> kSourceExts = {
+                ".cpp", ".cc", ".cxx", ".c++", ".C", ".cp", ".mm", ".m"
+            };
+            return path_has_extension(path, kSourceExts);
         }
 
         std::optional<fs::path> resolve_existing_instantiation_source(

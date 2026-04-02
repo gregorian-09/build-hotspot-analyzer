@@ -587,6 +587,100 @@ namespace bha::suggestions {
         return oss.str();
     }
 
+    [[nodiscard]] inline std::string trim_whitespace_copy(std::string value) {
+        if (const auto first = value.find_first_not_of(" \t\r\n"); first != std::string::npos) {
+            value.erase(0, first);
+        } else {
+            value.clear();
+        }
+        if (!value.empty()) {
+            if (const auto last = value.find_last_not_of(" \t\r\n"); last != std::string::npos) {
+                value.erase(last + 1);
+            }
+        }
+        return value;
+    }
+
+    [[nodiscard]] inline std::string strip_comments_and_strings(
+        const std::string& line,
+        bool& in_block_comment
+    ) {
+        std::string cleaned;
+        cleaned.reserve(line.size());
+
+        bool in_string = false;
+        char quote_char = '\0';
+        bool escape_next = false;
+
+        for (std::size_t i = 0; i < line.size(); ++i) {
+            const char ch = line[i];
+            const char next = (i + 1 < line.size()) ? line[i + 1] : '\0';
+
+            if (in_block_comment) {
+                if (ch == '*' && next == '/') {
+                    in_block_comment = false;
+                    ++i;
+                }
+                continue;
+            }
+
+            if (in_string) {
+                if (escape_next) {
+                    escape_next = false;
+                } else if (ch == '\\') {
+                    escape_next = true;
+                } else if (ch == quote_char) {
+                    in_string = false;
+                }
+                cleaned.push_back(' ');
+                continue;
+            }
+
+            if (ch == '/' && next == '/') {
+                break;
+            }
+            if (ch == '/' && next == '*') {
+                in_block_comment = true;
+                ++i;
+                continue;
+            }
+            if (ch == '"' || ch == '\'') {
+                in_string = true;
+                quote_char = ch;
+                cleaned.push_back(' ');
+                continue;
+            }
+
+            cleaned.push_back(ch);
+        }
+
+        return cleaned;
+    }
+
+    template <std::size_t N>
+    [[nodiscard]] inline bool path_has_extension(
+        const fs::path& path,
+        const std::array<std::string_view, N>& extensions
+    ) {
+        const std::string ext = path.extension().string();
+        return std::ranges::any_of(extensions, [&](std::string_view candidate) {
+            return ext == candidate;
+        });
+    }
+
+    [[nodiscard]] inline fs::path resolve_project_path(
+        const fs::path& path,
+        const fs::path& project_root
+    ) {
+        fs::path resolved = resolve_source_path(path);
+        if (resolved.is_relative() && !project_root.empty()) {
+            resolved = (project_root / resolved).lexically_normal();
+        } else {
+            resolved = resolved.lexically_normal();
+        }
+        return resolved;
+    }
+
     struct IncludeDirective {
         std::size_t line = 0;
         std::size_t col_start = 0;

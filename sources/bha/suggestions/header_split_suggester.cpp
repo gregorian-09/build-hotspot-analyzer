@@ -35,20 +35,6 @@ namespace bha::suggestions
             MacroWrapperScope macro;
         };
 
-        std::string trim_copy(std::string value) {
-            if (const auto first = value.find_first_not_of(" \t\r\n"); first != std::string::npos) {
-                value.erase(0, first);
-            } else {
-                value.clear();
-            }
-            if (!value.empty()) {
-                if (const auto last = value.find_last_not_of(" \t\r\n"); last != std::string::npos) {
-                    value.erase(last + 1);
-                }
-            }
-            return value;
-        }
-
         /**
          * Checks if a path is a C++ header file.
          */
@@ -330,59 +316,6 @@ namespace bha::suggestions
             return steps;
         }
 
-        std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment) {
-            std::string cleaned;
-            cleaned.reserve(line.size());
-
-            bool in_string = false;
-            char quote_char = '\0';
-            bool escape_next = false;
-
-            for (std::size_t i = 0; i < line.size(); ++i) {
-                const char ch = line[i];
-                const char next = (i + 1 < line.size()) ? line[i + 1] : '\0';
-
-                if (in_block_comment) {
-                    if (ch == '*' && next == '/') {
-                        in_block_comment = false;
-                        ++i;
-                    }
-                    continue;
-                }
-
-                if (in_string) {
-                    if (escape_next) {
-                        escape_next = false;
-                    } else if (ch == '\\') {
-                        escape_next = true;
-                    } else if (ch == quote_char) {
-                        in_string = false;
-                    }
-                    cleaned.push_back(' ');
-                    continue;
-                }
-
-                if (ch == '/' && next == '/') {
-                    break;
-                }
-                if (ch == '/' && next == '*') {
-                    in_block_comment = true;
-                    ++i;
-                    continue;
-                }
-                if (ch == '"' || ch == '\'') {
-                    in_string = true;
-                    quote_char = ch;
-                    cleaned.push_back(' ');
-                    continue;
-                }
-
-                cleaned.push_back(ch);
-            }
-
-            return cleaned;
-        }
-
         std::vector<std::string> split_namespace_path(const std::string& ns_path) {
             std::vector<std::string> parts;
             std::size_t start = 0;
@@ -551,7 +484,7 @@ namespace bha::suggestions
 
             MacroWrapperScope scope;
             scope.open_name = *macro_name;
-            scope.open_text = trim_copy(line);
+            scope.open_text = trim_whitespace_copy(line);
             scope.close_name = *close_name;
             scope.close_text = *close_name;
             return scope;

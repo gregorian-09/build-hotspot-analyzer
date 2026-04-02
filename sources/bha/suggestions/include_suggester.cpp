@@ -479,33 +479,17 @@ namespace bha::suggestions
         }
 
         bool is_header_file(const fs::path& file) {
-            const auto ext = file.extension().string();
-            return ext == ".h" || ext == ".hpp" || ext == ".hh" || ext == ".hxx" || ext == ".h++";
+            static constexpr std::array<std::string_view, 5> kHeaderExts = {
+                ".h", ".hpp", ".hh", ".hxx", ".h++"
+            };
+            return path_has_extension(file, kHeaderExts);
         }
 
         bool is_source_file(const fs::path& file) {
-            const auto ext = file.extension().string();
-            return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx";
-        }
-
-        fs::path resolve_project_path(const fs::path& path, const fs::path& project_root) {
-            fs::path resolved = resolve_source_path(path);
-            if (resolved.is_relative() && !project_root.empty()) {
-                resolved = (project_root / resolved).lexically_normal();
-            } else {
-                resolved = resolved.lexically_normal();
-            }
-            return resolved;
-        }
-
-
-        [[nodiscard]] std::string trim_copy(const std::string& input) {
-            const auto begin = input.find_first_not_of(" \t\r\n");
-            if (begin == std::string::npos) {
-                return {};
-            }
-            const auto end = input.find_last_not_of(" \t\r\n");
-            return input.substr(begin, end - begin + 1);
+            static constexpr std::array<std::string_view, 4> kSourceExts = {
+                ".c", ".cc", ".cpp", ".cxx"
+            };
+            return path_has_extension(file, kSourceExts);
         }
 
         [[nodiscard]] std::string uppercase_copy(std::string input) {
@@ -588,8 +572,6 @@ namespace bha::suggestions
             );
         }
 
-        std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment);
-
         [[nodiscard]] ConditionalContext analyze_conditional_context(
             const fs::path& file,
             const std::size_t target_line
@@ -619,32 +601,32 @@ namespace bha::suggestions
                     return context;
                 }
 
-                const std::string cleaned = trim_copy(
+                const std::string cleaned = trim_whitespace_copy(
                     strip_comments_and_strings(lines_result.value()[index], in_block_comment)
                 );
                 if (!cleaned.starts_with('#')) {
                     continue;
                 }
 
-                auto directive = trim_copy(cleaned.substr(1));
+                auto directive = trim_whitespace_copy(cleaned.substr(1));
                 if (directive.rfind("ifdef", 0) == 0) {
-                    directive = trim_copy(directive.substr(5));
+                    directive = trim_whitespace_copy(directive.substr(5));
                     stack.push_back({directive, condition_mentions_platform(directive)});
                     continue;
                 }
                 if (directive.rfind("ifndef", 0) == 0) {
-                    directive = trim_copy(directive.substr(6));
+                    directive = trim_whitespace_copy(directive.substr(6));
                     const std::string expression = "!defined(" + directive + ")";
                     stack.push_back({expression, condition_mentions_platform(directive)});
                     continue;
                 }
                 if (directive.rfind("if", 0) == 0) {
-                    directive = trim_copy(directive.substr(2));
+                    directive = trim_whitespace_copy(directive.substr(2));
                     stack.push_back({directive, condition_mentions_platform(directive)});
                     continue;
                 }
                 if (directive.rfind("elif", 0) == 0) {
-                    directive = trim_copy(directive.substr(4));
+                    directive = trim_whitespace_copy(directive.substr(4));
                     if (!stack.empty()) {
                         stack.back() = {directive, condition_mentions_platform(directive)};
                     }
@@ -703,59 +685,6 @@ namespace bha::suggestions
             }
             assessment.blocked_reason = reason.str();
             return assessment;
-        }
-
-        std::string strip_comments_and_strings(const std::string& line, bool& in_block_comment) {
-            std::string cleaned;
-            cleaned.reserve(line.size());
-
-            bool in_string = false;
-            char quote_char = '\0';
-            bool escape_next = false;
-
-            for (std::size_t i = 0; i < line.size(); ++i) {
-                const char ch = line[i];
-                const char next = (i + 1 < line.size()) ? line[i + 1] : '\0';
-
-                if (in_block_comment) {
-                    if (ch == '*' && next == '/') {
-                        in_block_comment = false;
-                        ++i;
-                    }
-                    continue;
-                }
-
-                if (in_string) {
-                    if (escape_next) {
-                        escape_next = false;
-                    } else if (ch == '\\') {
-                        escape_next = true;
-                    } else if (ch == quote_char) {
-                        in_string = false;
-                    }
-                    cleaned.push_back(' ');
-                    continue;
-                }
-
-                if (ch == '/' && next == '/') {
-                    break;
-                }
-                if (ch == '/' && next == '*') {
-                    in_block_comment = true;
-                    ++i;
-                    continue;
-                }
-                if (ch == '"' || ch == '\'') {
-                    in_string = true;
-                    quote_char = ch;
-                    cleaned.push_back(' ');
-                    continue;
-                }
-
-                cleaned.push_back(ch);
-            }
-
-            return cleaned;
         }
 
         std::vector<std::string> extract_declared_type_names(const fs::path& header_path) {
@@ -870,18 +799,18 @@ namespace bha::suggestions
         }
 
         bool callable_tail_looks_valid(std::string tail) {
-            tail = trim_copy(tail);
+            tail = trim_whitespace_copy(tail);
             while (!tail.empty()) {
                 if (tail[0] == ';' || tail[0] == '{') {
                     return true;
                 }
                 if (tail.rfind("noexcept", 0) == 0) {
                     tail.erase(0, std::string("noexcept").size());
-                    tail = trim_copy(tail);
+                    tail = trim_whitespace_copy(tail);
                     if (!tail.empty() && tail[0] == '(') {
                         if (const auto span = find_outer_paren_span(tail)) {
                             tail.erase(0, span->second + 1);
-                            tail = trim_copy(tail);
+                            tail = trim_whitespace_copy(tail);
                             continue;
                         }
                         return false;
@@ -894,16 +823,16 @@ namespace bha::suggestions
                         return false;
                     }
                     tail.erase(0, close + 2);
-                    tail = trim_copy(tail);
+                    tail = trim_whitespace_copy(tail);
                     continue;
                 }
                 if (tail.rfind("__attribute__", 0) == 0) {
                     tail.erase(0, std::string("__attribute__").size());
-                    tail = trim_copy(tail);
+                    tail = trim_whitespace_copy(tail);
                     if (!tail.empty() && tail[0] == '(') {
                         if (const auto span = find_outer_paren_span(tail)) {
                             tail.erase(0, span->second + 1);
-                            tail = trim_copy(tail);
+                            tail = trim_whitespace_copy(tail);
                             continue;
                         }
                     }
@@ -925,7 +854,7 @@ namespace bha::suggestions
                     return false;
                 }
                 tail.erase(0, token_end);
-                tail = trim_copy(tail);
+                tail = trim_whitespace_copy(tail);
             }
 
             return false;
@@ -939,7 +868,7 @@ namespace bha::suggestions
                 "class ",  "struct ",  "enum ",    "using ",   "typedef ", "static_assert"
             };
 
-            const std::string trimmed = trim_copy(declaration);
+            const std::string trimmed = trim_whitespace_copy(declaration);
             if (trimmed.empty()) {
                 return std::nullopt;
             }
@@ -953,7 +882,7 @@ namespace bha::suggestions
             if (!paren_span.has_value()) {
                 return std::nullopt;
             }
-            if (!callable_tail_looks_valid(trim_copy(trimmed.substr(paren_span->second + 1)))) {
+            if (!callable_tail_looks_valid(trim_whitespace_copy(trimmed.substr(paren_span->second + 1)))) {
                 return std::nullopt;
             }
 
@@ -988,7 +917,7 @@ namespace bha::suggestions
 
             for (const auto& raw_line : lines_result.value()) {
                 const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
-                const std::string trimmed = trim_copy(line);
+                const std::string trimmed = trim_whitespace_copy(line);
                 if (trimmed.empty()) {
                     continue;
                 }
