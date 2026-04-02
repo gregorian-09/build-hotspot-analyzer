@@ -2278,6 +2278,223 @@ namespace bha::lsp
         );
     }
 
+    bool SuggestionManager::create_backup_for_files(
+        const std::vector<fs::path>& files,
+        const std::string_view failure_message,
+        ApplySuggestionResult& result
+    ) {
+        if (files.empty()) {
+            return true;
+        }
+
+        const std::string backup_id = create_backup(files);
+        if (backup_id.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = std::string(failure_message);
+            result.errors.push_back(std::move(diag));
+            return false;
+        }
+
+        result.backup_id = backup_id;
+        return true;
+    }
+
+    bool SuggestionManager::apply_external_refactor_suggestion(
+        const std::string& /*suggestion_id*/,
+        const bha::Suggestion& bha_sug,
+        const bool create_backup_flag,
+        ApplySuggestionResult& result,
+        std::vector<fs::path>& changed_files
+    ) {
+        if (bha_sug.type != bha::SuggestionType::PIMPLPattern ||
+            !bha_sug.refactor_class_name ||
+            !bha_sug.refactor_compile_commands_path ||
+            bha_sug.secondary_files.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "This external refactor suggestion is missing the metadata required to invoke bha-refactor";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        const fs::path refactor_binary = resolve_bha_refactor_binary();
+        if (!fs::exists(refactor_binary)) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "bha-refactor binary was not found; build with BHA_BUILD_REFACTOR_TOOLS=ON or set BHA_REFACTOR";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        std::ostringstream cmd;
+        cmd << shell_quote(refactor_binary.string())
+            << " pimpl"
+            << " --compile-commands " << shell_quote(bha_sug.refactor_compile_commands_path->string())
+            << " --source " << shell_quote(bha_sug.target_file.path.string())
+            << " --header " << shell_quote(bha_sug.secondary_files.front().path.string())
+            << " --class " << shell_quote(*bha_sug.refactor_class_name)
+            << " --dry-run --output-format json";
+
+        std::array<char, 512> buffer{};
+        std::string output;
+        if (FILE* pipe = popen(cmd.str().c_str(), "r")) {
+            while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
+                output.append(buffer.data());
+            }
+            pclose(pipe);
+        } else {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "Failed to launch bha-refactor";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        nlohmann::json refactor_json;
+        try {
+            refactor_json = nlohmann::json::parse(output);
+        } catch (const nlohmann::json::exception&) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "bha-refactor returned invalid JSON";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        if (!refactor_json.value("success", false)) {
+            if (refactor_json.contains("diagnostics") && refactor_json["diagnostics"].is_array()) {
+                for (const auto& item : refactor_json["diagnostics"]) {
+                    result.errors.push_back(parse_refactor_diagnostic(item));
+                }
+            }
+            if (result.errors.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.message = "bha-refactor did not produce an applicable refactor";
+                diag.source = "bha-refactor";
+                result.errors.push_back(diag);
+            }
+            return false;
+        }
+
+        std::unordered_map<std::string, std::vector<ExternalReplacement>> replacements_by_file;
+        std::vector<fs::path> files_to_backup;
+        if (refactor_json.contains("replacements") && refactor_json["replacements"].is_array()) {
+            for (const auto& item : refactor_json["replacements"]) {
+                if (!item.is_object()) {
+                    continue;
+                }
+                ExternalReplacement replacement;
+                replacement.file = item.value("file", "");
+                replacement.offset = item.value("offset", std::size_t{0});
+                replacement.length = item.value("length", std::size_t{0});
+                replacement.replacement_text = item.value("replacement_text", "");
+                if (replacement.file.empty()) {
+                    continue;
+                }
+                if (!replacements_by_file.contains(replacement.file.string())) {
+                    files_to_backup.push_back(replacement.file);
+                }
+                replacements_by_file[replacement.file.string()].push_back(std::move(replacement));
+            }
+        }
+
+        if (replacements_by_file.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "bha-refactor returned no replacements";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        if (create_backup_flag &&
+            !create_backup_for_files(
+                files_to_backup,
+                "Failed to create durable backup before applying external refactor suggestion",
+                result
+            )) {
+            return false;
+        }
+
+        for (auto& [file_path_str, file_replacements] : replacements_by_file) {
+            const fs::path file_path(file_path_str);
+            if (!apply_replacements_to_file(file_path, std::move(file_replacements))) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.message = "Failed to apply bha-refactor replacements to " + file_path.string();
+                diag.source = "bha-refactor";
+                result.errors.push_back(diag);
+                if (result.backup_id) {
+                    rollback_apply_suggestion(
+                        result,
+                        {},
+                        "Automatic rollback failed after external refactor apply failure"
+                    );
+                }
+                return false;
+            }
+            changed_files.push_back(file_path);
+        }
+
+        return true;
+    }
+
+    bool SuggestionManager::apply_direct_edit_suggestion(
+        const std::string& suggestion_id,
+        const bha::Suggestion& bha_sug,
+        const bool create_backup_flag,
+        const bool enforce_forward_decl_validation,
+        ApplySuggestionResult& result,
+        std::vector<FileBackup>& transactional_snapshot,
+        std::vector<fs::path>& changed_files
+    ) {
+        if (bha_sug.type == bha::SuggestionType::PIMPLPattern && bha_sug.edits.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "PIMPL suggestions without concrete edits remain advisory-only";
+            result.errors.push_back(diag);
+            return false;
+        }
+
+        std::vector<fs::path> files_to_backup = collect_backup_files(bha_sug);
+
+        if (create_backup_flag &&
+            !create_backup_for_files(
+                files_to_backup,
+                "Failed to create durable backup before applying suggestion " + suggestion_id,
+                result
+            )) {
+            return false;
+        }
+        if (enforce_forward_decl_validation && !files_to_backup.empty() &&
+            !capture_transactional_snapshot(files_to_backup, transactional_snapshot, result.errors)) {
+            return false;
+        }
+
+        if (!apply_file_changes(bha_sug, changed_files)) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.message = "Failed to apply file changes for suggestion " + suggestion_id +
+                           " (" + bha_sug.title + ")";
+            result.errors.push_back(diag);
+
+            if (result.backup_id || (enforce_forward_decl_validation && !transactional_snapshot.empty())) {
+                rollback_apply_suggestion(
+                    result,
+                    transactional_snapshot,
+                    enforce_forward_decl_validation
+                        ? "Automatic rollback failed after forward-declaration apply failure"
+                        : "Automatic rollback failed after apply failure"
+                );
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     bool SuggestionManager::rollback_apply_suggestion(
         ApplySuggestionResult& result,
         const std::vector<FileBackup>& transactional_snapshot,
@@ -2558,191 +2775,25 @@ namespace bha::lsp
         std::vector<FileBackup> transactional_snapshot;
 
         std::vector<fs::path> changed_files;
-        if (application_mode == bha::SuggestionApplicationMode::ExternalRefactor) {
-            if (bha_sug.type != bha::SuggestionType::PIMPLPattern ||
-                !bha_sug.refactor_class_name ||
-                !bha_sug.refactor_compile_commands_path ||
-                bha_sug.secondary_files.empty()) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "This external refactor suggestion is missing the metadata required to invoke bha-refactor";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            const fs::path refactor_binary = resolve_bha_refactor_binary();
-            if (!fs::exists(refactor_binary)) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "bha-refactor binary was not found; build with BHA_BUILD_REFACTOR_TOOLS=ON or set BHA_REFACTOR";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            std::ostringstream cmd;
-            cmd << shell_quote(refactor_binary.string())
-                << " pimpl"
-                << " --compile-commands " << shell_quote(bha_sug.refactor_compile_commands_path->string())
-                << " --source " << shell_quote(bha_sug.target_file.path.string())
-                << " --header " << shell_quote(bha_sug.secondary_files.front().path.string())
-                << " --class " << shell_quote(*bha_sug.refactor_class_name)
-                << " --dry-run --output-format json";
-
-            std::array<char, 512> buffer{};
-            std::string output;
-            if (FILE* pipe = popen(cmd.str().c_str(), "r")) {
-                while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
-                    output.append(buffer.data());
-                }
-                pclose(pipe);
-            } else {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "Failed to launch bha-refactor";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            nlohmann::json refactor_json;
-            try {
-                refactor_json = nlohmann::json::parse(output);
-            } catch (const nlohmann::json::exception&) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "bha-refactor returned invalid JSON";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            if (!refactor_json.value("success", false)) {
-                if (refactor_json.contains("diagnostics") && refactor_json["diagnostics"].is_array()) {
-                    for (const auto& item : refactor_json["diagnostics"]) {
-                        result.errors.push_back(parse_refactor_diagnostic(item));
-                    }
-                }
-                if (result.errors.empty()) {
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.message = "bha-refactor did not produce an applicable refactor";
-                    diag.source = "bha-refactor";
-                    result.errors.push_back(diag);
-                }
-                return result;
-            }
-
-            std::unordered_map<std::string, std::vector<ExternalReplacement>> replacements_by_file;
-            std::vector<fs::path> files_to_backup;
-            if (refactor_json.contains("replacements") && refactor_json["replacements"].is_array()) {
-                for (const auto& item : refactor_json["replacements"]) {
-                    if (!item.is_object()) {
-                        continue;
-                    }
-                    ExternalReplacement replacement;
-                    replacement.file = item.value("file", "");
-                    replacement.offset = item.value("offset", std::size_t{0});
-                    replacement.length = item.value("length", std::size_t{0});
-                    replacement.replacement_text = item.value("replacement_text", "");
-                    if (replacement.file.empty()) {
-                        continue;
-                    }
-                    if (!replacements_by_file.contains(replacement.file.string())) {
-                        files_to_backup.push_back(replacement.file);
-                    }
-                    replacements_by_file[replacement.file.string()].push_back(std::move(replacement));
-                }
-            }
-
-            if (replacements_by_file.empty()) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "bha-refactor returned no replacements";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            if (create_backup_flag && !files_to_backup.empty()) {
-                const std::string backup_id = create_backup(files_to_backup);
-                if (backup_id.empty()) {
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.source = "bha-lsp";
-                    diag.message = "Failed to create durable backup before applying external refactor suggestion";
-                    result.errors.push_back(std::move(diag));
-                    return result;
-                }
-                result.backup_id = backup_id;
-            }
-
-            for (auto& [file_path_str, file_replacements] : replacements_by_file) {
-                const fs::path file_path(file_path_str);
-                if (!apply_replacements_to_file(file_path, std::move(file_replacements))) {
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.message = "Failed to apply bha-refactor replacements to " + file_path.string();
-                    diag.source = "bha-refactor";
-                    result.errors.push_back(diag);
-                    if (result.backup_id) {
-                        if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
-                            for (auto& revert_error : revert.errors) {
-                                result.errors.push_back(std::move(revert_error));
-                            }
-                            Diagnostic rollback_diag;
-                            rollback_diag.severity = DiagnosticSeverity::Error;
-                            rollback_diag.message = "Automatic rollback failed after external refactor apply failure";
-                            rollback_diag.source = "bha-lsp";
-                            result.errors.push_back(std::move(rollback_diag));
-                        }
-                    }
-                    return result;
-                }
-                changed_files.push_back(file_path);
-            }
-        } else {
-            if (bha_sug.type == bha::SuggestionType::PIMPLPattern && bha_sug.edits.empty()) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "PIMPL suggestions without concrete edits remain advisory-only";
-                result.errors.push_back(diag);
-                return result;
-            }
-
-            std::vector<fs::path> files_to_backup = collect_backup_files(bha_sug);
-
-            if (create_backup_flag && !files_to_backup.empty()) {
-                const std::string backup_id = create_backup(files_to_backup);
-                if (backup_id.empty()) {
-                    Diagnostic diag;
-                    diag.severity = DiagnosticSeverity::Error;
-                    diag.source = "bha-lsp";
-                    diag.message = "Failed to create durable backup before applying suggestion " + suggestion_id;
-                    result.errors.push_back(std::move(diag));
-                    return result;
-                }
-                result.backup_id = backup_id;
-            }
-            if (enforce_forward_decl_validation && !files_to_backup.empty() &&
-                !capture_transactional_snapshot(files_to_backup, transactional_snapshot, result.errors)) {
-                return result;
-            }
-
-            if (!apply_file_changes(bha_sug, changed_files)) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.message = "Failed to apply file changes for suggestion " + suggestion_id +
-                               " (" + bha_sug.title + ")";
-                result.errors.push_back(diag);
-
-                if (result.backup_id || (enforce_forward_decl_validation && !transactional_snapshot.empty())) {
-                    rollback_apply_suggestion(
-                        result,
-                        transactional_snapshot,
-                        enforce_forward_decl_validation
-                            ? "Automatic rollback failed after forward-declaration apply failure"
-                            : "Automatic rollback failed after apply failure"
-                    );
-                }
-                return result;
-            }
+        const bool apply_ok = application_mode == bha::SuggestionApplicationMode::ExternalRefactor
+            ? apply_external_refactor_suggestion(
+                suggestion_id,
+                bha_sug,
+                create_backup_flag,
+                result,
+                changed_files
+            )
+            : apply_direct_edit_suggestion(
+                suggestion_id,
+                bha_sug,
+                create_backup_flag,
+                enforce_forward_decl_validation,
+                result,
+                transactional_snapshot,
+                changed_files
+            );
+        if (!apply_ok) {
+            return result;
         }
 
         if (enforce_forward_decl_validation &&

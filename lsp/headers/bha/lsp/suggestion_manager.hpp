@@ -227,6 +227,27 @@ namespace bha::lsp
             ApplyAllResult& result,
             const ApplySuggestionResult& apply_result
         );
+        bool create_backup_for_files(
+            const std::vector<fs::path>& files,
+            std::string_view failure_message,
+            ApplySuggestionResult& result
+        );
+        bool apply_external_refactor_suggestion(
+            const std::string& suggestion_id,
+            const bha::Suggestion& suggestion,
+            bool create_backup_flag,
+            ApplySuggestionResult& result,
+            std::vector<fs::path>& changed_files
+        );
+        bool apply_direct_edit_suggestion(
+            const std::string& suggestion_id,
+            const bha::Suggestion& suggestion,
+            bool create_backup_flag,
+            bool enforce_forward_decl_validation,
+            ApplySuggestionResult& result,
+            std::vector<FileBackup>& transactional_snapshot,
+            std::vector<fs::path>& changed_files
+        );
         bool rollback_apply_suggestion(
             ApplySuggestionResult& result,
             const std::vector<FileBackup>& transactional_snapshot,
