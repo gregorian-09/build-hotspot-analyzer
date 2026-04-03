@@ -18224,6 +18224,25 @@ function normalizeWorkspaceRelativePath(workspaceRoot, candidate) {
   }
   return path.isAbsolute(trimmed) ? path.normalize(trimmed) : path.normalize(path.join(workspaceRoot, trimmed));
 }
+function normalizeCompilerOverride(candidate) {
+  const trimmed = candidate?.trim();
+  return trimmed ? trimmed : void 0;
+}
+function isValidCompilerOverride(candidate) {
+  if (!candidate) {
+    return true;
+  }
+  if (!candidate.includes(path.sep) && !candidate.startsWith(".")) {
+    return true;
+  }
+  return fs.existsSync(path.normalize(candidate));
+}
+function formatCompilerOverrides(options) {
+  if (options.cCompiler || options.cxxCompiler) {
+    return `C=${options.cCompiler ?? "auto"}, CXX=${options.cxxCompiler ?? "auto"}`;
+  }
+  return options.compiler ?? "auto";
+}
 function validatePersistedBuildProfile(profile, workspaceRoot) {
   if (!profile || profile.projectRoot !== workspaceRoot) {
     return void 0;
@@ -18236,8 +18255,10 @@ function validatePersistedBuildProfile(profile, workspaceRoot) {
   if (resolvedTraceDir && !fs.existsSync(resolvedTraceDir)) {
     return void 0;
   }
-  const compiler = profile.compiler?.trim();
-  if (compiler && (compiler.includes(path.sep) || compiler.startsWith(".")) && !fs.existsSync(path.normalize(compiler))) {
+  const compiler = normalizeCompilerOverride(profile.compiler);
+  const cCompiler = normalizeCompilerOverride(profile.cCompiler);
+  const cxxCompiler = normalizeCompilerOverride(profile.cxxCompiler);
+  if (!isValidCompilerOverride(compiler) || !isValidCompilerOverride(cCompiler) || !isValidCompilerOverride(cxxCompiler)) {
     return void 0;
   }
   return {
@@ -18245,6 +18266,8 @@ function validatePersistedBuildProfile(profile, workspaceRoot) {
     buildDir: profile.buildDir?.trim() || void 0,
     traceOutputDir: profile.traceOutputDir?.trim() || void 0,
     compiler: compiler || void 0,
+    cCompiler: cCompiler || void 0,
+    cxxCompiler: cxxCompiler || void 0,
     extraArgs: Array.isArray(profile.extraArgs) ? profile.extraArgs : [],
     buildTimeMs: typeof profile.buildTimeMs === "number" && Number.isFinite(profile.buildTimeMs) && profile.buildTimeMs >= 0 ? profile.buildTimeMs : void 0
   };
@@ -18580,15 +18603,24 @@ async function promptForRecordBuildOptions(advanced) {
     return void 0;
   }
   options.buildType = buildType.value;
-  const compiler = await vscode.window.showInputBox({
-    title: "Compiler Override",
-    prompt: "Compiler executable or absolute path (optional)",
-    placeHolder: "clang++, g++, icpx, /usr/bin/clang++"
+  const cCompiler = await vscode.window.showInputBox({
+    title: "C Compiler Override",
+    prompt: "C compiler executable or absolute path (optional)",
+    placeHolder: "clang, gcc, icx, /usr/bin/clang"
   });
-  if (compiler === void 0) {
+  if (cCompiler === void 0) {
     return void 0;
   }
-  options.compiler = compiler.trim() || void 0;
+  options.cCompiler = normalizeCompilerOverride(cCompiler);
+  const cxxCompiler = await vscode.window.showInputBox({
+    title: "C++ Compiler Override",
+    prompt: "C++ compiler executable or absolute path (optional)",
+    placeHolder: "clang++, g++, icpx, /usr/bin/clang++"
+  });
+  if (cxxCompiler === void 0) {
+    return void 0;
+  }
+  options.cxxCompiler = normalizeCompilerOverride(cxxCompiler);
   const parallelJobs = await vscode.window.showInputBox({
     title: "Parallel Jobs",
     prompt: "Number of parallel jobs (optional, leave empty for auto-detect)",
@@ -18707,7 +18739,7 @@ async function recordBuildTraces(advanced) {
   }
   try {
     logLine(
-      `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? "<auto>"}, buildSystem=${options.buildSystem ?? "auto"}, compiler=${options.compiler ?? "auto"}, buildType=${options.buildType ?? "default"}, clean=${options.cleanFirst}, verbose=${options.verbose}`
+      `Record traces request: projectRoot=${workspaceFolder.uri.fsPath}, buildDir=${options.buildDir ?? "<auto>"}, buildSystem=${options.buildSystem ?? "auto"}, compilers=${formatCompilerOverrides(options)}, buildType=${options.buildType ?? "default"}, clean=${options.cleanFirst}, verbose=${options.verbose}`
     );
     const result = await runAsyncLspCommand(
       advanced ? "BHA: Recording build traces (advanced)" : "BHA: Recording build traces",
@@ -18720,6 +18752,8 @@ async function recordBuildTraces(advanced) {
         buildSystem: options.buildSystem,
         buildType: options.buildType,
         compiler: options.compiler,
+        cCompiler: options.cCompiler,
+        cxxCompiler: options.cxxCompiler,
         parallelJobs: options.parallelJobs,
         traceOutputDir: options.traceOutputDir,
         extraArgs: options.extraArgs,
@@ -18754,6 +18788,8 @@ async function recordBuildTraces(advanced) {
         buildDir: safeGetString(result.buildDir, "").trim() || options.buildDir,
         buildType: safeGetString(result.buildType, "").trim() || options.buildType,
         compiler: safeGetString(result.compiler, "").trim() || options.compiler,
+        cCompiler: safeGetString(result.cCompiler, "").trim() || options.cCompiler,
+        cxxCompiler: safeGetString(result.cxxCompiler, "").trim() || options.cxxCompiler,
         parallelJobs: safeGetNumber(result.parallelJobs, 0) || options.parallelJobs,
         traceOutputDir: chosenTraceDir || options.traceOutputDir,
         extraArgs: options.extraArgs,

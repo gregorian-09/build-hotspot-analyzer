@@ -166,59 +166,157 @@ namespace bha::build_systems
             return CompilerType::Unknown;
         }
 
-        std::pair<std::string, std::string> resolve_compiler_pair(
-            const std::string& c_name,
-            const std::string& cxx_name
-        ) {
-            const auto c_path = find_compiler_path(c_name);
-            const auto cxx_path = find_compiler_path(cxx_name);
-            return {c_path.string(), cxx_path.string()};
+        struct CompilerPairDefaults {
+            std::string c_name;
+            std::string cxx_name;
+        };
+
+        CompilerPairDefaults compiler_pair_defaults(const CompilerType type) {
+            switch (type) {
+                case CompilerType::Clang:
+                case CompilerType::AppleClang:
+                    return {"clang", "clang++"};
+                case CompilerType::ArmClang:
+                    return {"armclang", "armclang++"};
+                case CompilerType::GCC:
+                    return {"gcc", "g++"};
+                case CompilerType::MSVC:
+                    return {"cl", "cl"};
+                case CompilerType::IntelClassic:
+                    return {"icc", "icpc"};
+                case CompilerType::IntelOneAPI:
+                    return {"icx", "icpx"};
+                case CompilerType::NVCC:
+                    return {"nvcc", "nvcc"};
+                case CompilerType::Unknown:
+                default:
+                    return {"gcc", "g++"};
+            }
         }
 
-        CompilerInfo get_compiler_info(const std::string& compiler) {
-            CompilerInfo info;
-            info.type = detect_compiler_type(compiler);
+        std::string compiler_leaf_name(const std::string& compiler) {
+            if (compiler.empty()) {
+                return {};
+            }
+            std::string leaf = fs::path(compiler).filename().string();
+            if (leaf.empty()) {
+                leaf = compiler;
+            }
+            std::ranges::transform(leaf, leaf.begin(),
+                [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            return leaf;
+        }
 
-            switch (info.type) {
-                case CompilerType::Clang: {
-                    const std::string c_name = compiler.empty() ? "clang" : compiler;
-                    const std::string cxx_name = (compiler.empty() || compiler == "clang") ? "clang++" : compiler;
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
-                    break;
+        bool compiler_looks_like_path(const std::string& compiler) {
+            return compiler.find('/') != std::string::npos ||
+                compiler.find('\\') != std::string::npos ||
+                compiler.starts_with(".");
+        }
+
+        std::string resolve_compiler_command(const std::string& compiler) {
+            if (compiler.empty()) {
+                return {};
+            }
+
+            const fs::path candidate(compiler);
+            if ((candidate.is_absolute() || compiler_looks_like_path(compiler)) && fs::exists(candidate)) {
+                return candidate.lexically_normal().string();
+            }
+
+            if (const auto resolved = find_compiler_path(compiler); !resolved.empty()) {
+                return resolved.string();
+            }
+
+            return {};
+        }
+
+        std::string resolve_sibling_compiler_command(
+            const std::string& known_compiler,
+            const std::string& sibling_name
+        ) {
+            if (known_compiler.empty()) {
+                return resolve_compiler_command(sibling_name);
+            }
+
+            const fs::path known_path(known_compiler);
+            if ((known_path.is_absolute() || compiler_looks_like_path(known_compiler)) &&
+                !known_path.parent_path().empty()) {
+                const fs::path sibling = known_path.parent_path() / sibling_name;
+                if (fs::exists(sibling)) {
+                    return sibling.lexically_normal().string();
                 }
+            }
+
+            return resolve_compiler_command(sibling_name);
+        }
+
+        bool compiler_name_is_cxx_driver(const CompilerType type, const std::string& compiler) {
+            const std::string leaf = compiler_leaf_name(compiler);
+            switch (type) {
+                case CompilerType::Clang:
                 case CompilerType::AppleClang:
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("clang", "clang++");
-                    break;
                 case CompilerType::ArmClang:
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("armclang", "armclang++");
-                    break;
-                case CompilerType::GCC: {
-                    const std::string c_name = (compiler.empty() || compiler == "g++") ? "gcc" : compiler;
-                    const std::string cxx_name = (compiler.empty() || compiler == "gcc") ? "g++" : compiler;
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
-                    break;
-                }
-                case CompilerType::MSVC:
-                    info.c_compiler = "cl";
-                    info.cxx_compiler = "cl";
-                    break;
+                    return leaf.ends_with("clang++") || leaf.ends_with("clang-cl");
+                case CompilerType::GCC:
+                    return leaf == "g++" || leaf.starts_with("g++-");
                 case CompilerType::IntelClassic:
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("icc", "icpc");
-                    break;
+                    return leaf == "icpc";
                 case CompilerType::IntelOneAPI:
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("icx", "icpx");
-                    break;
+                    return leaf == "icpx";
+                case CompilerType::MSVC:
                 case CompilerType::NVCC:
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair("nvcc", "nvcc");
-                    break;
+                    return true;
                 case CompilerType::Unknown:
-                default: {
-                    const std::string c_name = compiler.empty() ? "gcc" : compiler;
-                    const std::string cxx_name = compiler.empty() ? "g++" : compiler;
-                    std::tie(info.c_compiler, info.cxx_compiler) = resolve_compiler_pair(c_name, cxx_name);
-                    info.type = CompilerType::GCC;
-                    break;
+                default:
+                    return leaf.find("++") != std::string::npos;
+            }
+        }
+
+        CompilerInfo get_compiler_info(const BuildOptions& options) {
+            CompilerInfo info;
+
+            const std::string explicit_c = options.c_compiler;
+            const std::string explicit_cxx = options.cxx_compiler;
+            const std::string legacy = options.compiler;
+
+            info.type = detect_compiler_type(!explicit_cxx.empty() ? explicit_cxx :
+                (!explicit_c.empty() ? explicit_c : legacy));
+            if (info.type == CompilerType::Unknown) {
+                info.type = CompilerType::GCC;
+            }
+
+            const CompilerPairDefaults defaults = compiler_pair_defaults(info.type);
+
+            if (!explicit_c.empty()) {
+                info.c_compiler = resolve_compiler_command(explicit_c);
+            }
+            if (!explicit_cxx.empty()) {
+                info.cxx_compiler = resolve_compiler_command(explicit_cxx);
+            }
+
+            if (info.c_compiler.empty() && info.cxx_compiler.empty() && !legacy.empty()) {
+                const bool legacy_is_cxx = compiler_name_is_cxx_driver(info.type, legacy);
+                if (legacy_is_cxx) {
+                    info.cxx_compiler = resolve_compiler_command(legacy);
+                    info.c_compiler = resolve_sibling_compiler_command(legacy, defaults.c_name);
+                } else {
+                    info.c_compiler = resolve_compiler_command(legacy);
+                    info.cxx_compiler = resolve_sibling_compiler_command(legacy, defaults.cxx_name);
                 }
+            }
+
+            if (info.c_compiler.empty() && !info.cxx_compiler.empty()) {
+                info.c_compiler = resolve_sibling_compiler_command(info.cxx_compiler, defaults.c_name);
+            }
+            if (info.cxx_compiler.empty() && !info.c_compiler.empty()) {
+                info.cxx_compiler = resolve_sibling_compiler_command(info.c_compiler, defaults.cxx_name);
+            }
+
+            if (info.c_compiler.empty()) {
+                info.c_compiler = resolve_compiler_command(defaults.c_name);
+            }
+            if (info.cxx_compiler.empty()) {
+                info.cxx_compiler = resolve_compiler_command(defaults.cxx_name);
             }
 
             return info;
@@ -550,11 +648,12 @@ namespace bha::build_systems
                             terminated_for_cancel = true;
                             kill(pid, SIGTERM);
                             auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                            bool child_exited_on_cancel = false;
                             while (std::chrono::steady_clock::now() < deadline) {
                                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
                                 const pid_t cancel_wait = waitpid(pid, &status, WNOHANG);
                                 if (cancel_wait == pid) {
-                                    child_running = false;
+                                    child_exited_on_cancel = true;
                                     if (WIFEXITED(status)) {
                                         exit_code = WEXITSTATUS(status);
                                     } else if (WIFSIGNALED(status)) {
@@ -565,10 +664,9 @@ namespace bha::build_systems
                                     break;
                                 }
                             }
-                            if (child_running) {
+                            if (!child_exited_on_cancel) {
                                 kill(pid, SIGKILL);
                                 waitpid(pid, &status, 0);
-                                child_running = false;
                                 exit_code = WIFSIGNALED(status) ? 128 + WTERMSIG(status) : status;
                             }
                             break;
@@ -1027,7 +1125,7 @@ namespace bha::build_systems
             const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
             fs::create_directories(build_dir);
 
-            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             std::ostringstream cmd;
@@ -1096,7 +1194,7 @@ namespace bha::build_systems
                 }
             }
 
-            auto compiler = get_compiler_info(options.compiler);
+            auto compiler = get_compiler_info(options);
 
             std::ostringstream cmd;
             if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(compiler.type)) {
@@ -1230,7 +1328,7 @@ namespace bha::build_systems
                 const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
                 fs::create_directories(build_dir);
 
-                auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+                auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
                 auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
                 std::ostringstream cmd;
@@ -1644,7 +1742,7 @@ namespace bha::build_systems
                 }
             }
 
-            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             std::ostringstream cmd;
@@ -1765,7 +1863,7 @@ namespace bha::build_systems
                 work_dir = project_path;
             }
 
-            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
@@ -2163,7 +2261,7 @@ namespace bha::build_systems
 
             fs::create_directories(build_dir);
 
-            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             std::string capture_launcher;
@@ -2227,7 +2325,7 @@ namespace bha::build_systems
                 }
             }
 
-            auto compiler = get_compiler_info(options.compiler);
+            auto compiler = get_compiler_info(options);
 
             const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing
                 ? build_dir / "traces" : options.trace_output_dir;
@@ -2377,7 +2475,7 @@ namespace bha::build_systems
                 clean(project_path, options);
             }
 
-            auto compiler = get_compiler_info(options.compiler);
+            auto compiler = get_compiler_info(options);
 
             std::ostringstream cmd;
             cmd << "bazel build //...";
@@ -2655,7 +2753,7 @@ namespace bha::build_systems
                 clean(project_path, options);
             }
 
-            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options.compiler);
+            auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
 
             const fs::path trace_output_dir = options.trace_output_dir.empty() && options.enable_tracing

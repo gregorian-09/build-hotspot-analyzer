@@ -44,8 +44,14 @@ namespace bha::build_systems
         /** Enable memory profiling output */
         bool enable_memory_profiling = false;
 
-        /** Compiler to use (auto-detected if empty) */
+        /** Legacy single compiler override (auto-detected if empty) */
         std::string compiler;
+
+        /** Explicit C compiler override (auto-detected if empty) */
+        std::string c_compiler;
+
+        /** Explicit C++ compiler override (auto-detected if empty) */
+        std::string cxx_compiler;
 
         /** Clean before build */
         bool clean_first = false;

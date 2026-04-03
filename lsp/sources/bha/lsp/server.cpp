@@ -691,6 +691,12 @@ namespace bha::lsp
         if (build_profile_json.contains("compiler") && build_profile_json["compiler"].is_string()) {
             options.compiler = build_profile_json["compiler"].get<std::string>();
         }
+        if (build_profile_json.contains("cCompiler") && build_profile_json["cCompiler"].is_string()) {
+            options.c_compiler = build_profile_json["cCompiler"].get<std::string>();
+        }
+        if (build_profile_json.contains("cxxCompiler") && build_profile_json["cxxCompiler"].is_string()) {
+            options.cxx_compiler = build_profile_json["cxxCompiler"].get<std::string>();
+        }
         if (build_profile_json.contains("parallelJobs") && build_profile_json["parallelJobs"].is_number_integer()) {
             options.parallel_jobs = build_profile_json["parallelJobs"].get<int>();
         }
@@ -1425,6 +1431,12 @@ namespace bha::lsp
         const std::string compiler = args.contains("compiler") && args["compiler"].is_string()
             ? args["compiler"].get<std::string>()
             : std::string();
+        const std::string c_compiler = args.contains("cCompiler") && args["cCompiler"].is_string()
+            ? args["cCompiler"].get<std::string>()
+            : std::string();
+        const std::string cxx_compiler = args.contains("cxxCompiler") && args["cxxCompiler"].is_string()
+            ? args["cxxCompiler"].get<std::string>()
+            : std::string();
         const int parallel_jobs = args.contains("parallelJobs") && args["parallelJobs"].is_number_integer()
             ? args["parallelJobs"].get<int>()
             : 0;
@@ -1476,6 +1488,8 @@ namespace bha::lsp
             options.clean_first = clean_first;
             options.verbose = verbose;
             options.compiler = compiler;
+            options.c_compiler = c_compiler;
+            options.cxx_compiler = cxx_compiler;
             options.on_output_line = [this, job_id](const std::string& line) {
                 send_job_log(job_id, "build", line);
             };
@@ -1554,6 +1568,8 @@ namespace bha::lsp
                 {"buildSystem", adapter->name()},
                 {"buildType", options.build_type},
                 {"compiler", options.compiler},
+                {"cCompiler", options.c_compiler},
+                {"cxxCompiler", options.cxx_compiler},
                 {"parallelJobs", options.parallel_jobs},
                 {"buildDir", options.build_dir.empty() ? json(nullptr) : json(options.build_dir.string())},
                 {"traceOutputDir", effective_trace_output_dir.has_value()

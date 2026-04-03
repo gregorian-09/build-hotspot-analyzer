@@ -1,13 +1,22 @@
 #include "bha/build_systems/adapter.hpp"
 #include <gtest/gtest.h>
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <optional>
 
 using namespace bha::build_systems;
 namespace fs = std::filesystem;
 
 namespace {
+    constexpr char kPathListSeparator =
+#ifdef _WIN32
+        ';';
+#else
+        ':';
+#endif
+
     struct TempDir {
         fs::path root;
 
@@ -28,6 +37,65 @@ namespace {
         std::ofstream out(path);
         out << content;
     }
+
+    void make_executable(const fs::path& path) {
+        fs::permissions(
+            path,
+            fs::perms::owner_exec | fs::perms::owner_read | fs::perms::owner_write |
+                fs::perms::group_exec | fs::perms::group_read |
+                fs::perms::others_exec | fs::perms::others_read,
+            fs::perm_options::replace
+        );
+    }
+
+    struct ScopedEnvVar {
+        std::string name;
+        std::optional<std::string> original_value;
+
+        ScopedEnvVar(std::string env_name, const std::string& value) : name(std::move(env_name)) {
+            if (const char* existing = std::getenv(name.c_str())) {
+                original_value = existing;
+            }
+#ifdef _WIN32
+            _putenv_s(name.c_str(), value.c_str());
+#else
+            setenv(name.c_str(), value.c_str(), 1);
+#endif
+        }
+
+        ~ScopedEnvVar() {
+#ifdef _WIN32
+            _putenv_s(name.c_str(), original_value.has_value() ? original_value->c_str() : "");
+#else
+            if (original_value.has_value()) {
+                setenv(name.c_str(), original_value->c_str(), 1);
+            } else {
+                unsetenv(name.c_str());
+            }
+#endif
+        }
+    };
+
+    std::string read_file_text(const fs::path& path) {
+        std::ifstream in(path);
+        return std::string(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    }
+
+    void write_fake_cmake(const fs::path& bin_dir, const fs::path& log_path) {
+        const fs::path script = bin_dir / "cmake";
+        write_file(
+            script,
+            "#!/bin/sh\n"
+            "printf '%s\\n' \"$@\" > \"" + log_path.string() + "\"\n"
+            "exit 0\n"
+        );
+        make_executable(script);
+    }
+
+    void write_fake_compiler(const fs::path& path) {
+        write_file(path, "#!/bin/sh\nexit 0\n");
+        make_executable(path);
+    }
 }
 
 TEST(BuildOptionsTest, DefaultValues) {
@@ -39,6 +107,8 @@ TEST(BuildOptionsTest, DefaultValues) {
     EXPECT_FALSE(options.clean_first);
     EXPECT_FALSE(options.verbose);
     EXPECT_TRUE(options.compiler.empty());
+    EXPECT_TRUE(options.c_compiler.empty());
+    EXPECT_TRUE(options.cxx_compiler.empty());
 }
 
 TEST(BuildOptionsTest, MemoryProfilingFlag) {
@@ -138,4 +208,69 @@ TEST(BuildSystemRegistryTest, PrefersAvailableAdapterWhenHigherConfidenceToolIsM
     auto* adapter = registry.detect(temp.root);
     ASSERT_NE(adapter, nullptr);
     EXPECT_EQ(adapter->name(), "CMake");
+}
+
+TEST(CMakeAdapterTest, DerivesCompanionCompilerFromExplicitCxxOverride) {
+    register_all_adapters();
+    auto* adapter = BuildSystemRegistry::instance().get("CMake");
+    ASSERT_NE(adapter, nullptr);
+
+    TempDir temp;
+    const fs::path bin_dir = temp.root / "bin";
+    const fs::path log_path = temp.root / "cmake-args.log";
+    write_file(temp.root / "CMakeLists.txt", "cmake_minimum_required(VERSION 3.20)\nproject(sample C CXX)\n");
+    write_fake_cmake(bin_dir, log_path);
+    write_fake_compiler(bin_dir / "clang");
+    write_fake_compiler(bin_dir / "clang++");
+
+    ScopedEnvVar path_override(
+        "PATH",
+        bin_dir.string() + kPathListSeparator + (std::getenv("PATH") ? std::getenv("PATH") : "")
+    );
+
+    BuildOptions options;
+    options.build_dir = temp.root / "build";
+    options.cxx_compiler = (bin_dir / "clang++").string();
+
+    const auto result = adapter->configure(temp.root, options);
+    ASSERT_TRUE(result.is_ok()) << result.error().message();
+
+    const std::string logged = read_file_text(log_path);
+    EXPECT_NE(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "clang").string()), std::string::npos);
+    EXPECT_NE(logged.find("-DCMAKE_CXX_COMPILER=" + (bin_dir / "clang++").string()), std::string::npos);
+}
+
+TEST(CMakeAdapterTest, ExplicitCompilerPairOverridesLegacySingleCompiler) {
+    register_all_adapters();
+    auto* adapter = BuildSystemRegistry::instance().get("CMake");
+    ASSERT_NE(adapter, nullptr);
+
+    TempDir temp;
+    const fs::path bin_dir = temp.root / "bin";
+    const fs::path log_path = temp.root / "cmake-args.log";
+    write_file(temp.root / "CMakeLists.txt", "cmake_minimum_required(VERSION 3.20)\nproject(sample C CXX)\n");
+    write_fake_cmake(bin_dir, log_path);
+    write_fake_compiler(bin_dir / "gcc");
+    write_fake_compiler(bin_dir / "g++");
+    write_fake_compiler(bin_dir / "clang");
+    write_fake_compiler(bin_dir / "clang++");
+
+    ScopedEnvVar path_override(
+        "PATH",
+        bin_dir.string() + kPathListSeparator + (std::getenv("PATH") ? std::getenv("PATH") : "")
+    );
+
+    BuildOptions options;
+    options.build_dir = temp.root / "build";
+    options.compiler = (bin_dir / "gcc").string();
+    options.c_compiler = (bin_dir / "clang").string();
+    options.cxx_compiler = (bin_dir / "clang++").string();
+
+    const auto result = adapter->configure(temp.root, options);
+    ASSERT_TRUE(result.is_ok()) << result.error().message();
+
+    const std::string logged = read_file_text(log_path);
+    EXPECT_NE(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "clang").string()), std::string::npos);
+    EXPECT_NE(logged.find("-DCMAKE_CXX_COMPILER=" + (bin_dir / "clang++").string()), std::string::npos);
+    EXPECT_EQ(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "gcc").string()), std::string::npos);
 }
