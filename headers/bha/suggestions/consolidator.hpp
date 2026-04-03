@@ -100,13 +100,6 @@ namespace bha::suggestions
         );
 
         /**
-         * Consolidates move-to-cpp suggestions.
-         */
-        static std::optional<Suggestion> consolidate_move_to_cpp(
-            const std::vector<Suggestion>& suggestions
-        );
-
-        /**
          * Merges impact assessments from multiple suggestions.
          */
         [[nodiscard]] static Impact merge_impacts(

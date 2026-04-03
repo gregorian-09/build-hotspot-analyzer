@@ -96,19 +96,22 @@ namespace bha::suggestions
         std::vector<Suggestion> suggestions;
 
         Suggestion s1 = create_pch_suggestion("h1.h");
-        s1.impact.files_benefiting = 10;
+        s1.impact.files_benefiting = {fs::path("a.cpp"), fs::path("b.cpp")};
+        s1.impact.total_files_affected = 10;
         s1.impact.cumulative_savings = std::chrono::milliseconds(200);
         suggestions.push_back(s1);
 
         Suggestion s2 = create_pch_suggestion("h2.h");
-        s2.impact.files_benefiting = 15;
+        s2.impact.files_benefiting = {fs::path("b.cpp"), fs::path("c.cpp"), fs::path("d.cpp")};
+        s2.impact.total_files_affected = 15;
         s2.impact.cumulative_savings = std::chrono::milliseconds(300);
         suggestions.push_back(s2);
 
         const auto result = consolidator_->consolidate(suggestions);
 
         ASSERT_EQ(result.size(), 1u);
-        EXPECT_GE(result[0].impact.files_benefiting, 10u);
+        EXPECT_GE(result[0].impact.files_benefiting.size(), 3u);
+        EXPECT_GE(result[0].impact.total_files_affected, 10u);
         EXPECT_GT(result[0].impact.cumulative_savings.count(), 0);
     }
 
@@ -126,5 +129,25 @@ namespace bha::suggestions
         const auto result = disabled_consolidator.consolidate(suggestions);
 
         EXPECT_EQ(result.size(), suggestions.size());
+    }
+
+    TEST_F(ConsolidatorTest, LeavesMoveToCppSuggestionsUnconsolidated) {
+        Suggestion first;
+        first.type = SuggestionType::MoveToCpp;
+        first.title = "Move include A";
+        first.target_file.path = "a.hpp";
+
+        Suggestion second;
+        second.type = SuggestionType::MoveToCpp;
+        second.title = "Move include B";
+        second.target_file.path = "b.hpp";
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        ASSERT_EQ(result.size(), 2u);
+        EXPECT_EQ(result[0].type, SuggestionType::MoveToCpp);
+        EXPECT_EQ(result[1].type, SuggestionType::MoveToCpp);
+        EXPECT_EQ(result[0].title, "Move include A");
+        EXPECT_EQ(result[1].title, "Move include B");
     }
 }

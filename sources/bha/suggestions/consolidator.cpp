@@ -294,7 +294,7 @@ namespace bha::suggestions
                 result = consolidate_pimpl(group);
                 break;
             case SuggestionType::MoveToCpp:
-                result = consolidate_move_to_cpp(group);
+                consolidated.insert(consolidated.end(), group.begin(), group.end());
                 break;
             }
 
@@ -1164,68 +1164,6 @@ namespace bha::suggestions
         consolidated.confidence = 0.75;
         consolidated.estimated_savings = total_savings;
         consolidated.estimated_savings_percent = total_percent;
-
-        consolidated.edits = merge_edits(suggestions);
-
-        return consolidated;
-    }
-
-    std::optional<Suggestion> SuggestionConsolidator::consolidate_move_to_cpp(
-        const std::vector<Suggestion>& suggestions
-    ) {
-        if (suggestions.empty()) {
-            return std::nullopt;
-        }
-
-        Suggestion consolidated;
-        consolidated.type = SuggestionType::MoveToCpp;
-        consolidated.priority = Priority::Low;
-
-        std::unordered_map<std::string, std::vector<std::string>> by_header;
-
-        for (const auto& sug : suggestions) {
-            if (sug.priority >= Priority::High) {
-                consolidated.priority = Priority::Medium;
-            }
-
-            const std::string header = make_repo_relative(sug.target_file.path);
-            if (!sug.description.empty()) {
-                by_header[header].push_back(sug.description);
-            }
-        }
-
-        std::ostringstream desc;
-        desc << "Move function implementations from headers to source files to reduce compilation overhead.\n\n";
-
-        for (const auto& [header, items] : by_header) {
-            desc << "**" << header << ":**\n";
-            for (const auto& item : items) {
-                desc << "  - " << item << "\n";
-            }
-            desc << "\n";
-        }
-
-        consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
-        consolidated.title = "Move to Source File (" + std::to_string(suggestions.size()) + " items)";
-        consolidated.rationale = "Function definitions in headers are re-parsed and re-compiled "
-                                 "in every translation unit that includes them.";
-
-        consolidated.implementation_steps = {
-            "1. Identify function definitions that don't need to be inline",
-            "2. Move implementation to corresponding .cpp file",
-            "3. Keep only declaration in header",
-            "4. Verify linkage is correct (no ODR violations)"
-        };
-
-        consolidated.is_safe = false;
-        consolidated.confidence = 0.7;
-
-        Duration total_savings = Duration::zero();
-        for (const auto& sug : suggestions) {
-            total_savings += sug.estimated_savings;
-        }
-        consolidated.estimated_savings = total_savings;
 
         consolidated.edits = merge_edits(suggestions);
 

@@ -584,6 +584,22 @@ namespace bha::suggestions
             return result;
         }
 
+        bool references_non_target_exported_symbol(
+            const std::string& sanitized_text,
+            const std::vector<ExportedTypeSymbol>& exported_symbols,
+            const std::string& target_symbol
+        ) {
+            for (const auto& symbol : exported_symbols) {
+                if (symbol.name.empty() || symbol.name == target_symbol) {
+                    continue;
+                }
+                if (contains_identifier_token(sanitized_text, symbol.name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         bool is_source_file(const fs::path& path) {
             static constexpr std::array<std::string_view, 5> kSourceExts = {
                 ".cpp", ".cc", ".cxx", ".c++", ".C"
@@ -859,6 +875,7 @@ namespace bha::suggestions
                 ++skipped;
                 continue;
             }
+            const auto exported_symbols = extract_exported_type_symbols(header.path);
             ForwardDeclType target_type = std::move(forward_types.front());
             if (!target_type.namespaces.empty() && target_type.namespaces.front() == "std") {
                 ++skipped;
@@ -950,6 +967,13 @@ namespace bha::suggestions
 
                 const auto usage = analyze_includer_usage(sanitized, target_type);
                 if (!usage.eligible || usage.pointer_or_reference_mentions < config.min_usage_sites) {
+                    continue;
+                }
+                if (references_non_target_exported_symbol(
+                        sanitized,
+                        exported_symbols,
+                        target_type.name
+                    )) {
                     continue;
                 }
 

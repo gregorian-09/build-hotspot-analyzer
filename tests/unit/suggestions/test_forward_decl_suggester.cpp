@@ -170,6 +170,48 @@ namespace bha::suggestions
         EXPECT_TRUE(result.value().suggestions.empty());
     }
 
+    TEST_F(ForwardDeclSuggesterTest, SkipsWhenIncludedHeaderExportsAliasStillUsedByConsumer) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "widget_types.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class HeavyWidget {};\n"
+            "using WidgetId = int;\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"widget_types.h\"\n"
+            "class Consumer {\n"
+            "public:\n"
+            "    HeavyWidget* widget_{};\n"
+            "    WidgetId widget_id() const;\n"
+            "};\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(100);
+        header.inclusion_count = 5;
+        header.including_files = 1;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
     TEST_F(ForwardDeclSuggesterTest, IgnoresMacroAnnotationsWhenExtractingForwardDeclType) {
         BuildTrace trace;
 

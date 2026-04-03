@@ -693,63 +693,6 @@ namespace bha::suggestions
             return assessment;
         }
 
-        std::vector<std::string> extract_declared_type_names(const fs::path& header_path) {
-            auto lines_result = file_utils::read_lines(header_path);
-            if (lines_result.is_err()) {
-                return {};
-            }
-
-            static const std::regex class_or_struct_regex(
-                R"(^\s*(class|struct)\s+([A-Za-z_][A-Za-z0-9_]*)\b)"
-            );
-
-            std::vector<std::string> names;
-            std::unordered_set<std::string> seen;
-            bool in_block_comment = false;
-            bool template_pending = false;
-
-            for (const auto& raw_line : lines_result.value()) {
-                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
-
-                const auto start = line.find_first_not_of(" \t\r\n");
-                if (start == std::string::npos) {
-                    continue;
-                }
-                const auto end = line.find_last_not_of(" \t\r\n");
-                const std::string trimmed = line.substr(start, end - start + 1);
-
-                if (trimmed.rfind("template", 0) == 0) {
-                    template_pending = true;
-                    if (trimmed.find('>') != std::string::npos) {
-                        template_pending = false;
-                    }
-                    continue;
-                }
-
-                if (template_pending) {
-                    if (trimmed.find('>') != std::string::npos) {
-                        template_pending = false;
-                    }
-                    continue;
-                }
-
-                std::smatch match;
-                if (!std::regex_search(trimmed, match, class_or_struct_regex)) {
-                    continue;
-                }
-                if (trimmed.find('{') == std::string::npos && trimmed.find(';') == std::string::npos) {
-                    continue;
-                }
-
-                const std::string name = match[2].str();
-                if (seen.insert(name).second) {
-                    names.push_back(name);
-                }
-            }
-
-            return names;
-        }
-
         bool looks_like_macro_identifier(const std::string& identifier) {
             bool saw_alpha = false;
             for (const char ch : identifier) {
@@ -956,8 +899,6 @@ namespace bha::suggestions
             return names;
         }
 
-        bool contains_identifier(const std::string& line, const std::string& symbol);
-
         bool file_references_any_identifier(
             const fs::path& file_path,
             const std::vector<std::string>& identifiers
@@ -975,7 +916,7 @@ namespace bha::suggestions
             for (const auto& raw_line : lines_result.value()) {
                 const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
                 for (const auto& identifier : identifiers) {
-                    if (contains_identifier(line, identifier)) {
+                    if (contains_identifier_token(line, identifier)) {
                         return true;
                     }
                 }
@@ -985,120 +926,78 @@ namespace bha::suggestions
         }
 
         struct MoveToCppAssessment {
-            bool has_forward_decl = false;
             bool mentions_symbol = false;
             bool unsafe_usage = false;
         };
 
-        bool is_identifier_char(const char ch) {
-            const unsigned char value = static_cast<unsigned char>(ch);
-            return std::isalnum(value) || ch == '_';
-        }
-
-        bool contains_identifier(const std::string& line, const std::string& symbol) {
-            if (symbol.empty() || line.empty()) {
+        bool has_forward_declaration_for_symbol(
+            const std::string& sanitized_text,
+            const std::string& symbol
+        ) {
+            if (symbol.empty()) {
                 return false;
             }
-            std::size_t pos = line.find(symbol);
-            while (pos != std::string::npos) {
-                const bool left_ok = (pos == 0) || !is_identifier_char(line[pos - 1]);
-                const std::size_t end = pos + symbol.size();
-                const bool right_ok = (end >= line.size()) || !is_identifier_char(line[end]);
-                if (left_ok && right_ok) {
-                    return true;
-                }
-                pos = line.find(symbol, pos + 1);
-            }
-            return false;
+            const std::regex forward_decl_regex(
+                "(?:^|\\n)\\s*(?:class|struct)\\s+" + std::regex_replace(
+                    symbol,
+                    std::regex(R"([.^$|()\\[\]{}*+?])"),
+                    R"(\$&)"
+                ) + "\\s*;"
+            );
+            return std::regex_search(sanitized_text, forward_decl_regex);
         }
 
         MoveToCppAssessment assess_move_to_cpp(
             const fs::path& including_header,
-            const std::vector<std::string>& symbols
+            const std::vector<ExportedTypeSymbol>& symbols
         ) {
             MoveToCppAssessment assessment;
             if (symbols.empty()) {
                 return assessment;
             }
 
-            auto lines_result = file_utils::read_lines(including_header);
-            if (lines_result.is_err()) {
+            std::ifstream in(including_header);
+            if (!in) {
                 return assessment;
             }
 
-            bool in_block_comment = false;
-            for (const auto& raw_line : lines_result.value()) {
-                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
-                for (const auto& symbol : symbols) {
-                    if (!contains_identifier(line, symbol)) {
-                        continue;
-                    }
-
-                    assessment.mentions_symbol = true;
-
-                    if (line.find("class " + symbol) != std::string::npos ||
-                        line.find("struct " + symbol) != std::string::npos) {
-                        if (line.find(';') != std::string::npos && line.find('{') == std::string::npos) {
-                            assessment.has_forward_decl = true;
-                            continue;
-                        }
-                    }
-
-                    const auto symbol_pos = line.find(symbol);
-                    std::size_t after_pos = symbol_pos + symbol.size();
-                    while (after_pos < line.size() &&
-                           std::isspace(static_cast<unsigned char>(line[after_pos]))) {
-                        ++after_pos;
-                    }
-                    const char next = after_pos < line.size() ? line[after_pos] : '\0';
-                    if (next == '*' || next == '&') {
-                        continue;
-                    }
-
-                    const bool inheritance = (line.find("class ") != std::string::npos ||
-                                              line.find("struct ") != std::string::npos) &&
-                                              line.find(':') != std::string::npos;
-                    const bool complete_type_ops = line.find("sizeof") != std::string::npos ||
-                                                   line.find("alignof") != std::string::npos ||
-                                                   line.find("new ") != std::string::npos ||
-                                                   line.find("delete ") != std::string::npos ||
-                                                   line.find("dynamic_cast") != std::string::npos ||
-                                                   line.find("static_cast") != std::string::npos ||
-                                                   line.find("typeid") != std::string::npos ||
-                                                   line.find(symbol + "::") != std::string::npos;
-                    const bool template_by_value = line.find("<" + symbol + ">") != std::string::npos ||
-                                                   line.find("< " + symbol + " >") != std::string::npos;
-
-                    if (inheritance || complete_type_ops || template_by_value ||
-                        line.find(';') != std::string::npos || line.find('(') != std::string::npos) {
-                        assessment.unsafe_usage = true;
-                        break;
-                    }
-                }
-                if (assessment.unsafe_usage) {
-                    break;
-                }
+            const std::string content{
+                std::istreambuf_iterator<char>(in),
+                std::istreambuf_iterator<char>()
+            };
+            std::string sanitized;
+            sanitized.reserve(content.size());
+            bool in_block = false;
+            std::istringstream stream(content);
+            std::string raw_line;
+            while (std::getline(stream, raw_line)) {
+                sanitized += strip_comments_and_strings(raw_line, in_block);
+                sanitized.push_back('\n');
             }
 
-            if (!assessment.unsafe_usage && assessment.mentions_symbol) {
-                std::ifstream in(including_header);
-                if (in) {
-                    const std::string content{
-                        std::istreambuf_iterator<char>(in),
-                        std::istreambuf_iterator<char>()
-                    };
-                    std::string sanitized;
-                    sanitized.reserve(content.size());
-                    bool in_block = false;
-                    std::istringstream stream(content);
-                    std::string raw_line;
-                    while (std::getline(stream, raw_line)) {
-                        sanitized += strip_comments_and_strings(raw_line, in_block);
-                        sanitized.push_back('\n');
-                    }
+            for (const auto& symbol : symbols) {
+                if (!contains_identifier_token(sanitized, symbol.name)) {
+                    continue;
+                }
 
-                    const auto usage = analyze_incomplete_type_usage(sanitized, symbols);
-                    assessment.unsafe_usage = usage.requires_complete_type;
+                assessment.mentions_symbol = true;
+                if (!is_forward_declarable(symbol)) {
+                    assessment.unsafe_usage = true;
+                    break;
+                }
+
+                const auto usage = analyze_incomplete_type_usage(sanitized, {symbol.name});
+                if (usage.requires_complete_type) {
+                    assessment.unsafe_usage = true;
+                    break;
+                }
+                if (!usage.has_mentions) {
+                    continue;
+                }
+                if (!has_forward_declaration_for_symbol(sanitized, symbol.name) ||
+                    usage.pointer_or_reference_mentions == 0) {
+                    assessment.unsafe_usage = true;
+                    break;
                 }
             }
 
@@ -1435,7 +1334,7 @@ namespace bha::suggestions
             const IncludeDirective& include_dir,
             const fs::path& included_header,
             const analyzers::DependencyAnalysisResult::HeaderInfo* header_info,
-            const std::vector<std::string>& declared_symbols
+            const std::vector<ExportedTypeSymbol>& declared_symbols
         ) {
             if (find_include_for_header(source_file, include_dir.header_name).has_value()) {
                 return std::nullopt;
@@ -1445,7 +1344,7 @@ namespace bha::suggestions
             }
 
             const auto assessment = assess_move_to_cpp(including_header, declared_symbols);
-            if (!assessment.mentions_symbol || !assessment.has_forward_decl || assessment.unsafe_usage) {
+            if (!assessment.mentions_symbol || assessment.unsafe_usage) {
                 return std::nullopt;
             }
 
@@ -1646,7 +1545,7 @@ namespace bha::suggestions
         );
 
         std::unordered_set<std::string> emitted_move_keys;
-        std::unordered_map<std::string, std::vector<std::string>> declared_symbol_cache;
+        std::unordered_map<std::string, std::vector<ExportedTypeSymbol>> declared_symbol_cache;
 
         for (const auto& including_header : candidate_headers) {
             if (context.is_cancelled()) {
@@ -1723,7 +1622,9 @@ namespace bha::suggestions
                 if (cache_it == declared_symbol_cache.end()) {
                     cache_it = declared_symbol_cache.emplace(
                         cache_key,
-                        fs::exists(included_header) ? extract_declared_type_names(included_header) : std::vector<std::string>{}
+                        fs::exists(included_header)
+                            ? extract_exported_type_symbols(included_header)
+                            : std::vector<ExportedTypeSymbol>{}
                     ).first;
                 }
 

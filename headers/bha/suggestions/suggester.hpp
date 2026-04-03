@@ -684,6 +684,121 @@ namespace bha::suggestions {
         return false;
     }
 
+    enum class ExportedTypeSymbolKind {
+        ForwardDeclarableType,
+        AliasLike,
+    };
+
+    struct ExportedTypeSymbol {
+        std::string name;
+        ExportedTypeSymbolKind kind = ExportedTypeSymbolKind::ForwardDeclarableType;
+    };
+
+    [[nodiscard]] inline bool is_forward_declarable(const ExportedTypeSymbol& symbol) {
+        return symbol.kind == ExportedTypeSymbolKind::ForwardDeclarableType;
+    }
+
+    [[nodiscard]] inline std::vector<ExportedTypeSymbol> extract_exported_type_symbols(
+        const fs::path& header_path
+    ) {
+        auto lines_result = file_utils::read_lines(header_path);
+        if (lines_result.is_err()) {
+            return {};
+        }
+
+        static const std::regex class_or_struct_regex(
+            R"(^\s*(class|struct)\s+([A-Za-z_][A-Za-z0-9_]*)\b)"
+        );
+        static const std::regex using_alias_regex(
+            R"(^\s*using\s+([A-Za-z_][A-Za-z0-9_]*)\b)"
+        );
+        static const std::regex typedef_regex(
+            R"(^\s*typedef\b.*\b([A-Za-z_][A-Za-z0-9_]*)\s*;)"
+        );
+        static const std::regex enum_regex(
+            R"(^\s*enum(?:\s+class|\s+struct)?\s+([A-Za-z_][A-Za-z0-9_]*)\b)"
+        );
+
+        std::vector<ExportedTypeSymbol> symbols;
+        std::unordered_map<std::string, ExportedTypeSymbolKind> kinds_by_name;
+        bool in_block_comment = false;
+        bool template_pending = false;
+
+        const auto record_symbol = [&](const std::string& name, const ExportedTypeSymbolKind kind) {
+            if (name.empty()) {
+                return;
+            }
+            auto it = kinds_by_name.find(name);
+            if (it == kinds_by_name.end()) {
+                kinds_by_name.emplace(name, kind);
+                symbols.push_back(ExportedTypeSymbol{name, kind});
+                return;
+            }
+            if (it->second == kind) {
+                return;
+            }
+            it->second = ExportedTypeSymbolKind::AliasLike;
+            for (auto& symbol : symbols) {
+                if (symbol.name == name) {
+                    symbol.kind = ExportedTypeSymbolKind::AliasLike;
+                    break;
+                }
+            }
+        };
+
+        for (const auto& raw_line : lines_result.value()) {
+            const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+            const std::string trimmed = trim_whitespace_copy(line);
+
+            if (trimmed.empty()) {
+                template_pending = false;
+                continue;
+            }
+            if (trimmed == "template" || trimmed.starts_with("template<")) {
+                template_pending = true;
+                continue;
+            }
+            if (template_pending) {
+                if (trimmed.find(';') != std::string::npos || trimmed.find('{') != std::string::npos) {
+                    template_pending = false;
+                }
+                continue;
+            }
+            if (trimmed.starts_with("#") ||
+                trimmed.starts_with("namespace ") ||
+                trimmed == "{" ||
+                trimmed == "}" ||
+                trimmed == "};") {
+                continue;
+            }
+
+            std::smatch match;
+            if (std::regex_search(trimmed, match, class_or_struct_regex)) {
+                if (trimmed.find('{') == std::string::npos && trimmed.find(';') == std::string::npos) {
+                    continue;
+                }
+                record_symbol(match[2].str(), ExportedTypeSymbolKind::ForwardDeclarableType);
+                continue;
+            }
+            if (std::regex_search(trimmed, match, using_alias_regex)) {
+                if (trimmed.find('=') == std::string::npos) {
+                    continue;
+                }
+                record_symbol(match[1].str(), ExportedTypeSymbolKind::AliasLike);
+                continue;
+            }
+            if (std::regex_search(trimmed, match, typedef_regex)) {
+                record_symbol(match[1].str(), ExportedTypeSymbolKind::AliasLike);
+                continue;
+            }
+            if (std::regex_search(trimmed, match, enum_regex)) {
+                record_symbol(match[1].str(), ExportedTypeSymbolKind::AliasLike);
+            }
+        }
+
+        return symbols;
+    }
+
     struct IncompleteTypeUsageSummary {
         bool has_mentions = false;
         bool requires_complete_type = false;

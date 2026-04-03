@@ -374,6 +374,123 @@ esac
         EXPECT_EQ(it, result.value().suggestions.end());
     }
 
+    TEST_F(IncludeSuggesterTest, SkipsMoveToCppWhenAliasExportIsStillUsedInHeader) {
+        const BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "types.hpp";
+        const auto widget_header = temp_root_ / "widget.hpp";
+        const auto widget_source = temp_root_ / "widget.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class Forwardable {};\n"
+            "using AliasType = int;\n"
+        );
+        write_file(
+            widget_header,
+            "#pragma once\n"
+            "class Forwardable;\n"
+            "#include \"types.hpp\"\n"
+            "class Widget {\n"
+            "public:\n"
+            "    const AliasType& alias() const;\n"
+            "private:\n"
+            "    Forwardable* forwardable_{};\n"
+            "};\n"
+        );
+        write_file(widget_source, "#include \"widget.hpp\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::FileAnalysisResult file_header;
+        file_header.file = widget_header;
+        analysis.files.push_back(file_header);
+        analyzers::FileAnalysisResult file_source;
+        file_source.file = widget_source;
+        analysis.files.push_back(file_source);
+
+        analyzers::DependencyAnalysisResult::HeaderInfo dep_header;
+        dep_header.path = heavy_header;
+        dep_header.total_parse_time = std::chrono::milliseconds(250);
+        dep_header.inclusion_count = 8;
+        dep_header.including_files = 1;
+        dep_header.included_by = {widget_header};
+        analysis.dependencies.headers.push_back(dep_header);
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+
+        auto it = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.type == SuggestionType::MoveToCpp;
+            }
+        );
+        EXPECT_EQ(it, result.value().suggestions.end());
+    }
+
+    TEST_F(IncludeSuggesterTest, SkipsMoveToCppWhenNotAllUsedSymbolsHaveForwardDeclarations) {
+        const BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "types.hpp";
+        const auto widget_header = temp_root_ / "widget.hpp";
+        const auto widget_source = temp_root_ / "widget.cpp";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "class Foo {};\n"
+            "class Bar {};\n"
+        );
+        write_file(
+            widget_header,
+            "#pragma once\n"
+            "class Foo;\n"
+            "#include \"types.hpp\"\n"
+            "class Widget {\n"
+            "private:\n"
+            "    Foo* foo_{};\n"
+            "    Bar* bar_{};\n"
+            "};\n"
+        );
+        write_file(widget_source, "#include \"widget.hpp\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::FileAnalysisResult file_header;
+        file_header.file = widget_header;
+        analysis.files.push_back(file_header);
+        analyzers::FileAnalysisResult file_source;
+        file_source.file = widget_source;
+        analysis.files.push_back(file_source);
+
+        analyzers::DependencyAnalysisResult::HeaderInfo dep_header;
+        dep_header.path = heavy_header;
+        dep_header.total_parse_time = std::chrono::milliseconds(250);
+        dep_header.inclusion_count = 8;
+        dep_header.including_files = 1;
+        dep_header.included_by = {widget_header};
+        analysis.dependencies.headers.push_back(dep_header);
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+
+        auto it = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.type == SuggestionType::MoveToCpp;
+            }
+        );
+        EXPECT_EQ(it, result.value().suggestions.end());
+    }
+
     TEST_F(IncludeSuggesterTest, DowngradesConditionalPlatformIncludesToAdvisory) {
         ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "conditional", 1), 0);
 
