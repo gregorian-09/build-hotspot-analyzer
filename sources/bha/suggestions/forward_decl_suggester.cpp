@@ -315,33 +315,33 @@ namespace bha::suggestions
             const ForwardDeclType& type,
             const std::vector<IncludeDirective>& support_includes
         ) {
-            std::ostringstream out;
+            GeneratedTextBuilder out;
+            std::vector<std::string> include_lines;
+            include_lines.reserve(support_includes.size());
             for (const auto& include : support_includes) {
-                out << include_directive_text(include) << "\n";
+                include_lines.push_back(include_directive_text(include));
             }
-            if (!support_includes.empty()) {
-                out << "\n";
-            }
+            append_include_block(out, include_lines);
 
             if (type.scopes.empty()) {
-                out << "class " << type.name << ";";
+                out.add_line("class " + type.name + ";");
                 return trim_whitespace_copy(out.str());
             }
 
             for (const auto& scope : type.scopes) {
                 if (scope.kind == ScopeFrameKind::Namespace) {
-                    out << "namespace " << scope.name << " {\n";
+                    out.add_line("namespace " + scope.name + " {");
                 } else {
-                    out << scope.macro.open_text << "\n";
+                    out.add_line(scope.macro.open_text);
                 }
             }
-            out << "class " << type.name << ";\n";
+            out.add_line("class " + type.name + ";");
             for (std::size_t i = type.scopes.size(); i > 0; --i) {
                 const auto& scope = type.scopes[i - 1];
                 if (scope.kind == ScopeFrameKind::Namespace) {
-                    out << "}  // namespace " << scope.name << "\n";
+                    out.add_line("}  // namespace " + scope.name);
                 } else {
-                    out << scope.macro.close_text << "\n";
+                    out.add_line(scope.macro.close_text);
                 }
             }
             return trim_whitespace_copy(out.str());
@@ -895,15 +895,16 @@ namespace bha::suggestions
             const fs::path& includer_path,
             const std::string& type_name
         ) {
-            std::ostringstream oss;
-            oss << "// " << includer_path.filename().string() << "\n";
-            oss << "#pragma once\n\n";
-            oss << "#include \"" << header_path.filename().string() << "\"\n";
-            oss << "class Consumer {\n";
-            oss << "    " << type_name << "* ptr;\n";
-            oss << "    void process(" << type_name << "& ref);\n";
-            oss << "};";
-            return oss.str();
+            GeneratedTextBuilder out;
+            out.add_line("// " + includer_path.filename().string());
+            out.add_line("#pragma once");
+            out.add_blank_line();
+            out.add_line("#include \"" + header_path.filename().string() + "\"");
+            out.add_line("class Consumer {");
+            out.add_line("    " + type_name + "* ptr;");
+            out.add_line("    void process(" + type_name + "& ref);");
+            out.add_line("};");
+            return out.str();
         }
 
         std::string generate_after_code(
@@ -914,18 +915,21 @@ namespace bha::suggestions
             const std::string type_name = qualified_type_name(type);
             const std::string declaration = forward_declaration_text(type, type.support_includes);
 
-            std::ostringstream oss;
-            oss << "// " << includer_path.filename().string() << " (header)\n";
-            oss << "#pragma once\n\n";
-            oss << declaration << "\n\n";
-            oss << "class Consumer {\n";
-            oss << "    " << type_name << "* ptr;\n";
-            oss << "    void process(" << type_name << "& ref);\n";
-            oss << "};\n\n";
-            oss << "// " << includer_path.stem().string() << ".cpp (implementation)\n";
-            oss << "#include \"" << includer_path.filename().string() << "\"\n";
-            oss << "#include \"" << header_path.filename().string() << "\"\n";
-            return oss.str();
+            GeneratedTextBuilder out;
+            out.add_line("// " + includer_path.filename().string() + " (header)");
+            out.add_line("#pragma once");
+            out.add_blank_line();
+            out.add_block(declaration);
+            out.add_blank_line();
+            out.add_line("class Consumer {");
+            out.add_line("    " + type_name + "* ptr;");
+            out.add_line("    void process(" + type_name + "& ref);");
+            out.add_line("};");
+            out.add_blank_line();
+            out.add_line("// " + includer_path.stem().string() + ".cpp (implementation)");
+            out.add_line("#include \"" + includer_path.filename().string() + "\"");
+            out.add_line("#include \"" + header_path.filename().string() + "\"");
+            return out.str();
         }
 
     }  // namespace

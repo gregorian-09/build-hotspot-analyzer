@@ -1728,13 +1728,18 @@ namespace bha::suggestions
             if (fs::exists(pch_path)) {
                 suggestion.edits.push_back(make_preferred_include_insertion_edit(pch_path, include_line).edit);
             } else {
+                GeneratedTextBuilder pch_content;
+                pch_content.add_line("#pragma once");
+                pch_content.add_blank_line();
+                pch_content.add_line(include_line);
+
                 TextEdit create_pch;
                 create_pch.file = pch_path;
                 create_pch.start_line = 0;
                 create_pch.start_col = 0;
                 create_pch.end_line = 0;
                 create_pch.end_col = 0;
-                create_pch.new_text = "#pragma once\n\n" + include_line + "\n";
+                create_pch.new_text = pch_content.str();
                 suggestion.edits.push_back(create_pch);
 
                 FileTarget pch_target;

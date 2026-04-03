@@ -795,6 +795,73 @@ namespace bha::suggestions {
         std::size_t inserted_line_one_based = 1;
     };
 
+    class GeneratedTextBuilder {
+    public:
+        void add_line(std::string line) {
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
+            lines_.push_back(std::move(line));
+        }
+
+        void add_blank_line() {
+            if (lines_.empty() || lines_.back().empty()) {
+                return;
+            }
+            lines_.emplace_back();
+        }
+
+        void add_block(std::string_view block) {
+            std::size_t offset = 0;
+            while (offset <= block.size()) {
+                const auto next = block.find('\n', offset);
+                const auto chunk = next == std::string_view::npos
+                    ? block.substr(offset)
+                    : block.substr(offset, next - offset);
+                if (chunk.empty()) {
+                    add_blank_line();
+                } else {
+                    add_line(std::string(chunk));
+                }
+                if (next == std::string_view::npos) {
+                    break;
+                }
+                offset = next + 1;
+            }
+        }
+
+        [[nodiscard]] bool empty() const {
+            return lines_.empty();
+        }
+
+        [[nodiscard]] std::string str() const {
+            std::ostringstream out;
+            for (std::size_t i = 0; i < lines_.size(); ++i) {
+                out << lines_[i];
+                if (i + 1 < lines_.size() || !lines_.empty()) {
+                    out << '\n';
+                }
+            }
+            return out.str();
+        }
+
+    private:
+        std::vector<std::string> lines_;
+    };
+
+    inline void append_include_block(
+        GeneratedTextBuilder& builder,
+        const std::vector<std::string>& include_lines
+    ) {
+        if (include_lines.empty()) {
+            return;
+        }
+        for (const auto& include_line : include_lines) {
+            builder.add_line(include_line);
+        }
+        builder.add_blank_line();
+    }
+
     [[nodiscard]] inline std::string_view trim_whitespace_view(const std::string_view text) {
         const auto first = text.find_first_not_of(" \t\r\n");
         if (first == std::string_view::npos) {

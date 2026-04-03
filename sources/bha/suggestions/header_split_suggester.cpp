@@ -722,15 +722,16 @@ namespace bha::suggestions
                 return a.name < b.name;
             });
 
-            std::ostringstream out;
-            out << "#pragma once\n\n";
-            out << "#ifdef __cplusplus\n";
+            GeneratedTextBuilder out;
+            out.add_line("#pragma once");
+            out.add_blank_line();
+            out.add_line("#ifdef __cplusplus");
+            std::vector<std::string> include_lines;
+            include_lines.reserve(support_includes->size());
             for (const auto& include : *support_includes) {
-                out << include_directive_text(include) << "\n";
+                include_lines.push_back(include_directive_text(include));
             }
-            if (!support_includes->empty()) {
-                out << "\n";
-            }
+            append_include_block(out, include_lines);
 
             std::vector<ScopeFrame> opened_scopes;
             auto render_scope_key = [](const ScopeFrame& scope) {
@@ -741,16 +742,16 @@ namespace bha::suggestions
             };
             auto close_scope = [&](const ScopeFrame& scope) {
                 if (scope.kind == ScopeFrameKind::Namespace) {
-                    out << "}  // namespace " << scope.name << "\n";
+                    out.add_line("}  // namespace " + scope.name);
                 } else {
-                    out << scope.macro.close_text << "\n";
+                    out.add_line(scope.macro.close_text);
                 }
             };
             auto open_scope = [&](const ScopeFrame& scope) {
                 if (scope.kind == ScopeFrameKind::Namespace) {
-                    out << "namespace " << scope.name << " {\n";
+                    out.add_line("namespace " + scope.name + " {");
                 } else {
-                    out << scope.macro.open_text << "\n";
+                    out.add_line(scope.macro.open_text);
                 }
             };
 
@@ -775,14 +776,14 @@ namespace bha::suggestions
 
             for (const auto& symbol : symbols) {
                 adjust_scope_stack(symbol.scopes);
-                out << symbol.kind << " " << symbol.name << ";\n";
+                out.add_line(symbol.kind + " " + symbol.name + ";");
             }
 
             for (std::size_t i = opened_scopes.size(); i > 0; --i) {
                 close_scope(opened_scopes[i - 1]);
             }
 
-            out << "#endif  // __cplusplus\n";
+            out.add_line("#endif  // __cplusplus");
 
             return out.str();
         }
