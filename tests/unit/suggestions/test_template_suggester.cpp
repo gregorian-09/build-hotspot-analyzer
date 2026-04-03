@@ -536,4 +536,60 @@ namespace bha::suggestions
         ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
         EXPECT_NE(suggestion.auto_apply_blocked_reason->find("class-template member"), std::string::npos);
     }
+
+    TEST_F(TemplateSuggesterTest, DowngradesNestedDependentTypesWithoutExactVisibility) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto decl_header = temp_root_ / "include" / "autovector.h";
+        const auto consumer_header = temp_root_ / "include" / "writer.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            decl_header,
+            "#pragma once\n"
+            "namespace rocksdb {\n"
+            "template <class T>\n"
+            "class autovector {};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"autovector.h\"\n"
+            "namespace rocksdb {\n"
+            "class LogBuffer {\n"
+            " public:\n"
+            "  struct BufferedLog {};\n"
+            "};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(source_a, "#include \"../include/writer.h\"\n");
+        write_file(source_b, "#include \"../include/writer.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "rocksdb::autovector<rocksdb::LogBuffer::BufferedLog *>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{decl_header, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+    }
 }

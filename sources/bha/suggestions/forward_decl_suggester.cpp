@@ -565,151 +565,22 @@ namespace bha::suggestions
             return includes;
         }
 
-        bool is_reference_or_pointer_context(
-            const std::string& text,
-            const std::size_t match_begin,
-            const std::size_t match_end
-        ) {
-            auto find_prev_non_space = [&text](std::size_t index) -> std::optional<std::size_t> {
-                while (index > 0) {
-                    --index;
-                    if (!std::isspace(static_cast<unsigned char>(text[index]))) {
-                        return index;
-                    }
-                }
-                return std::nullopt;
-            };
-            auto find_next_non_space = [&text](std::size_t index) -> std::optional<std::size_t> {
-                while (index < text.size()) {
-                    if (!std::isspace(static_cast<unsigned char>(text[index]))) {
-                        return index;
-                    }
-                    ++index;
-                }
-                return std::nullopt;
-            };
-
-            if (const auto right = find_next_non_space(match_end); right.has_value()) {
-                if (text[*right] == '*' || text[*right] == '&') {
-                    return true;
-                }
-                if (text.compare(*right, 5, "const") == 0) {
-                    if (const auto after_const = find_next_non_space(*right + 5); after_const.has_value()) {
-                        if (text[*after_const] == '*' || text[*after_const] == '&') {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            if (const auto left = find_prev_non_space(match_begin); left.has_value()) {
-                if (text[*left] == '*' || text[*left] == '&') {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        bool line_looks_like_forward_declaration(
-            const std::string& text,
-            const std::size_t match_begin,
-            const std::size_t match_end
-        ) {
-            const auto line_start = text.rfind('\n', match_begin);
-            const auto line_end = text.find('\n', match_end);
-            const std::size_t begin = line_start == std::string::npos ? 0 : line_start + 1;
-            const std::size_t end = line_end == std::string::npos ? text.size() : line_end;
-            const std::string line = trim_whitespace_copy(text.substr(begin, end - begin));
-            return line.starts_with("class ") || line.starts_with("struct ");
-        }
-
         UsageAnalysis analyze_includer_usage(
             const std::string& sanitized_text,
             const ForwardDeclType& type
         ) {
             UsageAnalysis result;
             const std::string qualified = qualified_type_name(type);
-            const std::string escaped_qualified = escape_regex(qualified);
-            const std::string escaped_unqualified = escape_regex(type.name);
-            const std::vector<std::string> type_patterns = type.namespaces.empty()
-                ? std::vector<std::string>{escaped_qualified}
-                : std::vector<std::string>{escaped_qualified, escaped_unqualified};
-
-            for (const auto& pattern : type_patterns) {
-                const std::regex forbidden_constructs(
-                    "\\b(?:sizeof|alignof|typeid|new|delete)\\s*(?:\\(|)\\s*" + pattern + "\\b|"
-                    "\\b" + pattern + "\\s*::"
-                );
-                if (std::regex_search(sanitized_text, forbidden_constructs)) {
-                    return result;
-                }
-                const std::regex inheritance_regex(
-                    "\\b(?:class|struct)\\s+[A-Za-z_][A-Za-z0-9_]*\\s*:[^\\{;]*\\b" + pattern + "\\b"
-                );
-                if (std::regex_search(sanitized_text, inheritance_regex)) {
-                    return result;
-                }
-            }
-
-            std::vector<std::pair<std::size_t, std::size_t>> mentions;
-            auto add_mention = [&mentions](const std::size_t start, const std::size_t end_pos) {
-                const auto exists = std::ranges::any_of(
-                    mentions,
-                    [start, end_pos](const auto& span) { return span.first == start && span.second == end_pos; }
-                );
-                if (!exists) {
-                    mentions.emplace_back(start, end_pos);
-                }
-            };
-
-            const std::regex qualified_regex("\\b" + escaped_qualified + "\\b");
-            for (auto begin = std::sregex_iterator(sanitized_text.begin(), sanitized_text.end(), qualified_regex),
-                      end = std::sregex_iterator();
-                 begin != end;
-                 ++begin) {
-                const std::size_t start = static_cast<std::size_t>((*begin).position());
-                const std::size_t end_pos = start + static_cast<std::size_t>((*begin).length());
-                add_mention(start, end_pos);
-            }
-
+            std::vector<std::string> spellings{qualified};
             if (!type.namespaces.empty()) {
-                const std::regex unqualified_regex("\\b" + escaped_unqualified + "\\b");
-                for (auto begin = std::sregex_iterator(sanitized_text.begin(), sanitized_text.end(), unqualified_regex),
-                          end = std::sregex_iterator();
-                     begin != end;
-                     ++begin) {
-                    const std::size_t start = static_cast<std::size_t>((*begin).position());
-                    if (start >= 2 &&
-                        sanitized_text[start - 1] == ':' &&
-                        sanitized_text[start - 2] == ':') {
-                        continue;
-                    }
-                    const std::size_t end_pos = start + static_cast<std::size_t>((*begin).length());
-                    add_mention(start, end_pos);
-                }
+                spellings.push_back(type.name);
             }
 
-            std::ranges::sort(mentions, [](const auto& lhs, const auto& rhs) {
-                if (lhs.first != rhs.first) {
-                    return lhs.first < rhs.first;
-                }
-                return lhs.second < rhs.second;
-            });
-
-            for (const auto& [start, end_pos] : mentions) {
-                if (line_looks_like_forward_declaration(sanitized_text, start, end_pos)) {
-                    continue;
-                }
-
-                if (is_reference_or_pointer_context(sanitized_text, start, end_pos)) {
-                    ++result.pointer_or_reference_mentions;
-                    continue;
-                }
-                return result;
-            }
-
-            result.eligible = result.pointer_or_reference_mentions > 0;
+            const auto usage = analyze_incomplete_type_usage(sanitized_text, spellings);
+            result.eligible = usage.has_mentions &&
+                !usage.requires_complete_type &&
+                usage.pointer_or_reference_mentions > 0;
+            result.pointer_or_reference_mentions = usage.pointer_or_reference_mentions;
             return result;
         }
 

@@ -658,6 +658,263 @@ namespace bha::suggestions {
         return cleaned;
     }
 
+    [[nodiscard]] inline bool is_identifier_char(const char ch) {
+        const unsigned char value = static_cast<unsigned char>(ch);
+        return std::isalnum(value) || ch == '_';
+    }
+
+    [[nodiscard]] inline bool contains_identifier_token(
+        const std::string& text,
+        const std::string& symbol
+    ) {
+        if (text.empty() || symbol.empty()) {
+            return false;
+        }
+
+        std::size_t pos = text.find(symbol);
+        while (pos != std::string::npos) {
+            const bool left_ok = (pos == 0) || !is_identifier_char(text[pos - 1]);
+            const std::size_t end = pos + symbol.size();
+            const bool right_ok = (end >= text.size()) || !is_identifier_char(text[end]);
+            if (left_ok && right_ok) {
+                return true;
+            }
+            pos = text.find(symbol, pos + 1);
+        }
+        return false;
+    }
+
+    struct IncompleteTypeUsageSummary {
+        bool has_mentions = false;
+        bool requires_complete_type = false;
+        std::size_t pointer_or_reference_mentions = 0;
+    };
+
+    [[nodiscard]] inline bool is_reference_or_pointer_context(
+        const std::string& text,
+        const std::size_t end_pos
+    ) {
+        auto skip_ws = [&](std::size_t pos) {
+            while (pos < text.size() && std::isspace(static_cast<unsigned char>(text[pos]))) {
+                ++pos;
+            }
+            return pos;
+        };
+
+        std::size_t pos = skip_ws(end_pos);
+        while (pos < text.size()) {
+            if (text.compare(pos, 5, "const") == 0 &&
+                (pos + 5 >= text.size() || !is_identifier_char(text[pos + 5]))) {
+                pos = skip_ws(pos + 5);
+                continue;
+            }
+            if (text.compare(pos, 8, "volatile") == 0 &&
+                (pos + 8 >= text.size() || !is_identifier_char(text[pos + 8]))) {
+                pos = skip_ws(pos + 8);
+                continue;
+            }
+            break;
+        }
+        return pos < text.size() && (text[pos] == '*' || text[pos] == '&');
+    }
+
+    [[nodiscard]] inline bool line_looks_like_forward_declaration(
+        const std::string& text,
+        const std::size_t start,
+        const std::size_t end_pos
+    ) {
+        const auto line_start = text.rfind('\n', start);
+        const auto line_end = text.find('\n', end_pos);
+        const std::size_t begin = line_start == std::string::npos ? 0 : line_start + 1;
+        const std::size_t end = line_end == std::string::npos ? text.size() : line_end;
+        const std::string line = trim_whitespace_copy(text.substr(begin, end - begin));
+        return line.starts_with("class ") || line.starts_with("struct ");
+    }
+
+    [[nodiscard]] inline std::vector<std::string> collect_pointer_or_reference_identifiers(
+        const std::string& text,
+        const std::vector<std::pair<std::size_t, std::size_t>>& mentions
+    ) {
+        std::vector<std::string> identifiers;
+        std::unordered_set<std::string> seen;
+
+        auto skip_ws = [&](std::size_t pos) {
+            while (pos < text.size() && std::isspace(static_cast<unsigned char>(text[pos]))) {
+                ++pos;
+            }
+            return pos;
+        };
+
+        for (const auto& [start, end_pos] : mentions) {
+            std::size_t pos = skip_ws(end_pos);
+            while (pos < text.size()) {
+                if (text.compare(pos, 5, "const") == 0 &&
+                    (pos + 5 >= text.size() || !is_identifier_char(text[pos + 5]))) {
+                    pos = skip_ws(pos + 5);
+                    continue;
+                }
+                if (text.compare(pos, 8, "volatile") == 0 &&
+                    (pos + 8 >= text.size() || !is_identifier_char(text[pos + 8]))) {
+                    pos = skip_ws(pos + 8);
+                    continue;
+                }
+                break;
+            }
+
+            if (pos >= text.size() || (text[pos] != '*' && text[pos] != '&')) {
+                continue;
+            }
+            while (pos < text.size() && (text[pos] == '*' || text[pos] == '&' ||
+                   std::isspace(static_cast<unsigned char>(text[pos])))) {
+                ++pos;
+            }
+            if (pos < text.size() && is_identifier_char(text[pos])) {
+                const std::size_t id_start = pos;
+                while (pos < text.size() && is_identifier_char(text[pos])) {
+                    ++pos;
+                }
+                const std::string name = text.substr(id_start, pos - id_start);
+                if (!name.empty() && seen.insert(name).second) {
+                    identifiers.push_back(name);
+                }
+            }
+        }
+
+        return identifiers;
+    }
+
+    [[nodiscard]] inline bool has_member_access_on_identifiers(
+        const std::string& text,
+        const std::vector<std::string>& identifiers
+    ) {
+        for (const auto& identifier : identifiers) {
+            const std::string pointer_access = identifier + "->";
+            const std::string dot_access = identifier + ".";
+            if (text.find(pointer_access) != std::string::npos ||
+                text.find(dot_access) != std::string::npos) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] inline IncompleteTypeUsageSummary analyze_incomplete_type_usage(
+        const std::string& sanitized_text,
+        const std::vector<std::string>& type_spellings
+    ) {
+        IncompleteTypeUsageSummary result;
+        if (sanitized_text.empty() || type_spellings.empty()) {
+            return result;
+        }
+
+        std::vector<std::pair<std::size_t, std::size_t>> mentions;
+        auto add_mention = [&mentions](const std::size_t start, const std::size_t end_pos) {
+            const bool exists = std::ranges::any_of(
+                mentions,
+                [start, end_pos](const auto& span) { return span.first == start && span.second == end_pos; }
+            );
+            if (!exists) {
+                mentions.emplace_back(start, end_pos);
+            }
+        };
+
+        for (const auto& spelling : type_spellings) {
+            if (spelling.empty()) {
+                continue;
+            }
+            const std::string escaped = std::regex_replace(
+                spelling,
+                std::regex(R"([.^$|()\\[\]{}*+?])"),
+                R"(\$&)"
+            );
+
+            const std::regex forbidden_constructs(
+                "\\b(?:sizeof|alignof|typeid|new|delete|dynamic_cast|static_cast)\\s*(?:\\(|)\\s*" + escaped + "\\b|"
+                "\\b" + escaped + "\\s*::|"
+                "<\\s*" + escaped + "\\b"
+            );
+            if (std::regex_search(sanitized_text, forbidden_constructs)) {
+                result.requires_complete_type = true;
+                return result;
+            }
+
+            const std::regex inheritance_regex(
+                "\\b(?:class|struct)\\s+[A-Za-z_][A-Za-z0-9_]*\\s*:[^\\{;]*\\b" + escaped + "\\b"
+            );
+            if (std::regex_search(sanitized_text, inheritance_regex)) {
+                result.requires_complete_type = true;
+                return result;
+            }
+
+            const std::regex symbol_regex("\\b" + escaped + "\\b");
+            for (auto begin = std::sregex_iterator(sanitized_text.begin(), sanitized_text.end(), symbol_regex),
+                      end = std::sregex_iterator();
+                 begin != end;
+                 ++begin) {
+                const std::size_t start = static_cast<std::size_t>((*begin).position());
+                const std::size_t symbol_end = start + static_cast<std::size_t>((*begin).length());
+                add_mention(start, symbol_end);
+            }
+        }
+
+        std::ranges::sort(mentions, [](const auto& lhs, const auto& rhs) {
+            if (lhs.first != rhs.first) {
+                return lhs.first < rhs.first;
+            }
+            return lhs.second < rhs.second;
+        });
+
+        const auto pointer_identifiers = collect_pointer_or_reference_identifiers(sanitized_text, mentions);
+        if (has_member_access_on_identifiers(sanitized_text, pointer_identifiers)) {
+            result.requires_complete_type = true;
+            return result;
+        }
+
+        for (const auto& [start, end_pos] : mentions) {
+            if (line_looks_like_forward_declaration(sanitized_text, start, end_pos)) {
+                continue;
+            }
+
+            result.has_mentions = true;
+            if (is_reference_or_pointer_context(sanitized_text, end_pos)) {
+                ++result.pointer_or_reference_mentions;
+                continue;
+            }
+
+            result.requires_complete_type = true;
+            return result;
+        }
+
+        return result;
+    }
+
+    [[nodiscard]] inline std::vector<std::string> extract_qualified_names(const std::string& text) {
+        static const std::regex qualified_name_regex(
+            R"(\b([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\b)"
+        );
+
+        std::vector<std::string> names;
+        std::unordered_set<std::string> seen;
+        for (std::sregex_iterator it(text.begin(), text.end(), qualified_name_regex),
+             end; it != end; ++it) {
+            const std::string candidate = (*it)[1].str();
+            if (seen.insert(candidate).second) {
+                names.push_back(candidate);
+            }
+        }
+        return names;
+    }
+
+    [[nodiscard]] inline bool is_nested_qualified_name(const std::string& qualified_name) {
+        std::size_t separators = 0;
+        for (std::size_t pos = qualified_name.find("::");
+             pos != std::string::npos;
+             pos = qualified_name.find("::", pos + 2)) {
+            ++separators;
+        }
+        return separators >= 2;
+    }
+
     template <std::size_t N>
     [[nodiscard]] inline bool path_has_extension(
         const fs::path& path,

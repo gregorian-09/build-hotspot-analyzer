@@ -1080,6 +1080,28 @@ namespace bha::suggestions
                 }
             }
 
+            if (!assessment.unsafe_usage && assessment.mentions_symbol) {
+                std::ifstream in(including_header);
+                if (in) {
+                    const std::string content{
+                        std::istreambuf_iterator<char>(in),
+                        std::istreambuf_iterator<char>()
+                    };
+                    std::string sanitized;
+                    sanitized.reserve(content.size());
+                    bool in_block = false;
+                    std::istringstream stream(content);
+                    std::string raw_line;
+                    while (std::getline(stream, raw_line)) {
+                        sanitized += strip_comments_and_strings(raw_line, in_block);
+                        sanitized.push_back('\n');
+                    }
+
+                    const auto usage = analyze_incomplete_type_usage(sanitized, symbols);
+                    assessment.unsafe_usage = usage.requires_complete_type;
+                }
+            }
+
             return assessment;
         }
 

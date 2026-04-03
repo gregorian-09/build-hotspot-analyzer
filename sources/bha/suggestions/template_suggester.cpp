@@ -672,23 +672,6 @@ namespace bha::suggestions
             return std::nullopt;
         }
 
-        std::vector<std::string> extract_qualified_names(const std::string& text) {
-            static const std::regex qualified_name_regex(
-                R"(\b([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\b)"
-            );
-
-            std::vector<std::string> names;
-            std::unordered_set<std::string> seen;
-            for (std::sregex_iterator it(text.begin(), text.end(), qualified_name_regex),
-                 end; it != end; ++it) {
-                const std::string candidate = (*it)[1].str();
-                if (seen.insert(candidate).second) {
-                    names.push_back(candidate);
-                }
-            }
-            return names;
-        }
-
         std::vector<fs::path> collect_header_closure(const fs::path& header_path, const fs::path& project_root) {
             std::vector<fs::path> closure;
             std::vector<fs::path> stack{header_path.lexically_normal()};
@@ -756,6 +739,7 @@ namespace bha::suggestions
                 last_scope == std::string::npos ? qualified_name : qualified_name.substr(last_scope + 2);
             const std::regex exact_regex("\\b" + regex_escape(qualified_name) + "\\b");
             const std::regex terminal_regex("\\b" + regex_escape(terminal_name) + "\\b");
+            const bool nested_name = is_nested_qualified_name(qualified_name);
 
             for (const auto& candidate : collect_header_closure(header_path, project_root)) {
                 std::ifstream in(candidate);
@@ -764,7 +748,10 @@ namespace bha::suggestions
                 }
                 const std::string content((std::istreambuf_iterator<char>(in)),
                                           std::istreambuf_iterator<char>());
-                if (std::regex_search(content, exact_regex) || std::regex_search(content, terminal_regex)) {
+                if (std::regex_search(content, exact_regex)) {
+                    return true;
+                }
+                if (!nested_name && std::regex_search(content, terminal_regex)) {
                     return true;
                 }
             }
