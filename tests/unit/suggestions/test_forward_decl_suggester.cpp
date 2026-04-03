@@ -119,7 +119,7 @@ namespace bha::suggestions
         EXPECT_EQ(suggestion.type, SuggestionType::ForwardDeclaration);
         EXPECT_TRUE(suggestion.is_safe);
         ASSERT_FALSE(suggestion.edits.empty());
-        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+        EXPECT_EQ(suggestion.edits.front().new_text, "\nclass HeavyWidget;\n\n");
         EXPECT_TRUE(std::ranges::any_of(
             suggestion.edits,
             [&consumer_source](const TextEdit& edit) { return edit.file == consumer_source; }
@@ -176,7 +176,7 @@ namespace bha::suggestions
 
         const auto& suggestion = result.value().suggestions[0];
         ASSERT_FALSE(suggestion.edits.empty());
-        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+        EXPECT_EQ(suggestion.edits.front().new_text, "\nclass HeavyWidget;\n\n");
     }
 
     TEST_F(ForwardDeclSuggesterTest, PreservesNamespaceWrapperMacrosWhenSupportIncludeExists) {
@@ -519,7 +519,7 @@ namespace bha::suggestions
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.target_file.path, consumer_header);
         ASSERT_FALSE(suggestion.edits.empty());
-        EXPECT_EQ(suggestion.edits.front().new_text, "class HeavyWidget;\n");
+        EXPECT_EQ(suggestion.edits.front().new_text, "\nclass HeavyWidget;\n\n");
     }
 
     TEST_F(ForwardDeclSuggesterTest, SuggestsForwardDeclarationForNamespacedType) {

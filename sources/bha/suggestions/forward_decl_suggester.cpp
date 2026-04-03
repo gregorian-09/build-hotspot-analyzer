@@ -1169,10 +1169,10 @@ namespace bha::suggestions
                 suggestion.edits.push_back(make_replace_line_edit(
                     includer_path,
                     include_dir->line,
-                    forward_declaration_text(
+                    format_separated_block(forward_declaration_text(
                         target_type,
                         missing_support_includes(target_type, includer_path)
-                    )
+                    ))
                 ));
 
                 if (auto source_file = find_matching_source_file(includer_path, include_scan_root)) {

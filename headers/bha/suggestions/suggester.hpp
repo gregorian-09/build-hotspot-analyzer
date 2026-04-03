@@ -790,9 +790,17 @@ namespace bha::suggestions {
         return edit;
     }
 
+    enum class IncludeInsertionKind {
+        ExistingIncludeBlock,
+        HeaderGuard,
+        LeadingPreamble,
+        StartOfFile
+    };
+
     struct IncludeInsertionEdit {
         TextEdit edit;
         std::size_t inserted_line_one_based = 1;
+        IncludeInsertionKind kind = IncludeInsertionKind::StartOfFile;
     };
 
     class GeneratedTextBuilder {
@@ -860,6 +868,14 @@ namespace bha::suggestions {
             builder.add_line(include_line);
         }
         builder.add_blank_line();
+    }
+
+    [[nodiscard]] inline std::string format_separated_block(std::string block) {
+        block = trim_whitespace_copy(std::move(block));
+        if (block.empty()) {
+            return {};
+        }
+        return "\n" + block + "\n";
     }
 
     [[nodiscard]] inline std::string_view trim_whitespace_view(const std::string_view text) {
@@ -1094,12 +1110,19 @@ namespace bha::suggestions {
         const std::string& content
     ) {
         if (auto line = find_preferred_include_insertion_line(file)) {
-            return {make_insert_after_line_edit(file, *line, content), *line + 2};
+            auto edit = make_insert_after_line_edit(file, *line, content);
+            if (find_include_directives(file).empty()) {
+                edit.new_text = "\n" + content + "\n";
+                return {std::move(edit), *line + 3, IncludeInsertionKind::HeaderGuard};
+            }
+            return {std::move(edit), *line + 2, IncludeInsertionKind::ExistingIncludeBlock};
         }
         if (auto line = find_leading_preamble_line(file)) {
-            return {make_insert_after_line_edit(file, *line, content), *line + 2};
+            auto edit = make_insert_after_line_edit(file, *line, content);
+            edit.new_text = "\n" + content + "\n";
+            return {std::move(edit), *line + 3, IncludeInsertionKind::LeadingPreamble};
         }
-        return {make_insert_at_start_edit(file, content), 1};
+        return {make_insert_at_start_edit(file, content), 1, IncludeInsertionKind::StartOfFile};
     }
 
     [[nodiscard]] inline double saturating_count_factor(

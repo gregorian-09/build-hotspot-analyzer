@@ -579,6 +579,11 @@ namespace bha::suggestions
         const std::optional<std::size_t> insertion_line = find_preferred_include_insertion_line(header_path);
         ASSERT_TRUE(insertion_line.has_value());
         EXPECT_EQ(*insertion_line, 4u);
+
+        const auto insertion = make_preferred_include_insertion_edit(header_path, "#include \"widget_fwd.h\"");
+        EXPECT_EQ(insertion.edit.start_line, 5u);
+        EXPECT_EQ(insertion.edit.new_text, "\n#include \"widget_fwd.h\"\n");
+        EXPECT_EQ(insertion.inserted_line_one_based, 7u);
     }
 
     TEST_F(HeaderSplitSuggesterTest, FallsBackToLeadingPreambleForPreferredIncludeInsertion) {
@@ -599,7 +604,8 @@ namespace bha::suggestions
 
         const auto insertion = make_preferred_include_insertion_edit(header_path, "#include \"widget_fwd.h\"");
         EXPECT_EQ(insertion.edit.start_line, 3u);
-        EXPECT_EQ(insertion.inserted_line_one_based, 4u);
+        EXPECT_EQ(insertion.edit.new_text, "\n#include \"widget_fwd.h\"\n");
+        EXPECT_EQ(insertion.inserted_line_one_based, 5u);
     }
 
 }
