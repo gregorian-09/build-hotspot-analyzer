@@ -302,6 +302,44 @@ namespace bha::suggestions
             return base;
         }
 
+        std::optional<std::size_t> find_outer_template_close(const std::string& name) {
+            const auto open = name.find('<');
+            if (open == std::string::npos) {
+                return std::nullopt;
+            }
+
+            std::size_t depth = 0;
+            for (std::size_t i = open; i < name.size(); ++i) {
+                const char ch = name[i];
+                if (ch == '<') {
+                    ++depth;
+                    continue;
+                }
+                if (ch == '>') {
+                    if (depth == 0) {
+                        return std::nullopt;
+                    }
+                    --depth;
+                    if (depth == 0) {
+                        return i;
+                    }
+                }
+            }
+            return std::nullopt;
+        }
+
+        bool is_class_template_member_reference_without_signature(const std::string& name) {
+            const std::string normalized = strip_leading_keywords(name);
+            const auto close = find_outer_template_close(normalized);
+            if (!close.has_value()) {
+                return false;
+            }
+            const std::size_t next = *close + 1;
+            return next + 1 < normalized.size() &&
+                normalized[next] == ':' &&
+                normalized[next + 1] == ':';
+        }
+
         std::size_t count_top_level_template_args(const std::string& signature) {
             const auto open = signature.find('<');
             if (open == std::string::npos) {
@@ -872,6 +910,56 @@ namespace bha::suggestions
             suggestion.impact.cumulative_savings = suggestion.estimated_savings;
             suggestion.verification =
                 "After moving the declaration to a compile-valid header context, rerun BHA and verify that the generated explicit-instantiation edits build cleanly.";
+            suggestion.is_safe = false;
+            return suggestion;
+        }
+
+        Suggestion make_member_instantiation_advisory(
+            const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const std::string& template_name,
+            const fs::path& target_path,
+            const BuildTrace& trace
+        ) {
+            Suggestion suggestion;
+            const std::uint64_t signature_hash = std::hash<std::string>{}(template_name);
+            std::ostringstream id_suffix;
+            id_suffix << "member-" << std::hex << signature_hash;
+            suggestion.id = generate_suggestion_id("template", target_path, id_suffix.str());
+            suggestion.type = SuggestionType::ExplicitTemplate;
+            suggestion.priority = calculate_priority(tmpl, trace.total_time);
+            suggestion.confidence = 0.55;
+            suggestion.title = "Review class-template member instantiation manually";
+            suggestion.description =
+                "This hot template entry refers to a member of a class-template specialization rather than the primary class template or a complete function signature. "
+                "BHA cannot emit a compile-valid extern/explicit instantiation from that partial symbol alone.";
+            suggestion.rationale =
+                "Explicit instantiation for class-template members requires the exact instantiable declaration form. "
+                "A qualified member name like 'Type<int>::member' is not enough to generate a valid C++ instantiation statement safely.";
+            suggestion.target_file.path = target_path;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Inspect the concrete member declaration before adding any extern/explicit instantiation";
+            suggestion.application_mode = SuggestionApplicationMode::Advisory;
+            suggestion.application_summary = "Manual review required";
+            suggestion.application_guidance =
+                "Either instantiate the full class template if that is semantically appropriate, or write an explicit instantiation for the exact member declaration manually in a source file that already sees the full definition.";
+            suggestion.auto_apply_blocked_reason =
+                "The template hotspot references a class-template member without a complete instantiable signature.";
+            suggestion.caveats = {
+                "Instantiating the whole class template can be broader than instantiating one member",
+                "Constructors, assignment operators, and overloaded members need the exact declaration form",
+                "Auto-generated edits from a partial member symbol can be syntactically invalid"
+            };
+            suggestion.estimated_savings = tmpl.total_time * (tmpl.instantiation_count - 1) /
+                                           tmpl.instantiation_count;
+            if (trace.total_time.count() > 0) {
+                suggestion.estimated_savings_percent =
+                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
+                    static_cast<double>(trace.total_time.count());
+            }
+            suggestion.impact.total_files_affected = tmpl.files_using.size();
+            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
+            suggestion.verification =
+                "After introducing a manual explicit instantiation, rebuild and verify that no invalid extern-template declarations were added to the header.";
             suggestion.is_safe = false;
             return suggestion;
         }
@@ -1465,6 +1553,16 @@ namespace bha::suggestions
             if (is_function_template &&
                 (template_name.find('(') == std::string::npos || template_name.find(')') == std::string::npos)) {
                 ++skipped;
+                continue;
+            }
+            if (!is_function_template &&
+                is_class_template_member_reference_without_signature(template_name)) {
+                const fs::path advisory_target = !tmpl.locations.empty() && tmpl.locations.front().has_location()
+                    ? resolve_source_path(tmpl.locations.front().file)
+                    : (!tmpl.files_using.empty() ? resolve_source_path(tmpl.files_using.front()) : fs::path("template-instantiation"));
+                result.suggestions.push_back(
+                    make_member_instantiation_advisory(tmpl, template_name, advisory_target, context.trace)
+                );
                 continue;
             }
 
