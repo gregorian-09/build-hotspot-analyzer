@@ -287,6 +287,12 @@ endif()
 option(BHA_ENABLE_LSP "Build bha-lsp language server (optional, for separate repo/module)" OFF)
 if(BHA_ENABLE_LSP)
     add_subdirectory(lsp)
+    if(BHA_BUILD_CLI)
+        target_sources(bha PRIVATE
+            cli/commands/project_cmd.cpp
+        )
+        target_link_libraries(bha PRIVATE bha::lsp_core)
+    endif()
 endif()
 
 # =============================================================================
