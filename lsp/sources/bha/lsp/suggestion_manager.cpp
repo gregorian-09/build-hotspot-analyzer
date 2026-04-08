@@ -211,6 +211,8 @@ namespace bha::lsp
         return index;
     }
 
+    fs::path normalize_path_for_match(fs::path path, const std::optional<fs::path>& base);
+
     std::optional<fs::path> resolve_trace_source_with_compile_commands(
         const fs::path& raw_source,
         const fs::path& project_root,
@@ -279,6 +281,46 @@ namespace bha::lsp
             current = parent;
         }
         return std::nullopt;
+    }
+
+    std::optional<fs::path> compile_command_source_path_from_entry(const nlohmann::json& entry) {
+        if (!entry.is_object() || !entry.contains("file") || !entry["file"].is_string()) {
+            return std::nullopt;
+        }
+
+        std::optional<fs::path> directory;
+        if (entry.contains("directory") && entry["directory"].is_string()) {
+            directory = fs::path(entry["directory"].get<std::string>());
+        }
+
+        return normalize_path_for_match(fs::path(entry["file"].get<std::string>()), directory);
+    }
+
+    std::optional<fs::path> resolve_compile_command_backed_source(
+        const fs::path& raw_source,
+        const fs::path& project_root,
+        const std::unordered_set<std::string>& compile_command_sources,
+        const std::unordered_map<std::string, std::vector<fs::path>>& compile_sources_by_filename
+    ) {
+        const fs::path normalized = normalize_path_for_match(raw_source, project_root.empty()
+            ? std::nullopt
+            : std::make_optional(project_root));
+        if (!normalized.empty() && compile_command_sources.contains(normalized.generic_string())) {
+            return normalized;
+        }
+
+        auto resolved = resolve_trace_source_with_compile_commands(raw_source, project_root, compile_sources_by_filename);
+        if (!resolved.has_value()) {
+            return std::nullopt;
+        }
+
+        const fs::path normalized_resolved = normalize_path_for_match(*resolved, std::nullopt);
+        if (normalized_resolved.empty() ||
+            !compile_command_sources.contains(normalized_resolved.generic_string())) {
+            return std::nullopt;
+        }
+
+        return normalized_resolved;
     }
 
     std::optional<fs::path> resolve_trace_file_to_project(
@@ -610,20 +652,12 @@ namespace bha::lsp
                 continue;
             }
 
-            std::optional<fs::path> directory;
-            if (entry.contains("directory") && entry["directory"].is_string()) {
-                directory = fs::path(entry["directory"].get<std::string>());
-            }
-
-            fs::path candidate;
-            if (entry.contains("file") && entry["file"].is_string()) {
-                candidate = entry["file"].get<std::string>();
-            } else {
+            auto normalized_candidate = compile_command_source_path_from_entry(entry);
+            if (!normalized_candidate.has_value()) {
                 continue;
             }
 
-            const fs::path normalized_candidate = normalize_path_for_match(candidate, directory);
-            if (normalized_candidate != needle && normalized_candidate.filename() != needle.filename()) {
+            if (*normalized_candidate != needle && normalized_candidate->filename() != needle.filename()) {
                 continue;
             }
 
@@ -637,6 +671,10 @@ namespace bha::lsp
                 args = split_shell_command(entry["command"].get<std::string>());
             }
 
+            std::optional<fs::path> directory;
+            if (entry.contains("directory") && entry["directory"].is_string()) {
+                directory = fs::path(entry["directory"].get<std::string>());
+            }
             if (!args.empty() && directory.has_value()) {
                 for (auto& arg : args) {
                     fs::path path_arg(arg);
@@ -1665,17 +1703,16 @@ namespace bha::lsp
 
         std::unordered_set<std::string> seen;
         for (const auto& entry : payload) {
-            if (!entry.is_object() || !entry.contains("file") || !entry["file"].is_string()) {
+            auto source = compile_command_source_path_from_entry(entry);
+            if (!source.has_value() || source->empty()) {
                 continue;
             }
-            fs::path source = entry["file"].get<std::string>();
-            source = source.lexically_normal();
-            const std::string key = source.generic_string();
+            const std::string key = source->generic_string();
             if (!seen.insert(key).second) {
                 continue;
             }
-            sources.push_back(std::move(source));
-            if (sources.size() >= limit) {
+            sources.push_back(std::move(*source));
+            if (limit != 0 && sources.size() >= limit) {
                 break;
             }
         }
@@ -2674,13 +2711,45 @@ namespace bha::lsp
             return false;
         }
 
+        const auto compile_sources = collect_compile_commands_sources(*last_compile_commands_path_, 0);
+        std::unordered_set<std::string> compile_source_set;
+        compile_source_set.reserve(compile_sources.size());
+        for (const auto& source : compile_sources) {
+            compile_source_set.insert(source.generic_string());
+        }
+        const auto compile_sources_by_filename = index_sources_by_filename(compile_sources);
+        const fs::path project_root = last_project_root_.value_or(fs::path{});
+
         std::vector<fs::path> candidate_sources;
         std::unordered_set<std::string> seen_sources;
+        const auto add_candidate_source = [&](const fs::path& source) {
+            const fs::path normalized = normalize_path_for_match(source);
+            if (normalized.empty() || !is_cpp_source_path(normalized)) {
+                return;
+            }
+            if (!compile_source_set.contains(normalized.generic_string())) {
+                return;
+            }
+            if (seen_sources.insert(normalized.generic_string()).second) {
+                candidate_sources.push_back(normalized);
+            }
+        };
+
+        for (const auto& touched : touched_paths) {
+            add_candidate_source(fs::path(touched));
+        }
+
         for (const auto& unit : analysis_it->second.units) {
-            const fs::path source = normalize_path_for_match(unit.source_file);
-            if (source.empty() || !is_cpp_source_path(source)) {
+            auto compile_backed_source = resolve_compile_command_backed_source(
+                unit.source_file,
+                project_root,
+                compile_source_set,
+                compile_sources_by_filename
+            );
+            if (!compile_backed_source.has_value()) {
                 continue;
             }
+            const fs::path& source = *compile_backed_source;
 
             bool impacted = touched_paths.contains(source.generic_string());
             if (!impacted) {
@@ -2697,10 +2766,7 @@ namespace bha::lsp
                 continue;
             }
 
-            const std::string key = source.generic_string();
-            if (seen_sources.insert(key).second) {
-                candidate_sources.push_back(source);
-            }
+            add_candidate_source(source);
         }
 
         if (candidate_sources.empty()) {
@@ -2708,7 +2774,7 @@ namespace bha::lsp
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
             diag.message = validation_label +
-                " apply blocked: no affected translation units were found for syntax validation";
+                " apply blocked: no affected compile-command-backed translation units were found for syntax validation";
             errors.push_back(std::move(diag));
             return false;
         }
