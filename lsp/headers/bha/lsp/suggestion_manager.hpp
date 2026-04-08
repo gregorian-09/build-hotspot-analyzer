@@ -243,7 +243,7 @@ namespace bha::lsp
             const std::string& suggestion_id,
             const bha::Suggestion& suggestion,
             bool create_backup_flag,
-            bool enforce_forward_decl_validation,
+            bool enforce_syntax_validation,
             ApplySuggestionResult& result,
             std::vector<FileBackup>& transactional_snapshot,
             std::vector<fs::path>& changed_files
@@ -254,7 +254,7 @@ namespace bha::lsp
             std::string_view rollback_failure_message
         );
         bool validate_post_apply_rebuild(ApplySuggestionResult& result);
-        bool validate_forward_decl_suggestion(
+        bool validate_include_sensitive_suggestion(
             const bha::Suggestion& suggestion,
             const std::vector<fs::path>& changed_files,
             std::vector<Diagnostic>& errors

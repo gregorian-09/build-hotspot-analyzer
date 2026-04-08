@@ -1013,6 +1013,33 @@ namespace bha::lsp
         return resolve_apply_capabilities(suggestion).has_bulk_apply_path;
     }
 
+    bool requires_include_sensitive_syntax_validation(const bha::Suggestion& suggestion) {
+        switch (suggestion.type) {
+            case bha::SuggestionType::ForwardDeclaration:
+            case bha::SuggestionType::IncludeRemoval:
+            case bha::SuggestionType::MoveToCpp:
+            case bha::SuggestionType::HeaderSplit:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    std::string validation_label_for_suggestion(const bha::Suggestion& suggestion) {
+        switch (suggestion.type) {
+            case bha::SuggestionType::ForwardDeclaration:
+                return "Forward declaration";
+            case bha::SuggestionType::IncludeRemoval:
+                return "Include cleanup";
+            case bha::SuggestionType::MoveToCpp:
+                return "Move-to-cpp";
+            case bha::SuggestionType::HeaderSplit:
+                return "Header split";
+            default:
+                return "Suggestion";
+        }
+    }
+
     int parse_numeric_suggestion_id(const std::string& id) {
         if (!id.starts_with("ana-")) {
             return -1;
@@ -2461,7 +2488,7 @@ namespace bha::lsp
         const std::string& suggestion_id,
         const bha::Suggestion& bha_sug,
         const bool create_backup_flag,
-        const bool enforce_forward_decl_validation,
+        const bool enforce_syntax_validation,
         ApplySuggestionResult& result,
         std::vector<FileBackup>& transactional_snapshot,
         std::vector<fs::path>& changed_files
@@ -2484,7 +2511,7 @@ namespace bha::lsp
             )) {
             return false;
         }
-        if (enforce_forward_decl_validation && !files_to_backup.empty() &&
+        if (enforce_syntax_validation && !files_to_backup.empty() &&
             !capture_transactional_snapshot(files_to_backup, transactional_snapshot, result.errors)) {
             return false;
         }
@@ -2496,12 +2523,12 @@ namespace bha::lsp
                            " (" + bha_sug.title + ")";
             result.errors.push_back(diag);
 
-            if (result.backup_id || (enforce_forward_decl_validation && !transactional_snapshot.empty())) {
+            if (result.backup_id || (enforce_syntax_validation && !transactional_snapshot.empty())) {
                 rollback_apply_suggestion(
                     result,
                     transactional_snapshot,
-                    enforce_forward_decl_validation
-                        ? "Automatic rollback failed after forward-declaration apply failure"
+                    enforce_syntax_validation
+                        ? "Automatic rollback failed after syntax-validated apply failure"
                         : "Automatic rollback failed after apply failure"
                 );
             }
@@ -2580,11 +2607,12 @@ namespace bha::lsp
         return false;
     }
 
-    bool SuggestionManager::validate_forward_decl_suggestion(
+    bool SuggestionManager::validate_include_sensitive_suggestion(
         const bha::Suggestion& suggestion,
         const std::vector<fs::path>& changed_files,
         std::vector<Diagnostic>& errors
     ) const {
+        const std::string validation_label = validation_label_for_suggestion(suggestion);
         if (!config_.enforce_forward_decl_syntax_gate) {
             return true;
         }
@@ -2593,8 +2621,8 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message =
-                "Forward declaration apply blocked: compile_commands.json is unavailable for syntax validation";
+            diag.message = validation_label +
+                " apply blocked: compile_commands.json is unavailable for syntax validation";
             errors.push_back(std::move(diag));
             return false;
         }
@@ -2603,8 +2631,8 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message =
-                "Forward declaration apply blocked: no prior analysis context is available for validation";
+            diag.message = validation_label +
+                " apply blocked: no prior analysis context is available for validation";
             errors.push_back(std::move(diag));
             return false;
         }
@@ -2614,8 +2642,8 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message =
-                "Forward declaration apply blocked: cached analysis trace is no longer available";
+            diag.message = validation_label +
+                " apply blocked: cached analysis trace is no longer available";
             errors.push_back(std::move(diag));
             return false;
         }
@@ -2640,8 +2668,8 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message =
-                "Forward declaration apply blocked: could not determine affected files for validation";
+            diag.message = validation_label +
+                " apply blocked: could not determine affected files for validation";
             errors.push_back(std::move(diag));
             return false;
         }
@@ -2679,8 +2707,8 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message =
-                "Forward declaration apply blocked: no affected translation units were found for syntax validation";
+            diag.message = validation_label +
+                " apply blocked: no affected translation units were found for syntax validation";
             errors.push_back(std::move(diag));
             return false;
         }
@@ -2697,7 +2725,7 @@ namespace bha::lsp
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
                 diag.source = "bha-lsp";
-                diag.message = "Forward declaration apply blocked: no compile command found for " + source.string();
+                diag.message = validation_label + " apply blocked: no compile command found for " + source.string();
                 errors.push_back(std::move(diag));
                 return false;
             }
@@ -2707,7 +2735,7 @@ namespace bha::lsp
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
                 diag.source = "bha-lsp";
-                diag.message = "Forward declaration apply blocked: failed to construct syntax check command for " +
+                diag.message = validation_label + " apply blocked: failed to construct syntax check command for " +
                     source.string();
                 errors.push_back(std::move(diag));
                 return false;
@@ -2745,14 +2773,14 @@ namespace bha::lsp
                 diag.severity = DiagnosticSeverity::Error;
                 diag.source = "bha-lsp";
                 if (config_.forward_decl_validation_timeout_seconds > 0 && exit_code == 124) {
-                    diag.message = "Forward declaration syntax validation timed out for " + source.string();
+                    diag.message = validation_label + " syntax validation timed out for " + source.string();
                 } else if (!syntax_output.empty()) {
-                    diag.message = "Forward declaration syntax validation failed for " + source.string() +
+                    diag.message = validation_label + " syntax validation failed for " + source.string() +
                         ":\n" + truncate_for_diagnostic(syntax_output);
                 } else if (exit_code == -1) {
-                    diag.message = "Forward declaration syntax validation failed to launch compiler process";
+                    diag.message = validation_label + " syntax validation failed to launch compiler process";
                 } else {
-                    diag.message = "Forward declaration syntax validation failed for " + source.string() +
+                    diag.message = validation_label + " syntax validation failed for " + source.string() +
                         " with exit code " + std::to_string(exit_code);
                 }
                 errors.push_back(std::move(diag));
@@ -2784,8 +2812,8 @@ namespace bha::lsp
 
         const auto& bha_sug = bha_it->second;
         const auto application_mode = bha::resolve_application_mode(bha_sug);
-        const bool enforce_forward_decl_validation =
-            bha_sug.type == bha::SuggestionType::ForwardDeclaration &&
+        const bool enforce_syntax_validation =
+            requires_include_sensitive_syntax_validation(bha_sug) &&
             config_.enforce_forward_decl_syntax_gate;
 
         std::vector<FileBackup> transactional_snapshot;
@@ -2803,7 +2831,7 @@ namespace bha::lsp
                 suggestion_id,
                 bha_sug,
                 create_backup_flag,
-                enforce_forward_decl_validation,
+                enforce_syntax_validation,
                 result,
                 transactional_snapshot,
                 changed_files
@@ -2812,12 +2840,12 @@ namespace bha::lsp
             return result;
         }
 
-        if (enforce_forward_decl_validation &&
-            !validate_forward_decl_suggestion(bha_sug, changed_files, result.errors)) {
+        if (enforce_syntax_validation &&
+            !validate_include_sensitive_suggestion(bha_sug, changed_files, result.errors)) {
             rollback_apply_suggestion(
                 result,
                 transactional_snapshot,
-                "Forward declaration syntax validation failed and automatic rollback did not complete"
+                "Syntax validation failed and automatic rollback did not complete"
             );
             return result;
         }
