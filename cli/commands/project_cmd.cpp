@@ -21,6 +21,25 @@ namespace bha::cli
     using JsonValue = nlohmann::json;
 
     namespace {
+        constexpr std::string_view kProjectActionRecord = "record";
+        constexpr std::string_view kProjectActionAnalyze = "analyze";
+        constexpr std::string_view kProjectActionSuggestAlias = "suggest";
+        constexpr std::string_view kProjectActionApply = "apply";
+        constexpr std::string_view kProjectActionRevert = "revert";
+
+        [[nodiscard]] bool is_supported_project_action(const std::string_view action) {
+            return action == kProjectActionRecord || action == kProjectActionAnalyze ||
+                   action == kProjectActionSuggestAlias || action == kProjectActionApply ||
+                   action == kProjectActionRevert;
+        }
+
+        [[nodiscard]] std::string_view canonical_project_action(const std::string_view action) {
+            if (action == kProjectActionSuggestAlias) {
+                return kProjectActionAnalyze;
+            }
+            return action;
+        }
+
         std::string_view lsp_priority_label(const lsp::Priority priority) {
             switch (priority) {
             case lsp::Priority::High:
@@ -285,11 +304,14 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string usage() const override {
-            return "Usage: bha project <record|suggest|analyze|apply|revert> [OPTIONS]\n"
+            return "Usage: bha project <record|analyze|apply|revert> [OPTIONS]\n"
+                   "\n"
+                   "Aliases:\n"
+                   "  suggest  Alias for analyze\n"
                    "\n"
                    "Examples:\n"
                    "  bha project record --project-root /path/to/project --build-dir build --trace-dir build/traces\n"
-                   "  bha project suggest --project-root /path/to/project --build-dir build --trace-dir build/traces\n"
+                   "  bha project analyze --project-root /path/to/project --build-dir build --trace-dir build/traces\n"
                    "  bha project apply --project-root /path/to/project --build-dir build --trace-dir build/traces --suggestion-id ana-2\n"
                    "  bha project apply --project-root /path/to/project --build-dir build --trace-dir build/traces --all --safe-only\n"
                    "  bha project revert --project-root /path/to/project --backup-id backup-123\n";
@@ -322,16 +344,16 @@ namespace bha::cli
 
         [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
             if (args.positional().empty()) {
-                return "Missing action. Use one of: record, suggest, analyze, apply, revert";
+                return "Missing action. Use one of: record, analyze, apply, revert";
             }
 
             const std::string& action = args.positional().front();
-            if (action != "record" && action != "suggest" && action != "analyze" &&
-                action != "apply" && action != "revert") {
+            if (!is_supported_project_action(action)) {
                 return "Unknown action: " + action;
             }
 
-            if (action == "apply") {
+            const std::string_view canonical_action = canonical_project_action(action);
+            if (canonical_action == kProjectActionApply) {
                 const bool has_all = args.get_flag("all");
                 const bool has_id = args.get("suggestion-id").has_value();
                 if (has_all == has_id) {
@@ -339,7 +361,7 @@ namespace bha::cli
                 }
             }
 
-            if (action == "revert" && !args.get("backup-id").has_value()) {
+            if (canonical_action == kProjectActionRevert && !args.get("backup-id").has_value()) {
                 return "Revert requires --backup-id <ID>";
             }
 
@@ -365,15 +387,15 @@ namespace bha::cli
             const fs::path project_root = resolve_project_root(args);
             const auto build_dir = parse_optional_path(args, "build-dir");
             const auto trace_dir = parse_optional_path(args, "trace-dir");
-            const std::string action = args.positional().front();
+            const std::string_view action = canonical_project_action(args.positional().front());
 
-            if (action == "record") {
+            if (action == kProjectActionRecord) {
                 return execute_record(args, project_root);
             }
-            if (action == "suggest" || action == "analyze") {
-                return execute_suggest(args, project_root, build_dir, trace_dir);
+            if (action == kProjectActionAnalyze) {
+                return execute_analyze(args, project_root, build_dir, trace_dir);
             }
-            if (action == "apply") {
+            if (action == kProjectActionApply) {
                 return execute_apply(args, project_root, build_dir, trace_dir);
             }
             return execute_revert(args, project_root);
@@ -444,7 +466,7 @@ namespace bha::cli
             return 0;
         }
 
-        int execute_suggest(
+        int execute_analyze(
             const ParsedArgs& args,
             const fs::path& project_root,
             const std::optional<fs::path>& build_dir,
