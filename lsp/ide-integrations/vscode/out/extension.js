@@ -18122,7 +18122,7 @@ function formatApplicationMode(mode) {
   }
 }
 function hasBulkApplyPath(suggestion) {
-  return suggestion.applicationMode !== "advisory";
+  return suggestion.autoApplicable;
 }
 function formatDurationMs(ms) {
   return `${(ms / 1e3).toFixed(2)}s`;

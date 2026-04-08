@@ -359,7 +359,7 @@ function formatApplicationMode(mode?: string): string {
 }
 
 function hasBulkApplyPath(suggestion: Suggestion): boolean {
-    return suggestion.applicationMode !== 'advisory';
+    return suggestion.autoApplicable;
 }
 
 function formatDurationMs(ms: number): string {

@@ -1147,12 +1147,13 @@ namespace bha::lsp
         const std::optional<bha::Priority>& priority_threshold,
         const bool safe_only
     ) {
-        if (!has_bulk_apply_path(suggestion)) {
+        // Bulk apply must only consider suggestions with a proven automatic apply path.
+        // Suggestions that merely have concrete edits are not eligible unless they are
+        // also marked auto-applicable by the shared capability resolver.
+        if (!is_auto_applicable_suggestion(suggestion)) {
             return false;
         }
-        if (safe_only && !is_auto_applicable_suggestion(suggestion)) {
-            return false;
-        }
+        (void)safe_only;
         return suggestion_meets_priority_threshold(suggestion, priority_threshold);
     }
 
