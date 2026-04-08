@@ -1107,6 +1107,52 @@ namespace bha::suggestions {
         return std::nullopt;
     }
 
+    [[nodiscard]] inline const std::vector<std::string>& default_protected_include_patterns() {
+        static const std::vector<std::string> patterns = {
+            R"((^|.*/)(port|platform|compat|abi|os|sys|config)/)",
+            R"((^|.*/)(windows|winuser|winbase|windef|winnt|winsock|winsock2|pthread|unistd|malloc|intrin|io|direct)\.h$)"
+        };
+        return patterns;
+    }
+
+    [[nodiscard]] inline bool matches_protected_include_policy(
+        const std::string& header_name,
+        const std::optional<fs::path>& resolved_header,
+        const std::vector<std::string>& protected_include_patterns
+    ) {
+        const auto& patterns = protected_include_patterns.empty()
+            ? default_protected_include_patterns()
+            : protected_include_patterns;
+        if (patterns.empty()) {
+            return false;
+        }
+
+        std::vector<std::string> candidates;
+        candidates.push_back(fs::path(header_name).generic_string());
+        candidates.push_back(fs::path(header_name).filename().generic_string());
+        if (resolved_header.has_value()) {
+            candidates.push_back(resolved_header->lexically_normal().generic_string());
+            candidates.push_back(resolved_header->filename().generic_string());
+        }
+
+        for (const auto& pattern : patterns) {
+            std::regex compiled_pattern;
+            try {
+                compiled_pattern = std::regex(pattern, std::regex::ECMAScript | std::regex::icase);
+            } catch (const std::regex_error&) {
+                continue;
+            }
+
+            for (const auto& candidate : candidates) {
+                if (!candidate.empty() && std::regex_search(candidate, compiled_pattern)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     [[nodiscard]] inline TextEdit make_delete_line_edit(const fs::path& file, std::size_t line) {
         TextEdit edit;
         edit.file = file;

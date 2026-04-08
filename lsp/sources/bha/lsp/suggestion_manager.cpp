@@ -1723,7 +1723,8 @@ namespace bha::lsp
     std::vector<bha::TextEdit> collect_verified_include_removal_edits(
         const fs::path& compile_commands_path,
         const fs::path& project_root,
-        const BuildTrace& build_trace
+        const BuildTrace& build_trace,
+        const std::vector<std::string>& protected_include_patterns
     ) {
         std::vector<bha::TextEdit> edits;
         const fs::path build_dir = compile_commands_path.parent_path();
@@ -1807,6 +1808,14 @@ namespace bha::lsp
                     continue;
                 }
 
+                if (suggestions::matches_protected_include_policy(
+                    it_dir->header_name,
+                    std::nullopt,
+                    protected_include_patterns
+                )) {
+                    continue;
+                }
+
                 edits.push_back(suggestions::make_delete_line_edit(diag_file, it_dir->line));
             }
         }
@@ -1840,9 +1849,15 @@ namespace bha::lsp
     std::optional<bha::Suggestion> build_verified_include_removal_suggestion(
         const fs::path& compile_commands_path,
         const fs::path& project_root,
-        const BuildTrace& build_trace
+        const BuildTrace& build_trace,
+        const std::vector<std::string>& protected_include_patterns
     ) {
-        auto edits = collect_verified_include_removal_edits(compile_commands_path, project_root, build_trace);
+        auto edits = collect_verified_include_removal_edits(
+            compile_commands_path,
+            project_root,
+            build_trace,
+            protected_include_patterns
+        );
         if (edits.empty()) {
             return std::nullopt;
         }
@@ -2155,7 +2170,12 @@ namespace bha::lsp
             }
         }
         if (!has_include_removal && compile_commands_path.has_value()) {
-            if (auto verified_include = build_verified_include_removal_suggestion(*compile_commands_path, project_root, build_trace)) {
+            if (auto verified_include = build_verified_include_removal_suggestion(
+                *compile_commands_path,
+                project_root,
+                build_trace,
+                config_.protected_include_patterns
+            )) {
                 bha_suggestions.push_back(std::move(*verified_include));
             }
         }

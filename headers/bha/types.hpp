@@ -644,6 +644,7 @@ namespace bha {
         Duration max_total_time = Duration::zero();
         Duration max_suggester_time = Duration::zero();
         std::optional<fs::path> compile_commands_path;
+        std::vector<std::string> protected_include_patterns;
         std::vector<SuggestionType> enabled_types;
         heuristics::HeuristicsConfig heuristics = heuristics::HeuristicsConfig::defaults();
     };

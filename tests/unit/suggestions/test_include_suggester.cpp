@@ -39,6 +39,9 @@ case "$mode" in
   direct)
     printf '%s\n' "$file:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]"
     ;;
+  protected)
+    printf '%s\n' "$file:1:1: warning: included header port/malloc.h is not used directly [misc-include-cleaner]"
+    ;;
   mixed)
     printf '%s\n' "$file:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]"
     printf '%s\n' "$file:4:1: warning: included header windows.h is not used directly [misc-include-cleaner]"
@@ -626,6 +629,43 @@ esac
         ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
         EXPECT_NE(
             suggestion.auto_apply_blocked_reason->find("callable API"),
+            std::string::npos
+        );
+    }
+
+    TEST_F(IncludeSuggesterTest, DowngradesProtectedIncludeRemovalsToAdvisory) {
+        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "protected", 1), 0);
+
+        const auto build_dir = temp_root_ / "build";
+        const auto source = temp_root_ / "blob_contents.cc";
+        const auto header = temp_root_ / "port" / "malloc.h";
+        write_file(header, "#pragma once\n");
+        write_file(
+            source,
+            "#include \"port/malloc.h\"\n"
+            "int main() { return 0; }\n"
+        );
+        write_compile_commands(build_dir, source);
+
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.compile_commands_path = build_dir / "compile_commands.json";
+        options.protected_include_patterns = {R"((^|.*/)port/)"};
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const Suggestion& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.type, SuggestionType::IncludeRemoval);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(
+            suggestion.auto_apply_blocked_reason->find("protected include policy"),
             std::string::npos
         );
     }

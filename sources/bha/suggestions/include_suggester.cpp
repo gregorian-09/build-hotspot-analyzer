@@ -1092,7 +1092,8 @@ namespace bha::suggestions
         ClassifiedUnusedIncludes classify_unused_include_diagnostics(
             const analyzers::DependencyAnalysisResult& deps,
             const std::vector<TidyUnusedInclude>& diagnostics,
-            const fs::path& project_root
+            const fs::path& project_root,
+            const std::vector<std::string>& protected_include_patterns
         ) {
             ClassifiedUnusedIncludes classified;
             std::unordered_map<std::string, std::vector<std::string>> callable_symbol_cache;
@@ -1100,13 +1101,25 @@ namespace bha::suggestions
             classified.advisory_diagnostics.reserve(diagnostics.size());
 
             for (const auto& diag : diagnostics) {
+                const auto resolved_header = resolve_unused_include_header_path(
+                    deps,
+                    diag,
+                    project_root
+                );
                 IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                if (assessment.allow_direct_edits &&
+                    matches_protected_include_policy(
+                        diag.header_name,
+                        resolved_header,
+                        protected_include_patterns
+                    )) {
+                    assessment.allow_direct_edits = false;
+                    assessment.platform_sensitive = true;
+                    assessment.blocked_reason =
+                        "header matches protected include policy and may vary by platform or configuration";
+                }
+
                 if (assessment.allow_direct_edits) {
-                    const auto resolved_header = resolve_unused_include_header_path(
-                        deps,
-                        diag,
-                        project_root
-                    );
                     if (resolved_header.has_value()) {
                         const std::string cache_key = resolved_header->lexically_normal().generic_string();
                         auto cache_it = callable_symbol_cache.find(cache_key);
@@ -1497,7 +1510,8 @@ namespace bha::suggestions
                 auto classified = classify_unused_include_diagnostics(
                     deps,
                     diagnostics,
-                    context.project_root
+                    context.project_root,
+                    context.options.protected_include_patterns
                 );
 
                 const std::string header_name_copy = header_name;

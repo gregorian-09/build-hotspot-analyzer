@@ -62,6 +62,7 @@ namespace bha::lsp
         int forward_decl_validation_timeout_seconds = 120;
         std::size_t max_forward_decl_validation_units = 3;
         bool rerank_remaining_after_each_apply = false;
+        std::vector<std::string> protected_include_patterns;
 
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
