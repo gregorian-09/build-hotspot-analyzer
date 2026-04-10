@@ -949,10 +949,10 @@ namespace bha::suggestions
 
         MoveToCppAssessment assess_move_to_cpp(
             const fs::path& including_header,
-            const std::vector<ExportedTypeSymbol>& symbols
+            const ExportedTypeSurface& surface
         ) {
             MoveToCppAssessment assessment;
-            if (symbols.empty()) {
+            if (surface.direct_symbols.empty() && surface.transitive_symbols.empty()) {
                 return assessment;
             }
 
@@ -975,7 +975,7 @@ namespace bha::suggestions
                 sanitized.push_back('\n');
             }
 
-            for (const auto& symbol : symbols) {
+            for (const auto& symbol : surface.direct_symbols) {
                 if (!contains_identifier_token(sanitized, symbol.name)) {
                     continue;
                 }
@@ -999,6 +999,20 @@ namespace bha::suggestions
                     assessment.unsafe_usage = true;
                     break;
                 }
+            }
+
+            if (assessment.unsafe_usage) {
+                return assessment;
+            }
+
+            for (const auto& symbol : surface.transitive_symbols) {
+                if (!contains_identifier_token(sanitized, symbol.name)) {
+                    continue;
+                }
+
+                assessment.mentions_symbol = true;
+                assessment.unsafe_usage = true;
+                break;
             }
 
             return assessment;
@@ -1052,29 +1066,7 @@ namespace bha::suggestions
             const fs::path& including_file,
             const fs::path& project_root
         ) {
-            const fs::path include_path(include_name);
-            if (include_path.is_absolute()) {
-                if (fs::exists(include_path)) {
-                    return include_path.lexically_normal();
-                }
-                return std::nullopt;
-            }
-
-            std::vector<fs::path> candidates;
-            candidates.reserve(4);
-            candidates.push_back((including_file.parent_path() / include_path).lexically_normal());
-            if (!project_root.empty()) {
-                candidates.push_back((project_root / include_path).lexically_normal());
-                candidates.push_back((project_root / "include" / include_path).lexically_normal());
-                candidates.push_back((project_root / "src" / include_path).lexically_normal());
-            }
-
-            for (const auto& candidate : candidates) {
-                if (fs::exists(candidate)) {
-                    return candidate;
-                }
-            }
-            return std::nullopt;
+            return resolve_project_include_path(include_name, including_file, project_root);
         }
 
         std::optional<fs::path> resolve_unused_include_header_path(
@@ -1347,7 +1339,7 @@ namespace bha::suggestions
             const IncludeDirective& include_dir,
             const fs::path& included_header,
             const analyzers::DependencyAnalysisResult::HeaderInfo* header_info,
-            const std::vector<ExportedTypeSymbol>& declared_symbols
+            const ExportedTypeSurface& exported_surface
         ) {
             if (find_include_for_header(source_file, include_dir.header_name).has_value()) {
                 return std::nullopt;
@@ -1356,7 +1348,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            const auto assessment = assess_move_to_cpp(including_header, declared_symbols);
+            const auto assessment = assess_move_to_cpp(including_header, exported_surface);
             if (!assessment.mentions_symbol || assessment.unsafe_usage) {
                 return std::nullopt;
             }
@@ -1559,7 +1551,7 @@ namespace bha::suggestions
         );
 
         std::unordered_set<std::string> emitted_move_keys;
-        std::unordered_map<std::string, std::vector<ExportedTypeSymbol>> declared_symbol_cache;
+        std::unordered_map<std::string, ExportedTypeSurface> exported_surface_cache;
 
         for (const auto& including_header : candidate_headers) {
             if (context.is_cancelled()) {
@@ -1632,13 +1624,13 @@ namespace bha::suggestions
                 }
 
                 const std::string cache_key = included_header.generic_string();
-                auto cache_it = declared_symbol_cache.find(cache_key);
-                if (cache_it == declared_symbol_cache.end()) {
-                    cache_it = declared_symbol_cache.emplace(
+                auto cache_it = exported_surface_cache.find(cache_key);
+                if (cache_it == exported_surface_cache.end()) {
+                    cache_it = exported_surface_cache.emplace(
                         cache_key,
                         fs::exists(included_header)
-                            ? extract_exported_type_symbols(included_header)
-                            : std::vector<ExportedTypeSymbol>{}
+                            ? collect_exported_type_surface(included_header, context.project_root)
+                            : ExportedTypeSurface{}
                     ).first;
                 }
 

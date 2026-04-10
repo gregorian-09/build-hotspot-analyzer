@@ -698,6 +698,37 @@ namespace bha::suggestions {
         return symbol.kind == ExportedTypeSymbolKind::ForwardDeclarableType;
     }
 
+    inline void merge_exported_type_symbols(
+        std::vector<ExportedTypeSymbol>& destination,
+        std::unordered_map<std::string, ExportedTypeSymbolKind>& kinds_by_name,
+        const std::vector<ExportedTypeSymbol>& symbols
+    ) {
+        for (const auto& symbol : symbols) {
+            if (symbol.name.empty()) {
+                continue;
+            }
+
+            auto it = kinds_by_name.find(symbol.name);
+            if (it == kinds_by_name.end()) {
+                kinds_by_name.emplace(symbol.name, symbol.kind);
+                destination.push_back(symbol);
+                continue;
+            }
+
+            if (it->second == symbol.kind) {
+                continue;
+            }
+
+            it->second = ExportedTypeSymbolKind::AliasLike;
+            for (auto& existing : destination) {
+                if (existing.name == symbol.name) {
+                    existing.kind = ExportedTypeSymbolKind::AliasLike;
+                    break;
+                }
+            }
+        }
+    }
+
     [[nodiscard]] inline std::vector<ExportedTypeSymbol> extract_exported_type_symbols(
         const fs::path& header_path
     ) {
@@ -1105,6 +1136,104 @@ namespace bha::suggestions {
             }
         }
         return std::nullopt;
+    }
+
+    [[nodiscard]] inline std::optional<fs::path> resolve_project_include_path(
+        const std::string& include_name,
+        const fs::path& including_file,
+        const fs::path& project_root
+    ) {
+        const fs::path include_path(include_name);
+        if (include_path.is_absolute()) {
+            if (fs::exists(include_path)) {
+                return include_path.lexically_normal();
+            }
+            return std::nullopt;
+        }
+
+        std::vector<fs::path> candidates;
+        candidates.reserve(4);
+        candidates.push_back((including_file.parent_path() / include_path).lexically_normal());
+        if (!project_root.empty()) {
+            candidates.push_back((project_root / include_path).lexically_normal());
+            candidates.push_back((project_root / "include" / include_path).lexically_normal());
+            candidates.push_back((project_root / "src" / include_path).lexically_normal());
+        }
+
+        for (const auto& candidate : candidates) {
+            if (fs::exists(candidate)) {
+                return candidate;
+            }
+        }
+        return std::nullopt;
+    }
+
+    struct ExportedTypeSurface {
+        std::vector<ExportedTypeSymbol> direct_symbols;
+        std::vector<ExportedTypeSymbol> transitive_symbols;
+    };
+
+    [[nodiscard]] inline ExportedTypeSurface collect_exported_type_surface(
+        const fs::path& header_path,
+        const fs::path& project_root,
+        const std::size_t max_depth = 8
+    ) {
+        ExportedTypeSurface surface;
+        surface.direct_symbols = extract_exported_type_symbols(header_path);
+
+        std::unordered_map<std::string, ExportedTypeSymbolKind> direct_kinds;
+        for (const auto& symbol : surface.direct_symbols) {
+            if (!symbol.name.empty()) {
+                direct_kinds.emplace(symbol.name, symbol.kind);
+            }
+        }
+
+        std::unordered_map<std::string, ExportedTypeSymbolKind> transitive_kinds;
+        std::unordered_set<std::string> visited;
+
+        const auto visit = [&](const auto& self, const fs::path& current, const std::size_t depth) -> void {
+            if (depth >= max_depth) {
+                return;
+            }
+
+            for (const auto& include_dir : find_include_directives(current)) {
+                if (include_dir.is_system) {
+                    continue;
+                }
+
+                const auto resolved = resolve_project_include_path(
+                    include_dir.header_name,
+                    current,
+                    project_root
+                );
+                if (!resolved.has_value()) {
+                    continue;
+                }
+
+                const fs::path normalized = resolved->lexically_normal();
+                if (!visited.insert(normalized.generic_string()).second) {
+                    continue;
+                }
+
+                const auto exported = extract_exported_type_symbols(normalized);
+                for (const auto& symbol : exported) {
+                    if (direct_kinds.contains(symbol.name)) {
+                        continue;
+                    }
+                    merge_exported_type_symbols(
+                        surface.transitive_symbols,
+                        transitive_kinds,
+                        {symbol}
+                    );
+                }
+
+                self(self, normalized, depth + 1);
+            }
+        };
+
+        visited.insert(header_path.lexically_normal().generic_string());
+        visit(visit, header_path.lexically_normal(), 0);
+        return surface;
     }
 
     [[nodiscard]] inline const std::vector<std::string>& default_protected_include_patterns() {

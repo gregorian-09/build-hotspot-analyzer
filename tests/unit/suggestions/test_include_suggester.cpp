@@ -494,6 +494,135 @@ esac
         EXPECT_EQ(it, result.value().suggestions.end());
     }
 
+    TEST_F(IncludeSuggesterTest, SuggestsMoveToCppWhenTransitiveExportsAreUnused) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(30);
+
+        const auto dep_header = temp_root_ / "dep.hpp";
+        const auto wrapper_header = temp_root_ / "wrapper.hpp";
+        const auto widget_header = temp_root_ / "widget.hpp";
+        const auto widget_source = temp_root_ / "widget.cpp";
+
+        write_file(
+            dep_header,
+            "#pragma once\n"
+            "struct HelperType { int value; };\n"
+        );
+        write_file(
+            wrapper_header,
+            "#pragma once\n"
+            "#include \"dep.hpp\"\n"
+            "class Wrapper {};\n"
+        );
+        write_file(
+            widget_header,
+            "#pragma once\n"
+            "class Wrapper;\n"
+            "#include \"wrapper.hpp\"\n"
+            "class Widget {\n"
+            "private:\n"
+            "    Wrapper* wrapper_{};\n"
+            "};\n"
+        );
+        write_file(widget_source, "#include \"widget.hpp\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::FileAnalysisResult file_header;
+        file_header.file = widget_header;
+        analysis.files.push_back(file_header);
+        analyzers::FileAnalysisResult file_source;
+        file_source.file = widget_source;
+        analysis.files.push_back(file_source);
+
+        analyzers::DependencyAnalysisResult::HeaderInfo dep_header_info;
+        dep_header_info.path = wrapper_header;
+        dep_header_info.total_parse_time = std::chrono::milliseconds(250);
+        dep_header_info.inclusion_count = 8;
+        dep_header_info.including_files = 1;
+        dep_header_info.included_by = {widget_header};
+        analysis.dependencies.headers.push_back(dep_header_info);
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+
+        auto it = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.type == SuggestionType::MoveToCpp;
+            }
+        );
+        ASSERT_NE(it, result.value().suggestions.end());
+        EXPECT_TRUE(it->is_safe);
+    }
+
+    TEST_F(IncludeSuggesterTest, SkipsMoveToCppWhenHeaderDependsOnTransitiveExportedSymbol) {
+        const BuildTrace trace;
+
+        const auto dep_header = temp_root_ / "dep.hpp";
+        const auto wrapper_header = temp_root_ / "wrapper.hpp";
+        const auto widget_header = temp_root_ / "widget.hpp";
+        const auto widget_source = temp_root_ / "widget.cpp";
+
+        write_file(
+            dep_header,
+            "#pragma once\n"
+            "struct NeededType { int value; };\n"
+        );
+        write_file(
+            wrapper_header,
+            "#pragma once\n"
+            "#include \"dep.hpp\"\n"
+            "class Wrapper {};\n"
+        );
+        write_file(
+            widget_header,
+            "#pragma once\n"
+            "class Wrapper;\n"
+            "#include \"wrapper.hpp\"\n"
+            "class Widget {\n"
+            "private:\n"
+            "    NeededType needed_{};\n"
+            "    Wrapper* wrapper_{};\n"
+            "};\n"
+        );
+        write_file(widget_source, "#include \"widget.hpp\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::FileAnalysisResult file_header;
+        file_header.file = widget_header;
+        analysis.files.push_back(file_header);
+        analyzers::FileAnalysisResult file_source;
+        file_source.file = widget_source;
+        analysis.files.push_back(file_source);
+
+        analyzers::DependencyAnalysisResult::HeaderInfo dep_header_info;
+        dep_header_info.path = wrapper_header;
+        dep_header_info.total_parse_time = std::chrono::milliseconds(250);
+        dep_header_info.inclusion_count = 8;
+        dep_header_info.including_files = 1;
+        dep_header_info.included_by = {widget_header};
+        analysis.dependencies.headers.push_back(dep_header_info);
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+
+        auto it = std::find_if(
+            result.value().suggestions.begin(),
+            result.value().suggestions.end(),
+            [](const Suggestion& suggestion) {
+                return suggestion.type == SuggestionType::MoveToCpp;
+            }
+        );
+        EXPECT_EQ(it, result.value().suggestions.end());
+    }
+
     TEST_F(IncludeSuggesterTest, DowngradesConditionalPlatformIncludesToAdvisory) {
         ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "conditional", 1), 0);
 
