@@ -318,6 +318,7 @@ namespace bha::suggestions
         consolidated.priority = Priority::High;
 
         std::unordered_set<std::string> stable_headers;
+        std::unordered_set<std::string> internal_project_headers;
         std::unordered_set<std::string> volatile_headers;
         std::unordered_set<std::string> external_headers;
         fs::path repo_root;
@@ -345,6 +346,19 @@ namespace bha::suggestions
             return false;
         };
 
+        const auto is_public_project_header = [](const std::string& repo_relative) {
+            return repo_relative == "pch.h" ||
+                   repo_relative.rfind("include/", 0) == 0;
+        };
+
+        const auto normalize_project_header = [](const std::string& repo_relative) {
+            constexpr std::string_view include_prefix = "include/";
+            if (repo_relative.rfind(include_prefix, 0) == 0) {
+                return repo_relative.substr(include_prefix.size());
+            }
+            return repo_relative;
+        };
+
         for (const auto& sug : suggestions) {
             if (sug.priority == Priority::Critical) {
                 consolidated.priority = Priority::Critical;
@@ -359,15 +373,18 @@ namespace bha::suggestions
                 }
 
                 const std::string header_str = sug.target_file.path.string();
+                const std::string repo_relative = make_repo_relative_for_root(sug.target_file.path, repo_root);
                 if (header_str.find('<') == 0 ||
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
                 } else if (sug.rationale.find("volatile") != std::string::npos ||
                            sug.rationale.find("frequently modified") != std::string::npos) {
-                    volatile_headers.insert(make_repo_relative_for_root(sug.target_file.path, repo_root));
+                    volatile_headers.insert(repo_relative);
+                } else if (is_public_project_header(repo_relative)) {
+                    stable_headers.insert(repo_relative);
                 } else {
-                    stable_headers.insert(make_repo_relative_for_root(sug.target_file.path, repo_root));
+                    internal_project_headers.insert(repo_relative);
                 }
             }
 
@@ -380,6 +397,7 @@ namespace bha::suggestions
                 }
 
                 const std::string header_str = secondary.path.string();
+                const std::string repo_relative = make_repo_relative_for_root(secondary.path, repo_root);
                 if (header_str.ends_with("pch.h") || header_str.ends_with("stdafx.h")) {
                     continue;
                 }
@@ -387,8 +405,10 @@ namespace bha::suggestions
                     header_str.find("/usr/") == 0 ||
                     header_str.find("third_party") != std::string::npos) {
                     external_headers.insert(header_str);
+                } else if (is_public_project_header(repo_relative)) {
+                    stable_headers.insert(repo_relative);
                 } else {
-                    stable_headers.insert(make_repo_relative_for_root(secondary.path, repo_root));
+                    internal_project_headers.insert(repo_relative);
                 }
             }
         }
@@ -407,6 +427,16 @@ namespace bha::suggestions
             std::vector sorted_volatile(volatile_headers.begin(), volatile_headers.end());
             std::ranges::sort(sorted_volatile);
             for (const auto& header : sorted_volatile) {
+                desc << "  - " << header << "\n";
+            }
+            desc << "\n";
+        }
+
+        if (!internal_project_headers.empty()) {
+            desc << "**Excluded from shared pch.h:** These project-internal headers are not auto-added to the shared PCH because they are less portable across targets:\n";
+            std::vector sorted_internal(internal_project_headers.begin(), internal_project_headers.end());
+            std::ranges::sort(sorted_internal);
+            for (const auto& header : sorted_internal) {
                 desc << "  - " << header << "\n";
             }
             desc << "\n";
@@ -523,7 +553,7 @@ namespace bha::suggestions
             std::vector sorted_stable(stable_headers.begin(), stable_headers.end());
             std::ranges::sort(sorted_stable);
             for (const auto& header : sorted_stable) {
-                pch_content << "#include \"" << header << "\"\n";
+                pch_content << "#include \"" << normalize_project_header(header) << "\"\n";
                 ++header_count;
             }
         }

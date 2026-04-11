@@ -185,4 +185,31 @@ namespace bha::suggestions
         EXPECT_EQ(result[0].target_file.path, "foo.cpp");
         EXPECT_EQ(result[1].target_file.path, "bar.cpp");
     }
+
+    TEST_F(ConsolidatorTest, ConsolidatedPchUsesProjectNativeStyleAndSkipsInternalHeaders) {
+        Suggestion external = create_pch_suggestion("<vector>");
+        Suggestion public_header = create_pch_suggestion("include/public.hpp");
+        Suggestion internal_header = create_pch_suggestion("db/internal.hpp");
+
+        const auto result = consolidator_->consolidate({external, public_header, internal_header});
+
+        ASSERT_EQ(result.size(), 1u);
+        EXPECT_EQ(result.front().type, SuggestionType::PCHOptimization);
+
+        const auto pch_edit = std::find_if(
+            result.front().edits.begin(),
+            result.front().edits.end(),
+            [](const TextEdit& edit) {
+                return edit.file == "pch.h";
+            }
+        );
+        ASSERT_NE(pch_edit, result.front().edits.end());
+        EXPECT_NE(pch_edit->new_text.find("#include <vector>"), std::string::npos);
+        EXPECT_NE(pch_edit->new_text.find("#include \"public.hpp\""), std::string::npos);
+        EXPECT_EQ(pch_edit->new_text.find("db/internal.hpp"), std::string::npos);
+        EXPECT_NE(
+            result.front().description.find("Excluded from shared pch.h"),
+            std::string::npos
+        );
+    }
 }
