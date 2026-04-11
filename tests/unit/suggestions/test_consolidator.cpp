@@ -14,6 +14,17 @@ namespace bha::suggestions
             consolidator_ = std::make_unique<SuggestionConsolidator>();
         }
 
+        static TextEdit make_file_edit(const std::string& path, const std::string& content) {
+            TextEdit edit;
+            edit.file = path;
+            edit.start_line = 0;
+            edit.start_col = 0;
+            edit.end_line = 0;
+            edit.end_col = 0;
+            edit.new_text = content;
+            return edit;
+        }
+
         static Suggestion create_pch_suggestion(const std::string& header_name, const bool is_stable = true) {
             Suggestion s;
             s.type = SuggestionType::PCHOptimization;
@@ -149,5 +160,29 @@ namespace bha::suggestions
         EXPECT_EQ(result[1].type, SuggestionType::MoveToCpp);
         EXPECT_EQ(result[0].title, "Move include A");
         EXPECT_EQ(result[1].title, "Move include B");
+    }
+
+    TEST_F(ConsolidatorTest, LeavesExplicitTemplateSuggestionsUnconsolidated) {
+        Suggestion first;
+        first.type = SuggestionType::ExplicitTemplate;
+        first.title = "Instantiate Foo<int>";
+        first.target_file.path = "foo.cpp";
+        first.edits.push_back(make_file_edit("foo.cpp", "template class Foo<int>;\n"));
+
+        Suggestion second;
+        second.type = SuggestionType::ExplicitTemplate;
+        second.title = "Instantiate Bar<int>";
+        second.target_file.path = "bar.cpp";
+        second.edits.push_back(make_file_edit("bar.cpp", "template class Bar<int>;\n"));
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        ASSERT_EQ(result.size(), 2u);
+        EXPECT_EQ(result[0].type, SuggestionType::ExplicitTemplate);
+        EXPECT_EQ(result[1].type, SuggestionType::ExplicitTemplate);
+        EXPECT_EQ(result[0].title, "Instantiate Foo<int>");
+        EXPECT_EQ(result[1].title, "Instantiate Bar<int>");
+        EXPECT_EQ(result[0].target_file.path, "foo.cpp");
+        EXPECT_EQ(result[1].target_file.path, "bar.cpp");
     }
 }

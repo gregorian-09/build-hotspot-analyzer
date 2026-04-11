@@ -288,8 +288,8 @@ namespace bha::suggestions
                 result = consolidate_forward_decl(group);
                 break;
             case SuggestionType::ExplicitTemplate:
-                result = consolidate_template(group);
-                break;
+                consolidated.insert(consolidated.end(), group.begin(), group.end());
+                continue;
             case SuggestionType::PIMPLPattern:
                 result = consolidate_pimpl(group);
                 break;
