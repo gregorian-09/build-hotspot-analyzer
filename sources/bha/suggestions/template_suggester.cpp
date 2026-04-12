@@ -971,15 +971,109 @@ namespace bha::suggestions
             return lines.size();
         }
 
+        std::size_t find_namespace_tail_insertion_line(const std::string& content) {
+            std::istringstream input(content);
+            std::vector<std::string> lines;
+            std::string line;
+            while (std::getline(input, line)) {
+                lines.push_back(line);
+            }
+
+            for (std::size_t idx = lines.size(); idx > 0; --idx) {
+                const std::string& current = lines[idx - 1];
+                const auto first = current.find_first_not_of(" \t\r\n");
+                if (first == std::string::npos) {
+                    continue;
+                }
+                const std::string trimmed = current.substr(first);
+                if (!trimmed.empty() && trimmed.front() == '}') {
+                    return idx - 1;
+                }
+            }
+
+            return end_of_file_insert_line(content);
+        }
+
+        bool inserts_inside_namespace_tail(const std::string& content, const std::size_t insert_line) {
+            std::istringstream input(content);
+            std::string line;
+            std::size_t line_index = 0;
+            while (std::getline(input, line)) {
+                if (line_index == insert_line) {
+                    const auto first = line.find_first_not_of(" \t\r\n");
+                    return first != std::string::npos && line[first] == '}';
+                }
+                ++line_index;
+            }
+            return false;
+        }
+
+        std::optional<std::string> detect_primary_namespace_token(const std::string& content) {
+            static const std::regex namespace_regex(
+                R"((?:^|\n)\s*namespace\s+([A-Za-z_][A-Za-z0-9_:]*)\s*\{)"
+            );
+            std::smatch match;
+            if (std::regex_search(content, match, namespace_regex) && match.size() >= 2) {
+                return match[1].str();
+            }
+            return std::nullopt;
+        }
+
+        std::optional<std::string> top_level_namespace_prefix(std::string_view qualified_name) {
+            const auto first_scope = qualified_name.find("::");
+            if (first_scope == std::string::npos || first_scope == 0) {
+                return std::nullopt;
+            }
+            return std::string(qualified_name.substr(0, first_scope));
+        }
+
+        std::optional<std::string> render_namespace_prefix(
+            const std::string& normalized_template_name,
+            const bool is_function_template
+        ) {
+            if (!is_function_template) {
+                return top_level_namespace_prefix(normalized_template_name);
+            }
+
+            std::string declarator = normalized_template_name;
+            if (const auto angle = declarator.find('<'); angle != std::string::npos) {
+                declarator = declarator.substr(0, angle);
+            }
+            if (const auto paren = declarator.find('('); paren != std::string::npos) {
+                declarator = declarator.substr(0, paren);
+            }
+            if (const auto last_space = declarator.find_last_of(" \t"); last_space != std::string::npos) {
+                declarator = declarator.substr(last_space + 1);
+            }
+            return top_level_namespace_prefix(declarator);
+        }
+
+        std::string strip_namespace_prefix_for_in_namespace_use(
+            const std::string& qualified_name,
+            const std::string& namespace_prefix
+        ) {
+            if (namespace_prefix.empty()) {
+                return qualified_name;
+            }
+
+            const std::regex prefix_regex(
+                "(^|[^A-Za-z0-9_])" + regex_escape(namespace_prefix) + R"(::)"
+            );
+            return std::regex_replace(qualified_name, prefix_regex, "$1");
+        }
+
         struct TemplateRenderInfo {
             std::string template_name;
             std::string normalized_template_name;
+            std::string namespace_relative_template_name;
             std::string base_name;
             std::string short_name;
             std::string class_key = "class";
             bool is_function_template = false;
             std::string instantiation_line;
             std::string extern_line;
+            std::string namespace_relative_instantiation_line;
+            std::string namespace_relative_extern_line;
         };
 
         std::string make_short_template_name(const std::string& template_name) {
@@ -1004,6 +1098,17 @@ namespace bha::suggestions
             TemplateRenderInfo render;
             render.template_name = template_name;
             render.normalized_template_name = normalized_template_name;
+            if (const auto top_level_namespace = render_namespace_prefix(
+                    normalized_template_name,
+                    is_function_template
+                )) {
+                render.namespace_relative_template_name = strip_namespace_prefix_for_in_namespace_use(
+                    normalized_template_name,
+                    *top_level_namespace
+                );
+            } else {
+                render.namespace_relative_template_name = normalized_template_name;
+            }
             render.base_name = base_name;
             render.short_name = make_short_template_name(template_name);
             render.class_key = class_key;
@@ -1014,6 +1119,12 @@ namespace bha::suggestions
             render.extern_line = is_function_template
                 ? generate_extern_function_instantiation(normalized_template_name)
                 : generate_extern_template(class_key, normalized_template_name);
+            render.namespace_relative_instantiation_line = is_function_template
+                ? generate_explicit_function_instantiation(render.namespace_relative_template_name)
+                : generate_explicit_instantiation(class_key, render.namespace_relative_template_name);
+            render.namespace_relative_extern_line = is_function_template
+                ? generate_extern_function_instantiation(render.namespace_relative_template_name)
+                : generate_extern_template(class_key, render.namespace_relative_template_name);
             return render;
         }
 
@@ -1120,7 +1231,7 @@ namespace bha::suggestions
             const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
             const fs::path& project_root_dir,
             const fs::path& header_path,
-            const std::string& instantiation_line
+            const TemplateRenderInfo& render
         ) {
             const auto inst_source = resolve_existing_instantiation_source(tmpl, project_root_dir);
             if (!inst_source.has_value()) {
@@ -1143,14 +1254,19 @@ namespace bha::suggestions
             std::ifstream in(*inst_source);
             const std::string source_content((std::istreambuf_iterator<char>(in)),
                                              std::istreambuf_iterator<char>());
+            const std::size_t insert_line = find_namespace_tail_insertion_line(source_content);
+            const bool inside_namespace = inserts_inside_namespace_tail(source_content, insert_line);
+            const std::string& instantiation_line = inside_namespace
+                ? render.namespace_relative_instantiation_line
+                : render.instantiation_line;
+
             if (source_content.find(instantiation_line) == std::string::npos) {
-                const std::size_t last_line = end_of_file_insert_line(source_content);
 
                 TextEdit add_inst;
                 add_inst.file = *inst_source;
-                add_inst.start_line = last_line;
+                add_inst.start_line = insert_line;
                 add_inst.start_col = 0;
-                add_inst.end_line = last_line;
+                add_inst.end_line = insert_line;
                 add_inst.end_col = 0;
                 add_inst.new_text = "\n" + instantiation_line + "\n";
                 suggestion.edits.push_back(add_inst);
@@ -1164,7 +1280,7 @@ namespace bha::suggestions
             const SuggestionContext& context,
             const fs::path& project_root_dir,
             const fs::path& header_path,
-            const std::string& instantiation_line
+            const TemplateRenderInfo& render
         ) {
             fs::path inst_file = project_root_dir / "src" / "template_instantiations.cpp";
             if (!project_root_dir.empty() && !fs::exists(inst_file.parent_path())) {
@@ -1182,15 +1298,18 @@ namespace bha::suggestions
                 std::ifstream in(inst_file);
                 const std::string inst_content((std::istreambuf_iterator<char>(in)),
                                                std::istreambuf_iterator<char>());
+                const std::size_t insert_line = find_namespace_tail_insertion_line(inst_content);
+                const bool inside_namespace = inserts_inside_namespace_tail(inst_content, insert_line);
+                const std::string& instantiation_line = inside_namespace
+                    ? render.namespace_relative_instantiation_line
+                    : render.instantiation_line;
 
                 if (inst_content.find(instantiation_line) == std::string::npos) {
-                    const std::size_t last_line = end_of_file_insert_line(inst_content);
-
                     TextEdit add_inst;
                     add_inst.file = inst_file;
-                    add_inst.start_line = last_line;
+                    add_inst.start_line = insert_line;
                     add_inst.start_col = 0;
-                    add_inst.end_line = last_line;
+                    add_inst.end_line = insert_line;
                     add_inst.end_col = 0;
                     add_inst.new_text = "\n" + instantiation_line + "\n";
                     suggestion.edits.push_back(add_inst);
@@ -1206,7 +1325,19 @@ namespace bha::suggestions
                     );
                     new_file_content.add_blank_line();
                 }
-                new_file_content.add_line(instantiation_line);
+                if (std::ifstream header_in(header_path); header_in) {
+                    const std::string header_content((std::istreambuf_iterator<char>(header_in)),
+                                                     std::istreambuf_iterator<char>());
+                    if (const auto namespace_token = detect_primary_namespace_token(header_content)) {
+                        new_file_content.add_line("namespace " + *namespace_token + " {");
+                        new_file_content.add_line(render.namespace_relative_instantiation_line);
+                        new_file_content.add_line("}  // namespace " + *namespace_token);
+                    } else {
+                        new_file_content.add_line(render.instantiation_line);
+                    }
+                } else {
+                    new_file_content.add_line(render.instantiation_line);
+                }
 
                 TextEdit create_inst;
                 create_inst.file = inst_file;
@@ -1397,7 +1528,7 @@ namespace bha::suggestions
             Suggestion& suggestion,
             const fs::path& declaration_header,
             const fs::path& header_path,
-            const std::string& extern_line
+            const TemplateRenderInfo& render
         ) {
             if (!fs::exists(header_path)) {
                 return;
@@ -1406,15 +1537,19 @@ namespace bha::suggestions
             std::ifstream header_in(header_path);
             const std::string header_content((std::istreambuf_iterator<char>(header_in)),
                                              std::istreambuf_iterator<char>());
-            if (header_content.find(extern_line) != std::string::npos) {
-                return;
-            }
-
             const std::size_t insert_line = find_extern_template_insertion_line(header_path);
             const auto header_lines = file_utils::read_lines(header_path);
             const std::size_t line_count = header_lines.is_ok()
                 ? header_lines.value().size()
                 : 0;
+            const bool inside_namespace =
+                insert_line < line_count && inserts_inside_namespace_tail(header_content, insert_line);
+            const std::string& extern_line = inside_namespace
+                ? render.namespace_relative_extern_line
+                : render.extern_line;
+            if (header_content.find(extern_line) != std::string::npos) {
+                return;
+            }
 
             TextEdit extern_edit;
             extern_edit.file = header_path;
@@ -1623,7 +1758,7 @@ namespace bha::suggestions
                 tmpl,
                 project_root_dir,
                 header_path,
-                render.instantiation_line
+                render
             );
 
             bool build_wiring_proven = has_existing_instantiation_unit;
@@ -1633,7 +1768,7 @@ namespace bha::suggestions
                     context,
                     project_root_dir,
                     header_path,
-                    render.instantiation_line
+                    render
                 );
             }
 
@@ -1641,7 +1776,7 @@ namespace bha::suggestions
                 suggestion,
                 declaration_header,
                 header_path,
-                render.extern_line
+                render
             );
 
             if (!build_wiring_proven) {
