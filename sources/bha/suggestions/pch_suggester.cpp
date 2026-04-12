@@ -37,6 +37,8 @@ namespace bha::suggestions
             std::size_t open_pos = 0;
         };
 
+        std::vector<std::string> tokenize_cmake_args(std::string_view args);
+
         std::optional<int> parse_cpp_standard(std::string_view token) {
             constexpr std::string_view kPrefix = "-std=";
             if (!token.starts_with(kPrefix)) {
@@ -278,54 +280,182 @@ namespace bha::suggestions
             if (name.empty()) {
                 return false;
             }
-            if (name.find('$') != std::string::npos ||
-                name.find('<') != std::string::npos ||
-                name.find('>') != std::string::npos) {
-                return false;
-            }
             if (name.front() == '-') {
                 return false;
             }
-            for (const char c : name) {
+            int brace_depth = 0;
+            int angle_depth = 0;
+            for (std::size_t i = 0; i < name.size(); ++i) {
+                const char c = name[i];
                 const unsigned char ch = static_cast<unsigned char>(c);
                 if (std::isalnum(ch) != 0 || c == '_' || c == '-' || c == '.') {
                     continue;
                 }
+                if (c == '$') {
+                    continue;
+                }
+                if (c == '{') {
+                    ++brace_depth;
+                    continue;
+                }
+                if (c == '}') {
+                    if (brace_depth == 0) {
+                        return false;
+                    }
+                    --brace_depth;
+                    continue;
+                }
+                if (c == '<') {
+                    ++angle_depth;
+                    continue;
+                }
+                if (c == '>') {
+                    if (angle_depth == 0) {
+                        return false;
+                    }
+                    --angle_depth;
+                    continue;
+                }
+                if (c == ':') {
+                    if (i + 1 >= name.size() || name[i + 1] != ':') {
+                        return false;
+                    }
+                    ++i;
+                    continue;
+                }
                 return false;
             }
-            return true;
+            return brace_depth == 0 && angle_depth == 0;
         }
 
-        std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
-            const std::regex target_regex(
-                R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
-                std::regex::icase
-            );
+        std::string strip_cmake_generator_expressions(std::string_view name) {
+            std::string normalized;
+            normalized.reserve(name.size());
 
-            const auto project_name = find_project_name(content);
-            std::vector<CMakeTargetInfo> candidates;
+            int brace_depth = 0;
+            int angle_depth = 0;
+            for (std::size_t i = 0; i < name.size(); ++i) {
+                const char c = name[i];
+                if (c == '$' && i + 1 < name.size()) {
+                    if (name[i + 1] == '{') {
+                        ++i;
+                        ++brace_depth;
+                        continue;
+                    }
+                    if (name[i + 1] == '<') {
+                        ++i;
+                        ++angle_depth;
+                        continue;
+                    }
+                }
 
+                if (brace_depth > 0) {
+                    if (c == '{') {
+                        ++brace_depth;
+                    } else if (c == '}') {
+                        --brace_depth;
+                    }
+                    continue;
+                }
+                if (angle_depth > 0) {
+                    if (c == '<') {
+                        ++angle_depth;
+                    } else if (c == '>') {
+                        --angle_depth;
+                    }
+                    continue;
+                }
+
+                normalized.push_back(c);
+            }
+
+            return normalized;
+        }
+
+        bool cmake_target_matches_hint(std::string_view candidate, std::string_view hint) {
+            if (candidate == hint) {
+                return true;
+            }
+            return strip_cmake_generator_expressions(candidate) == hint;
+        }
+
+        std::optional<std::string> extract_direct_cmake_target_name(std::string_view line) {
+            const auto start = parse_cmake_command_start(line);
+            if (!start) {
+                return std::nullopt;
+            }
+            const auto close = line.rfind(')');
+            if (close == std::string::npos || close <= start->open_pos) {
+                return std::nullopt;
+            }
+            const auto args = line.substr(start->open_pos + 1, close - start->open_pos - 1);
+            const auto tokens = tokenize_cmake_args(args);
+            if (tokens.empty() || !is_probable_cmake_target_name(tokens.front())) {
+                return std::nullopt;
+            }
+            return tokens.front();
+        }
+
+        std::vector<CMakeTargetInfo> find_direct_cmake_targets(const std::string& content) {
+            std::vector<CMakeTargetInfo> targets;
             std::istringstream input(content);
             std::string line;
             std::size_t line_num = 0;
+            std::string pending;
+            std::size_t pending_line = 0;
+            int paren_depth = 0;
+            bool collecting = false;
+
             while (std::getline(input, line)) {
-                std::smatch match;
-                if (std::regex_search(line, match, target_regex) && match.size() >= 3) {
-                    const std::string name = match[2].str();
-                    if (is_cmake_target_candidate(name, line)) {
-                        candidates.push_back(CMakeTargetInfo{name, line_num, line_num, false});
+                std::string trimmed = line;
+                trimmed.erase(0, trimmed.find_first_not_of(" \t"));
+                if (trimmed.empty() || trimmed.rfind("#", 0) == 0) {
+                    ++line_num;
+                    continue;
+                }
+
+                if (!collecting) {
+                    const auto start = parse_cmake_command_start(trimmed);
+                    if (!start ||
+                        (start->name != "add_executable" && start->name != "add_library")) {
+                        ++line_num;
+                        continue;
                     }
+                    pending = trimmed;
+                    pending_line = line_num;
+                    collecting = true;
+                    paren_depth = 0;
+                } else {
+                    pending += " " + trimmed;
+                }
+
+                paren_depth += count_paren_delta_outside_quotes(trimmed);
+                if (collecting && paren_depth <= 0) {
+                    if (auto name = extract_direct_cmake_target_name(pending)) {
+                        if (is_cmake_target_candidate(*name, pending)) {
+                            targets.push_back(CMakeTargetInfo{*name, pending_line, line_num, false});
+                        }
+                    }
+                    collecting = false;
+                    pending.clear();
                 }
                 ++line_num;
             }
+
+            return targets;
+        }
+
+        std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
+            const auto project_name = find_project_name(content);
+            std::vector<CMakeTargetInfo> candidates = find_direct_cmake_targets(content);
 
             if (candidates.empty()) {
                 return std::nullopt;
             }
             if (project_name) {
                 for (const auto& candidate : candidates) {
-                    if (candidate.name == *project_name ||
-                        candidate.name.find(*project_name) == 0) {
+                    if (cmake_target_matches_hint(candidate.name, *project_name) ||
+                        strip_cmake_generator_expressions(candidate.name).find(*project_name) == 0) {
                         return candidate;
                     }
                 }
@@ -1025,29 +1155,6 @@ namespace bha::suggestions
             return hints;
         }
 
-        std::vector<CMakeTargetInfo> find_direct_cmake_targets(const std::string& content) {
-            const std::regex target_regex(
-                R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
-                std::regex::icase
-            );
-            std::vector<CMakeTargetInfo> targets;
-
-            std::istringstream input(content);
-            std::string line;
-            std::size_t line_num = 0;
-            while (std::getline(input, line)) {
-                std::smatch match;
-                if (std::regex_search(line, match, target_regex) && match.size() >= 3) {
-                    const std::string name = match[2].str();
-                    if (is_cmake_target_candidate(name, line)) {
-                        targets.push_back(CMakeTargetInfo{name, line_num, line_num, false});
-                    }
-                }
-                ++line_num;
-            }
-            return targets;
-        }
-
         std::optional<std::pair<fs::path, CMakeTargetInfo>> find_named_cmake_target_in_tree(
             const fs::path& project_root,
             const std::string& target_name,
@@ -1095,7 +1202,7 @@ namespace bha::suggestions
                 auto direct_targets = find_direct_cmake_targets(content);
                 macro_targets.insert(macro_targets.end(), direct_targets.begin(), direct_targets.end());
                 for (const auto& target : macro_targets) {
-                    if (target.name == target_name) {
+                    if (cmake_target_matches_hint(target.name, target_name)) {
                         matches.push_back(ScoredTarget{entry.path(), target, score_cmake_path(lower_rel)});
                     }
                 }

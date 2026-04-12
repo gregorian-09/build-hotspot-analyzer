@@ -203,6 +203,81 @@ namespace bha::suggestions
         fs::remove_all(project_root, ec);
     }
 
+    TEST_F(PCHSuggesterTest, CMakeTargetSelectionPreservesTargetSuffixExpressions) {
+        namespace fs = std::filesystem;
+        const fs::path project_root = fs::temp_directory_path() / "bha_pch_target_suffix_test";
+        std::error_code ec;
+        fs::remove_all(project_root, ec);
+        fs::create_directories(project_root / "include");
+        fs::create_directories(project_root / "tools");
+
+        {
+            std::ofstream cmake(project_root / "CMakeLists.txt");
+            cmake << "cmake_minimum_required(VERSION 3.20)\n"
+                  << "project(pch_target_suffix LANGUAGES CXX)\n"
+                  << "set(ARTIFACT_SUFFIX \"\")\n"
+                  << "add_executable(block_cache_trace_analyzer${ARTIFACT_SUFFIX}\n"
+                  << "  tools/block_cache_trace_analyzer_tool.cc)\n";
+        }
+        {
+            std::ofstream tool_src(project_root / "tools" / "block_cache_trace_analyzer_tool.cc");
+            tool_src << "#include \"../include/heavy.hpp\"\n"
+                     << "int main(){return 0;}\n";
+        }
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(8);
+        trace.build_system = BuildSystemType::CMake;
+
+        CompilationUnit tool_unit;
+        tool_unit.source_file = project_root / "tools" / "block_cache_trace_analyzer_tool.cc";
+        tool_unit.command_line = {
+            "clang++",
+            "-c",
+            "-o",
+            (project_root / "build" / "CMakeFiles" / "block_cache_trace_analyzer.dir" / "tools" /
+             "block_cache_trace_analyzer_tool.cc.o")
+                .string(),
+            tool_unit.source_file.string()
+        };
+        trace.units.push_back(tool_unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = project_root / "include" / "heavy.hpp";
+        header.total_parse_time = std::chrono::milliseconds(1200);
+        header.inclusion_count = 20;
+        header.including_files = 12;
+        header.is_stable = true;
+        header.is_external = false;
+        header.included_by = {tool_unit.source_file};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, project_root};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto cmake_edit = std::find_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [&](const TextEdit& edit) {
+                return edit.file == (project_root / "CMakeLists.txt");
+            }
+        );
+        ASSERT_NE(cmake_edit, suggestion.edits.end());
+        EXPECT_NE(
+            cmake_edit->new_text.find(
+                "target_precompile_headers(block_cache_trace_analyzer${ARTIFACT_SUFFIX} PRIVATE"),
+            std::string::npos
+        );
+
+        fs::remove_all(project_root, ec);
+    }
+
     TEST_F(PCHSuggesterTest, CMakeTargetSelectionSkipsBackupDirectories) {
         namespace fs = std::filesystem;
         const fs::path project_root = fs::temp_directory_path() / "bha_pch_backup_filter_test";
