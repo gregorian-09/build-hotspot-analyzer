@@ -1081,6 +1081,44 @@ namespace bha::suggestions
             return resolve_local_include_path(diag.header_name, diag.file, project_root);
         }
 
+        bool is_primary_self_header_include(
+            const TidyUnusedInclude& diag,
+            const std::optional<fs::path>& resolved_header
+        ) {
+            if (!is_source_file(diag.file)) {
+                return false;
+            }
+
+            const auto directives = find_include_directives(diag.file);
+            if (directives.empty()) {
+                return false;
+            }
+
+            const auto first_include = directives.front();
+            const fs::path source_path = diag.file.lexically_normal();
+            const std::string source_stem = source_path.stem().string();
+            if (source_stem.empty()) {
+                return false;
+            }
+
+            const fs::path include_header_name = fs::path(diag.header_name).filename();
+            const bool matches_source_stem = include_header_name.stem() == source_stem ||
+                (resolved_header.has_value() && resolved_header->stem() == source_stem);
+            if (!matches_source_stem) {
+                return false;
+            }
+
+            if (first_include.line != diag.line || first_include.is_system) {
+                return false;
+            }
+
+            if (first_include.header_name == diag.header_name) {
+                return true;
+            }
+            return resolved_header.has_value() &&
+                fs::path(first_include.header_name).filename() == resolved_header->filename();
+        }
+
         ClassifiedUnusedIncludes classify_unused_include_diagnostics(
             const analyzers::DependencyAnalysisResult& deps,
             const std::vector<TidyUnusedInclude>& diagnostics,
@@ -1099,6 +1137,12 @@ namespace bha::suggestions
                     project_root
                 );
                 IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
+                if (assessment.allow_direct_edits &&
+                    is_primary_self_header_include(diag, resolved_header)) {
+                    assessment.allow_direct_edits = false;
+                    assessment.blocked_reason =
+                        "primary self-header include should stay in the translation unit";
+                }
                 if (assessment.allow_direct_edits &&
                     matches_protected_include_policy(
                         diag.header_name,
