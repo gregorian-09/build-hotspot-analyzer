@@ -615,6 +615,7 @@ namespace bha::suggestions
             source_a,
             "#include \"../include/autovector.h\"\n"
             "namespace ROCKSDB_NAMESPACE {\n"
+            "\n"
             "}  // namespace ROCKSDB_NAMESPACE\n"
         );
         write_file(source_b, "#include \"../include/autovector.h\"\n");
@@ -650,8 +651,7 @@ namespace bha::suggestions
                 saw_namespace_relative_extern = true;
             }
             if (edit.file == source_a &&
-                edit.new_text.find(
-                    "template class autovector<TruncatedRangeDelIterator *>;") != std::string::npos) {
+                edit.new_text == "template class autovector<TruncatedRangeDelIterator *>;\n") {
                 saw_namespace_relative_instantiation = true;
             }
             if (edit.new_text.find("rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>") !=

@@ -1242,7 +1242,7 @@ namespace bha::suggestions
                 suggestion.is_safe = true;
                 suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
                 for (const auto& diag : selected_diagnostics) {
-                    suggestion.edits.push_back(make_delete_line_edit(diag.file, diag.line));
+                    suggestion.edits.push_back(make_delete_include_edit(diag.file, diag.line));
                 }
                 suggestion.implementation_steps = {
                     "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
@@ -1453,7 +1453,7 @@ namespace bha::suggestions
             suggestion.target_file.line_end = include_decl->line + 1;
             suggestion.target_file.note = "Remove header include after confirming forward declaration coverage";
 
-            suggestion.edits.push_back(make_delete_line_edit(including_header, include_decl->line));
+            suggestion.edits.push_back(make_delete_include_edit(including_header, include_decl->line));
 
             const std::string include_line = "#include \"" + include_dir.header_name + "\"";
             const auto insertion = make_preferred_include_insertion_edit(source_file, include_line);

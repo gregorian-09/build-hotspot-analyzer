@@ -765,6 +765,38 @@ esac
         );
     }
 
+    TEST_F(IncludeSuggesterTest, DirectIncludeRemovalConsumesTrailingSeparatorBlankLine) {
+        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "direct", 1), 0);
+
+        const auto build_dir = temp_root_ / "build";
+        const auto source = temp_root_ / "main.cpp";
+        const auto header = temp_root_ / "local_unused.hpp";
+        write_file(header, "#pragma once\n");
+        write_file(
+            source,
+            "#include \"local_unused.hpp\"\n"
+            "\n"
+            "int main() { return 0; }\n"
+        );
+        write_compile_commands(build_dir, source);
+
+        const BuildTrace trace;
+        const analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.compile_commands_path = build_dir / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const Suggestion& suggestion = result.value().suggestions.front();
+        ASSERT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+        ASSERT_EQ(suggestion.edits.size(), 1u);
+        EXPECT_EQ(suggestion.edits.front().start_line, 0u);
+        EXPECT_EQ(suggestion.edits.front().end_line, 2u);
+    }
+
     TEST_F(IncludeSuggesterTest, DowngradesProtectedIncludeRemovalsToAdvisory) {
         ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "protected", 1), 0);
 

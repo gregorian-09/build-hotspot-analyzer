@@ -1293,6 +1293,79 @@ namespace bha::suggestions {
         return edit;
     }
 
+    [[nodiscard]] inline bool is_blank_or_whitespace_line(std::string_view line) {
+        return line.find_first_not_of(" \t\r\n") == std::string_view::npos;
+    }
+
+    [[nodiscard]] inline std::string make_separated_statement_insertion_text(
+        const std::string& file_content,
+        const std::size_t insert_line,
+        const std::string& statement
+    ) {
+        std::istringstream input(file_content);
+        std::vector<std::string> lines;
+        std::string line;
+        while (std::getline(input, line)) {
+            lines.push_back(line);
+        }
+
+        const bool has_prev_line = insert_line > 0 && insert_line - 1 < lines.size();
+        const bool prev_is_blank = has_prev_line && is_blank_or_whitespace_line(lines[insert_line - 1]);
+
+        std::string text;
+        if (!prev_is_blank) {
+            text.push_back('\n');
+        }
+        text += statement;
+        text.push_back('\n');
+        return text;
+    }
+
+    [[nodiscard]] inline TextEdit make_delete_include_edit(const fs::path& file, std::size_t line) {
+        TextEdit edit = make_delete_line_edit(file, line);
+
+        std::ifstream in(file);
+        if (!in) {
+            return edit;
+        }
+
+        std::vector<std::string> lines;
+        std::string current_line;
+        while (std::getline(in, current_line)) {
+            lines.push_back(current_line);
+        }
+
+        if (line >= lines.size()) {
+            return edit;
+        }
+
+        const auto directives = find_include_directives(file);
+        const auto target_it = std::find_if(
+            directives.begin(),
+            directives.end(),
+            [&](const IncludeDirective& directive) {
+                return directive.line == line;
+            }
+        );
+        if (target_it == directives.end()) {
+            return edit;
+        }
+
+        const bool has_following_include = std::any_of(
+            directives.begin(),
+            directives.end(),
+            [&](const IncludeDirective& directive) {
+                return directive.line > line;
+            }
+        );
+        const bool next_is_blank = line + 1 < lines.size() && is_blank_or_whitespace_line(lines[line + 1]);
+        if (!has_following_include && next_is_blank) {
+            edit.end_line = line + 2;
+        }
+
+        return edit;
+    }
+
     [[nodiscard]] inline TextEdit make_replace_line_edit(
         const fs::path& file,
         const std::size_t line,

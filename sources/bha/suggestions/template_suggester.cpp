@@ -1268,7 +1268,11 @@ namespace bha::suggestions
                 add_inst.start_col = 0;
                 add_inst.end_line = insert_line;
                 add_inst.end_col = 0;
-                add_inst.new_text = "\n" + instantiation_line + "\n";
+                add_inst.new_text = make_separated_statement_insertion_text(
+                    source_content,
+                    insert_line,
+                    instantiation_line
+                );
                 suggestion.edits.push_back(add_inst);
             }
 
@@ -1311,7 +1315,11 @@ namespace bha::suggestions
                     add_inst.start_col = 0;
                     add_inst.end_line = insert_line;
                     add_inst.end_col = 0;
-                    add_inst.new_text = "\n" + instantiation_line + "\n";
+                    add_inst.new_text = make_separated_statement_insertion_text(
+                        inst_content,
+                        insert_line,
+                        instantiation_line
+                    );
                     suggestion.edits.push_back(add_inst);
                 }
             } else {
@@ -1559,7 +1567,11 @@ namespace bha::suggestions
                 extern_edit.start_col = 0;
                 extern_edit.end_line = last_line;
                 extern_edit.end_col = 0;
-                extern_edit.new_text = "\n" + extern_line + "\n";
+                extern_edit.new_text = make_separated_statement_insertion_text(
+                    header_content,
+                    last_line,
+                    extern_line
+                );
             } else {
                 extern_edit.start_line = insert_line;
                 extern_edit.start_col = 0;
