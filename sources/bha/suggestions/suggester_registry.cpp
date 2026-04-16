@@ -682,6 +682,7 @@ namespace bha::suggestions
 
         std::atomic<bool> cancelled{false};
         SuggestionContext context{trace, analysis, options, project_root};
+        const ProjectLanguageProfile project_languages = summarize_project_language_profile(trace);
         context.cancelled = &cancelled;
         if (options.restrict_to_trace) {
             std::unordered_set<std::string> targets;
@@ -750,6 +751,10 @@ namespace bha::suggestions
             : std::optional<std::chrono::steady_clock::time_point>();
 
         for (const auto& suggester : SuggesterRegistry::instance().suggesters()) {
+            if (!language_support_matches(suggester->policy().language_support, project_languages)) {
+                continue;
+            }
+
             if (options.max_total_time != Duration::zero()) {
                 const auto total_elapsed = std::chrono::steady_clock::now() - total_start;
                 if (total_elapsed >= options.max_total_time) {

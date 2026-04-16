@@ -121,6 +121,90 @@ namespace bha {
     }
 
     /**
+     * Source language mode inferred from a compile command.
+     */
+    enum class SourceLanguageMode {
+        Unknown,
+        C,
+        CXX,
+        ObjectiveC,
+        ObjectiveCXX
+    };
+
+    /**
+     * Declares which language families a suggester is designed to support.
+     */
+    enum class SuggesterLanguageSupport {
+        COnly,
+        CXXOnly,
+        CAndCXX,
+        BuildSystemLevel
+    };
+
+    /**
+     * Describes how conservatively a suggester should be treated around ABI-facing code.
+     */
+    enum class SuggesterAbiSensitivity {
+        Low,
+        HeaderSurface,
+        BuildConfiguration
+    };
+
+    /**
+     * Summarized language profile for a recorded project build.
+     */
+    struct ProjectLanguageProfile {
+        std::size_t c_units = 0;
+        std::size_t cxx_units = 0;
+        std::size_t objc_units = 0;
+        std::size_t objcxx_units = 0;
+        std::size_t unknown_units = 0;
+
+        [[nodiscard]] bool empty() const noexcept {
+            return c_units == 0 && cxx_units == 0 && objc_units == 0 &&
+                   objcxx_units == 0 && unknown_units == 0;
+        }
+
+        [[nodiscard]] bool has_c_family() const noexcept {
+            return c_units > 0 || objc_units > 0;
+        }
+
+        [[nodiscard]] bool has_cxx_family() const noexcept {
+            return cxx_units > 0 || objcxx_units > 0;
+        }
+    };
+
+    inline const char* to_string(const SourceLanguageMode mode) noexcept {
+        switch (mode) {
+            case SourceLanguageMode::Unknown:     return "unknown";
+            case SourceLanguageMode::C:           return "c";
+            case SourceLanguageMode::CXX:         return "c++";
+            case SourceLanguageMode::ObjectiveC:  return "objective-c";
+            case SourceLanguageMode::ObjectiveCXX:return "objective-c++";
+        }
+        return "unknown";
+    }
+
+    inline const char* to_string(const SuggesterLanguageSupport support) noexcept {
+        switch (support) {
+            case SuggesterLanguageSupport::COnly:            return "c-only";
+            case SuggesterLanguageSupport::CXXOnly:          return "c++-only";
+            case SuggesterLanguageSupport::CAndCXX:          return "c-and-c++";
+            case SuggesterLanguageSupport::BuildSystemLevel: return "build-system";
+        }
+        return "c-and-c++";
+    }
+
+    inline const char* to_string(const SuggesterAbiSensitivity sensitivity) noexcept {
+        switch (sensitivity) {
+            case SuggesterAbiSensitivity::Low:                return "low";
+            case SuggesterAbiSensitivity::HeaderSurface:      return "header-surface";
+            case SuggesterAbiSensitivity::BuildConfiguration: return "build-configuration";
+        }
+        return "low";
+    }
+
+    /**
      * Converts BuildSystemType to string.
      */
     inline const char* to_string(BuildSystemType type) noexcept {

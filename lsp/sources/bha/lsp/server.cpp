@@ -1758,7 +1758,9 @@ namespace bha::lsp
                 {"supportedTypes", supported_types},
                 {"inputRequirements", input_requirements},
                 {"potentiallyAutoApplicable", descriptor.potentially_auto_applicable},
-                {"supportsExplainMode", descriptor.supports_explain_mode}
+                {"supportsExplainMode", descriptor.supports_explain_mode},
+                {"languageSupport", to_string(descriptor.language_support)},
+                {"abiSensitivity", to_string(descriptor.abi_sensitivity)}
             });
         }
 
@@ -1822,6 +1824,8 @@ namespace bha::lsp
             {"inputRequirements", input_requirements},
             {"potentiallyAutoApplicable", descriptor->potentially_auto_applicable},
             {"supportsExplainMode", descriptor->supports_explain_mode},
+            {"languageSupport", to_string(descriptor->language_support)},
+            {"abiSensitivity", to_string(descriptor->abi_sensitivity)},
             {"usage", {
                 {"command", "bha.runSuggester"},
                 {"arguments", {

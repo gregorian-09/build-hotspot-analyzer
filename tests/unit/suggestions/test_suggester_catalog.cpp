@@ -39,5 +39,49 @@ namespace bha::suggestions {
         EXPECT_FALSE(parse_suggestion_type_id("not-a-type").has_value());
     }
 
-}  // namespace bha::suggestions
+    TEST(SuggesterCatalogTest, ExposesLanguageAndAbiPolicyMetadata) {
+        register_all_suggesters();
 
+        const auto template_descriptor = find_suggester_descriptor("template-instantiation");
+        ASSERT_TRUE(template_descriptor.has_value());
+        EXPECT_EQ(template_descriptor->language_support, SuggesterLanguageSupport::CXXOnly);
+        EXPECT_EQ(template_descriptor->abi_sensitivity, SuggesterAbiSensitivity::HeaderSurface);
+
+        const auto pch_descriptor = find_suggester_descriptor("pch");
+        ASSERT_TRUE(pch_descriptor.has_value());
+        EXPECT_EQ(pch_descriptor->language_support, SuggesterLanguageSupport::BuildSystemLevel);
+        EXPECT_EQ(pch_descriptor->abi_sensitivity, SuggesterAbiSensitivity::BuildConfiguration);
+    }
+
+    TEST(SuggesterCatalogTest, DetectsSourceLanguageFromCompileCommands) {
+        CompilationUnit c_unit;
+        c_unit.source_file = "src/example.c";
+        c_unit.command_line = {"clang", "-x", "c", "-c", "src/example.c"};
+        EXPECT_EQ(detect_source_language_mode(c_unit), SourceLanguageMode::C);
+
+        CompilationUnit cxx_unit;
+        cxx_unit.source_file = "src/example.cpp";
+        cxx_unit.command_line = {"clang++", "-c", "src/example.cpp"};
+        EXPECT_EQ(detect_source_language_mode(cxx_unit), SourceLanguageMode::CXX);
+
+        CompilationUnit msvc_cxx_unit;
+        msvc_cxx_unit.source_file = "src/example.c";
+        msvc_cxx_unit.command_line = {"cl.exe", "/TP", "/c", "src/example.c"};
+        EXPECT_EQ(detect_source_language_mode(msvc_cxx_unit), SourceLanguageMode::CXX);
+    }
+
+    TEST(SuggesterCatalogTest, AppliesLanguageSupportRulesToProjectProfiles) {
+        ProjectLanguageProfile c_only_profile;
+        c_only_profile.c_units = 4;
+
+        ProjectLanguageProfile mixed_profile;
+        mixed_profile.c_units = 2;
+        mixed_profile.cxx_units = 3;
+
+        EXPECT_FALSE(language_support_matches(SuggesterLanguageSupport::CXXOnly, c_only_profile));
+        EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::CAndCXX, c_only_profile));
+        EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::BuildSystemLevel, c_only_profile));
+        EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::CXXOnly, mixed_profile));
+    }
+
+}  // namespace bha::suggestions

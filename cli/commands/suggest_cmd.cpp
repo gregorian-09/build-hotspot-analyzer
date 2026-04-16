@@ -46,7 +46,9 @@ namespace bha::cli
                 {"supportedTypes", supported_types},
                 {"inputRequirements", requirements},
                 {"potentiallyAutoApplicable", descriptor.potentially_auto_applicable},
-                {"supportsExplainMode", descriptor.supports_explain_mode}
+                {"supportsExplainMode", descriptor.supports_explain_mode},
+                {"languageSupport", to_string(descriptor.language_support)},
+                {"abiSensitivity", to_string(descriptor.abi_sensitivity)}
             };
         }
 
@@ -62,6 +64,8 @@ namespace bha::cli
             }
             std::cout << "\n";
             std::cout << "  Potentially auto-applicable: " << (descriptor.potentially_auto_applicable ? "yes" : "no") << "\n";
+            std::cout << "  Language support: " << to_string(descriptor.language_support) << "\n";
+            std::cout << "  ABI sensitivity: " << to_string(descriptor.abi_sensitivity) << "\n";
             std::cout << "  Input requirements:\n";
             for (const auto& requirement : descriptor.input_requirements) {
                 std::cout << "    - " << requirement << "\n";

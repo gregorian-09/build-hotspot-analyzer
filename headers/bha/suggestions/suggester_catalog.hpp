@@ -19,6 +19,8 @@ namespace bha::suggestions {
         std::vector<std::string> input_requirements;
         bool potentially_auto_applicable = false;
         bool supports_explain_mode = true;
+        SuggesterLanguageSupport language_support = SuggesterLanguageSupport::CAndCXX;
+        SuggesterAbiSensitivity abi_sensitivity = SuggesterAbiSensitivity::Low;
     };
 
     [[nodiscard]] inline std::string normalize_suggester_token(std::string_view token) {
@@ -124,10 +126,16 @@ namespace bha::suggestions {
     [[nodiscard]] inline std::vector<std::string> default_input_requirements(
         const ISuggester& suggester
     ) {
+        const SuggesterPolicy policy = suggester.policy();
         std::vector<std::string> requirements{
             "Build traces (.json) from a profiled compile"
         };
         const auto supported = suggester.supported_types();
+        if (policy.language_support == SuggesterLanguageSupport::CXXOnly) {
+            requirements.emplace_back("C++ translation units in compile_commands.json");
+        } else if (policy.language_support == SuggesterLanguageSupport::COnly) {
+            requirements.emplace_back("C translation units in compile_commands.json");
+        }
         if (std::ranges::find(supported, SuggestionType::IncludeRemoval) != supported.end()) {
             requirements.emplace_back("compile_commands.json for clang-tidy verified include cleanup");
         }
@@ -138,6 +146,11 @@ namespace bha::suggestions {
             suggester.suggestion_type() == SuggestionType::ExplicitTemplate ||
             suggester.suggestion_type() == SuggestionType::UnityBuild) {
             requirements.emplace_back("Build-system files for auto-edit emission (CMake/Make/Meson/etc.)");
+        }
+        if (policy.abi_sensitivity == SuggesterAbiSensitivity::HeaderSurface) {
+            requirements.emplace_back("Conservative validation for ABI-visible/public headers and extern \"C\" surfaces");
+        } else if (policy.abi_sensitivity == SuggesterAbiSensitivity::BuildConfiguration) {
+            requirements.emplace_back("Target-level build validation before applying build-configuration edits");
         }
         return requirements;
     }
@@ -169,6 +182,8 @@ namespace bha::suggestions {
             descriptor.supported_types = suggester->supported_types();
             descriptor.input_requirements = default_input_requirements(*suggester);
             descriptor.potentially_auto_applicable = potentially_auto_applicable(*suggester);
+            descriptor.language_support = suggester->policy().language_support;
+            descriptor.abi_sensitivity = suggester->policy().abi_sensitivity;
             descriptors.push_back(std::move(descriptor));
         }
         std::ranges::sort(descriptors, [](const auto& lhs, const auto& rhs) {
@@ -200,4 +215,3 @@ namespace bha::suggestions {
     }
 
 }  // namespace bha::suggestions
-
