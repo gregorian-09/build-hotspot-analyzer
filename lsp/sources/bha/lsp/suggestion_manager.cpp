@@ -712,11 +712,28 @@ namespace bha::lsp
 
             if (skip_next_value_flag("-o") || skip_next_value_flag("-MF") || skip_next_value_flag("-MT") ||
                 skip_next_value_flag("-MQ") || skip_next_value_flag("-MJ") ||
-                skip_next_value_flag("/Fo") || skip_next_value_flag("/Fe")) {
+                skip_next_value_flag("-include") || skip_next_value_flag("-include-pch") ||
+                skip_next_value_flag("/Fo") || skip_next_value_flag("/Fe") ||
+                skip_next_value_flag("/Fp") || skip_next_value_flag("/FI") ||
+                skip_next_value_flag("/Yu") || skip_next_value_flag("/Yc")) {
                 if (i + 1 < args.size()) {
                     ++i;
                 }
                 continue;
+            }
+
+            if (arg == "-Xclang" && i + 1 < args.size()) {
+                const std::string& next = args[i + 1];
+                if (next == "-include-pch" || next == "-include" || next == "-emit-pch") {
+                    ++i;
+                    if (i + 1 < args.size() && args[i + 1] == "-Xclang") {
+                        ++i;
+                    }
+                    if (i + 1 < args.size()) {
+                        ++i;
+                    }
+                    continue;
+                }
             }
 
             if (arg == "-c" || arg == "-S" || arg == "-E" || arg == "/c" ||
@@ -726,7 +743,10 @@ namespace bha::lsp
 
             if (arg.starts_with("-o") || arg.starts_with("-MF") || arg.starts_with("-MT") ||
                 arg.starts_with("-MQ") || arg.starts_with("-MJ") ||
-                arg.starts_with("/Fo") || arg.starts_with("/Fe")) {
+                arg.starts_with("-include") || arg.starts_with("-include-pch") ||
+                arg.starts_with("/Fo") || arg.starts_with("/Fe") ||
+                arg.starts_with("/Fp") || arg.starts_with("/FI") ||
+                arg.starts_with("/Yu") || arg.starts_with("/Yc")) {
                 continue;
             }
 
@@ -784,6 +804,52 @@ namespace bha::lsp
         return cmd.str();
     }
 
+    std::optional<std::string> build_header_syntax_check_command(
+        const std::vector<std::string>& compile_args,
+        const fs::path& reference_source_file,
+        const fs::path& header_file
+    ) {
+        if (compile_args.empty()) {
+            return std::nullopt;
+        }
+
+        auto command_args = filter_compile_args_for_syntax_check(compile_args, reference_source_file);
+        if (command_args.empty()) {
+            return std::nullopt;
+        }
+
+        const std::string compiler_token = select_primary_compiler_token(command_args);
+        if (compiler_token.empty()) {
+            return std::nullopt;
+        }
+
+        if (is_msvc_driver(compiler_token)) {
+            command_args.push_back("/Zs");
+            const bool has_language_mode = std::ranges::any_of(command_args, [](const std::string& token) {
+                return token == "/TP" || token == "/TC" ||
+                       token.starts_with("/Tp") || token.starts_with("/Tc");
+            });
+            if (!has_language_mode) {
+                command_args.push_back("/TP");
+            }
+        } else {
+            command_args.push_back("-Winvalid-pch");
+            command_args.push_back("-fsyntax-only");
+            command_args.push_back("-x");
+            command_args.push_back("c++-header");
+        }
+        command_args.push_back(normalize_path_for_match(header_file).string());
+
+        std::ostringstream cmd;
+        for (std::size_t i = 0; i < command_args.size(); ++i) {
+            if (i > 0) {
+                cmd << ' ';
+            }
+            cmd << shell_quote(command_args[i]);
+        }
+        return cmd.str();
+    }
+
     int run_command_collect_output(
         const std::string& command,
         const int timeout_seconds,
@@ -821,7 +887,57 @@ namespace bha::lsp
         return exit_code;
     }
 
-    std::string truncate_for_diagnostic(const std::string& text, const std::size_t max_chars = 1200) {
+    std::string truncate_for_diagnostic(const std::string& text, std::size_t max_chars = 1200);
+
+    bool append_validation_command_failure(
+        const std::string& validation_label,
+        const fs::path& validated_path,
+        const int timeout_seconds,
+        const int exit_code,
+        const std::string& syntax_output,
+        std::vector<Diagnostic>& errors
+    ) {
+        static const std::regex diagnostic_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+
+        bool emitted_compiler_diag = false;
+        std::smatch match;
+        auto search_start = syntax_output.cbegin();
+        while (std::regex_search(search_start, syntax_output.cend(), match, diagnostic_regex)) {
+            Diagnostic diag;
+            diag.range.start.line = std::stoi(match[2]) - 1;
+            diag.range.start.character = std::stoi(match[3]) - 1;
+            diag.range.end = diag.range.start;
+            diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
+            diag.source = "compiler";
+            diag.message = match[5];
+            errors.push_back(std::move(diag));
+            emitted_compiler_diag = true;
+            search_start = match.suffix().first;
+        }
+
+        if (emitted_compiler_diag) {
+            return false;
+        }
+
+        Diagnostic diag;
+        diag.severity = DiagnosticSeverity::Error;
+        diag.source = "bha-lsp";
+        if (timeout_seconds > 0 && exit_code == 124) {
+            diag.message = validation_label + " syntax validation timed out for " + validated_path.string();
+        } else if (!syntax_output.empty()) {
+            diag.message = validation_label + " syntax validation failed for " + validated_path.string() +
+                ":\n" + truncate_for_diagnostic(syntax_output);
+        } else if (exit_code == -1) {
+            diag.message = validation_label + " syntax validation failed to launch compiler process";
+        } else {
+            diag.message = validation_label + " syntax validation failed for " + validated_path.string() +
+                " with exit code " + std::to_string(exit_code);
+        }
+        errors.push_back(std::move(diag));
+        return false;
+    }
+
+    std::string truncate_for_diagnostic(const std::string& text, const std::size_t max_chars) {
         if (text.size() <= max_chars) {
             return text;
         }
@@ -1051,12 +1167,14 @@ namespace bha::lsp
         return resolve_apply_capabilities(suggestion).has_bulk_apply_path;
     }
 
-    bool requires_include_sensitive_syntax_validation(const bha::Suggestion& suggestion) {
+    bool requires_compile_command_syntax_validation(const bha::Suggestion& suggestion) {
         switch (suggestion.type) {
             case bha::SuggestionType::ForwardDeclaration:
             case bha::SuggestionType::IncludeRemoval:
             case bha::SuggestionType::MoveToCpp:
             case bha::SuggestionType::HeaderSplit:
+            case bha::SuggestionType::ExplicitTemplate:
+            case bha::SuggestionType::PCHOptimization:
                 return true;
             default:
                 return false;
@@ -1073,6 +1191,10 @@ namespace bha::lsp
                 return "Move-to-cpp";
             case bha::SuggestionType::HeaderSplit:
                 return "Header split";
+            case bha::SuggestionType::ExplicitTemplate:
+                return "Explicit template instantiation";
+            case bha::SuggestionType::PCHOptimization:
+                return "PCH";
             default:
                 return "Suggestion";
         }
@@ -2664,45 +2786,23 @@ namespace bha::lsp
         return false;
     }
 
-    bool SuggestionManager::validate_include_sensitive_suggestion(
+    std::optional<std::vector<fs::path>> collect_compile_command_validation_sources(
+        const std::optional<fs::path>& compile_commands_path,
+        const BuildTrace& analysis_trace,
+        const std::optional<fs::path>& project_root,
         const bha::Suggestion& suggestion,
         const std::vector<fs::path>& changed_files,
+        const std::string& validation_label,
         std::vector<Diagnostic>& errors
-    ) const {
-        const std::string validation_label = validation_label_for_suggestion(suggestion);
-        if (!config_.enforce_forward_decl_syntax_gate) {
-            return true;
-        }
-
-        if (!last_compile_commands_path_.has_value() || !fs::exists(*last_compile_commands_path_)) {
+    ) {
+        if (!compile_commands_path.has_value() || !fs::exists(*compile_commands_path)) {
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
             diag.message = validation_label +
                 " apply blocked: compile_commands.json is unavailable for syntax validation";
             errors.push_back(std::move(diag));
-            return false;
-        }
-
-        if (last_analysis_id_.empty()) {
-            Diagnostic diag;
-            diag.severity = DiagnosticSeverity::Error;
-            diag.source = "bha-lsp";
-            diag.message = validation_label +
-                " apply blocked: no prior analysis context is available for validation";
-            errors.push_back(std::move(diag));
-            return false;
-        }
-
-        const auto analysis_it = analysis_cache_.find(last_analysis_id_);
-        if (analysis_it == analysis_cache_.end()) {
-            Diagnostic diag;
-            diag.severity = DiagnosticSeverity::Error;
-            diag.source = "bha-lsp";
-            diag.message = validation_label +
-                " apply blocked: cached analysis trace is no longer available";
-            errors.push_back(std::move(diag));
-            return false;
+            return std::nullopt;
         }
 
         std::unordered_set<std::string> touched_paths;
@@ -2728,17 +2828,16 @@ namespace bha::lsp
             diag.message = validation_label +
                 " apply blocked: could not determine affected files for validation";
             errors.push_back(std::move(diag));
-            return false;
+            return std::nullopt;
         }
 
-        const auto compile_sources = collect_compile_commands_sources(*last_compile_commands_path_, 0);
+        const auto compile_sources = collect_compile_commands_sources(*compile_commands_path, 0);
         std::unordered_set<std::string> compile_source_set;
         compile_source_set.reserve(compile_sources.size());
         for (const auto& source : compile_sources) {
             compile_source_set.insert(source.generic_string());
         }
         const auto compile_sources_by_filename = index_sources_by_filename(compile_sources);
-        const fs::path project_root = last_project_root_.value_or(fs::path{});
 
         std::vector<fs::path> candidate_sources;
         std::unordered_set<std::string> seen_sources;
@@ -2759,10 +2858,11 @@ namespace bha::lsp
             add_candidate_source(fs::path(touched));
         }
 
-        for (const auto& unit : analysis_it->second.units) {
+        const fs::path normalized_project_root = project_root.value_or(fs::path{});
+        for (const auto& unit : analysis_trace.units) {
             auto compile_backed_source = resolve_compile_command_backed_source(
                 unit.source_file,
-                project_root,
+                normalized_project_root,
                 compile_source_set,
                 compile_sources_by_filename
             );
@@ -2782,11 +2882,9 @@ namespace bha::lsp
                 }
             }
 
-            if (!impacted) {
-                continue;
+            if (impacted) {
+                add_candidate_source(source);
             }
-
-            add_candidate_source(source);
         }
 
         if (candidate_sources.empty()) {
@@ -2796,17 +2894,55 @@ namespace bha::lsp
             diag.message = validation_label +
                 " apply blocked: no affected compile-command-backed translation units were found for syntax validation";
             errors.push_back(std::move(diag));
-            return false;
+            return std::nullopt;
         }
 
-        const std::size_t validation_cap = config_.max_forward_decl_validation_units == 0
-            ? candidate_sources.size()
-            : std::min(candidate_sources.size(), config_.max_forward_decl_validation_units);
+        return candidate_sources;
+    }
 
-        std::regex diagnostic_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+    std::optional<fs::path> resolve_generated_pch_header_path(
+        const bha::Suggestion& suggestion,
+        const std::vector<fs::path>& changed_files
+    ) {
+        const auto is_header_path = [](const fs::path& path) {
+            const std::string ext = to_lower_ascii(path.extension().string());
+            return ext == ".h" || ext == ".hh" || ext == ".hpp" || ext == ".hxx";
+        };
+        const auto expected_name = suggestion.target_file.path.filename().string();
+        if (!expected_name.empty()) {
+            for (const auto& changed : changed_files) {
+                if (normalize_path_for_match(changed).filename() == expected_name) {
+                    return normalize_path_for_match(changed);
+                }
+            }
+        }
+
+        const auto is_pch_filename = [](const fs::path& path) {
+            const std::string filename = to_lower_ascii(path.filename().string());
+            return filename == "pch.h" || filename == "stdafx.h";
+        };
+
+        for (const auto& changed : changed_files) {
+            const fs::path normalized = normalize_path_for_match(changed);
+            if (!normalized.empty() && is_header_path(normalized) && is_pch_filename(normalized)) {
+                return normalized;
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    bool validate_source_suggestion_against_compile_commands(
+        const std::optional<fs::path>& compile_commands_path,
+        const std::vector<fs::path>& candidate_sources,
+        const std::string& validation_label,
+        const int timeout_seconds,
+        const std::size_t validation_cap,
+        std::vector<Diagnostic>& errors
+    ) {
         for (std::size_t i = 0; i < validation_cap; ++i) {
             const fs::path& source = candidate_sources[i];
-            auto compile_args = load_compile_command_args_for_source(last_compile_commands_path_, source);
+            auto compile_args = load_compile_command_args_for_source(compile_commands_path, source);
             if (compile_args.empty()) {
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
@@ -2828,54 +2964,157 @@ namespace bha::lsp
             }
 
             std::string syntax_output;
-            const int exit_code = run_command_collect_output(
-                *syntax_cmd,
-                config_.forward_decl_validation_timeout_seconds,
-                syntax_output
-            );
-
+            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
             if (exit_code == 0) {
                 continue;
             }
 
-            bool emitted_compiler_diag = false;
-            std::smatch match;
-            auto search_start = syntax_output.cbegin();
-            while (std::regex_search(search_start, syntax_output.cend(), match, diagnostic_regex)) {
-                Diagnostic diag;
-                diag.range.start.line = std::stoi(match[2]) - 1;
-                diag.range.start.character = std::stoi(match[3]) - 1;
-                diag.range.end = diag.range.start;
-                diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
-                diag.source = "compiler";
-                diag.message = match[5];
-                errors.push_back(std::move(diag));
-                emitted_compiler_diag = true;
-                search_start = match.suffix().first;
-            }
-
-            if (!emitted_compiler_diag) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.source = "bha-lsp";
-                if (config_.forward_decl_validation_timeout_seconds > 0 && exit_code == 124) {
-                    diag.message = validation_label + " syntax validation timed out for " + source.string();
-                } else if (!syntax_output.empty()) {
-                    diag.message = validation_label + " syntax validation failed for " + source.string() +
-                        ":\n" + truncate_for_diagnostic(syntax_output);
-                } else if (exit_code == -1) {
-                    diag.message = validation_label + " syntax validation failed to launch compiler process";
-                } else {
-                    diag.message = validation_label + " syntax validation failed for " + source.string() +
-                        " with exit code " + std::to_string(exit_code);
-                }
-                errors.push_back(std::move(diag));
-            }
-
-            return false;
+            return append_validation_command_failure(
+                validation_label,
+                source,
+                timeout_seconds,
+                exit_code,
+                syntax_output,
+                errors
+            );
         }
 
         return true;
+    }
+
+    bool validate_generated_pch_against_compile_commands(
+        const bha::Suggestion& suggestion,
+        const std::optional<fs::path>& compile_commands_path,
+        const std::vector<fs::path>& changed_files,
+        const std::vector<fs::path>& candidate_sources,
+        const std::string& validation_label,
+        const int timeout_seconds,
+        const std::size_t validation_cap,
+        std::vector<Diagnostic>& errors
+    ) {
+        const auto pch_header = resolve_generated_pch_header_path(suggestion, changed_files);
+        if (!pch_header.has_value()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: could not resolve the generated precompiled header file for validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        for (std::size_t i = 0; i < validation_cap; ++i) {
+            const fs::path& source = candidate_sources[i];
+            auto compile_args = load_compile_command_args_for_source(compile_commands_path, source);
+            if (compile_args.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = validation_label + " apply blocked: no compile command found for " + source.string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            const auto syntax_cmd = build_header_syntax_check_command(compile_args, source, *pch_header);
+            if (!syntax_cmd.has_value()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = validation_label +
+                    " apply blocked: failed to construct precompiled-header validation command for " +
+                    pch_header->string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            std::string syntax_output;
+            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
+            if (exit_code == 0) {
+                continue;
+            }
+
+            return append_validation_command_failure(
+                validation_label,
+                *pch_header,
+                timeout_seconds,
+                exit_code,
+                syntax_output,
+                errors
+            );
+        }
+
+        return true;
+    }
+
+    bool SuggestionManager::validate_compile_command_backed_suggestion(
+        const bha::Suggestion& suggestion,
+        const std::vector<fs::path>& changed_files,
+        std::vector<Diagnostic>& errors
+    ) const {
+        const std::string validation_label = validation_label_for_suggestion(suggestion);
+        if (!config_.enforce_compile_command_syntax_gate) {
+            return true;
+        }
+
+        if (last_analysis_id_.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: no prior analysis context is available for validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const auto analysis_it = analysis_cache_.find(last_analysis_id_);
+        if (analysis_it == analysis_cache_.end()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: cached analysis trace is no longer available";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const auto candidate_sources = collect_compile_command_validation_sources(
+            last_compile_commands_path_,
+            analysis_it->second,
+            last_project_root_,
+            suggestion,
+            changed_files,
+            validation_label,
+            errors
+        );
+        if (!candidate_sources.has_value()) {
+            return false;
+        }
+
+        const std::size_t validation_cap = config_.max_compile_command_validation_units == 0
+            ? candidate_sources->size()
+            : std::min(candidate_sources->size(), config_.max_compile_command_validation_units);
+
+        if (suggestion.type == bha::SuggestionType::PCHOptimization) {
+            return validate_generated_pch_against_compile_commands(
+                suggestion,
+                last_compile_commands_path_,
+                changed_files,
+                *candidate_sources,
+                validation_label,
+                config_.compile_command_validation_timeout_seconds,
+                validation_cap,
+                errors
+            );
+        }
+
+        return validate_source_suggestion_against_compile_commands(
+            last_compile_commands_path_,
+            *candidate_sources,
+            validation_label,
+            config_.compile_command_validation_timeout_seconds,
+            validation_cap,
+            errors
+        );
     }
 
     ApplySuggestionResult SuggestionManager::apply_suggestion(
@@ -2899,8 +3138,8 @@ namespace bha::lsp
         const auto& bha_sug = bha_it->second;
         const auto application_mode = bha::resolve_application_mode(bha_sug);
         const bool enforce_syntax_validation =
-            requires_include_sensitive_syntax_validation(bha_sug) &&
-            config_.enforce_forward_decl_syntax_gate;
+            requires_compile_command_syntax_validation(bha_sug) &&
+            config_.enforce_compile_command_syntax_gate;
 
         std::vector<FileBackup> transactional_snapshot;
 
@@ -2927,7 +3166,7 @@ namespace bha::lsp
         }
 
         if (enforce_syntax_validation &&
-            !validate_include_sensitive_suggestion(bha_sug, changed_files, result.errors)) {
+            !validate_compile_command_backed_suggestion(bha_sug, changed_files, result.errors)) {
             rollback_apply_suggestion(
                 result,
                 transactional_snapshot,

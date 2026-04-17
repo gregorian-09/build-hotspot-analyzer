@@ -58,9 +58,9 @@ namespace bha::lsp
         bool include_unsafe_suggestions = false;
 
         bool allow_missing_compile_commands = false;
-        bool enforce_forward_decl_syntax_gate = true;
-        int forward_decl_validation_timeout_seconds = 120;
-        std::size_t max_forward_decl_validation_units = 3;
+        bool enforce_compile_command_syntax_gate = true;
+        int compile_command_validation_timeout_seconds = 120;
+        std::size_t max_compile_command_validation_units = 3;
         bool rerank_remaining_after_each_apply = false;
         std::vector<std::string> protected_include_patterns;
 
@@ -255,7 +255,7 @@ namespace bha::lsp
             std::string_view rollback_failure_message
         );
         bool validate_post_apply_rebuild(ApplySuggestionResult& result);
-        bool validate_include_sensitive_suggestion(
+        bool validate_compile_command_backed_suggestion(
             const bha::Suggestion& suggestion,
             const std::vector<fs::path>& changed_files,
             std::vector<Diagnostic>& errors

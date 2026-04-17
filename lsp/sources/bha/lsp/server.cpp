@@ -1271,8 +1271,8 @@ namespace bha::lsp
         sm_config.allow_missing_compile_commands = config_.allow_missing_compile_commands;
         sm_config.include_unsafe_suggestions = config_.include_unsafe_suggestions;
         sm_config.min_confidence = config_.min_confidence;
-        sm_config.enforce_forward_decl_syntax_gate = true;
-        sm_config.forward_decl_validation_timeout_seconds = config_.build_timeout_seconds;
+        sm_config.enforce_compile_command_syntax_gate = true;
+        sm_config.compile_command_validation_timeout_seconds = config_.build_timeout_seconds;
         if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
             if (root.starts_with("file://")) {
