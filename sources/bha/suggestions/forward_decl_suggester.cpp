@@ -22,8 +22,15 @@ namespace bha::suggestions
 {
     namespace {
 
+        enum class ForwardDeclKind {
+            Class,
+            Struct,
+            Union
+        };
+
         struct ForwardDeclType {
             std::string name;
+            ForwardDeclKind kind = ForwardDeclKind::Class;
             std::vector<std::string> namespaces;
             std::vector<ScopeFrame> scopes;
             std::vector<IncludeDirective> support_includes;
@@ -311,6 +318,22 @@ namespace bha::suggestions
             return filtered;
         }
 
+        std::string forward_decl_keyword(const ForwardDeclType& type) {
+            switch (type.kind) {
+                case ForwardDeclKind::Class:
+                    return "class";
+                case ForwardDeclKind::Struct:
+                    return "struct";
+                case ForwardDeclKind::Union:
+                    return "union";
+            }
+            return "class";
+        }
+
+        std::string c_tag_name(const ForwardDeclType& type) {
+            return forward_decl_keyword(type) + " " + type.name;
+        }
+
         std::string forward_declaration_text(
             const ForwardDeclType& type,
             const std::vector<IncludeDirective>& support_includes
@@ -324,7 +347,7 @@ namespace bha::suggestions
             append_include_block(out, include_lines);
 
             if (type.scopes.empty()) {
-                out.add_line("class " + type.name + ";");
+                out.add_line(forward_decl_keyword(type) + " " + type.name + ";");
                 return trim_whitespace_copy(out.str());
             }
 
@@ -335,7 +358,7 @@ namespace bha::suggestions
                     out.add_line(scope.macro.open_text);
                 }
             }
-            out.add_line("class " + type.name + ";");
+            out.add_line(forward_decl_keyword(type) + " " + type.name + ";");
             for (std::size_t i = type.scopes.size(); i > 0; --i) {
                 const auto& scope = type.scopes[i - 1];
                 if (scope.kind == ScopeFrameKind::Namespace) {
@@ -402,18 +425,22 @@ namespace bha::suggestions
                     }
                 }
 
-                if (!line.empty()) {
-                    std::smatch class_match;
-                    const std::regex class_regex(R"(^\s*(class|struct)\b(.*)$)");
-                    if (std::regex_search(line, class_match, class_regex)) {
-                        if (!pending_template) {
-                            const auto type_name = extract_declared_type_name(class_match[2].str());
+            if (!line.empty()) {
+                std::smatch class_match;
+                const std::regex class_regex(R"(^\s*(class|struct|union)\b(.*)$)");
+                if (std::regex_search(line, class_match, class_regex)) {
+                    if (!pending_template) {
+                        const auto type_name = extract_declared_type_name(class_match[2].str());
                             if (!type_name.has_value()) {
                                 pending_template = false;
                                 continue;
                             }
                             ForwardDeclType type;
                             type.name = *type_name;
+                            const std::string kind = class_match[1].str();
+                            type.kind = kind == "struct" ? ForwardDeclKind::Struct :
+                                        kind == "union" ? ForwardDeclKind::Union :
+                                                          ForwardDeclKind::Class;
                             for (const auto& scope : scope_stack) {
                                 type.scopes.push_back(scope);
                                 if (scope.kind == ScopeFrameKind::Namespace) {
@@ -574,6 +601,8 @@ namespace bha::suggestions
             std::vector<std::string> spellings{qualified};
             if (!type.namespaces.empty()) {
                 spellings.push_back(type.name);
+            } else if (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union) {
+                spellings.push_back(c_tag_name(type));
             }
 
             const auto usage = analyze_incomplete_type_usage(sanitized_text, spellings);
@@ -794,12 +823,24 @@ namespace bha::suggestions
             return out.str();
         }
 
+        bool uses_c_tag_syntax(
+            const std::string& sanitized_includer_content,
+            const ForwardDeclType& type
+        ) {
+            const std::regex tag_regex(
+                "\\b" + forward_decl_keyword(type) + "\\s+" + type.name + "\\b"
+            );
+            return std::regex_search(sanitized_includer_content, tag_regex);
+        }
+
         std::string generate_after_code(
             const fs::path& header_path,
             const fs::path& includer_path,
             const ForwardDeclType& type
         ) {
-            const std::string type_name = qualified_type_name(type);
+            const std::string type_name = type.scopes.empty() && (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union)
+                ? c_tag_name(type)
+                : qualified_type_name(type);
             const std::string declaration = forward_declaration_text(type, type.support_includes);
 
             GeneratedTextBuilder out;
@@ -817,6 +858,13 @@ namespace bha::suggestions
             out.add_line("#include \"" + includer_path.filename().string() + "\"");
             out.add_line("#include \"" + header_path.filename().string() + "\"");
             return out.str();
+        }
+
+        std::string consumer_type_name_for_examples(const ForwardDeclType& type) {
+            if (type.scopes.empty() && (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union)) {
+                return c_tag_name(type);
+            }
+            return qualified_type_name(type);
         }
 
     }  // namespace
@@ -880,6 +928,17 @@ namespace bha::suggestions
             if (!target_type.namespaces.empty() && target_type.namespaces.front() == "std") {
                 ++skipped;
                 continue;
+            }
+            const ProjectLanguageProfile header_language = summarize_file_language_profile(header.path, context);
+            if (is_mixed_c_and_cxx_profile(header_language)) {
+                ++skipped;
+                continue;
+            }
+            if (is_c_like_profile(header_language)) {
+                if (target_type.kind == ForwardDeclKind::Class || !target_type.namespaces.empty()) {
+                    ++skipped;
+                    continue;
+                }
             }
             if (has_macro_wrappers(target_type)) {
                 const auto support_includes = resolve_support_includes(
@@ -969,6 +1028,19 @@ namespace bha::suggestions
                 if (!usage.eligible || usage.pointer_or_reference_mentions < config.min_usage_sites) {
                     continue;
                 }
+                const ProjectLanguageProfile includer_language = summarize_file_language_profile(includer_path, context);
+                if (is_mixed_c_and_cxx_profile(includer_language)) {
+                    continue;
+                }
+                const bool c_mode = is_c_like_profile(header_language) || is_c_like_profile(includer_language);
+                if (c_mode) {
+                    if (target_type.kind == ForwardDeclKind::Class || !target_type.namespaces.empty()) {
+                        continue;
+                    }
+                    if (!uses_c_tag_syntax(sanitized, target_type)) {
+                        continue;
+                    }
+                }
                 if (references_non_target_exported_symbol(
                         sanitized,
                         exported_symbols,
@@ -1034,7 +1106,7 @@ namespace bha::suggestions
                 suggestion.before_code.code = generate_before_code(
                     header.path,
                     includer_path,
-                    qualified_type_name(target_type)
+                    consumer_type_name_for_examples(target_type)
                 );
                 suggestion.after_code.file = includer_path;
                 suggestion.after_code.code = generate_after_code(

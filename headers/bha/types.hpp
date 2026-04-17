@@ -723,6 +723,7 @@ namespace bha {
         Priority min_priority = Priority::Low;
         double min_confidence = 0.5;
         bool include_unsafe = false;
+        bool conservative_abi_sensitive_headers = true;
         bool enable_consolidation = true;
         bool restrict_to_trace = true;
         Duration max_total_time = Duration::zero();

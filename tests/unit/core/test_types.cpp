@@ -207,6 +207,7 @@ namespace bha
         EXPECT_EQ(options.min_priority, Priority::Low);
         EXPECT_DOUBLE_EQ(options.min_confidence, 0.5);
         EXPECT_FALSE(options.include_unsafe);
+        EXPECT_TRUE(options.conservative_abi_sensitive_headers);
         EXPECT_TRUE(options.enabled_types.empty());
     }
 

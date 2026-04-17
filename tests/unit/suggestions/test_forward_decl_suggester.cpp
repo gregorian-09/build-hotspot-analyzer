@@ -725,4 +725,118 @@ namespace bha::suggestions
             [&consumer_source](const TextEdit& edit) { return edit.file == consumer_source; }
         ));
     }
+
+    TEST_F(ForwardDeclSuggesterTest, SuggestsStructForwardDeclarationInCMode) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.c";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "struct Widget {\n"
+            "    int value;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"widget.h\"\n"
+            "struct Consumer {\n"
+            "    struct Widget* ptr;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void use(struct Consumer* consumer) { (void)consumer; }\n"
+        );
+
+        CompilationUnit unit;
+        unit.source_file = consumer_source;
+        unit.command_line = {"clang", "-x", "c", "-c", consumer_source.string()};
+        IncludeInfo include;
+        include.header = heavy_header;
+        unit.includes.push_back(include);
+        trace.units.push_back(unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(90);
+        header.inclusion_count = 4;
+        header.including_files = 1;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        ASSERT_FALSE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.edits.front().new_text, "\nstruct Widget;\n\n");
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SkipsBareTypedefStyleUsageInCMode) {
+        BuildTrace trace;
+
+        const auto heavy_header = temp_root_ / "widget.h";
+        const auto consumer_header = temp_root_ / "consumer.h";
+        const auto consumer_source = temp_root_ / "consumer.c";
+
+        write_file(
+            heavy_header,
+            "#pragma once\n"
+            "struct Widget {\n"
+            "    int value;\n"
+            "};\n"
+            "typedef struct Widget Widget;\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"widget.h\"\n"
+            "struct Consumer {\n"
+            "    Widget* ptr;\n"
+            "};\n"
+        );
+        write_file(
+            consumer_source,
+            "#include \"consumer.h\"\n"
+            "void use(struct Consumer* consumer) { (void)consumer; }\n"
+        );
+
+        CompilationUnit unit;
+        unit.source_file = consumer_source;
+        unit.command_line = {"clang", "-x", "c", "-c", consumer_source.string()};
+        IncludeInfo include;
+        include.header = heavy_header;
+        unit.includes.push_back(include);
+        trace.units.push_back(unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = heavy_header;
+        header.total_parse_time = std::chrono::milliseconds(90);
+        header.inclusion_count = 4;
+        header.including_files = 1;
+        header.included_by = {consumer_header};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        options.heuristics.forward_decl.min_usage_sites = 1;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
 }

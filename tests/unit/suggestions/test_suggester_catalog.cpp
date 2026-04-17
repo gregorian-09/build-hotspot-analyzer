@@ -1,9 +1,77 @@
 #include "bha/suggestions/all_suggesters.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
 
+#include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace bha::suggestions {
+
+    namespace {
+
+        class AbiSensitiveStubSuggester final : public ISuggester {
+        public:
+            AbiSensitiveStubSuggester(std::string id, std::filesystem::path target)
+                : id_(std::move(id)), target_(std::move(target)) {}
+
+            [[nodiscard]] std::string_view name() const noexcept override {
+                return "AbiSensitiveStubSuggester";
+            }
+
+            [[nodiscard]] std::string_view description() const noexcept override {
+                return "Emits a deterministic header-edit suggestion for ABI policy tests.";
+            }
+
+            [[nodiscard]] SuggestionType suggestion_type() const noexcept override {
+                return SuggestionType::ForwardDeclaration;
+            }
+
+            [[nodiscard]] SuggesterPolicy policy() const noexcept override {
+                return {
+                    .language_support = SuggesterLanguageSupport::CAndCXX,
+                    .abi_sensitivity = SuggesterAbiSensitivity::HeaderSurface
+                };
+            }
+
+            [[nodiscard]] Result<SuggestionResult, Error> suggest(
+                const SuggestionContext&
+            ) const override {
+                Suggestion suggestion;
+                suggestion.id = id_;
+                suggestion.type = SuggestionType::ForwardDeclaration;
+                suggestion.priority = Priority::Medium;
+                suggestion.confidence = 0.9;
+                suggestion.is_safe = true;
+                suggestion.target_file.path = target_;
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.edits.push_back(TextEdit{
+                    .file = target_,
+                    .start_line = 0,
+                    .start_col = 0,
+                    .end_line = 0,
+                    .end_col = 0,
+                    .new_text = "// patched\n"
+                });
+
+                SuggestionResult result;
+                result.suggestions.push_back(std::move(suggestion));
+                return Result<SuggestionResult, Error>::success(std::move(result));
+            }
+
+        private:
+            std::string id_;
+            std::filesystem::path target_;
+        };
+
+        void write_file(const std::filesystem::path& path, const std::string& content) {
+            std::filesystem::create_directories(path.parent_path());
+            std::ofstream out(path);
+            ASSERT_TRUE(out.good());
+            out << content;
+        }
+
+    }  // namespace
 
     TEST(SuggesterCatalogTest, ListsRegisteredSuggesters) {
         register_all_suggesters();
@@ -82,6 +150,90 @@ namespace bha::suggestions {
         EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::CAndCXX, c_only_profile));
         EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::BuildSystemLevel, c_only_profile));
         EXPECT_TRUE(language_support_matches(SuggesterLanguageSupport::CXXOnly, mixed_profile));
+    }
+
+    TEST(SuggesterCatalogTest, DowngradesAbiSensitivePublicHeaderSuggestions) {
+        const auto unique_suffix = std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count()
+        );
+        const auto root = std::filesystem::temp_directory_path() / ("bha-abi-policy-" + unique_suffix);
+        const auto public_header = root / "include" / "widget.h";
+        write_file(public_header, "#pragma once\nstruct widget;\n");
+
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = root / "src" / "widget.c";
+        unit.command_line = {"clang", "-x", "c", "-c", unit.source_file.string()};
+        trace.units.push_back(unit);
+
+        analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.enable_consolidation = false;
+
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("abi-public", public_header)
+        );
+
+        const auto result = generate_all_suggestions(trace, analysis, options, root);
+        ASSERT_TRUE(result.is_ok());
+        const auto it = std::ranges::find_if(result.value(), [](const Suggestion& suggestion) {
+            return suggestion.id == "abi-public";
+        });
+        ASSERT_NE(it, result.value().end());
+        const auto& suggestion = *it;
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::Advisory);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("public or extern \"C\" header surface"), std::string::npos);
+
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST(SuggesterCatalogTest, DowngradesAbiSensitiveExternCHeaderSuggestions) {
+        const auto unique_suffix = std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count()
+        );
+        const auto root = std::filesystem::temp_directory_path() / ("bha-externc-policy-" + unique_suffix);
+        const auto header = root / "src" / "ffi.hpp";
+        write_file(
+            header,
+            "#pragma once\n"
+            "#ifdef __cplusplus\n"
+            "extern \"C\" {\n"
+            "#endif\n"
+            "int ffi_call(void);\n"
+            "#ifdef __cplusplus\n"
+            "}\n"
+            "#endif\n"
+        );
+
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = root / "src" / "ffi.cpp";
+        unit.command_line = {"clang++", "-c", unit.source_file.string()};
+        trace.units.push_back(unit);
+
+        analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.enable_consolidation = false;
+
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("abi-extern-c", header)
+        );
+
+        const auto result = generate_all_suggestions(trace, analysis, options, root);
+        ASSERT_TRUE(result.is_ok());
+        const auto it = std::ranges::find_if(result.value(), [](const Suggestion& suggestion) {
+            return suggestion.id == "abi-extern-c";
+        });
+        ASSERT_NE(it, result.value().end());
+        const auto& suggestion = *it;
+        EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::Advisory);
+        EXPECT_TRUE(suggestion.edits.empty());
+
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
     }
 
 }  // namespace bha::suggestions

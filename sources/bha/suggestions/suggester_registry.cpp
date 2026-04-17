@@ -805,6 +805,16 @@ namespace bha::suggestions
             }
 
             for (auto& suggestion : result_value.suggestions) {
+                if (options.conservative_abi_sensitive_headers &&
+                    suggester->policy().abi_sensitivity == SuggesterAbiSensitivity::HeaderSurface &&
+                    suggestion_touches_abi_sensitive_header(suggestion, project_root)) {
+                    downgrade_suggestion_to_manual_review(
+                        suggestion,
+                        "Touches a public or extern \"C\" header surface",
+                        "Review and apply this change manually after validating exported or C-ABI headers across supported consumers."
+                    );
+                }
+
                 if (suggestion.priority > options.min_priority) {
                     continue;
                 }

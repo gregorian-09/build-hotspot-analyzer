@@ -306,6 +306,196 @@ namespace bha::suggestions {
         return true;
     }
 
+    [[nodiscard]] inline std::optional<fs::path> find_file_in_repo(
+        const fs::path& repo_root,
+        const fs::path& filename
+    );
+
+    [[nodiscard]] inline std::optional<fs::path> resolve_trace_repo_root(const fs::path& path);
+
+    [[nodiscard]] inline fs::path resolve_source_path(const fs::path& path);
+
+    [[nodiscard]] inline bool is_header_file_path(const fs::path& path) {
+        const std::string extension = lowercase_ascii(path.extension().string());
+        return extension == ".h" || extension == ".hh" || extension == ".hpp" || extension == ".hxx" ||
+               extension == ".inc" || extension == ".inl" || extension == ".ipp" || extension == ".tpp";
+    }
+
+    [[nodiscard]] inline std::string repo_relative_path_string(
+        const fs::path& path,
+        const fs::path& project_root
+    ) {
+        fs::path resolved_path = path;
+        if (resolved_path.is_relative() && resolved_path.parent_path().empty()) {
+            resolved_path = resolve_source_path(resolved_path);
+        }
+
+        if (auto repo_root = resolve_trace_repo_root(resolved_path)) {
+            if (auto found = find_file_in_repo(*repo_root, resolved_path.filename())) {
+                std::error_code ec;
+                auto rel = fs::relative(*found, *repo_root, ec);
+                if (!ec && !rel.empty()) {
+                    return rel.generic_string();
+                }
+            }
+        }
+
+        if (!project_root.empty() && resolved_path.is_absolute()) {
+            std::error_code ec;
+            auto rel = fs::relative(resolved_path, project_root, ec);
+            if (!ec && !rel.empty()) {
+                return rel.generic_string();
+            }
+        }
+        return resolved_path.generic_string();
+    }
+
+    [[nodiscard]] inline bool is_public_api_header_path(std::string_view repo_relative) {
+        return repo_relative.rfind("include/", 0) == 0 ||
+               repo_relative.rfind("public/", 0) == 0 ||
+               repo_relative.rfind("api/", 0) == 0;
+    }
+
+    [[nodiscard]] inline bool file_contains_extern_c_linkage(const fs::path& path) {
+        static std::mutex cache_mutex;
+        static std::unordered_map<std::string, bool> cache;
+
+        const fs::path resolved = resolve_source_path(path).lexically_normal();
+        const std::string key = resolved.generic_string();
+        {
+            const std::scoped_lock lock(cache_mutex);
+            if (const auto it = cache.find(key); it != cache.end()) {
+                return it->second;
+            }
+        }
+
+        std::ifstream in(resolved);
+        bool contains_extern_c = false;
+        if (in.is_open()) {
+            const std::string content(
+                (std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>()
+            );
+            contains_extern_c = content.find("extern \"C\"") != std::string::npos;
+        }
+
+        const std::scoped_lock lock(cache_mutex);
+        cache[key] = contains_extern_c;
+        return contains_extern_c;
+    }
+
+    [[nodiscard]] inline bool is_abi_sensitive_header_path(
+        const fs::path& path,
+        const fs::path& project_root
+    ) {
+        if (!is_header_file_path(path)) {
+            return false;
+        }
+        const std::string repo_relative = repo_relative_path_string(path, project_root);
+        return is_public_api_header_path(repo_relative) || file_contains_extern_c_linkage(path);
+    }
+
+    [[nodiscard]] inline ProjectLanguageProfile summarize_file_language_profile(
+        const fs::path& path,
+        const SuggestionContext& context
+    ) {
+        ProjectLanguageProfile profile;
+        const fs::path target = resolve_source_path(path).lexically_normal();
+
+        for (const auto& unit : context.trace.units) {
+            const SourceLanguageMode mode = detect_source_language_mode(unit);
+            const auto count_mode = [&](const SourceLanguageMode detected) {
+                switch (detected) {
+                    case SourceLanguageMode::C:
+                        ++profile.c_units;
+                        break;
+                    case SourceLanguageMode::CXX:
+                        ++profile.cxx_units;
+                        break;
+                    case SourceLanguageMode::ObjectiveC:
+                        ++profile.objc_units;
+                        break;
+                    case SourceLanguageMode::ObjectiveCXX:
+                        ++profile.objcxx_units;
+                        break;
+                    case SourceLanguageMode::Unknown:
+                        ++profile.unknown_units;
+                        break;
+                }
+            };
+
+            if (resolve_source_path(unit.source_file).lexically_normal() == target) {
+                count_mode(mode);
+                continue;
+            }
+
+            for (const auto& include : unit.includes) {
+                if (resolve_source_path(include.header).lexically_normal() == target) {
+                    count_mode(mode);
+                    break;
+                }
+            }
+        }
+
+        return profile;
+    }
+
+    [[nodiscard]] inline bool is_c_like_profile(const ProjectLanguageProfile& profile) noexcept {
+        return profile.has_c_family() && !profile.has_cxx_family();
+    }
+
+    [[nodiscard]] inline bool is_mixed_c_and_cxx_profile(const ProjectLanguageProfile& profile) noexcept {
+        return profile.has_c_family() && profile.has_cxx_family();
+    }
+
+    inline void downgrade_suggestion_to_manual_review(
+        Suggestion& suggestion,
+        const std::string& reason,
+        const std::string& guidance
+    ) {
+        suggestion.application_mode = SuggestionApplicationMode::Advisory;
+        suggestion.application_summary = "Manual review only";
+        suggestion.application_guidance = guidance;
+        suggestion.auto_apply_blocked_reason = reason;
+        suggestion.edits.clear();
+        suggestion.refactor_class_name.reset();
+        suggestion.refactor_compile_commands_path.reset();
+    }
+
+    [[nodiscard]] inline std::vector<fs::path> suggestion_touched_files(const Suggestion& suggestion) {
+        std::vector<fs::path> files;
+        auto append_unique = [&](const fs::path& candidate) {
+            if (candidate.empty()) {
+                return;
+            }
+            const fs::path normalized = resolve_source_path(candidate).lexically_normal();
+            if (std::ranges::find(files, normalized) == files.end()) {
+                files.push_back(normalized);
+            }
+        };
+
+        append_unique(suggestion.target_file.path);
+        for (const auto& secondary : suggestion.secondary_files) {
+            append_unique(secondary.path);
+        }
+        for (const auto& edit : suggestion.edits) {
+            append_unique(edit.file);
+        }
+        return files;
+    }
+
+    [[nodiscard]] inline bool suggestion_touches_abi_sensitive_header(
+        const Suggestion& suggestion,
+        const fs::path& project_root
+    ) {
+        for (const auto& path : suggestion_touched_files(suggestion)) {
+            if (is_abi_sensitive_header_path(path, project_root)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] inline bool has_build_system_marker(const fs::path& dir) {
         if (fs::exists(dir / "CMakeLists.txt") ||
             fs::exists(dir / "meson.build") ||
@@ -1046,7 +1236,10 @@ namespace bha::suggestions {
         const std::size_t begin = line_start == std::string::npos ? 0 : line_start + 1;
         const std::size_t end = line_end == std::string::npos ? text.size() : line_end;
         const std::string line = trim_whitespace_copy(text.substr(begin, end - begin));
-        return line.starts_with("class ") || line.starts_with("struct ");
+        static const std::regex forward_decl_regex(
+            R"(^(class|struct|union)\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+final)?\s*;\s*$)"
+        );
+        return std::regex_match(line, forward_decl_regex);
     }
 
     [[nodiscard]] inline std::vector<std::string> collect_pointer_or_reference_identifiers(
