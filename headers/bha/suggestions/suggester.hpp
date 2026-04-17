@@ -1609,6 +1609,36 @@ namespace bha::suggestions {
         return patterns;
     }
 
+    [[nodiscard]] inline std::optional<std::string> direct_include_guard_umbrella_header(
+        const fs::path& header_path
+    ) {
+        if (header_path.empty() || !fs::exists(header_path)) {
+            return std::nullopt;
+        }
+
+        std::ifstream in(header_path);
+        if (!in) {
+            return std::nullopt;
+        }
+
+        static const std::regex direct_include_guard_regex(
+            R"(Never use\s+[<"]([^>"]+)[>"]\s+directly;\s+include\s+[<"]([^>"]+)[>"]\s+instead\.?)",
+            std::regex::ECMAScript | std::regex::icase
+        );
+
+        std::string line;
+        std::size_t bytes_scanned = 0;
+        while (std::getline(in, line) && bytes_scanned < 16 * 1024) {
+            bytes_scanned += line.size();
+            std::smatch match;
+            if (std::regex_search(line, match, direct_include_guard_regex) && match.size() >= 3) {
+                return match[2].str();
+            }
+        }
+
+        return std::nullopt;
+    }
+
     [[nodiscard]] inline bool matches_protected_include_policy(
         const std::string& header_name,
         const std::optional<fs::path>& resolved_header,
@@ -1619,6 +1649,11 @@ namespace bha::suggestions {
             : protected_include_patterns;
         if (patterns.empty()) {
             return false;
+        }
+
+        if (resolved_header.has_value() &&
+            direct_include_guard_umbrella_header(*resolved_header).has_value()) {
+            return true;
         }
 
         std::vector<std::string> candidates;

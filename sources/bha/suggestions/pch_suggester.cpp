@@ -1697,6 +1697,11 @@ namespace bha::suggestions
                 continue;
             }
 
+            if (direct_include_guard_umbrella_header(header.path).has_value()) {
+                ++skipped;
+                continue;
+            }
+
             if (!header.is_stable && !header.is_external) {
                 ++skipped;
                 continue;

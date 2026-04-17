@@ -97,6 +97,64 @@ namespace bha::suggestions
                   std::chrono::milliseconds(1500));
     }
 
+    TEST_F(PCHSuggesterTest, DetectsHeadersThatForbidDirectInclusion) {
+        namespace fs = std::filesystem;
+        const fs::path temp_dir = fs::temp_directory_path() / "bha_pch_direct_include_guard_test";
+        std::error_code ec;
+        fs::remove_all(temp_dir, ec);
+        fs::create_directories(temp_dir, ec);
+
+        const fs::path guarded_header = temp_dir / "hresetintrin.h";
+        {
+            std::ofstream out(guarded_header);
+            out << "#error \"Never use <hresetintrin.h> directly; include <x86gprintrin.h> instead.\"\n";
+        }
+
+        const auto umbrella = direct_include_guard_umbrella_header(guarded_header);
+        ASSERT_TRUE(umbrella.has_value());
+        EXPECT_EQ(*umbrella, "x86gprintrin.h");
+        EXPECT_TRUE(matches_protected_include_policy("hresetintrin.h", guarded_header, {}));
+
+        fs::remove_all(temp_dir, ec);
+    }
+
+    TEST_F(PCHSuggesterTest, SkipsHeadersThatForbidDirectInclusion) {
+        namespace fs = std::filesystem;
+        const fs::path temp_dir = fs::temp_directory_path() / "bha_pch_skip_direct_include_guard_test";
+        std::error_code ec;
+        fs::remove_all(temp_dir, ec);
+        fs::create_directories(temp_dir, ec);
+
+        const fs::path guarded_header = temp_dir / "hresetintrin.h";
+        {
+            std::ofstream out(guarded_header);
+            out << "#error \"Never use <hresetintrin.h> directly; include <x86gprintrin.h> instead.\"\n";
+        }
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(30);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = guarded_header;
+        header.total_parse_time = std::chrono::seconds(4);
+        header.inclusion_count = 200;
+        header.including_files = 160;
+        header.is_stable = true;
+        header.is_external = true;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_dir};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+
+        fs::remove_all(temp_dir, ec);
+    }
+
     TEST_F(PCHSuggesterTest, SkipsLowInclusionCount) {
         BuildTrace trace;
         analyzers::AnalysisResult analysis;
