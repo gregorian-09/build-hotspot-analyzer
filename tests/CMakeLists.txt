@@ -33,16 +33,23 @@ add_executable(bha_tests
         unit/exporters/test_exporter.cpp
         unit/storage/test_storage_compare.cpp
         unit/git/test_git_integration.cpp
+        unit/lsp/test_suggestion_manager.cpp
 )
 
 target_link_libraries(bha_tests
         PRIVATE
         bha::bha
+        bha::lsp_core
         bha::warnings
         GTest::gtest
         GTest::gtest_main
         $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
         $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
+)
+
+target_include_directories(bha_tests
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}/lsp/headers
 )
 
 gtest_discover_tests(bha_tests)

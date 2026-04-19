@@ -2412,6 +2412,15 @@ namespace bha::lsp
                 continue;
             }
 
+            if (!fs::exists(normalized)) {
+                snapshot.push_back(FileBackup{
+                    normalized,
+                    false,
+                    {}
+                });
+                continue;
+            }
+
             std::ifstream in(normalized, std::ios::binary);
             if (!in) {
                 Diagnostic diag;
@@ -2438,6 +2447,21 @@ namespace bha::lsp
         bool success = true;
         for (const auto& backup : snapshot) {
             try {
+                if (!backup.existed_before) {
+                    std::error_code remove_ec;
+                    fs::remove(backup.path, remove_ec);
+                    if (remove_ec) {
+                        success = false;
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.source = "bha-lsp";
+                        diag.message = "Failed to remove newly created file during rollback: " +
+                            backup.path.string();
+                        errors.push_back(std::move(diag));
+                    }
+                    continue;
+                }
+
                 if (const fs::path parent = backup.path.parent_path(); !parent.empty()) {
                     fs::create_directories(parent);
                 }

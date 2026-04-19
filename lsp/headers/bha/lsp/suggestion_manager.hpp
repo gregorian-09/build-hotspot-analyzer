@@ -191,6 +191,8 @@ namespace bha::lsp
         [[nodiscard]] std::optional<BuildMetrics> get_last_baseline_metrics() const;
 
     private:
+        friend class SuggestionManagerTestAccess;
+
         static BuildMetrics extract_build_metrics(const BuildTrace& trace);
 
         static Priority calculate_priority(double improvement_percentage) ;
