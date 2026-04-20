@@ -951,63 +951,6 @@ namespace bha::suggestions
             return suggestion;
         }
 
-        std::size_t find_extern_template_insertion_line(const fs::path& header_path) {
-            auto lines_result = file_utils::read_lines(header_path);
-            if (lines_result.is_err()) {
-                return 0;
-            }
-            const auto& lines = lines_result.value();
-            for (std::size_t idx = lines.size(); idx > 0; --idx) {
-                const std::string& line = lines[idx - 1];
-                const auto first = line.find_first_not_of(" \t\r\n");
-                if (first == std::string::npos) {
-                    continue;
-                }
-                const std::string trimmed = line.substr(first);
-                if (!trimmed.empty() && trimmed.front() == '}') {
-                    return idx - 1;
-                }
-            }
-            return lines.size();
-        }
-
-        std::size_t find_namespace_tail_insertion_line(const std::string& content) {
-            std::istringstream input(content);
-            std::vector<std::string> lines;
-            std::string line;
-            while (std::getline(input, line)) {
-                lines.push_back(line);
-            }
-
-            for (std::size_t idx = lines.size(); idx > 0; --idx) {
-                const std::string& current = lines[idx - 1];
-                const auto first = current.find_first_not_of(" \t\r\n");
-                if (first == std::string::npos) {
-                    continue;
-                }
-                const std::string trimmed = current.substr(first);
-                if (!trimmed.empty() && trimmed.front() == '}') {
-                    return idx - 1;
-                }
-            }
-
-            return end_of_file_insert_line(content);
-        }
-
-        bool inserts_inside_namespace_tail(const std::string& content, const std::size_t insert_line) {
-            std::istringstream input(content);
-            std::string line;
-            std::size_t line_index = 0;
-            while (std::getline(input, line)) {
-                if (line_index == insert_line) {
-                    const auto first = line.find_first_not_of(" \t\r\n");
-                    return first != std::string::npos && line[first] == '}';
-                }
-                ++line_index;
-            }
-            return false;
-        }
-
         std::optional<std::string> detect_primary_namespace_token(const std::string& content) {
             static const std::regex namespace_regex(
                 R"((?:^|\n)\s*namespace\s+([A-Za-z_][A-Za-z0-9_:]*)\s*\{)"
@@ -1048,9 +991,10 @@ namespace bha::suggestions
             return top_level_namespace_prefix(declarator);
         }
 
-        std::string strip_namespace_prefix_for_in_namespace_use(
+        std::string rewrite_namespace_prefix(
             const std::string& qualified_name,
-            const std::string& namespace_prefix
+            const std::string& namespace_prefix,
+            const std::string& replacement_token
         ) {
             if (namespace_prefix.empty()) {
                 return qualified_name;
@@ -1059,21 +1003,18 @@ namespace bha::suggestions
             const std::regex prefix_regex(
                 "(^|[^A-Za-z0-9_])" + regex_escape(namespace_prefix) + R"(::)"
             );
-            return std::regex_replace(qualified_name, prefix_regex, "$1");
+            return std::regex_replace(qualified_name, prefix_regex, "$1" + replacement_token + "::");
         }
 
         struct TemplateRenderInfo {
             std::string template_name;
             std::string normalized_template_name;
-            std::string namespace_relative_template_name;
             std::string base_name;
             std::string short_name;
             std::string class_key = "class";
             bool is_function_template = false;
             std::string instantiation_line;
             std::string extern_line;
-            std::string namespace_relative_instantiation_line;
-            std::string namespace_relative_extern_line;
         };
 
         std::string make_short_template_name(const std::string& template_name) {
@@ -1098,17 +1039,6 @@ namespace bha::suggestions
             TemplateRenderInfo render;
             render.template_name = template_name;
             render.normalized_template_name = normalized_template_name;
-            if (const auto top_level_namespace = render_namespace_prefix(
-                    normalized_template_name,
-                    is_function_template
-                )) {
-                render.namespace_relative_template_name = strip_namespace_prefix_for_in_namespace_use(
-                    normalized_template_name,
-                    *top_level_namespace
-                );
-            } else {
-                render.namespace_relative_template_name = normalized_template_name;
-            }
             render.base_name = base_name;
             render.short_name = make_short_template_name(template_name);
             render.class_key = class_key;
@@ -1119,13 +1049,47 @@ namespace bha::suggestions
             render.extern_line = is_function_template
                 ? generate_extern_function_instantiation(normalized_template_name)
                 : generate_extern_template(class_key, normalized_template_name);
-            render.namespace_relative_instantiation_line = is_function_template
-                ? generate_explicit_function_instantiation(render.namespace_relative_template_name)
-                : generate_explicit_instantiation(class_key, render.namespace_relative_template_name);
-            render.namespace_relative_extern_line = is_function_template
-                ? generate_extern_function_instantiation(render.namespace_relative_template_name)
-                : generate_extern_template(class_key, render.namespace_relative_template_name);
             return render;
+        }
+
+        std::string qualified_name_for_file_scope(
+            const TemplateRenderInfo& render,
+            const std::string& file_content
+        ) {
+            const auto namespace_prefix = render_namespace_prefix(
+                render.normalized_template_name,
+                render.is_function_template
+            );
+            const auto namespace_token = detect_primary_namespace_token(file_content);
+            if (!namespace_prefix.has_value() || !namespace_token.has_value() ||
+                *namespace_prefix == *namespace_token) {
+                return render.normalized_template_name;
+            }
+            return rewrite_namespace_prefix(
+                render.normalized_template_name,
+                *namespace_prefix,
+                *namespace_token
+            );
+        }
+
+        std::string make_file_scope_instantiation_line(
+            const TemplateRenderInfo& render,
+            const std::string& file_content
+        ) {
+            const std::string qualified_name = qualified_name_for_file_scope(render, file_content);
+            return render.is_function_template
+                ? generate_explicit_function_instantiation(qualified_name)
+                : generate_explicit_instantiation(render.class_key, qualified_name);
+        }
+
+        std::string make_file_scope_extern_line(
+            const TemplateRenderInfo& render,
+            const std::string& file_content
+        ) {
+            const std::string qualified_name = qualified_name_for_file_scope(render, file_content);
+            return render.is_function_template
+                ? generate_extern_function_instantiation(qualified_name)
+                : generate_extern_template(render.class_key, qualified_name);
         }
 
         fs::path resolve_project_root_dir(
@@ -1254,14 +1218,13 @@ namespace bha::suggestions
             std::ifstream in(*inst_source);
             const std::string source_content((std::istreambuf_iterator<char>(in)),
                                              std::istreambuf_iterator<char>());
-            const std::size_t insert_line = find_namespace_tail_insertion_line(source_content);
-            const bool inside_namespace = inserts_inside_namespace_tail(source_content, insert_line);
-            const std::string& instantiation_line = inside_namespace
-                ? render.namespace_relative_instantiation_line
-                : render.instantiation_line;
+            if (!has_proven_file_scope_at_eof(source_content)) {
+                return false;
+            }
+            const std::size_t insert_line = end_of_file_insert_line(source_content);
+            const std::string instantiation_line = make_file_scope_instantiation_line(render, source_content);
 
             if (source_content.find(instantiation_line) == std::string::npos) {
-
                 TextEdit add_inst;
                 add_inst.file = *inst_source;
                 add_inst.start_line = insert_line;
@@ -1302,11 +1265,11 @@ namespace bha::suggestions
                 std::ifstream in(inst_file);
                 const std::string inst_content((std::istreambuf_iterator<char>(in)),
                                                std::istreambuf_iterator<char>());
-                const std::size_t insert_line = find_namespace_tail_insertion_line(inst_content);
-                const bool inside_namespace = inserts_inside_namespace_tail(inst_content, insert_line);
-                const std::string& instantiation_line = inside_namespace
-                    ? render.namespace_relative_instantiation_line
-                    : render.instantiation_line;
+                if (!has_proven_file_scope_at_eof(inst_content)) {
+                    return false;
+                }
+                const std::size_t insert_line = end_of_file_insert_line(inst_content);
+                const std::string instantiation_line = make_file_scope_instantiation_line(render, inst_content);
 
                 if (inst_content.find(instantiation_line) == std::string::npos) {
                     TextEdit add_inst;
@@ -1336,13 +1299,7 @@ namespace bha::suggestions
                 if (std::ifstream header_in(header_path); header_in) {
                     const std::string header_content((std::istreambuf_iterator<char>(header_in)),
                                                      std::istreambuf_iterator<char>());
-                    if (const auto namespace_token = detect_primary_namespace_token(header_content)) {
-                        new_file_content.add_line("namespace " + *namespace_token + " {");
-                        new_file_content.add_line(render.namespace_relative_instantiation_line);
-                        new_file_content.add_line("}  // namespace " + *namespace_token);
-                    } else {
-                        new_file_content.add_line(render.instantiation_line);
-                    }
+                    new_file_content.add_line(make_file_scope_instantiation_line(render, header_content));
                 } else {
                     new_file_content.add_line(render.instantiation_line);
                 }
@@ -1532,53 +1489,39 @@ namespace bha::suggestions
             return build_wiring_proven;
         }
 
-        void add_extern_template_edit(
+        bool add_extern_template_edit(
             Suggestion& suggestion,
             const fs::path& declaration_header,
             const fs::path& header_path,
             const TemplateRenderInfo& render
         ) {
             if (!fs::exists(header_path)) {
-                return;
+                return false;
             }
 
             std::ifstream header_in(header_path);
             const std::string header_content((std::istreambuf_iterator<char>(header_in)),
                                              std::istreambuf_iterator<char>());
-            const std::size_t insert_line = find_extern_template_insertion_line(header_path);
-            const auto header_lines = file_utils::read_lines(header_path);
-            const std::size_t line_count = header_lines.is_ok()
-                ? header_lines.value().size()
-                : 0;
-            const bool inside_namespace =
-                insert_line < line_count && inserts_inside_namespace_tail(header_content, insert_line);
-            const std::string& extern_line = inside_namespace
-                ? render.namespace_relative_extern_line
-                : render.extern_line;
+            if (!has_proven_file_scope_at_eof(header_content)) {
+                return false;
+            }
+            const std::size_t insert_line = end_of_file_insert_line(header_content);
+            const std::string extern_line = make_file_scope_extern_line(render, header_content);
             if (header_content.find(extern_line) != std::string::npos) {
-                return;
+                return true;
             }
 
             TextEdit extern_edit;
             extern_edit.file = header_path;
-            if (insert_line >= line_count) {
-                const std::size_t last_line = end_of_file_insert_line(header_content);
-                extern_edit.start_line = last_line;
-                extern_edit.start_col = 0;
-                extern_edit.end_line = last_line;
-                extern_edit.end_col = 0;
-                extern_edit.new_text = make_separated_statement_insertion_text(
-                    header_content,
-                    last_line,
-                    extern_line
-                );
-            } else {
-                extern_edit.start_line = insert_line;
-                extern_edit.start_col = 0;
-                extern_edit.end_line = insert_line;
-                extern_edit.end_col = 0;
-                extern_edit.new_text = extern_line + "\n";
-            }
+            extern_edit.start_line = insert_line;
+            extern_edit.start_col = 0;
+            extern_edit.end_line = insert_line;
+            extern_edit.end_col = 0;
+            extern_edit.new_text = make_separated_statement_insertion_text(
+                header_content,
+                insert_line,
+                extern_line
+            );
             suggestion.edits.push_back(extern_edit);
 
             FileTarget header_target;
@@ -1590,6 +1533,7 @@ namespace bha::suggestions
                 ? "Add extern template declaration"
                 : "Add extern template declaration in a header that already exposes dependent types";
             suggestion.secondary_files.push_back(header_target);
+            return true;
         }
 
         void mark_manual_integration_advisory(Suggestion& suggestion) {
@@ -1600,6 +1544,19 @@ namespace bha::suggestions
                 "Place the explicit instantiation in an existing compiled source file, or add the generated file to the owning target manually, then rerun BHA.";
             suggestion.auto_apply_blocked_reason =
                 "No existing compiled source file was available for the explicit instantiation, and BHA could not prove build-system ownership for a new translation unit.";
+            suggestion.is_safe = false;
+            suggestion.edits.clear();
+            suggestion.secondary_files.clear();
+        }
+
+        void mark_scope_validation_advisory(Suggestion& suggestion) {
+            suggestion.application_mode = SuggestionApplicationMode::Advisory;
+            suggestion.application_summary = "Manual placement required";
+            suggestion.application_guidance =
+                "BHA could not prove that the destination header or source file ends at top-level file scope, so it did not auto-generate explicit-instantiation edits. "
+                "Place the extern template and explicit instantiation manually at file scope in a translation unit that already sees the full template definition.";
+            suggestion.auto_apply_blocked_reason =
+                "BHA could not prove a top-level declaration context for the generated explicit-instantiation edits.";
             suggestion.is_safe = false;
             suggestion.edits.clear();
             suggestion.secondary_files.clear();
@@ -1784,14 +1741,16 @@ namespace bha::suggestions
                 );
             }
 
-            add_extern_template_edit(
+            const bool extern_edit_proven = add_extern_template_edit(
                 suggestion,
                 declaration_header,
                 header_path,
                 render
             );
 
-            if (!build_wiring_proven) {
+            if (!extern_edit_proven) {
+                mark_scope_validation_advisory(suggestion);
+            } else if (!build_wiring_proven) {
                 mark_manual_integration_advisory(suggestion);
             }
 

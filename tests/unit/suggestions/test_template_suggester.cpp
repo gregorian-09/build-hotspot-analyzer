@@ -202,10 +202,10 @@ namespace bha::suggestions
         bool has_extern = false;
         bool has_explicit = false;
         for (const auto& edit : it->edits) {
-            if (edit.new_text.find("extern template int heavy<int>(int);") != std::string::npos) {
+            if (edit.new_text.find("extern template int fn_probe::heavy<int>(int);") != std::string::npos) {
                 has_extern = true;
             }
-            if (edit.new_text.find("template int heavy<int>(int);") != std::string::npos) {
+            if (edit.new_text.find("template int fn_probe::heavy<int>(int);") != std::string::npos) {
                 has_explicit = true;
             }
         }
@@ -290,7 +290,9 @@ namespace bha::suggestions
 
         bool has_class_extern = false;
         for (const auto& edit : suggestion.edits) {
-            if (edit.new_text.find("extern template class FunctionRef<void (int, FunctionRef<void (int &)>)>;") != std::string::npos) {
+            if (edit.new_text.find(
+                    "extern template class absl::FunctionRef<void (int, absl::FunctionRef<void (int &)>)>;")
+                != std::string::npos) {
                 has_class_extern = true;
             }
         }
@@ -342,7 +344,7 @@ namespace bha::suggestions
         bool has_expected_extern = false;
         for (const auto& edit : suggestion.edits) {
             if (edit.new_text.find(
-                    "extern template class FunctionRef<void (HashState, FunctionRef<void (HashState &)>)>;")
+                    "extern template class absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;")
                 != std::string::npos) {
                 has_expected_extern = true;
             }
@@ -407,7 +409,7 @@ namespace bha::suggestions
         for (const auto& edit : suggestion.edits) {
             if (edit.file == hash_header &&
                 edit.new_text.find(
-                    "extern template class FunctionRef<void (HashState, FunctionRef<void (HashState &)>)>;")
+                    "extern template class absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>;")
                     != std::string::npos) {
                 has_hash_header_extern = true;
             }
@@ -593,7 +595,7 @@ namespace bha::suggestions
         EXPECT_TRUE(suggestion.edits.empty());
     }
 
-    TEST_F(TemplateSuggesterTest, EmitsNamespaceRelativeTemplateInstantiationsInsideMacroNamespace) {
+    TEST_F(TemplateSuggesterTest, EmitsFileScopeQualifiedTemplateInstantiationsWithMacroNamespaceToken) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(45);
 
@@ -640,27 +642,76 @@ namespace bha::suggestions
         ASSERT_EQ(result.value().suggestions.size(), 1u);
 
         const auto& suggestion = result.value().suggestions.front();
-        bool saw_namespace_relative_extern = false;
-        bool saw_namespace_relative_instantiation = false;
+        bool saw_file_scope_extern = false;
+        bool saw_file_scope_instantiation = false;
         bool saw_hardcoded_namespace = false;
         for (const auto& edit : suggestion.edits) {
             if (edit.file == header_path &&
                 edit.new_text.find(
-                    "extern template class autovector<TruncatedRangeDelIterator *>;") !=
+                    "extern template class ROCKSDB_NAMESPACE::autovector<ROCKSDB_NAMESPACE::TruncatedRangeDelIterator *>;") !=
                     std::string::npos) {
-                saw_namespace_relative_extern = true;
+                saw_file_scope_extern = true;
             }
             if (edit.file == source_a &&
-                edit.new_text == "template class autovector<TruncatedRangeDelIterator *>;\n") {
-                saw_namespace_relative_instantiation = true;
+                edit.new_text.find(
+                    "template class ROCKSDB_NAMESPACE::autovector<ROCKSDB_NAMESPACE::TruncatedRangeDelIterator *>;") !=
+                    std::string::npos) {
+                saw_file_scope_instantiation = true;
             }
             if (edit.new_text.find("rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>") !=
                 std::string::npos) {
                 saw_hardcoded_namespace = true;
             }
         }
-        EXPECT_TRUE(saw_namespace_relative_extern);
-        EXPECT_TRUE(saw_namespace_relative_instantiation);
+        EXPECT_TRUE(saw_file_scope_extern);
+        EXPECT_TRUE(saw_file_scope_instantiation);
         EXPECT_FALSE(saw_hardcoded_namespace);
+    }
+
+    TEST_F(TemplateSuggesterTest, DowngradesWhenHeaderDoesNotEndAtProvenFileScope) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto header_path = temp_root_ / "include" / "autovector.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace rocksdb {\n"
+            "template <class T>\n"
+            "class autovector {};\n"
+            "}  // namespace rocksdb\n"
+            "/* unterminated guard context"
+        );
+        write_file(source_a, "#include \"../include/autovector.h\"\n");
+        write_file(source_b, "#include \"../include/autovector.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "rocksdb::autovector<int>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{header_path, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("top-level declaration context"), std::string::npos);
     }
 }

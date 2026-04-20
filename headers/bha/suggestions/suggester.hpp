@@ -2182,6 +2182,117 @@ namespace bha::suggestions {
         return static_cast<std::size_t>(std::count(content.begin(), content.end(), '\n')) + 1;
     }
 
+    [[nodiscard]] inline bool has_proven_file_scope_at_eof(const std::string& content) {
+        enum class LexState {
+            Code,
+            LineComment,
+            BlockComment,
+            StringLiteral,
+            CharLiteral,
+            RawString
+        };
+
+        const auto is_escaped = [&](const std::size_t index) {
+            if (index == 0 || index > content.size()) {
+                return false;
+            }
+            std::size_t backslash_count = 0;
+            for (std::size_t cursor = index; cursor > 0; --cursor) {
+                if (content[cursor - 1] != '\\') {
+                    break;
+                }
+                ++backslash_count;
+            }
+            return (backslash_count % 2) == 1;
+        };
+
+        LexState state = LexState::Code;
+        std::string raw_terminator;
+        int brace_depth = 0;
+
+        for (std::size_t i = 0; i < content.size(); ++i) {
+            const char ch = content[i];
+
+            switch (state) {
+                case LexState::LineComment:
+                    if (ch == '\n') {
+                        state = LexState::Code;
+                    }
+                    continue;
+                case LexState::BlockComment:
+                    if (ch == '*' && i + 1 < content.size() && content[i + 1] == '/') {
+                        state = LexState::Code;
+                        ++i;
+                    }
+                    continue;
+                case LexState::StringLiteral:
+                    if (ch == '"' && !is_escaped(i)) {
+                        state = LexState::Code;
+                    }
+                    continue;
+                case LexState::CharLiteral:
+                    if (ch == '\'' && !is_escaped(i)) {
+                        state = LexState::Code;
+                    }
+                    continue;
+                case LexState::RawString:
+                    if (!raw_terminator.empty() &&
+                        i + raw_terminator.size() <= content.size() &&
+                        content.compare(i, raw_terminator.size(), raw_terminator) == 0) {
+                        state = LexState::Code;
+                        i += raw_terminator.size() - 1;
+                    }
+                    continue;
+                case LexState::Code:
+                    break;
+            }
+
+            if (ch == '/' && i + 1 < content.size()) {
+                if (content[i + 1] == '/') {
+                    state = LexState::LineComment;
+                    ++i;
+                    continue;
+                }
+                if (content[i + 1] == '*') {
+                    state = LexState::BlockComment;
+                    ++i;
+                    continue;
+                }
+            }
+
+            if (ch == 'R' && i + 1 < content.size() && content[i + 1] == '"') {
+                const auto delimiter_end = content.find('(', i + 2);
+                if (delimiter_end != std::string::npos) {
+                    raw_terminator = ")" + content.substr(i + 2, delimiter_end - (i + 2)) + "\"";
+                    state = LexState::RawString;
+                    i = delimiter_end;
+                    continue;
+                }
+            }
+
+            if (ch == '"') {
+                state = LexState::StringLiteral;
+                continue;
+            }
+            if (ch == '\'') {
+                state = LexState::CharLiteral;
+                continue;
+            }
+            if (ch == '{') {
+                ++brace_depth;
+                continue;
+            }
+            if (ch == '}') {
+                if (brace_depth == 0) {
+                    return false;
+                }
+                --brace_depth;
+            }
+        }
+
+        return state == LexState::Code && brace_depth == 0;
+    }
+
     struct ClassMemberInfo {
         std::string name;
         std::string type;
