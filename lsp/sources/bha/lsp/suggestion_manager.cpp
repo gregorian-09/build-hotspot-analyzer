@@ -2524,6 +2524,19 @@ namespace bha::lsp
         );
     }
 
+    bool is_compile_command_validation_blocked_diagnostic(const Diagnostic& diagnostic) {
+        constexpr std::string_view blocked_marker = " apply blocked: ";
+        return diagnostic.source == "bha-lsp" &&
+            diagnostic.message.find(blocked_marker) != std::string::npos;
+    }
+
+    bool is_compile_command_validation_blocked_result(const ApplySuggestionResult& result) {
+        return !result.errors.empty() &&
+            std::ranges::all_of(result.errors, [](const Diagnostic& diagnostic) {
+                return is_compile_command_validation_blocked_diagnostic(diagnostic);
+            });
+    }
+
     bool SuggestionManager::create_backup_for_files(
         const std::vector<fs::path>& files,
         const std::string_view failure_message,
@@ -3186,6 +3199,48 @@ namespace bha::lsp
         );
     }
 
+    bool SuggestionManager::can_prepare_compile_command_validation(
+        const bha::Suggestion& suggestion,
+        std::vector<Diagnostic>& errors
+    ) const {
+        const std::string validation_label = validation_label_for_suggestion(suggestion);
+        if (!config_.enforce_compile_command_syntax_gate) {
+            return true;
+        }
+
+        if (last_analysis_id_.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: no prior analysis context is available for validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const auto analysis_it = analysis_cache_.find(last_analysis_id_);
+        if (analysis_it == analysis_cache_.end()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: cached analysis trace is no longer available";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const auto predicted_changed_files = collect_backup_files(suggestion);
+        return collect_compile_command_validation_sources(
+            last_compile_commands_path_,
+            analysis_it->second,
+            last_project_root_,
+            suggestion,
+            predicted_changed_files,
+            validation_label,
+            errors
+        ).has_value();
+    }
+
     ApplySuggestionResult SuggestionManager::apply_suggestion(
         const std::string& suggestion_id,
         bool /*skip_validation*/,
@@ -3209,6 +3264,11 @@ namespace bha::lsp
         const bool enforce_syntax_validation =
             requires_compile_command_syntax_validation(bha_sug) &&
             config_.enforce_compile_command_syntax_gate;
+
+        if (enforce_syntax_validation &&
+            !can_prepare_compile_command_validation(bha_sug, result.errors)) {
+            return result;
+        }
 
         std::vector<FileBackup> transactional_snapshot;
 
@@ -4365,6 +4425,10 @@ namespace bha::lsp
                     }
                 }
             } else {
+                if (safe_only && is_compile_command_validation_blocked_result(apply_result)) {
+                    result.skipped_count++;
+                    continue;
+                }
                 merge_apply_all_failure(result, apply_result);
             }
         }

@@ -244,6 +244,10 @@ namespace bha::lsp
             std::string_view failure_message,
             ApplySuggestionResult& result
         );
+        bool can_prepare_compile_command_validation(
+            const bha::Suggestion& suggestion,
+            std::vector<Diagnostic>& errors
+        ) const;
         bool apply_external_refactor_suggestion(
             const std::string& suggestion_id,
             const bha::Suggestion& suggestion,
