@@ -29,6 +29,26 @@ namespace bha::lsp
         ) {
             return SuggestionManager::restore_transactional_snapshot(snapshot, errors);
         }
+
+        static std::optional<std::vector<fs::path>> collect_compile_command_validation_sources(
+            const std::optional<fs::path>& compile_commands_path,
+            const BuildTrace& analysis_trace,
+            const std::optional<fs::path>& project_root,
+            const bha::Suggestion& suggestion,
+            const std::vector<fs::path>& changed_files,
+            const std::string& validation_label,
+            std::vector<Diagnostic>& errors
+        ) {
+            return SuggestionManager::collect_compile_command_validation_sources(
+                compile_commands_path,
+                analysis_trace,
+                project_root,
+                suggestion,
+                changed_files,
+                validation_label,
+                errors
+            );
+        }
     };
 
     class SuggestionManagerRollbackTest : public ::testing::Test {
@@ -112,5 +132,74 @@ namespace bha::lsp
         ASSERT_TRUE(in.good());
         std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         EXPECT_EQ(content, "before\n");
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, PCHValidationUsesCompileBackedIncludersOfTargetHeader) {
+        const fs::path include_dir = temp_root_ / "include";
+        const fs::path src_dir = temp_root_ / "src";
+        const fs::path header_path = include_dir / "hot.hpp";
+        const fs::path source_path = src_dir / "main.cpp";
+        const fs::path compile_commands_path = temp_root_ / "compile_commands.json";
+        const fs::path generated_pch = temp_root_ / "pch.h";
+        const fs::path cmake_lists = temp_root_ / "CMakeLists.txt";
+
+        fs::create_directories(include_dir);
+        fs::create_directories(src_dir);
+        {
+            std::ofstream out(header_path);
+            ASSERT_TRUE(out.good());
+            out << "#pragma once\n";
+        }
+        {
+            std::ofstream out(source_path);
+            ASSERT_TRUE(out.good());
+            out << "#include \"../include/hot.hpp\"\n";
+        }
+        {
+            std::ofstream out(compile_commands_path);
+            ASSERT_TRUE(out.good());
+            out << "[{\"directory\":\"" << temp_root_.string()
+                << "\",\"file\":\"" << source_path.string()
+                << "\",\"command\":\"clang++ -c " << source_path.string() << "\"}]";
+        }
+
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = source_path;
+        unit.includes.push_back(IncludeInfo{
+            .header = header_path,
+            .parse_time = Duration::zero(),
+            .depth = 0,
+            .included_by = {},
+            .symbols_used = {}
+        });
+        trace.units.push_back(std::move(unit));
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::PCHOptimization;
+        suggestion.target_file.path = header_path;
+        suggestion.target_file.action = bha::FileAction::Modify;
+        suggestion.secondary_files.push_back(
+            bha::FileTarget{.path = generated_pch, .action = bha::FileAction::Create}
+        );
+        suggestion.secondary_files.push_back(
+            bha::FileTarget{.path = cmake_lists, .action = bha::FileAction::Modify}
+        );
+
+        std::vector<Diagnostic> errors;
+        const auto sources = SuggestionManagerTestAccess::collect_compile_command_validation_sources(
+            compile_commands_path,
+            trace,
+            temp_root_,
+            suggestion,
+            {generated_pch, cmake_lists},
+            "PCH",
+            errors
+        );
+
+        ASSERT_TRUE(sources.has_value());
+        ASSERT_TRUE(errors.empty());
+        ASSERT_EQ(sources->size(), 1u);
+        EXPECT_EQ(sources->front(), source_path.lexically_normal());
     }
 }

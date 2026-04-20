@@ -199,6 +199,15 @@ namespace bha::lsp
 
         static Suggestion convert_suggestion(const bha::Suggestion& bha_sug);
         static DetailedSuggestion convert_to_detailed(const bha::Suggestion& bha_sug);
+        static std::optional<std::vector<fs::path>> collect_compile_command_validation_sources(
+            const std::optional<fs::path>& compile_commands_path,
+            const BuildTrace& analysis_trace,
+            const std::optional<fs::path>& project_root,
+            const bha::Suggestion& suggestion,
+            const std::vector<fs::path>& changed_files,
+            const std::string& validation_label,
+            std::vector<Diagnostic>& errors
+        );
 
         std::string generate_analysis_id();
         std::string generate_backup_id();

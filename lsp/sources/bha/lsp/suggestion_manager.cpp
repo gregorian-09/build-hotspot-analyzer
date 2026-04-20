@@ -2810,7 +2810,7 @@ namespace bha::lsp
         return false;
     }
 
-    std::optional<std::vector<fs::path>> collect_compile_command_validation_sources(
+    std::optional<std::vector<fs::path>> SuggestionManager::collect_compile_command_validation_sources(
         const std::optional<fs::path>& compile_commands_path,
         const BuildTrace& analysis_trace,
         const std::optional<fs::path>& project_root,
@@ -2878,36 +2878,76 @@ namespace bha::lsp
             }
         };
 
-        for (const auto& touched : touched_paths) {
-            add_candidate_source(fs::path(touched));
-        }
-
         const fs::path normalized_project_root = project_root.value_or(fs::path{});
-        for (const auto& unit : analysis_trace.units) {
-            auto compile_backed_source = resolve_compile_command_backed_source(
-                unit.source_file,
-                normalized_project_root,
-                compile_source_set,
-                compile_sources_by_filename
+        if (suggestion.type == bha::SuggestionType::PCHOptimization) {
+            const fs::path normalized_target_header = normalize_path_for_match(
+                suggestion.target_file.path,
+                project_root
             );
-            if (!compile_backed_source.has_value()) {
-                continue;
+            if (normalized_target_header.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = validation_label +
+                    " apply blocked: could not resolve the optimized header for validation";
+                errors.push_back(std::move(diag));
+                return std::nullopt;
             }
-            const fs::path& source = *compile_backed_source;
 
-            bool impacted = touched_paths.contains(source.generic_string());
-            if (!impacted) {
-                for (const auto& include : unit.includes) {
-                    const fs::path header = normalize_path_for_match(include.header);
-                    if (!header.empty() && touched_paths.contains(header.generic_string())) {
-                        impacted = true;
-                        break;
+            for (const auto& unit : analysis_trace.units) {
+                auto compile_backed_source = resolve_compile_command_backed_source(
+                    unit.source_file,
+                    normalized_project_root,
+                    compile_source_set,
+                    compile_sources_by_filename
+                );
+                if (!compile_backed_source.has_value()) {
+                    continue;
+                }
+
+                const bool includes_target_header = std::any_of(
+                    unit.includes.begin(),
+                    unit.includes.end(),
+                    [&](const IncludeInfo& include) {
+                        const fs::path include_header = normalize_path_for_match(include.header, project_root);
+                        return !include_header.empty() && include_header == normalized_target_header;
                     }
+                );
+                if (includes_target_header) {
+                    add_candidate_source(*compile_backed_source);
                 }
             }
+        } else {
+            for (const auto& touched : touched_paths) {
+                add_candidate_source(fs::path(touched));
+            }
 
-            if (impacted) {
-                add_candidate_source(source);
+            for (const auto& unit : analysis_trace.units) {
+                auto compile_backed_source = resolve_compile_command_backed_source(
+                    unit.source_file,
+                    normalized_project_root,
+                    compile_source_set,
+                    compile_sources_by_filename
+                );
+                if (!compile_backed_source.has_value()) {
+                    continue;
+                }
+                const fs::path& source = *compile_backed_source;
+
+                bool impacted = touched_paths.contains(source.generic_string());
+                if (!impacted) {
+                    for (const auto& include : unit.includes) {
+                        const fs::path header = normalize_path_for_match(include.header, project_root);
+                        if (!header.empty() && touched_paths.contains(header.generic_string())) {
+                            impacted = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (impacted) {
+                    add_candidate_source(source);
+                }
             }
         }
 
@@ -2915,8 +2955,13 @@ namespace bha::lsp
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
-            diag.message = validation_label +
-                " apply blocked: no affected compile-command-backed translation units were found for syntax validation";
+            if (suggestion.type == bha::SuggestionType::PCHOptimization) {
+                diag.message = validation_label +
+                    " apply blocked: no compile-command-backed translation units that include the optimized header were found for syntax validation";
+            } else {
+                diag.message = validation_label +
+                    " apply blocked: no affected compile-command-backed translation units were found for syntax validation";
+            }
             errors.push_back(std::move(diag));
             return std::nullopt;
         }
