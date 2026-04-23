@@ -714,4 +714,149 @@ namespace bha::suggestions
         ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
         EXPECT_NE(suggestion.auto_apply_blocked_reason->find("top-level declaration context"), std::string::npos);
     }
+
+    TEST_F(TemplateSuggesterTest, RejectsExternTemplateHeadersThatOnlySeeProviderTransitively) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto decl_header = temp_root_ / "include" / "autovector.h";
+        const auto bridge_header = temp_root_ / "include" / "bridge.h";
+        const auto consumer_header = temp_root_ / "include" / "consumer.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            decl_header,
+            "#pragma once\n"
+            "namespace rocksdb {\n"
+            "template <class T>\n"
+            "class autovector {};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(
+            bridge_header,
+            "#pragma once\n"
+            "#include \"autovector.h\"\n"
+            "namespace rocksdb {\n"
+            "class TruncatedRangeDelIterator {};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(
+            consumer_header,
+            "#pragma once\n"
+            "#include \"bridge.h\"\n"
+            "namespace rocksdb {\n"
+            "struct UsesIterator {\n"
+            "  autovector<TruncatedRangeDelIterator *> value;\n"
+            "};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(source_a, "#include \"../include/consumer.h\"\n");
+        write_file(source_b, "#include \"../include/consumer.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{decl_header, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("dependent types"), std::string::npos);
+    }
+
+    TEST_F(TemplateSuggesterTest, CreatesDedicatedInstantiationUnitWhenUsersOnlySeeHeaderTransitively) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto decl_header = temp_root_ / "include" / "autovector.h";
+        const auto bridge_header = temp_root_ / "include" / "bridge.h";
+        const auto user_header_a = temp_root_ / "include" / "user_a.h";
+        const auto user_header_b = temp_root_ / "include" / "user_b.h";
+        const auto cmake_path = temp_root_ / "CMakeLists.txt";
+
+        write_file(
+            decl_header,
+            "#pragma once\n"
+            "namespace rocksdb {\n"
+            "template <class T>\n"
+            "class autovector {};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(
+            bridge_header,
+            "#pragma once\n"
+            "#include \"autovector.h\"\n"
+            "namespace rocksdb {\n"
+            "class TruncatedRangeDelIterator {};\n"
+            "}  // namespace rocksdb\n"
+        );
+        write_file(user_header_a, "#pragma once\n#include \"bridge.h\"\n");
+        write_file(user_header_b, "#pragma once\n#include \"bridge.h\"\n");
+        write_file(
+            cmake_path,
+            "cmake_minimum_required(VERSION 3.20)\n"
+            "project(template_probe)\n"
+            "add_library(template_probe STATIC\n"
+            "  src/main.cpp\n"
+            ")\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "rocksdb::autovector<rocksdb::TruncatedRangeDelIterator *>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {user_header_a.string(), user_header_b.string()};
+        tmpl.locations.push_back(SourceLocation{decl_header, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+
+        bool touched_existing_user = false;
+        bool saw_generated_unit = false;
+        bool saw_repo_relative_include = false;
+        for (const auto& edit : suggestion.edits) {
+            if (edit.file == user_header_a || edit.file == user_header_b) {
+                touched_existing_user = true;
+            }
+            if (edit.file.filename() == "template_instantiations.cpp") {
+                saw_generated_unit = true;
+                if (edit.new_text.find("#include \"include/bridge.h\"") != std::string::npos) {
+                    saw_repo_relative_include = true;
+                }
+            }
+        }
+
+        EXPECT_FALSE(touched_existing_user);
+        EXPECT_TRUE(saw_generated_unit);
+        EXPECT_TRUE(saw_repo_relative_include);
+    }
 }

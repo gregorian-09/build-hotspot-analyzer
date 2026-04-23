@@ -192,8 +192,42 @@ namespace bha::suggestions
             return path_has_extension(path, kSourceExts);
         }
 
+        std::optional<fs::path> resolve_include_path_for_source(
+            const fs::path& source_file,
+            const std::string& include_name,
+            const fs::path& project_root
+        );
+
+        bool file_directly_includes_header(
+            const fs::path& file,
+            const fs::path& target_header,
+            const fs::path& project_root
+        ) {
+            if (!fs::exists(file) || !fs::exists(target_header)) {
+                return false;
+            }
+
+            const fs::path normalized_target = target_header.lexically_normal();
+            for (const auto& include_dir : find_include_directives(file)) {
+                if (include_dir.is_system) {
+                    continue;
+                }
+                const auto include_path =
+                    resolve_include_path_for_source(file, include_dir.header_name, project_root);
+                if (!include_path.has_value()) {
+                    continue;
+                }
+                if (include_path->lexically_normal() == normalized_target) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         std::optional<fs::path> resolve_existing_instantiation_source(
             const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
+            const fs::path& instantiation_header,
             const fs::path& project_root
         ) {
             for (const auto& file : tmpl.files_using) {
@@ -204,14 +238,25 @@ namespace bha::suggestions
                         source_path = fallback->lexically_normal();
                     }
                 }
-                if (fs::exists(source_path) && is_source_file(source_path)) {
+                if (fs::exists(source_path) && is_source_file(source_path) &&
+                    file_directly_includes_header(source_path, instantiation_header, project_root)) {
                     return source_path;
                 }
             }
             return std::nullopt;
         }
 
-        std::string include_path_for_source(const fs::path& source_file, const fs::path& header_path) {
+        std::string include_path_for_source(
+            const fs::path& source_file,
+            const fs::path& header_path,
+            const fs::path& project_root
+        ) {
+            if (!project_root.empty() && path_utils::is_under(header_path, project_root)) {
+                std::error_code ec;
+                if (auto rel = fs::relative(header_path, project_root, ec); !ec && !rel.empty()) {
+                    return rel.generic_string();
+                }
+            }
             std::error_code ec;
             if (auto rel = fs::relative(header_path, source_file.parent_path(), ec); !ec) {
                 return rel.generic_string();
@@ -824,6 +869,11 @@ namespace bha::suggestions
                     continue;
                 }
 
+                if (candidate != declaration->header_path &&
+                    !file_directly_includes_header(candidate, declaration->header_path, project_root)) {
+                    continue;
+                }
+
                 bool dependencies_visible = true;
                 for (const auto& required_symbol : required_symbols) {
                     if (!header_closure_exposes_symbol(candidate, project_root, required_symbol)) {
@@ -1197,7 +1247,7 @@ namespace bha::suggestions
             const fs::path& header_path,
             const TemplateRenderInfo& render
         ) {
-            const auto inst_source = resolve_existing_instantiation_source(tmpl, project_root_dir);
+            const auto inst_source = resolve_existing_instantiation_source(tmpl, header_path, project_root_dir);
             if (!inst_source.has_value()) {
                 return false;
             }
@@ -1205,15 +1255,6 @@ namespace bha::suggestions
             suggestion.target_file.path = *inst_source;
             suggestion.target_file.action = FileAction::Modify;
             suggestion.target_file.note = "Add explicit instantiation to an existing compiled source file";
-
-            if (fs::exists(*inst_source) && fs::exists(header_path) &&
-                !find_include_for_header(*inst_source, header_path.filename().string()).has_value()) {
-                const std::string include_line =
-                    "#include \"" + include_path_for_source(*inst_source, header_path) + "\"";
-                suggestion.edits.push_back(
-                    make_preferred_include_insertion_edit(*inst_source, include_line).edit
-                );
-            }
 
             std::ifstream in(*inst_source);
             const std::string source_content((std::istreambuf_iterator<char>(in)),
@@ -1287,12 +1328,12 @@ namespace bha::suggestions
                 }
             } else {
                 GeneratedTextBuilder new_file_content;
-                new_file_content.add_line("// Explicit template instantiations");
+                    new_file_content.add_line("// Explicit template instantiations");
                 new_file_content.add_line("// Auto-generated by BHA");
                 new_file_content.add_blank_line();
                 if (fs::exists(header_path)) {
                     new_file_content.add_line(
-                        "#include \"" + include_path_for_source(inst_file, header_path) + "\""
+                        "#include \"" + include_path_for_source(inst_file, header_path, project_root_dir) + "\""
                     );
                     new_file_content.add_blank_line();
                 }
