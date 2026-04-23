@@ -375,6 +375,7 @@ namespace bha::suggestions
             "#include \"../functional/function_ref.h\"\n"
             "namespace absl {\n"
             "class HashState {};\n"
+            "using HashCallback = FunctionRef<void (HashState, FunctionRef<void (HashState &)>)>;\n"
             "}  // namespace absl\n"
         );
         write_file(source_a, "#include \"../absl/hash/hash.h\"\n");
@@ -426,6 +427,62 @@ namespace bha::suggestions
         EXPECT_TRUE(has_hash_header_extern);
         EXPECT_TRUE(instantiation_uses_existing_source);
         EXPECT_FALSE(created_new_instantiation_tu);
+    }
+
+    TEST_F(TemplateSuggesterTest, DowngradesWhenOnlyVisibilityHeaderExistsWithoutSpecializationUse) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(45);
+
+        const auto function_ref_header = temp_root_ / "absl" / "functional" / "function_ref.h";
+        const auto hash_header = temp_root_ / "absl" / "hash" / "hash.h";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            function_ref_header,
+            "#pragma once\n"
+            "namespace absl {\n"
+            "template <typename Sig>\n"
+            "class FunctionRef {};\n"
+            "}  // namespace absl\n"
+        );
+        write_file(
+            hash_header,
+            "#pragma once\n"
+            "#include \"../functional/function_ref.h\"\n"
+            "namespace absl {\n"
+            "class HashState {};\n"
+            "}  // namespace absl\n"
+        );
+        write_file(source_a, "#include \"../absl/hash/hash.h\"\n");
+        write_file(source_b, "#include \"../absl/hash/hash.h\"\n");
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name =
+            "absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)>";
+        tmpl.full_signature = tmpl.name;
+        tmpl.total_time = std::chrono::milliseconds(450);
+        tmpl.instantiation_count = 9;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{function_ref_header, 3, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("dependent types"), std::string::npos);
     }
 
     TEST_F(TemplateSuggesterTest, DowngradesWhenNoCompiledSourceOrBuildOwnershipIsProvable) {
@@ -838,25 +895,10 @@ namespace bha::suggestions
         ASSERT_EQ(result.value().suggestions.size(), 1u);
 
         const auto& suggestion = result.value().suggestions.front();
-        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
-
-        bool touched_existing_user = false;
-        bool saw_generated_unit = false;
-        bool saw_repo_relative_include = false;
-        for (const auto& edit : suggestion.edits) {
-            if (edit.file == user_header_a || edit.file == user_header_b) {
-                touched_existing_user = true;
-            }
-            if (edit.file.filename() == "template_instantiations.cpp") {
-                saw_generated_unit = true;
-                if (edit.new_text.find("#include \"include/bridge.h\"") != std::string::npos) {
-                    saw_repo_relative_include = true;
-                }
-            }
-        }
-
-        EXPECT_FALSE(touched_existing_user);
-        EXPECT_TRUE(saw_generated_unit);
-        EXPECT_TRUE(saw_repo_relative_include);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("dependent types"), std::string::npos);
     }
 }

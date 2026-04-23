@@ -804,6 +804,101 @@ namespace bha::suggestions
             return false;
         }
 
+        std::optional<std::string> render_namespace_prefix(
+            const std::string& normalized_template_name,
+            bool is_function_template
+        );
+
+        std::optional<std::string> detect_primary_namespace_token(const std::string& content);
+
+        std::string rewrite_namespace_prefix(
+            const std::string& qualified_name,
+            const std::string& namespace_prefix,
+            const std::string& replacement_token
+        );
+
+        std::string strip_namespace_prefix(
+            const std::string& qualified_name,
+            const std::string& namespace_prefix
+        ) {
+            if (namespace_prefix.empty()) {
+                return qualified_name;
+            }
+
+            const std::regex prefix_regex(
+                "(^|[^A-Za-z0-9_])" + regex_escape(namespace_prefix) + R"(::)"
+            );
+            return std::regex_replace(qualified_name, prefix_regex, "$1");
+        }
+
+        std::string canonicalize_specialization_spelling(std::string text) {
+            std::istringstream input(text);
+            std::string line;
+            std::string normalized;
+            bool in_block_comment = false;
+
+            while (std::getline(input, line)) {
+                std::string cleaned = strip_comments_and_strings(line, in_block_comment);
+                cleaned.erase(
+                    std::remove_if(
+                        cleaned.begin(),
+                        cleaned.end(),
+                        [](const unsigned char ch) { return std::isspace(ch) != 0; }
+                    ),
+                    cleaned.end()
+                );
+                normalized += cleaned;
+            }
+
+            return normalized;
+        }
+
+        bool header_directly_mentions_specialization(
+            const fs::path& header_path,
+            const std::string& normalized_template_name,
+            const bool is_function_template
+        ) {
+            if (!fs::exists(header_path)) {
+                return false;
+            }
+
+            std::ifstream in(header_path);
+            const std::string header_content((std::istreambuf_iterator<char>(in)),
+                                             std::istreambuf_iterator<char>());
+            if (header_content.empty()) {
+                return false;
+            }
+
+            const std::string canonical_header = canonicalize_specialization_spelling(header_content);
+            std::vector<std::string> spellings;
+            spellings.push_back(normalized_template_name);
+
+            if (const auto namespace_prefix =
+                    render_namespace_prefix(normalized_template_name, is_function_template);
+                namespace_prefix.has_value()) {
+                if (const auto namespace_token = detect_primary_namespace_token(header_content);
+                    namespace_token.has_value() && *namespace_token != *namespace_prefix) {
+                    spellings.push_back(
+                        rewrite_namespace_prefix(normalized_template_name, *namespace_prefix, *namespace_token)
+                    );
+                }
+                spellings.push_back(strip_namespace_prefix(normalized_template_name, *namespace_prefix));
+            }
+
+            std::unordered_set<std::string> seen;
+            for (const auto& spelling : spellings) {
+                const std::string canonical_spelling = canonicalize_specialization_spelling(spelling);
+                if (canonical_spelling.empty() || !seen.insert(canonical_spelling).second) {
+                    continue;
+                }
+                if (canonical_header.find(canonical_spelling) != std::string::npos) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         std::optional<TemplateHeaderCandidate> select_template_header_candidate(
             const analyzers::TemplateAnalysisResult::TemplateInfo& tmpl,
             const fs::path& project_root,
@@ -871,6 +966,14 @@ namespace bha::suggestions
 
                 if (candidate != declaration->header_path &&
                     !file_directly_includes_header(candidate, declaration->header_path, project_root)) {
+                    continue;
+                }
+
+                if (candidate != declaration->header_path &&
+                    !header_directly_mentions_specialization(
+                        candidate,
+                        normalized_template_name,
+                        is_function_template)) {
                     continue;
                 }
 
