@@ -82,8 +82,16 @@ namespace bha::suggestions
             "    T value{};\n"
             "};\n"
         );
-        write_file(source_a, "#include \"../include/my_template.hpp\"\n");
-        write_file(source_b, "#include \"../include/my_template.hpp\"\n");
+        write_file(
+            source_a,
+            "#include \"../include/my_template.hpp\"\n"
+            "MyContainer<int> build_a();\n"
+        );
+        write_file(
+            source_b,
+            "#include \"../include/my_template.hpp\"\n"
+            "MyContainer<int> build_b();\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::TemplateAnalysisResult::TemplateStats tmpl;
@@ -110,6 +118,53 @@ namespace bha::suggestions
             EXPECT_GT(suggestion.estimated_savings.count(), 0);
             EXPECT_FALSE(suggestion.edits.empty());
         }
+    }
+
+    TEST_F(TemplateSuggesterTest, PicksOwnerSourceThatDirectlyMentionsSpecialization) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "include" / "my_template.hpp";
+        const auto source_a = temp_root_ / "src" / "a.cpp";
+        const auto source_b = temp_root_ / "src" / "b.cpp";
+
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "template<typename T>\n"
+            "struct MyContainer {\n"
+            "    T value{};\n"
+            "};\n"
+        );
+        write_file(source_a, "#include \"../include/my_template.hpp\"\n");
+        write_file(
+            source_b,
+            "#include \"../include/my_template.hpp\"\n"
+            "MyContainer<int> make_value();\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "MyContainer<int>";
+        tmpl.full_signature = "MyContainer<int>";
+        tmpl.total_time = std::chrono::milliseconds(500);
+        tmpl.instantiation_count = 20;
+        tmpl.files_using = {source_a.string(), source_b.string()};
+        tmpl.locations.push_back(SourceLocation{header_path, 2, 1});
+        analysis.templates.templates.push_back(tmpl);
+
+        SuggesterOptions options;
+        options.heuristics.templates.min_instantiation_count = 2;
+        options.heuristics.templates.min_total_time = std::chrono::milliseconds(1);
+        const SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.target_file.path, source_b);
+        EXPECT_NE(suggestion.target_file.path, source_a);
     }
 
     TEST_F(TemplateSuggesterTest, SkipsStdTemplates) {
@@ -264,7 +319,11 @@ namespace bha::suggestions
             "class FunctionRef {};\n"
             "}  // namespace absl\n"
         );
-        write_file(source_a, "#include \"../include/function_ref.hpp\"\n");
+        write_file(
+            source_a,
+            "#include \"../include/function_ref.hpp\"\n"
+            "absl::FunctionRef<void (int, absl::FunctionRef<void (int &)>)> make_ref();\n"
+        );
         write_file(source_b, "#include \"../include/function_ref.hpp\"\n");
 
         analyzers::AnalysisResult analysis;
@@ -316,7 +375,11 @@ namespace bha::suggestions
             "class FunctionRef {};\n"
             "}  // namespace absl\n"
         );
-        write_file(source_a, "#include \"../include/hash.h\"\n");
+        write_file(
+            source_a,
+            "#include \"../include/hash.h\"\n"
+            "absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)> make_hash_ref();\n"
+        );
         write_file(source_b, "#include \"../include/hash.h\"\n");
 
         analyzers::AnalysisResult analysis;
@@ -378,7 +441,11 @@ namespace bha::suggestions
             "using HashCallback = FunctionRef<void (HashState, FunctionRef<void (HashState &)>)>;\n"
             "}  // namespace absl\n"
         );
-        write_file(source_a, "#include \"../absl/hash/hash.h\"\n");
+        write_file(
+            source_a,
+            "#include \"../absl/hash/hash.h\"\n"
+            "absl::FunctionRef<void (absl::HashState, absl::FunctionRef<void (absl::HashState &)>)> make_hash_ref();\n"
+        );
         write_file(source_b, "#include \"../absl/hash/hash.h\"\n");
 
         analyzers::AnalysisResult analysis;
@@ -674,7 +741,7 @@ namespace bha::suggestions
             source_a,
             "#include \"../include/autovector.h\"\n"
             "namespace ROCKSDB_NAMESPACE {\n"
-            "\n"
+            "autovector<TruncatedRangeDelIterator *> make_value();\n"
             "}  // namespace ROCKSDB_NAMESPACE\n"
         );
         write_file(source_b, "#include \"../include/autovector.h\"\n");

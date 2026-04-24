@@ -225,10 +225,18 @@ namespace bha::suggestions
             return false;
         }
 
+        bool file_directly_mentions_specialization(
+            const fs::path& file,
+            const std::string& normalized_template_name,
+            bool is_function_template
+        );
+
         std::optional<fs::path> resolve_existing_instantiation_source(
             const analyzers::TemplateAnalysisResult::TemplateStats& tmpl,
             const fs::path& instantiation_header,
-            const fs::path& project_root
+            const fs::path& project_root,
+            const std::string& normalized_template_name,
+            const bool is_function_template
         ) {
             for (const auto& file : tmpl.files_using) {
                 fs::path source_path = resolve_source_path(file).lexically_normal();
@@ -239,7 +247,12 @@ namespace bha::suggestions
                     }
                 }
                 if (fs::exists(source_path) && is_source_file(source_path) &&
-                    file_directly_includes_header(source_path, instantiation_header, project_root)) {
+                    file_directly_includes_header(source_path, instantiation_header, project_root) &&
+                    file_directly_mentions_specialization(
+                        source_path,
+                        normalized_template_name,
+                        is_function_template
+                    )) {
                     return source_path;
                 }
             }
@@ -853,6 +866,73 @@ namespace bha::suggestions
             return normalized;
         }
 
+        std::optional<std::string> extract_function_specialization_id(
+            const std::string& normalized_template_name
+        ) {
+            std::string declarator = normalized_template_name;
+            if (const auto paren = declarator.find('('); paren != std::string::npos) {
+                declarator = declarator.substr(0, paren);
+            }
+            if (const auto last_space = declarator.find_last_of(" \t"); last_space != std::string::npos) {
+                declarator = declarator.substr(last_space + 1);
+            }
+            if (declarator.find('<') == std::string::npos || declarator.find('>') == std::string::npos) {
+                return std::nullopt;
+            }
+            return declarator;
+        }
+
+        bool file_directly_mentions_specialization(
+            const fs::path& file,
+            const std::string& normalized_template_name,
+            const bool is_function_template
+        ) {
+            if (!fs::exists(file)) {
+                return false;
+            }
+
+            std::ifstream in(file);
+            const std::string file_content((std::istreambuf_iterator<char>(in)),
+                                           std::istreambuf_iterator<char>());
+            if (file_content.empty()) {
+                return false;
+            }
+
+            const std::string canonical_file = canonicalize_specialization_spelling(file_content);
+            std::vector<std::string> spellings{normalized_template_name};
+            if (is_function_template) {
+                if (auto specialization_id = extract_function_specialization_id(normalized_template_name);
+                    specialization_id.has_value()) {
+                    spellings.push_back(*specialization_id);
+                }
+            }
+
+            if (const auto namespace_prefix =
+                    render_namespace_prefix(normalized_template_name, is_function_template);
+                namespace_prefix.has_value()) {
+                if (const auto namespace_token = detect_primary_namespace_token(file_content);
+                    namespace_token.has_value() && *namespace_token != *namespace_prefix) {
+                    spellings.push_back(
+                        rewrite_namespace_prefix(normalized_template_name, *namespace_prefix, *namespace_token)
+                    );
+                }
+                spellings.push_back(strip_namespace_prefix(normalized_template_name, *namespace_prefix));
+            }
+
+            std::unordered_set<std::string> seen;
+            for (const auto& spelling : spellings) {
+                const std::string canonical_spelling = canonicalize_specialization_spelling(spelling);
+                if (canonical_spelling.empty() || !seen.insert(canonical_spelling).second) {
+                    continue;
+                }
+                if (canonical_file.find(canonical_spelling) != std::string::npos) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         bool header_directly_mentions_specialization(
             const fs::path& header_path,
             const std::string& normalized_template_name,
@@ -1350,7 +1430,13 @@ namespace bha::suggestions
             const fs::path& header_path,
             const TemplateRenderInfo& render
         ) {
-            const auto inst_source = resolve_existing_instantiation_source(tmpl, header_path, project_root_dir);
+            const auto inst_source = resolve_existing_instantiation_source(
+                tmpl,
+                header_path,
+                project_root_dir,
+                render.normalized_template_name,
+                render.is_function_template
+            );
             if (!inst_source.has_value()) {
                 return false;
             }
