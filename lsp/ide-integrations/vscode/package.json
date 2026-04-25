@@ -68,6 +68,11 @@
           "default": false,
           "description": "Automatically analyze project on startup"
         },
+        "buildHotspotAnalyzer.enableExpensiveIncludeCleanupFallbacks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt into expensive clang-tidy include-cleanup scans and legacy fallback scans during analysis"
+        },
         "buildHotspotAnalyzer.trace.server": {
           "type": "string",
           "enum": [

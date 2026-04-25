@@ -61,6 +61,7 @@ namespace bha::lsp
         bool enforce_compile_command_syntax_gate = true;
         int compile_command_validation_timeout_seconds = 120;
         std::size_t max_compile_command_validation_units = 3;
+        bool enable_expensive_include_cleanup_fallbacks = false;
         bool rerank_remaining_after_each_apply = false;
         std::vector<std::string> protected_include_patterns;
 

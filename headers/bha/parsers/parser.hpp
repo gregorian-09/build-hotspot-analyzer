@@ -209,7 +209,8 @@ namespace bha::parsers {
      * @return Vector of results (one per file).
      */
     [[nodiscard]] std::vector<Result<CompilationUnit, Error>> parse_trace_files(
-        const std::vector<fs::path>& paths
+        const std::vector<fs::path>& paths,
+        std::size_t max_threads = 0
     );
 
     /**

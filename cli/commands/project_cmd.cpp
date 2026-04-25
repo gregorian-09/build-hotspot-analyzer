@@ -401,6 +401,7 @@ namespace bha::cli
             config.min_confidence = args.get_double("min-confidence").value_or(config.min_confidence);
             config.include_unsafe_suggestions = args.get_flag("include-unsafe");
             config.allow_missing_compile_commands = true;
+            config.enable_expensive_include_cleanup_fallbacks = args.get_flag("include-cleanup-fallback");
             return config;
         }
 
@@ -581,6 +582,7 @@ namespace bha::cli
                 {"backup-id", 0, "Backup ID to revert", false, true, "", "ID"},
                 {"min-confidence", 0, "Minimum confidence for analysis results", false, true, "0.5", "VALUE"},
                 {"include-unsafe", 0, "Include potentially unsafe suggestions in analysis", false, false, "", ""},
+                {"include-cleanup-fallback", 0, "Opt into legacy expensive include-cleanup fallback scans during analysis", false, false, "", ""},
                 {"type", 0, "Restrict analysis to a suggestion type (repeatable)", false, true, "", "TYPE"},
             };
         }

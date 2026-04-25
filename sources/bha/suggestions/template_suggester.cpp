@@ -1815,10 +1815,30 @@ namespace bha::suggestions
         std::size_t analyzed = 0;
         std::size_t skipped = 0;
 
+        std::vector<const analyzers::TemplateAnalysisResult::TemplateInfo*> candidate_templates;
+        candidate_templates.reserve(templates.templates.size());
         for (const auto& tmpl : templates.templates) {
+            if (tmpl.instantiation_count < min_instantiation_count ||
+                tmpl.total_time < min_template_time) {
+                continue;
+            }
+            candidate_templates.push_back(&tmpl);
+        }
+        std::ranges::sort(
+            candidate_templates,
+            [](const auto* lhs, const auto* rhs) {
+                return lhs->total_time > rhs->total_time;
+            }
+        );
+        if (candidate_templates.size() > template_cfg.max_candidate_instantiations) {
+            candidate_templates.resize(template_cfg.max_candidate_instantiations);
+        }
+
+        for (const auto* tmpl_ptr : candidate_templates) {
             if (context.is_cancelled()) {
                 break;
             }
+            const auto& tmpl = *tmpl_ptr;
             ++analyzed;
 
             if (tmpl.instantiation_count < min_instantiation_count) {

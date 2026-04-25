@@ -5,9 +5,27 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/utils/file_utils.hpp"
 #include "bha/utils/parallel.hpp"
+#include <algorithm>
 #include <set>
 
 namespace bha::parsers {
+    namespace {
+        constexpr std::size_t kDefaultMaxTraceParseThreads = 8;
+
+        [[nodiscard]] std::size_t bounded_trace_parse_threads(
+            const std::size_t requested_threads,
+            const std::size_t input_count
+        ) {
+            if (input_count <= 1) {
+                return 1;
+            }
+
+            const std::size_t hardware_threads = parallel::hardware_concurrency();
+            const std::size_t default_threads = std::min(hardware_threads, kDefaultMaxTraceParseThreads);
+            const std::size_t requested = requested_threads == 0 ? default_threads : requested_threads;
+            return std::clamp<std::size_t>(requested, 1, input_count);
+        }
+    }  // namespace
 
     ParserRegistry& ParserRegistry::instance() {
         static ParserRegistry registry;
@@ -62,11 +80,15 @@ namespace bha::parsers {
     }
 
     std::vector<Result<CompilationUnit, Error>> parse_trace_files(
-        const std::vector<fs::path>& paths
+        const std::vector<fs::path>& paths,
+        const std::size_t max_threads
     ) {
+        parallel::ThreadPool pool(static_cast<unsigned int>(
+            bounded_trace_parse_threads(max_threads, paths.size())
+        ));
         return parallel::map(paths, [](const fs::path& path) {
             return parse_trace_file(path);
-        });
+        }, pool);
     }
 
     std::vector<std::string> get_supported_trace_extensions() {

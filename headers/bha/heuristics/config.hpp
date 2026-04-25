@@ -94,6 +94,11 @@ namespace bha::heuristics
 
         /// Recursive depth threshold for warning
         std::size_t recursive_depth_warning = 10;
+
+        /// Maximum hot template instantiations to inspect in suggestion
+        /// generation. Expensive declaration/source verification is only worth
+        /// doing for the hottest repeated instantiations.
+        std::size_t max_candidate_instantiations = 50;
     };
 
     /**
@@ -162,6 +167,11 @@ namespace bha::heuristics
 
         /// Minimum usage sites to make suggestion worthwhile
         std::size_t min_usage_sites = 3;
+
+        /// Maximum hot headers to inspect. Forward-declaration analysis is
+        /// intentionally hotspot-first because whole-repository header scans
+        /// are expensive and produce low-value tail suggestions.
+        std::size_t max_candidate_headers = 50;
     };
 
     /**

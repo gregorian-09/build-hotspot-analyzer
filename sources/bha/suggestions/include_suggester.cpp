@@ -444,10 +444,14 @@ namespace bha::suggestions
 
         std::unordered_map<std::string, std::vector<TidyUnusedInclude>> collect_tidy_unused_includes(
             const fs::path& build_dir,
-            const std::vector<fs::path>& source_files
+            const std::vector<fs::path>& source_files,
+            const SuggestionContext& context
         ) {
             std::unordered_map<std::string, std::vector<TidyUnusedInclude>> results;
             for (const auto& source_file : source_files) {
+                if (context.is_cancelled()) {
+                    break;
+                }
                 const fs::path resolved_source = resolve_source_path(source_file).lexically_normal();
                 const std::string key = resolved_source.generic_string();
                 auto diagnostics = run_include_cleaner_for_file(build_dir, resolved_source);
@@ -1500,6 +1504,12 @@ namespace bha::suggestions
             result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
+        if (context.options.max_include_cleanup_scan_files == 0 &&
+            context.options.max_include_move_candidate_headers == 0) {
+            auto end_time = std::chrono::steady_clock::now();
+            result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
 
         const auto& deps = context.analysis.dependencies;
         const auto compile_commands_dir = resolve_compile_commands_dir(context);
@@ -1512,8 +1522,12 @@ namespace bha::suggestions
         if (compile_commands_dir.has_value()) {
             std::vector<fs::path> to_scan;
             const auto compile_db_sources = collect_compile_commands_sources(*compile_commands_dir);
-            to_scan.reserve(std::min<std::size_t>(compile_db_sources.size(), 25));
+            const std::size_t scan_limit = context.options.max_include_cleanup_scan_files;
+            to_scan.reserve(std::min<std::size_t>(compile_db_sources.size(), scan_limit));
             for (const auto& source_file : compile_db_sources) {
+                if (scan_limit == 0 || context.is_cancelled()) {
+                    break;
+                }
                 const auto ext = source_file.extension().string();
                 if (ext != ".c" && ext != ".cc" && ext != ".cpp" && ext != ".cxx") {
                     continue;
@@ -1524,12 +1538,12 @@ namespace bha::suggestions
                     continue;
                 }
                 to_scan.push_back(resolved);
-                if (to_scan.size() >= 25) {
+                if (to_scan.size() >= scan_limit) {
                     break;
                 }
             }
 
-            tidy_unused_cache = collect_tidy_unused_includes(*compile_commands_dir, to_scan);
+            tidy_unused_cache = collect_tidy_unused_includes(*compile_commands_dir, to_scan, context);
 
             std::unordered_map<std::string, std::vector<TidyUnusedInclude>> grouped_diagnostics;
             for (const auto& [_, diagnostics] : tidy_unused_cache) {
@@ -1593,6 +1607,28 @@ namespace bha::suggestions
             source_seen,
             header_includers
         );
+        if (candidate_headers.size() > context.options.max_include_move_candidate_headers) {
+            std::unordered_map<std::string, Duration> header_parse_times;
+            header_parse_times.reserve(deps.headers.size());
+            for (const auto& header_info : deps.headers) {
+                const fs::path header = resolve_project_path(header_info.path, context.project_root);
+                header_parse_times[header.generic_string()] = header_info.total_parse_time;
+            }
+            std::ranges::sort(
+                candidate_headers,
+                [&](const fs::path& lhs, const fs::path& rhs) {
+                    const auto lhs_it = header_parse_times.find(lhs.generic_string());
+                    const auto rhs_it = header_parse_times.find(rhs.generic_string());
+                    const Duration lhs_time = lhs_it != header_parse_times.end() ? lhs_it->second : Duration::zero();
+                    const Duration rhs_time = rhs_it != header_parse_times.end() ? rhs_it->second : Duration::zero();
+                    if (lhs_time != rhs_time) {
+                        return lhs_time > rhs_time;
+                    }
+                    return lhs.generic_string() < rhs.generic_string();
+                }
+            );
+            candidate_headers.resize(context.options.max_include_move_candidate_headers);
+        }
 
         std::unordered_set<std::string> emitted_move_keys;
         std::unordered_map<std::string, ExportedTypeSurface> exported_surface_cache;

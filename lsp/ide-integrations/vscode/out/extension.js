@@ -18368,6 +18368,14 @@ function activate(context) {
       { scheme: "file", language: "cpp" },
       { scheme: "file", language: "c" }
     ],
+    initializationOptions: {
+      optimization: {
+        enableExpensiveIncludeCleanupFallbacks: config.get(
+          "enableExpensiveIncludeCleanupFallbacks",
+          false
+        )
+      }
+    },
     outputChannel,
     traceOutputChannel,
     revealOutputChannelOn: import_node.RevealOutputChannelOn.Error,

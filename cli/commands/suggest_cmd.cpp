@@ -278,8 +278,9 @@ namespace bha::cli
             {
                 ScopedProgress progress(trace_files.size(), "Parsing traces");
 
-                for (const auto& file : trace_files) {
-                    if (auto result = parsers::parse_trace_file(file); result.is_ok()) {
+                auto parse_results = parsers::parse_trace_files(trace_files);
+                for (auto& result : parse_results) {
+                    if (result.is_ok()) {
                         build_trace.total_time += result.value().metrics.total_time;
                         build_trace.units.push_back(std::move(result.value()));
                     }

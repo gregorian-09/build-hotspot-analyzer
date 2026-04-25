@@ -13,6 +13,7 @@
 #include <array>
 #include <cctype>
 #include <chrono>
+#include <cstddef>
 #include <cstdlib>
 #include <cstdio>
 #include <fstream>
@@ -42,6 +43,18 @@ namespace bha::lsp
     namespace path_utils = bha::path_utils;
 
     namespace {
+        template<typename Rep, typename Period>
+        [[nodiscard]] std::string format_elapsed_ms(const std::chrono::duration<Rep, Period> elapsed) {
+            const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+            if (ms < 1000) {
+                return std::to_string(ms) + "ms";
+            }
+
+            std::ostringstream out;
+            out << std::fixed << std::setprecision(1) << (static_cast<double>(ms) / 1000.0) << "s";
+            return out.str();
+        }
+
         [[nodiscard]] std::vector<fs::path> collect_backup_files(const bha::Suggestion& suggestion) {
             std::vector<fs::path> files;
             std::unordered_set<std::string> seen;
@@ -2070,6 +2083,17 @@ namespace bha::lsp
                 on_progress(msg, pct);
             }
         };
+        const auto report_elapsed = [&report](
+            const std::string_view phase,
+            const std::chrono::steady_clock::time_point phase_start,
+            const int pct
+        ) {
+            report(
+                std::string(phase) + " completed in " +
+                    format_elapsed_ms(std::chrono::steady_clock::now() - phase_start),
+                pct
+            );
+        };
         const auto ensure_not_cancelled = [&is_cancelled]() {
             if (is_cancelled && is_cancelled()) {
                 throw std::runtime_error("Operation cancelled");
@@ -2110,6 +2134,7 @@ namespace bha::lsp
 
         ensure_not_cancelled();
         report("Loading compile commands...", 20);
+        auto phase_start = std::chrono::steady_clock::now();
         if (auto compile_commands_result = adapter->get_compile_commands(project_root, options); !compile_commands_result.is_ok()) {
             if (!config_.allow_missing_compile_commands) {
                 throw std::runtime_error("Could not find compile_commands.json");
@@ -2117,9 +2142,11 @@ namespace bha::lsp
         } else {
             compile_commands_path = compile_commands_result.value();
         }
+        report_elapsed("Loading compile commands", phase_start, 25);
 
         ensure_not_cancelled();
         report("Parsing trace files...", 30);
+        phase_start = std::chrono::steady_clock::now();
         BuildTrace build_trace;
         build_trace.timestamp = std::chrono::system_clock::now();
         build_trace.build_system = detect_build_system_from_build_dir(build_dir);
@@ -2147,19 +2174,38 @@ namespace bha::lsp
         };
 
         if (fs::exists(traces_dir)) {
-            for (const auto& trace_file : parsers::collect_trace_files(traces_dir, true)) {
+            const auto trace_files = parsers::collect_trace_files(traces_dir, true);
+            constexpr std::size_t kParseBatchSize = 64;
+            for (std::size_t offset = 0; offset < trace_files.size(); offset += kParseBatchSize) {
                 ensure_not_cancelled();
-                if (auto parse_result = parsers::parse_trace_file(trace_file); parse_result.is_ok()) {
-                    auto unit = std::move(parse_result.value());
-                    if (should_skip_unit(unit.source_file)) {
-                        continue;
+                const auto batch_end = std::min(offset + kParseBatchSize, trace_files.size());
+                const std::vector<fs::path> batch(trace_files.begin() + static_cast<std::ptrdiff_t>(offset),
+                                                  trace_files.begin() + static_cast<std::ptrdiff_t>(batch_end));
+                auto parse_results = parsers::parse_trace_files(batch);
+                for (auto& parse_result : parse_results) {
+                    ensure_not_cancelled();
+                    if (parse_result.is_ok()) {
+                        auto unit = std::move(parse_result.value());
+                        if (should_skip_unit(unit.source_file)) {
+                            continue;
+                        }
+                        build_trace.total_time += unit.metrics.total_time;
+                        build_trace.units.push_back(std::move(unit));
+                        files_analyzed++;
                     }
-                    build_trace.total_time += unit.metrics.total_time;
-                    build_trace.units.push_back(std::move(unit));
-                    files_analyzed++;
                 }
+                report(
+                    "Parsed " + std::to_string(std::min(batch_end, trace_files.size())) + "/" +
+                        std::to_string(trace_files.size()) + " trace files...",
+                    30 + static_cast<int>((10 * batch_end) / std::max<std::size_t>(trace_files.size(), 1))
+                );
             }
         }
+        report(
+            "Parsed " + std::to_string(files_analyzed) + " trace files in " +
+                format_elapsed_ms(std::chrono::steady_clock::now() - phase_start),
+            40
+        );
 
         if (build_trace.units.empty()) {
             throw std::runtime_error("No trace files found");
@@ -2208,6 +2254,7 @@ namespace bha::lsp
 
         ensure_not_cancelled();
         report("Running analyzers...", 50);
+        phase_start = std::chrono::steady_clock::now();
 
         AnalysisOptions analysis_opts;
         auto analysis_result = analyzers::run_full_analysis(build_trace, analysis_opts);
@@ -2215,9 +2262,11 @@ namespace bha::lsp
         if (!analysis_result.is_ok()) {
             throw std::runtime_error("Analysis failed: " + analysis_result.error().message());
         }
+        report_elapsed("Running analyzers", phase_start, 65);
 
         ensure_not_cancelled();
         report("Generating suggestions...", 70);
+        phase_start = std::chrono::steady_clock::now();
 
         // Configure suggester options
         SuggesterOptions suggester_opts;
@@ -2225,6 +2274,20 @@ namespace bha::lsp
         suggester_opts.include_unsafe = config_.include_unsafe_suggestions;
         suggester_opts.enable_consolidation = true;
         suggester_opts.compile_commands_path = compile_commands_path;
+        suggester_opts.max_include_cleanup_scan_files =
+            config_.enable_expensive_include_cleanup_fallbacks ? 25 : 0;
+        suggester_opts.max_include_move_candidate_headers =
+            config_.enable_expensive_include_cleanup_fallbacks ? 100 : 0;
+        suggester_opts.heuristics.forward_decl.max_candidate_headers = 25;
+        suggester_opts.heuristics.templates.max_candidate_instantiations = 25;
+        suggester_opts.on_suggester_completed =
+            [&report](const std::string_view name, const Duration elapsed, const std::size_t count) {
+                report(
+                    "Suggester " + std::string(name) + " produced " +
+                        std::to_string(count) + " suggestions in " + format_elapsed_ms(elapsed),
+                    70
+                );
+            };
         if (!analyze_options.enabled_types.empty()) {
             suggester_opts.enabled_types = analyze_options.enabled_types;
         }
@@ -2275,6 +2338,11 @@ namespace bha::lsp
         }
 
         auto bha_suggestions = std::move(suggestions_result.value());
+        report(
+            "Generated " + std::to_string(bha_suggestions.size()) + " suggestions in " +
+                format_elapsed_ms(std::chrono::steady_clock::now() - phase_start),
+            85
+        );
 
         bool has_include_removal = std::ranges::any_of(
             bha_suggestions,
@@ -2282,7 +2350,9 @@ namespace bha::lsp
                 return suggestion.type == bha::SuggestionType::IncludeRemoval;
             }
         );
-        if (!has_include_removal) {
+        if (config_.enable_expensive_include_cleanup_fallbacks && !has_include_removal) {
+            phase_start = std::chrono::steady_clock::now();
+            report("Running include-cleanup fallback...", 86);
             auto cli_include_removals = load_include_removal_suggestions_via_cli(project_root, traces_dir);
             if (!cli_include_removals.empty()) {
                 for (auto& suggestion : cli_include_removals) {
@@ -2290,8 +2360,11 @@ namespace bha::lsp
                 }
                 has_include_removal = true;
             }
+            report_elapsed("Include-cleanup CLI fallback", phase_start, 88);
         }
-        if (!has_include_removal && compile_commands_path.has_value()) {
+        if (config_.enable_expensive_include_cleanup_fallbacks && !has_include_removal && compile_commands_path.has_value()) {
+            phase_start = std::chrono::steady_clock::now();
+            report("Running verified include-cleanup fallback...", 88);
             if (auto verified_include = build_verified_include_removal_suggestion(
                 *compile_commands_path,
                 project_root,
@@ -2300,6 +2373,7 @@ namespace bha::lsp
             )) {
                 bha_suggestions.push_back(std::move(*verified_include));
             }
+            report_elapsed("Verified include-cleanup fallback", phase_start, 90);
         }
 
         ensure_not_cancelled();

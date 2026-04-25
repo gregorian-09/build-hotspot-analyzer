@@ -787,6 +787,36 @@ namespace bha::suggestions
             return index;
         }
 
+        bool is_small_repository_for_include_scan(const fs::path& root, const std::size_t max_files = 500) {
+            if (root.empty() || !fs::exists(root) || !fs::is_directory(root)) {
+                return false;
+            }
+            std::size_t files_seen = 0;
+            std::error_code ec;
+            fs::recursive_directory_iterator it(
+                root,
+                fs::directory_options::skip_permission_denied,
+                ec
+            );
+            const fs::recursive_directory_iterator end;
+            for (; it != end; it.increment(ec)) {
+                if (ec) {
+                    continue;
+                }
+                const auto& entry = *it;
+                if (entry.is_directory()) {
+                    if (should_skip_index_directory(entry.path())) {
+                        it.disable_recursion_pending();
+                    }
+                    continue;
+                }
+                if (entry.is_regular_file() && ++files_seen > max_files) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         Priority calculate_priority(
             const Duration parse_time,
             const std::size_t includer_count,
@@ -882,6 +912,9 @@ namespace bha::suggestions
         if (include_scan_root.empty() && !deps.headers.empty()) {
             include_scan_root = find_repository_root(deps.headers.front().path);
         }
+        const bool allow_repository_include_scan =
+            !context.options.restrict_to_trace ||
+            is_small_repository_for_include_scan(include_scan_root);
         std::optional<IncludeIndex> include_index;
         auto ensure_include_index = [&]() -> const IncludeIndex& {
             if (!include_index.has_value()) {
@@ -894,10 +927,31 @@ namespace bha::suggestions
         std::size_t analyzed = 0;
         std::size_t skipped = 0;
 
+        std::vector<const analyzers::DependencyAnalysisResult::HeaderInfo*> candidate_headers;
+        candidate_headers.reserve(deps.headers.size());
         for (const auto& header : deps.headers) {
+            if (!is_header_file(header.path) ||
+                header.total_parse_time < config.min_parse_time ||
+                header.included_by.empty()) {
+                continue;
+            }
+            candidate_headers.push_back(&header);
+        }
+        std::ranges::sort(
+            candidate_headers,
+            [](const auto* lhs, const auto* rhs) {
+                return lhs->total_parse_time > rhs->total_parse_time;
+            }
+        );
+        if (candidate_headers.size() > config.max_candidate_headers) {
+            candidate_headers.resize(config.max_candidate_headers);
+        }
+
+        for (const auto* header_ptr : candidate_headers) {
             if (context.is_cancelled()) {
                 break;
             }
+            const auto& header = *header_ptr;
             ++analyzed;
 
             if (!is_header_file(header.path)) {
@@ -973,7 +1027,7 @@ namespace bha::suggestions
                 add_includer_candidate(includer);
             }
 
-            if (!include_scan_root.empty() && fs::exists(include_scan_root)) {
+            if (allow_repository_include_scan && !include_scan_root.empty() && fs::exists(include_scan_root)) {
                 const auto& index = ensure_include_index();
                 const std::string header_filename = header.path.filename().string();
                 if (const auto it = index.find(header_filename); it != index.end()) {
@@ -1142,7 +1196,9 @@ namespace bha::suggestions
                     ))
                 ));
 
-                if (auto source_file = find_matching_source_file(includer_path, include_scan_root)) {
+                const fs::path source_scan_root =
+                    allow_repository_include_scan ? include_scan_root : fs::path{};
+                if (auto source_file = find_matching_source_file(includer_path, source_scan_root)) {
                     if (!find_include_for_header(*source_file, header_filename).has_value()) {
                         const auto insertion = make_preferred_include_insertion_edit(
                             *source_file,

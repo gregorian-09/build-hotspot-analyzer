@@ -679,6 +679,14 @@ export function activate(context: vscode.ExtensionContext) {
             { scheme: 'file', language: 'cpp' },
             { scheme: 'file', language: 'c' }
         ],
+        initializationOptions: {
+            optimization: {
+                enableExpensiveIncludeCleanupFallbacks: config.get<boolean>(
+                    'enableExpensiveIncludeCleanupFallbacks',
+                    false
+                )
+            }
+        },
         outputChannel,
         traceOutputChannel,
         revealOutputChannelOn: RevealOutputChannelOn.Error,

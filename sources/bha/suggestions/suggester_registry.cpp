@@ -798,6 +798,13 @@ namespace bha::suggestions
                 result_value.generation_time =
                     std::chrono::duration_cast<Duration>(suggester_elapsed);
             }
+            if (options.on_suggester_completed) {
+                options.on_suggester_completed(
+                    suggester->name(),
+                    result_value.generation_time,
+                    result_value.suggestions.size()
+                );
+            }
 
             if (options.max_suggester_time != Duration::zero() &&
                 suggester_elapsed >= options.max_suggester_time) {

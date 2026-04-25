@@ -30,6 +30,7 @@ namespace bha::lsp
         bool persist_trust_loop = true;
         bool allow_missing_compile_commands = true;
         bool include_unsafe_suggestions = false;
+        bool enable_expensive_include_cleanup_fallbacks = false;
         double min_confidence = 0.5;
 
         struct PerOptimization {
