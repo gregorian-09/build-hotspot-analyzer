@@ -1228,6 +1228,7 @@ namespace bha::lsp
                     "bha.cancelJob",
                     "bha.getSuggestionDetails",
                     "bha.revertChanges",
+                    "bha.listBackups",
                     "bha.showMetrics",
                     "bha.listSuggesters",
                     "bha.runSuggester",
@@ -1330,6 +1331,9 @@ namespace bha::lsp
         }
         if (command == "bha.revertChanges") {
             return execute_revert_changes(args);
+        }
+        if (command == "bha.listBackups") {
+            return execute_list_backups(args);
         }
         if (command == "bha.getSuggestionDetails") {
             return execute_get_suggestion_details(args);
@@ -2790,6 +2794,31 @@ namespace bha::lsp
             {"restoredFiles", restored_files},
             {"errors", errors_json}
         };
+    }
+
+    json LSPServer::execute_list_backups(const json&) const
+    {
+        if (!suggestion_manager_) {
+            throw std::runtime_error("Server not fully initialized");
+        }
+
+        std::vector<BackupSummary> backups;
+        {
+            std::lock_guard const lock(suggestion_manager_mutex_);
+            backups = suggestion_manager_->list_backups();
+        }
+
+        json backups_json = json::array();
+        for (const auto& backup : backups) {
+            backups_json.push_back({
+                {"id", backup.id},
+                {"timestamp", std::chrono::system_clock::to_time_t(backup.timestamp)},
+                {"fileCount", backup.file_count},
+                {"onDisk", backup.on_disk}
+            });
+        }
+
+        return {{"backups", backups_json}};
     }
 
     json LSPServer::execute_get_suggestion_details(const json& args) const

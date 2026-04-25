@@ -140,6 +140,7 @@ namespace bha::lsp
         json execute_get_job_status(const json& args) const;
         json execute_cancel_job(const json& args);
         json execute_revert_changes(const json& args) const;
+        json execute_list_backups(const json& args) const;
         json execute_get_suggestion_details(const json& args) const;
         json execute_show_metrics(const json& args) const;
         json execute_list_suggesters(const json& args) const;

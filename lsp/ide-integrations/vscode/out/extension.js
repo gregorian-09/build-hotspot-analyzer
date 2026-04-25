@@ -18067,6 +18067,11 @@ function isValidRevertResult(result) {
   const obj = result;
   return typeof obj.success === "boolean";
 }
+function isValidListBackupsResult(result) {
+  if (!result || typeof result !== "object") return false;
+  const obj = result;
+  return Array.isArray(obj.backups);
+}
 function isValidRecordBuildResult(result) {
   if (!result || typeof result !== "object") return false;
   const obj = result;
@@ -18181,12 +18186,17 @@ var extensionContext;
 var lastBuildDirByWorkspace = /* @__PURE__ */ new Map();
 var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
 var lastBuildProfileByWorkspace = /* @__PURE__ */ new Map();
+var lastBackupIdByWorkspace = /* @__PURE__ */ new Map();
 var BUILD_PROFILE_STATE_PREFIX = "bha.lastBuildProfile:";
+var BACKUP_ID_STATE_PREFIX = "bha.lastBackupId:";
 function getWorkspaceRootPath() {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
 function buildProfileStateKey(workspaceRoot) {
   return `${BUILD_PROFILE_STATE_PREFIX}${workspaceRoot}`;
+}
+function backupIdStateKey(workspaceRoot) {
+  return `${BACKUP_ID_STATE_PREFIX}${workspaceRoot}`;
 }
 function timestamp() {
   return (/* @__PURE__ */ new Date()).toLocaleTimeString();
@@ -18280,6 +18290,28 @@ async function clearPersistedBuildProfile(workspaceRoot) {
   lastBuildProfileByWorkspace.delete(workspaceRoot);
   await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), void 0);
 }
+async function persistLastBackupId(workspaceRoot, backupId) {
+  lastBackupIdByWorkspace.set(workspaceRoot, backupId);
+  lastBackupId = backupId;
+  await extensionContext.workspaceState.update(backupIdStateKey(workspaceRoot), backupId);
+}
+async function clearPersistedLastBackupId(workspaceRoot) {
+  lastBackupIdByWorkspace.delete(workspaceRoot);
+  lastBackupId = void 0;
+  await extensionContext.workspaceState.update(backupIdStateKey(workspaceRoot), void 0);
+}
+function getReusableBackupId(workspaceRoot) {
+  const cached = lastBackupIdByWorkspace.get(workspaceRoot)?.trim();
+  if (cached) {
+    return cached;
+  }
+  const persisted = extensionContext.workspaceState.get(backupIdStateKey(workspaceRoot))?.trim();
+  if (persisted) {
+    lastBackupIdByWorkspace.set(workspaceRoot, persisted);
+    return persisted;
+  }
+  return void 0;
+}
 function getReusableBuildProfile(workspaceRoot) {
   const cached = validatePersistedBuildProfile(lastBuildProfileByWorkspace.get(workspaceRoot), workspaceRoot);
   if (cached) {
@@ -18311,6 +18343,13 @@ function activate(context) {
       }
     } else {
       void context.workspaceState.update(buildProfileStateKey(workspaceRoot), void 0);
+    }
+    const cachedBackupId = context.workspaceState.get(backupIdStateKey(workspaceRoot))?.trim();
+    if (cachedBackupId) {
+      lastBackupIdByWorkspace.set(workspaceRoot, cachedBackupId);
+      lastBackupId = cachedBackupId;
+    } else {
+      void context.workspaceState.update(backupIdStateKey(workspaceRoot), void 0);
     }
   }
   if (!serverPath || serverPath.trim().length === 0) {
@@ -18495,6 +18534,45 @@ async function runAsyncLspCommand(title, command, argumentsPayload, startedMessa
       }
     });
   });
+}
+async function fetchAvailableBackups() {
+  const result = await client.sendRequest("workspace/executeCommand", {
+    command: "bha.listBackups",
+    arguments: [{}]
+  });
+  if (!isValidListBackupsResult(result)) {
+    return [];
+  }
+  return result.backups.filter((backup) => backup && typeof backup.id === "string" && backup.id.length > 0).sort((lhs, rhs) => safeGetNumber(rhs.timestamp, 0) - safeGetNumber(lhs.timestamp, 0));
+}
+async function resolveBackupIdForRevert(workspaceRoot) {
+  const preferredBackupId = workspaceRoot ? getReusableBackupId(workspaceRoot) : lastBackupId;
+  const backups = await fetchAvailableBackups();
+  if (backups.length === 0) {
+    return preferredBackupId;
+  }
+  if (preferredBackupId && backups.some((backup) => backup.id === preferredBackupId)) {
+    return preferredBackupId;
+  }
+  if (backups.length === 1) {
+    return backups[0].id;
+  }
+  const selected = await vscode.window.showQuickPick(
+    backups.map((backup) => {
+      const timestamp2 = safeGetNumber(backup.timestamp, 0);
+      const when = timestamp2 > 0 ? new Date(timestamp2 * 1e3).toLocaleString() : "unknown time";
+      return {
+        label: backup.id,
+        description: `${backup.fileCount} file(s)`,
+        detail: `${when}${backup.onDisk ? " \u2022 disk backup" : ""}`,
+        backupId: backup.id
+      };
+    }),
+    {
+      placeHolder: "Select a backup to revert"
+    }
+  );
+  return selected?.backupId;
 }
 async function fetchSuggestionDetails(suggestionId) {
   try {
@@ -18918,8 +18996,12 @@ async function cmdApplySuggestion(suggestionId) {
       vscode.window.showErrorMessage("Apply returned invalid result");
       return;
     }
-    if (applyResult.success) {
+    if (applyResult.backupId && workspaceRoot) {
+      await persistLastBackupId(workspaceRoot, applyResult.backupId);
+    } else if (applyResult.backupId) {
       lastBackupId = applyResult.backupId;
+    }
+    if (applyResult.success) {
       const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
       const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
       logLine(
@@ -19027,7 +19109,11 @@ async function cmdApplyAllSuggestions() {
       vscode.window.showErrorMessage("Apply all returned invalid result");
       return;
     }
-    lastBackupId = applyResult.backupId;
+    if (applyResult.backupId && workspaceRoot) {
+      await persistLastBackupId(workspaceRoot, applyResult.backupId);
+    } else if (applyResult.backupId) {
+      lastBackupId = applyResult.backupId;
+    }
     if (applyResult.success) {
       const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
       const hasWarnings = errors.length > 0;
@@ -19074,24 +19160,26 @@ async function cmdApplyAllSuggestions() {
 }
 async function cmdRevertChanges() {
   const operationId = generateOperationId("revert");
-  if (!lastBackupId) {
+  const workspaceRoot = getWorkspaceRootPath();
+  const backupId = await resolveBackupIdForRevert(workspaceRoot);
+  if (!backupId) {
     logLine("Revert skipped: no backup available");
     vscode.window.showInformationMessage("No backup available to revert");
     return;
   }
   const confirm = await vscode.window.showWarningMessage(
-    "Revert all changes from the last apply operation?",
+    `Revert changes from backup ${backupId}?`,
     { modal: true },
     "Revert"
   );
   if (confirm !== "Revert") return;
   try {
-    logLine(`Reverting changes from backup: ${lastBackupId}`);
+    logLine(`Reverting changes from backup: ${backupId}`);
     const executeRevert = async (progress) => {
       progress.report({ message: "Restoring files from backup..." });
       const result = await client.sendRequest("workspace/executeCommand", {
         command: "bha.revertChanges",
-        arguments: [{ backupId: lastBackupId, operationId }]
+        arguments: [{ backupId, operationId }]
       });
       return result;
     };
@@ -19111,7 +19199,11 @@ async function cmdRevertChanges() {
       vscode.window.showInformationMessage(
         `Reverted successfully. Restored ${numFiles} files.`
       );
-      lastBackupId = void 0;
+      if (workspaceRoot && getReusableBackupId(workspaceRoot) === backupId) {
+        await clearPersistedLastBackupId(workspaceRoot);
+      } else if (lastBackupId === backupId) {
+        lastBackupId = void 0;
+      }
     } else {
       const errors = Array.isArray(revertResult.errors) ? revertResult.errors : [];
       const errorMsgs = errors.map((e) => safeGetString(e?.message, "Unknown error"));

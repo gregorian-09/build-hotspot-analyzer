@@ -186,6 +186,17 @@ interface RevertResult {
     errors: Array<{ message: string }>;
 }
 
+interface BackupSummary {
+    id: string;
+    timestamp: number;
+    fileCount: number;
+    onDisk: boolean;
+}
+
+interface ListBackupsResult {
+    backups: BackupSummary[];
+}
+
 interface TrustLoopSummary {
     message: string;
     logSuffix: string;
@@ -294,6 +305,12 @@ function isValidRevertResult(result: unknown): result is RevertResult {
     if (!result || typeof result !== 'object') return false;
     const obj = result as Record<string, unknown>;
     return typeof obj.success === 'boolean';
+}
+
+function isValidListBackupsResult(result: unknown): result is ListBackupsResult {
+    if (!result || typeof result !== 'object') return false;
+    const obj = result as Record<string, unknown>;
+    return Array.isArray(obj.backups);
 }
 
 function isValidRecordBuildResult(result: unknown): result is RecordBuildResult {
@@ -437,7 +454,9 @@ let extensionContext: vscode.ExtensionContext;
 const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
 const lastBuildProfileByWorkspace = new Map<string, PersistedBuildProfile>();
+const lastBackupIdByWorkspace = new Map<string, string>();
 const BUILD_PROFILE_STATE_PREFIX = 'bha.lastBuildProfile:';
+const BACKUP_ID_STATE_PREFIX = 'bha.lastBackupId:';
 
 function getWorkspaceRootPath(): string | undefined {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
@@ -445,6 +464,10 @@ function getWorkspaceRootPath(): string | undefined {
 
 function buildProfileStateKey(workspaceRoot: string): string {
     return `${BUILD_PROFILE_STATE_PREFIX}${workspaceRoot}`;
+}
+
+function backupIdStateKey(workspaceRoot: string): string {
+    return `${BACKUP_ID_STATE_PREFIX}${workspaceRoot}`;
 }
 
 function timestamp(): string {
@@ -563,6 +586,31 @@ async function clearPersistedBuildProfile(workspaceRoot: string): Promise<void> 
     await extensionContext.workspaceState.update(buildProfileStateKey(workspaceRoot), undefined);
 }
 
+async function persistLastBackupId(workspaceRoot: string, backupId: string): Promise<void> {
+    lastBackupIdByWorkspace.set(workspaceRoot, backupId);
+    lastBackupId = backupId;
+    await extensionContext.workspaceState.update(backupIdStateKey(workspaceRoot), backupId);
+}
+
+async function clearPersistedLastBackupId(workspaceRoot: string): Promise<void> {
+    lastBackupIdByWorkspace.delete(workspaceRoot);
+    lastBackupId = undefined;
+    await extensionContext.workspaceState.update(backupIdStateKey(workspaceRoot), undefined);
+}
+
+function getReusableBackupId(workspaceRoot: string): string | undefined {
+    const cached = lastBackupIdByWorkspace.get(workspaceRoot)?.trim();
+    if (cached) {
+        return cached;
+    }
+    const persisted = extensionContext.workspaceState.get<string>(backupIdStateKey(workspaceRoot))?.trim();
+    if (persisted) {
+        lastBackupIdByWorkspace.set(workspaceRoot, persisted);
+        return persisted;
+    }
+    return undefined;
+}
+
 function getReusableBuildProfile(workspaceRoot: string): PersistedBuildProfile | undefined {
     const cached = validatePersistedBuildProfile(lastBuildProfileByWorkspace.get(workspaceRoot), workspaceRoot);
     if (cached) {
@@ -601,6 +649,14 @@ export function activate(context: vscode.ExtensionContext) {
             }
         } else {
             void context.workspaceState.update(buildProfileStateKey(workspaceRoot), undefined);
+        }
+
+        const cachedBackupId = context.workspaceState.get<string>(backupIdStateKey(workspaceRoot))?.trim();
+        if (cachedBackupId) {
+            lastBackupIdByWorkspace.set(workspaceRoot, cachedBackupId);
+            lastBackupId = cachedBackupId;
+        } else {
+            void context.workspaceState.update(backupIdStateKey(workspaceRoot), undefined);
         }
     }
 
@@ -826,6 +882,58 @@ async function runAsyncLspCommand<T>(
             }
         });
     });
+}
+
+async function fetchAvailableBackups(): Promise<BackupSummary[]> {
+    const result = await client.sendRequest<unknown>('workspace/executeCommand', {
+        command: 'bha.listBackups',
+        arguments: [{}]
+    });
+
+    if (!isValidListBackupsResult(result)) {
+        return [];
+    }
+
+    return result.backups
+        .filter((backup) => backup && typeof backup.id === 'string' && backup.id.length > 0)
+        .sort((lhs, rhs) => safeGetNumber(rhs.timestamp, 0) - safeGetNumber(lhs.timestamp, 0));
+}
+
+async function resolveBackupIdForRevert(workspaceRoot: string | undefined): Promise<string | undefined> {
+    const preferredBackupId = workspaceRoot ? getReusableBackupId(workspaceRoot) : lastBackupId;
+    const backups = await fetchAvailableBackups();
+
+    if (backups.length === 0) {
+        return preferredBackupId;
+    }
+
+    if (preferredBackupId && backups.some((backup) => backup.id === preferredBackupId)) {
+        return preferredBackupId;
+    }
+
+    if (backups.length === 1) {
+        return backups[0].id;
+    }
+
+    const selected = await vscode.window.showQuickPick(
+        backups.map((backup) => {
+            const timestamp = safeGetNumber(backup.timestamp, 0);
+            const when = timestamp > 0
+                ? new Date(timestamp * 1000).toLocaleString()
+                : 'unknown time';
+            return {
+                label: backup.id,
+                description: `${backup.fileCount} file(s)`,
+                detail: `${when}${backup.onDisk ? ' • disk backup' : ''}`,
+                backupId: backup.id
+            };
+        }),
+        {
+            placeHolder: 'Select a backup to revert'
+        }
+    );
+
+    return selected?.backupId;
 }
 
 async function fetchSuggestionDetails(suggestionId: string): Promise<SuggestionDetails | undefined> {
@@ -1312,8 +1420,13 @@ async function cmdApplySuggestion(suggestionId?: string): Promise<void> {
             return;
         }
 
-        if (applyResult.success) {
+        if (applyResult.backupId && workspaceRoot) {
+            await persistLastBackupId(workspaceRoot, applyResult.backupId);
+        } else if (applyResult.backupId) {
             lastBackupId = applyResult.backupId;
+        }
+
+        if (applyResult.success) {
             const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
             const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
             logLine(
@@ -1447,7 +1560,11 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             return;
         }
 
-        lastBackupId = applyResult.backupId;
+        if (applyResult.backupId && workspaceRoot) {
+            await persistLastBackupId(workspaceRoot, applyResult.backupId);
+        } else if (applyResult.backupId) {
+            lastBackupId = applyResult.backupId;
+        }
 
         if (applyResult.success) {
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
@@ -1509,15 +1626,17 @@ async function cmdApplyAllSuggestions(): Promise<void> {
 
 async function cmdRevertChanges(): Promise<void> {
     const operationId = generateOperationId('revert');
+    const workspaceRoot = getWorkspaceRootPath();
+    const backupId = await resolveBackupIdForRevert(workspaceRoot);
 
-    if (!lastBackupId) {
+    if (!backupId) {
         logLine('Revert skipped: no backup available');
         vscode.window.showInformationMessage('No backup available to revert');
         return;
     }
 
     const confirm = await vscode.window.showWarningMessage(
-        'Revert all changes from the last apply operation?',
+        `Revert changes from backup ${backupId}?`,
         { modal: true },
         'Revert'
     );
@@ -1525,14 +1644,14 @@ async function cmdRevertChanges(): Promise<void> {
     if (confirm !== 'Revert') return;
 
     try {
-        logLine(`Reverting changes from backup: ${lastBackupId}`);
+        logLine(`Reverting changes from backup: ${backupId}`);
         const executeRevert = async (
             progress: vscode.Progress<{ message?: string; increment?: number }>
         ): Promise<unknown> => {
             progress.report({ message: 'Restoring files from backup...' });
             const result = await client.sendRequest('workspace/executeCommand', {
                 command: 'bha.revertChanges',
-                arguments: [{ backupId: lastBackupId, operationId }]
+                arguments: [{ backupId, operationId }]
             });
             return result as unknown;
         };
@@ -1554,7 +1673,11 @@ async function cmdRevertChanges(): Promise<void> {
             vscode.window.showInformationMessage(
                 `Reverted successfully. Restored ${numFiles} files.`
             );
-            lastBackupId = undefined;
+            if (workspaceRoot && getReusableBackupId(workspaceRoot) === backupId) {
+                await clearPersistedLastBackupId(workspaceRoot);
+            } else if (lastBackupId === backupId) {
+                lastBackupId = undefined;
+            }
         } else {
             const errors = Array.isArray(revertResult.errors) ? revertResult.errors : [];
             const errorMsgs = errors.map((e) => safeGetString(e?.message, 'Unknown error'));

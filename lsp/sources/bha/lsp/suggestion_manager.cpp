@@ -4552,4 +4552,59 @@ namespace bha::lsp
         }
         return result;
     }
+
+    std::vector<BackupSummary> SuggestionManager::list_backups() const {
+        std::map<std::string, BackupSummary> summaries;
+
+        for (const auto& [id, backup] : backups_) {
+            summaries[id] = BackupSummary{
+                .id = id,
+                .timestamp = backup.timestamp,
+                .file_count = backup.files.size(),
+                .on_disk = config_.use_disk_backups && !config_.workspace_root.empty() &&
+                    fs::exists(get_backup_path(id))
+            };
+        }
+
+        if (config_.use_disk_backups && !config_.workspace_root.empty()) {
+            const fs::path backup_root = (config_.workspace_root / config_.backup_directory).lexically_normal();
+            std::error_code ec;
+            if (fs::exists(backup_root, ec) && fs::is_directory(backup_root, ec)) {
+                for (const auto& entry : fs::directory_iterator(backup_root, ec)) {
+                    if (ec || !entry.is_directory()) {
+                        continue;
+                    }
+
+                    const auto metadata = read_backup_metadata(entry.path());
+                    if (!metadata.has_value() || metadata->id.empty()) {
+                        continue;
+                    }
+
+                    auto& summary = summaries[metadata->id];
+                    summary.id = metadata->id;
+                    summary.timestamp = metadata->timestamp;
+                    summary.file_count = metadata->files.size();
+                    summary.on_disk = true;
+                }
+            }
+        }
+
+        std::vector<BackupSummary> result;
+        result.reserve(summaries.size());
+        for (const auto& summary : summaries | std::views::values) {
+            result.push_back(summary);
+        }
+
+        std::ranges::sort(
+            result,
+            [](const BackupSummary& lhs, const BackupSummary& rhs) {
+                if (lhs.timestamp != rhs.timestamp) {
+                    return lhs.timestamp > rhs.timestamp;
+                }
+                return lhs.id > rhs.id;
+            }
+        );
+
+        return result;
+    }
 }

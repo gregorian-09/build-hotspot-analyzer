@@ -110,6 +110,13 @@ namespace bha::lsp
         std::vector<Diagnostic> errors;
     };
 
+    struct BackupSummary {
+        std::string id;
+        std::chrono::system_clock::time_point timestamp{};
+        std::size_t file_count = 0;
+        bool on_disk = false;
+    };
+
     struct FileBackup {
         fs::path path;
         bool existed_before = false;
@@ -184,6 +191,7 @@ namespace bha::lsp
          * Revert changes with detailed result.
          */
         RevertResult revert_changes_detailed(const std::string& backup_id, bool preserve_backup = false);
+        [[nodiscard]] std::vector<BackupSummary> list_backups() const;
 
         [[nodiscard]] std::vector<Suggestion> get_all_suggestions() const;
         [[nodiscard]] std::optional<Suggestion> get_suggestion(const std::string& id) const;

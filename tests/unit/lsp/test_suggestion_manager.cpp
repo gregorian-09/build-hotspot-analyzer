@@ -202,4 +202,48 @@ namespace bha::lsp
         ASSERT_EQ(sources->size(), 1u);
         EXPECT_EQ(sources->front(), source_path.lexically_normal());
     }
+
+    TEST_F(SuggestionManagerRollbackTest, ListsDiskBackupsAcrossSessionsInNewestFirstOrder) {
+        const fs::path backup_root = temp_root_ / ".lsp-optimization-backup";
+        const fs::path newer_backup = backup_root / "20260424-220000-1";
+        const fs::path older_backup = backup_root / "20260423-220000-1";
+
+        fs::create_directories(newer_backup);
+        fs::create_directories(older_backup);
+
+        {
+            std::ofstream out(newer_backup / "metadata.txt");
+            ASSERT_TRUE(out.good());
+            out << "id=20260424-220000-1\n";
+            out << "timestamp=1714082400\n";
+            out << "file_count=2\n";
+            out << "file=" << (temp_root_ / "a.cpp").string() << "\n";
+            out << "existed_before=1\n";
+            out << "file=" << (temp_root_ / "b.cpp").string() << "\n";
+            out << "existed_before=0\n";
+        }
+        {
+            std::ofstream out(older_backup / "metadata.txt");
+            ASSERT_TRUE(out.good());
+            out << "id=20260423-220000-1\n";
+            out << "timestamp=1713996000\n";
+            out << "file_count=1\n";
+            out << "file=" << (temp_root_ / "c.cpp").string() << "\n";
+            out << "existed_before=1\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.use_disk_backups = true;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
+
+        const auto backups = manager.list_backups();
+        ASSERT_EQ(backups.size(), 2u);
+        EXPECT_EQ(backups[0].id, "20260424-220000-1");
+        EXPECT_EQ(backups[0].file_count, 2u);
+        EXPECT_TRUE(backups[0].on_disk);
+        EXPECT_EQ(backups[1].id, "20260423-220000-1");
+        EXPECT_EQ(backups[1].file_count, 1u);
+        EXPECT_TRUE(backups[1].on_disk);
+    }
 }
