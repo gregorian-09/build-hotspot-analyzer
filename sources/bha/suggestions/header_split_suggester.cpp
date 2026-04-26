@@ -342,13 +342,30 @@ namespace bha::suggestions
             std::string name;
         };
 
-        std::string make_symbol_key(const ForwardDeclSymbol& symbol) {
+        std::string make_symbol_identity_key(const ForwardDeclSymbol& symbol) {
             std::ostringstream key;
-            for (const auto& ns : symbol.namespaces) {
-                key << ns << "::";
+            for (const auto& scope : symbol.scopes) {
+                if (scope.kind == ScopeFrameKind::Namespace) {
+                    key << "namespace:" << scope.name << "::";
+                } else {
+                    key << "macro:" << scope.macro.open_text << "::";
+                }
             }
-            key << symbol.kind << " " << symbol.name;
+            key << symbol.name;
             return key.str();
+        }
+
+        bool has_nested_name_qualifier_after_match(
+            const std::string& text,
+            const std::smatch& match,
+            const std::size_t capture_index
+        ) {
+            std::size_t pos = static_cast<std::size_t>(match.position(capture_index)) +
+                              static_cast<std::size_t>(match.length(capture_index));
+            while (pos < text.size() && std::isspace(static_cast<unsigned char>(text[pos]))) {
+                ++pos;
+            }
+            return pos + 1 < text.size() && text[pos] == ':' && text[pos + 1] == ':';
         }
 
         bool is_macro_like_identifier(const std::string& token) {
@@ -443,7 +460,8 @@ namespace bha::suggestions
             );
 
             std::vector<ForwardDeclSymbol> symbols;
-            std::unordered_set<std::string> seen;
+            std::unordered_map<std::string, ForwardDeclSymbol> symbols_by_identity;
+            std::unordered_set<std::string> conflicted_identities;
             std::vector<ScopeFrame> scope_stack;
             bool in_block_comment = false;
             std::size_t brace_depth = 0;
@@ -519,6 +537,10 @@ namespace bha::suggestions
                 if (can_scan_class_decl) {
                     std::smatch class_match;
                     if (std::regex_search(trimmed, class_match, class_or_struct_regex)) {
+                        if (has_nested_name_qualifier_after_match(trimmed, class_match, 2)) {
+                            skip_next_class_decl = false;
+                            continue;
+                        }
                         if (!skip_next_class_decl &&
                             (trimmed.find('{') != std::string::npos || trimmed.find(';') != std::string::npos)) {
                             const auto name = extract_declared_type_name(
@@ -533,8 +555,17 @@ namespace bha::suggestions
                             symbol.namespaces = collect_active_namespaces(scope_stack);
                             symbol.kind = class_match[1].str();
                             symbol.name = *name;
-                            if (seen.insert(make_symbol_key(symbol)).second) {
-                                symbols.push_back(std::move(symbol));
+                            const std::string identity = make_symbol_identity_key(symbol);
+                            if (!conflicted_identities.contains(identity)) {
+                                if (auto existing = symbols_by_identity.find(identity);
+                                    existing != symbols_by_identity.end()) {
+                                    if (existing->second.kind != symbol.kind) {
+                                        symbols_by_identity.erase(existing);
+                                        conflicted_identities.insert(identity);
+                                    }
+                                } else {
+                                    symbols_by_identity.emplace(identity, std::move(symbol));
+                                }
                             }
                         }
                         skip_next_class_decl = false;
@@ -571,6 +602,10 @@ namespace bha::suggestions
                 }
             }
 
+            symbols.reserve(symbols_by_identity.size());
+            for (auto& [_, symbol] : symbols_by_identity) {
+                symbols.push_back(std::move(symbol));
+            }
             return symbols;
         }
 

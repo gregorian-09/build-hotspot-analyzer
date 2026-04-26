@@ -357,6 +357,50 @@ namespace bha::suggestions
         }));
     }
 
+    TEST_F(HeaderSplitSuggesterTest, SkipsNestedMemberDefinitionsInForwardHeader) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "reader.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Reader {\n"
+            "public:\n"
+            "    struct Rep;\n"
+            "};\n"
+            "struct Reader::Rep {\n"
+            "    int value;\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        auto fwd_edit = std::ranges::find_if(suggestion.edits, [](const TextEdit& edit) {
+            return edit.file.filename() == "reader_fwd.hpp";
+        });
+        ASSERT_NE(fwd_edit, suggestion.edits.end());
+        EXPECT_NE(fwd_edit->new_text.find("class Reader;"), std::string::npos);
+        EXPECT_EQ(fwd_edit->new_text.find("struct Reader;"), std::string::npos);
+        EXPECT_EQ(fwd_edit->new_text.find("Rep"), std::string::npos);
+    }
+
     TEST_F(HeaderSplitSuggesterTest, SkipsHeaderWithExistingForwardCompanionInclude) {
         BuildTrace trace;
 
