@@ -49,6 +49,22 @@ namespace bha::lsp
                 errors
             );
         }
+
+        static void enforce_pch_auto_apply_validation_readiness(
+            std::vector<bha::Suggestion>& suggestions,
+            const std::optional<fs::path>& compile_commands_path,
+            const BuildTrace& analysis_trace,
+            const std::optional<fs::path>& project_root,
+            const bool enforce_compile_command_syntax_gate
+        ) {
+            SuggestionManager::enforce_pch_auto_apply_validation_readiness(
+                suggestions,
+                compile_commands_path,
+                analysis_trace,
+                project_root,
+                enforce_compile_command_syntax_gate
+            );
+        }
     };
 
     class SuggestionManagerRollbackTest : public ::testing::Test {
@@ -201,6 +217,81 @@ namespace bha::lsp
         ASSERT_TRUE(errors.empty());
         ASSERT_EQ(sources->size(), 1u);
         EXPECT_EQ(sources->front(), source_path.lexically_normal());
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, PCHSuggestionWithoutValidationTuIsAdvisoryOnly) {
+        const fs::path include_dir = temp_root_ / "include";
+        const fs::path src_dir = temp_root_ / "src";
+        const fs::path header_path = include_dir / "hot.hpp";
+        const fs::path unrelated_source = src_dir / "main.cpp";
+        const fs::path compile_commands_path = temp_root_ / "compile_commands.json";
+        const fs::path generated_pch = temp_root_ / "pch.h";
+
+        fs::create_directories(include_dir);
+        fs::create_directories(src_dir);
+        {
+            std::ofstream out(header_path);
+            ASSERT_TRUE(out.good());
+            out << "#pragma once\n";
+        }
+        {
+            std::ofstream out(unrelated_source);
+            ASSERT_TRUE(out.good());
+            out << "int main() { return 0; }\n";
+        }
+        {
+            std::ofstream out(compile_commands_path);
+            ASSERT_TRUE(out.good());
+            out << "[{\"directory\":\"" << temp_root_.string()
+                << "\",\"file\":\"" << unrelated_source.string()
+                << "\",\"command\":\"clang++ -c " << unrelated_source.string() << "\"}]";
+        }
+
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = unrelated_source;
+        trace.units.push_back(std::move(unit));
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::PCHOptimization;
+        suggestion.is_safe = true;
+        suggestion.application_mode = bha::SuggestionApplicationMode::DirectEdits;
+        suggestion.target_file.path = header_path;
+        suggestion.target_file.action = bha::FileAction::Modify;
+        suggestion.secondary_files.push_back(
+            bha::FileTarget{.path = generated_pch, .action = bha::FileAction::Create}
+        );
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = generated_pch,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "#pragma once\n#include \"include/hot.hpp\"\n"
+        });
+
+        std::vector<bha::Suggestion> suggestions;
+        suggestions.push_back(std::move(suggestion));
+
+        SuggestionManagerTestAccess::enforce_pch_auto_apply_validation_readiness(
+            suggestions,
+            compile_commands_path,
+            trace,
+            temp_root_,
+            true
+        );
+
+        ASSERT_EQ(suggestions.size(), 1u);
+        EXPECT_TRUE(suggestions.front().edits.empty());
+        EXPECT_EQ(
+            suggestions.front().application_mode,
+            bha::SuggestionApplicationMode::Advisory
+        );
+        ASSERT_TRUE(suggestions.front().auto_apply_blocked_reason.has_value());
+        EXPECT_NE(
+            suggestions.front().auto_apply_blocked_reason->find("compile-command-backed translation unit"),
+            std::string::npos
+        );
     }
 
     TEST_F(SuggestionManagerRollbackTest, ListsDiskBackupsAcrossSessionsInNewestFirstOrder) {

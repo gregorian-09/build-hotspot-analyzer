@@ -2406,6 +2406,28 @@ namespace bha::lsp
             }
         }
 
+        std::optional<fs::path> compile_commands_for_validation;
+        if (compile_commands_path.has_value()) {
+            fs::path compile_commands = *compile_commands_path;
+            if (compile_commands.is_relative() && !project_root.empty()) {
+                compile_commands = (project_root / compile_commands).lexically_normal();
+            } else {
+                compile_commands = compile_commands.lexically_normal();
+            }
+            compile_commands_for_validation = compile_commands;
+        }
+
+        const std::optional<fs::path> project_root_for_validation =
+            project_root.empty() ? std::optional<fs::path>{} : std::optional<fs::path>{project_root};
+
+        enforce_pch_auto_apply_validation_readiness(
+            bha_suggestions,
+            compile_commands_for_validation,
+            build_trace,
+            project_root_for_validation,
+            config_.enforce_compile_command_syntax_gate
+        );
+
         ensure_not_cancelled();
         // Convert bha::Suggestion to lsp::Suggestion
         suggestions_.clear();
@@ -2432,17 +2454,7 @@ namespace bha::lsp
         last_analysis_id_ = analysis_id;
         analysis_cache_[analysis_id] = std::move(build_trace);
         analysis_lru_.push_back(analysis_id);
-        if (compile_commands_path.has_value()) {
-            fs::path compile_commands = *compile_commands_path;
-            if (compile_commands.is_relative() && !project_root.empty()) {
-                compile_commands = (project_root / compile_commands).lexically_normal();
-            } else {
-                compile_commands = compile_commands.lexically_normal();
-            }
-            last_compile_commands_path_ = compile_commands;
-        } else {
-            last_compile_commands_path_ = std::nullopt;
-        }
+        last_compile_commands_path_ = compile_commands_for_validation;
         last_project_root_ = project_root;
         last_build_dir_ = build_dir;
         last_trace_dir_ = trace_dir;
@@ -3054,6 +3066,45 @@ namespace bha::lsp
         }
 
         return candidate_sources;
+    }
+
+    void SuggestionManager::enforce_pch_auto_apply_validation_readiness(
+        std::vector<bha::Suggestion>& suggestions,
+        const std::optional<fs::path>& compile_commands_path,
+        const BuildTrace& analysis_trace,
+        const std::optional<fs::path>& project_root,
+        const bool enforce_compile_command_syntax_gate
+    ) {
+        if (!enforce_compile_command_syntax_gate) {
+            return;
+        }
+
+        for (auto& suggestion : suggestions) {
+            if (suggestion.type != bha::SuggestionType::PCHOptimization ||
+                bha::resolve_application_mode(suggestion) != bha::SuggestionApplicationMode::DirectEdits) {
+                continue;
+            }
+
+            std::vector<Diagnostic> ignored_errors;
+            const auto candidate_sources = collect_compile_command_validation_sources(
+                compile_commands_path,
+                analysis_trace,
+                project_root,
+                suggestion,
+                collect_backup_files(suggestion),
+                "PCH",
+                ignored_errors
+            );
+            if (candidate_sources.has_value()) {
+                continue;
+            }
+
+            bha::suggestions::downgrade_suggestion_to_manual_review(
+                suggestion,
+                "PCH auto-apply requires at least one compile-command-backed translation unit that includes the optimized header; none was found.",
+                "Review the PCH candidate manually or regenerate traces from a build where compile_commands.json contains a source that includes the optimized header."
+            );
+        }
     }
 
     std::optional<fs::path> resolve_generated_pch_header_path(

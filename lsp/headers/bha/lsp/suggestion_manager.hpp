@@ -217,6 +217,13 @@ namespace bha::lsp
             const std::string& validation_label,
             std::vector<Diagnostic>& errors
         );
+        static void enforce_pch_auto_apply_validation_readiness(
+            std::vector<bha::Suggestion>& suggestions,
+            const std::optional<fs::path>& compile_commands_path,
+            const BuildTrace& analysis_trace,
+            const std::optional<fs::path>& project_root,
+            bool enforce_compile_command_syntax_gate
+        );
 
         std::string generate_analysis_id();
         std::string generate_backup_id();
