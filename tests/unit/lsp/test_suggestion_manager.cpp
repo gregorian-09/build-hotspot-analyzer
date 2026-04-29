@@ -65,6 +65,16 @@ namespace bha::lsp
                 enforce_compile_command_syntax_gate
             );
         }
+
+        static std::vector<fs::path> collect_generated_forward_headers(
+            const bha::Suggestion& suggestion,
+            const std::vector<fs::path>& changed_files
+        ) {
+            return SuggestionManager::collect_generated_forward_headers(
+                suggestion,
+                changed_files
+            );
+        }
     };
 
     class SuggestionManagerRollbackTest : public ::testing::Test {
@@ -292,6 +302,39 @@ namespace bha::lsp
             suggestions.front().auto_apply_blocked_reason->find("compile-command-backed translation unit"),
             std::string::npos
         );
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, CollectsGeneratedForwardHeadersForStandaloneValidation) {
+        const fs::path source_header = temp_root_ / "include" / "widget.h";
+        const fs::path forward_header = temp_root_ / "include" / "widget_fwd.h";
+        const fs::path other_header = temp_root_ / "include" / "other.h";
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::HeaderSplit;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = forward_header,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "#pragma once\nclass Widget;\n"
+        });
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source_header,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "#include \"widget_fwd.h\"\n"
+        });
+
+        const auto headers = SuggestionManagerTestAccess::collect_generated_forward_headers(
+            suggestion,
+            {other_header, forward_header}
+        );
+
+        ASSERT_EQ(headers.size(), 1u);
+        EXPECT_EQ(headers.front(), forward_header.lexically_normal());
     }
 
     TEST_F(SuggestionManagerRollbackTest, ListsDiskBackupsAcrossSessionsInNewestFirstOrder) {

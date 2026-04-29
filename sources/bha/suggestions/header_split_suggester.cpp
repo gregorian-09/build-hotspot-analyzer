@@ -631,6 +631,82 @@ namespace bha::suggestions
             return false;
         }
 
+        bool should_skip_support_scan_directory(const fs::path& path) {
+            const std::string name = path.filename().string();
+            return name == ".git" ||
+                   name == ".svn" ||
+                   name == ".hg" ||
+                   name == "build" ||
+                   name == "cmake-build-debug" ||
+                   name == "cmake-build-release" ||
+                   name == ".lsp-optimization-backup";
+        }
+
+        std::optional<fs::path> find_macro_definition_header(
+            const fs::path& repo_root,
+            const fs::path& excluded_header,
+            const std::string& macro_name
+        ) {
+            if (repo_root.empty() || macro_name.empty()) {
+                return std::nullopt;
+            }
+            const fs::path normalized_excluded_header =
+                resolve_source_path(excluded_header).lexically_normal();
+
+            std::error_code ec;
+            fs::recursive_directory_iterator it(
+                repo_root,
+                fs::directory_options::skip_permission_denied,
+                ec
+            );
+            const fs::recursive_directory_iterator end;
+            while (!ec && it != end) {
+                const fs::path path = it->path();
+                if (it->is_directory(ec)) {
+                    if (should_skip_support_scan_directory(path)) {
+                        it.disable_recursion_pending();
+                    }
+                    it.increment(ec);
+                    continue;
+                }
+
+                const fs::path normalized_path = path.lexically_normal();
+                if (normalized_path != normalized_excluded_header &&
+                    is_header_file_path(normalized_path) &&
+                    file_defines_macro(normalized_path, macro_name)) {
+                    return normalized_path;
+                }
+                it.increment(ec);
+            }
+
+            return std::nullopt;
+        }
+
+        std::string support_include_name_for_header(
+            const fs::path& support_header,
+            const fs::path& project_root
+        ) {
+            if (!project_root.empty()) {
+                const fs::path normalized_root = project_root.lexically_normal();
+                const fs::path normalized_header = support_header.lexically_normal();
+                const fs::path public_include_root = normalized_root / "include";
+
+                std::error_code ec;
+                fs::path rel = fs::relative(normalized_header, public_include_root, ec);
+                if (!ec && !rel.empty() && rel.native().rfind("..", 0) != 0) {
+                    return rel.generic_string();
+                }
+
+                ec.clear();
+                rel = fs::relative(normalized_header, normalized_root, ec);
+                if (!ec && !rel.empty() && rel.native().rfind("..", 0) != 0) {
+                    return rel.generic_string();
+                }
+            }
+
+            return support_header.filename().generic_string();
+        }
+
         std::optional<fs::path> resolve_include_target(
             const fs::path& header_path,
             const fs::path& project_root,
@@ -669,11 +745,13 @@ namespace bha::suggestions
             std::unordered_set<std::string> unresolved_macros;
             for (const auto& symbol : symbols) {
                 for (const auto& scope : symbol.scopes) {
-                    if (scope.kind != ScopeFrameKind::MacroWrapper) {
-                        continue;
+                    if (scope.kind == ScopeFrameKind::MacroWrapper) {
+                        unresolved_macros.insert(scope.macro.open_name);
+                        unresolved_macros.insert(scope.macro.close_name);
+                    } else if (scope.kind == ScopeFrameKind::Namespace &&
+                               is_macro_like_identifier(scope.name)) {
+                        unresolved_macros.insert(scope.name);
                     }
-                    unresolved_macros.insert(scope.macro.open_name);
-                    unresolved_macros.insert(scope.macro.close_name);
                 }
             }
             if (unresolved_macros.empty()) {
@@ -714,6 +792,41 @@ namespace bha::suggestions
                 }
                 if (unresolved_macros.empty()) {
                     break;
+                }
+            }
+
+            if (!unresolved_macros.empty()) {
+                const fs::path repo_root = !project_root.empty()
+                    ? project_root.lexically_normal()
+                    : find_repository_root(header_path);
+
+                std::vector<std::string> remaining_macros(
+                    unresolved_macros.begin(),
+                    unresolved_macros.end()
+                );
+                for (const auto& macro_name : remaining_macros) {
+                    const auto support_header = find_macro_definition_header(
+                        repo_root,
+                        header_path,
+                        macro_name
+                    );
+                    if (!support_header.has_value()) {
+                        continue;
+                    }
+
+                    const std::string include_name =
+                        support_include_name_for_header(*support_header, repo_root);
+                    if (include_name.empty()) {
+                        continue;
+                    }
+
+                    if (seen_headers.insert(include_name).second) {
+                        IncludeDirective support;
+                        support.header_name = include_name;
+                        support.is_system = false;
+                        includes.push_back(std::move(support));
+                    }
+                    unresolved_macros.erase(macro_name);
                 }
             }
 

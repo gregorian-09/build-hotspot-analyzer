@@ -401,6 +401,56 @@ namespace bha::suggestions
         EXPECT_EQ(fwd_edit->new_text.find("Rep"), std::string::npos);
     }
 
+    TEST_F(HeaderSplitSuggesterTest, AddsSupportIncludeForMacroNamespaceForwardHeader) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto namespace_header = temp_root_ / "include" / "rocksdb" / "rocksdb_namespace.h";
+        const auto header_path = temp_root_ / "db" / "column_family.hpp";
+        write_file(
+            namespace_header,
+            "#pragma once\n"
+            "#define ROCKSDB_NAMESPACE rocksdb\n"
+        );
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace ROCKSDB_NAMESPACE {\n"
+            "class ColumnFamilyData {\n"
+            "public:\n"
+            "    void Ref();\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        auto fwd_edit = std::ranges::find_if(suggestion.edits, [](const TextEdit& edit) {
+            return edit.file.filename() == "column_family_fwd.hpp";
+        });
+        ASSERT_NE(fwd_edit, suggestion.edits.end());
+        EXPECT_NE(
+            fwd_edit->new_text.find("#include \"rocksdb/rocksdb_namespace.h\""),
+            std::string::npos
+        );
+        EXPECT_NE(fwd_edit->new_text.find("namespace ROCKSDB_NAMESPACE {"), std::string::npos);
+        EXPECT_NE(fwd_edit->new_text.find("class ColumnFamilyData;"), std::string::npos);
+    }
+
     TEST_F(HeaderSplitSuggesterTest, SkipsHeaderWithExistingForwardCompanionInclude) {
         BuildTrace trace;
 

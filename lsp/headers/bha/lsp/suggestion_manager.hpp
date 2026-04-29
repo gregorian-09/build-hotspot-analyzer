@@ -217,6 +217,19 @@ namespace bha::lsp
             const std::string& validation_label,
             std::vector<Diagnostic>& errors
         );
+        static std::vector<fs::path> collect_generated_forward_headers(
+            const bha::Suggestion& suggestion,
+            const std::vector<fs::path>& changed_files
+        );
+        static bool validate_generated_forward_headers_against_compile_commands(
+            const bha::Suggestion& suggestion,
+            const std::optional<fs::path>& compile_commands_path,
+            const std::vector<fs::path>& changed_files,
+            const std::vector<fs::path>& candidate_sources,
+            const std::string& validation_label,
+            int timeout_seconds,
+            std::vector<Diagnostic>& errors
+        );
         static void enforce_pch_auto_apply_validation_readiness(
             std::vector<bha::Suggestion>& suggestions,
             const std::optional<fs::path>& compile_commands_path,

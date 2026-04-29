@@ -3189,6 +3189,114 @@ namespace bha::lsp
         return true;
     }
 
+    std::vector<fs::path> SuggestionManager::collect_generated_forward_headers(
+        const bha::Suggestion& suggestion,
+        const std::vector<fs::path>& changed_files
+    ) {
+        const auto is_generated_forward_header = [](const fs::path& path) {
+            if (!bha::suggestions::is_header_file_path(path)) {
+                return false;
+            }
+            const std::string stem = path.stem().string();
+            return stem.size() > 4 && stem.ends_with("_fwd");
+        };
+
+        std::vector<fs::path> headers;
+        std::unordered_set<std::string> seen;
+        const auto add_header = [&](const fs::path& path) {
+            const fs::path normalized = normalize_path_for_match(path);
+            if (normalized.empty() || !is_generated_forward_header(normalized)) {
+                return;
+            }
+            if (seen.insert(normalized.generic_string()).second) {
+                headers.push_back(normalized);
+            }
+        };
+
+        for (const auto& file : changed_files) {
+            add_header(file);
+        }
+        for (const auto& edit : suggestion.edits) {
+            add_header(edit.file);
+        }
+        for (const auto& secondary : suggestion.secondary_files) {
+            add_header(secondary.path);
+        }
+        return headers;
+    }
+
+    bool SuggestionManager::validate_generated_forward_headers_against_compile_commands(
+        const bha::Suggestion& suggestion,
+        const std::optional<fs::path>& compile_commands_path,
+        const std::vector<fs::path>& changed_files,
+        const std::vector<fs::path>& candidate_sources,
+        const std::string& validation_label,
+        const int timeout_seconds,
+        std::vector<Diagnostic>& errors
+    ) {
+        const auto forward_headers =
+            SuggestionManager::collect_generated_forward_headers(suggestion, changed_files);
+        if (forward_headers.empty()) {
+            return true;
+        }
+        if (candidate_sources.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label +
+                " apply blocked: no compile-command-backed source is available for generated forward-header validation";
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        const fs::path& reference_source = candidate_sources.front();
+        auto compile_args = load_compile_command_args_for_source(compile_commands_path, reference_source);
+        if (compile_args.empty()) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = validation_label + " apply blocked: no compile command found for " +
+                reference_source.string();
+            errors.push_back(std::move(diag));
+            return false;
+        }
+
+        for (const auto& forward_header : forward_headers) {
+            const auto syntax_cmd = build_header_syntax_check_command(
+                compile_args,
+                reference_source,
+                forward_header
+            );
+            if (!syntax_cmd.has_value()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = validation_label +
+                    " apply blocked: failed to construct forward-header validation command for " +
+                    forward_header.string();
+                errors.push_back(std::move(diag));
+                return false;
+            }
+
+            std::string syntax_output;
+            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
+            if (exit_code == 0) {
+                continue;
+            }
+
+            return append_validation_command_failure(
+                validation_label,
+                forward_header,
+                timeout_seconds,
+                exit_code,
+                syntax_output,
+                errors
+            );
+        }
+
+        return true;
+    }
+
     bool validate_generated_pch_against_compile_commands(
         const bha::Suggestion& suggestion,
         const std::optional<fs::path>& compile_commands_path,
@@ -3312,6 +3420,19 @@ namespace bha::lsp
                 validation_cap,
                 errors
             );
+        }
+
+        if (suggestion.type == bha::SuggestionType::HeaderSplit &&
+            !validate_generated_forward_headers_against_compile_commands(
+                suggestion,
+                last_compile_commands_path_,
+                changed_files,
+                *candidate_sources,
+                validation_label,
+                config_.compile_command_validation_timeout_seconds,
+                errors
+            )) {
+            return false;
         }
 
         return validate_source_suggestion_against_compile_commands(
