@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/header_split_suggester.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
@@ -487,6 +488,125 @@ namespace bha::suggestions
         ASSERT_NE(fwd_edit, suggestion.edits.end());
         EXPECT_NE(fwd_edit->new_text.find("class Widget;"), std::string::npos);
         EXPECT_EQ(fwd_edit->new_text.find("struct Widget;"), std::string::npos);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, CopiesSourcePreambleIntoGeneratedForwardHeader) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "licensed.hpp";
+        const auto includer_path = temp_root_ / "licensed_consumer.hpp";
+        write_file(
+            header_path,
+            "// Copyright (c) 2026 Example\n"
+            "// SPDX-License-Identifier: Apache-2.0\n"
+            "\n"
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"licensed.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        header.included_by.push_back(includer_path);
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        auto fwd_edit = std::ranges::find_if(suggestion.edits, [](const TextEdit& edit) {
+            return edit.file.filename() == "licensed_fwd.hpp";
+        });
+        ASSERT_NE(fwd_edit, suggestion.edits.end());
+        EXPECT_TRUE(fwd_edit->new_text.rfind("// Copyright (c) 2026 Example", 0) == 0);
+        EXPECT_NE(fwd_edit->new_text.find("SPDX-License-Identifier: Apache-2.0"), std::string::npos);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, RemovesDuplicateForwardDeclarationsFromPrimaryHeader) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "primary.hpp";
+        const auto includer_path = temp_root_ / "primary_consumer.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget;\n"
+            "struct Config;\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "struct Config {\n"
+            "    int value;\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"primary.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "    Config* config = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        header.included_by.push_back(includer_path);
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto deleted_forward_decl_count = std::count_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [&](const TextEdit& edit) {
+                return edit.file == header_path && edit.new_text.empty() &&
+                    edit.start_col == 0 && edit.end_col == 0 &&
+                    (edit.end_line == edit.start_line + 1);
+            }
+        );
+        EXPECT_GE(deleted_forward_decl_count, 2);
     }
 
     TEST_F(HeaderSplitSuggesterTest, AddsSupportIncludeForMacroNamespaceForwardHeader) {

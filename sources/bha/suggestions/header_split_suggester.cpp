@@ -887,6 +887,228 @@ namespace bha::suggestions
             return "#include \"" + include.header_name + "\"";
         }
 
+        std::string extract_leading_comment_preamble(const fs::path& header_path) {
+            std::ifstream in(header_path);
+            if (!in) {
+                return {};
+            }
+
+            std::vector<std::string> lines;
+            std::string line;
+            while (std::getline(in, line)) {
+                lines.push_back(line);
+            }
+            if (lines.empty()) {
+                return {};
+            }
+
+            std::size_t index = 0;
+            bool saw_comment = false;
+            bool in_block_comment = false;
+            std::vector<std::string> preamble;
+
+            while (index < lines.size()) {
+                const std::string& original = lines[index];
+                const auto first_non_ws = original.find_first_not_of(" \t\r");
+                const std::string trimmed = first_non_ws == std::string::npos
+                    ? std::string{}
+                    : original.substr(first_non_ws);
+
+                if (in_block_comment) {
+                    preamble.push_back(original);
+                    saw_comment = true;
+                    if (trimmed.find("*/") != std::string::npos) {
+                        in_block_comment = false;
+                    }
+                    ++index;
+                    continue;
+                }
+
+                if (trimmed.empty()) {
+                    if (!saw_comment) {
+                        ++index;
+                        continue;
+                    }
+                    preamble.push_back(original);
+                    ++index;
+                    continue;
+                }
+
+                if (trimmed.rfind("//", 0) == 0) {
+                    saw_comment = true;
+                    preamble.push_back(original);
+                    ++index;
+                    continue;
+                }
+
+                if (trimmed.rfind("/*", 0) == 0) {
+                    saw_comment = true;
+                    in_block_comment = trimmed.find("*/") == std::string::npos;
+                    preamble.push_back(original);
+                    ++index;
+                    continue;
+                }
+
+                break;
+            }
+
+            while (!preamble.empty()) {
+                const auto non_ws = preamble.back().find_first_not_of(" \t\r");
+                if (non_ws == std::string::npos) {
+                    preamble.pop_back();
+                } else {
+                    break;
+                }
+            }
+
+            if (!saw_comment || preamble.empty()) {
+                return {};
+            }
+
+            std::ostringstream out;
+            for (std::size_t i = 0; i < preamble.size(); ++i) {
+                out << preamble[i];
+                if (i + 1 < preamble.size()) {
+                    out << '\n';
+                }
+            }
+            return out.str();
+        }
+
+        std::vector<std::size_t> collect_redundant_forward_decl_lines(
+            const fs::path& header_path,
+            const std::vector<ForwardDeclSymbol>& symbols
+        ) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return {};
+            }
+
+            std::unordered_set<std::string> known_symbols;
+            known_symbols.reserve(symbols.size());
+            for (const auto& symbol : symbols) {
+                known_symbols.insert(make_symbol_identity_key(symbol));
+            }
+
+            static const std::regex namespace_open_regex(
+                R"(^\s*(?:inline\s+)?namespace\s+([A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*)\s*\{)"
+            );
+            static const std::regex class_or_struct_decl_regex(
+                R"(^\s*(class|struct)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;\s*$)"
+            );
+
+            std::vector<std::size_t> redundant_lines;
+            std::vector<ScopeFrame> scope_stack;
+            bool in_block_comment = false;
+            bool template_pending = false;
+            std::size_t brace_depth = 0;
+
+            const auto& lines = lines_result.value();
+            for (std::size_t line_index = 0; line_index < lines.size(); ++line_index) {
+                const std::string line = strip_comments_and_strings(lines[line_index], in_block_comment);
+
+                std::size_t namespace_depth = 0;
+                for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                    if (it->kind != ScopeFrameKind::Namespace) {
+                        continue;
+                    }
+                    namespace_depth = it->open_depth;
+                    break;
+                }
+
+                const std::string trimmed = [&]() {
+                    const auto start = line.find_first_not_of(" \t\r\n");
+                    if (start == std::string::npos) {
+                        return std::string{};
+                    }
+                    const auto end = line.find_last_not_of(" \t\r\n");
+                    return line.substr(start, end - start + 1);
+                }();
+
+                std::vector<ScopeFrame> pending_namespaces;
+                if (std::smatch namespace_match;
+                    std::regex_search(trimmed, namespace_match, namespace_open_regex) &&
+                    brace_depth == namespace_depth) {
+                    const auto parts = split_namespace_path(namespace_match[1].str());
+                    for (const auto& part : parts) {
+                        ScopeFrame scope;
+                        scope.kind = ScopeFrameKind::Namespace;
+                        scope.name = part;
+                        scope.open_depth = brace_depth + 1;
+                        pending_namespaces.push_back(std::move(scope));
+                    }
+                }
+
+                if (const auto macro_scope = parse_scope_macro_open(trimmed); macro_scope.has_value()) {
+                    ScopeFrame frame;
+                    frame.kind = ScopeFrameKind::MacroWrapper;
+                    frame.macro = *macro_scope;
+                    scope_stack.push_back(std::move(frame));
+                } else if (const auto close_macro = parse_scope_macro_close(trimmed); close_macro.has_value()) {
+                    for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
+                        if (it->kind != ScopeFrameKind::MacroWrapper) {
+                            continue;
+                        }
+                        if (it->macro.close_name != *close_macro) {
+                            continue;
+                        }
+                        it->macro.close_text = trimmed;
+                        scope_stack.erase(std::next(it).base());
+                        break;
+                    }
+                }
+
+                if (trimmed.rfind("template", 0) == 0) {
+                    template_pending = trimmed.find('>') == std::string::npos;
+                } else if (!template_pending && brace_depth == namespace_depth) {
+                    std::smatch match;
+                    if (std::regex_match(trimmed, match, class_or_struct_decl_regex)) {
+                        ForwardDeclSymbol candidate;
+                        candidate.scopes = scope_stack;
+                        candidate.namespaces = collect_active_namespaces(scope_stack);
+                        candidate.kind = normalize_class_key(match[1].str());
+                        candidate.name = match[2].str();
+                        if (known_symbols.contains(make_symbol_identity_key(candidate))) {
+                            redundant_lines.push_back(line_index);
+                        }
+                    }
+                } else if (template_pending && trimmed.find('>') != std::string::npos) {
+                    template_pending = false;
+                }
+
+                for (const char ch : line) {
+                    if (ch == '{') {
+                        ++brace_depth;
+                    } else if (ch == '}') {
+                        if (brace_depth > 0) {
+                            --brace_depth;
+                        }
+                    }
+                }
+
+                if (!pending_namespaces.empty()) {
+                    for (auto& pending_namespace : pending_namespaces) {
+                        if (brace_depth >= pending_namespace.open_depth) {
+                            scope_stack.push_back(std::move(pending_namespace));
+                        }
+                    }
+                }
+
+                while (!scope_stack.empty()) {
+                    const auto& scope = scope_stack.back();
+                    if (scope.kind != ScopeFrameKind::Namespace) {
+                        break;
+                    }
+                    if (brace_depth >= scope.open_depth) {
+                        break;
+                    }
+                    scope_stack.pop_back();
+                }
+            }
+
+            return redundant_lines;
+        }
+
         std::optional<std::string> generate_forward_header_content(
             const fs::path& header_path,
             const fs::path& project_root
@@ -915,6 +1137,15 @@ namespace bha::suggestions
             });
 
             GeneratedTextBuilder out;
+            const std::string source_preamble = extract_leading_comment_preamble(header_path);
+            if (!source_preamble.empty()) {
+                std::istringstream preamble_stream(source_preamble);
+                std::string preamble_line;
+                while (std::getline(preamble_stream, preamble_line)) {
+                    out.add_line(preamble_line);
+                }
+                out.add_blank_line();
+            }
             out.add_line("#pragma once");
             out.add_blank_line();
             out.add_line("#ifdef __cplusplus");
@@ -1770,6 +2001,13 @@ namespace bha::suggestions
                         include_line
                     );
                     suggestion.edits.push_back(insertion.edit);
+                }
+
+                for (const auto line : collect_redundant_forward_decl_lines(
+                         *resolved_header_path,
+                         forward_decl_symbols
+                     )) {
+                    suggestion.edits.push_back(make_delete_line_edit(*resolved_header_path, line));
                 }
 
                 std::unordered_set<std::string> edited_includers;

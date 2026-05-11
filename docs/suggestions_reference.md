@@ -114,6 +114,8 @@ Application mode:
 
 Guardrails:
 - generated `_fwd` declarations preserve class-key consistency (`class`/`struct`) for the same canonical type name to avoid `-Wmismatched-tags` ABI portability warnings
+- when `_fwd` is wired into the original header, redundant in-header forward declarations are removed to prevent declaration drift
+- generated `_fwd` headers copy leading source-header comment preambles (license/copyright banners) for policy consistency
 
 ### 8. `pimpl`
 
