@@ -6,6 +6,7 @@
 #include "bha/suggestions/scope_utils.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cmath>
 #include <fstream>
@@ -936,6 +937,377 @@ namespace bha::suggestions
             return out.str();
         }
 
+        struct ForwardReplacementOpportunity {
+            fs::path includer_path;
+            IncludeDirective include_directive;
+            std::string replacement_include;
+            std::size_t pointer_or_reference_mentions = 0;
+            std::vector<std::string> referenced_symbols;
+        };
+
+        bool looks_like_macro_identifier(const std::string& identifier) {
+            bool saw_alpha = false;
+            for (const char ch : identifier) {
+                const auto value = static_cast<unsigned char>(ch);
+                if (std::isalpha(value)) {
+                    saw_alpha = true;
+                    if (!std::isupper(value)) {
+                        return false;
+                    }
+                } else if (!std::isdigit(value) && ch != '_') {
+                    return false;
+                }
+            }
+            return saw_alpha;
+        }
+
+        std::optional<std::pair<std::size_t, std::size_t>> find_outer_paren_span(
+            const std::string& text
+        ) {
+            std::size_t template_depth = 0;
+            std::size_t paren_depth = 0;
+            std::optional<std::size_t> open_paren;
+
+            for (std::size_t i = 0; i < text.size(); ++i) {
+                const char ch = text[i];
+                if (ch == '<') {
+                    ++template_depth;
+                    continue;
+                }
+                if (ch == '>' && template_depth > 0) {
+                    --template_depth;
+                    continue;
+                }
+                if (template_depth > 0) {
+                    continue;
+                }
+                if (ch == '(') {
+                    if (paren_depth == 0) {
+                        open_paren = i;
+                    }
+                    ++paren_depth;
+                    continue;
+                }
+                if (ch == ')' && paren_depth > 0) {
+                    --paren_depth;
+                    if (paren_depth == 0 && open_paren.has_value()) {
+                        return std::pair{*open_paren, i};
+                    }
+                }
+            }
+
+            return std::nullopt;
+        }
+
+        bool callable_tail_looks_valid(std::string tail) {
+            tail = trim_whitespace_copy(tail);
+            while (!tail.empty()) {
+                if (tail[0] == ';' || tail[0] == '{') {
+                    return true;
+                }
+                if (tail.rfind("noexcept", 0) == 0) {
+                    tail.erase(0, std::string("noexcept").size());
+                    tail = trim_whitespace_copy(tail);
+                    if (!tail.empty() && tail[0] == '(') {
+                        if (const auto span = find_outer_paren_span(tail)) {
+                            tail.erase(0, span->second + 1);
+                            tail = trim_whitespace_copy(tail);
+                            continue;
+                        }
+                        return false;
+                    }
+                    continue;
+                }
+                if (tail.rfind("[[", 0) == 0) {
+                    const auto close = tail.find("]]");
+                    if (close == std::string::npos) {
+                        return false;
+                    }
+                    tail.erase(0, close + 2);
+                    tail = trim_whitespace_copy(tail);
+                    continue;
+                }
+                if (tail.rfind("__attribute__", 0) == 0) {
+                    tail.erase(0, std::string("__attribute__").size());
+                    tail = trim_whitespace_copy(tail);
+                    if (!tail.empty() && tail[0] == '(') {
+                        if (const auto span = find_outer_paren_span(tail)) {
+                            tail.erase(0, span->second + 1);
+                            tail = trim_whitespace_copy(tail);
+                            continue;
+                        }
+                    }
+                    return false;
+                }
+
+                std::size_t token_end = 0;
+                while (token_end < tail.size() &&
+                       (std::isalnum(static_cast<unsigned char>(tail[token_end])) ||
+                        tail[token_end] == '_')) {
+                    ++token_end;
+                }
+                if (token_end == 0) {
+                    return false;
+                }
+
+                const std::string token = tail.substr(0, token_end);
+                if (!looks_like_macro_identifier(token)) {
+                    return false;
+                }
+                tail.erase(0, token_end);
+                tail = trim_whitespace_copy(tail);
+            }
+
+            return false;
+        }
+
+        std::optional<std::string> extract_callable_name_from_declaration(
+            const std::string& declaration
+        ) {
+            static const std::array<std::string_view, 12> kRejectedPrefixes{
+                "#",       "if",       "for",      "while",    "switch",   "return",
+                "class ",  "struct ",  "enum ",    "using ",   "typedef ", "static_assert"
+            };
+
+            const std::string trimmed = trim_whitespace_copy(declaration);
+            if (trimmed.empty()) {
+                return std::nullopt;
+            }
+            for (const auto prefix : kRejectedPrefixes) {
+                if (trimmed.rfind(prefix, 0) == 0) {
+                    return std::nullopt;
+                }
+            }
+
+            const auto paren_span = find_outer_paren_span(trimmed);
+            if (!paren_span.has_value()) {
+                return std::nullopt;
+            }
+            if (!callable_tail_looks_valid(trim_whitespace_copy(trimmed.substr(paren_span->second + 1)))) {
+                return std::nullopt;
+            }
+
+            static const std::regex callable_name_regex(
+                R"((?:[A-Za-z_][A-Za-z0-9_]*::)*([A-Za-z_][A-Za-z0-9_]*)\s*$)"
+            );
+
+            const std::string head = trimmed.substr(0, paren_span->first);
+            std::smatch match;
+            if (!std::regex_search(head, match, callable_name_regex)) {
+                return std::nullopt;
+            }
+
+            const std::string name = match[1].str();
+            if (name == "operator" || looks_like_macro_identifier(name)) {
+                return std::nullopt;
+            }
+            return name;
+        }
+
+        std::vector<std::string> extract_declared_callable_names(const fs::path& header_path) {
+            auto lines_result = file_utils::read_lines(header_path);
+            if (lines_result.is_err()) {
+                return {};
+            }
+
+            std::vector<std::string> names;
+            std::unordered_set<std::string> seen;
+            bool in_block_comment = false;
+            bool declaration_pending = false;
+            std::string declaration;
+
+            for (const auto& raw_line : lines_result.value()) {
+                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
+                const std::string trimmed = trim_whitespace_copy(line);
+                if (trimmed.empty()) {
+                    continue;
+                }
+
+                const bool starts_candidate =
+                    !declaration_pending &&
+                    trimmed.find('(') != std::string::npos;
+                if (!declaration_pending && !starts_candidate) {
+                    continue;
+                }
+
+                declaration_pending = true;
+                if (!declaration.empty()) {
+                    declaration.push_back(' ');
+                }
+                declaration += trimmed;
+
+                if (trimmed.find(';') == std::string::npos && trimmed.find('{') == std::string::npos) {
+                    continue;
+                }
+
+                if (auto callable_name = extract_callable_name_from_declaration(declaration);
+                    callable_name.has_value() && seen.insert(*callable_name).second) {
+                    names.push_back(*callable_name);
+                }
+                declaration_pending = false;
+                declaration.clear();
+            }
+
+            return names;
+        }
+
+        std::string sanitize_source_file(const fs::path& file_path) {
+            std::ifstream input(file_path);
+            if (!input) {
+                return {};
+            }
+
+            std::ostringstream buffer;
+            bool in_block_comment = false;
+            std::string line;
+            while (std::getline(input, line)) {
+                buffer << strip_comments_and_strings(line, in_block_comment) << '\n';
+            }
+            return buffer.str();
+        }
+
+        bool references_any_identifier(
+            const std::string& sanitized_text,
+            const std::vector<std::string>& identifiers
+        ) {
+            for (const auto& identifier : identifiers) {
+                if (contains_identifier_token(sanitized_text, identifier)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        std::string derive_forward_include_name(
+            const IncludeDirective& include,
+            const fs::path& target_header,
+            const std::string& fwd_header_name
+        ) {
+            fs::path include_path(include.header_name);
+            if (include_path.filename() == target_header.filename()) {
+                include_path.replace_filename(fwd_header_name);
+                return include_path.generic_string();
+            }
+            return fwd_header_name;
+        }
+
+        std::optional<ForwardReplacementOpportunity> analyze_forward_replacement_opportunity(
+            const fs::path& includer_path,
+            const fs::path& target_header,
+            const std::vector<ForwardDeclSymbol>& symbols,
+            const std::vector<std::string>& callable_names,
+            const std::string& fwd_header_name
+        ) {
+            auto include_directive = find_include_for_header(
+                includer_path,
+                target_header.generic_string()
+            );
+            if (!include_directive.has_value()) {
+                include_directive = find_include_for_header(
+                    includer_path,
+                    target_header.filename().string()
+                );
+            }
+            if (!include_directive.has_value()) {
+                return std::nullopt;
+            }
+
+            const std::string sanitized_text = sanitize_source_file(includer_path);
+            if (sanitized_text.empty()) {
+                return std::nullopt;
+            }
+
+            if (references_any_identifier(sanitized_text, callable_names)) {
+                return std::nullopt;
+            }
+
+            std::unordered_set<std::string> seen_symbols;
+            std::vector<std::string> mentioned_symbols;
+            std::size_t pointer_or_reference_mentions = 0;
+            for (const auto& symbol : symbols) {
+                if (!seen_symbols.insert(symbol.name).second) {
+                    continue;
+                }
+                if (!contains_identifier_token(sanitized_text, symbol.name)) {
+                    continue;
+                }
+
+                const auto usage = analyze_incomplete_type_usage(sanitized_text, {symbol.name});
+                if (usage.requires_complete_type) {
+                    return std::nullopt;
+                }
+                if (!usage.has_mentions || usage.pointer_or_reference_mentions == 0) {
+                    return std::nullopt;
+                }
+
+                mentioned_symbols.push_back(symbol.name);
+                pointer_or_reference_mentions += usage.pointer_or_reference_mentions;
+            }
+
+            if (mentioned_symbols.empty() || pointer_or_reference_mentions == 0) {
+                return std::nullopt;
+            }
+
+            ForwardReplacementOpportunity opportunity;
+            opportunity.includer_path = includer_path;
+            opportunity.include_directive = *include_directive;
+            opportunity.replacement_include = derive_forward_include_name(
+                *include_directive,
+                target_header,
+                fwd_header_name
+            );
+            opportunity.pointer_or_reference_mentions = pointer_or_reference_mentions;
+            opportunity.referenced_symbols = std::move(mentioned_symbols);
+            return opportunity;
+        }
+
+        std::vector<ForwardReplacementOpportunity> collect_forward_replacement_opportunities(
+            const analyzers::DependencyAnalysisResult::HeaderInfo& header,
+            const fs::path& resolved_header_path,
+            const fs::path& project_root,
+            const std::vector<ForwardDeclSymbol>& symbols,
+            const std::vector<std::string>& callable_names,
+            const std::string& fwd_header_name
+        ) {
+            std::vector<ForwardReplacementOpportunity> opportunities;
+            std::unordered_set<std::string> seen_includers;
+            opportunities.reserve(header.included_by.size());
+
+            for (const auto& includer : header.included_by) {
+                auto resolved_includer_path = resolve_header_path_for_edits(includer, project_root);
+                if (!resolved_includer_path.has_value() || !fs::exists(*resolved_includer_path)) {
+                    continue;
+                }
+                if (*resolved_includer_path == resolved_header_path) {
+                    continue;
+                }
+                if (!seen_includers.insert(resolved_includer_path->generic_string()).second) {
+                    continue;
+                }
+
+                auto opportunity = analyze_forward_replacement_opportunity(
+                    *resolved_includer_path,
+                    resolved_header_path,
+                    symbols,
+                    callable_names,
+                    fwd_header_name
+                );
+                if (!opportunity.has_value()) {
+                    continue;
+                }
+                opportunities.push_back(std::move(*opportunity));
+            }
+
+            std::ranges::sort(opportunities, [](const ForwardReplacementOpportunity& lhs,
+                                                const ForwardReplacementOpportunity& rhs) {
+                if (lhs.pointer_or_reference_mentions != rhs.pointer_or_reference_mentions) {
+                    return lhs.pointer_or_reference_mentions > rhs.pointer_or_reference_mentions;
+                }
+                return lhs.includer_path.generic_string() < rhs.includer_path.generic_string();
+            });
+            return opportunities;
+        }
+
     }  // namespace
 
     Result<SuggestionResult, Error> HeaderSplitSuggester::suggest(
@@ -1020,6 +1392,29 @@ namespace bha::suggestions
             }
 
             const SplitPattern pattern = determine_split_pattern(header.path, header.including_files);
+            std::vector<ForwardDeclSymbol> forward_decl_symbols;
+            std::vector<std::string> callable_names;
+            std::vector<ForwardReplacementOpportunity> replacement_opportunities;
+            if (pattern == SplitPattern::ForwardDecl && resolved_header_path.has_value()) {
+                forward_decl_symbols = extract_forward_decl_symbols(*resolved_header_path);
+                if (forward_decl_symbols.empty()) {
+                    ++skipped;
+                    continue;
+                }
+                callable_names = extract_declared_callable_names(*resolved_header_path);
+                replacement_opportunities = collect_forward_replacement_opportunities(
+                    header,
+                    *resolved_header_path,
+                    context.project_root,
+                    forward_decl_symbols,
+                    callable_names,
+                    fwd_header_name
+                );
+                if (replacement_opportunities.empty()) {
+                    ++skipped;
+                    continue;
+                }
+            }
 
             const double confidence = calculate_confidence(
                 header.total_parse_time,
@@ -1067,7 +1462,8 @@ namespace bha::suggestions
                 case SplitPattern::ForwardDecl:
                     desc << "- Create `" << fwd_header_name << "` for forward declarations only.\n";
                     desc << "- Keep full definitions in `" << filename << "` and include `" << fwd_header_name << "` there.\n";
-                    desc << "- Update includers that only need pointers/references to include `" << fwd_header_name << "`.\n";
+                    desc << "- Replace proven includers that only need incomplete types with `" << fwd_header_name
+                         << "` (" << replacement_opportunities.size() << " files).\n";
                     break;
                 case SplitPattern::TypesAndFwd:
                     desc << "- Create `" << fwd_header_name << "` for forward declarations.\n";
@@ -1097,8 +1493,9 @@ namespace bha::suggestions
             switch (pattern) {
             case SplitPattern::ForwardDecl:
                 rationale << "This header would benefit from a forward declaration "
-                          << "header (_fwd.h) since many includers likely only need "
-                          << "to reference types without seeing their full definition.";
+                          << "header (_fwd.h). BHA only emits this when it can prove "
+                          << replacement_opportunities.size()
+                          << " includer file(s) use only incomplete-type-safe references.";
                 break;
             case SplitPattern::TypesAndFwd:
                 rationale << "Separating type definitions from forward declarations "
@@ -1213,7 +1610,11 @@ namespace bha::suggestions
 
             suggestion.implementation_steps = generate_implementation_steps(header.path, pattern);
 
-            suggestion.impact.total_files_affected = header.including_files;
+            if (pattern == SplitPattern::ForwardDecl && !replacement_opportunities.empty()) {
+                suggestion.impact.total_files_affected = replacement_opportunities.size() + 1;
+            } else {
+                suggestion.impact.total_files_affected = header.including_files;
+            }
             suggestion.impact.cumulative_savings = suggestion.estimated_savings;
 
             suggestion.caveats = {
@@ -1232,7 +1633,8 @@ namespace bha::suggestions
 
             const bool supports_direct_edits =
                 pattern == SplitPattern::ForwardDecl &&
-                resolved_header_path.has_value();
+                resolved_header_path.has_value() &&
+                !replacement_opportunities.empty();
             bool created_fwd_header = false;
 
             if (supports_direct_edits) {
@@ -1274,6 +1676,30 @@ namespace bha::suggestions
                         include_line
                     );
                     suggestion.edits.push_back(insertion.edit);
+                }
+
+                std::unordered_set<std::string> edited_includers;
+                for (const auto& opportunity : replacement_opportunities) {
+                    const std::string replacement_line =
+                        "#include \"" + opportunity.replacement_include + "\"";
+
+                    TextEdit replace_include;
+                    replace_include.file = opportunity.includer_path;
+                    replace_include.start_line = opportunity.include_directive.line;
+                    replace_include.start_col = opportunity.include_directive.col_start;
+                    replace_include.end_line = opportunity.include_directive.line;
+                    replace_include.end_col = opportunity.include_directive.col_end;
+                    replace_include.new_text = replacement_line;
+                    suggestion.edits.push_back(std::move(replace_include));
+
+                    if (edited_includers.insert(opportunity.includer_path.generic_string()).second) {
+                        FileTarget includer_target;
+                        includer_target.path = opportunity.includer_path;
+                        includer_target.action = FileAction::Modify;
+                        includer_target.note =
+                            "Replace full header include with proven forward companion include";
+                        suggestion.secondary_files.push_back(std::move(includer_target));
+                    }
                 }
             }
 
