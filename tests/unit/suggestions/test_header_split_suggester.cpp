@@ -314,6 +314,7 @@ namespace bha::suggestions
         trace.total_time = std::chrono::seconds(60);
 
         const auto header_path = temp_root_ / "monolith.hpp";
+        const auto includer_path = temp_root_ / "consumer.hpp";
         write_file(
             header_path,
             "#pragma once\n"
@@ -327,6 +328,17 @@ namespace bha::suggestions
             "};\n"
             "}\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"monolith.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -334,6 +346,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(500);
         header.inclusion_count = 20;
         header.including_files = 10;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -355,6 +368,10 @@ namespace bha::suggestions
             return edit.file == header_path &&
                    edit.new_text.find("#include \"monolith_fwd.hpp\"") != std::string::npos;
         }));
+        EXPECT_TRUE(std::ranges::any_of(suggestion.edits, [&](const TextEdit& edit) {
+            return edit.file == includer_path &&
+                   edit.new_text == "#include \"monolith_fwd.hpp\"";
+        }));
     }
 
     TEST_F(HeaderSplitSuggesterTest, SkipsNestedMemberDefinitionsInForwardHeader) {
@@ -362,6 +379,7 @@ namespace bha::suggestions
         trace.total_time = std::chrono::seconds(60);
 
         const auto header_path = temp_root_ / "reader.hpp";
+        const auto includer_path = temp_root_ / "reader_consumer.hpp";
         write_file(
             header_path,
             "#pragma once\n"
@@ -375,6 +393,17 @@ namespace bha::suggestions
             "};\n"
             "}\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"reader.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesReader {\n"
+            "public:\n"
+            "    Reader* reader = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -382,6 +411,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(500);
         header.inclusion_count = 20;
         header.including_files = 10;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -407,6 +437,7 @@ namespace bha::suggestions
 
         const auto namespace_header = temp_root_ / "include" / "rocksdb" / "rocksdb_namespace.h";
         const auto header_path = temp_root_ / "db" / "column_family.hpp";
+        const auto includer_path = temp_root_ / "db" / "column_family_consumer.hpp";
         write_file(
             namespace_header,
             "#pragma once\n"
@@ -422,6 +453,17 @@ namespace bha::suggestions
             "};\n"
             "}\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"db/column_family.hpp\"\n"
+            "namespace ROCKSDB_NAMESPACE {\n"
+            "class UsesColumnFamilyData {\n"
+            "public:\n"
+            "    ColumnFamilyData* cfd = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -429,6 +471,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(500);
         header.inclusion_count = 20;
         header.including_files = 10;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -495,6 +538,7 @@ namespace bha::suggestions
         BuildTrace trace;
 
         const auto header_path = temp_root_ / "spinlock.hpp";
+        const auto includer_path = temp_root_ / "spinlock_consumer.hpp";
         write_file(
             header_path,
             "#pragma once\n"
@@ -505,6 +549,17 @@ namespace bha::suggestions
             "};\n"
             "}\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"spinlock.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesSpinLock {\n"
+            "public:\n"
+            "    SpinLock* lock = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -512,6 +567,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(600);
         header.inclusion_count = 24;
         header.including_files = 12;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -535,6 +591,7 @@ namespace bha::suggestions
 
         const auto config_header = temp_root_ / "project_config.h";
         const auto header_path = temp_root_ / "widget.hpp";
+        const auto includer_path = temp_root_ / "widget_consumer.hpp";
         write_file(
             config_header,
             "#pragma once\n"
@@ -556,6 +613,21 @@ namespace bha::suggestions
             "PROJECT_NAMESPACE_END\n"
             "}  // namespace demo\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"widget.hpp\"\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -563,6 +635,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(600);
         header.inclusion_count = 24;
         header.including_files = 12;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -591,6 +664,7 @@ namespace bha::suggestions
         BuildTrace trace;
 
         const auto header_path = temp_root_ / "widget.hpp";
+        const auto includer_path = temp_root_ / "widget_consumer.hpp";
         write_file(
             header_path,
             "#pragma once\n"
@@ -607,6 +681,21 @@ namespace bha::suggestions
             "PROJECT_NAMESPACE_END\n"
             "}  // namespace demo\n"
         );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"widget.hpp\"\n"
+            "namespace demo {\n"
+            "PROJECT_NAMESPACE_BEGIN\n"
+            "namespace detail {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "};\n"
+            "}  // namespace detail\n"
+            "PROJECT_NAMESPACE_END\n"
+            "}  // namespace demo\n"
+        );
 
         analyzers::AnalysisResult analysis;
         analyzers::DependencyAnalysisResult::HeaderInfo header;
@@ -614,6 +703,7 @@ namespace bha::suggestions
         header.total_parse_time = std::chrono::milliseconds(600);
         header.inclusion_count = 24;
         header.including_files = 12;
+        header.included_by.push_back(includer_path);
         analysis.dependencies.headers.push_back(header);
 
         SuggesterOptions options;
@@ -627,6 +717,51 @@ namespace bha::suggestions
         EXPECT_FALSE(suggestion.is_safe);
         EXPECT_TRUE(suggestion.edits.empty());
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+    }
+
+    TEST_F(HeaderSplitSuggesterTest, SkipsForwardDeclSplitWithoutProvableConsumerReplacement) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "heavy.hpp";
+        const auto includer_path = temp_root_ / "heavy_consumer.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class HeavyType {\n"
+            "public:\n"
+            "    int value() const;\n"
+            "};\n"
+            "}\n"
+        );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"heavy.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesHeavy {\n"
+            "public:\n"
+            "    HeavyType value;\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(800);
+        header.inclusion_count = 24;
+        header.including_files = 12;
+        header.included_by.push_back(includer_path);
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
     }
 
     TEST_F(HeaderSplitSuggesterTest, FindsOnlyPrimaryIncludeBlockForInsertion) {
