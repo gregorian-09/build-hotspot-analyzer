@@ -20,6 +20,11 @@
 
 namespace bha::suggestions {
 
+    /**
+     * @brief Register all builtin suggesters with the global suggester registry.
+     *
+     * Intended for one-time initialization during startup.
+     */
     inline void register_all_suggesters() {
         register_pch_suggester();
         register_forward_decl_suggester();

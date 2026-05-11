@@ -10,7 +10,7 @@
 namespace bha::suggestions {
 
     /**
-     * Unity Build Suggester - suggests grouping source files for unity builds.
+     * @brief Suggester for unity/jumbo build opportunities.
      *
      * Unity builds (also known as jumbo or batch builds) combine multiple source
      * files into a single translation unit, reducing:
@@ -27,23 +27,35 @@ namespace bha::suggestions {
      */
     class UnityBuildSuggester : public ISuggester {
     public:
+        /// Stable suggester identifier.
         [[nodiscard]] std::string_view name() const noexcept override {
             return "UnityBuildSuggester";
         }
 
+        /// Human-readable behavior summary for UI/CLI surfaces.
         [[nodiscard]] std::string_view description() const noexcept override {
             return "Suggests unity/jumbo build configurations to reduce compile times";
         }
 
+        /// Primary suggestion type emitted by this suggester.
         [[nodiscard]] SuggestionType suggestion_type() const noexcept override {
             return SuggestionType::UnityBuild;
         }
 
+        /**
+         * @brief Generate unity-build suggestions for compatible translation-unit groups.
+         *
+         * @param context Analysis context containing traces, analyzer outputs, and options.
+         * @return Suggestion generation result or structured error.
+         */
         [[nodiscard]] Result<SuggestionResult, Error> suggest(
             const SuggestionContext& context
         ) const override;
     };
 
+    /**
+     * @brief Register `UnityBuildSuggester` with the global suggester registry.
+     */
     void register_unity_build_suggester();
 
 }  // namespace bha::suggestions

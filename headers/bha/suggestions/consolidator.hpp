@@ -22,12 +22,16 @@
 namespace bha::suggestions
 {
     /**
-     * Consolidation options.
+     * @brief Tunables controlling suggestion consolidation behavior.
      */
     struct ConsolidationOptions {
+        /// Enables/disables consolidation stage.
         bool enable_consolidation = true;
+        /// Soft cap for items represented in one merged suggestion body.
         std::size_t max_items_per_suggestion = 50;
+        /// Whether external/system headers are retained in merged output.
         bool include_external_headers = false;
+        /// Age threshold used for stability heuristics in consolidation.
         Duration stability_threshold = std::chrono::hours(24 * 30 * 6);
     };
 
@@ -36,6 +40,9 @@ namespace bha::suggestions
      */
     class SuggestionConsolidator {
     public:
+        /**
+         * @brief Construct consolidator with caller-provided options.
+         */
         explicit SuggestionConsolidator(const ConsolidationOptions& options = {})
             : options_(options) {}
 
@@ -43,7 +50,7 @@ namespace bha::suggestions
          * Consolidates a list of suggestions.
          *
          * @param suggestions Raw suggestions from all suggesters.
-         * @return Consolidated suggestions with merged information.
+         * @return Consolidated suggestions with merged information and reduced duplication.
          */
         [[nodiscard]] std::vector<Suggestion> consolidate(
             std::vector<Suggestion> suggestions
@@ -115,6 +122,8 @@ namespace bha::suggestions
 
         /**
          * Merges TextEdits from multiple suggestions, handling conflicts.
+         *
+         * The merge keeps deterministic ordering and drops exact duplicates.
          */
         [[nodiscard]] static std::vector<TextEdit> merge_edits(
             const std::vector<Suggestion>& suggestions
