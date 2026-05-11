@@ -22,6 +22,10 @@ Typical outputs:
 Application mode:
 - usually `direct-edits` when unambiguous target selection succeeds
 
+Guardrails:
+- auto-apply is syntax-gated against compile-command-backed translation units
+- when no compile-command evidence exists for a candidate, apply-all skips that suggestion instead of failing the full batch
+
 ### 2. `forward-decl` (Forward Declaration)
 
 Purpose:
@@ -108,6 +112,9 @@ Inputs:
 Application mode:
 - generally advisory in conservative mode (higher semantic risk)
 
+Guardrails:
+- generated `_fwd` declarations preserve class-key consistency (`class`/`struct`) for the same canonical type name to avoid `-Wmismatched-tags` ABI portability warnings
+
 ### 8. `pimpl`
 
 Purpose:
@@ -183,4 +190,3 @@ BHA exposes threshold flags for key suggesters:
 Use:
 - strict thresholds for CI gating stability
 - relaxed `--explain` runs for exploratory discovery
-

@@ -4671,7 +4671,11 @@ namespace bha::lsp
                     }
                 }
             } else {
-                if (safe_only && is_compile_command_validation_blocked_result(apply_result)) {
+                // Validation "apply blocked" diagnostics indicate missing compile-command
+                // evidence for safe auto-apply in this workspace, not a code-edit failure.
+                // Treat these as skipped suggestions for apply-all so one unverifiable item
+                // does not fail the whole batch.
+                if (is_compile_command_validation_blocked_result(apply_result)) {
                     result.skipped_count++;
                     continue;
                 }

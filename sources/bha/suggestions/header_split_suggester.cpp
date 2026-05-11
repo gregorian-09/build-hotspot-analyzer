@@ -12,6 +12,7 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace bha::suggestions
@@ -343,6 +344,33 @@ namespace bha::suggestions
             std::string name;
         };
 
+        std::string make_canonical_symbol_key(const ForwardDeclSymbol& symbol) {
+            std::ostringstream key;
+            for (const auto& name : symbol.namespaces) {
+                key << name << "::";
+            }
+            key << symbol.name;
+            return key.str();
+        }
+
+        std::string normalize_class_key(const std::string& class_key) {
+            return class_key == "struct" ? "struct" : "class";
+        }
+
+        std::string merge_class_key_preference(
+            const std::string& existing,
+            const std::string& observed
+        ) {
+            const std::string existing_normalized = normalize_class_key(existing);
+            const std::string observed_normalized = normalize_class_key(observed);
+            // Prefer `class` when conflicting declarations exist to avoid emitting
+            // `struct` forward declarations for class definitions (MSVC ABI warning risk).
+            if (existing_normalized == "class" || observed_normalized == "class") {
+                return "class";
+            }
+            return "struct";
+        }
+
         std::string make_symbol_identity_key(const ForwardDeclSymbol& symbol) {
             std::ostringstream key;
             for (const auto& scope : symbol.scopes) {
@@ -462,7 +490,7 @@ namespace bha::suggestions
 
             std::vector<ForwardDeclSymbol> symbols;
             std::unordered_map<std::string, ForwardDeclSymbol> symbols_by_identity;
-            std::unordered_set<std::string> conflicted_identities;
+            std::unordered_map<std::string, std::string> preferred_class_key_by_canonical_symbol;
             std::vector<ScopeFrame> scope_stack;
             bool in_block_comment = false;
             std::size_t brace_depth = 0;
@@ -554,19 +582,29 @@ namespace bha::suggestions
                             ForwardDeclSymbol symbol;
                             symbol.scopes = scope_stack;
                             symbol.namespaces = collect_active_namespaces(scope_stack);
-                            symbol.kind = class_match[1].str();
+                            symbol.kind = normalize_class_key(class_match[1].str());
                             symbol.name = *name;
+                            const std::string canonical_symbol = make_canonical_symbol_key(symbol);
+                            auto preferred_kind =
+                                preferred_class_key_by_canonical_symbol.find(canonical_symbol);
+                            if (preferred_kind == preferred_class_key_by_canonical_symbol.end()) {
+                                preferred_class_key_by_canonical_symbol.emplace(canonical_symbol, symbol.kind);
+                            } else {
+                                preferred_kind->second = merge_class_key_preference(
+                                    preferred_kind->second,
+                                    symbol.kind
+                                );
+                            }
+
                             const std::string identity = make_symbol_identity_key(symbol);
-                            if (!conflicted_identities.contains(identity)) {
-                                if (auto existing = symbols_by_identity.find(identity);
-                                    existing != symbols_by_identity.end()) {
-                                    if (existing->second.kind != symbol.kind) {
-                                        symbols_by_identity.erase(existing);
-                                        conflicted_identities.insert(identity);
-                                    }
-                                } else {
-                                    symbols_by_identity.emplace(identity, std::move(symbol));
-                                }
+                            if (auto existing = symbols_by_identity.find(identity);
+                                existing != symbols_by_identity.end()) {
+                                existing->second.kind = merge_class_key_preference(
+                                    existing->second.kind,
+                                    symbol.kind
+                                );
+                            } else {
+                                symbols_by_identity.emplace(identity, std::move(symbol));
                             }
                         }
                         skip_next_class_decl = false;
@@ -605,6 +643,11 @@ namespace bha::suggestions
 
             symbols.reserve(symbols_by_identity.size());
             for (auto& [_, symbol] : symbols_by_identity) {
+                const auto preferred_kind =
+                    preferred_class_key_by_canonical_symbol.find(make_canonical_symbol_key(symbol));
+                if (preferred_kind != preferred_class_key_by_canonical_symbol.end()) {
+                    symbol.kind = preferred_kind->second;
+                }
                 symbols.push_back(std::move(symbol));
             }
             return symbols;

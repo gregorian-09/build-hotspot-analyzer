@@ -431,6 +431,64 @@ namespace bha::suggestions
         EXPECT_EQ(fwd_edit->new_text.find("Rep"), std::string::npos);
     }
 
+    TEST_F(HeaderSplitSuggesterTest, PreservesClassKeyConsistencyInGeneratedForwardHeader) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(60);
+
+        const auto header_path = temp_root_ / "mismatched_tags.hpp";
+        const auto includer_path = temp_root_ / "mismatched_tags_consumer.hpp";
+        write_file(
+            header_path,
+            "#pragma once\n"
+            "namespace demo {\n"
+            "class Widget {\n"
+            "public:\n"
+            "    void run();\n"
+            "};\n"
+            "}\n"
+            "#if defined(LEGACY_DECL)\n"
+            "namespace demo {\n"
+            "struct Widget;\n"
+            "}\n"
+            "#endif\n"
+        );
+        write_file(
+            includer_path,
+            "#pragma once\n"
+            "#include \"mismatched_tags.hpp\"\n"
+            "namespace demo {\n"
+            "class UsesWidget {\n"
+            "public:\n"
+            "    Widget* widget = nullptr;\n"
+            "};\n"
+            "}\n"
+        );
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = header_path;
+        header.total_parse_time = std::chrono::milliseconds(500);
+        header.inclusion_count = 20;
+        header.including_files = 10;
+        header.included_by.push_back(includer_path);
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, temp_root_};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        auto fwd_edit = std::ranges::find_if(suggestion.edits, [](const TextEdit& edit) {
+            return edit.file.filename() == "mismatched_tags_fwd.hpp";
+        });
+        ASSERT_NE(fwd_edit, suggestion.edits.end());
+        EXPECT_NE(fwd_edit->new_text.find("class Widget;"), std::string::npos);
+        EXPECT_EQ(fwd_edit->new_text.find("struct Widget;"), std::string::npos);
+    }
+
     TEST_F(HeaderSplitSuggesterTest, AddsSupportIncludeForMacroNamespaceForwardHeader) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(60);
