@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file uri.hpp
+ * @brief URI/path conversion helpers used by the LSP layer.
+ */
+
 #include <string>
 #include <string_view>
 #include <filesystem>
@@ -9,10 +14,18 @@ namespace bha::lsp::uri
 {
     namespace fs = std::filesystem;
 
+    /**
+     * @brief Return whether a byte is URI-unreserved per RFC 3986.
+     */
     inline bool is_unreserved(const unsigned char c) {
         return std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~';
     }
 
+    /**
+     * @brief Percent-encode a path/URI fragment.
+     *
+     * Keeps `/` and `:` unescaped to preserve path separators and drive prefixes.
+     */
     inline std::string percent_encode(const std::string_view input) {
         std::string out;
         out.reserve(input.size());
@@ -30,6 +43,11 @@ namespace bha::lsp::uri
         return out;
     }
 
+    /**
+     * @brief Decode one hexadecimal nibble.
+     *
+     * @return Nibble value in `[0, 15]` or `-1` for invalid input.
+     */
     inline int hex_value(const unsigned char c) {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'A' && c <= 'F') return 10 + (c - 'A');
@@ -37,6 +55,9 @@ namespace bha::lsp::uri
         return -1;
     }
 
+    /**
+     * @brief Percent-decode an encoded path/URI fragment.
+     */
     inline std::string percent_decode(const std::string_view input) {
         std::string out;
         out.reserve(input.size());
@@ -55,6 +76,11 @@ namespace bha::lsp::uri
         return out;
     }
 
+    /**
+     * @brief Convert filesystem path to `file://` URI.
+     *
+     * Produces normalized absolute paths and handles Windows drive/UNC forms.
+     */
     inline std::string path_to_uri(const fs::path& path) {
         fs::path abs = fs::absolute(path).lexically_normal();
         std::string path_str = abs.string();
@@ -74,6 +100,11 @@ namespace bha::lsp::uri
 #endif
     }
 
+    /**
+     * @brief Convert `file://` URI back to filesystem path.
+     *
+     * Non-`file://` inputs are treated as raw paths and returned directly.
+     */
     inline fs::path uri_to_path(std::string_view uri) {
         constexpr std::string_view prefix = "file://";
         if (uri.rfind(prefix, 0) != 0) {

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file protocol.hpp
+ * @brief JSON-RPC/LSP protocol envelope types and serializers.
+ */
+
 #include "types.hpp"
 #include <string>
 #include <variant>
@@ -8,34 +13,68 @@
 
 namespace bha::lsp
 {
+    /**
+     * @brief JSON-RPC request identifier type.
+     *
+     * LSP permits numeric and string identifiers.
+     */
     using RequestId = std::variant<int, std::string>;
 
+    /**
+     * @brief JSON-RPC request envelope.
+     */
     struct RequestMessage {
+        /// JSON-RPC protocol version (typically `"2.0"`).
         std::string jsonrpc;
+        /// Request identifier.
         RequestId id;
+        /// Method name.
         std::string method;
+        /// Optional method parameters object/array.
         std::optional<json> params;
     };
 
+    /**
+     * @brief JSON-RPC response envelope.
+     */
     struct ResponseMessage {
+        /// JSON-RPC protocol version.
         std::string jsonrpc;
+        /// Correlated request identifier.
         RequestId id;
+        /// Optional successful result payload.
         std::optional<json> result;
+        /// Optional error payload.
         std::optional<json> error;
     };
 
+    /**
+     * @brief JSON-RPC notification envelope.
+     */
     struct NotificationMessage {
+        /// JSON-RPC protocol version.
         std::string jsonrpc;
+        /// Method name.
         std::string method;
+        /// Optional method parameters object/array.
         std::optional<json> params;
     };
 
+    /**
+     * @brief JSON-RPC error object.
+     */
     struct ResponseError {
+        /// Error code (standard or domain-specific).
         int code;
+        /// Human-readable error message.
         std::string message;
+        /// Optional structured error details.
         std::optional<json> data;
     };
 
+    /**
+     * @brief Standard JSON-RPC/LSP plus BHA-specific error codes.
+     */
     enum class ErrorCode {
         // JSON-RPC standard errors
         ParseError = -32700,
@@ -64,10 +103,12 @@ namespace bha::lsp
         ConcurrentModification = -32032
     };
 
+    /// Serialize request identifier variant.
     inline void to_json(json& j, const RequestId& id) {
         std::visit([&j](auto&& arg) { j = arg; }, id);
     }
 
+    /// Deserialize request identifier variant.
     inline void from_json(const json& j, RequestId& id) {
         if (j.is_number()) {
             id = j.get<int>();
@@ -76,6 +117,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `ResponseError`.
     inline void to_json(json& j, const ResponseError& e) {
         j["code"] = e.code;
         j["message"] = e.message;
@@ -84,6 +126,7 @@ namespace bha::lsp
         }
     }
 
+    /// Deserialize `ResponseError`.
     inline void from_json(const json& j, ResponseError& e) {
         j.at("code").get_to(e.code);
         j.at("message").get_to(e.message);
@@ -92,6 +135,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `RequestMessage`.
     inline void to_json(json& j, const RequestMessage& m) {
         j["jsonrpc"] = m.jsonrpc;
         json id_json;
@@ -103,6 +147,7 @@ namespace bha::lsp
         }
     }
 
+    /// Deserialize `RequestMessage`.
     inline void from_json(const json& j, RequestMessage& m) {
         j.at("jsonrpc").get_to(m.jsonrpc);
         from_json(j.at("id"), m.id);
@@ -112,6 +157,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `ResponseMessage`.
     inline void to_json(json& j, const ResponseMessage& m) {
         j["jsonrpc"] = m.jsonrpc;
         json id_json;
@@ -125,6 +171,7 @@ namespace bha::lsp
         }
     }
 
+    /// Deserialize `ResponseMessage`.
     inline void from_json(const json& j, ResponseMessage& m) {
         j.at("jsonrpc").get_to(m.jsonrpc);
         from_json(j.at("id"), m.id);
@@ -136,6 +183,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `NotificationMessage`.
     inline void to_json(json& j, const NotificationMessage& m) {
         j["jsonrpc"] = m.jsonrpc;
         j["method"] = m.method;
@@ -144,6 +192,7 @@ namespace bha::lsp
         }
     }
 
+    /// Deserialize `NotificationMessage`.
     inline void from_json(const json& j, NotificationMessage& m) {
         j.at("jsonrpc").get_to(m.jsonrpc);
         j.at("method").get_to(m.method);

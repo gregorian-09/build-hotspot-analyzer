@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file types.hpp
+ * @brief LSP-facing data model and JSON serializers.
+ */
+
 #include <string>
 #include <vector>
 #include <optional>
@@ -10,26 +15,31 @@ namespace bha::lsp
 {
     using json = nlohmann::json;
 
+    /// Zero-based position in a text document.
     struct Position {
         int line = 0;
         int character = 0;
     };
 
+    /// Text range in a document (inclusive start, exclusive end).
     struct Range {
         Position start;
         Position end;
     };
 
+    /// URI plus range reference.
     struct Location {
         std::string uri;
         Range range;
     };
 
+    /// Text replacement in one range.
     struct TextEdit {
         Range range;
         std::string new_text;
     };
 
+    /// LSP `window/showMessage` categories.
     enum class MessageType {
         Error = 1,
         Warning = 2,
@@ -37,6 +47,7 @@ namespace bha::lsp
         Log = 4
     };
 
+    /// LSP diagnostic severity levels.
     enum class DiagnosticSeverity {
         Error = 1,
         Warning = 2,
@@ -44,6 +55,7 @@ namespace bha::lsp
         Hint = 4
     };
 
+    /// LSP diagnostic payload.
     struct Diagnostic {
         Range range;
         DiagnosticSeverity severity = DiagnosticSeverity::Information;
@@ -54,6 +66,7 @@ namespace bha::lsp
 
     inline void to_json(json& j, const Diagnostic& d);
 
+    /// Suggestion categories exposed to IDE clients.
     enum class SuggestionType {
         PrecompiledHeader,
         HeaderSplit,
@@ -65,12 +78,14 @@ namespace bha::lsp
         MoveToCpp
     };
 
+    /// User-facing prioritization buckets.
     enum class Priority {
         High,
         Medium,
         Low
     };
 
+    /// Relative implementation complexity estimate.
     enum class Complexity {
         Trivial,
         Simple,
@@ -78,6 +93,7 @@ namespace bha::lsp
         Complex
     };
 
+    /// Estimated effect summary for one suggestion.
     struct Impact {
         int time_saved_ms;
         double percentage;
@@ -85,6 +101,7 @@ namespace bha::lsp
         Complexity complexity;
     };
 
+    /// Summary suggestion payload used in list/code-action surfaces.
     struct Suggestion {
         std::string id;
         SuggestionType type;
@@ -112,6 +129,7 @@ namespace bha::lsp
         std::optional<Range> range;
     };
 
+    /// Expanded suggestion payload for details views.
     struct DetailedSuggestion : Suggestion {
         std::string rationale;
         std::vector<std::string> files_to_create;
@@ -122,6 +140,7 @@ namespace bha::lsp
         std::optional<std::string> auto_apply_blocked_reason;
     };
 
+    /// One file-level change in apply preview/result payloads.
     struct FileChange {
         std::string file;
         enum class Type { Create, Modify, Delete } type;
@@ -129,10 +148,12 @@ namespace bha::lsp
         std::vector<TextEdit> edits;
     };
 
+    /// Build metrics surfaced to LSP clients.
     struct BuildMetrics {
         int total_duration_ms;
         int files_compiled;
         int files_up_to_date;
+        /// Per-file timing metric entry.
         struct FileMetric {
             std::string file;
             int duration_ms;
@@ -141,6 +162,7 @@ namespace bha::lsp
         std::vector<FileMetric> slowest_files;
     };
 
+    /// Validation status payload for apply/build verification.
     struct ValidationResult {
         bool valid;
         bool syntax_valid;
@@ -150,6 +172,7 @@ namespace bha::lsp
         std::vector<Diagnostic> warnings;
     };
 
+    /// Build execution result payload.
     struct BuildResult {
         bool success;
         BuildMetrics metrics;
@@ -204,6 +227,7 @@ namespace bha::lsp
         if (p.percentage) j["percentage"] = *p.percentage;
     }
 
+    /// Serialize `WorkDoneProgressReport`.
     inline void to_json(json& j, const WorkDoneProgressReport& p) {
         j["kind"] = p.kind;
         if (p.cancellable) j["cancellable"] = *p.cancellable;
@@ -211,25 +235,30 @@ namespace bha::lsp
         if (p.percentage) j["percentage"] = *p.percentage;
     }
 
+    /// Serialize `WorkDoneProgressEnd`.
     inline void to_json(json& j, const WorkDoneProgressEnd& p) {
         j["kind"] = p.kind;
         if (p.message) j["message"] = *p.message;
     }
 
+    /// Serialize progress token variant.
     inline void to_json(json& j, const ProgressToken& token) {
         std::visit([&j](auto&& arg) { j = arg; }, token);
     }
 
+    /// Serialize `Position`.
     inline void to_json(json& j, const Position& p) {
         j["line"] = p.line;
         j["character"] = p.character;
     }
 
+    /// Deserialize `Position`.
     inline void from_json(const json& j, Position& p) {
         j.at("line").get_to(p.line);
         j.at("character").get_to(p.character);
     }
 
+    /// Serialize `Range`.
     inline void to_json(json& j, const Range& r) {
         json start_json;
         to_json(start_json, r.start);
@@ -239,11 +268,13 @@ namespace bha::lsp
         j["end"] = end_json;
     }
 
+    /// Deserialize `Range`.
     inline void from_json(const json& j, Range& r) {
         j.at("start").get_to(r.start);
         j.at("end").get_to(r.end);
     }
 
+    /// Serialize `Diagnostic`.
     inline void to_json(json& j, const Diagnostic& d) {
         json range_json;
         to_json(range_json, d.range);
@@ -258,6 +289,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `Impact`.
     inline void to_json(json& j, const Impact& i) {
         j["timeSavedMs"] = i.time_saved_ms;
         j["timeSaved"] = i.time_saved_ms;
@@ -266,6 +298,7 @@ namespace bha::lsp
         j["complexity"] = static_cast<int>(i.complexity);
     }
 
+    /// Serialize `Suggestion`.
     inline void to_json(json& j, const Suggestion& s) {
         j["id"] = s.id;
         j["type"] = static_cast<int>(s.type);
@@ -317,6 +350,7 @@ namespace bha::lsp
         }
     }
 
+    /// Serialize `BuildMetrics`.
     inline void to_json(json& j, const BuildMetrics& m) {
         j["totalDurationMs"] = m.total_duration_ms;
         j["totalDuration"] = m.total_duration_ms;
