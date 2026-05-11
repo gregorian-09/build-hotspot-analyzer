@@ -39,7 +39,7 @@
 namespace bha::exporters
 {
     /**
-     * Export format enumeration.
+     * @brief Supported export payload formats.
      */
     enum class ExportFormat {
         JSON,
@@ -50,57 +50,81 @@ namespace bha::exporters
     };
 
     /**
-     * Export options for controlling output.
+     * @brief Export options controlling output shape and filtering.
      */
     struct ExportOptions {
-        // General options
-        bool pretty_print = true;           // Format output for readability
-        bool include_metadata = true;       // Include version, timestamp, etc.
-        bool compress = false;              // Gzip compress output
+        /// Pretty-print structured output where format supports it.
+        bool pretty_print = true;
+        /// Include metadata block (version, timestamps, provenance).
+        bool include_metadata = true;
+        /// Compress output payload when sink supports compression.
+        bool compress = false;
 
-        // Content options
-        bool include_file_details = true;   // Per-file analysis results
-        bool include_dependencies = true;   // Dependency graph
-        bool include_templates = true;      // Template instantiation data
-        bool include_symbols = true;        // Symbol information
-        bool include_suggestions = true;    // Optimization suggestions
-        bool include_timing = true;         // Timing breakdown
+        /// Include per-file analysis sections.
+        bool include_file_details = true;
+        /// Include dependency graph sections.
+        bool include_dependencies = true;
+        /// Include template-instantiation sections.
+        bool include_templates = true;
+        /// Include symbol-analysis sections.
+        bool include_symbols = true;
+        /// Include optimization suggestion sections.
+        bool include_suggestions = true;
+        /// Include timing breakdown sections.
+        bool include_timing = true;
 
-        // Filtering options
-        Duration min_compile_time = Duration::zero();  // Min time to include
-        double min_confidence = 0.0;        // Min suggestion confidence
-        std::size_t max_files = 0;          // 0 = unlimited
-        std::size_t max_suggestions = 0;    // 0 = unlimited
+        /// Minimum compile duration filter for included file entries.
+        Duration min_compile_time = Duration::zero();
+        /// Minimum confidence threshold filter for suggestion entries.
+        double min_confidence = 0.0;
+        /// Maximum number of file entries to emit (`0` = unlimited).
+        std::size_t max_files = 0;
+        /// Maximum number of suggestions to emit (`0` = unlimited).
+        std::size_t max_suggestions = 0;
 
-        // HTML-specific options
-        bool html_interactive = true;       // Include D3.js visualizations
-        bool html_offline = true;           // Bundle all assets (no CDN)
-        bool html_dark_mode = true;        // Default to dark mode
+        /// Include interactive visualizations when exporting HTML.
+        bool html_interactive = true;
+        /// Bundle assets for offline HTML viewing.
+        bool html_offline = true;
+        /// Use dark mode defaults in HTML output.
+        bool html_dark_mode = true;
+        /// HTML document title.
         std::string html_title = "Build Hotspot Analysis Report";
 
-        // JSON-specific options
+        /// Declared schema version for JSON output.
         std::string json_schema_version = "0.1.0";
-        bool json_streaming = false;        // Stream large arrays
+        /// Stream large JSON arrays progressively.
+        bool json_streaming = false;
     };
 
     /**
-     * Export metadata included in output.
+     * @brief Metadata emitted alongside analysis payloads.
      */
     struct ExportMetadata {
+        /// BHA binary/library version.
         std::string bha_version = "0.1.0";
+        /// Output schema version.
         std::string schema_version = "0.1.0";
+        /// Timestamp when export was generated.
         Timestamp generated_at;
+        /// Logical project name.
         std::string project_name;
+        /// Project root path string.
         std::string project_path;
+        /// Git commit hash when available.
         std::string git_commit;
+        /// Git branch name when available.
         std::string git_branch;
+        /// Total analysis runtime.
         Duration total_analysis_time = Duration::zero();
+        /// Number of files analyzed.
         std::size_t files_analyzed = 0;
+        /// Number of suggestions generated.
         std::size_t suggestions_generated = 0;
     };
 
     /**
-     * Progress callback for long-running exports.
+     * @brief Progress callback signature for long-running exports.
      */
     using ExportProgressCallback = std::function<void(std::size_t current, std::size_t total, std::string_view stage)>;
 
