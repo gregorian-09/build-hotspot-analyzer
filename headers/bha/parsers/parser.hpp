@@ -47,6 +47,9 @@ namespace bha::parsers {
 
         /**
          * Returns the parser name (e.g., "Clang", "GCC").
+         *
+         * Name values should be stable and user-facing since they appear in
+         * diagnostics, CLI output, and registry inspection commands.
          */
         [[nodiscard]] virtual std::string_view name() const noexcept = 0;
 
@@ -58,12 +61,18 @@ namespace bha::parsers {
         /**
          * Returns file extensions this parser can handle.
          *
-         * @return Vector of extensions (e.g., {".json"}).
+         * Extensions should include the leading dot and represent candidate
+         * trace artifact formats for quick file-based routing.
+         *
+         * @return Vector of extensions (for example `{".json"}`).
          */
         [[nodiscard]] virtual std::vector<std::string> supported_extensions() const = 0;
 
         /**
          * Checks if this parser can handle the given file based on path.
+         *
+         * Implementations should keep this check lightweight and avoid full file
+         * reads whenever possible.
          *
          * @param path Path to the trace file.
          * @return True if this parser might be able to parse the file.
@@ -84,6 +93,9 @@ namespace bha::parsers {
         /**
          * Parses a trace file into a compilation unit.
          *
+         * Parsing should produce a normalized `CompilationUnit` that can be
+         * consumed by analyzers independent of compiler-specific trace format.
+         *
          * @param path Path to the trace file.
          * @return The parsed compilation unit or an error.
          */
@@ -93,6 +105,9 @@ namespace bha::parsers {
 
         /**
          * Parses trace content directly.
+         *
+         * Use this entrypoint when the caller already has file content in memory
+         * or when the source is not backed by a filesystem path.
          *
          * @param content The trace content.
          * @param source_hint Optional hint about the source file.
@@ -105,6 +120,9 @@ namespace bha::parsers {
 
         /**
          * Returns whether this parser supports streaming for large files.
+         *
+         * When true, callers may invoke `parse_streaming()` for lower memory
+         * overhead in very large trace artifacts.
          */
         [[nodiscard]] virtual bool supports_streaming() const noexcept {
             return false;
@@ -148,7 +166,9 @@ namespace bha::parsers {
         /**
          * Registers a parser.
          *
-         * @param parser The parser to register.
+         * Ownership is transferred to the registry.
+         *
+         * @param parser Parser implementation to register.
          */
         void register_parser(std::unique_ptr<ITraceParser> parser);
 
@@ -178,6 +198,8 @@ namespace bha::parsers {
 
         /**
          * Lists all registered parsers.
+         *
+         * @return Snapshot of registered parser pointers owned by the registry.
          */
         [[nodiscard]] std::vector<ITraceParser*> list_parsers() const;
 
@@ -206,6 +228,7 @@ namespace bha::parsers {
      * Helper to parse multiple trace files in parallel.
      *
      * @param paths Paths to trace files.
+     * @param max_threads Maximum worker count (0 uses internal default policy).
      * @return Vector of results (one per file).
      */
     [[nodiscard]] std::vector<Result<CompilationUnit, Error>> parse_trace_files(

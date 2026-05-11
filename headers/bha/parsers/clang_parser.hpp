@@ -30,26 +30,33 @@ namespace bha::parsers {
      */
     class ClangTraceParser : public ITraceParser {
     public:
+        /// Human-readable parser name.
         [[nodiscard]] std::string_view name() const noexcept override {
             return "Clang";
         }
 
+        /// Compiler family handled by this parser.
         [[nodiscard]] CompilerType compiler_type() const noexcept override {
             return CompilerType::Clang;
         }
 
+        /// Preferred trace artifact extension for clang `-ftime-trace`.
         [[nodiscard]] std::vector<std::string> supported_extensions() const override {
             return {".json"};
         }
 
+        /// Quick path-based eligibility check.
         [[nodiscard]] bool can_parse(const fs::path& path) const override;
 
+        /// Content-signature check for Chrome Trace Event JSON.
         [[nodiscard]] bool can_parse_content(std::string_view content) const override;
 
+        /// Parse a clang time-trace file into one normalized compilation unit.
         [[nodiscard]] Result<CompilationUnit, Error> parse_file(
             const fs::path& path
         ) const override;
 
+        /// Parse in-memory clang time-trace content with optional source hint.
         [[nodiscard]] Result<CompilationUnit, Error> parse_content(
             std::string_view content,
             const fs::path& source_hint

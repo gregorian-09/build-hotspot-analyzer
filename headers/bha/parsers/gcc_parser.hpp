@@ -35,26 +35,33 @@ namespace bha::parsers {
      */
     class GCCTraceParser : public ITraceParser {
     public:
+        /// Human-readable parser name.
         [[nodiscard]] std::string_view name() const noexcept override {
             return "GCC";
         }
 
+        /// Compiler family handled by this parser.
         [[nodiscard]] CompilerType compiler_type() const noexcept override {
             return CompilerType::GCC;
         }
 
+        /// Common report/log extensions emitted from GCC timing runs.
         [[nodiscard]] std::vector<std::string> supported_extensions() const override {
             return {".txt", ".log", ".report"};
         }
 
+        /// Quick path-based eligibility check.
         [[nodiscard]] bool can_parse(const fs::path& path) const override;
 
+        /// Content-signature check for GCC `-ftime-report` text output.
         [[nodiscard]] bool can_parse_content(std::string_view content) const override;
 
+        /// Parse a GCC timing report file into one normalized compilation unit.
         [[nodiscard]] Result<CompilationUnit, Error> parse_file(
             const fs::path& path
         ) const override;
 
+        /// Parse in-memory GCC timing content with optional source hint.
         [[nodiscard]] Result<CompilationUnit, Error> parse_content(
             std::string_view content,
             const fs::path& source_hint

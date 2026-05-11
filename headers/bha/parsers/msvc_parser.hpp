@@ -31,26 +31,33 @@ namespace bha::parsers {
      */
     class MSVCTraceParser : public ITraceParser {
     public:
+        /// Human-readable parser name.
         [[nodiscard]] std::string_view name() const noexcept override {
             return "MSVC";
         }
 
+        /// Compiler family handled by this parser.
         [[nodiscard]] CompilerType compiler_type() const noexcept override {
             return CompilerType::MSVC;
         }
 
+        /// Common text/log extensions used to capture MSVC timing output.
         [[nodiscard]] std::vector<std::string> supported_extensions() const override {
             return {".txt", ".log", ".btlog"};
         }
 
+        /// Quick path-based eligibility check.
         [[nodiscard]] bool can_parse(const fs::path& path) const override;
 
+        /// Content-signature check for `/Bt+` and `/d1reportTime` output.
         [[nodiscard]] bool can_parse_content(std::string_view content) const override;
 
+        /// Parse an MSVC timing trace file into one compilation unit.
         [[nodiscard]] Result<CompilationUnit, Error> parse_file(
             const fs::path& path
         ) const override;
 
+        /// Parse in-memory MSVC timing content with optional source hint.
         [[nodiscard]] Result<CompilationUnit, Error> parse_content(
             std::string_view content,
             const fs::path& source_hint

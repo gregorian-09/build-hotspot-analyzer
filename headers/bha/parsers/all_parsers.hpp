@@ -26,6 +26,9 @@ namespace bha::parsers {
      *
      * Call this once during application initialization to enable
      * auto-detection and parsing of all supported trace formats.
+     *
+     * Registration is idempotent at process start by convention, but callers
+     * should still avoid repeated invocation in hot paths.
      */
     inline void register_all_parsers() {
         register_clang_parser();
