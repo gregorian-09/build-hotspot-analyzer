@@ -1,5 +1,16 @@
 #pragma once
 
+/**
+ * @file suggester_catalog.hpp
+ * @brief Metadata catalog utilities for registered suggesters.
+ *
+ * This header exposes lightweight helpers used by CLI/LSP surfaces to:
+ * - Normalize user-provided suggester tokens.
+ * - Map suggestion types to stable identifiers.
+ * - Expose runtime suggester metadata (inputs, safety posture, capabilities).
+ * - Resolve a user token to a concrete suggester descriptor.
+ */
+
 #include "bha/suggestions/suggester.hpp"
 
 #include <algorithm>
@@ -11,18 +22,45 @@
 
 namespace bha::suggestions {
 
+    /**
+     * @brief Human-readable metadata for one registered suggester.
+     *
+     * The descriptor is designed for UX and policy reporting, not for direct
+     * execution. Execution still happens through `ISuggester` instances in
+     * `SuggesterRegistry`.
+     */
     struct SuggesterDescriptor {
+        /// Canonical short identifier used in CLI/LSP filters (for example `pch`).
         std::string id;
+        /// Concrete C++ class name exposed by the suggester implementation.
         std::string class_name;
+        /// High-level purpose and behavior summary.
         std::string description;
+        /// All suggestion types this suggester can emit.
         std::vector<SuggestionType> supported_types;
+        /// Input prerequisites required for reliable operation.
         std::vector<std::string> input_requirements;
+        /// Indicates whether the suggester may emit automatically applicable edits.
         bool potentially_auto_applicable = false;
+        /// Indicates whether `explain` mode can provide extra diagnostics/reasoning.
         bool supports_explain_mode = true;
+        /// Language profile guard for compatibility checks.
         SuggesterLanguageSupport language_support = SuggesterLanguageSupport::CAndCXX;
+        /// ABI risk profile used by policy gates.
         SuggesterAbiSensitivity abi_sensitivity = SuggesterAbiSensitivity::Low;
     };
 
+    /**
+     * @brief Canonicalize a user-provided suggester token.
+     *
+     * Normalization rules:
+     * - Convert alphanumeric characters to lowercase.
+     * - Collapse non-alphanumeric separators into a single `-`.
+     * - Trim trailing separators.
+     *
+     * @param token Raw token from CLI/LSP input.
+     * @return Normalized token used for matching.
+     */
     [[nodiscard]] inline std::string normalize_suggester_token(std::string_view token) {
         std::string normalized;
         normalized.reserve(token.size());
@@ -45,6 +83,12 @@ namespace bha::suggestions {
         return normalized;
     }
 
+    /**
+     * @brief Return the canonical identifier for a suggestion type.
+     *
+     * @param type Suggestion type enum value.
+     * @return Stable identifier string for serialization/filtering.
+     */
     [[nodiscard]] inline std::string suggestion_type_id(const SuggestionType type) {
         switch (type) {
             case SuggestionType::PCHOptimization:
@@ -67,6 +111,15 @@ namespace bha::suggestions {
         return "unknown";
     }
 
+    /**
+     * @brief Parse a normalized type token into a `SuggestionType`.
+     *
+     * Supports documented aliases to preserve backward compatibility in CLI/LSP
+     * command surfaces.
+     *
+     * @param token User-provided token.
+     * @return Parsed type when recognized, otherwise `std::nullopt`.
+     */
     [[nodiscard]] inline std::optional<SuggestionType> parse_suggestion_type_id(std::string_view token) {
         const std::string normalized = normalize_suggester_token(token);
         if (normalized == "pch" || normalized == "pch-optimization") {
@@ -96,6 +149,15 @@ namespace bha::suggestions {
         return std::nullopt;
     }
 
+    /**
+     * @brief Compute the canonical suggester ID for one implementation.
+     *
+     * For mixed suggesters (for example include cleanup + move-to-cpp), this
+     * function picks the shared user-facing ID used by catalog/filters.
+     *
+     * @param suggester Suggester instance.
+     * @return Canonical ID string.
+     */
     [[nodiscard]] inline std::string canonical_suggester_id(const ISuggester& suggester) {
         switch (suggester.suggestion_type()) {
             case SuggestionType::PCHOptimization:
@@ -123,6 +185,16 @@ namespace bha::suggestions {
         return normalize_suggester_token(suggester.name());
     }
 
+    /**
+     * @brief Build a default requirement checklist for one suggester.
+     *
+     * Requirements combine language support, compile-command dependence, and
+     * ABI/build-system constraints so users understand applicability before
+     * attempting auto-apply.
+     *
+     * @param suggester Suggester instance.
+     * @return Ordered list of input requirements.
+     */
     [[nodiscard]] inline std::vector<std::string> default_input_requirements(
         const ISuggester& suggester
     ) {
@@ -155,6 +227,15 @@ namespace bha::suggestions {
         return requirements;
     }
 
+    /**
+     * @brief Conservative auto-apply capability hint.
+     *
+     * This flag indicates that a suggester can potentially emit auto-applicable
+     * edits. Individual suggestions may still be advisory after safety gates.
+     *
+     * @param suggester Suggester instance.
+     * @return `true` when auto-apply is potentially supported.
+     */
     [[nodiscard]] inline bool potentially_auto_applicable(const ISuggester& suggester) {
         if (suggester.suggestion_type() == SuggestionType::PIMPLPattern) {
             return false;
@@ -168,6 +249,13 @@ namespace bha::suggestions {
                std::ranges::find(supported, SuggestionType::ForwardDeclaration) != supported.end();
     }
 
+    /**
+     * @brief Materialize descriptors for all currently registered suggesters.
+     *
+     * The result is sorted by canonical ID for stable presentation order.
+     *
+     * @return Descriptor list for UI/CLI consumption.
+     */
     [[nodiscard]] inline std::vector<SuggesterDescriptor> list_suggester_descriptors() {
         std::vector<SuggesterDescriptor> descriptors;
         descriptors.reserve(SuggesterRegistry::instance().suggesters().size());
@@ -192,6 +280,17 @@ namespace bha::suggestions {
         return descriptors;
     }
 
+    /**
+     * @brief Resolve a user token to one suggester descriptor.
+     *
+     * Matching checks:
+     * - Descriptor canonical ID.
+     * - Normalized class name.
+     * - Any supported suggestion type alias.
+     *
+     * @param token User token from CLI/LSP filters.
+     * @return Matching descriptor when found, otherwise `std::nullopt`.
+     */
     [[nodiscard]] inline std::optional<SuggesterDescriptor> find_suggester_descriptor(std::string_view token) {
         const std::string normalized = normalize_suggester_token(token);
         if (normalized.empty()) {
