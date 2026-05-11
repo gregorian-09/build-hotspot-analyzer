@@ -945,6 +945,8 @@ namespace bha::suggestions
             std::vector<std::string> referenced_symbols;
         };
 
+        using IdentifierSet = std::unordered_set<std::string>;
+
         bool looks_like_macro_identifier(const std::string& identifier) {
             bool saw_alpha = false;
             for (const char ch : identifier) {
@@ -1166,6 +1168,29 @@ namespace bha::suggestions
             return buffer.str();
         }
 
+        IdentifierSet collect_identifier_tokens(const std::string& sanitized_text) {
+            IdentifierSet tokens;
+            std::string current;
+            current.reserve(32);
+
+            auto flush = [&]() {
+                if (!current.empty()) {
+                    tokens.insert(current);
+                    current.clear();
+                }
+            };
+
+            for (const char ch : sanitized_text) {
+                if (is_identifier_char(ch)) {
+                    current.push_back(ch);
+                    continue;
+                }
+                flush();
+            }
+            flush();
+            return tokens;
+        }
+
         bool references_any_identifier(
             const std::string& sanitized_text,
             const std::vector<std::string>& identifiers
@@ -1196,7 +1221,9 @@ namespace bha::suggestions
             const fs::path& target_header,
             const std::vector<ForwardDeclSymbol>& symbols,
             const std::vector<std::string>& callable_names,
-            const std::string& fwd_header_name
+            const std::string& fwd_header_name,
+            std::unordered_map<std::string, std::string>& sanitized_source_cache,
+            std::unordered_map<std::string, IdentifierSet>& identifier_token_cache
         ) {
             auto include_directive = find_include_for_header(
                 includer_path,
@@ -1212,7 +1239,13 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            const std::string sanitized_text = sanitize_source_file(includer_path);
+            const std::string includer_key = includer_path.generic_string();
+            auto sanitized_it = sanitized_source_cache.find(includer_key);
+            if (sanitized_it == sanitized_source_cache.end()) {
+                const std::string sanitized = sanitize_source_file(includer_path);
+                sanitized_it = sanitized_source_cache.emplace(includer_key, sanitized).first;
+            }
+            const std::string& sanitized_text = sanitized_it->second;
             if (sanitized_text.empty()) {
                 return std::nullopt;
             }
@@ -1221,30 +1254,35 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            std::unordered_set<std::string> seen_symbols;
+            auto token_it = identifier_token_cache.find(includer_key);
+            if (token_it == identifier_token_cache.end()) {
+                token_it = identifier_token_cache.emplace(
+                    includer_key,
+                    collect_identifier_tokens(sanitized_text)
+                ).first;
+            }
+            const IdentifierSet& identifiers = token_it->second;
+
             std::vector<std::string> mentioned_symbols;
-            std::size_t pointer_or_reference_mentions = 0;
+            std::unordered_set<std::string> seen_symbols;
             for (const auto& symbol : symbols) {
                 if (!seen_symbols.insert(symbol.name).second) {
                     continue;
                 }
-                if (!contains_identifier_token(sanitized_text, symbol.name)) {
+                if (!identifiers.contains(symbol.name)) {
                     continue;
                 }
-
-                const auto usage = analyze_incomplete_type_usage(sanitized_text, {symbol.name});
-                if (usage.requires_complete_type) {
-                    return std::nullopt;
-                }
-                if (!usage.has_mentions || usage.pointer_or_reference_mentions == 0) {
-                    return std::nullopt;
-                }
-
                 mentioned_symbols.push_back(symbol.name);
-                pointer_or_reference_mentions += usage.pointer_or_reference_mentions;
             }
 
-            if (mentioned_symbols.empty() || pointer_or_reference_mentions == 0) {
+            if (mentioned_symbols.empty()) {
+                return std::nullopt;
+            }
+
+            const auto usage = analyze_incomplete_type_usage(sanitized_text, mentioned_symbols);
+            if (usage.requires_complete_type ||
+                !usage.has_mentions ||
+                usage.pointer_or_reference_mentions == 0) {
                 return std::nullopt;
             }
 
@@ -1256,7 +1294,7 @@ namespace bha::suggestions
                 target_header,
                 fwd_header_name
             );
-            opportunity.pointer_or_reference_mentions = pointer_or_reference_mentions;
+            opportunity.pointer_or_reference_mentions = usage.pointer_or_reference_mentions;
             opportunity.referenced_symbols = std::move(mentioned_symbols);
             return opportunity;
         }
@@ -1269,11 +1307,21 @@ namespace bha::suggestions
             const std::vector<std::string>& callable_names,
             const std::string& fwd_header_name
         ) {
+            constexpr std::size_t kMaxIncludersToInspect = 96;
+            constexpr std::size_t kMaxForwardReplacementOpportunities = 24;
+
             std::vector<ForwardReplacementOpportunity> opportunities;
             std::unordered_set<std::string> seen_includers;
+            std::unordered_map<std::string, std::string> sanitized_source_cache;
+            std::unordered_map<std::string, IdentifierSet> identifier_token_cache;
             opportunities.reserve(header.included_by.size());
+            std::size_t inspected_includers = 0;
 
             for (const auto& includer : header.included_by) {
+                if (inspected_includers >= kMaxIncludersToInspect ||
+                    opportunities.size() >= kMaxForwardReplacementOpportunities) {
+                    break;
+                }
                 auto resolved_includer_path = resolve_header_path_for_edits(includer, project_root);
                 if (!resolved_includer_path.has_value() || !fs::exists(*resolved_includer_path)) {
                     continue;
@@ -1284,13 +1332,16 @@ namespace bha::suggestions
                 if (!seen_includers.insert(resolved_includer_path->generic_string()).second) {
                     continue;
                 }
+                ++inspected_includers;
 
                 auto opportunity = analyze_forward_replacement_opportunity(
                     *resolved_includer_path,
                     resolved_header_path,
                     symbols,
                     callable_names,
-                    fwd_header_name
+                    fwd_header_name,
+                    sanitized_source_cache,
+                    identifier_token_cache
                 );
                 if (!opportunity.has_value()) {
                     continue;
