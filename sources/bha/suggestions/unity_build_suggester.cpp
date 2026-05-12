@@ -3,7 +3,7 @@
 //
 
 #include "bha/suggestions/unity_build_suggester.hpp"
-#include "bha/suggestions/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_classification_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
@@ -600,10 +600,6 @@ namespace bha::suggestions
             return tokens;
         }
 
-        bool is_probable_source_token(std::string_view token) {
-            return suggestions::is_probable_source_token(token, CMakeSourceTokenMode::Strict);
-        }
-
         bool is_scope_or_target_keyword(std::string_view token) {
             const std::string key = to_lower_ascii(token);
             static const std::unordered_set<std::string> kKeywords = {
@@ -615,20 +611,12 @@ namespace bha::suggestions
             return kKeywords.contains(key);
         }
 
-        bool is_probable_cmake_target_name(std::string_view name) {
-            return suggestions::is_probable_cmake_target_name(name, CMakeTargetNameMode::Strict);
-        }
-
         bool is_target_like_macro(std::string_view name) {
             const std::string lower = to_lower_ascii(name);
             return lower.find("library") != std::string::npos ||
                    lower.find("executable") != std::string::npos ||
                    lower.find("binary") != std::string::npos ||
                    lower.find("target") != std::string::npos;
-        }
-
-        bool is_macro_keyword(std::string_view token) {
-            return suggestions::is_macro_keyword_lower(token);
         }
 
         std::optional<std::string> extract_macro_target_name(const std::vector<std::string>& tokens) {
@@ -639,12 +627,14 @@ namespace bha::suggestions
                 if (to_lower_ascii(tokens[i]) != "name") {
                     continue;
                 }
-                if (is_probable_cmake_target_name(tokens[i + 1])) {
+                if (utils::is_probable_cmake_target_name(
+                        tokens[i + 1], utils::CMakeTargetNameMode::Strict)) {
                     return tokens[i + 1];
                 }
                 return std::nullopt;
             }
-            if (is_probable_cmake_target_name(tokens.front())) {
+            if (utils::is_probable_cmake_target_name(
+                    tokens.front(), utils::CMakeTargetNameMode::Strict)) {
                 return tokens.front();
             }
             return std::nullopt;
@@ -658,10 +648,11 @@ namespace bha::suggestions
                     continue;
                 }
                 for (std::size_t j = i + 1; j < tokens.size(); ++j) {
-                    if (is_macro_keyword(tokens[j])) {
+                    if (utils::is_macro_keyword_lower(tokens[j])) {
                         break;
                     }
-                    if (is_probable_source_token(tokens[j])) {
+                    if (utils::is_probable_source_token(
+                            tokens[j], utils::CMakeSourceTokenMode::Strict)) {
                         sources.push_back(tokens[j]);
                     }
                 }
@@ -679,7 +670,8 @@ namespace bha::suggestions
             const std::string lower_command = to_lower_ascii(command);
             if (lower_command == "add_library" || lower_command == "add_executable" ||
                 lower_command == "target_sources") {
-                if (is_probable_cmake_target_name(tokens.front())) {
+                if (utils::is_probable_cmake_target_name(
+                        tokens.front(), utils::CMakeTargetNameMode::Strict)) {
                     return tokens.front();
                 }
             }
@@ -704,7 +696,8 @@ namespace bha::suggestions
                     return sources;
                 }
                 for (; i < tokens.size(); ++i) {
-                    if (is_probable_source_token(tokens[i])) {
+                    if (utils::is_probable_source_token(
+                            tokens[i], utils::CMakeSourceTokenMode::Strict)) {
                         sources.push_back(tokens[i]);
                     }
                 }
@@ -715,7 +708,8 @@ namespace bha::suggestions
                     if (is_scope_or_target_keyword(tokens[i])) {
                         continue;
                     }
-                    if (is_probable_source_token(tokens[i])) {
+                    if (utils::is_probable_source_token(
+                            tokens[i], utils::CMakeSourceTokenMode::Strict)) {
                         sources.push_back(tokens[i]);
                     }
                 }
@@ -728,7 +722,8 @@ namespace bha::suggestions
             std::unordered_map<std::string, std::size_t> by_name;
 
             auto upsert_target = [&](CMakeTargetInfo&& candidate) {
-                if (!is_probable_cmake_target_name(candidate.name)) {
+                if (!utils::is_probable_cmake_target_name(
+                        candidate.name, utils::CMakeTargetNameMode::Strict)) {
                     return;
                 }
                 if (auto it = by_name.find(candidate.name); it != by_name.end()) {
@@ -824,10 +819,6 @@ namespace bha::suggestions
             }
 
             return targets;
-        }
-
-        bool is_excluded_cmake_path(const fs::path& path) {
-            return suggestions::is_excluded_cmake_path(path);
         }
 
         bool cmake_has_global_unity_enabled(const std::string& content) {
@@ -955,7 +946,7 @@ namespace bha::suggestions
                     break;
                 }
                 const fs::path path = it->path();
-                if (it->is_directory(ec) && is_excluded_cmake_path(path)) {
+                if (it->is_directory(ec) && utils::is_excluded_cmake_path(path)) {
                     it.disable_recursion_pending();
                     ec.clear();
                     continue;
@@ -1003,7 +994,7 @@ namespace bha::suggestions
                     break;
                 }
                 const fs::path path = it->path();
-                if (it->is_directory(ec) && is_excluded_cmake_path(path)) {
+                if (it->is_directory(ec) && utils::is_excluded_cmake_path(path)) {
                     it.disable_recursion_pending();
                     ec.clear();
                     continue;

@@ -3,7 +3,7 @@
 //
 
 #include "bha/suggestions/pch_suggester.hpp"
-#include "bha/suggestions/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_classification_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 
 #include <algorithm>
@@ -277,13 +277,6 @@ namespace bha::suggestions
             return true;
         }
 
-        bool is_probable_cmake_target_name(std::string_view name) {
-            return suggestions::is_probable_cmake_target_name(
-                name,
-                CMakeTargetNameMode::AllowGeneratorExpressions
-            );
-        }
-
         std::string strip_cmake_generator_expressions(std::string_view name) {
             std::string normalized;
             normalized.reserve(name.size());
@@ -346,7 +339,10 @@ namespace bha::suggestions
             }
             const auto args = line.substr(start->open_pos + 1, close - start->open_pos - 1);
             const auto tokens = tokenize_cmake_args(args);
-            if (tokens.empty() || !is_probable_cmake_target_name(tokens.front())) {
+            if (tokens.empty() || !utils::is_probable_cmake_target_name(
+                    tokens.front(),
+                    utils::CMakeTargetNameMode::AllowGeneratorExpressions
+                )) {
                 return std::nullopt;
             }
             return tokens.front();
@@ -536,10 +532,6 @@ namespace bha::suggestions
             return false;
         }
 
-        bool is_excluded_cmake_path(const fs::path& path) {
-            return suggestions::is_excluded_cmake_path(path);
-        }
-
         int score_cmake_path(const std::string& lower_path) {
             int score = 0;
             if (lower_path.find("/src/") != std::string::npos) {
@@ -591,7 +583,7 @@ namespace bha::suggestions
                     lower_rel.find(".git") != std::string::npos) {
                     continue;
                 }
-                if (is_excluded_cmake_path(rel)) {
+                if (utils::is_excluded_cmake_path(rel)) {
                     continue;
                 }
 
@@ -767,17 +759,6 @@ namespace bha::suggestions
             return tokens;
         }
 
-        bool is_macro_keyword(const std::string& token) {
-            return suggestions::is_macro_keyword_lower(token);
-        }
-
-        bool is_probable_source_token(const std::string& token) {
-            return suggestions::is_probable_source_token(
-                token,
-                CMakeSourceTokenMode::AllowLeadingGeneratorToken
-            );
-        }
-
         bool macro_args_have_sources(const std::vector<std::string>& tokens) {
             for (std::size_t i = 0; i < tokens.size(); ++i) {
                 std::string key = tokens[i];
@@ -787,10 +768,13 @@ namespace bha::suggestions
                     continue;
                 }
                 for (std::size_t j = i + 1; j < tokens.size(); ++j) {
-                    if (is_macro_keyword(tokens[j])) {
+                    if (utils::is_macro_keyword_lower(tokens[j])) {
                         break;
                     }
-                    if (is_probable_source_token(tokens[j])) {
+                    if (utils::is_probable_source_token(
+                            tokens[j],
+                            utils::CMakeSourceTokenMode::AllowLeadingGeneratorToken
+                        )) {
                         return true;
                     }
                 }
@@ -820,13 +804,19 @@ namespace bha::suggestions
                 std::ranges::transform(key, key.begin(),
                                        [](const unsigned char c) { return static_cast<char>(std::toupper(c)); });
                 if (key == "NAME") {
-                    if (is_probable_cmake_target_name(tokens[i + 1])) {
+                    if (utils::is_probable_cmake_target_name(
+                            tokens[i + 1],
+                            utils::CMakeTargetNameMode::AllowGeneratorExpressions
+                        )) {
                         return tokens[i + 1];
                     }
                     return std::nullopt;
                 }
             }
-            if (is_probable_cmake_target_name(tokens.front())) {
+            if (utils::is_probable_cmake_target_name(
+                    tokens.front(),
+                    utils::CMakeTargetNameMode::AllowGeneratorExpressions
+                )) {
                 return tokens.front();
             }
             return std::nullopt;
@@ -1104,7 +1094,7 @@ namespace bha::suggestions
                                        [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
                 if (lower_rel.find("build") != std::string::npos ||
                     lower_rel.find(".git") != std::string::npos ||
-                    is_excluded_cmake_path(lower_rel)) {
+                    utils::is_excluded_cmake_path(rel)) {
                     continue;
                 }
 

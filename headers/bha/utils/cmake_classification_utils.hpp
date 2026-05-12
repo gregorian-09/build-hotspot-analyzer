@@ -1,15 +1,16 @@
-#ifndef BHA_SUGGESTIONS_CMAKE_CLASSIFICATION_UTILS_HPP
-#define BHA_SUGGESTIONS_CMAKE_CLASSIFICATION_UTILS_HPP
-
-#include "bha/suggestions/suggester.hpp"
+#ifndef BHA_UTILS_CMAKE_CLASSIFICATION_UTILS_HPP
+#define BHA_UTILS_CMAKE_CLASSIFICATION_UTILS_HPP
 
 #include <array>
 #include <cctype>
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <unordered_set>
 
-namespace bha::suggestions {
+namespace bha::utils {
+
+    namespace fs = std::filesystem;
 
     enum class CMakeSourceTokenMode {
         Strict,
@@ -20,6 +21,15 @@ namespace bha::suggestions {
         Strict,
         AllowGeneratorExpressions
     };
+
+    [[nodiscard]] inline std::string to_lower_ascii(std::string_view input) {
+        std::string out;
+        out.reserve(input.size());
+        for (const char c : input) {
+            out.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(c))));
+        }
+        return out;
+    }
 
     [[nodiscard]] inline bool is_probable_source_token(
         std::string_view token,
@@ -129,11 +139,11 @@ namespace bha::suggestions {
             "testonly",
             "disable_install"
         };
-        return kKeywords.contains(lowercase_ascii(token));
+        return kKeywords.contains(to_lower_ascii(token));
     }
 
     [[nodiscard]] inline bool is_excluded_cmake_path(const fs::path& path) {
-        const std::string lower = lowercase_ascii(path.generic_string());
+        const std::string lower = to_lower_ascii(path.generic_string());
         if (lower.find("/.git/") != std::string::npos ||
             lower.find("/cmakefiles/") != std::string::npos ||
             lower.find("/_deps/") != std::string::npos ||
@@ -148,7 +158,7 @@ namespace bha::suggestions {
             return true;
         }
         for (const auto& part : path) {
-            const std::string c = lowercase_ascii(part.string());
+            const std::string c = to_lower_ascii(part.string());
             if (c == "build" || c == "out" || c.rfind("cmake-build", 0) == 0) {
                 return true;
             }
@@ -156,6 +166,6 @@ namespace bha::suggestions {
         return false;
     }
 
-}  // namespace bha::suggestions
+}  // namespace bha::utils
 
 #endif
