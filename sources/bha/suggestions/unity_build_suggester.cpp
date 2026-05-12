@@ -6,6 +6,7 @@
 #include "bha/utils/cmake_classification_utils.hpp"
 #include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
+#include "bha/utils/cmake_target_parse_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
@@ -499,80 +500,12 @@ namespace bha::suggestions
                    path_has_component_ci(path, "build");
         }
 
-        bool is_scope_or_target_keyword(std::string_view token) {
-            const std::string key = utils::to_lower_ascii(token);
-            static const std::unordered_set<std::string> kKeywords = {
-                "public", "private", "interface",
-                "before", "after",
-                "static", "shared", "module", "object", "interface", "alias",
-                "exclude_from_all", "win32", "macosx_bundle"
-            };
-            return kKeywords.contains(key);
-        }
-
         bool is_target_like_macro(std::string_view name) {
             const std::string lower = utils::to_lower_ascii(name);
             return lower.find("library") != std::string::npos ||
                    lower.find("executable") != std::string::npos ||
                    lower.find("binary") != std::string::npos ||
                    lower.find("target") != std::string::npos;
-        }
-
-        std::optional<std::string> extract_builtin_target_name(
-            std::string_view command,
-            const std::vector<std::string>& tokens
-        ) {
-            if (tokens.empty()) {
-                return std::nullopt;
-            }
-            const std::string lower_command = utils::to_lower_ascii(command);
-            if (lower_command == "add_library" || lower_command == "add_executable" ||
-                lower_command == "target_sources") {
-                if (utils::is_probable_cmake_target_name(
-                        tokens.front(), utils::CMakeTargetNameMode::Strict)) {
-                    return tokens.front();
-                }
-            }
-            return std::nullopt;
-        }
-
-        std::vector<std::string> extract_builtin_sources(
-            std::string_view command,
-            const std::vector<std::string>& tokens
-        ) {
-            std::vector<std::string> sources;
-            if (tokens.size() < 2) {
-                return sources;
-            }
-            const std::string lower_command = utils::to_lower_ascii(command);
-            std::size_t i = 1;
-            if (lower_command == "add_library" || lower_command == "add_executable") {
-                while (i < tokens.size() && is_scope_or_target_keyword(tokens[i])) {
-                    ++i;
-                }
-                if (i < tokens.size() && utils::to_lower_ascii(tokens[i]) == "alias") {
-                    return sources;
-                }
-                for (; i < tokens.size(); ++i) {
-                    if (utils::is_probable_source_token(
-                            tokens[i], utils::CMakeSourceTokenMode::Strict)) {
-                        sources.push_back(tokens[i]);
-                    }
-                }
-                return sources;
-            }
-            if (lower_command == "target_sources") {
-                for (; i < tokens.size(); ++i) {
-                    if (is_scope_or_target_keyword(tokens[i])) {
-                        continue;
-                    }
-                    if (utils::is_probable_source_token(
-                            tokens[i], utils::CMakeSourceTokenMode::Strict)) {
-                        sources.push_back(tokens[i]);
-                    }
-                }
-            }
-            return sources;
         }
 
         std::vector<CMakeTargetInfo> parse_cmake_targets(const std::string& content) {
@@ -641,12 +574,15 @@ namespace bha::suggestions
                         const auto tokens = utils::tokenize_cmake_args(args);
 
                         if (command == "add_library" || command == "add_executable" || command == "target_sources") {
-                            if (auto target_name = extract_builtin_target_name(command, tokens)) {
+                            if (auto target_name = utils::extract_builtin_target_name(
+                                    command, tokens, utils::CMakeTargetNameMode::Strict)) {
                                 CMakeTargetInfo target;
                                 target.name = *target_name;
                                 target.start_line = pending_line;
                                 target.end_line = line_num;
-                                target.source_tokens = extract_builtin_sources(command, tokens);
+                                target.source_tokens = utils::extract_builtin_sources(
+                                    command, tokens, utils::CMakeSourceTokenMode::Strict
+                                );
                                 upsert_target(std::move(target));
                             }
                         } else if (is_target_like_macro(command)) {
