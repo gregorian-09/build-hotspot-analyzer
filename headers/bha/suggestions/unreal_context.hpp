@@ -68,18 +68,6 @@ namespace bha::suggestions
         std::vector<fs::path> paths;
     };
 
-    [[nodiscard]] inline std::string trim_copy(const std::string& value) {
-        std::size_t begin = 0;
-        while (begin < value.size() && std::isspace(static_cast<unsigned char>(value[begin]))) {
-            ++begin;
-        }
-        std::size_t end = value.size();
-        while (end > begin && std::isspace(static_cast<unsigned char>(value[end - 1]))) {
-            --end;
-        }
-        return value.substr(begin, end - begin);
-    }
-
     [[nodiscard]] inline std::string strip_line_comment(std::string line) {
         if (const auto pos = line.find("//"); pos != std::string::npos) {
             line.erase(pos);
@@ -307,7 +295,7 @@ namespace bha::suggestions
     }
 
     [[nodiscard]] inline UnrealPCHUsageMode parse_pch_usage_mode(const std::string& mode_name) {
-        const std::string normalized = string_utils::to_lower(trim_copy(mode_name));
+        const std::string normalized = string_utils::to_lower(string_utils::trim_copy(mode_name));
         if (normalized == "nopchs") {
             return UnrealPCHUsageMode::NoPCHs;
         }

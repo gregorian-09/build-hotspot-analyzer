@@ -195,6 +195,16 @@ namespace bha::string_utils {
     }
 
     /**
+     * Returns a trimmed string copy.
+     *
+     * @param s Input string view.
+     * @return Copy of s without leading/trailing whitespace.
+     */
+    inline std::string trim_copy(const std::string_view s) {
+        return std::string(trim(s));
+    }
+
+    /**
      * Replaces all occurrences of a substring.
      *
      * @param s The original string.
