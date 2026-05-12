@@ -5,6 +5,7 @@
 #include "bha/analyzers/performance_analyzer.hpp"
 
 #include "bha/graph/graph.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -20,22 +21,15 @@ namespace bha::analyzers
 {
     namespace {
 
-        std::string to_lower_copy(std::string value) {
-            std::ranges::transform(value, value.begin(), [](const unsigned char ch) {
-                return static_cast<char>(std::tolower(ch));
-            });
-            return value;
-        }
-
         bool is_source_path_arg(const std::string& arg) {
             const fs::path path(arg);
-            const std::string ext = to_lower_copy(path.extension().string());
+            const std::string ext = string_utils::to_lower(path.extension().string());
             return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".m" || ext == ".mm";
         }
 
         bool is_object_path_arg(const std::string& arg) {
             const fs::path path(arg);
-            const std::string ext = to_lower_copy(path.extension().string());
+            const std::string ext = string_utils::to_lower(path.extension().string());
             return ext == ".o" || ext == ".obj" || ext == ".pch" || ext == ".gch";
         }
 
@@ -49,7 +43,7 @@ namespace bha::analyzers
                 }
 
                 const std::string arg = raw_arg;
-                const std::string lower = to_lower_copy(arg);
+                const std::string lower = string_utils::to_lower(arg);
 
                 if (lower == "-o" || lower == "-mf" || lower == "-mt" || lower == "-mq") {
                     skip_next = true;
@@ -81,7 +75,7 @@ namespace bha::analyzers
         CommandRiskFlags inspect_command_line(const std::vector<std::string>& command_line) {
             CommandRiskFlags flags;
             if (!command_line.empty()) {
-                const std::string first = to_lower_copy(command_line.front());
+                const std::string first = string_utils::to_lower(command_line.front());
                 if (first.find("sccache") != std::string::npos ||
                     first.find("ccache") != std::string::npos ||
                     first.find("clcache") != std::string::npos) {
@@ -91,7 +85,7 @@ namespace bha::analyzers
 
             for (std::size_t i = 0; i < command_line.size(); ++i) {
                 const auto& raw_arg = command_line[i];
-                const std::string lower = to_lower_copy(raw_arg);
+                const std::string lower = string_utils::to_lower(raw_arg);
                 if (lower.find("sccache") != std::string::npos) {
                     flags.sccache = true;
                     flags.cache_wrapper = true;
@@ -119,7 +113,7 @@ namespace bha::analyzers
                     flags.pch_generation = true;
                 }
                 if (lower == "-x" && i + 1 < command_line.size()) {
-                    const std::string next = to_lower_copy(command_line[i + 1]);
+                    const std::string next = string_utils::to_lower(command_line[i + 1]);
                     if (next.find("c++-header") != std::string::npos) {
                         flags.pch_generation = true;
                     }

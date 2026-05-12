@@ -21,10 +21,6 @@ namespace bha::parsers {
         constexpr std::string_view ICC_OPT_REPORT = "LOOP BEGIN";
         constexpr std::string_view ICX_MARKER = "icx";
 
-        std::string to_lower_copy(const std::string_view text) {
-            return string_utils::to_lower(std::string(text));
-        }
-
         Duration parse_icc_time(const std::string_view time_str) {
             double seconds = 0.0;
             auto trimmed = string_utils::trim(time_str);
@@ -59,9 +55,9 @@ namespace bha::parsers {
     }
 
     bool IntelClassicParser::can_parse_content(std::string_view content) const {
-        const auto lower_content = to_lower_copy(content);
-        return string_utils::contains(lower_content, to_lower_copy(ICC_MARKER)) ||
-               string_utils::contains(lower_content, to_lower_copy(ICC_OPT_REPORT));
+        const auto lower_content = string_utils::to_lower(content);
+        return string_utils::contains(lower_content, string_utils::to_lower(ICC_MARKER)) ||
+               string_utils::contains(lower_content, string_utils::to_lower(ICC_OPT_REPORT));
     }
 
     Result<CompilationUnit, Error> IntelClassicParser::parse_file(
@@ -148,8 +144,8 @@ namespace bha::parsers {
             return false;
         }
 
-        const auto lower_content = to_lower_copy(content);
-        return string_utils::contains(lower_content, to_lower_copy(ICX_MARKER)) ||
+        const auto lower_content = string_utils::to_lower(content);
+        return string_utils::contains(lower_content, string_utils::to_lower(ICX_MARKER)) ||
                string_utils::contains(lower_content, "intel") ||
                string_utils::contains(lower_content, "oneapi") ||
                string_utils::contains(lower_content, "total frontend") ||
