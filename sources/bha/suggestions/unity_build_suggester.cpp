@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/unity_build_suggester.hpp"
+#include "bha/suggestions/cmake_classification_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
@@ -600,22 +601,7 @@ namespace bha::suggestions
         }
 
         bool is_probable_source_token(std::string_view token) {
-            if (token.empty()) {
-                return false;
-            }
-            if (token.find('$') != std::string_view::npos || token.find('<') != std::string_view::npos) {
-                return false;
-            }
-            static constexpr std::array<std::string_view, 8> kExts = {
-                ".c", ".cc", ".cpp", ".cxx", ".c++", ".m", ".mm", ".cu"
-            };
-            for (const auto ext : kExts) {
-                if (token.size() >= ext.size() &&
-                    token.substr(token.size() - ext.size()) == ext) {
-                    return true;
-                }
-            }
-            return false;
+            return suggestions::is_probable_source_token(token, CMakeSourceTokenMode::Strict);
         }
 
         bool is_scope_or_target_keyword(std::string_view token) {
@@ -630,25 +616,7 @@ namespace bha::suggestions
         }
 
         bool is_probable_cmake_target_name(std::string_view name) {
-            if (name.empty()) {
-                return false;
-            }
-            if (name.find('$') != std::string_view::npos ||
-                name.find('<') != std::string_view::npos ||
-                name.find('>') != std::string_view::npos) {
-                return false;
-            }
-            if (name.front() == '-') {
-                return false;
-            }
-            for (const char c : name) {
-                const unsigned char ch = static_cast<unsigned char>(c);
-                if (std::isalnum(ch) != 0 || c == '_' || c == '-' || c == '.') {
-                    continue;
-                }
-                return false;
-            }
-            return true;
+            return suggestions::is_probable_cmake_target_name(name, CMakeTargetNameMode::Strict);
         }
 
         bool is_target_like_macro(std::string_view name) {
@@ -660,13 +628,7 @@ namespace bha::suggestions
         }
 
         bool is_macro_keyword(std::string_view token) {
-            const std::string key = to_lower_ascii(token);
-            static const std::unordered_set<std::string> kKeywords = {
-                "name", "hdrs", "srcs", "sources", "src", "source",
-                "copts", "defines", "linkopts", "deps",
-                "public", "private", "interface", "textual_hdrs", "testonly"
-            };
-            return kKeywords.contains(key);
+            return suggestions::is_macro_keyword_lower(token);
         }
 
         std::optional<std::string> extract_macro_target_name(const std::vector<std::string>& tokens) {
@@ -865,19 +827,7 @@ namespace bha::suggestions
         }
 
         bool is_excluded_cmake_path(const fs::path& path) {
-            const std::string lower = to_lower_ascii(path.generic_string());
-            if (lower.find("/.git/") != std::string::npos ||
-                lower.find("/cmakefiles/") != std::string::npos ||
-                lower.find("/_deps/") != std::string::npos) {
-                return true;
-            }
-            for (const auto& part : path) {
-                const std::string c = to_lower_ascii(part.string());
-                if (c == "build" || c == "out" || c.rfind("cmake-build", 0) == 0) {
-                    return true;
-                }
-            }
-            return false;
+            return suggestions::is_excluded_cmake_path(path);
         }
 
         bool cmake_has_global_unity_enabled(const std::string& content) {

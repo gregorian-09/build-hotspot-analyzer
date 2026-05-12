@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/pch_suggester.hpp"
+#include "bha/suggestions/cmake_classification_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 
 #include <algorithm>
@@ -277,55 +278,10 @@ namespace bha::suggestions
         }
 
         bool is_probable_cmake_target_name(std::string_view name) {
-            if (name.empty()) {
-                return false;
-            }
-            if (name.front() == '-') {
-                return false;
-            }
-            int brace_depth = 0;
-            int angle_depth = 0;
-            for (std::size_t i = 0; i < name.size(); ++i) {
-                const char c = name[i];
-                const unsigned char ch = static_cast<unsigned char>(c);
-                if (std::isalnum(ch) != 0 || c == '_' || c == '-' || c == '.') {
-                    continue;
-                }
-                if (c == '$') {
-                    continue;
-                }
-                if (c == '{') {
-                    ++brace_depth;
-                    continue;
-                }
-                if (c == '}') {
-                    if (brace_depth == 0) {
-                        return false;
-                    }
-                    --brace_depth;
-                    continue;
-                }
-                if (c == '<') {
-                    ++angle_depth;
-                    continue;
-                }
-                if (c == '>') {
-                    if (angle_depth == 0) {
-                        return false;
-                    }
-                    --angle_depth;
-                    continue;
-                }
-                if (c == ':') {
-                    if (i + 1 >= name.size() || name[i + 1] != ':') {
-                        return false;
-                    }
-                    ++i;
-                    continue;
-                }
-                return false;
-            }
-            return brace_depth == 0 && angle_depth == 0;
+            return suggestions::is_probable_cmake_target_name(
+                name,
+                CMakeTargetNameMode::AllowGeneratorExpressions
+            );
         }
 
         std::string strip_cmake_generator_expressions(std::string_view name) {
@@ -580,15 +536,8 @@ namespace bha::suggestions
             return false;
         }
 
-        bool is_excluded_cmake_path(const std::string& lower_path) {
-            return lower_path.find("/test") != std::string::npos ||
-                   lower_path.find("/tests") != std::string::npos ||
-                   lower_path.find("example") != std::string::npos ||
-                   lower_path.find("benchmark") != std::string::npos ||
-                   lower_path.find("install_test") != std::string::npos ||
-                   lower_path.find("/cmake/") != std::string::npos ||
-                   lower_path.find(".lsp-optimization-backup") != std::string::npos ||
-                   lower_path.find(".bha_traces") != std::string::npos;
+        bool is_excluded_cmake_path(const fs::path& path) {
+            return suggestions::is_excluded_cmake_path(path);
         }
 
         int score_cmake_path(const std::string& lower_path) {
@@ -642,7 +591,7 @@ namespace bha::suggestions
                     lower_rel.find(".git") != std::string::npos) {
                     continue;
                 }
-                if (is_excluded_cmake_path(lower_rel)) {
+                if (is_excluded_cmake_path(rel)) {
                     continue;
                 }
 
@@ -819,47 +768,14 @@ namespace bha::suggestions
         }
 
         bool is_macro_keyword(const std::string& token) {
-            std::string key = token;
-            std::ranges::transform(key, key.begin(),
-                                   [](const unsigned char c) { return static_cast<char>(std::toupper(c)); });
-            static const std::unordered_set<std::string> kKeywords = {
-                "NAME",
-                "HDRS",
-                "SRCS",
-                "SOURCES",
-                "SRC",
-                "SOURCE",
-                "COPTS",
-                "DEFINES",
-                "LINKOPTS",
-                "DEPS",
-                "PUBLIC",
-                "PRIVATE",
-                "INTERFACE",
-                "TEXTUAL_HDRS",
-                "TESTONLY",
-                "DISABLE_INSTALL"
-            };
-            return kKeywords.contains(key);
+            return suggestions::is_macro_keyword_lower(token);
         }
 
         bool is_probable_source_token(const std::string& token) {
-            if (token.empty()) {
-                return false;
-            }
-            if (token.front() == '$') {
-                return false;
-            }
-            static const std::array<std::string, 8> kExts = {
-                ".c", ".cc", ".cpp", ".cxx", ".mm", ".m", ".ixx", ".cu"
-            };
-            for (const auto& ext : kExts) {
-                if (token.size() >= ext.size() &&
-                    token.compare(token.size() - ext.size(), ext.size(), ext) == 0) {
-                    return true;
-                }
-            }
-            return false;
+            return suggestions::is_probable_source_token(
+                token,
+                CMakeSourceTokenMode::AllowLeadingGeneratorToken
+            );
         }
 
         bool macro_args_have_sources(const std::vector<std::string>& tokens) {
