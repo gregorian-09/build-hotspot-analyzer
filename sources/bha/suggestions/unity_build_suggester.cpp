@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/unity_build_suggester.hpp"
 #include "bha/utils/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
@@ -454,11 +455,6 @@ namespace bha::suggestions
             return s;
         }
 
-        struct CMakeCommandStart {
-            std::string name;
-            std::size_t open_pos = 0;
-        };
-
         struct CMakeTargetInfo {
             std::string name;
             std::size_t start_line = 0;
@@ -500,96 +496,6 @@ namespace bha::suggestions
             return path_has_component_ci(path, "unity") ||
                    path_has_component_ci(path, "cmakefiles") ||
                    path_has_component_ci(path, "build");
-        }
-
-        std::optional<CMakeCommandStart> parse_cmake_command_start(std::string_view line) {
-            if (line.empty()) {
-                return std::nullopt;
-            }
-            const unsigned char first = static_cast<unsigned char>(line.front());
-            if (!std::isalpha(first) && line.front() != '_') {
-                return std::nullopt;
-            }
-            std::size_t i = 1;
-            while (i < line.size()) {
-                const unsigned char ch = static_cast<unsigned char>(line[i]);
-                if (std::isalnum(ch) || line[i] == '_') {
-                    ++i;
-                    continue;
-                }
-                break;
-            }
-            std::size_t j = i;
-            while (j < line.size() && (line[j] == ' ' || line[j] == '\t')) {
-                ++j;
-            }
-            if (j >= line.size() || line[j] != '(') {
-                return std::nullopt;
-            }
-            return CMakeCommandStart{std::string(line.substr(0, i)), j};
-        }
-
-        int count_paren_delta_outside_quotes(std::string_view text) {
-            int delta = 0;
-            bool in_quote = false;
-            char quote = '\0';
-            for (const char c : text) {
-                if (in_quote) {
-                    if (c == quote) {
-                        in_quote = false;
-                    }
-                    continue;
-                }
-                if (c == '"' || c == '\'') {
-                    in_quote = true;
-                    quote = c;
-                    continue;
-                }
-                if (c == '(') {
-                    ++delta;
-                } else if (c == ')') {
-                    --delta;
-                }
-            }
-            return delta;
-        }
-
-        std::vector<std::string> tokenize_cmake_args(std::string_view args) {
-            std::vector<std::string> tokens;
-            std::string current;
-            bool in_quote = false;
-            char quote = '\0';
-
-            auto flush = [&]() {
-                if (!current.empty()) {
-                    tokens.push_back(current);
-                    current.clear();
-                }
-            };
-
-            for (std::size_t i = 0; i < args.size(); ++i) {
-                const char c = args[i];
-                if (in_quote) {
-                    if (c == quote) {
-                        in_quote = false;
-                    } else {
-                        current.push_back(c);
-                    }
-                    continue;
-                }
-                if (c == '"' || c == '\'') {
-                    in_quote = true;
-                    quote = c;
-                    continue;
-                }
-                if (std::isspace(static_cast<unsigned char>(c)) || c == ';') {
-                    flush();
-                    continue;
-                }
-                current.push_back(c);
-            }
-            flush();
-            return tokens;
         }
 
         bool is_scope_or_target_keyword(std::string_view token) {
@@ -752,7 +658,7 @@ namespace bha::suggestions
                 }
 
                 if (!collecting) {
-                    const auto start = parse_cmake_command_start(trimmed);
+                    const auto start = utils::parse_cmake_command_start(trimmed);
                     if (!start) {
                         ++line_num;
                         continue;
@@ -765,14 +671,14 @@ namespace bha::suggestions
                     pending += " " + trimmed;
                 }
 
-                paren_depth += count_paren_delta_outside_quotes(trimmed);
+                paren_depth += utils::count_paren_delta_outside_quotes(trimmed);
                 if (collecting && paren_depth <= 0) {
                     const auto open = pending.find('(');
                     const auto close = pending.rfind(')');
                     if (open != std::string::npos && close != std::string::npos && close > open) {
                         const std::string command = utils::to_lower_ascii(pending.substr(0, open));
                         const std::string args = pending.substr(open + 1, close - open - 1);
-                        const auto tokens = tokenize_cmake_args(args);
+                        const auto tokens = utils::tokenize_cmake_args(args);
 
                         if (command == "add_library" || command == "add_executable" || command == "target_sources") {
                             if (auto target_name = extract_builtin_target_name(command, tokens)) {

@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/pch_suggester.hpp"
 #include "bha/utils/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 
 #include <algorithm>
@@ -32,13 +33,6 @@ namespace bha::suggestions
             bool single_line = false;
             bool has_pch = false;
         };
-
-        struct CMakeCommandStart {
-            std::string name;
-            std::size_t open_pos = 0;
-        };
-
-        std::vector<std::string> tokenize_cmake_args(std::string_view args);
 
         std::optional<int> parse_cpp_standard(std::string_view token) {
             constexpr std::string_view kPrefix = "-std=";
@@ -156,60 +150,6 @@ namespace bha::suggestions
             return ext == ".txt" || ext == ".cmake" || ext == ".mk";
         }
 
-        std::optional<CMakeCommandStart> parse_cmake_command_start(std::string_view line) {
-            if (line.empty()) {
-                return std::nullopt;
-            }
-            const unsigned char first = static_cast<unsigned char>(line.front());
-            if (!std::isalpha(first) && line.front() != '_') {
-                return std::nullopt;
-            }
-            std::size_t i = 1;
-            while (i < line.size()) {
-                const unsigned char ch = static_cast<unsigned char>(line[i]);
-                if (std::isalnum(ch) || line[i] == '_') {
-                    ++i;
-                    continue;
-                }
-                break;
-            }
-            if (i == 0) {
-                return std::nullopt;
-            }
-            std::size_t j = i;
-            while (j < line.size() && (line[j] == ' ' || line[j] == '\t')) {
-                ++j;
-            }
-            if (j >= line.size() || line[j] != '(') {
-                return std::nullopt;
-            }
-            return CMakeCommandStart{std::string(line.substr(0, i)), j};
-        }
-
-        int count_paren_delta_outside_quotes(std::string_view text) {
-            int delta = 0;
-            bool in_quote = false;
-            char quote = '\0';
-            for (const char c : text) {
-                if (in_quote) {
-                    if (c == quote) {
-                        in_quote = false;
-                    }
-                    continue;
-                }
-                if (c == '"' || c == '\'') {
-                    in_quote = true;
-                    quote = c;
-                    continue;
-                }
-                if (c == '(') {
-                    ++delta;
-                } else if (c == ')') {
-                    --delta;
-                }
-            }
-            return delta;
-        }
 
         std::optional<std::size_t> find_cmake_block_end(
             const std::string& content,
@@ -227,7 +167,7 @@ namespace bha::suggestions
             int paren_depth = 0;
             bool seen_open = false;
             for (std::size_t i = start_line; i < lines.size(); ++i) {
-                const int delta = count_paren_delta_outside_quotes(lines[i]);
+                const int delta = utils::count_paren_delta_outside_quotes(lines[i]);
                 if (delta > 0) {
                     seen_open = true;
                 }
@@ -329,7 +269,7 @@ namespace bha::suggestions
         }
 
         std::optional<std::string> extract_direct_cmake_target_name(std::string_view line) {
-            const auto start = parse_cmake_command_start(line);
+            const auto start = utils::parse_cmake_command_start(line);
             if (!start) {
                 return std::nullopt;
             }
@@ -338,7 +278,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
             const auto args = line.substr(start->open_pos + 1, close - start->open_pos - 1);
-            const auto tokens = tokenize_cmake_args(args);
+            const auto tokens = utils::tokenize_cmake_args(args);
             if (tokens.empty() || !utils::is_probable_cmake_target_name(
                     tokens.front(),
                     utils::CMakeTargetNameMode::AllowGeneratorExpressions
@@ -367,7 +307,7 @@ namespace bha::suggestions
                 }
 
                 if (!collecting) {
-                    const auto start = parse_cmake_command_start(trimmed);
+                    const auto start = utils::parse_cmake_command_start(trimmed);
                     if (!start ||
                         (start->name != "add_executable" && start->name != "add_library")) {
                         ++line_num;
@@ -381,7 +321,7 @@ namespace bha::suggestions
                     pending += " " + trimmed;
                 }
 
-                paren_depth += count_paren_delta_outside_quotes(trimmed);
+                paren_depth += utils::count_paren_delta_outside_quotes(trimmed);
                 if (collecting && paren_depth <= 0) {
                     if (auto name = extract_direct_cmake_target_name(pending)) {
                         if (is_cmake_target_candidate(*name, pending)) {
@@ -721,44 +661,6 @@ namespace bha::suggestions
                    lower.find("target") != std::string::npos;
         }
 
-        std::vector<std::string> tokenize_cmake_args(std::string_view args) {
-            std::vector<std::string> tokens;
-            std::string current;
-            bool in_quote = false;
-            char quote = '\0';
-
-            auto flush = [&]() {
-                if (!current.empty()) {
-                    tokens.push_back(current);
-                    current.clear();
-                }
-            };
-
-            for (std::size_t i = 0; i < args.size(); ++i) {
-                const char c = args[i];
-                if (in_quote) {
-                    if (c == quote) {
-                        in_quote = false;
-                    } else {
-                        current.push_back(c);
-                    }
-                    continue;
-                }
-                if (c == '"' || c == '\'') {
-                    in_quote = true;
-                    quote = c;
-                    continue;
-                }
-                if (std::isspace(static_cast<unsigned char>(c)) || c == ';') {
-                    flush();
-                    continue;
-                }
-                current.push_back(c);
-            }
-            flush();
-            return tokens;
-        }
-
         bool macro_args_have_sources(const std::vector<std::string>& tokens) {
             for (std::size_t i = 0; i < tokens.size(); ++i) {
                 std::string key = tokens[i];
@@ -795,7 +697,7 @@ namespace bha::suggestions
         }
 
         std::optional<std::string> extract_macro_target_name(std::string_view args) {
-            const auto tokens = tokenize_cmake_args(args);
+            const auto tokens = utils::tokenize_cmake_args(args);
             if (tokens.empty()) {
                 return std::nullopt;
             }
@@ -841,7 +743,7 @@ namespace bha::suggestions
                 }
 
                 if (!collecting) {
-                    const auto start = parse_cmake_command_start(trimmed);
+                    const auto start = utils::parse_cmake_command_start(trimmed);
                     if (!start) {
                         ++line_num;
                         continue;
@@ -858,7 +760,7 @@ namespace bha::suggestions
                     pending += " " + trimmed;
                 }
 
-                paren_depth += count_paren_delta_outside_quotes(trimmed);
+                paren_depth += utils::count_paren_delta_outside_quotes(trimmed);
                 if (collecting && paren_depth <= 0) {
                     const auto open = pending.find('(');
                     const auto close = pending.rfind(')');
@@ -867,7 +769,7 @@ namespace bha::suggestions
                         name.erase(0, name.find_first_not_of(" \t"));
                         name.erase(name.find_last_not_of(" \t") + 1);
                         const std::string args = pending.substr(open + 1, close - open - 1);
-                        const auto tokens = tokenize_cmake_args(args);
+                        const auto tokens = utils::tokenize_cmake_args(args);
                         if (macro_args_have_sources(tokens) && !macro_args_has_testonly(tokens)) {
                             if (auto target = extract_macro_target_name(args)) {
                                 if (is_cmake_target_candidate(*target, pending)) {
