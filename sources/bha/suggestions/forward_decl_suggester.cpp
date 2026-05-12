@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/forward_decl_suggester.hpp"
 #include "bha/utils/scope_utils.hpp"
+#include "bha/utils/type_decl_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -68,71 +69,6 @@ namespace bha::suggestions
                 }
             }
             return line;
-        }
-
-        std::string strip_attribute_sequences(std::string text) {
-            const auto erase_balanced = [&](const std::string& open, const std::string& close) {
-                std::size_t pos = 0;
-                while ((pos = text.find(open, pos)) != std::string::npos) {
-                    const std::size_t end = text.find(close, pos + open.size());
-                    if (end == std::string::npos) {
-                        text.erase(pos);
-                        break;
-                    }
-                    text.erase(pos, end + close.size() - pos);
-                }
-            };
-
-            erase_balanced("[[", "]]");
-
-            static const std::regex attribute_regex(R"(\b(?:__attribute__|alignas)\s*\([^)]*\))");
-            text = std::regex_replace(text, attribute_regex, " ");
-            return text;
-        }
-
-        std::optional<std::string> extract_declared_type_name(const std::string& declaration_tail) {
-            const std::string sanitized = strip_attribute_sequences(declaration_tail);
-            static const std::regex identifier_regex(R"([A-Za-z_][A-Za-z0-9_]*)");
-            std::vector<std::string> tokens;
-            for (auto begin = std::sregex_iterator(sanitized.begin(), sanitized.end(), identifier_regex),
-                      end = std::sregex_iterator();
-                 begin != end;
-                 ++begin) {
-                tokens.push_back((*begin).str());
-            }
-
-            auto is_non_name_token = [](const std::string& token) {
-                static const std::unordered_set<std::string> blocked{
-                    "class",
-                    "struct",
-                    "final",
-                    "override",
-                    "alignas",
-                    "__attribute__",
-                    "__declspec",
-                    "declspec",
-                    "nodiscard",
-                    "maybe_unused"
-                };
-                return blocked.contains(token);
-            };
-
-            tokens.erase(
-                std::remove_if(tokens.begin(), tokens.end(), is_non_name_token),
-                tokens.end()
-            );
-
-            while (tokens.size() > 1 && is_macro_like_identifier(tokens.front())) {
-                tokens.erase(tokens.begin());
-            }
-            while (tokens.size() > 1 && is_macro_like_identifier(tokens.back())) {
-                tokens.pop_back();
-            }
-
-            if (tokens.empty()) {
-                return std::nullopt;
-            }
-            return tokens.front();
         }
 
         std::string sanitize_source_for_usage(std::string content) {
@@ -373,7 +309,7 @@ namespace bha::suggestions
                 const std::regex class_regex(R"(^\s*(class|struct|union)\b(.*)$)");
                 if (std::regex_search(line, class_match, class_regex)) {
                     if (!pending_template) {
-                        const auto type_name = extract_declared_type_name(class_match[2].str());
+                        const auto type_name = utils::extract_declared_type_name(class_match[2].str());
                             if (!type_name.has_value()) {
                                 pending_template = false;
                                 continue;

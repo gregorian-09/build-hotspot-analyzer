@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/include_suggester.hpp"
 #include "bha/suggestions/unreal_context.hpp"
+#include "bha/utils/callable_decl_utils.hpp"
 #include "bha/utils/header_utils.hpp"
 #include "bha/utils/path_utils.hpp"
 
@@ -676,96 +677,6 @@ namespace bha::suggestions
             return assessment;
         }
 
-        std::optional<std::string> extract_callable_name_from_declaration(
-            const std::string& declaration
-        ) {
-            static const std::array<std::string_view, 12> kRejectedPrefixes{
-                "#",       "if",       "for",      "while",    "switch",   "return",
-                "class ",  "struct ",  "enum ",    "using ",   "typedef ", "static_assert"
-            };
-
-            const std::string trimmed = trim_whitespace_copy(declaration);
-            if (trimmed.empty()) {
-                return std::nullopt;
-            }
-            for (const auto prefix : kRejectedPrefixes) {
-                if (trimmed.rfind(prefix, 0) == 0) {
-                    return std::nullopt;
-                }
-            }
-
-            const auto paren_span = find_outer_paren_span(trimmed);
-            if (!paren_span.has_value()) {
-                return std::nullopt;
-            }
-            if (!callable_tail_looks_valid(trim_whitespace_copy(trimmed.substr(paren_span->second + 1)))) {
-                return std::nullopt;
-            }
-
-            static const std::regex callable_name_regex(
-                R"((?:[A-Za-z_][A-Za-z0-9_]*::)*([A-Za-z_][A-Za-z0-9_]*)\s*$)"
-            );
-
-            const std::string head = trimmed.substr(0, paren_span->first);
-            std::smatch match;
-            if (!std::regex_search(head, match, callable_name_regex)) {
-                return std::nullopt;
-            }
-
-            const std::string name = match[1].str();
-            if (name == "operator" || looks_like_macro_identifier(name)) {
-                return std::nullopt;
-            }
-            return name;
-        }
-
-        std::vector<std::string> extract_declared_callable_names(const fs::path& header_path) {
-            auto lines_result = file_utils::read_lines(header_path);
-            if (lines_result.is_err()) {
-                return {};
-            }
-
-            std::vector<std::string> names;
-            std::unordered_set<std::string> seen;
-            bool in_block_comment = false;
-            bool declaration_pending = false;
-            std::string declaration;
-
-            for (const auto& raw_line : lines_result.value()) {
-                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
-                const std::string trimmed = trim_whitespace_copy(line);
-                if (trimmed.empty()) {
-                    continue;
-                }
-
-                const bool starts_candidate =
-                    !declaration_pending &&
-                    trimmed.find('(') != std::string::npos;
-                if (!declaration_pending && !starts_candidate) {
-                    continue;
-                }
-
-                declaration_pending = true;
-                if (!declaration.empty()) {
-                    declaration.push_back(' ');
-                }
-                declaration += trimmed;
-
-                if (trimmed.find(';') == std::string::npos && trimmed.find('{') == std::string::npos) {
-                    continue;
-                }
-
-                if (auto callable_name = extract_callable_name_from_declaration(declaration);
-                    callable_name.has_value() && seen.insert(*callable_name).second) {
-                    names.push_back(*callable_name);
-                }
-                declaration_pending = false;
-                declaration.clear();
-            }
-
-            return names;
-        }
-
         bool file_references_any_identifier(
             const fs::path& file_path,
             const std::vector<std::string>& identifiers
@@ -1029,7 +940,7 @@ namespace bha::suggestions
                         if (cache_it == callable_symbol_cache.end()) {
                             cache_it = callable_symbol_cache.emplace(
                                 cache_key,
-                                extract_declared_callable_names(*resolved_header)
+                                utils::extract_declared_callable_names(*resolved_header)
                             ).first;
                         }
 
