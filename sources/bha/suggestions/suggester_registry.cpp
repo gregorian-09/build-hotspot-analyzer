@@ -4,10 +4,10 @@
 
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/consolidator.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
 #include <array>
-#include <cctype>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -28,13 +28,6 @@ namespace bha::suggestions
 {
     namespace fs = std::filesystem;
     namespace {
-
-        [[nodiscard]] std::string to_lower(std::string text) {
-            std::ranges::transform(text, text.begin(), [](unsigned char c) {
-                return static_cast<char>(std::tolower(c));
-            });
-            return text;
-        }
 
         fs::path normalize_path(const fs::path& input, const fs::path& project_root) {
             fs::path path = input;
@@ -452,7 +445,7 @@ namespace bha::suggestions
 
             const std::string searchable = suggestion.title + "\n" + suggestion.description + "\n" +
                 suggestion.before_code.code + "\n" + suggestion.after_code.code;
-            const std::string searchable_lower = to_lower(searchable);
+            const std::string searchable_lower = string_utils::to_lower(searchable);
 
             struct Candidate {
                 const analyzers::TemplateAnalysisResult::TemplateInfo* info;
@@ -461,8 +454,8 @@ namespace bha::suggestions
             std::vector<Candidate> candidates;
             for (const auto& tmpl : analysis.templates.templates) {
                 int score = 0;
-                const std::string signature_lower = to_lower(tmpl.full_signature);
-                const std::string name_lower = to_lower(tmpl.name);
+                const std::string signature_lower = string_utils::to_lower(tmpl.full_signature);
+                const std::string name_lower = string_utils::to_lower(tmpl.name);
                 if (!signature_lower.empty() && searchable_lower.find(signature_lower) != std::string::npos) {
                     score += 5;
                 }
