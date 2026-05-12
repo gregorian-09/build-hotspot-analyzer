@@ -321,6 +321,13 @@ namespace bha::suggestions {
                extension == ".inc" || extension == ".inl" || extension == ".ipp" || extension == ".tpp";
     }
 
+    [[nodiscard]] inline bool is_source_file_path(const fs::path& path) {
+        const std::string extension = lowercase_ascii(path.extension().string());
+        return extension == ".c" || extension == ".cc" || extension == ".cpp" || extension == ".cxx" ||
+               extension == ".c++" || extension == ".cp" || extension == ".m" || extension == ".mm" ||
+               extension == ".cu";
+    }
+
     [[nodiscard]] inline std::string repo_relative_path_string(
         const fs::path& path,
         const fs::path& project_root

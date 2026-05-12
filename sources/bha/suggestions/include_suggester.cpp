@@ -488,20 +488,6 @@ namespace bha::suggestions
             return nullptr;
         }
 
-        bool is_header_file(const fs::path& file) {
-            static constexpr std::array<std::string_view, 5> kHeaderExts = {
-                ".h", ".hpp", ".hh", ".hxx", ".h++"
-            };
-            return path_has_extension(file, kHeaderExts);
-        }
-
-        bool is_source_file(const fs::path& file) {
-            static constexpr std::array<std::string_view, 4> kSourceExts = {
-                ".c", ".cc", ".cpp", ".cxx"
-            };
-            return path_has_extension(file, kSourceExts);
-        }
-
         [[nodiscard]] std::string uppercase_copy(std::string input) {
             std::ranges::transform(
                 input,
@@ -1089,7 +1075,7 @@ namespace bha::suggestions
             const TidyUnusedInclude& diag,
             const std::optional<fs::path>& resolved_header
         ) {
-            if (!is_source_file(diag.file)) {
+            if (!is_source_file_path(diag.file)) {
                 return false;
             }
 
@@ -1293,7 +1279,7 @@ namespace bha::suggestions
             source_files.reserve(analysis.files.size());
 
             for (const auto& file_result : analysis.files) {
-                if (!is_source_file(file_result.file)) {
+                if (!is_source_file_path(file_result.file)) {
                     continue;
                 }
                 fs::path resolved_source = resolve_project_path(file_result.file, project_root);
@@ -1317,7 +1303,7 @@ namespace bha::suggestions
             std::unordered_set<std::string> header_seen;
 
             for (const auto& file_result : context.analysis.files) {
-                if (!is_header_file(file_result.file)) {
+                if (!is_header_file_path(file_result.file)) {
                     continue;
                 }
                 fs::path header = resolve_project_path(file_result.file, context.project_root);
@@ -1328,7 +1314,7 @@ namespace bha::suggestions
             }
 
             for (const auto& header_info : deps.headers) {
-                if (!is_header_file(header_info.path)) {
+                if (!is_header_file_path(header_info.path)) {
                     continue;
                 }
 
@@ -1342,7 +1328,7 @@ namespace bha::suggestions
                 includers.reserve(includers.size() + header_info.included_by.size());
                 for (const auto& includer : header_info.included_by) {
                     fs::path resolved_includer = resolve_project_path(includer, context.project_root);
-                    if (!is_source_file(resolved_includer)) {
+                    if (!is_source_file_path(resolved_includer)) {
                         continue;
                     }
                     const std::string key = resolved_includer.generic_string();
@@ -1367,7 +1353,7 @@ namespace bha::suggestions
                         source_file,
                         context.project_root
                     );
-                    if (!included_header.has_value() || !is_header_file(*included_header)) {
+                    if (!included_header.has_value() || !is_header_file_path(*included_header)) {
                         continue;
                     }
                     const std::string key = included_header->generic_string();

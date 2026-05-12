@@ -19,16 +19,6 @@ namespace bha::suggestions
     namespace {
 
         /**
-         * Checks if a path is a C++ source file (not a header).
-         */
-        bool is_source_file(const fs::path& path) {
-            static constexpr std::array<std::string_view, 6> kSourceExts = {
-                ".cpp", ".cc", ".cxx", ".c", ".C", ".c++"
-            };
-            return path_has_extension(path, kSourceExts);
-        }
-
-        /**
          * Gets possible header paths for a source file.
          * Returns multiple candidates since naming conventions vary.
          */
@@ -3296,7 +3286,7 @@ namespace bha::suggestions
                 continue;
             }
 
-            if (!is_source_file(file.file)) {
+            if (!is_source_file_path(file.file)) {
                 ++skipped;
                 continue;
             }
@@ -3448,7 +3438,7 @@ namespace bha::suggestions
                     !compile_args.empty()) {
                     for (auto it = compile_args.rbegin(); it != compile_args.rend(); ++it) {
                         const fs::path candidate_path(*it);
-                        if (!is_source_file(candidate_path) || !fs::exists(candidate_path)) {
+                        if (!is_source_file_path(candidate_path) || !fs::exists(candidate_path)) {
                             continue;
                         }
                         if (candidate_path.filename() == file.file.filename()) {

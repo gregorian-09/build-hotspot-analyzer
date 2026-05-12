@@ -266,13 +266,6 @@ namespace bha::suggestions
             return escaped;
         }
 
-        bool is_header_file(const fs::path& path) {
-            static constexpr std::array<std::string_view, 4> kHeaderExts = {
-                ".h", ".hpp", ".hxx", ".H"
-            };
-            return path_has_extension(path, kHeaderExts);
-        }
-
         std::string join_namespace(const std::vector<std::string>& parts) {
             std::string joined;
             for (std::size_t i = 0; i < parts.size(); ++i) {
@@ -629,13 +622,6 @@ namespace bha::suggestions
             return false;
         }
 
-        bool is_source_file(const fs::path& path) {
-            static constexpr std::array<std::string_view, 5> kSourceExts = {
-                ".cpp", ".cc", ".cxx", ".c++", ".C"
-            };
-            return path_has_extension(path, kSourceExts);
-        }
-
         std::optional<fs::path> find_matching_source_file(const fs::path& header_path, const fs::path& project_root) {
             static constexpr std::array<std::string_view, 5> kSourceExts = {
                 ".cpp", ".cc", ".cxx", ".c++", ".C"
@@ -703,7 +689,7 @@ namespace bha::suggestions
                         continue;
                     }
                     const fs::path path = entry.path();
-                    if (!is_source_file(path)) {
+                    if (!is_source_file_path(path)) {
                         continue;
                     }
                     if (path.stem() != header_path.stem()) {
@@ -769,7 +755,7 @@ namespace bha::suggestions
                     continue;
                 }
                 const fs::path& file = entry.path();
-                if (!is_header_file(file)) {
+                if (!is_header_file_path(file)) {
                     continue;
                 }
 
@@ -930,7 +916,7 @@ namespace bha::suggestions
         std::vector<const analyzers::DependencyAnalysisResult::HeaderInfo*> candidate_headers;
         candidate_headers.reserve(deps.headers.size());
         for (const auto& header : deps.headers) {
-            if (!is_header_file(header.path) ||
+            if (!is_header_file_path(header.path) ||
                 header.total_parse_time < config.min_parse_time ||
                 header.included_by.empty()) {
                 continue;
@@ -954,7 +940,7 @@ namespace bha::suggestions
             const auto& header = *header_ptr;
             ++analyzed;
 
-            if (!is_header_file(header.path)) {
+            if (!is_header_file_path(header.path)) {
                 ++skipped;
                 continue;
             }
@@ -1010,7 +996,7 @@ namespace bha::suggestions
             std::vector<fs::path> candidate_includers;
             std::unordered_set<std::string> seen_includers;
             auto add_includer_candidate = [&](const fs::path& candidate) {
-                if (!is_header_file(candidate)) {
+                if (!is_header_file_path(candidate)) {
                     return;
                 }
                 if (candidate.lexically_normal() == header.path.lexically_normal()) {
@@ -1058,7 +1044,7 @@ namespace bha::suggestions
                 if (!context.should_analyze(includer_path)) {
                     continue;
                 }
-                if (!is_header_file(includer_path)) {
+                if (!is_header_file_path(includer_path)) {
                     continue;
                 }
 

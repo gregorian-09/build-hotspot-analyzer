@@ -186,13 +186,6 @@ namespace bha::suggestions
             return count;
         }
 
-        bool is_source_file(const fs::path& path) {
-            static constexpr std::array<std::string_view, 8> kSourceExts = {
-                ".cpp", ".cc", ".cxx", ".c++", ".C", ".cp", ".mm", ".m"
-            };
-            return path_has_extension(path, kSourceExts);
-        }
-
         std::optional<fs::path> resolve_include_path_for_source(
             const fs::path& source_file,
             const std::string& include_name,
@@ -247,7 +240,7 @@ namespace bha::suggestions
                         source_path = fallback->lexically_normal();
                     }
                 }
-                if (fs::exists(source_path) && is_source_file(source_path) &&
+                if (fs::exists(source_path) && is_source_file_path(source_path) &&
                     file_directly_includes_header(source_path, instantiation_header, project_root) &&
                     file_directly_mentions_specialization(
                         source_path,

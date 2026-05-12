@@ -118,16 +118,6 @@ namespace bha::suggestions
         };
 
         /**
-         * Checks if a file is a C++ source file (not a header).
-         */
-        bool is_source_file(const fs::path& path) {
-            static constexpr std::array<std::string_view, 6> kSourceExts = {
-                ".cpp", ".cc", ".cxx", ".c", ".C", ".c++"
-            };
-            return path_has_extension(path, kSourceExts);
-        }
-
-        /**
          * Extracts the directory/module name from a path for grouping.
          */
         std::string get_module_name(const fs::path& path) {
@@ -1310,7 +1300,7 @@ namespace bha::suggestions
             }
 
             for (const auto& file : files) {
-                if (!is_source_file(file.file)) {
+                if (!is_source_file_path(file.file)) {
                     continue;
                 }
                 const fs::path resolved_path = resolve_source_path(file.file);

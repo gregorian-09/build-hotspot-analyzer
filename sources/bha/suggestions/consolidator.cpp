@@ -227,12 +227,6 @@ namespace bha::suggestions
             return common_dir;
         }
 
-        bool is_source_file_path(const fs::path& path) {
-            const std::string ext = path.extension().string();
-            return ext == ".cpp" || ext == ".cc" || ext == ".cxx" ||
-                   ext == ".c" || ext == ".C" || ext == ".c++";
-        }
-
         std::string resolve_unity_include_path(const fs::path& path) {
             const fs::path resolved = resolve_source_path(path);
             std::string rel = make_repo_relative(resolved);

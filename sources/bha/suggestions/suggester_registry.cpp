@@ -29,34 +29,11 @@ namespace bha::suggestions
     namespace fs = std::filesystem;
     namespace {
 
-        constexpr std::array<std::string_view, 9> kHeaderExts = {
-            ".h", ".hh", ".hpp", ".hxx", ".inc", ".inl", ".ipp", ".tpp", ".pch"
-        };
-
-        constexpr std::array<std::string_view, 7> kSourceExts = {
-            ".c", ".cc", ".cpp", ".cxx", ".m", ".mm", ".ixx"
-        };
-
-        std::string to_lower(std::string text) {
+        [[nodiscard]] std::string to_lower(std::string text) {
             std::ranges::transform(text, text.begin(), [](unsigned char c) {
                 return static_cast<char>(std::tolower(c));
             });
             return text;
-        }
-
-        bool has_extension(const fs::path& path, const std::span<const std::string_view> exts) {
-            const std::string ext = to_lower(path.extension().string());
-            return std::ranges::any_of(exts, [&](const std::string_view candidate) {
-                return ext == candidate;
-            });
-        }
-
-        bool is_header_file(const fs::path& path) {
-            return has_extension(path, kHeaderExts);
-        }
-
-        bool is_source_file(const fs::path& path) {
-            return has_extension(path, kSourceExts);
         }
 
         fs::path normalize_path(const fs::path& input, const fs::path& project_root) {
@@ -374,7 +351,7 @@ namespace bha::suggestions
                 if (normalized.empty()) {
                     return;
                 }
-                if (!is_source_file(normalized)) {
+                if (!is_source_file_path(normalized)) {
                     return;
                 }
                 candidates.push_back(std::move(normalized));
@@ -420,7 +397,7 @@ namespace bha::suggestions
                     return;
                 }
                 const fs::path normalized = normalize_path(path, project_root);
-                if (!normalized.empty() && is_header_file(normalized)) {
+                if (!normalized.empty() && is_header_file_path(normalized)) {
                     headers.push_back(normalized);
                 }
             };
