@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/template_suggester.hpp"
 #include "bha/utils/path_utils.hpp"
+#include "bha/utils/regex_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -427,35 +428,6 @@ namespace bha::suggestions
             return 0;
         }
 
-        std::string regex_escape(const std::string& input) {
-            std::string escaped;
-            escaped.reserve(input.size() * 2);
-            for (const char ch : input) {
-                switch (ch) {
-                    case '.':
-                    case '^':
-                    case '$':
-                    case '|':
-                    case '(':
-                    case ')':
-                    case '[':
-                    case ']':
-                    case '{':
-                    case '}':
-                    case '*':
-                    case '+':
-                    case '?':
-                    case '\\':
-                        escaped.push_back('\\');
-                        break;
-                    default:
-                        break;
-                }
-                escaped.push_back(ch);
-            }
-            return escaped;
-        }
-
         bool is_blacklisted_template(const std::string& name) {
             std::string trimmed = strip_leading_keywords(name);
             if (trimmed.rfind("::", 0) == 0) {
@@ -609,7 +581,7 @@ namespace bha::suggestions
             }
             const std::string content((std::istreambuf_iterator<char>(in)),
                                       std::istreambuf_iterator<char>());
-            const std::string escaped_name = regex_escape(base_name);
+            const std::string escaped_name = utils::regex_escape(base_name);
             const std::regex tmpl_regex(
                 "\\btemplate\\s*<[^>]*>\\s*(class|struct)\\s+" + escaped_name + "\\b",
                 std::regex::icase
@@ -795,8 +767,8 @@ namespace bha::suggestions
             const auto last_scope = qualified_name.rfind("::");
             const std::string terminal_name =
                 last_scope == std::string::npos ? qualified_name : qualified_name.substr(last_scope + 2);
-            const std::regex exact_regex("\\b" + regex_escape(qualified_name) + "\\b");
-            const std::regex terminal_regex("\\b" + regex_escape(terminal_name) + "\\b");
+            const std::regex exact_regex("\\b" + utils::regex_escape(qualified_name) + "\\b");
+            const std::regex terminal_regex("\\b" + utils::regex_escape(terminal_name) + "\\b");
             const bool nested_name = is_nested_qualified_name(qualified_name);
 
             for (const auto& candidate : collect_header_closure(header_path, project_root)) {
@@ -839,7 +811,7 @@ namespace bha::suggestions
             }
 
             const std::regex prefix_regex(
-                "(^|[^A-Za-z0-9_])" + regex_escape(namespace_prefix) + R"(::)"
+                "(^|[^A-Za-z0-9_])" + utils::regex_escape(namespace_prefix) + R"(::)"
             );
             return std::regex_replace(qualified_name, prefix_regex, "$1");
         }
@@ -1234,7 +1206,7 @@ namespace bha::suggestions
             }
 
             const std::regex prefix_regex(
-                "(^|[^A-Za-z0-9_])" + regex_escape(namespace_prefix) + R"(::)"
+                "(^|[^A-Za-z0-9_])" + utils::regex_escape(namespace_prefix) + R"(::)"
             );
             return std::regex_replace(qualified_name, prefix_regex, "$1" + replacement_token + "::");
         }

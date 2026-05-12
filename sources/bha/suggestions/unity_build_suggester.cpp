@@ -5,6 +5,7 @@
 #include "bha/suggestions/unity_build_suggester.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
+#include "bha/utils/regex_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -518,20 +519,6 @@ namespace bha::suggestions
                    path_has_component_ci(path, "build");
         }
 
-        std::string regex_escape(std::string_view input) {
-            std::string out;
-            out.reserve(input.size() * 2);
-            for (const char c : input) {
-                if (c == '\\' || c == '^' || c == '$' || c == '.' || c == '|' ||
-                    c == '?' || c == '*' || c == '+' || c == '(' || c == ')' ||
-                    c == '[' || c == ']' || c == '{' || c == '}') {
-                    out.push_back('\\');
-                }
-                out.push_back(c);
-            }
-            return out;
-        }
-
         std::optional<CMakeCommandStart> parse_cmake_command_start(std::string_view line) {
             if (line.empty()) {
                 return std::nullopt;
@@ -909,7 +896,7 @@ namespace bha::suggestions
         }
 
         bool cmake_target_has_unity_enabled(const std::string& content, const std::string& target_name) {
-            const std::string escaped = regex_escape(target_name);
+            const std::string escaped = utils::regex_escape(target_name);
             const std::regex set_prop_re(
                 "set_property\\s*\\(\\s*TARGET\\s+" + escaped + "\\s+PROPERTY\\s+UNITY_BUILD\\s+ON\\b",
                 std::regex::icase
