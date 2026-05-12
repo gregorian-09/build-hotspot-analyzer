@@ -474,25 +474,17 @@ namespace bha::suggestions
             std::size_t exact_hits = 0;
         };
 
-        std::string to_lower_ascii(std::string_view input) {
-            std::string out(input);
-            std::ranges::transform(out, out.begin(), [](const unsigned char c) {
-                return static_cast<char>(std::tolower(c));
-            });
-            return out;
-        }
-
         bool contains_ci(std::string_view haystack, std::string_view needle) {
             if (needle.empty()) {
                 return true;
             }
-            return to_lower_ascii(haystack).find(to_lower_ascii(needle)) != std::string::npos;
+            return utils::to_lower_ascii(haystack).find(utils::to_lower_ascii(needle)) != std::string::npos;
         }
 
         bool path_has_component_ci(const fs::path& path, std::string_view component) {
-            const std::string needle = to_lower_ascii(component);
+            const std::string needle = utils::to_lower_ascii(component);
             for (const auto& part : path) {
-                if (to_lower_ascii(part.string()) == needle) {
+                if (utils::to_lower_ascii(part.string()) == needle) {
                     return true;
                 }
             }
@@ -500,7 +492,7 @@ namespace bha::suggestions
         }
 
         bool is_probable_generated_unity_source(const fs::path& path) {
-            const std::string filename = to_lower_ascii(path.filename().string());
+            const std::string filename = utils::to_lower_ascii(path.filename().string());
             if (filename.rfind("unity_", 0) == std::string::npos &&
                 filename.find("_unity_") == std::string::npos) {
                 return false;
@@ -601,7 +593,7 @@ namespace bha::suggestions
         }
 
         bool is_scope_or_target_keyword(std::string_view token) {
-            const std::string key = to_lower_ascii(token);
+            const std::string key = utils::to_lower_ascii(token);
             static const std::unordered_set<std::string> kKeywords = {
                 "public", "private", "interface",
                 "before", "after",
@@ -612,7 +604,7 @@ namespace bha::suggestions
         }
 
         bool is_target_like_macro(std::string_view name) {
-            const std::string lower = to_lower_ascii(name);
+            const std::string lower = utils::to_lower_ascii(name);
             return lower.find("library") != std::string::npos ||
                    lower.find("executable") != std::string::npos ||
                    lower.find("binary") != std::string::npos ||
@@ -624,7 +616,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
             for (std::size_t i = 0; i + 1 < tokens.size(); ++i) {
-                if (to_lower_ascii(tokens[i]) != "name") {
+                if (utils::to_lower_ascii(tokens[i]) != "name") {
                     continue;
                 }
                 if (utils::is_probable_cmake_target_name(
@@ -643,7 +635,7 @@ namespace bha::suggestions
         std::vector<std::string> extract_macro_sources(const std::vector<std::string>& tokens) {
             std::vector<std::string> sources;
             for (std::size_t i = 0; i < tokens.size(); ++i) {
-                const std::string key = to_lower_ascii(tokens[i]);
+                const std::string key = utils::to_lower_ascii(tokens[i]);
                 if (key != "srcs" && key != "sources" && key != "src" && key != "source") {
                     continue;
                 }
@@ -667,7 +659,7 @@ namespace bha::suggestions
             if (tokens.empty()) {
                 return std::nullopt;
             }
-            const std::string lower_command = to_lower_ascii(command);
+            const std::string lower_command = utils::to_lower_ascii(command);
             if (lower_command == "add_library" || lower_command == "add_executable" ||
                 lower_command == "target_sources") {
                 if (utils::is_probable_cmake_target_name(
@@ -686,13 +678,13 @@ namespace bha::suggestions
             if (tokens.size() < 2) {
                 return sources;
             }
-            const std::string lower_command = to_lower_ascii(command);
+            const std::string lower_command = utils::to_lower_ascii(command);
             std::size_t i = 1;
             if (lower_command == "add_library" || lower_command == "add_executable") {
                 while (i < tokens.size() && is_scope_or_target_keyword(tokens[i])) {
                     ++i;
                 }
-                if (i < tokens.size() && to_lower_ascii(tokens[i]) == "alias") {
+                if (i < tokens.size() && utils::to_lower_ascii(tokens[i]) == "alias") {
                     return sources;
                 }
                 for (; i < tokens.size(); ++i) {
@@ -778,7 +770,7 @@ namespace bha::suggestions
                     const auto open = pending.find('(');
                     const auto close = pending.rfind(')');
                     if (open != std::string::npos && close != std::string::npos && close > open) {
-                        const std::string command = to_lower_ascii(pending.substr(0, open));
+                        const std::string command = utils::to_lower_ascii(pending.substr(0, open));
                         const std::string args = pending.substr(open + 1, close - open - 1);
                         const auto tokens = tokenize_cmake_args(args);
 
@@ -911,13 +903,13 @@ namespace bha::suggestions
                     ++result.exact_hits;
                     continue;
                 }
-                if (group_filenames.contains(to_lower_ascii(resolved.filename().string()))) {
+                if (group_filenames.contains(utils::to_lower_ascii(resolved.filename().string()))) {
                     result.score += 8;
                     ++result.name_hits;
                 }
             }
 
-            const std::string lower_target = to_lower_ascii(target.name);
+            const std::string lower_target = utils::to_lower_ascii(target.name);
             if (contains_ci(lower_target, "test") ||
                 contains_ci(lower_target, "bench") ||
                 contains_ci(lower_target, "mock") ||
@@ -982,7 +974,7 @@ namespace bha::suggestions
             for (const auto& path : group_files) {
                 const fs::path resolved = resolve_source_path(path);
                 group_keys.insert(normalized_key(resolved));
-                group_filenames.insert(to_lower_ascii(resolved.filename().string()));
+                group_filenames.insert(utils::to_lower_ascii(resolved.filename().string()));
             }
 
             std::optional<CMakeTargetSelection> best;
