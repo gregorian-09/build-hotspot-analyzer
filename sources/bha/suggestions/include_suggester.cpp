@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/include_suggester.hpp"
 #include "bha/suggestions/unreal_context.hpp"
+#include "bha/utils/header_utils.hpp"
 #include "bha/utils/path_utils.hpp"
 
 #include <algorithm>
@@ -208,14 +209,6 @@ namespace bha::suggestions
             }
 
             return suggestion;
-        }
-
-        bool is_likely_system_header(const fs::path& path) {
-            const std::string p = path.generic_string();
-            return p.starts_with("/usr/") ||
-                   p.starts_with("/opt/") ||
-                   p.find("/include/c++/") != std::string::npos ||
-                   p.find("Program Files") != std::string::npos;
         }
 
         std::string shell_quote(const std::string& input) {
@@ -1561,7 +1554,7 @@ namespace bha::suggestions
                     continue;
                 }
                 const fs::path included_header = resolved_include_header->lexically_normal();
-                if (is_likely_system_header(included_header)) {
+                if (utils::is_likely_system_header_path(included_header)) {
                     continue;
                 }
                 if (!included_header.empty() && included_header == including_header) {

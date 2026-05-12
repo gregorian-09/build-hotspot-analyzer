@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/header_split_suggester.hpp"
 #include "bha/utils/scope_utils.hpp"
+#include "bha/utils/header_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -18,14 +19,6 @@
 namespace bha::suggestions
 {
     namespace {
-
-        bool is_likely_system_header(const fs::path& path) {
-            const std::string value = path.generic_string();
-            return value.starts_with("/usr/include") ||
-                   value.find("/include/c++/") != std::string::npos ||
-                   value.find("/lib/clang/") != std::string::npos ||
-                   value.rfind("<built-in>", 0) == 0;
-        }
 
         /**
          * Header split pattern types.
@@ -1506,7 +1499,7 @@ namespace bha::suggestions
                 ++skipped;
                 continue;
             }
-            if (is_likely_system_header(header.path)) {
+            if (utils::is_likely_system_header_path(header.path)) {
                 ++skipped;
                 continue;
             }
