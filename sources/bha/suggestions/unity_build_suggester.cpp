@@ -10,6 +10,7 @@
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
 #include <array>
@@ -446,15 +447,6 @@ namespace bha::suggestions
                 }
             }
             return out;
-        }
-
-        std::string trim_left(std::string s) {
-            std::size_t i = 0;
-            while (i < s.size() && std::isspace(static_cast<unsigned char>(s[i]))) {
-                ++i;
-            }
-            s.erase(0, i);
-            return s;
         }
 
         struct CMakeTargetInfo {
@@ -909,7 +901,7 @@ namespace bha::suggestions
 
             while (std::getline(in, line)) {
                 const std::string cleaned = strip_comments(line, in_block);
-                const std::string trimmed = trim_left(cleaned);
+                const std::string trimmed = std::string(string_utils::trim_left(cleaned));
                 if (trimmed.empty()) {
                     continue;
                 }
