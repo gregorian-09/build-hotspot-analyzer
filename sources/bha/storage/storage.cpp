@@ -3,6 +3,7 @@
 //
 
 #include "bha/storage.hpp"
+#include "bha/utils/time_utils.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -24,24 +25,6 @@ namespace bha::storage
 {
 
     namespace {
-
-        /**
-         * Formats a timestamp to ISO 8601.
-         */
-        std::string format_timestamp(const Timestamp ts) {
-            const auto time_t_val = std::chrono::system_clock::to_time_t(ts);
-            std::ostringstream ss;
-
-#ifdef _WIN32
-            std::tm time_info;
-            gmtime_s(&time_info, &time_t_val);
-            ss << std::put_time(&time_info, "%Y-%m-%dT%H:%M:%SZ");
-#else
-            ss << std::put_time(std::gmtime(&time_t_val), "%Y-%m-%dT%H:%M:%SZ");
-#endif
-
-            return ss.str();
-        }
 
         /**
          * Parses ISO 8601 timestamp.
@@ -461,7 +444,7 @@ namespace bha::storage
         j["version"] = "2.0";
         j["name"] = name;
         j["description"] = description;
-        j["created_at"] = format_timestamp(std::chrono::system_clock::now());
+        j["created_at"] = utils::format_timestamp_iso8601(std::chrono::system_clock::now());
         j["git_commit"] = get_git_commit();
         j["git_branch"] = get_git_branch();
         j["file_count"] = analysis.files.size();
