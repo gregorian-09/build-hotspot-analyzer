@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/consolidator.hpp"
+#include "bha/utils/include_parse_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
@@ -120,22 +121,11 @@ namespace bha::suggestions
         }
 
         std::vector<IncludeDirective> parse_include_directives(const fs::path& file_path) {
-            std::ifstream in(file_path);
-            if (!in.is_open()) {
-                return {};
-            }
-
-            static const std::regex include_regex(R"(^\s*#\s*include\s*([<"])([^">]+)[">])");
             std::vector<IncludeDirective> directives;
-            std::string line;
-            while (std::getline(in, line)) {
-                std::smatch match;
-                if (!std::regex_search(line, match, include_regex)) {
-                    continue;
-                }
+            for (const auto& parsed : utils::parse_include_directives_from_file(file_path)) {
                 IncludeDirective directive;
-                directive.is_system = match[1].str() == "<";
-                directive.name = fs::path(match[2].str()).lexically_normal().generic_string();
+                directive.is_system = parsed.is_system;
+                directive.name = parsed.header_name;
                 directives.push_back(std::move(directive));
             }
             return directives;

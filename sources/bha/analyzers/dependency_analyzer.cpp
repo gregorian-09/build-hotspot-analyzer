@@ -4,6 +4,7 @@
 
 #include "bha/analyzers/dependency_analyzer.hpp"
 #include "bha/git/git_integration.hpp"
+#include "bha/utils/include_parse_utils.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -108,26 +109,12 @@ namespace bha::analyzers
 
         std::vector<IncludeDirective> parse_include_directives(const fs::path& file_path) {
             std::vector<IncludeDirective> directives;
-
-            std::ifstream in(file_path);
-            if (!in) {
-                return directives;
-            }
-
-            static const std::regex include_regex(R"(^\s*#\s*include\s*([<"])([^">]+)[">])");
-            std::string line;
-            while (std::getline(in, line)) {
-                std::smatch match;
-                if (!std::regex_search(line, match, include_regex)) {
-                    continue;
-                }
-
+            for (const auto& parsed : utils::parse_include_directives_from_file(file_path)) {
                 IncludeDirective directive;
-                directive.is_system = match[1].str() == "<";
-                directive.header_name = fs::path(match[2].str()).lexically_normal().generic_string();
+                directive.header_name = parsed.header_name;
+                directive.is_system = parsed.is_system;
                 directives.push_back(std::move(directive));
             }
-
             return directives;
         }
 
