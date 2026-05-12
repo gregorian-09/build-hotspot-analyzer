@@ -3,7 +3,7 @@
 //
 
 #include "bha/suggestions/forward_decl_suggester.hpp"
-#include "bha/suggestions/scope_utils.hpp"
+#include "bha/utils/scope_utils.hpp"
 
 #include <algorithm>
 #include <array>
