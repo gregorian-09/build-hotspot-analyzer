@@ -1518,6 +1518,119 @@ namespace bha::suggestions {
         return std::nullopt;
     }
 
+    [[nodiscard]] inline bool looks_like_macro_identifier(const std::string& identifier) {
+        bool saw_alpha = false;
+        for (const char c : identifier) {
+            if (std::isalpha(static_cast<unsigned char>(c)) != 0) {
+                saw_alpha = true;
+                if (std::isupper(static_cast<unsigned char>(c)) == 0 && c != '_') {
+                    return false;
+                }
+            }
+        }
+        return saw_alpha;
+    }
+
+    [[nodiscard]] inline std::optional<std::pair<std::size_t, std::size_t>> find_outer_paren_span(
+        const std::string& text
+    ) {
+        std::size_t template_depth = 0;
+        std::size_t paren_depth = 0;
+        std::optional<std::size_t> open_paren;
+
+        for (std::size_t i = 0; i < text.size(); ++i) {
+            const char ch = text[i];
+            if (ch == '<') {
+                ++template_depth;
+                continue;
+            }
+            if (ch == '>' && template_depth > 0) {
+                --template_depth;
+                continue;
+            }
+            if (template_depth > 0) {
+                continue;
+            }
+            if (ch == '(') {
+                if (paren_depth == 0) {
+                    open_paren = i;
+                }
+                ++paren_depth;
+                continue;
+            }
+            if (ch == ')' && paren_depth > 0) {
+                --paren_depth;
+                if (paren_depth == 0 && open_paren.has_value()) {
+                    return std::pair{*open_paren, i};
+                }
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    [[nodiscard]] inline bool callable_tail_looks_valid(std::string tail) {
+        tail = trim_whitespace_copy(std::move(tail));
+        while (!tail.empty()) {
+            if (tail[0] == ';' || tail[0] == '{') {
+                return true;
+            }
+            if (tail.rfind("noexcept", 0) == 0) {
+                tail.erase(0, std::string("noexcept").size());
+                tail = trim_whitespace_copy(std::move(tail));
+                if (!tail.empty() && tail[0] == '(') {
+                    if (const auto span = find_outer_paren_span(tail)) {
+                        tail.erase(0, span->second + 1);
+                        tail = trim_whitespace_copy(std::move(tail));
+                        continue;
+                    }
+                    return false;
+                }
+                continue;
+            }
+            if (tail.rfind("[[", 0) == 0) {
+                const auto close = tail.find("]]");
+                if (close == std::string::npos) {
+                    return false;
+                }
+                tail.erase(0, close + 2);
+                tail = trim_whitespace_copy(std::move(tail));
+                continue;
+            }
+            if (tail.rfind("__attribute__", 0) == 0) {
+                tail.erase(0, std::string("__attribute__").size());
+                tail = trim_whitespace_copy(std::move(tail));
+                if (!tail.empty() && tail[0] == '(') {
+                    if (const auto span = find_outer_paren_span(tail)) {
+                        tail.erase(0, span->second + 1);
+                        tail = trim_whitespace_copy(std::move(tail));
+                        continue;
+                    }
+                }
+                return false;
+            }
+
+            std::size_t token_end = 0;
+            while (token_end < tail.size() &&
+                   (std::isalnum(static_cast<unsigned char>(tail[token_end])) ||
+                    tail[token_end] == '_')) {
+                ++token_end;
+            }
+            if (token_end == 0) {
+                return false;
+            }
+
+            const std::string token = tail.substr(0, token_end);
+            if (!looks_like_macro_identifier(token)) {
+                return false;
+            }
+            tail.erase(0, token_end);
+            tail = trim_whitespace_copy(std::move(tail));
+        }
+
+        return false;
+    }
+
     [[nodiscard]] inline std::optional<fs::path> resolve_project_include_path(
         const std::string& include_name,
         const fs::path& including_file,
