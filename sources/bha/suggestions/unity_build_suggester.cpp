@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/unity_build_suggester.hpp"
 #include "bha/utils/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
@@ -517,47 +518,6 @@ namespace bha::suggestions
                    lower.find("target") != std::string::npos;
         }
 
-        std::optional<std::string> extract_macro_target_name(const std::vector<std::string>& tokens) {
-            if (tokens.empty()) {
-                return std::nullopt;
-            }
-            for (std::size_t i = 0; i + 1 < tokens.size(); ++i) {
-                if (utils::to_lower_ascii(tokens[i]) != "name") {
-                    continue;
-                }
-                if (utils::is_probable_cmake_target_name(
-                        tokens[i + 1], utils::CMakeTargetNameMode::Strict)) {
-                    return tokens[i + 1];
-                }
-                return std::nullopt;
-            }
-            if (utils::is_probable_cmake_target_name(
-                    tokens.front(), utils::CMakeTargetNameMode::Strict)) {
-                return tokens.front();
-            }
-            return std::nullopt;
-        }
-
-        std::vector<std::string> extract_macro_sources(const std::vector<std::string>& tokens) {
-            std::vector<std::string> sources;
-            for (std::size_t i = 0; i < tokens.size(); ++i) {
-                const std::string key = utils::to_lower_ascii(tokens[i]);
-                if (key != "srcs" && key != "sources" && key != "src" && key != "source") {
-                    continue;
-                }
-                for (std::size_t j = i + 1; j < tokens.size(); ++j) {
-                    if (utils::is_macro_keyword_lower(tokens[j])) {
-                        break;
-                    }
-                    if (utils::is_probable_source_token(
-                            tokens[j], utils::CMakeSourceTokenMode::Strict)) {
-                        sources.push_back(tokens[j]);
-                    }
-                }
-            }
-            return sources;
-        }
-
         std::optional<std::string> extract_builtin_target_name(
             std::string_view command,
             const std::vector<std::string>& tokens
@@ -690,13 +650,16 @@ namespace bha::suggestions
                                 upsert_target(std::move(target));
                             }
                         } else if (is_target_like_macro(command)) {
-                            if (auto target_name = extract_macro_target_name(tokens)) {
+                            if (auto target_name = utils::extract_cmake_macro_target_name(
+                                    tokens, utils::CMakeTargetNameMode::Strict)) {
                                 CMakeTargetInfo target;
                                 target.name = *target_name;
                                 target.start_line = pending_line;
                                 target.end_line = line_num;
                                 target.is_macro = true;
-                                target.source_tokens = extract_macro_sources(tokens);
+                                target.source_tokens = utils::extract_cmake_macro_sources(
+                                    tokens, utils::CMakeSourceTokenMode::Strict
+                                );
                                 upsert_target(std::move(target));
                             }
                         }

@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/pch_suggester.hpp"
 #include "bha/utils/cmake_classification_utils.hpp"
+#include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/suggestions/unreal_context.hpp"
 
@@ -662,26 +663,9 @@ namespace bha::suggestions
         }
 
         bool macro_args_have_sources(const std::vector<std::string>& tokens) {
-            for (std::size_t i = 0; i < tokens.size(); ++i) {
-                std::string key = tokens[i];
-                std::ranges::transform(key, key.begin(),
-                                       [](const unsigned char c) { return static_cast<char>(std::toupper(c)); });
-                if (key != "SRCS" && key != "SOURCES" && key != "SRC" && key != "SOURCE") {
-                    continue;
-                }
-                for (std::size_t j = i + 1; j < tokens.size(); ++j) {
-                    if (utils::is_macro_keyword_lower(tokens[j])) {
-                        break;
-                    }
-                    if (utils::is_probable_source_token(
-                            tokens[j],
-                            utils::CMakeSourceTokenMode::AllowLeadingGeneratorToken
-                        )) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return !utils::extract_cmake_macro_sources(
+                tokens, utils::CMakeSourceTokenMode::AllowLeadingGeneratorToken
+            ).empty();
         }
 
         bool macro_args_has_testonly(const std::vector<std::string>& tokens) {
@@ -694,34 +678,6 @@ namespace bha::suggestions
                 }
             }
             return false;
-        }
-
-        std::optional<std::string> extract_macro_target_name(std::string_view args) {
-            const auto tokens = utils::tokenize_cmake_args(args);
-            if (tokens.empty()) {
-                return std::nullopt;
-            }
-            for (std::size_t i = 0; i + 1 < tokens.size(); ++i) {
-                std::string key = tokens[i];
-                std::ranges::transform(key, key.begin(),
-                                       [](const unsigned char c) { return static_cast<char>(std::toupper(c)); });
-                if (key == "NAME") {
-                    if (utils::is_probable_cmake_target_name(
-                            tokens[i + 1],
-                            utils::CMakeTargetNameMode::AllowGeneratorExpressions
-                        )) {
-                        return tokens[i + 1];
-                    }
-                    return std::nullopt;
-                }
-            }
-            if (utils::is_probable_cmake_target_name(
-                    tokens.front(),
-                    utils::CMakeTargetNameMode::AllowGeneratorExpressions
-                )) {
-                return tokens.front();
-            }
-            return std::nullopt;
         }
 
         std::vector<CMakeTargetInfo> find_macro_targets(const std::string& content) {
@@ -771,7 +727,8 @@ namespace bha::suggestions
                         const std::string args = pending.substr(open + 1, close - open - 1);
                         const auto tokens = utils::tokenize_cmake_args(args);
                         if (macro_args_have_sources(tokens) && !macro_args_has_testonly(tokens)) {
-                            if (auto target = extract_macro_target_name(args)) {
+                            if (auto target = utils::extract_cmake_macro_target_name(
+                                    tokens, utils::CMakeTargetNameMode::AllowGeneratorExpressions)) {
                                 if (is_cmake_target_candidate(*target, pending)) {
                                     results.push_back(CMakeTargetInfo{*target, pending_line, line_num, true});
                                 }
