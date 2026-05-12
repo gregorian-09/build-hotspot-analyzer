@@ -70,19 +70,6 @@ namespace bha::suggestions
             return line;
         }
 
-        bool is_macro_like_identifier(const std::string& token) {
-            bool saw_alpha = false;
-            for (const char ch : token) {
-                if (std::isalpha(static_cast<unsigned char>(ch))) {
-                    saw_alpha = true;
-                    if (!std::isupper(static_cast<unsigned char>(ch)) && ch != '_') {
-                        return false;
-                    }
-                }
-            }
-            return saw_alpha;
-        }
-
         std::string strip_attribute_sequences(std::string text) {
             const auto erase_balanced = [&](const std::string& open, const std::string& close) {
                 std::size_t pos = 0;
@@ -234,36 +221,6 @@ namespace bha::suggestions
             }
 
             return output;
-        }
-
-        std::string escape_regex(const std::string& text) {
-            std::string escaped;
-            escaped.reserve(text.size() * 2);
-            for (const char ch : text) {
-                switch (ch) {
-                    case '\\':
-                    case '.':
-                    case '^':
-                    case '$':
-                    case '|':
-                    case '(':
-                    case ')':
-                    case '[':
-                    case ']':
-                    case '{':
-                    case '}':
-                    case '*':
-                    case '+':
-                    case '?':
-                        escaped.push_back('\\');
-                        escaped.push_back(ch);
-                        break;
-                    default:
-                        escaped.push_back(ch);
-                        break;
-                }
-            }
-            return escaped;
         }
 
         std::string join_namespace(const std::vector<std::string>& parts) {
@@ -498,24 +455,6 @@ namespace bha::suggestions
                 }
             }
             return std::nullopt;
-        }
-
-        bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
-            std::ifstream in(file);
-            if (!in) {
-                return false;
-            }
-
-            const std::regex define_regex(
-                "^\\s*#\\s*define\\s+" + escape_regex(macro_name) + R"((?:\b|\s*\())"
-            );
-            std::string line;
-            while (std::getline(in, line)) {
-                if (std::regex_search(line, define_regex)) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         std::optional<std::vector<IncludeDirective>> resolve_support_includes(

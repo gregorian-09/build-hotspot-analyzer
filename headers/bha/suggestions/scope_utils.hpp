@@ -1,8 +1,11 @@
 #ifndef BHA_SCOPE_UTILS_HPP
 #define BHA_SCOPE_UTILS_HPP
 
+#include "bha/utils/regex_utils.hpp"
 #include "bha/suggestions/suggester.hpp"
 
+#include <cctype>
+#include <fstream>
 #include <optional>
 #include <regex>
 #include <string>
@@ -132,6 +135,38 @@ namespace bha::suggestions {
             return *macro_name;
         }
         return std::nullopt;
+    }
+
+    [[nodiscard]] inline bool is_macro_like_identifier(const std::string& token) {
+        bool saw_alpha = false;
+        for (const char ch : token) {
+            if (std::isalpha(static_cast<unsigned char>(ch)) == 0) {
+                continue;
+            }
+            saw_alpha = true;
+            if (std::isupper(static_cast<unsigned char>(ch)) == 0 && ch != '_') {
+                return false;
+            }
+        }
+        return saw_alpha;
+    }
+
+    [[nodiscard]] inline bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
+        std::ifstream in(file);
+        if (!in) {
+            return false;
+        }
+
+        const std::regex define_regex(
+            "^\\s*#\\s*define\\s+" + utils::regex_escape(macro_name) + R"((\b|\s*\())"
+        );
+        std::string line;
+        while (std::getline(in, line)) {
+            if (std::regex_search(line, define_regex)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }  // namespace bha::suggestions
