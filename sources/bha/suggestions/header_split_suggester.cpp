@@ -19,15 +19,6 @@ namespace bha::suggestions
 {
     namespace {
 
-        /**
-         * Checks if a path is a C++ header file.
-         */
-        bool is_header(const fs::path& path) {
-            const std::string ext = path.extension().string();
-            return ext == ".h" || ext == ".hpp" || ext == ".hxx" || ext == ".H" ||
-                   ext == ".hh" || ext == ".h++";
-        }
-
         bool is_likely_system_header(const fs::path& path) {
             const std::string value = path.generic_string();
             return value.starts_with("/usr/include") ||
@@ -1669,7 +1660,7 @@ namespace bha::suggestions
                 }
             }
 
-            if (!is_header(header.path)) {
+            if (!is_header_file_path(header.path)) {
                 ++skipped;
                 continue;
             }

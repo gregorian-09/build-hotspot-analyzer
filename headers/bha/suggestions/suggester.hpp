@@ -318,7 +318,8 @@ namespace bha::suggestions {
     [[nodiscard]] inline bool is_header_file_path(const fs::path& path) {
         const std::string extension = lowercase_ascii(path.extension().string());
         return extension == ".h" || extension == ".hh" || extension == ".hpp" || extension == ".hxx" ||
-               extension == ".inc" || extension == ".inl" || extension == ".ipp" || extension == ".tpp";
+               extension == ".h++" || extension == ".inc" || extension == ".inl" ||
+               extension == ".ipp" || extension == ".tpp";
     }
 
     [[nodiscard]] inline bool is_source_file_path(const fs::path& path) {
