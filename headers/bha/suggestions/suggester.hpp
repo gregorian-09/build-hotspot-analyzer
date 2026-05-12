@@ -1466,6 +1466,13 @@ namespace bha::suggestions {
         bool is_system = false;
     };
 
+    [[nodiscard]] inline std::string include_directive_text(const IncludeDirective& include) {
+        if (include.is_system) {
+            return "#include <" + include.header_name + ">";
+        }
+        return "#include \"" + include.header_name + "\"";
+    }
+
     [[nodiscard]] inline std::vector<IncludeDirective> find_include_directives(const fs::path& file) {
         std::vector<IncludeDirective> result;
 

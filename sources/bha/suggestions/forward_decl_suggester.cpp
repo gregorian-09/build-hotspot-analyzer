@@ -290,13 +290,6 @@ namespace bha::suggestions
             });
         }
 
-        std::string include_directive_text(const IncludeDirective& include) {
-            if (include.is_system) {
-                return "#include <" + include.header_name + ">";
-            }
-            return "#include \"" + include.header_name + "\"";
-        }
-
         std::vector<IncludeDirective> missing_support_includes(
             const ForwardDeclType& type,
             const fs::path& includer_path

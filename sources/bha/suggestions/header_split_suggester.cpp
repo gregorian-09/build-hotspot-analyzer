@@ -871,13 +871,6 @@ namespace bha::suggestions
             return includes;
         }
 
-        std::string include_directive_text(const IncludeDirective& include) {
-            if (include.is_system) {
-                return "#include <" + include.header_name + ">";
-            }
-            return "#include \"" + include.header_name + "\"";
-        }
-
         std::string extract_leading_comment_preamble(const fs::path& header_path) {
             std::ifstream in(header_path);
             if (!in) {
