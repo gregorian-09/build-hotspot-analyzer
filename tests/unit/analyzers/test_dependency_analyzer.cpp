@@ -435,4 +435,25 @@ namespace bha::analyzers
         std::error_code ec;
         fs::remove_all(temp_dir, ec);
     }
+
+    TEST_F(DependencyAnalyzerTest, StabilityFieldsWithoutGit) {
+        BuildTrace trace;
+        trace.id = "test-no-git";
+        trace.git_info = std::nullopt;
+
+        CompilationUnit unit;
+        unit.source_file = "/src/main.cpp";
+        unit.includes = {{"/include/header.h", std::chrono::milliseconds(10), 1, {}, {}}};
+        trace.units = {unit};
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+        ASSERT_TRUE(result.is_ok());
+
+        for (const auto& h : result.value().dependencies.headers) {
+            EXPECT_EQ(h.modification_count, 0u);
+            EXPECT_EQ(h.time_since_modification, Duration::zero());
+            EXPECT_FALSE(h.is_stable);
+        }
+    }
 }
