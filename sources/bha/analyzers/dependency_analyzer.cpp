@@ -9,11 +9,9 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <optional>
 #include <ranges>
-#include <regex>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -235,7 +233,7 @@ namespace bha::analyzers
         std::vector<std::pair<fs::path, fs::path>> detect_circular_header_dependencies(
             const std::unordered_map<std::string, HeaderStats>& header_map
         ) {
-            const HeaderIncludeGraph graph = build_header_include_graph(header_map);
+            HeaderIncludeGraph graph = build_header_include_graph(header_map);
             const std::size_t n = graph.nodes.size();
             if (n == 0) {
                 return {};
@@ -249,41 +247,52 @@ namespace bha::analyzers
             int next_index = 0;
             std::vector<std::vector<std::size_t>> sccs;
 
-            std::function<void(std::size_t)> strongconnect;
-            strongconnect = [&](const std::size_t v) {
-                index[v] = next_index;
-                lowlink[v] = next_index;
-                ++next_index;
-                stack.push_back(v);
-                on_stack[v] = true;
+            struct StrongConnect {
+                std::vector<int>& index;
+                std::vector<int>& lowlink;
+                std::vector<bool>& on_stack;
+                std::vector<std::size_t>& stack;
+                int& next_index;
+                std::vector<std::vector<std::size_t>>& sccs;
+                const HeaderIncludeGraph& graph;
 
-                for (const auto w : graph.adjacency[v]) {
-                    if (index[w] == -1) {
-                        strongconnect(w);
-                        lowlink[v] = std::min(lowlink[v], lowlink[w]);
-                    } else if (on_stack[w]) {
-                        lowlink[v] = std::min(lowlink[v], index[w]);
-                    }
-                }
+                void operator()(const std::size_t v) {
+                    index[v] = next_index;
+                    lowlink[v] = next_index;
+                    ++next_index;
+                    stack.push_back(v);
+                    on_stack[v] = true;
 
-                if (lowlink[v] == index[v]) {
-                    std::vector<std::size_t> component;
-                    while (!stack.empty()) {
-                        const std::size_t w = stack.back();
-                        stack.pop_back();
-                        on_stack[w] = false;
-                        component.push_back(w);
-                        if (w == v) {
-                            break;
+                    for (const auto w : graph.adjacency[v]) {
+                        if (index[w] == -1) {
+                            (*this)(w);
+                            lowlink[v] = std::min(lowlink[v], lowlink[w]);
+                        } else if (on_stack[w]) {
+                            lowlink[v] = std::min(lowlink[v], index[w]);
                         }
                     }
-                    sccs.push_back(std::move(component));
+
+                    if (lowlink[v] == index[v]) {
+                        std::vector<std::size_t> component;
+                        while (!stack.empty()) {
+                            const std::size_t w = stack.back();
+                            stack.pop_back();
+                            on_stack[w] = false;
+                            component.push_back(w);
+                            if (w == v) {
+                                break;
+                            }
+                        }
+                        sccs.push_back(std::move(component));
+                    }
                 }
             };
 
+            StrongConnect sc{index, lowlink, on_stack, stack, next_index, sccs, graph};
+
             for (std::size_t v = 0; v < n; ++v) {
                 if (index[v] == -1) {
-                    strongconnect(v);
+                    sc(v);
                 }
             }
 

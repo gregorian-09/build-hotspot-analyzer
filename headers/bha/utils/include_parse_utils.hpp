@@ -2,8 +2,8 @@
 
 #include <filesystem>
 #include <fstream>
-#include <regex>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -24,18 +24,66 @@ namespace bha::utils {
             return directives;
         }
 
-        static const std::regex include_regex(R"(^\s*#\s*include\s*([<"])([^">]+)[">])");
+        constexpr std::string_view include_kwd = "include";
         std::string line;
         while (std::getline(in, line)) {
-            std::smatch match;
-            if (!std::regex_search(line, match, include_regex)) {
+            const std::string_view sv(line);
+            std::size_t pos = 0;
+
+            // Skip leading whitespace
+            while (pos < sv.size() && (sv[pos] == ' ' || sv[pos] == '\t')) {
+                ++pos;
+            }
+
+            // Must start with #
+            if (pos >= sv.size() || sv[pos] != '#') {
+                continue;
+            }
+            ++pos;
+
+            // Skip whitespace after #
+            while (pos < sv.size() && (sv[pos] == ' ' || sv[pos] == '\t')) {
+                ++pos;
+            }
+
+            // Check for "include" keyword
+            if (pos + include_kwd.size() > sv.size()) {
+                continue;
+            }
+            if (sv.substr(pos, include_kwd.size()) != include_kwd) {
+                continue;
+            }
+            pos += include_kwd.size();
+
+            // Skip whitespace before delimiter
+            while (pos < sv.size() && (sv[pos] == ' ' || sv[pos] == '\t')) {
+                ++pos;
+            }
+
+            // Check for opening delimiter
+            if (pos >= sv.size()) {
+                continue;
+            }
+            const char delim = sv[pos];
+            if (delim != '"' && delim != '<') {
+                continue;
+            }
+            const char close_delim = (delim == '<') ? '>' : '"';
+            ++pos;
+
+            // Read header name until closing delimiter
+            const std::size_t start = pos;
+            while (pos < sv.size() && sv[pos] != close_delim) {
+                ++pos;
+            }
+            if (pos >= sv.size()) {
                 continue;
             }
 
             ParsedIncludeDirective directive;
-            directive.is_system = match[1].str() == "<";
+            directive.is_system = (delim == '<');
             directive.header_name =
-                std::filesystem::path(match[2].str()).lexically_normal().generic_string();
+                std::filesystem::path(sv.substr(start, pos - start)).lexically_normal().generic_string();
             directives.push_back(std::move(directive));
         }
 
