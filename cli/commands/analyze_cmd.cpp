@@ -81,9 +81,9 @@ namespace bha::cli
                 set_output_format(OutputFormat::JSON);
             }
 
-            std::size_t top_count = static_cast<std::size_t>(args.get_int("top").value_or(10));
-            std::size_t threads = static_cast<std::size_t>(args.get_int("parallel").value_or(0));
-            Duration min_time = std::chrono::milliseconds(args.get_int("min-time").value_or(10));
+            const std::size_t top_count = static_cast<std::size_t>(args.get_int("top").value_or(10));
+            const std::size_t threads = static_cast<std::size_t>(args.get_int("parallel").value_or(0));
+            const Duration min_time = std::chrono::milliseconds(args.get_int("min-time").value_or(10));
 
             std::vector<fs::path> trace_files;
             std::vector<fs::path> memory_files;
@@ -91,7 +91,7 @@ namespace bha::cli
             std::vector<std::string> paths_to_analyze;
 
             if (args.positional().empty()) {
-                if (fs::path default_trace_dir = fs::current_path() / "build" / "traces"; fs::exists(default_trace_dir)) {
+                if (const fs::path default_trace_dir = fs::current_path() / "build" / "traces"; fs::exists(default_trace_dir)) {
                     paths_to_analyze.push_back(default_trace_dir.string());
                     print_verbose("Using default trace directory: " + default_trace_dir.string());
                 } else {
@@ -104,7 +104,7 @@ namespace bha::cli
             }
 
             for (const auto& path_str : paths_to_analyze) {
-                fs::path path(path_str);
+                const fs::path path(path_str);
 
                 if (!fs::exists(path)) {
                     print_error("File not found: " + path_str);
@@ -142,7 +142,7 @@ namespace bha::cli
             build_trace.timestamp = std::chrono::system_clock::now();
 
             {
-                ScopedProgress progress(trace_files.size(), "Parsing traces");
+                const ScopedProgress progress(trace_files.size(), "Parsing traces");
 
                 auto parse_results = parsers::parse_trace_files(trace_files, threads);
                 for (std::size_t i = 0; i < parse_results.size(); ++i) {
@@ -167,7 +167,7 @@ namespace bha::cli
             if (!memory_files.empty()) {
                 std::unordered_map<std::string, MemoryMetrics> memory_map;
 
-                ScopedProgress progress(memory_files.size(), "Parsing stack usage files");
+                const ScopedProgress progress(memory_files.size(), "Parsing stack usage files");
                 for (const auto& file : memory_files) {
                     if (file.extension() != ".su") {
                         progress.tick();
@@ -177,9 +177,9 @@ namespace bha::cli
                     progress.set_message(format_path(file, 40));
 
                     if (auto result = parsers::parse_stack_usage_file(file); result.is_ok()) {
-                        std::string filename = file.filename().string();
+                        const std::string filename = file.filename().string();
                         if (filename.size() > 3) {
-                            std::string key = filename.substr(0, filename.size() - 3);
+                            const std::string key = filename.substr(0, filename.size() - 3);
                             memory_map[key] = result.value();
                         }
                     }
@@ -189,7 +189,7 @@ namespace bha::cli
 
                 std::size_t matched = 0;
                 for (auto& unit : build_trace.units) {
-                    std::string source_name = unit.source_file.filename().string();
+                    const std::string source_name = unit.source_file.filename().string();
 
                     if (auto it = memory_map.find(source_name); it != memory_map.end()) {
                         unit.metrics.memory = it->second;
@@ -221,19 +221,19 @@ namespace bha::cli
 
             const auto& result = analysis_result.value();
 
-            bool list_files = args.get_flag("list-files");
-            bool list_headers = args.get_flag("list-headers");
-            bool list_templates = args.get_flag("list-templates");
+            const bool list_files = args.get_flag("list-files");
+            const bool list_headers = args.get_flag("list-headers");
+            const bool list_templates = args.get_flag("list-templates");
 
             if (is_json()) {
                 std::cout << json::to_json(result, true) << "\n";
             } else {
-                SummaryPrinter printer(std::cout);
+                const SummaryPrinter printer(std::cout);
                 printer.print_build_summary(result);
 
-                std::size_t file_limit = list_files ? 0 : top_count;
-                std::size_t header_limit = list_headers ? 0 : top_count;
-                std::size_t template_limit = list_templates ? 0 : top_count;
+                const std::size_t file_limit = list_files ? 0 : top_count;
+                const std::size_t header_limit = list_headers ? 0 : top_count;
+                const std::size_t template_limit = list_templates ? 0 : top_count;
 
                 printer.print_file_summary(result.files, file_limit);
                 printer.print_include_summary(result.dependencies, header_limit);
@@ -258,7 +258,7 @@ namespace bha::cli
                 export_opts.max_files = 0;  // Include all files
                 export_opts.min_compile_time = Duration::zero();  // Include all files regardless of time
 
-                exporters::JsonExporter exporter;
+                const exporters::JsonExporter exporter;
 
                 if (auto export_result = exporter.export_to_stream(out, result, {}, export_opts, nullptr); export_result.is_err()) {
                     print_error("Failed to write output: " + export_result.error().message());

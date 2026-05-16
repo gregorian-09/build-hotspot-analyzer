@@ -241,7 +241,7 @@ namespace bha::parsers {
             // Replaces the O(N^2) nested-loop approach.
             // Maintains a min-heap of end times; for each event (processed in start_time order),
             // pop intervals that ended before or at this start, then remaining heap size = depth.
-            std::priority_queue<double, std::vector<double>, std::greater<double>> active_end_times;
+            std::priority_queue<double, std::vector<double>, std::greater<>> active_end_times;
             for (auto& ev : source_events) {
                 while (!active_end_times.empty() && active_end_times.top() <= ev.start_time) {
                     active_end_times.pop();
