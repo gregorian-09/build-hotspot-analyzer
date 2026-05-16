@@ -101,6 +101,23 @@ namespace bha::utils {
         return s.find(needle) != std::string_view::npos;
     }
 
+    inline bool icontains(const std::string_view s, const std::string_view needle) noexcept {
+        if (needle.size() > s.size()) return false;
+        const auto end = s.end() - needle.size() + 1;
+        for (auto it = s.begin(); it != end; ++it) {
+            bool match = true;
+            for (std::size_t i = 0; i < needle.size(); ++i) {
+                if (std::tolower(static_cast<unsigned char>(it[i])) !=
+                    std::tolower(static_cast<unsigned char>(needle[i]))) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+        }
+        return false;
+    }
+
     inline std::string to_lower(const std::string_view s) {
         std::string result(s);
         std::ranges::transform(result, result.begin(),

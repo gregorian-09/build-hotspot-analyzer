@@ -188,4 +188,198 @@ namespace bha::analyzers {
         EXPECT_GE(result.value().symbols.symbols[0].usage_count,
                   result.value().symbols.symbols[1].usage_count);
     }
+
+    // ======================================================================
+    // Edge-case tests for the O(N^4) -> O(N) reverse-map optimization
+    // ======================================================================
+
+    TEST_F(SymbolAnalyzerTest, TracksSymbolUsageThroughIncludes) {
+        BuildTrace trace;
+
+        CompilationUnit header_unit;
+        header_unit.source_file = "/project/src/foo.h";
+        header_unit.symbols_defined = {"FooClass", "foo_helper"};
+        trace.units.push_back(header_unit);
+
+        CompilationUnit user_unit;
+        user_unit.source_file = "/project/src/main.cpp";
+        IncludeInfo inc;
+        inc.header = "/project/src/foo.h";
+        inc.parse_time = std::chrono::milliseconds(5);
+        user_unit.includes.push_back(inc);
+        trace.units.push_back(user_unit);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().symbols.total_symbols, 2u);
+
+        for (const auto& sym : result.value().symbols.symbols) {
+            EXPECT_EQ(sym.usage_count, 1u);
+            bool found_main = false;
+            for (const auto& used_in : sym.used_in) {
+                if (used_in == "/project/src/main.cpp") {
+                    found_main = true;
+                    break;
+                }
+            }
+            EXPECT_TRUE(found_main);
+        }
+    }
+
+    TEST_F(SymbolAnalyzerTest, MultipleFilesIncludeSameHeader) {
+        BuildTrace trace;
+
+        CompilationUnit header_unit;
+        header_unit.source_file = "/project/include/api.h";
+        header_unit.symbols_defined = {"api_function", "ApiClass"};
+        trace.units.push_back(header_unit);
+
+        for (int i = 0; i < 50; ++i) {
+            CompilationUnit unit;
+            unit.source_file = "/project/src/file_" + std::to_string(i) + ".cpp";
+            IncludeInfo inc;
+            inc.header = "/project/include/api.h";
+            inc.parse_time = std::chrono::milliseconds(1);
+            unit.includes.push_back(inc);
+            trace.units.push_back(unit);
+        }
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().symbols.total_symbols, 2u);
+
+        for (const auto& sym : result.value().symbols.symbols) {
+            EXPECT_EQ(sym.usage_count, 50u);
+            EXPECT_EQ(sym.used_in.size(), 50u);
+        }
+    }
+
+    TEST_F(SymbolAnalyzerTest, IncludeWithNoMatchingDefinitionsDoesNotAddUsage) {
+        BuildTrace trace;
+
+        CompilationUnit unit;
+        unit.source_file = "/project/src/work.cpp";
+        unit.symbols_defined = {"local_func"};
+        IncludeInfo inc;
+        inc.header = "/project/include/external_lib.h";
+        inc.parse_time = std::chrono::milliseconds(3);
+        unit.includes.push_back(inc);
+        trace.units.push_back(unit);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().symbols.total_symbols, 1u);
+        for (const auto& sym : result.value().symbols.symbols) {
+            EXPECT_EQ(sym.usage_count, 0u);
+            EXPECT_TRUE(sym.used_in.empty());
+        }
+    }
+
+    TEST_F(SymbolAnalyzerTest, SameIncludeDoesNotDoubleCountUsage) {
+        BuildTrace trace;
+
+        CompilationUnit header_unit;
+        header_unit.source_file = "/project/src/header.h";
+        header_unit.symbols_defined = {"SharedSymbol"};
+        trace.units.push_back(header_unit);
+
+        CompilationUnit user;
+        user.source_file = "/project/src/user.cpp";
+        IncludeInfo inc1;
+        inc1.header = "/project/src/header.h";
+        user.includes.push_back(inc1);
+        IncludeInfo inc2;
+        inc2.header = "/project/src/header.h";
+        user.includes.push_back(inc2);
+        trace.units.push_back(user);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        for (const auto& sym : result.value().symbols.symbols) {
+            if (sym.name == "SharedSymbol") {
+                EXPECT_EQ(sym.usage_count, 1u);
+                EXPECT_EQ(sym.used_in.size(), 1u);
+            }
+        }
+    }
+
+    TEST_F(SymbolAnalyzerTest, HeaderDefinesMultipleSymbolsAllTracked) {
+        BuildTrace trace;
+
+        CompilationUnit header;
+        header.source_file = "/project/src/big_header.h";
+        for (int i = 0; i < 200; ++i) {
+            header.symbols_defined.push_back("big_symbol_" + std::to_string(i));
+        }
+        trace.units.push_back(header);
+
+        for (int u = 0; u < 3; ++u) {
+            CompilationUnit unit;
+            unit.source_file = "/project/src/user_" + std::to_string(u) + ".cpp";
+            IncludeInfo inc;
+            inc.header = "/project/src/big_header.h";
+            unit.includes.push_back(inc);
+            trace.units.push_back(unit);
+        }
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().symbols.total_symbols, 200u);
+
+        for (const auto& sym : result.value().symbols.symbols) {
+            EXPECT_EQ(sym.usage_count, 3u);
+            EXPECT_EQ(sym.used_in.size(), 3u);
+        }
+    }
+
+    TEST_F(SymbolAnalyzerTest, EmptySymbolStringsAreSkipped) {
+        BuildTrace trace;
+
+        CompilationUnit unit;
+        unit.source_file = "/project/src/skip.cpp";
+        unit.symbols_defined = {"valid_sym", "", "another_valid", ""};
+        trace.units.push_back(unit);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().symbols.total_symbols, 2u);
+    }
+
+    TEST_F(SymbolAnalyzerTest, NormalizedPathMatching) {
+        BuildTrace trace;
+
+        CompilationUnit header_unit;
+        header_unit.source_file = "/project/./src/./../src/header.h";
+        header_unit.symbols_defined = {"NormalizedSym"};
+        trace.units.push_back(header_unit);
+
+        CompilationUnit user;
+        user.source_file = "/project/src/main.cpp";
+        IncludeInfo inc;
+        inc.header = "/project/src/header.h";
+        user.includes.push_back(inc);
+        trace.units.push_back(user);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        for (const auto& sym : result.value().symbols.symbols) {
+            if (sym.name == "NormalizedSym") {
+                EXPECT_EQ(sym.usage_count, 1u);
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@
 //
 
 #include "bha/analyzers/symbol_analyzer.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -57,14 +58,7 @@ namespace bha::analyzers
 
             if (symbol.find("::") != std::string::npos) {
                 if (symbol.find('(') != std::string::npos) {
-                    std::string lower_symbol;
-                    lower_symbol.reserve(symbol.size());
-                    for (const char c : symbol) {
-                        lower_symbol += static_cast<char>(
-                            std::tolower(static_cast<unsigned char>(c)));
-                    }
-
-                    if (lower_symbol.find("operator") != std::string::npos) {
+                    if (utils::icontains(symbol, "operator")) {
                         return "operator";
                     }
                     if (symbol.find("::~") != std::string::npos) {
@@ -228,6 +222,10 @@ namespace bha::analyzers
             return count_factor * (1.0 + time_factor) * type_multiplier;
         }
 
+        std::string path_key(const fs::path& p) {
+            return p.lexically_normal().string();
+        }
+
     }  // namespace
 
     Result<AnalysisResult, Error> SymbolAnalyzer::analyze(
@@ -237,8 +235,10 @@ namespace bha::analyzers
         AnalysisResult result;
 
         struct SymbolData {
-            std::vector<fs::path> defined_in;  // Can be defined in multiple files
+            std::vector<fs::path> defined_in;
+            std::unordered_set<std::string> defined_in_set;  // O(1) dedup for defined_in
             std::vector<fs::path> used_in;
+            std::unordered_set<std::string> used_in_set;     // O(1) dedup for used_in
             std::size_t usage_count = 0;
             Duration total_time = Duration::zero();
             std::string type;
@@ -247,9 +247,14 @@ namespace bha::analyzers
             double bloat_score = 0.0;
         };
         std::unordered_map<std::string, SymbolData> symbol_map;
+        // Reverse map: normalized file path → symbols defined there
+        // Replaces O(N^4) nested loops with O(1) lookups per include
+        std::unordered_map<std::string, std::vector<std::string>> def_path_to_symbols;
 
         // First pass: collect symbol definitions and their properties
         for (const auto& unit : trace.units) {
+            const std::string src_key = path_key(unit.source_file);
+
             for (const auto& symbol : unit.symbols_defined) {
                 if (symbol.empty()) {
                     continue;
@@ -257,6 +262,7 @@ namespace bha::analyzers
 
                 auto& data = symbol_map[symbol];
                 data.defined_in.push_back(unit.source_file);
+                def_path_to_symbols[src_key].push_back(symbol);
 
                 if (data.type.empty()) {
                     data.type = classify_symbol_type(symbol);
@@ -274,33 +280,35 @@ namespace bha::analyzers
                     data.linkage = SymbolLinkage::Template;
                 }
 
-                // Each instantiation is both a definition and a use
-                if (std::ranges::find(data.defined_in,
-                                      unit.source_file) == data.defined_in.end()) {
+                if (data.defined_in_set.insert(src_key).second) {
                     data.defined_in.push_back(unit.source_file);
-                              }
+                    def_path_to_symbols[src_key].push_back(symbol);
+                }
 
                 data.used_in.push_back(unit.source_file);
+                data.used_in_set.insert(src_key);
                 data.usage_count += tmpl.count;
                 data.total_time += tmpl.time;
             }
         }
 
         // Second pass: track symbol usage through includes
+        // Build reverse map first: file_path → symbols defined there
+        // The first pass already populated def_path_to_symbols for defined_in entries.
+        // Now iterate includes and look up which symbols live in each included header.
         for (const auto& unit : trace.units) {
+            const std::string src_key = path_key(unit.source_file);
             for (const auto& inc : unit.includes) {
-                // Find symbols defined in the included file
-                for (auto& data : symbol_map | std::views::values) {
-                    for (const auto& def_file : data.defined_in) {
-                        if (def_file == inc.header) {
-                            // This file uses symbols from the included file
-                            if (std::ranges::find(data.used_in,
-                                                  unit.source_file) == data.used_in.end()) {
-                                data.used_in.push_back(unit.source_file);
-                                data.usage_count++;
-                                          }
-                            break;
-                        }
+                const std::string inc_key = path_key(inc.header);
+                auto def_it = def_path_to_symbols.find(inc_key);
+                if (def_it == def_path_to_symbols.end()) {
+                    continue;
+                }
+                for (const auto& sym_name : def_it->second) {
+                    auto& data = symbol_map[sym_name];
+                    if (data.used_in_set.insert(src_key).second) {
+                        data.used_in.push_back(unit.source_file);
+                        ++data.usage_count;
                     }
                 }
             }
