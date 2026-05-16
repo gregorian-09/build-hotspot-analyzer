@@ -144,14 +144,19 @@ namespace bha::cli
             {
                 ScopedProgress progress(trace_files.size(), "Parsing traces");
 
-                for (const auto& file : trace_files) {
-                    progress.set_message(format_path(file, 40));
+                auto parse_results = parsers::parse_trace_files(trace_files, threads);
+                for (std::size_t i = 0; i < parse_results.size(); ++i) {
+                    auto& result = parse_results[i];
 
-                    if (auto result = parsers::parse_trace_file(file); result.is_ok()) {
+                    if (!trace_files.empty()) {
+                        progress.set_message(format_path(trace_files[i], 40));
+                    }
+
+                    if (result.is_ok()) {
                         build_trace.total_time += result.value().metrics.total_time;
                         build_trace.units.push_back(std::move(result.value()));
                     } else {
-                        print_warning("Failed to parse: " + file.string() +
+                        print_warning("Failed to parse: " + trace_files[i].string() +
                                       " (" + result.error().message() + ")");
                     }
 
