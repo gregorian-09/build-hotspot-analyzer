@@ -112,6 +112,118 @@ namespace bha::parsers
         EXPECT_EQ(unit.metrics.direct_includes, 2u);
     }
 
+    TEST_F(ClangParserTest, IncludeDepthNested) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":100,"name":"Source","args":{"detail":"/include/a.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":10,"dur":80,"name":"Source","args":{"detail":"/include/b.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":20,"dur":60,"name":"Source","args":{"detail":"/include/c.h"}}
+            ]
+        })";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 3u);
+
+        for (const auto& inc : includes) {
+            if (inc.header.filename() == "a.h") { EXPECT_EQ(inc.depth, 0u); }
+            if (inc.header.filename() == "b.h") { EXPECT_EQ(inc.depth, 1u); }
+            if (inc.header.filename() == "c.h") { EXPECT_EQ(inc.depth, 2u); }
+        }
+    }
+
+    TEST_F(ClangParserTest, IncludeDepthSiblings) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":100,"name":"Source","args":{"detail":"/include/a.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":5,"dur":90,"name":"Source","args":{"detail":"/include/b.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":10,"dur":80,"name":"Source","args":{"detail":"/include/c.h"}}
+            ]
+        })";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 3u);
+
+        for (const auto& inc : includes) {
+            if (inc.header.filename() == "a.h") { EXPECT_EQ(inc.depth, 0u); }
+            if (inc.header.filename() == "b.h") { EXPECT_EQ(inc.depth, 1u); }
+            if (inc.header.filename() == "c.h") { EXPECT_EQ(inc.depth, 2u); }
+        }
+    }
+
+    TEST_F(ClangParserTest, IncludeDepthNonOverlapping) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":50,"name":"Source","args":{"detail":"/include/a.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":100,"dur":50,"name":"Source","args":{"detail":"/include/b.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":200,"dur":50,"name":"Source","args":{"detail":"/include/c.h"}}
+            ]
+        })";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 3u);
+
+        for (const auto& inc : includes) {
+            EXPECT_EQ(inc.depth, 0u);
+        }
+    }
+
+    TEST_F(ClangParserTest, IncludeDepthMaxDepth) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":1000,"name":"Source","args":{"detail":"/include/root.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":10,"dur":500,"name":"Source","args":{"detail":"/include/lvl1.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":20,"dur":200,"name":"Source","args":{"detail":"/include/lvl2.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":30,"dur":100,"name":"Source","args":{"detail":"/include/lvl3.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":40,"dur":50,"name":"Source","args":{"detail":"/include/lvl4.h"}}
+            ]
+        })";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 5u);
+
+        for (const auto& inc : includes) {
+            if (inc.header.filename() == "root.h") { EXPECT_EQ(inc.depth, 0u); }
+            if (inc.header.filename() == "lvl1.h") { EXPECT_EQ(inc.depth, 1u); }
+            if (inc.header.filename() == "lvl2.h") { EXPECT_EQ(inc.depth, 2u); }
+            if (inc.header.filename() == "lvl3.h") { EXPECT_EQ(inc.depth, 3u); }
+            if (inc.header.filename() == "lvl4.h") { EXPECT_EQ(inc.depth, 4u); }
+        }
+    }
+
+    TEST_F(ClangParserTest, IncludeDepthOutOfOrder) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":50,"dur":50,"name":"Source","args":{"detail":"/include/a.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":100,"name":"Source","args":{"detail":"/include/b.h"}},
+                {"pid":1,"tid":0,"ph":"X","ts":20,"dur":60,"name":"Source","args":{"detail":"/include/c.h"}}
+            ]
+        })";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 3u);
+
+        for (const auto& inc : includes) {
+            if (inc.header.filename() == "b.h") { EXPECT_EQ(inc.depth, 0u); }
+            if (inc.header.filename() == "c.h") { EXPECT_EQ(inc.depth, 1u); }
+            if (inc.header.filename() == "a.h") { EXPECT_EQ(inc.depth, 2u); }
+        }
+    }
+
     TEST_F(ClangParserTest, ParseContent_InvalidJson) {
         constexpr std::string_view invalid_json = "not json at all";
         auto result = parser_->parse_content(invalid_json, {});

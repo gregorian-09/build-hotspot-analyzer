@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <optional>
+#include <queue>
 #include <sstream>
 
 namespace bha::parsers {
@@ -236,15 +237,17 @@ namespace bha::parsers {
                 return a.start_time < b.start_time;
             });
 
-            for (std::size_t i = 0; i < source_events.size(); ++i) {
-                std::size_t depth = 0;
-                for (std::size_t j = 0; j < i; ++j) {
-                    if (source_events[j].start_time <= source_events[i].start_time &&
-                        source_events[i].start_time < source_events[j].end_time) {
-                        ++depth;
-                    }
+            // Sweep-line algorithm for O(N log N) include depth calculation.
+            // Replaces the O(N^2) nested-loop approach.
+            // Maintains a min-heap of end times; for each event (processed in start_time order),
+            // pop intervals that ended before or at this start, then remaining heap size = depth.
+            std::priority_queue<double, std::vector<double>, std::greater<double>> active_end_times;
+            for (auto& ev : source_events) {
+                while (!active_end_times.empty() && active_end_times.top() <= ev.start_time) {
+                    active_end_times.pop();
                 }
-                source_events[i].depth = depth;
+                ev.depth = active_end_times.size();
+                active_end_times.push(ev.end_time);
             }
 
             std::unordered_map<std::string, IncludeInfo> include_map;
