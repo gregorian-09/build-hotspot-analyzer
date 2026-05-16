@@ -27,7 +27,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace bha::parallel {
+namespace bha::utils {
 
     /**
      * Returns the number of hardware threads available.
@@ -320,6 +320,6 @@ namespace bha::parallel {
         }
     }
 
-}  // namespace bha::parallel
+}  // namespace bha::utils
 
 #endif //BUILDTIMEHOTSPOTANALYZER_PARALLEL_HPP

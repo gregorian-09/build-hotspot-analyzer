@@ -21,7 +21,7 @@ namespace bha::utils {
                value.find("/include/c++/") != std::string::npos ||
                value.find("/lib/clang/") != std::string::npos ||
                value.find("Program Files") != std::string::npos ||
-               value.rfind("<built-in>", 0) == 0;
+                value.starts_with("<built-in>");
     }
 
 }  // namespace bha::utils

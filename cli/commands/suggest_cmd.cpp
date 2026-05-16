@@ -5,7 +5,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/progress.hpp"
 #include "bha/cli/formatter.hpp"
-#include "bha/cli/suggestion_utils.hpp"
+#include "bha/utils/suggestion_path_utils.hpp"
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
@@ -433,13 +433,13 @@ namespace bha::cli
             for (const auto& path : args.positional()) {
                 input_paths.emplace_back(path);
             }
-            fs::path project_root = suggestion_utils::resolve_project_root_for_suggestions(
+            fs::path project_root = utils::resolve_project_root_for_suggestions(
                 input_paths,
                 build_trace,
                 analysis_result.value(),
                 20
             );
-            if (const auto compile_commands_path = suggestion_utils::find_compile_commands_path(project_root)) {
+            if (const auto compile_commands_path = utils::find_compile_commands_path(project_root)) {
                 suggester_opts.compile_commands_path = *compile_commands_path;
                 print_verbose("Using compile_commands: " + compile_commands_path->generic_string());
             }

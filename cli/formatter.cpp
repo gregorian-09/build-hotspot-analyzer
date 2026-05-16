@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <ctime>
+#include <nlohmann/json.hpp>
 
 namespace bha::cli
 {
@@ -630,272 +631,222 @@ namespace bha::cli
 
     namespace json {
 
-        std::string escape_string(const std::string& s) {
-            std::string result;
-            result.reserve(s.size() * 2);
-            for (const char c : s) {
-                switch (c) {
-                case '"': result += "\\\""; break;
-                case '\\': result += "\\\\"; break;
-                case '\n': result += "\\n"; break;
-                case '\r': result += "\\r"; break;
-                case '\t': result += "\\t"; break;
-                default: result += c;
-                }
+        namespace json_detail {
+            using nlohmann::json;
+
+            inline json perf_to_json(const analyzers::PerformanceAnalysisResult& perf) {
+                json j;
+                j["total_build_time_ns"] = perf.total_build_time.count();
+                j["total_files"] = perf.total_files;
+                j["avg_file_time_ns"] = perf.avg_file_time.count();
+                j["median_file_time_ns"] = perf.median_file_time.count();
+                j["p90_file_time_ns"] = perf.p90_file_time.count();
+                j["p99_file_time_ns"] = perf.p99_file_time.count();
+                return j;
             }
-            return result;
+
+            inline json deps_to_json(const analyzers::DependencyAnalysisResult& deps) {
+                json j;
+                j["total_includes"] = deps.total_includes;
+                j["unique_headers"] = deps.unique_headers;
+                j["max_include_depth"] = deps.max_include_depth;
+                j["total_include_time_ns"] = deps.total_include_time.count();
+                return j;
+            }
+
+            inline json tmpl_to_json(const analyzers::TemplateAnalysisResult& tmpl) {
+                json j;
+                j["total_time_ns"] = tmpl.total_template_time.count();
+                j["total_instantiations"] = tmpl.total_instantiations;
+                j["time_percent"] = tmpl.template_time_percent;
+                return j;
+            }
+
+            inline json cache_to_json(const analyzers::CacheDistributionAnalysisResult& cache) {
+                json j;
+                j["total_compilations"] = cache.total_compilations;
+                j["cache_friendly_compilations"] = cache.cache_friendly_compilations;
+                j["cache_risk_compilations"] = cache.cache_risk_compilations;
+                j["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
+                j["sccache_detected"] = cache.sccache_detected;
+                j["fastbuild_detected"] = cache.fastbuild_detected;
+                j["cache_wrapper_detected"] = cache.cache_wrapper_detected;
+                j["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
+                j["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
+                j["pch_generation_risk_count"] = cache.pch_generation_risk_count;
+                j["volatile_path_risk_count"] = cache.volatile_path_risk_count;
+                j["heavy_translation_units"] = cache.heavy_translation_units;
+                j["homogeneous_command_units"] = cache.homogeneous_command_units;
+                j["distributed_suitability_score"] = cache.distributed_suitability_score;
+                return j;
+            }
         }
 
         std::string to_json(const analyzers::AnalysisResult& result, const bool pretty) {
-            std::ostringstream ss;
-            const std::string indent = pretty ? "  " : "";
-            const std::string nl = pretty ? "\n" : "";
-
-            ss << "{" << nl;
-
-            ss << indent << R"("bha_version": "0.1.0",)" << nl;
-
-            ss << indent << "\"performance\": {" << nl;
-            ss << indent << indent << "\"total_build_time_ns\": " << result.performance.total_build_time.count() << "," << nl;
-            ss << indent << indent << "\"total_files\": " << result.performance.total_files << "," << nl;
-            ss << indent << indent << "\"avg_file_time_ns\": " << result.performance.avg_file_time.count() << "," << nl;
-            ss << indent << indent << "\"median_file_time_ns\": " << result.performance.median_file_time.count() << "," << nl;
-            ss << indent << indent << "\"p90_file_time_ns\": " << result.performance.p90_file_time.count() << "," << nl;
-            ss << indent << indent << "\"p99_file_time_ns\": " << result.performance.p99_file_time.count() << nl;
-            ss << indent << "}," << nl;
-
-            ss << indent << "\"dependencies\": {" << nl;
-            ss << indent << indent << "\"total_includes\": " << result.dependencies.total_includes << "," << nl;
-            ss << indent << indent << "\"unique_headers\": " << result.dependencies.unique_headers << "," << nl;
-            ss << indent << indent << "\"max_include_depth\": " << result.dependencies.max_include_depth << "," << nl;
-            ss << indent << indent << "\"total_include_time_ns\": " << result.dependencies.total_include_time.count() << nl;
-            ss << indent << "}," << nl;
-
-            ss << indent << "\"templates\": {" << nl;
-            ss << indent << indent << "\"total_time_ns\": " << result.templates.total_template_time.count() << "," << nl;
-            ss << indent << indent << "\"total_instantiations\": " << result.templates.total_instantiations << "," << nl;
-            ss << indent << indent << "\"time_percent\": " << result.templates.template_time_percent << nl;
-            ss << indent << "}," << nl;
-
-            const auto& cache = result.cache_distribution;
-            ss << indent << "\"cache_distribution\": {" << nl;
-            ss << indent << indent << "\"total_compilations\": " << cache.total_compilations << "," << nl;
-            ss << indent << indent << "\"cache_friendly_compilations\": " << cache.cache_friendly_compilations << "," << nl;
-            ss << indent << indent << "\"cache_risk_compilations\": " << cache.cache_risk_compilations << "," << nl;
-            ss << indent << indent << "\"cache_hit_opportunity_percent\": " << cache.cache_hit_opportunity_percent << "," << nl;
-            ss << indent << indent << "\"sccache_detected\": " << (cache.sccache_detected ? "true" : "false") << "," << nl;
-            ss << indent << indent << "\"fastbuild_detected\": " << (cache.fastbuild_detected ? "true" : "false") << "," << nl;
-            ss << indent << indent << "\"cache_wrapper_detected\": " << (cache.cache_wrapper_detected ? "true" : "false") << "," << nl;
-            ss << indent << indent << "\"dynamic_macro_risk_count\": " << cache.dynamic_macro_risk_count << "," << nl;
-            ss << indent << indent << "\"profile_or_coverage_risk_count\": " << cache.profile_or_coverage_risk_count << "," << nl;
-            ss << indent << indent << "\"pch_generation_risk_count\": " << cache.pch_generation_risk_count << "," << nl;
-            ss << indent << indent << "\"volatile_path_risk_count\": " << cache.volatile_path_risk_count << "," << nl;
-            ss << indent << indent << "\"heavy_translation_units\": " << cache.heavy_translation_units << "," << nl;
-            ss << indent << indent << "\"homogeneous_command_units\": " << cache.homogeneous_command_units << "," << nl;
-            ss << indent << indent << "\"distributed_suitability_score\": " << cache.distributed_suitability_score << nl;
-            ss << indent << "}" << nl;
-
-            ss << "}";
-            return ss.str();
+            using json_detail::json;
+            json j;
+            j["bha_version"] = "0.1.0";
+            j["performance"] = json_detail::perf_to_json(result.performance);
+            j["dependencies"] = json_detail::deps_to_json(result.dependencies);
+            j["templates"] = json_detail::tmpl_to_json(result.templates);
+            j["cache_distribution"] = json_detail::cache_to_json(result.cache_distribution);
+            return j.dump(pretty ? 2 : -1);
         }
 
         std::string to_json(const std::vector<Suggestion>& suggestions, const bool pretty) {
-            std::ostringstream ss;
-            const std::string i1 = pretty ? "  " : "";
-            const std::string i2 = pretty ? "    " : "";
-            const std::string i3 = pretty ? "      " : "";
-            const std::string i4 = pretty ? "        " : "";
-            const std::string nl = pretty ? "\n" : "";
-
-            ss << "[" << nl;
-
-            for (std::size_t idx = 0; idx < suggestions.size(); ++idx) {
-                const auto& suggestion = suggestions[idx];
-                const auto mode = resolve_application_mode(suggestion);
-                ss << i1 << "{" << nl;
-                ss << i2 << R"("id": ")" << escape_string(suggestion.id) << "\"," << nl;
-                ss << i2 << R"("type": ")" << to_string(suggestion.type) << "\"," << nl;
-                ss << i2 << R"("priority": ")" << to_string(suggestion.priority) << "\"," << nl;
-                ss << i2 << "\"confidence\": " << suggestion.confidence << "," << nl;
-                ss << i2 << R"("title": ")" << escape_string(suggestion.title) << "\"," << nl;
-                ss << i2 << R"("description": ")" << escape_string(suggestion.description) << "\"," << nl;
-
-                if (!suggestion.rationale.empty()) {
-                    ss << i2 << R"("rationale": ")" << escape_string(suggestion.rationale) << "\"," << nl;
+            using json_detail::json;
+            json arr = json::array();
+            for (const auto& s : suggestions) {
+                const auto mode = resolve_application_mode(s);
+                json j;
+                j["id"] = s.id;
+                j["type"] = to_string(s.type);
+                j["priority"] = to_string(s.priority);
+                j["confidence"] = s.confidence;
+                j["title"] = s.title;
+                j["description"] = s.description;
+                if (!s.rationale.empty()) {
+                    j["rationale"] = s.rationale;
+                }
+                j["estimated_savings_ns"] = s.estimated_savings.count();
+                j["estimated_savings_percent"] = s.estimated_savings_percent;
+                j["is_safe"] = s.is_safe;
+                j["application_mode"] = to_string(mode);
+                if (s.refactor_class_name) {
+                    j["refactor_class_name"] = *s.refactor_class_name;
+                }
+                if (s.refactor_compile_commands_path) {
+                    j["refactor_compile_commands_path"] = s.refactor_compile_commands_path->string();
+                }
+                if (s.application_summary) {
+                    j["application_summary"] = *s.application_summary;
+                }
+                if (s.application_guidance) {
+                    j["application_guidance"] = *s.application_guidance;
+                }
+                if (s.auto_apply_blocked_reason) {
+                    j["auto_apply_blocked_reason"] = *s.auto_apply_blocked_reason;
                 }
 
-                ss << i2 << "\"estimated_savings_ns\": " << suggestion.estimated_savings.count() << "," << nl;
-                ss << i2 << "\"estimated_savings_percent\": " << suggestion.estimated_savings_percent << "," << nl;
-                ss << i2 << "\"is_safe\": " << (suggestion.is_safe ? "true" : "false") << "," << nl;
-                ss << i2 << R"("application_mode": ")" << to_string(mode) << "\"," << nl;
-                if (suggestion.refactor_class_name) {
-                    ss << i2 << R"("refactor_class_name": ")" << escape_string(*suggestion.refactor_class_name) << "\"," << nl;
-                }
-                if (suggestion.refactor_compile_commands_path) {
-                    ss << i2 << R"("refactor_compile_commands_path": ")" << escape_string(suggestion.refactor_compile_commands_path->string()) << "\"," << nl;
-                }
-                if (suggestion.application_summary) {
-                    ss << i2 << R"("application_summary": ")" << escape_string(*suggestion.application_summary) << "\"," << nl;
-                }
-                if (suggestion.application_guidance) {
-                    ss << i2 << R"("application_guidance": ")" << escape_string(*suggestion.application_guidance) << "\"," << nl;
-                }
-                if (suggestion.auto_apply_blocked_reason) {
-                    ss << i2 << R"("auto_apply_blocked_reason": ")" << escape_string(*suggestion.auto_apply_blocked_reason) << "\"," << nl;
-                }
+                json target_file;
+                target_file["path"] = s.target_file.path.string();
+                target_file["line_start"] = s.target_file.line_start;
+                target_file["line_end"] = s.target_file.line_end;
+                target_file["action"] = to_string(s.target_file.action);
+                j["target_file"] = std::move(target_file);
 
-                ss << i2 << "\"target_file\": {" << nl;
-                ss << i3 << R"("path": ")" << escape_string(suggestion.target_file.path.string()) << "\"," << nl;
-                ss << i3 << "\"line_start\": " << suggestion.target_file.line_start << "," << nl;
-                ss << i3 << "\"line_end\": " << suggestion.target_file.line_end << "," << nl;
-                ss << i3 << R"("action": ")" << to_string(suggestion.target_file.action) << "\"" << nl;
-                ss << i2 << "}," << nl;
-
-                if (!suggestion.secondary_files.empty()) {
-                    ss << i2 << "\"secondary_files\": [" << nl;
-                    for (std::size_t j = 0; j < suggestion.secondary_files.size(); ++j) {
-                        const auto& sf = suggestion.secondary_files[j];
-                        ss << i3 << "{" << nl;
-                        ss << i4 << R"("path": ")" << escape_string(sf.path.string()) << "\"," << nl;
-                        ss << i4 << "\"line_start\": " << sf.line_start << "," << nl;
-                        ss << i4 << R"("action": ")" << to_string(sf.action) << "\"" << nl;
-                        ss << i3 << "}";
-                        if (j < suggestion.secondary_files.size() - 1) ss << ",";
-                        ss << nl;
+                if (!s.secondary_files.empty()) {
+                    json sec_arr = json::array();
+                    for (const auto& sf : s.secondary_files) {
+                        json sfj;
+                        sfj["path"] = sf.path.string();
+                        sfj["line_start"] = sf.line_start;
+                        sfj["action"] = to_string(sf.action);
+                        sec_arr.push_back(std::move(sfj));
                     }
-                    ss << i2 << "]," << nl;
+                    j["secondary_files"] = std::move(sec_arr);
                 }
 
-                if (!suggestion.before_code.code.empty()) {
-                    ss << i2 << "\"before_code\": {" << nl;
-                    ss << i3 << R"("file": ")" << escape_string(suggestion.before_code.file.string()) << "\"," << nl;
-                    ss << i3 << "\"line\": " << suggestion.before_code.line << "," << nl;
-                    ss << i3 << R"("code": ")" << escape_string(suggestion.before_code.code) << "\"" << nl;
-                    ss << i2 << "}," << nl;
+                if (!s.before_code.code.empty()) {
+                    json bc;
+                    bc["file"] = s.before_code.file.string();
+                    bc["line"] = s.before_code.line;
+                    bc["code"] = s.before_code.code;
+                    j["before_code"] = std::move(bc);
                 }
 
-                if (!suggestion.after_code.code.empty()) {
-                    ss << i2 << "\"after_code\": {" << nl;
-                    ss << i3 << R"("file": ")" << escape_string(suggestion.after_code.file.string()) << "\"," << nl;
-                    ss << i3 << "\"line\": " << suggestion.after_code.line << "," << nl;
-                    ss << i3 << R"("code": ")" << escape_string(suggestion.after_code.code) << "\"" << nl;
-                    ss << i2 << "}," << nl;
+                if (!s.after_code.code.empty()) {
+                    json ac;
+                    ac["file"] = s.after_code.file.string();
+                    ac["line"] = s.after_code.line;
+                    ac["code"] = s.after_code.code;
+                    j["after_code"] = std::move(ac);
                 }
 
-                if (!suggestion.edits.empty()) {
-                    ss << i2 << "\"edits\": [" << nl;
-                    for (std::size_t j = 0; j < suggestion.edits.size(); ++j) {
-                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = suggestion.edits[j];
-                        ss << i3 << "{" << nl;
-                        ss << i4 << R"("file": ")" << escape_string(file.string()) << "\"," << nl;
-                        ss << i4 << "\"start_line\": " << start_line << "," << nl;
-                        ss << i4 << "\"start_col\": " << start_col << "," << nl;
-                        ss << i4 << "\"end_line\": " << end_line << "," << nl;
-                        ss << i4 << "\"end_col\": " << end_col << "," << nl;
-                        ss << i4 << R"("new_text": ")" << escape_string(new_text) << "\"" << nl;
-                        ss << i3 << "}";
-                        if (j < suggestion.edits.size() - 1) ss << ",";
-                        ss << nl;
+                if (!s.edits.empty()) {
+                    json edits_arr = json::array();
+                    for (const auto& edit : s.edits) {
+                        json ej;
+                        ej["file"] = edit.file.string();
+                        ej["start_line"] = edit.start_line;
+                        ej["start_col"] = edit.start_col;
+                        ej["end_line"] = edit.end_line;
+                        ej["end_col"] = edit.end_col;
+                        ej["new_text"] = edit.new_text;
+                        edits_arr.push_back(std::move(ej));
                     }
-                    ss << i2 << "]," << nl;
+                    j["edits"] = std::move(edits_arr);
                 }
 
-                if (!suggestion.implementation_steps.empty()) {
-                    ss << i2 << "\"implementation_steps\": [" << nl;
-                    for (std::size_t j = 0; j < suggestion.implementation_steps.size(); ++j) {
-                        ss << i3 << "\"" << escape_string(suggestion.implementation_steps[j]) << "\"";
-                        if (j < suggestion.implementation_steps.size() - 1) ss << ",";
-                        ss << nl;
+                if (!s.implementation_steps.empty()) {
+                    json steps = json::array();
+                    for (const auto& step : s.implementation_steps) {
+                        steps.push_back(step);
                     }
-                    ss << i2 << "]," << nl;
+                    j["implementation_steps"] = std::move(steps);
                 }
 
-                ss << i2 << "\"impact\": {" << nl;
-                ss << i3 << "\"total_files_affected\": " << suggestion.impact.total_files_affected << "," << nl;
-                ss << i3 << "\"cumulative_savings_ns\": " << suggestion.impact.cumulative_savings.count() << "," << nl;
-                ss << i3 << "\"rebuild_files_count\": " << suggestion.impact.rebuild_files_count << nl;
-                ss << i2 << "}," << nl;
+                json impact;
+                impact["total_files_affected"] = s.impact.total_files_affected;
+                impact["cumulative_savings_ns"] = s.impact.cumulative_savings.count();
+                impact["rebuild_files_count"] = s.impact.rebuild_files_count;
+                j["impact"] = std::move(impact);
 
-                if (!suggestion.caveats.empty()) {
-                    ss << i2 << "\"caveats\": [" << nl;
-                    for (std::size_t j = 0; j < suggestion.caveats.size(); ++j) {
-                        ss << i3 << "\"" << escape_string(suggestion.caveats[j]) << "\"";
-                        if (j < suggestion.caveats.size() - 1) ss << ",";
-                        ss << nl;
+                if (!s.caveats.empty()) {
+                    json caveats_arr = json::array();
+                    for (const auto& cv : s.caveats) {
+                        caveats_arr.push_back(cv);
                     }
-                    ss << i2 << "]," << nl;
+                    j["caveats"] = std::move(caveats_arr);
                 }
 
-                if (!suggestion.verification.empty()) {
-                    ss << i2 << R"("verification": ")" << escape_string(suggestion.verification) << "\"," << nl;
+                if (!s.verification.empty()) {
+                    j["verification"] = s.verification;
+                }
+                if (s.documentation_link) {
+                    j["documentation_link"] = *s.documentation_link;
                 }
 
-                if (suggestion.documentation_link) {
-                    ss << i2 << R"("documentation_link": ")" << escape_string(*suggestion.documentation_link) << "\"," << nl;
-                }
-
-                if (!suggestion.hotspot_origins.empty()) {
-                    ss << i2 << "\"hotspot_origins\": [" << nl;
-                    for (std::size_t j = 0; j < suggestion.hotspot_origins.size(); ++j) {
-                        const auto& origin = suggestion.hotspot_origins[j];
-                        ss << i3 << "{" << nl;
-                        ss << i4 << R"("kind": ")" << escape_string(origin.kind) << "\"," << nl;
-                        ss << i4 << R"("source": ")" << escape_string(origin.source.string()) << "\"," << nl;
-                        ss << i4 << R"("target": ")" << escape_string(origin.target.string()) << "\"," << nl;
-                        ss << i4 << "\"estimated_cost_ns\": " << origin.estimated_cost.count() << "," << nl;
-                        ss << i4 << R"("note": ")" << escape_string(origin.note) << "\"," << nl;
-                        ss << i4 << "\"chain\": [" << nl;
-                        for (std::size_t k = 0; k < origin.chain.size(); ++k) {
-                            ss << i4 << i1 << "\"" << escape_string(origin.chain[k]) << "\"";
-                            if (k + 1 < origin.chain.size()) {
-                                ss << ",";
-                            }
-                            ss << nl;
+                if (!s.hotspot_origins.empty()) {
+                    json origins = json::array();
+                    for (const auto& origin : s.hotspot_origins) {
+                        json oj;
+                        oj["kind"] = origin.kind;
+                        oj["source"] = origin.source.string();
+                        oj["target"] = origin.target.string();
+                        oj["estimated_cost_ns"] = origin.estimated_cost.count();
+                        oj["note"] = origin.note;
+                        json chain = json::array();
+                        for (const auto& ch : origin.chain) {
+                            chain.push_back(ch);
                         }
-                        ss << i4 << "]" << nl;
-                        ss << i3 << "}";
-                        if (j + 1 < suggestion.hotspot_origins.size()) {
-                            ss << ",";
-                        }
-                        ss << nl;
+                        oj["chain"] = std::move(chain);
+                        origins.push_back(std::move(oj));
                     }
-                    ss << i2 << "]," << nl;
+                    j["hotspot_origins"] = std::move(origins);
                 }
 
-                ss << i2 << R"("file": ")" << escape_string(suggestion.target_file.path.string()) << "\"" << nl;
-                ss << i1 << "}";
-                if (idx < suggestions.size() - 1) ss << ",";
-                ss << nl;
+                j["file"] = s.target_file.path.string();
+                arr.push_back(std::move(j));
             }
-
-            ss << "]";
-            return ss.str();
+            return arr.dump(pretty ? 2 : -1);
         }
 
-        std::string to_json(const std::vector<analyzers::FileAnalysisResult>& files, bool pretty) {
-            std::ostringstream ss;
-            const std::string indent = pretty ? "  " : "";
-            const std::string nl = pretty ? "\n" : "";
-
-            ss << "[" << nl;
-
-            for (std::size_t i = 0; i < files.size(); ++i) {
-                const auto& f = files[i];
-                ss << indent << "{" << nl;
-                ss << indent << indent << R"("file": ")" << escape_string(f.file.string()) << "\"," << nl;
-                ss << indent << indent << "\"compile_time_ns\": " << f.compile_time.count() << "," << nl;
-                ss << indent << indent << "\"frontend_time_ns\": " << f.frontend_time.count() << "," << nl;
-                ss << indent << indent << "\"backend_time_ns\": " << f.backend_time.count() << "," << nl;
-                ss << indent << indent << "\"time_percent\": " << f.time_percent << "," << nl;
-                ss << indent << indent << "\"include_count\": " << f.include_count << "," << nl;
-                ss << indent << indent << "\"template_count\": " << f.template_count << nl;
-                ss << indent << "}";
-                if (i < files.size() - 1) ss << ",";
-                ss << nl;
+        std::string to_json(const std::vector<analyzers::FileAnalysisResult>& files, const bool pretty) {
+            using json_detail::json;
+            json arr = json::array();
+            for (const auto& f : files) {
+                json j;
+                j["file"] = f.file.string();
+                j["compile_time_ns"] = f.compile_time.count();
+                j["frontend_time_ns"] = f.frontend_time.count();
+                j["backend_time_ns"] = f.backend_time.count();
+                j["time_percent"] = f.time_percent;
+                j["include_count"] = f.include_count;
+                j["template_count"] = f.template_count;
+                arr.push_back(std::move(j));
             }
-
-            ss << "]";
-            return ss.str();
+            return arr.dump(pretty ? 2 : -1);
         }
 
     }  // namespace json

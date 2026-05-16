@@ -1,8 +1,7 @@
-#ifndef BHA_SCOPE_UTILS_HPP
-#define BHA_SCOPE_UTILS_HPP
+#pragma once
 
 #include "bha/utils/regex_utils.hpp"
-#include "bha/suggestions/suggester.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <cctype>
 #include <fstream>
@@ -32,7 +31,7 @@ namespace bha::suggestions {
         MacroWrapperScope macro;
     };
 
-    [[nodiscard]] inline std::vector<std::string> split_namespace_path(const std::string& ns_path) {
+    inline std::vector<std::string> split_namespace_path(const std::string& ns_path) {
         std::vector<std::string> result;
         std::size_t offset = 0;
         while (offset < ns_path.size()) {
@@ -45,16 +44,16 @@ namespace bha::suggestions {
             offset = pos + 2;
         }
         for (auto& part : result) {
-            part = trim_whitespace_copy(std::move(part));
+            part = bha::utils::trim_whitespace_copy(std::move(part));
         }
         result.erase(
-            std::remove_if(result.begin(), result.end(), [](const std::string& part) { return part.empty(); }),
-            result.end()
-        );
+            std::remove_if(result.begin(), result.end(),
+                [](const std::string& part) { return part.empty(); }),
+            result.end());
         return result;
     }
 
-    [[nodiscard]] inline std::vector<std::string> collect_active_namespaces(
+    inline std::vector<std::string> collect_active_namespaces(
         const std::vector<ScopeFrame>& scope_stack
     ) {
         std::vector<std::string> result;
@@ -66,7 +65,7 @@ namespace bha::suggestions {
         return result;
     }
 
-    [[nodiscard]] inline std::optional<std::string> derive_matching_close_macro(std::string name) {
+    inline std::optional<std::string> derive_matching_close_macro(std::string name) {
         if (name.ends_with("_BEGIN")) {
             name.replace(name.size() - 6, 6, "_END");
             return name;
@@ -91,11 +90,9 @@ namespace bha::suggestions {
         return std::nullopt;
     }
 
-    [[nodiscard]] inline std::optional<std::string> parse_scope_macro_name(const std::string& line) {
+    inline std::optional<std::string> parse_scope_macro_name(const std::string& line) {
         static const std::regex macro_regex(
-            R"(^\s*([A-Z][A-Z0-9_]*|(?:BEGIN|OPEN|PUSH)_[A-Z0-9_]+)\s*(\([^;{}]*\))?\s*$)"
-        );
-
+            R"(^\s*([A-Z][A-Z0-9_]*|(?:BEGIN|OPEN|PUSH)_[A-Z0-9_]+)\s*(\([^;{}]*\))?\s*$)");
         std::smatch match;
         if (!std::regex_match(line, match, macro_regex)) {
             return std::nullopt;
@@ -103,7 +100,7 @@ namespace bha::suggestions {
         return match[1].str();
     }
 
-    [[nodiscard]] inline std::optional<MacroWrapperScope> parse_scope_macro_open(const std::string& line) {
+    inline std::optional<MacroWrapperScope> parse_scope_macro_open(const std::string& line) {
         const auto macro_name = parse_scope_macro_name(line);
         if (!macro_name.has_value()) {
             return std::nullopt;
@@ -112,16 +109,15 @@ namespace bha::suggestions {
         if (!close_name.has_value()) {
             return std::nullopt;
         }
-
         MacroWrapperScope scope;
         scope.open_name = *macro_name;
-        scope.open_text = trim_whitespace_copy(line);
+        scope.open_text = bha::utils::trim_whitespace_copy(line);
         scope.close_name = *close_name;
         scope.close_text = *close_name;
         return scope;
     }
 
-    [[nodiscard]] inline std::optional<std::string> parse_scope_macro_close(const std::string& line) {
+    inline std::optional<std::string> parse_scope_macro_close(const std::string& line) {
         const auto macro_name = parse_scope_macro_name(line);
         if (!macro_name.has_value()) {
             return std::nullopt;
@@ -137,7 +133,7 @@ namespace bha::suggestions {
         return std::nullopt;
     }
 
-    [[nodiscard]] inline bool is_macro_like_identifier(const std::string& token) {
+    inline bool is_macro_like_identifier(const std::string& token) {
         bool saw_alpha = false;
         for (const char ch : token) {
             if (std::isalpha(static_cast<unsigned char>(ch)) == 0) {
@@ -151,15 +147,13 @@ namespace bha::suggestions {
         return saw_alpha;
     }
 
-    [[nodiscard]] inline bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
+    inline bool file_defines_macro(const fs::path& file, const std::string& macro_name) {
         std::ifstream in(file);
         if (!in) {
             return false;
         }
-
         const std::regex define_regex(
-            "^\\s*#\\s*define\\s+" + utils::regex_escape(macro_name) + R"((\b|\s*\())"
-        );
+            "^\\s*#\\s*define\\s+" + bha::utils::regex_escape(macro_name) + R"((\b|\s*\())");
         std::string line;
         while (std::getline(in, line)) {
             if (std::regex_search(line, define_regex)) {
@@ -170,5 +164,3 @@ namespace bha::suggestions {
     }
 
 }  // namespace bha::suggestions
-
-#endif

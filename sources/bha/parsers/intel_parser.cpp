@@ -23,9 +23,9 @@ namespace bha::parsers {
 
         Duration parse_icc_time(const std::string_view time_str) {
             double seconds = 0.0;
-            auto trimmed = string_utils::trim(time_str);
+            auto trimmed = utils::trim(time_str);
 
-            if (string_utils::ends_with(trimmed, "s")) {
+            if (utils::ends_with(trimmed, "s")) {
                 trimmed = trimmed.substr(0, trimmed.size() - 1);
             }
 
@@ -46,7 +46,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -55,15 +55,15 @@ namespace bha::parsers {
     }
 
     bool IntelClassicParser::can_parse_content(std::string_view content) const {
-        const auto lower_content = string_utils::to_lower(content);
-        return string_utils::contains(lower_content, string_utils::to_lower(ICC_MARKER)) ||
-               string_utils::contains(lower_content, string_utils::to_lower(ICC_OPT_REPORT));
+        const auto lower_content = utils::to_lower(content);
+        return utils::contains(lower_content, utils::to_lower(ICC_MARKER)) ||
+               utils::contains(lower_content, utils::to_lower(ICC_OPT_REPORT));
     }
 
     Result<CompilationUnit, Error> IntelClassicParser::parse_file(
         const fs::path& path
     ) const {
-        auto content_result = file_utils::read_file(path);
+        auto content_result = utils::read_file(path);
         if (content_result.is_err()) {
             return Result<CompilationUnit, Error>::failure(content_result.error());
         }
@@ -84,7 +84,7 @@ namespace bha::parsers {
         unit.source_file = source_hint;
         unit.metrics.path = source_hint;
 
-        const auto lines = string_utils::split(content, '\n');
+        const auto lines = utils::split(content, '\n');
 
         const std::regex time_regex(R"((\d+\.?\d*)\s*(?:s|sec|secs|seconds?))", std::regex_constants::icase);
         const std::regex loop_paren_regex(
@@ -106,7 +106,7 @@ namespace bha::parsers {
                 if ((std::regex_search(line_str, loop_match, loop_paren_regex) ||
                      std::regex_search(line_str, loop_match, loop_colon_regex)) &&
                     loop_match.size() > 1) {
-                    unit.source_file = string_utils::trim(loop_match[1].str());
+                    unit.source_file = utils::trim(loop_match[1].str());
                     unit.metrics.path = unit.source_file;
                 }
             }
@@ -131,7 +131,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -140,17 +140,17 @@ namespace bha::parsers {
     }
 
     bool IntelOneAPIParser::can_parse_content(const std::string_view content) const {
-        if (!string_utils::contains(content, "traceEvents")) {
+        if (!utils::contains(content, "traceEvents")) {
             return false;
         }
 
-        const auto lower_content = string_utils::to_lower(content);
-        return string_utils::contains(lower_content, string_utils::to_lower(ICX_MARKER)) ||
-               string_utils::contains(lower_content, "intel") ||
-               string_utils::contains(lower_content, "oneapi") ||
-               string_utils::contains(lower_content, "total frontend") ||
-               string_utils::contains(lower_content, "total backend") ||
-               string_utils::contains(lower_content, "executecompiler");
+        const auto lower_content = utils::to_lower(content);
+        return utils::contains(lower_content, utils::to_lower(ICX_MARKER)) ||
+               utils::contains(lower_content, "intel") ||
+               utils::contains(lower_content, "oneapi") ||
+               utils::contains(lower_content, "total frontend") ||
+               utils::contains(lower_content, "total backend") ||
+               utils::contains(lower_content, "executecompiler");
     }
 
     Result<CompilationUnit, Error> IntelOneAPIParser::parse_file(

@@ -5,7 +5,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/progress.hpp"
 #include "bha/cli/formatter.hpp"
-#include "bha/cli/suggestion_utils.hpp"
+#include "bha/utils/suggestion_path_utils.hpp"
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
@@ -128,7 +128,7 @@ namespace bha::cli
                     print_error("Supported formats: github, gitlab");
                     return 1;
                 }
-                pr_annotation_format = *parsed;
+                pr_annotation_format = parsed;
             }
 
             // Collect trace files AND memory files
@@ -261,7 +261,7 @@ namespace bha::cli
                 for (const auto& path : args.positional()) {
                     input_paths.emplace_back(path);
                 }
-                project_root = suggestion_utils::resolve_project_root_for_suggestions(
+                project_root = utils::resolve_project_root_for_suggestions(
                     input_paths,
                     build_trace,
                     analysis_result.value()

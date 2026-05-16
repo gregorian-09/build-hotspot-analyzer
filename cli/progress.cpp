@@ -184,7 +184,7 @@ namespace bha::cli
         ss << style_.left_bracket;
 
         const double pct = progress();
-        const std::size_t filled = static_cast<std::size_t>(pct * static_cast<double>(style_.bar_width));
+        const auto filled = static_cast<std::size_t>(pct * static_cast<double>(style_.bar_width));
 
         for (std::size_t i = 0; i < style_.bar_width; ++i) {
             if (i < filled) {
@@ -338,7 +338,7 @@ namespace bha::cli
 
         // For now, simple sequential rendering
         // Future: Later version would use cursor positioning
-        for (auto& info : bars_) {
+        for (const auto& info : bars_) {
             info.bar->tick();
         }
     }

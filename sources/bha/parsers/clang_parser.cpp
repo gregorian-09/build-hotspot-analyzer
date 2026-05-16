@@ -177,7 +177,7 @@ namespace bha::parsers {
                 if (event.name == "InstantiateClass" ||
                     event.name == "InstantiateFunction" ||
                     event.name == "CodeGen Function" ||
-                    string_utils::starts_with(event.name, "Instantiate")) {
+                    utils::starts_with(event.name, "Instantiate")) {
 
                     auto& tmpl = template_map[event.detail];
                     if (tmpl.name.empty()) {
@@ -293,7 +293,7 @@ namespace bha::parsers {
                     metrics.breakdown.parsing += dur;
                 }
                 else if (event.name == "Total PerformPendingInstantiations" ||
-                         string_utils::starts_with(event.name, "Total Instantiate")) {
+                         utils::starts_with(event.name, "Total Instantiate")) {
                     metrics.breakdown.template_instantiation += dur;
                 }
                 else if (event.name == "Total CodeGen Function" ||
@@ -322,7 +322,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -337,7 +337,7 @@ namespace bha::parsers {
     Result<CompilationUnit, Error> ClangTraceParser::parse_file(
         const fs::path& path
     ) const {
-        auto content_result = file_utils::read_file(path);
+        auto content_result = utils::read_file(path);
         if (content_result.is_err()) {
             return Result<CompilationUnit, Error>::failure(content_result.error());
         }

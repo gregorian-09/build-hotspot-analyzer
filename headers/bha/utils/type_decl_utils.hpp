@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bha/suggestions/suggester.hpp"
+#include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -65,10 +65,10 @@ namespace bha::utils {
             tokens.end()
         );
 
-        while (tokens.size() > 1 && suggestions::looks_like_macro_identifier(tokens.front())) {
+        while (tokens.size() > 1 && bha::utils::looks_like_macro_identifier(tokens.front())) {
             tokens.erase(tokens.begin());
         }
-        while (tokens.size() > 1 && suggestions::looks_like_macro_identifier(tokens.back())) {
+        while (tokens.size() > 1 && bha::utils::looks_like_macro_identifier(tokens.back())) {
             tokens.pop_back();
         }
 

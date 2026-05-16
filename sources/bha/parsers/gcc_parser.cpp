@@ -44,10 +44,10 @@ namespace bha::parsers {
         };
 
         std::optional<TimingLine> parse_timing_line(std::string_view line) {
-            const auto trimmed = string_utils::trim(line);
+            const auto trimmed = utils::trim(line);
 
-            if (!string_utils::starts_with(trimmed, GCC_PHASE_PREFIX) &&
-                !string_utils::contains(trimmed, ":")) {
+            if (!utils::starts_with(trimmed, GCC_PHASE_PREFIX) &&
+                !utils::contains(trimmed, ":")) {
                 return std::nullopt;
             }
 
@@ -57,7 +57,7 @@ namespace bha::parsers {
             }
 
             TimingLine result;
-            result.phase_name = std::string(string_utils::trim(trimmed.substr(0, colon_pos)));
+            result.phase_name = std::string(utils::trim(trimmed.substr(0, colon_pos)));
 
             const auto times_part = trimmed.substr(colon_pos + 1);
 
@@ -125,32 +125,32 @@ namespace bha::parsers {
             }
             else {
                 // For non-phase timing variables, heuristic matching is employed
-                const auto lower = string_utils::to_lower(name);
+                const auto lower = utils::to_lower(name);
 
-                if (string_utils::contains(lower, "preprocess")) {
+                if (utils::contains(lower, "preprocess")) {
                     breakdown.preprocessing += timing.wall_time;
                 }
-                else if (string_utils::contains(lower, "pars")) {
+                else if (utils::contains(lower, "pars")) {
                     breakdown.parsing += timing.wall_time;
                 }
-                else if (string_utils::contains(lower, "template") ||
-                         string_utils::contains(lower, "instantiat")) {
+                else if (utils::contains(lower, "template") ||
+                         utils::contains(lower, "instantiat")) {
                     breakdown.template_instantiation += timing.wall_time;
                 }
-                else if (string_utils::contains(lower, "semantic") ||
-                         string_utils::contains(lower, "name lookup") ||
-                         string_utils::contains(lower, "overload")) {
+                else if (utils::contains(lower, "semantic") ||
+                         utils::contains(lower, "name lookup") ||
+                         utils::contains(lower, "overload")) {
                     breakdown.semantic_analysis += timing.wall_time;
                 }
-                else if (string_utils::contains(lower, "optim") ||
-                         string_utils::contains(lower, "inline")) {
+                else if (utils::contains(lower, "optim") ||
+                         utils::contains(lower, "inline")) {
                     breakdown.optimization += timing.wall_time;
                 }
-                else if (string_utils::contains(lower, "expand") ||
-                         string_utils::contains(lower, "rtl") ||
-                         string_utils::contains(lower, "codegen") ||
-                         string_utils::contains(lower, "final") ||
-                         string_utils::contains(lower, "assemb")) {
+                else if (utils::contains(lower, "expand") ||
+                         utils::contains(lower, "rtl") ||
+                         utils::contains(lower, "codegen") ||
+                         utils::contains(lower, "final") ||
+                         utils::contains(lower, "assemb")) {
                     add_code_generation_time();
                 }
             }
@@ -162,7 +162,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -171,16 +171,16 @@ namespace bha::parsers {
     }
 
     bool GCCTraceParser::can_parse_content(std::string_view content) const {
-        return string_utils::contains(content, GCC_TIME_HEADER) &&
-               string_utils::contains(content, "usr") &&
-               string_utils::contains(content, "sys") &&
-               string_utils::contains(content, "wall");
+        return utils::contains(content, GCC_TIME_HEADER) &&
+               utils::contains(content, "usr") &&
+               utils::contains(content, "sys") &&
+               utils::contains(content, "wall");
     }
 
     Result<CompilationUnit, Error> GCCTraceParser::parse_file(
         const fs::path& path
     ) const {
-        auto content_result = file_utils::read_file(path);
+        auto content_result = utils::read_file(path);
         if (content_result.is_err()) {
             return Result<CompilationUnit, Error>::failure(content_result.error());
         }
@@ -205,7 +205,7 @@ namespace bha::parsers {
         unit.source_file = source_hint;
         unit.metrics.path = source_hint;
 
-        const auto lines = string_utils::split(content, '\n');
+        const auto lines = utils::split(content, '\n');
         Duration total_wall = Duration::zero();
 
         for (const auto& line : lines) {

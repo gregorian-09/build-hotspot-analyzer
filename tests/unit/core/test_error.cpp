@@ -103,7 +103,7 @@ namespace bha
     }
 
     TEST(ErrorTest, ErrorCodeToString) {
-        EXPECT_STREQ(error_code_to_string(ErrorCode::None), "None");
+        EXPECT_STREQ(error_code_to_string(ErrorCode::Success), "Success");
         EXPECT_STREQ(error_code_to_string(ErrorCode::InvalidArgument), "InvalidArgument");
         EXPECT_STREQ(error_code_to_string(ErrorCode::NotFound), "NotFound");
         EXPECT_STREQ(error_code_to_string(ErrorCode::ParseError), "ParseError");

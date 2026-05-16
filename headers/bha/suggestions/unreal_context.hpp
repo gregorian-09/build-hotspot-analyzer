@@ -195,7 +195,7 @@ namespace bha::suggestions
             parts.push_back(part.string());
         }
         for (std::size_t i = 0; i + 1 < parts.size(); ++i) {
-            if (string_utils::to_lower(parts[i]) == "source") {
+            if (utils::to_lower(parts[i]) == "source") {
                 const std::string module_name = parts[i + 1];
                 if (!module_name.empty()) {
                     return module_name;
@@ -295,7 +295,7 @@ namespace bha::suggestions
     }
 
     [[nodiscard]] inline UnrealPCHUsageMode parse_pch_usage_mode(const std::string& mode_name) {
-        const std::string normalized = string_utils::to_lower(string_utils::trim_copy(mode_name));
+        const std::string normalized = utils::to_lower(utils::trim_copy(mode_name));
         if (normalized == "nopchs") {
             return UnrealPCHUsageMode::NoPCHs;
         }
@@ -353,14 +353,14 @@ namespace bha::suggestions
 
             if (!rules.enforce_iwyu.has_value() &&
                 std::regex_search(sanitized, match, iwyu_regex)) {
-                const std::string value = string_utils::to_lower(match[1].str());
+                const std::string value = utils::to_lower(match[1].str());
                 rules.enforce_iwyu = (value == "true");
                 rules.enforce_iwyu_line = line_number;
             }
 
             if (!rules.use_unity.has_value() &&
                 std::regex_search(sanitized, match, unity_regex)) {
-                const std::string value = string_utils::to_lower(match[1].str());
+                const std::string value = utils::to_lower(match[1].str());
                 rules.use_unity = (value == "true");
                 rules.use_unity_line = line_number;
             }
@@ -412,14 +412,14 @@ namespace bha::suggestions
             std::smatch match;
 
             if (!rules.use_unity.has_value() && std::regex_search(sanitized, match, unity_regex)) {
-                const std::string value = string_utils::to_lower(match[1].str());
+                const std::string value = utils::to_lower(match[1].str());
                 rules.use_unity = (value == "true");
                 rules.use_unity_line = line_number;
             }
 
             if (!rules.use_adaptive_unity.has_value() &&
                 std::regex_search(sanitized, match, adaptive_unity_regex)) {
-                const std::string value = string_utils::to_lower(match[1].str());
+                const std::string value = utils::to_lower(match[1].str());
                 rules.use_adaptive_unity = (value == "true");
                 rules.use_adaptive_unity_line = line_number;
             }
@@ -523,14 +523,14 @@ namespace bha::suggestions
         static constexpr std::array<std::string_view, 4> kHeaderExts = {
             ".h", ".hh", ".hpp", ".hxx"
         };
-        const std::string ext = string_utils::to_lower(path.extension().string());
+        const std::string ext = utils::to_lower(path.extension().string());
         return std::ranges::any_of(kHeaderExts, [&](const std::string_view candidate) {
             return ext == candidate;
         });
     }
 
     [[nodiscard]] inline bool is_generated_header_include(const std::string& include_header) {
-        return string_utils::to_lower(include_header).ends_with(".generated.h");
+        return utils::to_lower(include_header).ends_with(".generated.h");
     }
 
     [[nodiscard]] inline std::vector<UnrealGeneratedIncludeViolation> find_generated_include_order_violations(
@@ -601,7 +601,7 @@ namespace bha::suggestions
         std::unordered_map<std::string, std::vector<fs::path>> grouped_paths;
         std::unordered_map<std::string, std::string> canonical_names;
         for (const auto& module : modules) {
-            const std::string key = string_utils::to_lower(module.rules.module_name);
+            const std::string key = utils::to_lower(module.rules.module_name);
             if (key.empty()) {
                 continue;
             }
@@ -637,7 +637,7 @@ namespace bha::suggestions
         std::unordered_map<std::string, std::vector<fs::path>> grouped_paths;
         std::unordered_map<std::string, std::string> canonical_names;
         for (const auto& target : targets) {
-            const std::string key = string_utils::to_lower(target.target_name);
+            const std::string key = utils::to_lower(target.target_name);
             if (key.empty()) {
                 continue;
             }
@@ -686,7 +686,7 @@ namespace bha::suggestions
             if (!module_name.has_value()) {
                 continue;
             }
-            const std::string key = string_utils::to_lower(*module_name);
+            const std::string key = utils::to_lower(*module_name);
             auto& stats = stats_by_module[key];
             ++stats.source_files;
             stats.total_compile_time += unit.metrics.total_time;
@@ -715,7 +715,7 @@ namespace bha::suggestions
         for (const auto& module_rules : rules) {
             UnrealModuleContext ctx;
             ctx.rules = module_rules;
-            if (const auto it = stats_by_module.find(string_utils::to_lower(module_rules.module_name));
+            if (const auto it = stats_by_module.find(utils::to_lower(module_rules.module_name));
                 it != stats_by_module.end()) {
                 ctx.stats = it->second;
             }

@@ -1,0 +1,61 @@
+---
+Checks: >
+  clang-diagnostic-*,
+  -clang-diagnostic-unknown-warning-option,
+  clang-analyzer-*,
+  modernize-*,
+  performance-*,
+  bugprone-*,
+  readability-*,
+  misc-*,
+  -readability-identifier-naming,
+  -readability-identifier-length,
+  -readability-function-cognitive-complexity,
+  -readability-magic-numbers,
+  -readability-else-after-return,
+  -modernize-use-trailing-return-type,
+  -readability-redundant-access-specifiers,
+  -readability-uppercase-literal-suffix,
+  -misc-non-private-member-variables-in-classes,
+  -bugprone-narrowing-conversions,
+  -bugprone-easily-swappable-parameters,
+  -misc-no-recursion,
+  -modernize-use-nodiscard,
+  -modernize-return-braced-init-list,
+  -modernize-concat-nested-namespaces,
+  -modernize-use-default-member-init,
+  -readability-convert-member-functions-to-static,
+  -readability-implicit-bool-conversion,
+  -misc-unused-parameters,
+  -modernize-avoid-c-arrays,
+  -readability-named-parameter,
+  -bugprone-unchecked-optional-access,
+  -readability-isolate-declaration,
+  -bugprone-assignment-in-if-condition,
+  -modernize-macro-to-enum,
+  -misc-include-cleaner,
+  -modernize-raw-string-literal,
+  -readability-avoid-nested-conditional-operator,
+  -clang-analyzer-core.uninitialized.Assign,
+  -readability-braces-around-statements
+
+WarningsAsErrors: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  modernize-*,
+  performance-*,
+  bugprone-*,
+  readability-*,
+  misc-*
+
+ExtraArgs:
+  - '-Wno-unknown-warning-option'
+
+CheckOptions:
+  - key:   modernize-pass-by-value.ValuesOnly
+    value: '1'
+  - key:   readability-function-size.LineThreshold
+    value: '600'
+  - key:   modernize-use-starts-ends-with.ReplaceStyle
+    value: 'true'
+...

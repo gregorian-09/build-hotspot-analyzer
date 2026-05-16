@@ -14,7 +14,7 @@
  * for explicit error handling throughout the codebase.
  *
  * Error categories:
- * - None: No error (success state)
+ * - Success: No error (success state)
  * - InvalidArgument: Invalid function arguments or parameters
  * - NotFound: Requested resource not found
  * - ParseError: Failed to parse input data
@@ -48,6 +48,7 @@
 #include <optional>
 #include <ostream>
 #include <utility>
+#include <cstdint>
 
 namespace bha {
 
@@ -57,8 +58,8 @@ namespace bha {
      * Each category represents a broad class of errors that can occur
      * during build analysis operations.
      */
-    enum class ErrorCode {
-        None,             ///< No error
+    enum class ErrorCode : std::uint8_t {
+        Success,          ///< No error (success state)
         InvalidArgument,  ///< Invalid argument or parameter
         NotFound,         ///< Resource not found
         ParseError,       ///< Parsing failed
@@ -78,7 +79,7 @@ namespace bha {
      */
     inline const char* error_code_to_string(ErrorCode code) noexcept {
         switch (code) {
-            case ErrorCode::None:            return "None";
+            case ErrorCode::Success:         return "Success";
             case ErrorCode::InvalidArgument: return "InvalidArgument";
             case ErrorCode::NotFound:        return "NotFound";
             case ErrorCode::ParseError:      return "ParseError";

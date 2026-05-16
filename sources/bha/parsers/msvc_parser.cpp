@@ -38,9 +38,9 @@ namespace bha::parsers {
 
         Duration parse_msvc_time(const std::string_view time_str) {
             double seconds = 0.0;
-            auto trimmed = string_utils::trim(time_str);
+            auto trimmed = utils::trim(time_str);
 
-            if (string_utils::ends_with(trimmed, "s")) {
+            if (utils::ends_with(trimmed, "s")) {
                 trimmed = trimmed.substr(0, trimmed.size() - 1);
             }
 
@@ -56,9 +56,9 @@ namespace bha::parsers {
         };
 
         std::optional<MSVCTimeLine> parse_msvc_line(const std::string_view line) {
-            const auto trimmed = string_utils::trim(line);
+            const auto trimmed = utils::trim(line);
 
-            if (!string_utils::starts_with(trimmed, MSVC_TIME_PREFIX)) {
+            if (!utils::starts_with(trimmed, MSVC_TIME_PREFIX)) {
                 return std::nullopt;
             }
 
@@ -93,7 +93,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -102,15 +102,15 @@ namespace bha::parsers {
     }
 
     bool MSVCTraceParser::can_parse_content(const std::string_view content) const {
-        return string_utils::contains(content, MSVC_TIME_PREFIX) &&
-               (string_utils::contains(content, MSVC_C1XX) ||
-                string_utils::contains(content, MSVC_C2));
+        return utils::contains(content, MSVC_TIME_PREFIX) &&
+               (utils::contains(content, MSVC_C1XX) ||
+                utils::contains(content, MSVC_C2));
     }
 
     Result<CompilationUnit, Error> MSVCTraceParser::parse_file(
         const fs::path& path
     ) const {
-        auto content_result = file_utils::read_file(path);
+        auto content_result = utils::read_file(path);
         if (content_result.is_err()) {
             return Result<CompilationUnit, Error>::failure(content_result.error());
         }
@@ -132,15 +132,15 @@ namespace bha::parsers {
         unit.source_file = source_hint;
         unit.metrics.path = source_hint;
 
-        for (const auto lines = string_utils::split(content, '\n'); const auto& line : lines) {
+        for (const auto lines = utils::split(content, '\n'); const auto& line : lines) {
             const auto timing = parse_msvc_line(line);
             if (!timing) {
                 continue;
             }
 
-            auto lower_target = string_utils::to_lower(timing->target);
+            auto lower_target = utils::to_lower(timing->target);
 
-            if (string_utils::contains(lower_target, "c1xx")) {
+            if (utils::contains(lower_target, "c1xx")) {
                 unit.metrics.frontend_time = timing->total_time;
 
                 // Heuristic breakdown: Frontend includes parsing, semantic analysis, and templates
@@ -149,7 +149,7 @@ namespace bha::parsers {
                 unit.metrics.breakdown.semantic_analysis = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
                 unit.metrics.breakdown.template_instantiation = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
             }
-            else if (string_utils::contains(lower_target, "c2")) {
+            else if (utils::contains(lower_target, "c2")) {
                 unit.metrics.backend_time = timing->total_time;
 
                 // Heuristic breakdown: Backend includes optimization and code generation
@@ -157,10 +157,10 @@ namespace bha::parsers {
                 unit.metrics.breakdown.optimization = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
                 unit.metrics.breakdown.code_generation = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
             }
-            else if (string_utils::ends_with(lower_target, ".cpp") ||
-                     string_utils::ends_with(lower_target, ".cxx") ||
-                     string_utils::ends_with(lower_target, ".cc") ||
-                     string_utils::ends_with(lower_target, ".c")) {
+            else if (utils::ends_with(lower_target, ".cpp") ||
+                     utils::ends_with(lower_target, ".cxx") ||
+                     utils::ends_with(lower_target, ".cc") ||
+                     utils::ends_with(lower_target, ".c")) {
                 unit.source_file = timing->target;
                 unit.metrics.path = timing->target;
                 unit.metrics.total_time = timing->total_time;

@@ -348,7 +348,7 @@ namespace bha::git
         }
 
         return Result<fs::path, Error>::success(
-            fs::path(string_utils::trim_copy(result.value().stdout_output))
+            fs::path(utils::trim_copy(result.value().stdout_output))
         );
     }
 
@@ -469,7 +469,7 @@ namespace bha::git
             );
         }
 
-        return Result<std::string, Error>::success(string_utils::trim_copy(result.value().stdout_output));
+        return Result<std::string, Error>::success(utils::trim_copy(result.value().stdout_output));
     }
 
     Result<std::string, Error> get_head(const fs::path& repo_dir) {
@@ -489,7 +489,7 @@ namespace bha::git
             );
         }
 
-        return Result<std::string, Error>::success(string_utils::trim_copy(result.value().stdout_output));
+        return Result<std::string, Error>::success(utils::trim_copy(result.value().stdout_output));
     }
 
     Result<bool, Error> has_uncommitted_changes(const fs::path& repo_dir) {
@@ -563,22 +563,22 @@ namespace bha::git
                         current_entry.original_line = std::stoul(parts[1]);
                         current_entry.final_line = std::stoul(parts[2]);
                     }
-                } else if (string_utils::starts_with(line, "author ")) {
+                } else if (utils::starts_with(line, "author ")) {
                     current_entry.author_name = line.substr(7);
-                } else if (string_utils::starts_with(line, "author-mail ")) {
+                } else if (utils::starts_with(line, "author-mail ")) {
                     std::string email = line.substr(12);
                     // Remove < and >
                     if (email.size() >= 2 && email.front() == '<' && email.back() == '>') {
                         email = email.substr(1, email.size() - 2);
                     }
                     current_entry.author_email = email;
-                } else if (string_utils::starts_with(line, "author-time ")) {
+                } else if (utils::starts_with(line, "author-time ")) {
                     auto timestamp = std::stoll(line.substr(12));
                     current_entry.author_date =
                         std::chrono::system_clock::from_time_t(timestamp);
-                } else if (string_utils::starts_with(line, "filename ")) {
+                } else if (utils::starts_with(line, "filename ")) {
                     current_entry.original_file = line.substr(9);
-                } else if (string_utils::starts_with(line, "\t")) {
+                } else if (utils::starts_with(line, "\t")) {
                     current_entry.line_content = line.substr(1);
                     blame_result.entries.push_back(current_entry);
                     blame_result.lines_per_author[current_entry.author_name]++;
@@ -914,7 +914,7 @@ namespace bha::git
                 );
                 }
 
-            result.merge_base = string_utils::trim_copy(merge_base_result.value().stdout_output);
+            result.merge_base = utils::trim_copy(merge_base_result.value().stdout_output);
 
             // Count commits ahead/behind
             auto ahead_result = execute_git(
@@ -922,7 +922,7 @@ namespace bha::git
                 repo_dir_
             );
             if (ahead_result.is_ok() && ahead_result.value().exit_code == 0) {
-                result.commits_ahead = std::stoul(string_utils::trim_copy(ahead_result.value().stdout_output));
+                result.commits_ahead = std::stoul(utils::trim_copy(ahead_result.value().stdout_output));
             }
 
             auto behind_result = execute_git(
@@ -930,7 +930,7 @@ namespace bha::git
                 repo_dir_
             );
             if (behind_result.is_ok() && behind_result.value().exit_code == 0) {
-                result.commits_behind = std::stoul(string_utils::trim_copy(behind_result.value().stdout_output));
+                result.commits_behind = std::stoul(utils::trim_copy(behind_result.value().stdout_output));
             }
 
             auto diff_result = execute_git(
@@ -946,7 +946,7 @@ namespace bha::git
                         continue;
                     }
                     const char status = line[0];
-                    const std::string file = string_utils::trim_copy(line.substr(1));
+                    const std::string file = utils::trim_copy(line.substr(1));
 
                     switch (status) {
                     case 'A':
@@ -977,7 +977,7 @@ namespace bha::git
 
             std::string base_branch = "main";
             if (default_result.is_ok() && default_result.value().exit_code == 0) {
-                const std::string ref = string_utils::trim_copy(default_result.value().stdout_output);
+                const std::string ref = utils::trim_copy(default_result.value().stdout_output);
                 if (const auto pos = ref.rfind('/'); pos != std::string::npos) {
                     base_branch = ref.substr(pos + 1);
                 }

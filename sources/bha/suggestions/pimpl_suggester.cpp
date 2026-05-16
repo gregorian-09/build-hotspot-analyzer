@@ -2041,7 +2041,7 @@ namespace bha::suggestions
                     brace_depth == 0 &&
                     bracket_depth == 0 &&
                     angle_depth == 0) {
-                    auto entry = string_utils::trim_copy(current);
+                    auto entry = utils::trim_copy(current);
                     if (!entry.empty()) {
                         entries.push_back(std::move(entry));
                     }
@@ -2052,7 +2052,7 @@ namespace bha::suggestions
                 current.push_back(ch);
             }
 
-            auto tail = string_utils::trim_copy(current);
+            auto tail = utils::trim_copy(current);
             if (!tail.empty()) {
                 entries.push_back(std::move(tail));
             }
@@ -2070,7 +2070,7 @@ namespace bha::suggestions
 
                 std::size_t start_line = sig_line;
                 while (start_line > 0) {
-                    const std::string previous = string_utils::trim_copy(lines[start_line - 1]);
+                    const std::string previous = utils::trim_copy(lines[start_line - 1]);
                     if (!previous.starts_with("template<") && !previous.starts_with("template <")) {
                         break;
                     }
@@ -2112,10 +2112,10 @@ namespace bha::suggestions
                 block.start_line = start_line;
                 block.prefix = std::move(prefix);
                 if (colon_pos.has_value()) {
-                    block.signature = string_utils::trim_copy(header.substr(0, *colon_pos));
-                    block.initializer = string_utils::trim_copy(header.substr(*colon_pos + 1));
+                    block.signature = utils::trim_copy(header.substr(0, *colon_pos));
+                    block.initializer = utils::trim_copy(header.substr(*colon_pos + 1));
                 } else {
-                    block.signature = string_utils::trim_copy(header);
+                    block.signature = utils::trim_copy(header);
                 }
 
                 int brace_depth = 0;
@@ -2145,7 +2145,7 @@ namespace bha::suggestions
                             --brace_depth;
                             if (brace_depth == 0) {
                                 block.end_line = line_index + 1;
-                                block.body = string_utils::trim_copy(body);
+                                block.body = utils::trim_copy(body);
                                 return block;
                             }
                             body.push_back(ch);
@@ -2337,13 +2337,13 @@ namespace bha::suggestions
                     }
                     assignments.push_back(
                         "    pimpl_->" + field_name + " = " +
-                        string_utils::trim_copy(rewrite_copy_body_for_pimpl(expression, private_fields)) + ";"
+                        utils::trim_copy(rewrite_copy_body_for_pimpl(expression, private_fields)) + ";"
                     );
                 }
             }
 
             const std::string rewritten_body =
-                string_utils::trim_copy(rewrite_copy_body_for_pimpl(ctor_block.body, private_fields));
+                utils::trim_copy(rewrite_copy_body_for_pimpl(ctor_block.body, private_fields));
 
             std::string rewritten;
             rewritten.reserve(ctor_block.prefix.size() + ctor_block.signature.size() + rewritten_body.size() + 256);
@@ -2413,7 +2413,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            std::string rewritten_body = string_utils::trim_copy(rewrite_copy_body_for_pimpl(assign_block.body, private_fields));
+            std::string rewritten_body = utils::trim_copy(rewrite_copy_body_for_pimpl(assign_block.body, private_fields));
             rewritten_body = insert_assignment_null_guards(rewritten_body);
 
             std::string rewritten;

@@ -94,7 +94,7 @@ namespace bha::exporters
             std::string code_block_content;
 
             while (std::getline(stream, line)) {
-                if (line.find("```") == 0) {
+                if (line.starts_with("```")) {
                     if (in_code_block) {
                         html += R"(<pre class="code-block" style="margin: 6px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border-left: 3px solid var(--accent-color); overflow-x: auto;">)";
                         html += escape_html(code_block_content);
@@ -124,7 +124,7 @@ namespace bha::exporters
                     continue;
                 }
 
-                if (line.find("  - ") == 0 || line.find("- ") == 0) {
+                if (line.starts_with("  - ") || line.starts_with("- ")) {
                     if (!in_list) {
                         html += "<ul style=\"margin: 8px 0; padding-left: 24px;\">\n";
                         in_list = true;
@@ -831,9 +831,9 @@ namespace bha::exporters
         }
 
         if (options.pretty_print) {
-            stream << std::setw(2) << output << std::endl;
+            stream << std::setw(2) << output << '\n';
         } else {
-            stream << output << std::endl;
+            stream << output << '\n';
         }
 
         return Result<void, Error>::success();
@@ -957,10 +957,10 @@ namespace bha::exporters
             if (bytes < 1024) {
                 return std::to_string(bytes) + " B";
             }
-            if (bytes < 1024 * 1024) {
+            if (bytes < static_cast<std::size_t>(1024) * 1024) {
                 return std::to_string(bytes / 1024) + " KB";
             }
-            return std::to_string(bytes / (1024 * 1024)) + " MB";
+            return std::to_string(bytes / (static_cast<std::size_t>(1024) * 1024)) + " MB";
         };
 
         for (const auto& file : sorted_files) {
@@ -1334,8 +1334,7 @@ namespace bha::exporters
                                     << "                                    <span class=\"edit-file-count\">" << file_edits.size() << " edits</span>\n"
                                     << "                                </div>\n";
 
-                    for (std::size_t edit_idx = 0; edit_idx < file_edits.size(); ++edit_idx) {
-                        const auto& edit = file_edits[edit_idx];
+                    for (const auto& edit : file_edits) {
                         suggestion_cards << "                                <div class=\"text-edit\">\n"
                                         << "                                    <div class=\"text-edit-meta\">\n"
                                         << "                                        <span class=\"edit-range\">[" << edit.start_line << ":" << edit.start_col

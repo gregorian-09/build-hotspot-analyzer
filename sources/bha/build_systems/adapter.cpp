@@ -599,7 +599,9 @@ namespace bha::build_systems
                 const pid_t pid = fork();
                 if (pid == 0) {
                     if (!working_dir.empty()) {
-                        (void)chdir(working_dir.c_str());
+                        if (chdir(working_dir.c_str()) != 0) {
+                            _exit(127);
+                        }
                     }
                     dup2(pipe_fds[1], STDOUT_FILENO);
                     dup2(pipe_fds[1], STDERR_FILENO);

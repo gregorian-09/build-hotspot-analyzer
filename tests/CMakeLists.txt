@@ -33,13 +33,15 @@ add_executable(bha_tests
         unit/exporters/test_exporter.cpp
         unit/storage/test_storage_compare.cpp
         unit/git/test_git_integration.cpp
-        unit/lsp/test_suggestion_manager.cpp
 )
+
+if(BHA_ENABLE_LSP)
+    target_sources(bha_tests PRIVATE unit/lsp/test_suggestion_manager.cpp)
+endif()
 
 target_link_libraries(bha_tests
         PRIVATE
         bha::bha
-        bha::lsp_core
         bha::warnings
         GTest::gtest
         GTest::gtest_main
@@ -47,9 +49,9 @@ target_link_libraries(bha_tests
         $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
 
-target_include_directories(bha_tests
-        PRIVATE
-        ${PROJECT_SOURCE_DIR}/lsp/headers
-)
+if(BHA_ENABLE_LSP)
+    target_link_libraries(bha_tests PRIVATE bha::lsp_core)
+    target_include_directories(bha_tests PRIVATE ${PROJECT_SOURCE_DIR}/lsp/headers)
+endif()
 
 gtest_discover_tests(bha_tests)

@@ -60,20 +60,20 @@ namespace bha::parsers
                 }
             } else {
                 std::cerr << "Warning: Failed to parse .su file line " << line_number
-                          << " in " << su_file.filename().string() << ": " << line << std::endl;
+                          << " in " << su_file.filename().string() << ": " << line << '\n';
             }
         }
 
         if (parsed_lines == 0 && skipped_unreliable == 0 && line_number > 0) {
             std::cerr << "Warning: No valid stack usage entries found in "
-                      << su_file.string() << " (" << line_number << " lines)" << std::endl;
+                      << su_file.string() << " (" << line_number << " lines)" << '\n';
         }
 
         if (skipped_unreliable > 0) {
             std::cerr << "Info: Skipped " << skipped_unreliable
                       << " unreliable 'dynamic' measurements in "
                       << su_file.filename().string()
-                      << " (max unreliable: " << max_unreliable_stack << " bytes)" << std::endl;
+                      << " (max unreliable: " << max_unreliable_stack << " bytes)" << '\n';
         }
 
         metrics.max_stack_bytes = max_stack;

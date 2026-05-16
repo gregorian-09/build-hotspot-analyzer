@@ -567,7 +567,7 @@ namespace bha::suggestions
             const std::size_t target_line
         ) {
             ConditionalContext context;
-            auto lines_result = file_utils::read_lines(file);
+            auto lines_result = utils::read_lines(file);
             if (lines_result.is_err()) {
                 return context;
             }
@@ -685,7 +685,7 @@ namespace bha::suggestions
                 return false;
             }
 
-            auto lines_result = file_utils::read_lines(file_path);
+            auto lines_result = utils::read_lines(file_path);
             if (lines_result.is_err()) {
                 return false;
             }
@@ -814,7 +814,7 @@ namespace bha::suggestions
 
             if (!project_root.empty()) {
                 const fs::path include_root = (project_root / "include").lexically_normal();
-                if (path_utils::is_under(normalized, include_root)) {
+                if (utils::is_under(normalized, include_root)) {
                     const fs::path rel = normalized.lexically_relative(include_root);
                     if (!rel.empty()) {
                         for (const auto& ext : source_exts) {

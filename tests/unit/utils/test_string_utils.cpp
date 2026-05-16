@@ -3,10 +3,12 @@
 //
 
 #include "bha/utils/string_utils.hpp"
+#include "bha/utils/format_utils.hpp"
+#include "bha/types.hpp"
 
 #include <gtest/gtest.h>
 
-namespace bha::string_utils
+namespace bha::utils
 {
     TEST(TrimTest, TrimLeft) {
         EXPECT_EQ(trim_left("  hello"), "hello");
@@ -124,18 +126,18 @@ namespace bha::string_utils
     }
 
     TEST(FormatDurationTest, Various) {
-        EXPECT_EQ(format_duration(500), "500ns");
-        EXPECT_EQ(format_duration(5000), "5.00us");
-        EXPECT_EQ(format_duration(5000000), "5.00ms");
-        EXPECT_EQ(format_duration(5000000000), "5.00s");
-        EXPECT_EQ(format_duration(300000000000), "5.00min");
-        EXPECT_EQ(format_duration(18000000000000), "5.00h");
+        EXPECT_EQ(format_duration(Duration{500}), "500ns");
+        EXPECT_EQ(format_duration(Duration{5000}), "5μs");
+        EXPECT_EQ(format_duration(Duration{5000000}), "5.0ms");
+        EXPECT_EQ(format_duration(Duration{5000000000}), "5.00s");
+        EXPECT_EQ(format_duration(Duration{300000000000}), "5m 0.0s");
+        EXPECT_EQ(format_duration(Duration{18000000000000}), "5h 0m 0s");
     }
 
-    TEST(FormatBytesTest, Various) {
-        EXPECT_EQ(format_bytes(500), "500 B");
-        EXPECT_EQ(format_bytes(5 * 1024), "5.00 KB");
-        EXPECT_EQ(format_bytes(5 * 1024 * 1024), "5.00 MB");
-        EXPECT_EQ(format_bytes(5ULL * 1024 * 1024 * 1024), "5.00 GB");
+    TEST(FormatSizeTest, Various) {
+        EXPECT_EQ(format_size(500), "500 B");
+        EXPECT_EQ(format_size(5 * 1024), "5.0 KB");
+        EXPECT_EQ(format_size(5 * 1024 * 1024), "5.0 MB");
+        EXPECT_EQ(format_size(5ULL * 1024 * 1024 * 1024), "5.0 GB");
     }
 }

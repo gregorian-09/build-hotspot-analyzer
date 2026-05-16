@@ -26,6 +26,8 @@
 #include "bha/error.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/string_utils.hpp"
+#include "bha/utils/regex_utils.hpp"
 
 #include <atomic>
 #include <cctype>
@@ -55,6 +57,16 @@
 
 namespace bha::suggestions {
     namespace fs = std::filesystem;
+
+    using bha::utils::trim_whitespace_copy;
+    using bha::utils::lowercase_ascii;
+    using bha::utils::strip_comments_and_strings;
+    using bha::utils::is_identifier_char;
+    using bha::utils::is_header_file_path;
+    using bha::utils::is_source_file_path;
+    using bha::utils::looks_like_macro_identifier;
+    using bha::utils::contains_identifier_token;
+    using bha::utils::find_outer_paren_span;
 
     /**
      * Context passed to suggesters containing all analysis data.
@@ -170,15 +182,6 @@ namespace bha::suggestions {
                 };
         }
         return {};
-    }
-
-    [[nodiscard]] inline std::string lowercase_ascii(std::string_view input) {
-        std::string lowered;
-        lowered.reserve(input.size());
-        for (const char c : input) {
-            lowered.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(c))));
-        }
-        return lowered;
     }
 
     [[nodiscard]] inline SourceLanguageMode classify_source_language_extension(const fs::path& path) {
@@ -314,20 +317,6 @@ namespace bha::suggestions {
     [[nodiscard]] inline std::optional<fs::path> resolve_trace_repo_root(const fs::path& path);
 
     [[nodiscard]] inline fs::path resolve_source_path(const fs::path& path);
-
-    [[nodiscard]] inline bool is_header_file_path(const fs::path& path) {
-        const std::string extension = lowercase_ascii(path.extension().string());
-        return extension == ".h" || extension == ".hh" || extension == ".hpp" || extension == ".hxx" ||
-               extension == ".h++" || extension == ".inc" || extension == ".inl" ||
-               extension == ".ipp" || extension == ".tpp";
-    }
-
-    [[nodiscard]] inline bool is_source_file_path(const fs::path& path) {
-        const std::string extension = lowercase_ascii(path.extension().string());
-        return extension == ".c" || extension == ".cc" || extension == ".cpp" || extension == ".cxx" ||
-               extension == ".c++" || extension == ".cp" || extension == ".m" || extension == ".mm" ||
-               extension == ".cu";
-    }
 
     [[nodiscard]] inline std::string repo_relative_path_string(
         const fs::path& path,
@@ -692,7 +681,7 @@ namespace bha::suggestions {
         if (!fs::exists(cache_path, ec) || ec) {
             return std::nullopt;
         }
-        auto content = file_utils::read_file(cache_path);
+        auto content = bha::utils::read_file(cache_path);
         if (content.is_err()) {
             return std::nullopt;
         }
@@ -958,102 +947,6 @@ namespace bha::suggestions {
         return oss.str();
     }
 
-    [[nodiscard]] inline std::string trim_whitespace_copy(std::string value) {
-        if (const auto first = value.find_first_not_of(" \t\r\n"); first != std::string::npos) {
-            value.erase(0, first);
-        } else {
-            value.clear();
-        }
-        if (!value.empty()) {
-            if (const auto last = value.find_last_not_of(" \t\r\n"); last != std::string::npos) {
-                value.erase(last + 1);
-            }
-        }
-        return value;
-    }
-
-    [[nodiscard]] inline std::string strip_comments_and_strings(
-        const std::string& line,
-        bool& in_block_comment
-    ) {
-        std::string cleaned;
-        cleaned.reserve(line.size());
-
-        bool in_string = false;
-        char quote_char = '\0';
-        bool escape_next = false;
-
-        for (std::size_t i = 0; i < line.size(); ++i) {
-            const char ch = line[i];
-            const char next = (i + 1 < line.size()) ? line[i + 1] : '\0';
-
-            if (in_block_comment) {
-                if (ch == '*' && next == '/') {
-                    in_block_comment = false;
-                    ++i;
-                }
-                continue;
-            }
-
-            if (in_string) {
-                if (escape_next) {
-                    escape_next = false;
-                } else if (ch == '\\') {
-                    escape_next = true;
-                } else if (ch == quote_char) {
-                    in_string = false;
-                }
-                cleaned.push_back(' ');
-                continue;
-            }
-
-            if (ch == '/' && next == '/') {
-                break;
-            }
-            if (ch == '/' && next == '*') {
-                in_block_comment = true;
-                ++i;
-                continue;
-            }
-            if (ch == '"' || ch == '\'') {
-                in_string = true;
-                quote_char = ch;
-                cleaned.push_back(' ');
-                continue;
-            }
-
-            cleaned.push_back(ch);
-        }
-
-        return cleaned;
-    }
-
-    [[nodiscard]] inline bool is_identifier_char(const char ch) {
-        const unsigned char value = static_cast<unsigned char>(ch);
-        return std::isalnum(value) || ch == '_';
-    }
-
-    [[nodiscard]] inline bool contains_identifier_token(
-        const std::string& text,
-        const std::string& symbol
-    ) {
-        if (text.empty() || symbol.empty()) {
-            return false;
-        }
-
-        std::size_t pos = text.find(symbol);
-        while (pos != std::string::npos) {
-            const bool left_ok = (pos == 0) || !is_identifier_char(text[pos - 1]);
-            const std::size_t end = pos + symbol.size();
-            const bool right_ok = (end >= text.size()) || !is_identifier_char(text[end]);
-            if (left_ok && right_ok) {
-                return true;
-            }
-            pos = text.find(symbol, pos + 1);
-        }
-        return false;
-    }
-
     enum class ExportedTypeSymbolKind {
         ForwardDeclarableType,
         AliasLike,
@@ -1102,7 +995,7 @@ namespace bha::suggestions {
     [[nodiscard]] inline std::vector<ExportedTypeSymbol> extract_exported_type_symbols(
         const fs::path& header_path
     ) {
-        auto lines_result = file_utils::read_lines(header_path);
+        auto lines_result = bha::utils::read_lines(header_path);
         if (lines_result.is_err()) {
             return {};
         }
@@ -1341,11 +1234,7 @@ namespace bha::suggestions {
             if (spelling.empty()) {
                 continue;
             }
-            const std::string escaped = std::regex_replace(
-                spelling,
-                std::regex(R"([.^$|()\\[\]{}*+?])"),
-                R"(\$&)"
-            );
+            const std::string escaped = bha::utils::regex_escape(spelling);
 
             const std::regex forbidden_constructs(
                 "\\b(?:sizeof|alignof|typeid|new|delete|dynamic_cast|static_cast)\\s*(?:\\(|)\\s*" + escaped + "\\b|"
@@ -1516,119 +1405,6 @@ namespace bha::suggestions {
             }
         }
         return std::nullopt;
-    }
-
-    [[nodiscard]] inline bool looks_like_macro_identifier(const std::string& identifier) {
-        bool saw_alpha = false;
-        for (const char c : identifier) {
-            if (std::isalpha(static_cast<unsigned char>(c)) != 0) {
-                saw_alpha = true;
-                if (std::isupper(static_cast<unsigned char>(c)) == 0 && c != '_') {
-                    return false;
-                }
-            }
-        }
-        return saw_alpha;
-    }
-
-    [[nodiscard]] inline std::optional<std::pair<std::size_t, std::size_t>> find_outer_paren_span(
-        const std::string& text
-    ) {
-        std::size_t template_depth = 0;
-        std::size_t paren_depth = 0;
-        std::optional<std::size_t> open_paren;
-
-        for (std::size_t i = 0; i < text.size(); ++i) {
-            const char ch = text[i];
-            if (ch == '<') {
-                ++template_depth;
-                continue;
-            }
-            if (ch == '>' && template_depth > 0) {
-                --template_depth;
-                continue;
-            }
-            if (template_depth > 0) {
-                continue;
-            }
-            if (ch == '(') {
-                if (paren_depth == 0) {
-                    open_paren = i;
-                }
-                ++paren_depth;
-                continue;
-            }
-            if (ch == ')' && paren_depth > 0) {
-                --paren_depth;
-                if (paren_depth == 0 && open_paren.has_value()) {
-                    return std::pair{*open_paren, i};
-                }
-            }
-        }
-
-        return std::nullopt;
-    }
-
-    [[nodiscard]] inline bool callable_tail_looks_valid(std::string tail) {
-        tail = trim_whitespace_copy(std::move(tail));
-        while (!tail.empty()) {
-            if (tail[0] == ';' || tail[0] == '{') {
-                return true;
-            }
-            if (tail.rfind("noexcept", 0) == 0) {
-                tail.erase(0, std::string("noexcept").size());
-                tail = trim_whitespace_copy(std::move(tail));
-                if (!tail.empty() && tail[0] == '(') {
-                    if (const auto span = find_outer_paren_span(tail)) {
-                        tail.erase(0, span->second + 1);
-                        tail = trim_whitespace_copy(std::move(tail));
-                        continue;
-                    }
-                    return false;
-                }
-                continue;
-            }
-            if (tail.rfind("[[", 0) == 0) {
-                const auto close = tail.find("]]");
-                if (close == std::string::npos) {
-                    return false;
-                }
-                tail.erase(0, close + 2);
-                tail = trim_whitespace_copy(std::move(tail));
-                continue;
-            }
-            if (tail.rfind("__attribute__", 0) == 0) {
-                tail.erase(0, std::string("__attribute__").size());
-                tail = trim_whitespace_copy(std::move(tail));
-                if (!tail.empty() && tail[0] == '(') {
-                    if (const auto span = find_outer_paren_span(tail)) {
-                        tail.erase(0, span->second + 1);
-                        tail = trim_whitespace_copy(std::move(tail));
-                        continue;
-                    }
-                }
-                return false;
-            }
-
-            std::size_t token_end = 0;
-            while (token_end < tail.size() &&
-                   (std::isalnum(static_cast<unsigned char>(tail[token_end])) ||
-                    tail[token_end] == '_')) {
-                ++token_end;
-            }
-            if (token_end == 0) {
-                return false;
-            }
-
-            const std::string token = tail.substr(0, token_end);
-            if (!looks_like_macro_identifier(token)) {
-                return false;
-            }
-            tail.erase(0, token_end);
-            tail = trim_whitespace_copy(std::move(tail));
-        }
-
-        return false;
     }
 
     [[nodiscard]] inline std::optional<fs::path> resolve_project_include_path(

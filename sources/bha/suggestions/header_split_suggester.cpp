@@ -3,7 +3,7 @@
 //
 
 #include "bha/suggestions/header_split_suggester.hpp"
-#include "bha/utils/scope_utils.hpp"
+#include "bha/suggestions/scope_utils.hpp"
 #include "bha/utils/callable_decl_utils.hpp"
 #include "bha/utils/type_decl_utils.hpp"
 #include "bha/utils/header_utils.hpp"
@@ -384,7 +384,7 @@ namespace bha::suggestions
         }
 
         std::vector<ForwardDeclSymbol> extract_forward_decl_symbols(const fs::path& header_path) {
-            auto lines_result = file_utils::read_lines(header_path);
+            auto lines_result = utils::read_lines(header_path);
             if (lines_result.is_err()) {
                 return {};
             }
@@ -750,6 +750,10 @@ namespace bha::suggestions
                         continue;
                     }
 
+                    const fs::path resolved_support = resolve_source_path(*support_header);
+                    if (resolved_support.lexically_normal() == header_path.lexically_normal()) {
+                        continue;
+                    }
                     if (seen_headers.insert(include_name).second) {
                         IncludeDirective support;
                         support.header_name = include_name;
@@ -858,7 +862,7 @@ namespace bha::suggestions
             const fs::path& header_path,
             const std::vector<ForwardDeclSymbol>& symbols
         ) {
-            auto lines_result = file_utils::read_lines(header_path);
+            auto lines_result = utils::read_lines(header_path);
             if (lines_result.is_err()) {
                 return {};
             }
@@ -1138,13 +1142,41 @@ namespace bha::suggestions
             return tokens;
         }
 
-        bool references_any_identifier(
+        bool references_any_callable(
             const std::string& sanitized_text,
-            const std::vector<std::string>& identifiers
+            const std::vector<std::string>& callable_names
         ) {
-            for (const auto& identifier : identifiers) {
-                if (contains_identifier_token(sanitized_text, identifier)) {
-                    return true;
+            for (const auto& name : callable_names) {
+                std::size_t pos = sanitized_text.find(name);
+                while (pos != std::string::npos) {
+                    const std::size_t end = pos + name.size();
+                    const bool left_ok = (pos == 0) || !bha::utils::is_identifier_char(sanitized_text[pos - 1]);
+                    const bool right_ok = (end >= sanitized_text.size()) || !bha::utils::is_identifier_char(sanitized_text[end]);
+                    if (left_ok && right_ok) {
+                        std::size_t scan = end;
+                        while (scan < sanitized_text.size() && sanitized_text[scan] == ' ') {
+                            ++scan;
+                        }
+                        if (scan < sanitized_text.size() && sanitized_text[scan] == '(') {
+                            return true;
+                        }
+                        if (scan < sanitized_text.size() && sanitized_text[scan] == '<') {
+                            int depth = 1;
+                            ++scan;
+                            while (scan < sanitized_text.size() && depth > 0) {
+                                if (sanitized_text[scan] == '<') ++depth;
+                                else if (sanitized_text[scan] == '>') --depth;
+                                ++scan;
+                            }
+                            while (scan < sanitized_text.size() && sanitized_text[scan] == ' ') {
+                                ++scan;
+                            }
+                            if (scan < sanitized_text.size() && sanitized_text[scan] == '(') {
+                                return true;
+                            }
+                        }
+                    }
+                    pos = sanitized_text.find(name, pos + 1);
                 }
             }
             return false;
@@ -1197,7 +1229,7 @@ namespace bha::suggestions
                 return std::nullopt;
             }
 
-            if (references_any_identifier(sanitized_text, callable_names)) {
+            if (references_any_callable(sanitized_text, callable_names)) {
                 return std::nullopt;
             }
 
@@ -1667,24 +1699,25 @@ namespace bha::suggestions
                     }
                 }
 
-                if (!include_exists && (fwd_exists || created_fwd_header)) {
-                    const std::string include_line = "#include \"" + fwd_header_name + "\"";
-                    const auto insertion = make_preferred_include_insertion_edit(
-                        *resolved_header_path,
-                        include_line
-                    );
-                    suggestion.edits.push_back(insertion.edit);
-                }
+                if (fwd_exists || created_fwd_header) {
+                    if (!include_exists) {
+                        const std::string include_line = "#include \"" + fwd_header_name + "\"";
+                        const auto insertion = make_preferred_include_insertion_edit(
+                            *resolved_header_path,
+                            include_line
+                        );
+                        suggestion.edits.push_back(insertion.edit);
+                    }
 
-                for (const auto line : collect_redundant_forward_decl_lines(
-                         *resolved_header_path,
-                         forward_decl_symbols
-                     )) {
-                    suggestion.edits.push_back(make_delete_line_edit(*resolved_header_path, line));
-                }
+                    for (const auto line : collect_redundant_forward_decl_lines(
+                             *resolved_header_path,
+                             forward_decl_symbols
+                         )) {
+                        suggestion.edits.push_back(make_delete_line_edit(*resolved_header_path, line));
+                    }
 
-                std::unordered_set<std::string> edited_includers;
-                for (const auto& opportunity : replacement_opportunities) {
+                    std::unordered_set<std::string> edited_includers;
+                    for (const auto& opportunity : replacement_opportunities) {
                     const std::string replacement_line =
                         "#include \"" + opportunity.replacement_include + "\"";
 
@@ -1706,6 +1739,7 @@ namespace bha::suggestions
                         suggestion.secondary_files.push_back(std::move(includer_target));
                     }
                 }
+            }
             }
 
             suggestion.is_safe = !suggestion.edits.empty();

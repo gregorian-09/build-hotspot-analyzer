@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-namespace bha::cli::suggestion_utils
+namespace bha::utils
 {
     namespace fs = std::filesystem;
 

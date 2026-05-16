@@ -35,9 +35,9 @@ namespace bha::analyzers
 
         bool is_external_header(const fs::path& header_path) {
             const std::string path_str = header_path.string();
-            return path_str.find("/usr/") == 0 ||
-                   path_str.find("/opt/") == 0 ||
-                   path_str.find("C:\\Program Files") == 0 ||
+            return path_str.starts_with("/usr/") ||
+                   path_str.starts_with("/opt/") ||
+                   path_str.starts_with("C:\\Program Files") ||
                    path_str.find("third_party") != std::string::npos ||
                    path_str.find("external") != std::string::npos ||
                    path_str.find("dependencies") != std::string::npos;

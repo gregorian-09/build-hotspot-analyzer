@@ -435,7 +435,7 @@ namespace bha::suggestions
 
             const std::string searchable = suggestion.title + "\n" + suggestion.description + "\n" +
                 suggestion.before_code.code + "\n" + suggestion.after_code.code;
-            const std::string searchable_lower = string_utils::to_lower(searchable);
+            const std::string searchable_lower = utils::to_lower(searchable);
 
             struct Candidate {
                 const analyzers::TemplateAnalysisResult::TemplateInfo* info;
@@ -444,8 +444,8 @@ namespace bha::suggestions
             std::vector<Candidate> candidates;
             for (const auto& tmpl : analysis.templates.templates) {
                 int score = 0;
-                const std::string signature_lower = string_utils::to_lower(tmpl.full_signature);
-                const std::string name_lower = string_utils::to_lower(tmpl.name);
+                const std::string signature_lower = utils::to_lower(tmpl.full_signature);
+                const std::string name_lower = utils::to_lower(tmpl.name);
                 if (!signature_lower.empty() && searchable_lower.find(signature_lower) != std::string::npos) {
                     score += 5;
                 }

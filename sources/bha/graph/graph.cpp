@@ -389,6 +389,7 @@ namespace bha::graph {
         }
 
         std::vector<std::pair<std::string, std::size_t>> result;
+        result.reserve(cycle_participation.size());
         for (const auto& [node, count] : cycle_participation) {
             result.emplace_back(node, count);
         }

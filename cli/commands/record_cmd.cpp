@@ -106,8 +106,6 @@ namespace bha::cli
             }
             fs::path output_path(*output_str);
 
-            auto compiler_hint = args.get_or("compiler", "auto");
-
             const std::vector<std::string>& cmd_parts = args.positional();
             if (cmd_parts.empty()) {
                 print_error("No command specified");

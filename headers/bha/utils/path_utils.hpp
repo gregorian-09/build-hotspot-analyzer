@@ -18,7 +18,7 @@
 #include <string_view>
 #include <vector>
 
-namespace bha::path_utils {
+namespace bha::utils {
 
     namespace fs = std::filesystem;
 
@@ -225,6 +225,6 @@ namespace bha::path_utils {
         return fs::equivalent(path1, path2, ec);
     }
 
-}  // namespace bha::path_utils
+}  // namespace bha::utils
 
 #endif //BUILDTIMEHOTSPOTANALYZER_PATH_UTILS_HPP

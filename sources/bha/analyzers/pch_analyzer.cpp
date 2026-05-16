@@ -24,9 +24,9 @@ namespace bha::analyzers
         bool is_system_header(const fs::path& path) {
             if (const std::string path_str = path.string(); path_str.find("/usr/include") != std::string::npos ||
                 path_str.find("/usr/local/include") != std::string::npos ||
-                path_str.find("/opt/") == 0 ||
-                path_str.find("C:\\Program Files") == 0 ||
-                path_str.find('<') == 0) {
+                path_str.starts_with("/opt/") ||
+                path_str.starts_with("C:\\Program Files") ||
+                path_str.starts_with('<')) {
                 return true;
                 }
 

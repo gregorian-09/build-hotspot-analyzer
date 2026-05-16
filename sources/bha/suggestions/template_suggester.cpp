@@ -203,7 +203,7 @@ namespace bha::suggestions
             const fs::path& header_path,
             const fs::path& project_root
         ) {
-            if (!project_root.empty() && path_utils::is_under(header_path, project_root)) {
+            if (!project_root.empty() && utils::is_under(header_path, project_root)) {
                 std::error_code ec;
                 if (auto rel = fs::relative(header_path, project_root, ec); !ec && !rel.empty()) {
                     return rel.generic_string();
@@ -478,7 +478,7 @@ namespace bha::suggestions
             const fs::path& header_path,
             const std::string& function_name
         ) {
-            auto lines_result = file_utils::read_lines(header_path);
+            auto lines_result = utils::read_lines(header_path);
             if (lines_result.is_err()) {
                 return false;
             }
@@ -1246,7 +1246,7 @@ namespace bha::suggestions
             if (!project_root_dir.empty() && !tmpl.files_using.empty()) {
                 const fs::path derived_root = find_repository_root(resolve_source_path(tmpl.files_using[0]));
                 if (!derived_root.empty() &&
-                    path_utils::is_under(derived_root, project_root_dir) &&
+                    utils::is_under(derived_root, project_root_dir) &&
                     derived_root != project_root_dir) {
                     project_root_dir = derived_root;
                 }
@@ -1463,7 +1463,7 @@ namespace bha::suggestions
             if (fs::exists(project_root_dir / "CMakeLists.txt")) {
                 const fs::path cmake_path = project_root_dir / "CMakeLists.txt";
                 if (context.project_root.empty() ||
-                    path_utils::is_under(cmake_path, project_root_dir)) {
+                    utils::is_under(cmake_path, project_root_dir)) {
                     std::ifstream cmake_in(cmake_path);
                     const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
                                                     std::istreambuf_iterator<char>());
@@ -1505,7 +1505,7 @@ namespace bha::suggestions
             if (fs::exists(project_root_dir / "meson.build")) {
                 const fs::path meson_path = project_root_dir / "meson.build";
                 if (context.project_root.empty() ||
-                    path_utils::is_under(meson_path, project_root_dir)) {
+                    utils::is_under(meson_path, project_root_dir)) {
                     std::ifstream meson_in(meson_path);
                     const std::string meson_content((std::istreambuf_iterator<char>(meson_in)),
                                                     std::istreambuf_iterator<char>());

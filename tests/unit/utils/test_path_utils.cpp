@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-namespace bha::path_utils
+namespace bha::utils
 {
     namespace fs = std::filesystem;
 

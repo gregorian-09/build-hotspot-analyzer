@@ -901,7 +901,7 @@ namespace bha::suggestions
 
             while (std::getline(in, line)) {
                 const std::string cleaned = strip_comments(line, in_block);
-                const std::string trimmed = std::string(string_utils::trim_left(cleaned));
+                const std::string trimmed = std::string(utils::trim_left(cleaned));
                 if (trimmed.empty()) {
                     continue;
                 }
@@ -1581,7 +1581,7 @@ namespace bha::suggestions
                 std::remove_if(metadata.begin(), metadata.end(),
                     [&](const FileMetadata& meta) {
                         const fs::path resolved = resolve_source_path(meta.path);
-                        return !path_utils::is_under(resolved, root);
+                        return !utils::is_under(resolved, root);
                     }),
                 metadata.end()
             );

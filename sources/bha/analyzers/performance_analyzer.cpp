@@ -23,13 +23,13 @@ namespace bha::analyzers
 
         bool is_source_path_arg(const std::string& arg) {
             const fs::path path(arg);
-            const std::string ext = string_utils::to_lower(path.extension().string());
+            const std::string ext = utils::to_lower(path.extension().string());
             return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".m" || ext == ".mm";
         }
 
         bool is_object_path_arg(const std::string& arg) {
             const fs::path path(arg);
-            const std::string ext = string_utils::to_lower(path.extension().string());
+            const std::string ext = utils::to_lower(path.extension().string());
             return ext == ".o" || ext == ".obj" || ext == ".pch" || ext == ".gch";
         }
 
@@ -42,15 +42,15 @@ namespace bha::analyzers
                     continue;
                 }
 
-                const std::string arg = raw_arg;
-                const std::string lower = string_utils::to_lower(arg);
+                const std::string& arg = raw_arg;
+                const std::string lower = utils::to_lower(arg);
 
                 if (lower == "-o" || lower == "-mf" || lower == "-mt" || lower == "-mq") {
                     skip_next = true;
                     continue;
                 }
-                if (lower.rfind("-o", 0) == 0 || lower.rfind("/fo", 0) == 0 || lower.rfind("-mf", 0) == 0 ||
-                    lower.rfind("-mt", 0) == 0 || lower.rfind("-mq", 0) == 0) {
+                if (lower.starts_with("-o") || lower.starts_with("/fo") || lower.starts_with("-mf") ||
+                    lower.starts_with("-mt") || lower.starts_with("-mq")) {
                     continue;
                 }
                 if (is_source_path_arg(arg) || is_object_path_arg(arg)) {
@@ -75,7 +75,7 @@ namespace bha::analyzers
         CommandRiskFlags inspect_command_line(const std::vector<std::string>& command_line) {
             CommandRiskFlags flags;
             if (!command_line.empty()) {
-                const std::string first = string_utils::to_lower(command_line.front());
+                const std::string first = utils::to_lower(command_line.front());
                 if (first.find("sccache") != std::string::npos ||
                     first.find("ccache") != std::string::npos ||
                     first.find("clcache") != std::string::npos) {
@@ -85,7 +85,7 @@ namespace bha::analyzers
 
             for (std::size_t i = 0; i < command_line.size(); ++i) {
                 const auto& raw_arg = command_line[i];
-                const std::string lower = string_utils::to_lower(raw_arg);
+                const std::string lower = utils::to_lower(raw_arg);
                 if (lower.find("sccache") != std::string::npos) {
                     flags.sccache = true;
                     flags.cache_wrapper = true;
@@ -101,19 +101,19 @@ namespace bha::analyzers
                 }
 
                 if (lower == "--coverage" ||
-                    lower.rfind("-fprofile-", 0) == 0 ||
-                    lower.rfind("-fcoverage-", 0) == 0 ||
-                    lower.rfind("/profile", 0) == 0) {
+                    lower.starts_with("-fprofile-") ||
+                    lower.starts_with("-fcoverage-") ||
+                    lower.starts_with("/profile")) {
                     flags.profile_or_coverage = true;
                 }
 
                 if (lower.find("cmake_pch") != std::string::npos ||
-                    lower.rfind("/yc", 0) == 0 ||
-                    (lower.rfind("-x", 0) == 0 && lower.find("c++-header") != std::string::npos)) {
+                    lower.starts_with("/yc") ||
+                    (lower.starts_with("-x") && lower.find("c++-header") != std::string::npos)) {
                     flags.pch_generation = true;
                 }
                 if (lower == "-x" && i + 1 < command_line.size()) {
-                    const std::string next = string_utils::to_lower(command_line[i + 1]);
+                    const std::string next = utils::to_lower(command_line[i + 1]);
                     if (next.find("c++-header") != std::string::npos) {
                         flags.pch_generation = true;
                     }

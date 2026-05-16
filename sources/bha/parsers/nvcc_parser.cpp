@@ -21,7 +21,7 @@ namespace bha::parsers {
         constexpr std::string_view CICC_MARKER = "cicc";
 
         std::optional<double> parse_number(const std::string_view token) {
-            auto trimmed = string_utils::trim(token);
+            auto trimmed = utils::trim(token);
             double value = 0.0;
             if (trimmed.empty()) {
                 return std::nullopt;
@@ -93,7 +93,7 @@ namespace bha::parsers {
                 if (name.empty() || time <= Duration::zero()) {
                     return;
                 }
-                const auto normalized_name_view = string_utils::trim(name);
+                const auto normalized_name_view = utils::trim(name);
                 const std::string normalized_name(normalized_name_view);
                 if (normalized_name.empty()) {
                     return;
@@ -106,8 +106,8 @@ namespace bha::parsers {
                 }
             };
 
-            for (const auto lines = string_utils::split(content, '\n'); const auto& line_view : lines) {
-                const std::string line(string_utils::trim(line_view));
+            for (const auto lines = utils::split(content, '\n'); const auto& line_view : lines) {
+                const std::string line(utils::trim(line_view));
                 if (line.empty()) {
                     continue;
                 }
@@ -147,7 +147,7 @@ namespace bha::parsers {
                 if (sep_pos == std::string::npos || sep_pos == 0) {
                     continue;
                 }
-                const std::string name(string_utils::trim(line.substr(0, sep_pos)));
+                const std::string name(utils::trim(line.substr(0, sep_pos)));
                 const auto maybe_duration = parse_duration_from_text(line.substr(sep_pos + 1));
                 if (maybe_duration.has_value()) {
                     add_phase(name, *maybe_duration);
@@ -164,7 +164,7 @@ namespace bha::parsers {
             return false;
         }
 
-        auto result = file_utils::read_file(path);
+        auto result = utils::read_file(path);
         if (result.is_err()) {
             return false;
         }
@@ -173,12 +173,12 @@ namespace bha::parsers {
     }
 
     bool NVCCTraceParser::can_parse_content(std::string_view content) const {
-        const auto lower = string_utils::to_lower(std::string(content.substr(0, 1000)));
+        const auto lower = utils::to_lower(std::string(content.substr(0, 1000)));
 
-        const bool has_nvcc = string_utils::contains(lower, NVCC_MARKER);
-        const bool has_cuda_tools = string_utils::contains(lower, PTXAS_MARKER) ||
-                              string_utils::contains(lower, FATBIN_MARKER) ||
-                              string_utils::contains(lower, CICC_MARKER);
+        const bool has_nvcc = utils::contains(lower, NVCC_MARKER);
+        const bool has_cuda_tools = utils::contains(lower, PTXAS_MARKER) ||
+                              utils::contains(lower, FATBIN_MARKER) ||
+                              utils::contains(lower, CICC_MARKER);
 
         return has_nvcc || has_cuda_tools;
     }
@@ -186,7 +186,7 @@ namespace bha::parsers {
     Result<CompilationUnit, Error> NVCCTraceParser::parse_file(
         const fs::path& path
     ) const {
-        auto content_result = file_utils::read_file(path);
+        auto content_result = utils::read_file(path);
         if (content_result.is_err()) {
             return Result<CompilationUnit, Error>::failure(content_result.error());
         }
@@ -213,22 +213,22 @@ namespace bha::parsers {
         Duration total_time = Duration::zero();
 
         for (const auto& [name, time] : phases) {
-            auto lower_name = string_utils::to_lower(name);
+            auto lower_name = utils::to_lower(name);
             total_time += time;
 
-            if (string_utils::contains(lower_name, "compile") ||
-                string_utils::contains(lower_name, "host") ||
-                string_utils::contains(lower_name, "c++")) {
+            if (utils::contains(lower_name, "compile") ||
+                utils::contains(lower_name, "host") ||
+                utils::contains(lower_name, "c++")) {
                 host_time += time;
             }
-            else if (string_utils::contains(lower_name, "ptx") ||
-                     string_utils::contains(lower_name, "cicc") ||
-                     string_utils::contains(lower_name, "device")) {
+            else if (utils::contains(lower_name, "ptx") ||
+                     utils::contains(lower_name, "cicc") ||
+                     utils::contains(lower_name, "device")) {
                 device_time += time;
             }
-            else if (string_utils::contains(lower_name, "fat") ||
-                     string_utils::contains(lower_name, "link") ||
-                     string_utils::contains(lower_name, "nvlink")) {
+            else if (utils::contains(lower_name, "fat") ||
+                     utils::contains(lower_name, "link") ||
+                     utils::contains(lower_name, "nvlink")) {
                 link_time += time;
             }
         }

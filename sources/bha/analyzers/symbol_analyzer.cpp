@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <ranges>
 #include <unordered_map>
 #include <unordered_set>
@@ -23,7 +24,7 @@ namespace bha::analyzers
          * - Inline: inline/constexpr (can appear in multiple TUs if identical)
          * - Template: template definitions (instantiated per TU)
          */
-        enum class SymbolLinkage {
+        enum class SymbolLinkage : std::uint8_t {
             External,
             Internal,
             Inline,
@@ -49,8 +50,8 @@ namespace bha::analyzers
                 return "template_class";
                 }
 
-            if (symbol.find("class ") == 0 || symbol.find("struct ") == 0 ||
-                symbol.find("enum ") == 0 || symbol.find("union ") == 0) {
+            if (symbol.starts_with("class ") || symbol.starts_with("struct ") ||
+                symbol.starts_with("enum ") || symbol.starts_with("union ")) {
                 return "type";
                 }
 
@@ -130,7 +131,7 @@ namespace bha::analyzers
                 return SymbolLinkage::Inline;
                 }
 
-            if (symbol.find("static ") == 0 ||
+            if (symbol.starts_with("static ") ||
                 symbol.find("(anonymous namespace)") != std::string::npos ||
                 symbol.find("::(anonymous)::") != std::string::npos) {
                 return SymbolLinkage::Internal;

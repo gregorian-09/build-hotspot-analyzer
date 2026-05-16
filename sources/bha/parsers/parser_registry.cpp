@@ -20,7 +20,7 @@ namespace bha::parsers {
                 return 1;
             }
 
-            const std::size_t hardware_threads = parallel::hardware_concurrency();
+            const std::size_t hardware_threads = bha::utils::hardware_concurrency();
             const std::size_t default_threads = std::min(hardware_threads, kDefaultMaxTraceParseThreads);
             const std::size_t requested = requested_threads == 0 ? default_threads : requested_threads;
             return std::clamp<std::size_t>(requested, 1, input_count);
@@ -83,10 +83,10 @@ namespace bha::parsers {
         const std::vector<fs::path>& paths,
         const std::size_t max_threads
     ) {
-        parallel::ThreadPool pool(static_cast<unsigned int>(
+        bha::utils::ThreadPool pool(static_cast<unsigned int>(
             bounded_trace_parse_threads(max_threads, paths.size())
         ));
-        return parallel::map(paths, [](const fs::path& path) {
+        return bha::utils::map(paths, [](const fs::path& path) {
             return parse_trace_file(path);
         }, pool);
     }
