@@ -218,16 +218,6 @@ namespace bha::cli
      */
     [[nodiscard]] std::size_t terminal_width();
 
-    /**
-     * Format a duration for display.
-     */
-    [[nodiscard]] std::string format_duration(std::chrono::milliseconds ms);
-
-    /**
-     * Format a size (bytes) for display.
-     */
-    [[nodiscard]] std::string format_size(std::size_t bytes);
-
 }  // namespace bha::cli
 
 #endif //BHA_PROGRESS_HPP

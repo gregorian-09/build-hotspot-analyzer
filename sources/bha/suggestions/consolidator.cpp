@@ -181,19 +181,6 @@ namespace bha::suggestions
             return filtered;
         }
 
-        [[maybe_unused]] std::string format_duration_estimate(const Duration d) {
-            const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
-            if (ms < 1000) {
-                return std::to_string(ms) + "ms";
-            }
-            const auto sec = ms / 1000;
-            if (sec < 60) {
-                return std::to_string(sec) + "s";
-            }
-            const auto min = sec / 60;
-            return std::to_string(min) + "m " + std::to_string(sec % 60) + "s";
-        }
-
         fs::path common_parent_path(const fs::path& lhs, const fs::path& rhs) {
             fs::path result;
             auto lit = lhs.begin();
