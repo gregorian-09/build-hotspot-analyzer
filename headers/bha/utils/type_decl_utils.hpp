@@ -26,8 +26,20 @@ namespace bha::utils {
 
         erase_balanced("[[", "]]");
 
-        static const std::regex attribute_regex(R"(\b(?:__attribute__|alignas)\s*\([^)]*\))");
-        text = std::regex_replace(text, attribute_regex, " ");
+        static const std::regex kw_regex(R"(\b(?:__attribute__|alignas)\s*\()");
+        for (auto it = std::sregex_iterator(text.begin(), text.end(), kw_regex);
+             it != std::sregex_iterator(); ) {
+            const std::size_t start = static_cast<std::size_t>(it->position());
+            std::size_t scan = start + static_cast<std::size_t>(it->length());
+            int depth = 1;
+            while (scan < text.size() && depth > 0) {
+                if (text[scan] == '(') ++depth;
+                else if (text[scan] == ')') --depth;
+                ++scan;
+            }
+            text.erase(start, scan - start);
+            it = std::sregex_iterator(text.begin(), text.end(), kw_regex);
+        }
         return text;
     }
 
@@ -76,7 +88,18 @@ namespace bha::utils {
             return std::nullopt;
         }
 
-        return tokens.front();
+        std::string qualified;
+        for (std::size_t i = 0; i < tokens.size(); ++i) {
+            if (!qualified.empty()) {
+                qualified += "::";
+            }
+            qualified += tokens[i];
+            if (i + 1 >= tokens.size() ||
+                sanitized.find(qualified + "::" + tokens[i + 1]) == std::string::npos) {
+                break;
+            }
+        }
+        return qualified;
     }
 
 }  // namespace bha::utils

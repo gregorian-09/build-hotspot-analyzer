@@ -4,6 +4,7 @@
 #include "bha/utils/string_utils.hpp"
 
 #include <cctype>
+#include <filesystem>
 #include <fstream>
 #include <optional>
 #include <regex>
@@ -11,6 +12,8 @@
 #include <vector>
 
 namespace bha::suggestions {
+
+    namespace fs = std::filesystem;
 
     enum class ScopeFrameKind {
         Namespace,
