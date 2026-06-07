@@ -332,28 +332,20 @@ namespace bha::suggestions
                 return results;
             }
 
-            static const auto clang_tidy_binary = [] {
+            static const auto clang_tidy_binary = []() -> std::string {
                 if (const char* env = std::getenv("BHA_CLANG_TIDY")) {
-                    const fs::path path = env;
-                    if (!path.empty()) {
-                        return path.string();
-                    }
+                    return env;
                 }
                 const std::array candidates{
                     fs::path("/usr/bin/clang-tidy"),
                     fs::path("/usr/local/bin/clang-tidy"),
-                    fs::path("clang-tidy")
                 };
                 for (const auto& candidate : candidates) {
-                    if (candidate.is_absolute()) {
-                        if (fs::exists(candidate)) {
-                            return candidate.string();
-                        }
-                        continue;
+                    if (fs::exists(candidate)) {
+                        return candidate.string();
                     }
-                    return candidate.string();
                 }
-                return std::string("clang-tidy");
+                return "clang-tidy";
             }();
 
             const std::string cmd =
@@ -406,10 +398,18 @@ namespace bha::suggestions
                 std::error_code ec;
                 if (diag_file.is_relative()) {
                     diag_file = fs::absolute(diag_file, ec);
+                    if (ec) {
+                        continue;
+                    }
                 }
-                const auto line_number = std::stoul(
-                    line.substr(first_colon + 1, second_colon - first_colon - 1)
-                );
+                std::size_t line_number = 0;
+                try {
+                    line_number = std::stoul(
+                        line.substr(first_colon + 1, second_colon - first_colon - 1)
+                    );
+                } catch (...) {
+                    continue;
+                }
                 if (line_number == 0) {
                     continue;
                 }
@@ -470,12 +470,8 @@ namespace bha::suggestions
             const analyzers::DependencyAnalysisResult& deps,
             const std::string& include_name
         ) {
-            const fs::path include_path(include_name);
             for (const auto& header : deps.headers) {
                 if (matches_candidate_header(include_name, header.path)) {
-                    return &header;
-                }
-                if (include_path.filename() == header.path.filename()) {
                     return &header;
                 }
             }
@@ -497,7 +493,7 @@ namespace bha::suggestions
             const std::string& haystack,
             const std::initializer_list<std::string_view> tokens
         ) {
-            for (const auto token : tokens) {
+            for (const auto& token : tokens) {
                 if (haystack.find(token) != std::string::npos) {
                     return true;
                 }
@@ -599,23 +595,23 @@ namespace bha::suggestions
                 }
 
                 auto directive = trim_whitespace_copy(cleaned.substr(1));
-                if (directive.rfind("ifdef", 0) == 0) {
+                if (directive.starts_with("ifdef")) {
                     directive = trim_whitespace_copy(directive.substr(5));
                     stack.push_back({directive, condition_mentions_platform(directive)});
                     continue;
                 }
-                if (directive.rfind("ifndef", 0) == 0) {
+                if (directive.starts_with("ifndef")) {
                     directive = trim_whitespace_copy(directive.substr(6));
                     const std::string expression = "!defined(" + directive + ")";
                     stack.push_back({expression, condition_mentions_platform(directive)});
                     continue;
                 }
-                if (directive.rfind("if", 0) == 0) {
+                if (directive.starts_with("if")) {
                     directive = trim_whitespace_copy(directive.substr(2));
                     stack.push_back({directive, condition_mentions_platform(directive)});
                     continue;
                 }
-                if (directive.rfind("elif", 0) == 0) {
+                if (directive.starts_with("elif")) {
                     directive = trim_whitespace_copy(directive.substr(4));
                     if (!stack.empty()) {
                         stack.back() = {directive, condition_mentions_platform(directive)};
