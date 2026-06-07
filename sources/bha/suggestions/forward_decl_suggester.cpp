@@ -51,20 +51,30 @@ namespace bha::suggestions
             bool in_double_quote = false;
             for (std::size_t i = 0; i < line.size(); ++i) {
                 const char ch = line[i];
-                if (ch == '\\') {
-                    ++i;
+                if (in_single_quote || in_double_quote) {
+                    if (ch == '\\') {
+                        ++i;
+                        continue;
+                    }
+                    if (in_single_quote && ch == '\'') {
+                        in_single_quote = false;
+                        continue;
+                    }
+                    if (in_double_quote && ch == '"') {
+                        in_double_quote = false;
+                        continue;
+                    }
                     continue;
                 }
-                if (!in_double_quote && ch == '\'') {
-                    in_single_quote = !in_single_quote;
+                if (ch == '\'') {
+                    in_single_quote = true;
                     continue;
                 }
-                if (!in_single_quote && ch == '"') {
-                    in_double_quote = !in_double_quote;
+                if (ch == '"') {
+                    in_double_quote = true;
                     continue;
                 }
-                if (!in_single_quote && !in_double_quote && ch == '/' &&
-                    i + 1 < line.size() && line[i + 1] == '/') {
+                if (ch == '/' && i + 1 < line.size() && line[i + 1] == '/') {
                     return line.substr(0, i);
                 }
             }
@@ -260,6 +270,7 @@ namespace bha::suggestions
             std::unordered_set<std::string> seen_types;
             std::size_t brace_depth = 0;
             bool pending_template = false;
+            bool in_block_comment = false;
 
             std::string raw_line;
             while (std::getline(in, raw_line)) {
@@ -270,7 +281,7 @@ namespace bha::suggestions
                     pending_template = true;
                 }
 
-                const std::regex namespace_regex(R"(\bnamespace\s+([A-Za-z_][A-Za-z0-9_:]*)\s*\{)");
+                static const std::regex namespace_regex(R"(\bnamespace\s+([A-Za-z_][A-Za-z0-9_:]*)\s*\{)");
                 for (auto begin = std::sregex_iterator(no_comment.begin(), no_comment.end(), namespace_regex),
                           end = std::sregex_iterator();
                      begin != end;
@@ -306,7 +317,7 @@ namespace bha::suggestions
 
             if (!line.empty()) {
                 std::smatch class_match;
-                const std::regex class_regex(R"(^\s*(class|struct|union)\b(.*)$)");
+                static const std::regex class_regex(R"(^\s*(class|struct|union)\b(.*)$)");
                 if (std::regex_search(line, class_match, class_regex)) {
                     if (!pending_template) {
                         const auto type_name = utils::extract_declared_type_name(class_match[2].str());
@@ -335,8 +346,10 @@ namespace bha::suggestions
                     }
                 }
 
-                const auto opens = static_cast<std::size_t>(std::count(no_comment.begin(), no_comment.end(), '{'));
-                const auto closes = static_cast<std::size_t>(std::count(no_comment.begin(), no_comment.end(), '}'));
+                const std::string comment_free = bha::utils::strip_comments_and_strings(
+                    raw_line, in_block_comment);
+                const auto opens = static_cast<std::size_t>(std::count(comment_free.begin(), comment_free.end(), '{'));
+                const auto closes = static_cast<std::size_t>(std::count(comment_free.begin(), comment_free.end(), '}'));
                 brace_depth += opens;
                 if (closes >= brace_depth) {
                     brace_depth = 0;
@@ -494,7 +507,7 @@ namespace bha::suggestions
             static constexpr std::array<std::string_view, 5> kSourceExts = {
                 ".cpp", ".cc", ".cxx", ".c++", ".C"
             };
-            for (const auto ext : kSourceExts) {
+            for (const auto& ext : kSourceExts) {
                 fs::path candidate = header_path;
                 candidate.replace_extension(ext);
                 if (fs::exists(candidate)) {
@@ -508,7 +521,7 @@ namespace bha::suggestions
                 if (header_path.is_absolute()) {
                     const fs::path rel = normalized_header.lexically_relative(normalized_root);
                     if (!rel.empty() && rel != "." && rel != "..") {
-                        for (const auto ext : kSourceExts) {
+                        for (const auto& ext : kSourceExts) {
                             fs::path direct_candidate = normalized_root / rel;
                             direct_candidate.replace_extension(ext);
                             if (fs::exists(direct_candidate)) {
@@ -523,7 +536,7 @@ namespace bha::suggestions
                             for (; rel_it != rel.end(); ++rel_it) {
                                 rel_without_include /= *rel_it;
                             }
-                            for (const auto ext : kSourceExts) {
+                            for (const auto& ext : kSourceExts) {
                                 fs::path src_candidate = normalized_root / "src" / rel_without_include;
                                 src_candidate.replace_extension(ext);
                                 if (fs::exists(src_candidate)) {
@@ -712,7 +725,8 @@ namespace bha::suggestions
             const ForwardDeclType& type
         ) {
             const std::regex tag_regex(
-                "\\b" + forward_decl_keyword(type) + "\\s+" + type.name + "\\b"
+                "\\b" + forward_decl_keyword(type) + "\\s+" +
+                bha::utils::regex_escape(type.name) + "\\b"
             );
             return std::regex_search(sanitized_includer_content, tag_regex);
         }
