@@ -461,7 +461,12 @@ namespace bha::suggestions
 
                 if (trimmed.rfind("template", 0) == 0) {
                     template_pending = true;
-                    if (trimmed.find('>') != std::string::npos) {
+                    int angle_depth = 0;
+                    for (const char ch : trimmed) {
+                        if (ch == '<') ++angle_depth;
+                        else if (ch == '>' && angle_depth > 0) --angle_depth;
+                    }
+                    if (angle_depth == 0) {
                         template_pending = false;
                         skip_next_class_decl = true;
                     }
@@ -475,16 +480,18 @@ namespace bha::suggestions
                     std::smatch class_match;
                     if (std::regex_search(trimmed, class_match, class_or_struct_regex)) {
                         if (has_nested_name_qualifier_after_match(trimmed, class_match, 2)) {
-                            skip_next_class_decl = false;
                             continue;
                         }
                         if (!skip_next_class_decl &&
                             (trimmed.find('{') != std::string::npos || trimmed.find(';') != std::string::npos)) {
+                            const std::size_t match_start = static_cast<std::size_t>(class_match.position());
+                            if (match_start >= 6 && trimmed.substr(match_start - 6, 6) == "friend") {
+                                continue;
+                            }
                             const auto name = utils::extract_declared_type_name(
-                                trimmed.substr(static_cast<std::size_t>(class_match.position()))
+                                trimmed.substr(match_start)
                             );
                             if (!name.has_value()) {
-                                skip_next_class_decl = false;
                                 continue;
                             }
                             ForwardDeclSymbol symbol;
@@ -515,8 +522,8 @@ namespace bha::suggestions
                                 symbols_by_identity.emplace(identity, std::move(symbol));
                             }
                         }
-                        skip_next_class_decl = false;
                     }
+                    skip_next_class_decl = false;
                 }
 
                 for (const char ch : line) {
@@ -942,7 +949,12 @@ namespace bha::suggestions
                 }
 
                 if (trimmed.rfind("template", 0) == 0) {
-                    template_pending = trimmed.find('>') == std::string::npos;
+                    int angle_depth = 0;
+                    for (const char ch : trimmed) {
+                        if (ch == '<') ++angle_depth;
+                        else if (ch == '>' && angle_depth > 0) --angle_depth;
+                    }
+                    template_pending = angle_depth > 0;
                 } else if (!template_pending && brace_depth == namespace_depth) {
                     std::smatch match;
                     if (std::regex_match(trimmed, match, class_or_struct_decl_regex)) {
@@ -955,8 +967,15 @@ namespace bha::suggestions
                             redundant_lines.push_back(line_index);
                         }
                     }
-                } else if (template_pending && trimmed.find('>') != std::string::npos) {
-                    template_pending = false;
+                } else if (template_pending) {
+                    int angle_depth = 0;
+                    for (const char ch : trimmed) {
+                        if (ch == '<') ++angle_depth;
+                        else if (ch == '>' && angle_depth > 0) --angle_depth;
+                    }
+                    if (angle_depth == 0) {
+                        template_pending = false;
+                    }
                 }
 
                 for (const char ch : line) {
@@ -1245,7 +1264,8 @@ namespace bha::suggestions
             std::vector<std::string> mentioned_symbols;
             std::unordered_set<std::string> seen_symbols;
             for (const auto& symbol : symbols) {
-                if (!seen_symbols.insert(symbol.name).second) {
+                const std::string sym_key = make_canonical_symbol_key(symbol);
+                if (!seen_symbols.insert(sym_key).second) {
                     continue;
                 }
                 if (!identifiers.contains(symbol.name)) {
@@ -1398,19 +1418,20 @@ namespace bha::suggestions
 
             // Check if already split
             const std::string filename = header.path.filename().string();
-            std::string lower_filename;
-            lower_filename.reserve(filename.size());
-            for (const char c : filename) {
-                lower_filename += static_cast<char>(
+            const std::string stem = header.path.stem().string();
+            std::string lower_stem;
+            lower_stem.reserve(stem.size());
+            for (const char c : stem) {
+                lower_stem += static_cast<char>(
                     std::tolower(static_cast<unsigned char>(c)));
             }
 
-            bool already_split = lower_filename.find("_fwd") != std::string::npos ||
-                                 lower_filename.find("_types") != std::string::npos ||
-                                 lower_filename.find("_decl") != std::string::npos ||
-                                 lower_filename.find("_impl") != std::string::npos ||
-                                 lower_filename.find("_internal") != std::string::npos ||
-                                 lower_filename.find("_detail") != std::string::npos;
+            bool already_split = lower_stem.ends_with("_fwd") ||
+                                 lower_stem.ends_with("_types") ||
+                                 lower_stem.ends_with("_decl") ||
+                                 lower_stem.ends_with("_impl") ||
+                                 lower_stem.ends_with("_internal") ||
+                                 lower_stem.ends_with("_detail");
             if (!already_split && resolved_header_path.has_value()) {
                 if (find_include_for_header(*resolved_header_path, fwd_header_name).has_value()) {
                     already_split = true;
