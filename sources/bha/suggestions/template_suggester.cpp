@@ -47,7 +47,7 @@ namespace bha::suggestions
         };
 
         std::optional<CMakeTargetInfo> find_first_cmake_target(const std::string& content) {
-            const std::regex target_regex(
+            static const std::regex target_regex(
                 R"(^\s*add_(executable|library)\s*\(\s*([A-Za-z0-9_\-\.]+))",
                 std::regex::icase
             );
@@ -69,9 +69,17 @@ namespace bha::suggestions
 
                 int depth = 0;
                 bool started = false;
+                bool in_string = false;
                 std::size_t end_line = line_num;
                 for (std::size_t i = line_num; i < lines.size(); ++i) {
                     for (const char c : lines[i]) {
+                        if (c == '"') {
+                            in_string = !in_string;
+                            continue;
+                        }
+                        if (in_string) {
+                            continue;
+                        }
                         if (c == '(') {
                             ++depth;
                             started = true;
@@ -342,24 +350,44 @@ namespace bha::suggestions
             if (open == std::string::npos) {
                 return 0;
             }
-            std::size_t depth = 0;
+            std::size_t angle_depth = 0;
+            std::size_t paren_depth = 0;
             std::size_t commas = 0;
             for (std::size_t i = open; i < signature.size(); ++i) {
                 const char ch = signature[i];
+                if (ch == '(') {
+                    ++paren_depth;
+                    continue;
+                }
+                if (ch == ')') {
+                    if (paren_depth > 0) {
+                        --paren_depth;
+                    }
+                    continue;
+                }
+                if (paren_depth > 0) {
+                    continue;
+                }
                 if (ch == '<') {
-                    ++depth;
+                    if (i >= 8 && signature.substr(i - 8, 8) == "operator") {
+                        continue;
+                    }
+                    ++angle_depth;
                     continue;
                 }
                 if (ch == '>') {
-                    if (depth > 0) {
-                        --depth;
-                        if (depth == 0) {
+                    if (i >= 8 && signature.substr(i - 8, 8) == "operator") {
+                        continue;
+                    }
+                    if (angle_depth > 0) {
+                        --angle_depth;
+                        if (angle_depth == 0) {
                             return commas + 1;
                         }
                     }
                     continue;
                 }
-                if (ch == ',' && depth == 1) {
+                if (ch == ',' && angle_depth == 1) {
                     ++commas;
                 }
             }
@@ -483,27 +511,25 @@ namespace bha::suggestions
                 return false;
             }
 
-            int template_window = 0;
+            bool in_template = false;
             for (const auto& line : lines_result.value()) {
                 const auto start = line.find_first_not_of(" \t\r\n");
                 if (start == std::string::npos) {
-                    if (template_window > 0) {
-                        --template_window;
-                    }
                     continue;
                 }
                 const std::string trimmed = line.substr(start);
                 if (trimmed.rfind("template", 0) == 0) {
-                    template_window = 8;
+                    in_template = true;
                     continue;
                 }
-                if (template_window > 0 &&
-                    trimmed.find(function_name) != std::string::npos &&
-                    trimmed.find('(') != std::string::npos) {
-                    return true;
-                }
-                if (template_window > 0) {
-                    --template_window;
+                if (in_template) {
+                    if (trimmed.find(function_name) != std::string::npos &&
+                        trimmed.find('(') != std::string::npos) {
+                        return true;
+                    }
+                    if (trimmed.front() == '{' || trimmed.front() == ';') {
+                        in_template = false;
+                    }
                 }
             }
             return false;
@@ -519,20 +545,71 @@ namespace bha::suggestions
             }
             const std::string content((std::istreambuf_iterator<char>(in)),
                                       std::istreambuf_iterator<char>());
+
+            // Use a regex that handles template parameters by allowing '>' inside <> pairs.
+            // We approximate this by matching up to a final '>' that precedes 'class'/'struct'.
             const std::string escaped_name = utils::regex_escape(base_name);
-            const std::regex tmpl_regex(
-                "\\btemplate\\s*<[^>]*>\\s*(class|struct)\\s+" + escaped_name + "\\b",
+            static const std::regex tmpl_regex(
+                "\\btemplate\\s*<[^>]*(?:>[^>]*)*>\\s*(class|struct)\\s+" + escaped_name + "\\b",
                 std::regex::icase
             );
             std::smatch match;
-            if (!std::regex_search(content, match, tmpl_regex) || match.size() < 2) {
-                return std::nullopt;
+            if (std::regex_search(content, match, tmpl_regex) && match.size() >= 2) {
+                std::string kind = match[1].str();
+                if (kind != "struct" && kind != "class") {
+                    kind = "class";
+                }
+                return kind;
             }
-            std::string kind = match[1].str();
-            if (kind != "struct" && kind != "class") {
-                kind = "class";
+
+            // Fallback: depth-aware scanner that handles arbitrary nesting.
+            std::size_t pos = 0;
+            while ((pos = content.find("template", pos)) != std::string::npos) {
+                pos += 8;
+                pos = content.find_first_not_of(" \t\r\n", pos);
+                if (pos == std::string::npos || content[pos] != '<') {
+                    continue;
+                }
+                std::size_t angle_depth = 1;
+                std::size_t close = pos + 1;
+                for (; close < content.size(); ++close) {
+                    const char c = content[close];
+                    if (c == '<') {
+                        ++angle_depth;
+                    } else if (c == '>') {
+                        --angle_depth;
+                        if (angle_depth == 0) {
+                            break;
+                        }
+                    }
+                }
+                if (close >= content.size()) {
+                    break;
+                }
+                std::size_t after = close + 1;
+                after = content.find_first_not_of(" \t\r\n", after);
+                if (after == std::string::npos) {
+                    break;
+                }
+                std::string kind;
+                if (content.compare(after, 5, "class") == 0) {
+                    kind = "class";
+                    after += 5;
+                } else if (content.compare(after, 6, "struct") == 0) {
+                    kind = "struct";
+                    after += 6;
+                } else {
+                    pos = close + 1;
+                    continue;
+                }
+                after = content.find_first_not_of(" \t\r\n", after);
+                if (after != std::string::npos &&
+                    content.compare(after, base_name.size(), base_name) == 0) {
+                    return kind;
+                }
+                pos = close + 1;
             }
-            return kind;
+            return std::nullopt;
         }
 
         std::optional<fs::path> resolve_template_header(const analyzers::TemplateAnalysisResult::TemplateInfo& tmpl) {
@@ -1750,16 +1827,6 @@ namespace bha::suggestions
             }
             const auto& tmpl = *tmpl_ptr;
             ++analyzed;
-
-            if (tmpl.instantiation_count < min_instantiation_count) {
-                ++skipped;
-                continue;
-            }
-
-            if (tmpl.total_time < min_template_time) {
-                ++skipped;
-                continue;
-            }
 
             if (!context.target_files_lookup.empty()) {
                 bool any_target = false;
