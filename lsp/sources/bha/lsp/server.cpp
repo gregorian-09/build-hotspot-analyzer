@@ -15,6 +15,7 @@
 #include <ctime>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 #include <regex>
 #include <thread>
 #include <unordered_set>
@@ -1544,12 +1545,12 @@ namespace bha::lsp
                 throw std::runtime_error(message);
             }
             ensure_not_cancelled();
-            remember_build_profile(
-                project_path,
-                adapter->name(),
-                options,
-                std::chrono::duration_cast<std::chrono::milliseconds>(build.build_time).count()
-            );
+            const auto build_time_ms =
+                std::chrono::duration_cast<std::chrono::milliseconds>(build.build_time).count();
+            const int recorded_build_time_ms = build_time_ms > std::numeric_limits<int>::max()
+                ? std::numeric_limits<int>::max()
+                : static_cast<int>(build_time_ms);
+            remember_build_profile(project_path, adapter->name(), options, recorded_build_time_ms);
 
             send_progress(token, json{
                 {"kind", "report"},

@@ -870,7 +870,9 @@ namespace bha::lsp
     ) {
         output.clear();
         std::string effective_command = command;
-#ifndef _WIN32
+#ifdef _WIN32
+        (void)timeout_seconds;
+#else
         if (timeout_seconds > 0 && std::system("command -v timeout >/dev/null 2>&1") == 0) {
             effective_command = "timeout --signal=TERM " +
                 std::to_string(timeout_seconds) + "s /bin/bash -lc " + shell_quote(command);

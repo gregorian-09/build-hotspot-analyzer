@@ -630,13 +630,13 @@ namespace bha::suggestions
 
                 std::error_code ec;
                 fs::path rel = fs::relative(normalized_header, public_include_root, ec);
-                if (!ec && !rel.empty() && rel.native().rfind("..", 0) != 0) {
+                if (!ec && !rel.empty() && rel.generic_string().rfind("..", 0) != 0) {
                     return rel.generic_string();
                 }
 
                 ec.clear();
                 rel = fs::relative(normalized_header, normalized_root, ec);
-                if (!ec && !rel.empty() && rel.native().rfind("..", 0) != 0) {
+                if (!ec && !rel.empty() && rel.generic_string().rfind("..", 0) != 0) {
                     return rel.generic_string();
                 }
             }

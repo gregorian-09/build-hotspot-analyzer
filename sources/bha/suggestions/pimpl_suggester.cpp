@@ -1108,7 +1108,7 @@ namespace bha::suggestions
                         readiness.has_macro_generated_private_declarations = true;
                     }
                 }
-            } else if (const std::regex preprocessor_regex(R"(^\s*#)", std::regex_constants::multiline);
+            } else if (const std::regex preprocessor_regex(R"((^|\n)[ \t]*#)");
                        std::regex_search(content, preprocessor_regex)) {
                 readiness.has_preprocessor_in_class = true;
             }

@@ -35,6 +35,12 @@ add_library(bha_warnings INTERFACE)
 add_library(bha::warnings ALIAS bha_warnings)
 
 if(MSVC)
+    target_compile_definitions(bha_warnings INTERFACE
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
+            _CRT_SECURE_NO_WARNINGS
+    )
+
     target_compile_options(bha_warnings INTERFACE
             /W4
             /WX
