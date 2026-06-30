@@ -81,7 +81,32 @@ namespace {
         return std::string(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
     }
 
+    void expect_logged_cmake_define(
+        const std::string& logged,
+        const std::string& define,
+        const fs::path& value
+    ) {
+        const std::string define_without_equals = define.ends_with("=")
+            ? define.substr(0, define.size() - 1)
+            : define;
+        EXPECT_NE(logged.find(define_without_equals), std::string::npos) << logged;
+        EXPECT_NE(logged.find(value.string()), std::string::npos) << logged;
+    }
+
     void write_fake_cmake(const fs::path& bin_dir, const fs::path& log_path) {
+#ifdef _WIN32
+        const fs::path script = bin_dir / "cmake.cmd";
+        write_file(
+            script,
+            "@echo off\n"
+            "break > \"" + log_path.string() + "\"\n"
+            ":args\n"
+            "if \"%~1\"==\"\" exit /b 0\n"
+            "echo %~1>>\"" + log_path.string() + "\"\n"
+            "shift\n"
+            "goto args\n"
+        );
+#else
         const fs::path script = bin_dir / "cmake";
         write_file(
             script,
@@ -90,6 +115,7 @@ namespace {
             "exit 0\n"
         );
         make_executable(script);
+#endif
     }
 
     void write_fake_compiler(const fs::path& path) {
@@ -236,8 +262,8 @@ TEST(CMakeAdapterTest, DerivesCompanionCompilerFromExplicitCxxOverride) {
     ASSERT_TRUE(result.is_ok()) << result.error().message();
 
     const std::string logged = read_file_text(log_path);
-    EXPECT_NE(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "clang").string()), std::string::npos);
-    EXPECT_NE(logged.find("-DCMAKE_CXX_COMPILER=" + (bin_dir / "clang++").string()), std::string::npos);
+    expect_logged_cmake_define(logged, "-DCMAKE_C_COMPILER=", bin_dir / "clang");
+    expect_logged_cmake_define(logged, "-DCMAKE_CXX_COMPILER=", bin_dir / "clang++");
 }
 
 TEST(CMakeAdapterTest, ExplicitCompilerPairOverridesLegacySingleCompiler) {
@@ -270,7 +296,7 @@ TEST(CMakeAdapterTest, ExplicitCompilerPairOverridesLegacySingleCompiler) {
     ASSERT_TRUE(result.is_ok()) << result.error().message();
 
     const std::string logged = read_file_text(log_path);
-    EXPECT_NE(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "clang").string()), std::string::npos);
-    EXPECT_NE(logged.find("-DCMAKE_CXX_COMPILER=" + (bin_dir / "clang++").string()), std::string::npos);
-    EXPECT_EQ(logged.find("-DCMAKE_C_COMPILER=" + (bin_dir / "gcc").string()), std::string::npos);
+    expect_logged_cmake_define(logged, "-DCMAKE_C_COMPILER=", bin_dir / "clang");
+    expect_logged_cmake_define(logged, "-DCMAKE_CXX_COMPILER=", bin_dir / "clang++");
+    EXPECT_EQ(logged.find((bin_dir / "gcc").string()), std::string::npos);
 }

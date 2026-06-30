@@ -348,8 +348,16 @@ namespace bha::suggestions
                 return "clang-tidy";
             }();
 
+            std::string clang_tidy_command = shell_quote(clang_tidy_binary);
+#ifdef _WIN32
+            const std::string tidy_extension = fs::path(clang_tidy_binary).extension().string();
+            if (tidy_extension == ".cmd" || tidy_extension == ".bat") {
+                clang_tidy_command = "cmd /d /q /c call " + clang_tidy_command;
+            }
+#endif
+
             const std::string cmd =
-                shell_quote(clang_tidy_binary) + " -checks=" + shell_quote("-*,misc-include-cleaner") +
+                clang_tidy_command + " -checks=" + shell_quote("-*,misc-include-cleaner") +
                 " -p " + shell_quote(build_dir.string()) +
                 " " + shell_quote(resolved_source.string()) + " --quiet 2>&1";
 
@@ -381,20 +389,20 @@ namespace bha::suggestions
                     continue;
                 }
 
-                const auto first_colon = line.find(':');
-                if (first_colon == std::string::npos) {
+                const auto warning_pos = line.find(": warning:");
+                if (warning_pos == std::string::npos || warning_pos == 0) {
                     continue;
                 }
-                const auto second_colon = line.find(':', first_colon + 1);
-                if (second_colon == std::string::npos) {
+                const auto column_colon = line.rfind(':', warning_pos - 1);
+                if (column_colon == std::string::npos || column_colon == 0) {
                     continue;
                 }
-                const auto third_colon = line.find(':', second_colon + 1);
-                if (third_colon == std::string::npos) {
+                const auto line_colon = line.rfind(':', column_colon - 1);
+                if (line_colon == std::string::npos) {
                     continue;
                 }
 
-                fs::path diag_file = line.substr(0, first_colon);
+                fs::path diag_file = line.substr(0, line_colon);
                 std::error_code ec;
                 if (diag_file.is_relative()) {
                     diag_file = fs::absolute(diag_file, ec);
@@ -405,7 +413,7 @@ namespace bha::suggestions
                 std::size_t line_number = 0;
                 try {
                     line_number = std::stoul(
-                        line.substr(first_colon + 1, second_colon - first_colon - 1)
+                        line.substr(line_colon + 1, column_colon - line_colon - 1)
                     );
                 } catch (...) {
                     continue;

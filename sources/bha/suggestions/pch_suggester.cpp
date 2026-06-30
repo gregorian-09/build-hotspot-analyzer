@@ -414,6 +414,18 @@ namespace bha::suggestions
             return line.substr(pos, end - pos);
         }
 
+        int cmake_paren_delta(const std::string& line) {
+            int delta = 0;
+            for (const char ch : line) {
+                if (ch == '(') {
+                    ++delta;
+                } else if (ch == ')') {
+                    --delta;
+                }
+            }
+            return delta;
+        }
+
         bool has_cmake_pch_for_target(const std::string& content, const std::string& target) {
             std::istringstream input(content);
             std::string line;
@@ -423,13 +435,49 @@ namespace bha::suggestions
                 if (trimmed.rfind("target_precompile_headers", 0) != 0) {
                     continue;
                 }
-                if (auto parsed = parse_cmake_target_from_line(trimmed)) {
+                std::string command = trimmed;
+                int paren_balance = cmake_paren_delta(trimmed);
+                while (paren_balance > 0 && std::getline(input, line)) {
+                    command += '\n';
+                    command += line;
+                    paren_balance += cmake_paren_delta(line);
+                }
+                if (auto parsed = parse_cmake_target_from_line(command)) {
                     if (*parsed == target) {
                         return true;
                     }
                 }
             }
             return false;
+        }
+
+        std::string build_pch_include_line(
+            const fs::path& header_path,
+            const fs::path& pch_path,
+            const bool is_external_header
+        ) {
+            const std::string header_spelling = header_path.generic_string();
+            if (!header_spelling.empty() && header_spelling.front() == '<') {
+                return "#include " + header_spelling;
+            }
+
+            std::string include_spelling;
+            if (!is_external_header && header_path.is_absolute() && !pch_path.empty()) {
+                const fs::path pch_dir = pch_path.has_parent_path()
+                    ? pch_path.parent_path()
+                    : fs::current_path();
+                std::error_code ec;
+                const fs::path relative = fs::relative(header_path, pch_dir, ec);
+                if (!ec && !relative.empty()) {
+                    include_spelling = relative.lexically_normal().generic_string();
+                }
+            }
+
+            if (include_spelling.empty()) {
+                include_spelling = make_repo_relative(header_path);
+            }
+
+            return "#include \"" + include_spelling + "\"";
         }
 
         int score_cmake_path(const std::string& lower_path) {
@@ -1554,12 +1602,11 @@ namespace bha::suggestions
                 }
             }
 
-            std::string include_line;
-            if (header.path.string().find('<') == 0) {
-                include_line = "#include " + header.path.string();
-            } else {
-                include_line = "#include \"" + make_repo_relative(header.path) + "\"";
-            }
+            const std::string include_line = build_pch_include_line(
+                header.path,
+                pch_path,
+                header.is_external
+            );
 
             if (fs::exists(pch_path)) {
                 suggestion.edits.push_back(make_preferred_include_insertion_edit(pch_path, include_line).edit);

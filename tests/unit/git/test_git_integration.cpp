@@ -44,7 +44,12 @@ namespace bha::git
         void SetUp() override {
             temp_dir_ = fs::current_path();
             while (!temp_dir_.empty() && !fs::exists(temp_dir_ / ".git")) {
-                temp_dir_ = temp_dir_.parent_path();
+                const fs::path parent = temp_dir_.parent_path();
+                if (parent == temp_dir_) {
+                    temp_dir_ = fs::current_path();
+                    break;
+                }
+                temp_dir_ = parent;
             }
         }
 

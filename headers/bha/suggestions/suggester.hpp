@@ -696,7 +696,12 @@ namespace bha::suggestions {
             if (eq == std::string::npos) {
                 continue;
             }
-            fs::path root = line.substr(eq + 1);
+            std::string root_text = line.substr(eq + 1);
+            while (!root_text.empty() &&
+                   std::isspace(static_cast<unsigned char>(root_text.back()))) {
+                root_text.pop_back();
+            }
+            fs::path root = root_text;
             if (!root.empty() && fs::exists(root / "CMakeLists.txt")) {
                 return root;
             }

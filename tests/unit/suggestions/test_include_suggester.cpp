@@ -21,6 +21,37 @@ namespace bha::suggestions
             std::error_code ec;
             std::filesystem::remove_all(fake_clang_tidy_root_, ec);
             std::filesystem::create_directories(fake_clang_tidy_root_, ec);
+#ifdef _WIN32
+            fake_clang_tidy_path_ = fake_clang_tidy_root_ / "clang-tidy.cmd";
+            write_file(
+                fake_clang_tidy_path_,
+                R"(@echo off
+setlocal EnableExtensions EnableDelayedExpansion
+set "mode=%BHA_FAKE_CLANG_TIDY_MODE%"
+set "file=%BHA_FAKE_CLANG_TIDY_SOURCE%"
+if not "%file%"=="" goto done
+:args
+if [%~1]==[] goto done
+set "arg=%~1"
+if /I "!arg:~-4!"==".cpp" set "file=!arg!"
+if /I "!arg:~-3!"==".cc" set "file=!arg!"
+if /I "!arg:~-4!"==".cxx" set "file=!arg!"
+if /I "!arg:~-2!"==".c" set "file=!arg!"
+shift
+goto args
+:done
+if "!mode!"=="conditional" echo !file!:2:1: warning: included header platform/windows_only.hpp is not used directly [misc-include-cleaner]
+if "!mode!"=="direct" echo !file!:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]
+if "!mode!"=="protected" echo !file!:1:1: warning: included header port/malloc.h is not used directly [misc-include-cleaner]
+if "!mode!"=="self" echo !file!:1:1: warning: included header widget.h is not used directly [misc-include-cleaner]
+if "!mode!"=="mixed" (
+  echo !file!:1:1: warning: included header local_unused.hpp is not used directly [misc-include-cleaner]
+  echo !file!:4:1: warning: included header windows.h is not used directly [misc-include-cleaner]
+)
+exit /b 0
+)"
+            );
+#else
             fake_clang_tidy_path_ = fake_clang_tidy_root_ / "clang-tidy";
             write_file(
                 fake_clang_tidy_path_,
@@ -52,6 +83,7 @@ case "$mode" in
 esac
 )"
             );
+#endif
             std::filesystem::permissions(
                 fake_clang_tidy_path_,
                 std::filesystem::perms::owner_exec |
@@ -60,14 +92,15 @@ esac
                 std::filesystem::perm_options::add,
                 ec
             );
-            ASSERT_EQ(setenv("BHA_CLANG_TIDY", fake_clang_tidy_path_.c_str(), 1), 0);
+            ASSERT_EQ(set_test_env("BHA_CLANG_TIDY", fake_clang_tidy_path_.string()), 0);
         }
 
         static void TearDownTestSuite() {
             std::error_code ec;
             std::filesystem::remove_all(fake_clang_tidy_root_, ec);
-            unsetenv("BHA_CLANG_TIDY");
-            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_CLANG_TIDY");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_SOURCE");
         }
 
         void SetUp() override {
@@ -79,13 +112,31 @@ esac
             std::error_code ec;
             std::filesystem::remove_all(temp_root_, ec);
             std::filesystem::create_directories(temp_root_, ec);
-            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_SOURCE");
         }
 
         void TearDown() override {
             std::error_code ec;
             std::filesystem::remove_all(temp_root_, ec);
-            unsetenv("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_MODE");
+            unset_test_env("BHA_FAKE_CLANG_TIDY_SOURCE");
+        }
+
+        static int set_test_env(const char* name, const std::string& value) {
+#ifdef _WIN32
+            return _putenv_s(name, value.c_str());
+#else
+            return setenv(name, value.c_str(), 1);
+#endif
+        }
+
+        static int unset_test_env(const char* name) {
+#ifdef _WIN32
+            return _putenv_s(name, "");
+#else
+            return unsetenv(name);
+#endif
         }
 
         static void write_file(const std::filesystem::path& path, const std::string& content) {
@@ -96,6 +147,7 @@ esac
         }
 
         static void write_compile_commands(const std::filesystem::path& build_dir, const std::filesystem::path& source) {
+            ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_SOURCE", source.generic_string()), 0);
             write_file(
                 build_dir / "compile_commands.json",
                 "[\n"
@@ -627,7 +679,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, DowngradesConditionalPlatformIncludesToAdvisory) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "conditional", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "conditional"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "main.cpp";
@@ -667,7 +719,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, SplitsSafeAndPlatformSpecificUnusedIncludeSuggestions) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "mixed", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "mixed"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "main.cpp";
@@ -718,7 +770,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, DowngradesUnusedIncludeRemovalWhenSourceCallsHeaderApi) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "direct", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "direct"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "spinlock.cc";
@@ -766,7 +818,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, DirectIncludeRemovalConsumesTrailingSeparatorBlankLine) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "direct", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "direct"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "main.cpp";
@@ -798,7 +850,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, DowngradesProtectedIncludeRemovalsToAdvisory) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "protected", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "protected"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "blob_contents.cc";
@@ -835,7 +887,7 @@ esac
     }
 
     TEST_F(IncludeSuggesterTest, DowngradesPrimarySelfHeaderRemovalToAdvisory) {
-        ASSERT_EQ(setenv("BHA_FAKE_CLANG_TIDY_MODE", "self", 1), 0);
+        ASSERT_EQ(set_test_env("BHA_FAKE_CLANG_TIDY_MODE", "self"), 0);
 
         const auto build_dir = temp_root_ / "build";
         const auto source = temp_root_ / "widget.cc";

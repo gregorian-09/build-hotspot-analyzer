@@ -128,7 +128,7 @@ namespace bha::lsp
     TEST_F(SuggestionManagerRollbackTest, SnapshotRestoresExistingFileContents) {
         const fs::path existing_file = temp_root_ / "existing.hpp";
         {
-            std::ofstream out(existing_file);
+            std::ofstream out(existing_file, std::ios::binary);
             ASSERT_TRUE(out.good());
             out << "before\n";
         }
@@ -146,7 +146,7 @@ namespace bha::lsp
         EXPECT_EQ(snapshot.front().content, "before\n");
 
         {
-            std::ofstream out(existing_file, std::ios::trunc);
+            std::ofstream out(existing_file, std::ios::binary | std::ios::trunc);
             ASSERT_TRUE(out.good());
             out << "after\n";
         }
@@ -154,7 +154,7 @@ namespace bha::lsp
         ASSERT_TRUE(SuggestionManagerTestAccess::restore_transactional_snapshot(snapshot, errors));
         EXPECT_TRUE(errors.empty());
 
-        std::ifstream in(existing_file);
+        std::ifstream in(existing_file, std::ios::binary);
         ASSERT_TRUE(in.good());
         std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         EXPECT_EQ(content, "before\n");
@@ -184,9 +184,9 @@ namespace bha::lsp
         {
             std::ofstream out(compile_commands_path);
             ASSERT_TRUE(out.good());
-            out << "[{\"directory\":\"" << temp_root_.string()
-                << "\",\"file\":\"" << source_path.string()
-                << "\",\"command\":\"clang++ -c " << source_path.string() << "\"}]";
+            out << "[{\"directory\":\"" << temp_root_.generic_string()
+                << "\",\"file\":\"" << source_path.generic_string()
+                << "\",\"command\":\"clang++ -c " << source_path.generic_string() << "\"}]";
         }
 
         BuildTrace trace;
@@ -252,9 +252,9 @@ namespace bha::lsp
         {
             std::ofstream out(compile_commands_path);
             ASSERT_TRUE(out.good());
-            out << "[{\"directory\":\"" << temp_root_.string()
-                << "\",\"file\":\"" << unrelated_source.string()
-                << "\",\"command\":\"clang++ -c " << unrelated_source.string() << "\"}]";
+            out << "[{\"directory\":\"" << temp_root_.generic_string()
+                << "\",\"file\":\"" << unrelated_source.generic_string()
+                << "\",\"command\":\"clang++ -c " << unrelated_source.generic_string() << "\"}]";
         }
 
         BuildTrace trace;

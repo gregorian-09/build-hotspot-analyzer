@@ -261,6 +261,79 @@ namespace bha::suggestions
         fs::remove_all(project_root, ec);
     }
 
+    TEST_F(PCHSuggesterTest, GeneratedPchUsesIncludeRelativeHeaderSpelling) {
+        namespace fs = std::filesystem;
+        const fs::path project_root = fs::temp_directory_path() / "bha_pch_relative_include_test";
+        std::error_code ec;
+        fs::remove_all(project_root, ec);
+        fs::create_directories(project_root / "include");
+        fs::create_directories(project_root / "src");
+
+        {
+            std::ofstream cmake(project_root / "CMakeLists.txt");
+            cmake << "cmake_minimum_required(VERSION 3.20)\n"
+                  << "project(pch_relative_include LANGUAGES CXX)\n"
+                  << "add_library(core src/core.cpp)\n";
+        }
+        {
+            std::ofstream header(project_root / "include" / "heavy.hpp");
+            header << "#pragma once\n";
+        }
+        {
+            std::ofstream core_src(project_root / "src" / "core.cpp");
+            core_src << "#include \"heavy.hpp\"\n";
+        }
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(8);
+        trace.build_system = BuildSystemType::CMake;
+
+        CompilationUnit core_unit;
+        core_unit.source_file = project_root / "src" / "core.cpp";
+        core_unit.command_line = {
+            "clang++",
+            "-c",
+            "-I",
+            (project_root / "include").string(),
+            "-o",
+            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
+            core_unit.source_file.string()
+        };
+        trace.units.push_back(core_unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = project_root / "include" / "heavy.hpp";
+        header.total_parse_time = std::chrono::milliseconds(1200);
+        header.inclusion_count = 20;
+        header.including_files = 12;
+        header.is_stable = true;
+        header.is_external = false;
+        header.included_by = {core_unit.source_file};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, project_root};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto pch_edit = std::find_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [&](const TextEdit& edit) {
+                return edit.file == (project_root / "include" / "pch.h");
+            }
+        );
+        ASSERT_NE(pch_edit, suggestion.edits.end());
+        EXPECT_NE(pch_edit->new_text.find("#include \"heavy.hpp\""), std::string::npos);
+        EXPECT_EQ(pch_edit->new_text.find("#include \"include/heavy.hpp\""), std::string::npos);
+
+        fs::remove_all(project_root, ec);
+    }
+
     TEST_F(PCHSuggesterTest, CMakeTargetSelectionPreservesTargetSuffixExpressions) {
         namespace fs = std::filesystem;
         const fs::path project_root = fs::temp_directory_path() / "bha_pch_target_suffix_test";
@@ -477,6 +550,90 @@ namespace bha::suggestions
         );
         ASSERT_NE(cmake_edit, suggestion.edits.end());
         EXPECT_EQ(cmake_edit->start_line, 5u);
+
+        fs::remove_all(project_root, ec);
+    }
+
+    TEST_F(PCHSuggesterTest, CMakeExistingMultilinePchConfigPreventsDuplicateTargetEdit) {
+        namespace fs = std::filesystem;
+        const fs::path project_root = fs::temp_directory_path() / "bha_pch_existing_multiline_config_test";
+        std::error_code ec;
+        fs::remove_all(project_root, ec);
+        fs::create_directories(project_root / "include");
+        fs::create_directories(project_root / "src");
+
+        {
+            std::ofstream cmake(project_root / "CMakeLists.txt");
+            cmake << "cmake_minimum_required(VERSION 3.20)\n"
+                  << "project(pch_existing_multiline LANGUAGES CXX)\n"
+                  << "add_library(core src/core.cpp)\n"
+                  << "target_precompile_headers(\n"
+                  << "  core\n"
+                  << "  PRIVATE\n"
+                  << "    include/pch.h\n"
+                  << ")\n";
+        }
+        {
+            std::ofstream pch(project_root / "include" / "pch.h");
+            pch << "#pragma once\n";
+        }
+        {
+            std::ofstream core_src(project_root / "src" / "core.cpp");
+            core_src << "#include \"heavy.hpp\"\n";
+        }
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(6);
+        trace.build_system = BuildSystemType::CMake;
+
+        CompilationUnit core_unit;
+        core_unit.source_file = project_root / "src" / "core.cpp";
+        core_unit.command_line = {
+            "clang++",
+            "-c",
+            "-o",
+            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
+            core_unit.source_file.string()
+        };
+        trace.units.push_back(core_unit);
+
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo header;
+        header.path = project_root / "include" / "heavy.hpp";
+        header.total_parse_time = std::chrono::milliseconds(1000);
+        header.inclusion_count = 16;
+        header.including_files = 9;
+        header.is_stable = true;
+        header.is_external = false;
+        header.included_by = {project_root / "src" / "core.cpp"};
+        analysis.dependencies.headers.push_back(header);
+
+        SuggesterOptions options;
+        SuggestionContext context{trace, analysis, options, project_root};
+
+        auto result = suggester_->suggest(context);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+
+        const auto& suggestion = result.value().suggestions.front();
+        const auto duplicate_cmake_edit = std::find_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [](const TextEdit& edit) {
+                return edit.new_text.find("target_precompile_headers(core PRIVATE") != std::string::npos;
+            }
+        );
+        EXPECT_EQ(duplicate_cmake_edit, suggestion.edits.end());
+
+        const auto pch_update = std::find_if(
+            suggestion.edits.begin(),
+            suggestion.edits.end(),
+            [&](const TextEdit& edit) {
+                return edit.file == (project_root / "include" / "pch.h") &&
+                       edit.new_text.find("#include \"heavy.hpp\"") != std::string::npos;
+            }
+        );
+        EXPECT_NE(pch_update, suggestion.edits.end());
 
         fs::remove_all(project_root, ec);
     }
