@@ -40,7 +40,7 @@
 namespace bha::lsp
 {
     namespace fs = std::filesystem;
-    namespace path_utils = bha::path_utils;
+    namespace path_utils = bha::utils;
 
     namespace {
         template<typename Rep, typename Period>
