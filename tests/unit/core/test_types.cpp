@@ -64,6 +64,63 @@ namespace bha
         EXPECT_STREQ(to_string(BuildSystemType::XCode), "XCode");
     }
 
+    TEST(SupportTierTest, ToString) {
+        EXPECT_STREQ(to_string(SupportTier::Unknown), "unknown");
+        EXPECT_STREQ(to_string(SupportTier::Core), "core");
+        EXPECT_STREQ(to_string(SupportTier::Experimental), "experimental");
+        EXPECT_STREQ(to_string(SupportTier::Deferred), "deferred");
+    }
+
+    TEST(CompilerFamilyTest, ClassifiesCoreCompilerGroups) {
+        EXPECT_EQ(compiler_family(CompilerType::Clang), CompilerFamily::Clang);
+        EXPECT_EQ(compiler_family(CompilerType::AppleClang), CompilerFamily::Clang);
+        EXPECT_EQ(compiler_family(CompilerType::ArmClang), CompilerFamily::Clang);
+        EXPECT_EQ(compiler_family(CompilerType::GCC), CompilerFamily::GCC);
+        EXPECT_EQ(compiler_family(CompilerType::MSVC), CompilerFamily::MSVC);
+
+        EXPECT_EQ(support_tier(CompilerType::Clang), SupportTier::Core);
+        EXPECT_EQ(support_tier(CompilerType::AppleClang), SupportTier::Core);
+        EXPECT_EQ(support_tier(CompilerType::ArmClang), SupportTier::Core);
+        EXPECT_EQ(support_tier(CompilerType::GCC), SupportTier::Core);
+        EXPECT_EQ(support_tier(CompilerType::MSVC), SupportTier::Core);
+    }
+
+    TEST(CompilerFamilyTest, ClassifiesExperimentalAndDeferredCompilers) {
+        EXPECT_EQ(compiler_family(CompilerType::IntelOneAPI), CompilerFamily::Clang);
+        EXPECT_EQ(support_tier(CompilerType::IntelOneAPI), SupportTier::Experimental);
+        EXPECT_EQ(support_tier(CompilerType::NVCC), SupportTier::Experimental);
+        EXPECT_EQ(support_tier(CompilerType::IntelClassic), SupportTier::Deferred);
+        EXPECT_EQ(support_tier(CompilerType::Unknown), SupportTier::Unknown);
+
+        EXPECT_TRUE(is_core_supported(CompilerType::Clang));
+        EXPECT_FALSE(is_core_supported(CompilerType::NVCC));
+    }
+
+    TEST(BuildSystemFamilyTest, ClassifiesCoreBuildSystemGroups) {
+        EXPECT_EQ(build_system_family(BuildSystemType::CMake), BuildSystemFamily::CMake);
+        EXPECT_EQ(build_system_family(BuildSystemType::MSBuild), BuildSystemFamily::MSBuild);
+        EXPECT_EQ(support_tier(BuildSystemType::CMake), SupportTier::Core);
+        EXPECT_EQ(support_tier(BuildSystemType::MSBuild), SupportTier::Core);
+
+        EXPECT_TRUE(is_core_supported(BuildSystemType::CMake));
+        EXPECT_TRUE(is_core_supported(BuildSystemType::MSBuild));
+    }
+
+    TEST(BuildSystemFamilyTest, ClassifiesNonCoreBuildSystemsAsCompileDatabaseFamily) {
+        EXPECT_EQ(build_system_family(BuildSystemType::Ninja), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::Make), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::Meson), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::Bazel), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::Buck2), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::SCons), BuildSystemFamily::CompileDatabase);
+        EXPECT_EQ(build_system_family(BuildSystemType::XCode), BuildSystemFamily::CompileDatabase);
+
+        EXPECT_EQ(support_tier(BuildSystemType::Ninja), SupportTier::Experimental);
+        EXPECT_EQ(support_tier(BuildSystemType::Make), SupportTier::Experimental);
+        EXPECT_EQ(support_tier(BuildSystemType::Unknown), SupportTier::Unknown);
+        EXPECT_FALSE(is_core_supported(BuildSystemType::Meson));
+    }
+
     TEST(SuggestionTypeTest, ToString) {
         EXPECT_STREQ(to_string(SuggestionType::ForwardDeclaration), "Forward Declaration");
         EXPECT_STREQ(to_string(SuggestionType::HeaderSplit), "Header Split");

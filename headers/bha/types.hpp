@@ -104,6 +104,36 @@ namespace bha {
     };
 
     /**
+     * Verification/support status for externally visible platform features.
+     */
+    enum class SupportTier {
+        Unknown,
+        Core,
+        Experimental,
+        Deferred
+    };
+
+    /**
+     * Coarse compiler families used for support-matrix decisions.
+     */
+    enum class CompilerFamily {
+        Unknown,
+        Clang,
+        GCC,
+        MSVC
+    };
+
+    /**
+     * Coarse build-system families used for support-matrix decisions.
+     */
+    enum class BuildSystemFamily {
+        Unknown,
+        CMake,
+        MSBuild,
+        CompileDatabase
+    };
+
+    /**
      * Converts CompilerType to string.
      */
     inline const char* to_string(CompilerType type) noexcept {
@@ -119,6 +149,78 @@ namespace bha {
             case CompilerType::AppleClang:   return "Apple Clang";
         }
         return "Unknown";
+    }
+
+    inline const char* to_string(const SupportTier tier) noexcept {
+        switch (tier) {
+            case SupportTier::Unknown:      return "unknown";
+            case SupportTier::Core:         return "core";
+            case SupportTier::Experimental: return "experimental";
+            case SupportTier::Deferred:     return "deferred";
+        }
+        return "unknown";
+    }
+
+    inline const char* to_string(const CompilerFamily family) noexcept {
+        switch (family) {
+            case CompilerFamily::Unknown: return "unknown";
+            case CompilerFamily::Clang:   return "clang-family";
+            case CompilerFamily::GCC:     return "gcc-family";
+            case CompilerFamily::MSVC:    return "msvc-family";
+        }
+        return "unknown";
+    }
+
+    inline const char* to_string(const BuildSystemFamily family) noexcept {
+        switch (family) {
+            case BuildSystemFamily::Unknown:         return "unknown";
+            case BuildSystemFamily::CMake:           return "cmake-family";
+            case BuildSystemFamily::MSBuild:         return "msbuild-family";
+            case BuildSystemFamily::CompileDatabase: return "compile-db-family";
+        }
+        return "unknown";
+    }
+
+    [[nodiscard]] inline CompilerFamily compiler_family(const CompilerType type) noexcept {
+        switch (type) {
+            case CompilerType::Clang:
+            case CompilerType::AppleClang:
+            case CompilerType::ArmClang:
+            case CompilerType::IntelOneAPI:
+                return CompilerFamily::Clang;
+            case CompilerType::GCC:
+                return CompilerFamily::GCC;
+            case CompilerType::MSVC:
+                return CompilerFamily::MSVC;
+            case CompilerType::Unknown:
+            case CompilerType::IntelClassic:
+            case CompilerType::NVCC:
+                return CompilerFamily::Unknown;
+        }
+        return CompilerFamily::Unknown;
+    }
+
+    [[nodiscard]] inline SupportTier support_tier(const CompilerType type) noexcept {
+        switch (type) {
+            case CompilerType::Clang:
+            case CompilerType::AppleClang:
+            case CompilerType::ArmClang:
+            case CompilerType::GCC:
+            case CompilerType::MSVC:
+                return SupportTier::Core;
+            case CompilerType::IntelOneAPI:
+            case CompilerType::NVCC:
+                return SupportTier::Experimental;
+            case CompilerType::IntelClassic:
+                return SupportTier::Deferred;
+            case CompilerType::Unknown:
+                return SupportTier::Unknown;
+        }
+        return SupportTier::Unknown;
+    }
+
+    [[nodiscard]] inline bool is_core_supported(const CompilerType type) noexcept {
+        return support_tier(type) == SupportTier::Core;
     }
 
     /**
@@ -222,6 +324,49 @@ namespace bha {
             case BuildSystemType::XCode:   return "XCode";
         }
         return "Unknown";
+    }
+
+    [[nodiscard]] inline BuildSystemFamily build_system_family(const BuildSystemType type) noexcept {
+        switch (type) {
+            case BuildSystemType::CMake:
+                return BuildSystemFamily::CMake;
+            case BuildSystemType::MSBuild:
+                return BuildSystemFamily::MSBuild;
+            case BuildSystemType::Ninja:
+            case BuildSystemType::Make:
+            case BuildSystemType::Bazel:
+            case BuildSystemType::Buck2:
+            case BuildSystemType::Meson:
+            case BuildSystemType::SCons:
+            case BuildSystemType::XCode:
+                return BuildSystemFamily::CompileDatabase;
+            case BuildSystemType::Unknown:
+                return BuildSystemFamily::Unknown;
+        }
+        return BuildSystemFamily::Unknown;
+    }
+
+    [[nodiscard]] inline SupportTier support_tier(const BuildSystemType type) noexcept {
+        switch (type) {
+            case BuildSystemType::CMake:
+            case BuildSystemType::MSBuild:
+                return SupportTier::Core;
+            case BuildSystemType::Ninja:
+            case BuildSystemType::Make:
+            case BuildSystemType::Bazel:
+            case BuildSystemType::Buck2:
+            case BuildSystemType::Meson:
+            case BuildSystemType::SCons:
+            case BuildSystemType::XCode:
+                return SupportTier::Experimental;
+            case BuildSystemType::Unknown:
+                return SupportTier::Unknown;
+        }
+        return SupportTier::Unknown;
+    }
+
+    [[nodiscard]] inline bool is_core_supported(const BuildSystemType type) noexcept {
+        return support_tier(type) == SupportTier::Core;
     }
 
     // ============================================================================

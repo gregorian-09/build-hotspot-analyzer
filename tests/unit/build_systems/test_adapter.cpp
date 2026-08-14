@@ -174,10 +174,10 @@ TEST(BuildSystemRegistryTest, AdaptersNotEmpty) {
     register_all_adapters();
     const auto& registry = BuildSystemRegistry::instance();
     EXPECT_FALSE(registry.adapters().empty());
-    EXPECT_GE(registry.adapters().size(), 4);
+    EXPECT_GE(registry.adapters().size(), 2);
 }
 
-TEST(BuildSystemRegistryTest, GetByName) {
+TEST(BuildSystemRegistryTest, CoreAdaptersAreRegisteredByDefault) {
     register_all_adapters();
     const auto& registry = BuildSystemRegistry::instance();
 
@@ -185,16 +185,29 @@ TEST(BuildSystemRegistryTest, GetByName) {
     EXPECT_NE(cmake, nullptr);
     EXPECT_EQ(cmake->name(), "CMake");
 
-    auto* ninja = registry.get("Ninja");
-    EXPECT_NE(ninja, nullptr);
-    EXPECT_EQ(ninja->name(), "Ninja");
+    auto* msbuild = registry.get("MSBuild");
+    EXPECT_NE(msbuild, nullptr);
+    EXPECT_EQ(msbuild->name(), "MSBuild");
 
     auto* nonexistent = registry.get("Nonexistent");
     EXPECT_EQ(nonexistent, nullptr);
 }
 
+TEST(BuildSystemRegistryTest, ExperimentalAdaptersRequireExplicitRegistration) {
+    register_all_adapters(AdapterRegistrationMode::IncludeExperimental);
+    const auto& registry = BuildSystemRegistry::instance();
+
+    auto* ninja = registry.get("Ninja");
+    EXPECT_NE(ninja, nullptr);
+    EXPECT_EQ(ninja->name(), "Ninja");
+
+    auto* unreal = registry.get("Unreal");
+    EXPECT_NE(unreal, nullptr);
+    EXPECT_EQ(unreal->name(), "Unreal");
+}
+
 TEST(BuildSystemRegistryTest, DetectsUnrealProjectFromUprojectAndTargetRules) {
-    register_all_adapters();
+    register_all_adapters(AdapterRegistrationMode::IncludeExperimental);
     const auto& registry = BuildSystemRegistry::instance();
 
     TempDir temp;

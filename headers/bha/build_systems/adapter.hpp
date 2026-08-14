@@ -214,6 +214,11 @@ namespace bha::build_systems
     };
 
     // Registration functions for built-in adapters
+    enum class AdapterRegistrationMode {
+        CoreOnly,
+        IncludeExperimental
+    };
+
     void register_cmake_adapter();
     void register_ninja_adapter();
     void register_make_adapter();
@@ -225,19 +230,14 @@ namespace bha::build_systems
     void register_xcode_adapter();
     void register_unreal_adapter();
 
-    // Register all built-in adapters
-    inline void register_all_adapters() {
-        register_cmake_adapter();
-        register_ninja_adapter();
-        register_make_adapter();
-        register_msbuild_adapter();
-        register_meson_adapter();
-        register_bazel_adapter();
-        register_buck2_adapter();
-        register_scons_adapter();
-        register_xcode_adapter();
-        register_unreal_adapter();
-    }
+    /// Register the verified default adapter set.
+    void register_core_adapters();
+
+    /// Register adapters that are available for explicit opt-in verification.
+    void register_experimental_adapters();
+
+    /// Register built-in adapters. Defaults to the verified core support matrix.
+    void register_all_adapters(AdapterRegistrationMode mode = AdapterRegistrationMode::CoreOnly);
 
 } // namespace bha::build_systems
 
