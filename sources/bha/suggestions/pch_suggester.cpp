@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/pch_suggester.hpp"
+#include "bha/suggestions/pch_build_planner.hpp"
 #include "bha/utils/cmake_classification_utils.hpp"
 #include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
@@ -150,35 +151,6 @@ namespace bha::suggestions
             }
             const std::string ext = path.extension().string();
             return ext == ".txt" || ext == ".cmake" || ext == ".mk";
-        }
-
-
-        std::optional<std::size_t> find_cmake_block_end(
-            const std::string& content,
-            const std::size_t start_line
-        ) {
-            std::istringstream input(content);
-            std::string line;
-            std::vector<std::string> lines;
-            while (std::getline(input, line)) {
-                lines.push_back(line);
-            }
-            if (start_line >= lines.size()) {
-                return std::nullopt;
-            }
-            int paren_depth = 0;
-            bool seen_open = false;
-            for (std::size_t i = start_line; i < lines.size(); ++i) {
-                const int delta = utils::count_paren_delta_outside_quotes(lines[i]);
-                if (delta > 0) {
-                    seen_open = true;
-                }
-                paren_depth += delta;
-                if (seen_open && paren_depth <= 0) {
-                    return i;
-                }
-            }
-            return std::nullopt;
         }
 
         std::optional<std::string> find_project_name(const std::string& content) {
@@ -1681,36 +1653,23 @@ namespace bha::suggestions
                 }
 
                 if (target && !has_cmake_pch_for_target(cmake_content, target->name)) {
-                    std::size_t insert_line = target->insert_after_line;
-                    if (auto end_line = find_cmake_block_end(cmake_content, target->line)) {
-                        insert_line = *end_line;
-                    }
-                    fs::path rel_pch = pch_path;
-                    std::error_code ec;
-                    if (rel_pch.is_absolute()) {
-                        auto relative = fs::relative(pch_path, cmake_path.parent_path(), ec);
-                        if (!ec && !relative.empty()) {
-                            rel_pch = relative;
-                        }
-                    }
-
-                    std::ostringstream cmake_line;
-                    cmake_line << "target_precompile_headers(" << target->name
-                               << " PRIVATE \"" << rel_pch.generic_string() << "\")";
-
-                    suggestion.edits.push_back(make_insert_after_line_edit(
+                    const auto build_plan = plan_cmake_pch_edits(CMakePCHTargetPlan{
                         cmake_path,
-                        insert_line,
-                        cmake_line.str()
-                    ));
-
-                    FileTarget cmake_target;
-                    cmake_target.path = cmake_path;
-                    cmake_target.action = FileAction::Modify;
-                    cmake_target.line_start = insert_line + 2;
-                    cmake_target.line_end = insert_line + 2;
-                    cmake_target.note = "Add target_precompile_headers for PCH";
-                    suggestion.secondary_files.push_back(cmake_target);
+                        cmake_content,
+                        target->name,
+                        target->line,
+                        pch_path
+                    });
+                    suggestion.edits.insert(
+                        suggestion.edits.end(),
+                        build_plan.edits.begin(),
+                        build_plan.edits.end()
+                    );
+                    suggestion.secondary_files.insert(
+                        suggestion.secondary_files.end(),
+                        build_plan.files.begin(),
+                        build_plan.files.end()
+                    );
                 }
             }
 
@@ -2004,85 +1963,21 @@ namespace bha::suggestions
             }
 
             if (!project_root.empty() && active_build_system == BuildSystemType::MSBuild) {
-                for (const auto& entry : fs::directory_iterator(project_root)) {
-                    if (context.is_cancelled()) {
-                        break;
-                    }
-                    if (!entry.is_regular_file()) {
-                        continue;
-                    }
-                    if (entry.path().extension() == ".vcxproj") {
-                        std::ifstream vcx_in(entry.path());
-                        const std::string vcx_content((std::istreambuf_iterator<char>(vcx_in)),
-                                                      std::istreambuf_iterator<char>());
-                        vcx_in.close();
-
-                        if (vcx_content.find("PrecompiledHeaderFile") == std::string::npos) {
-                            std::string rel_pch = pch_path.filename().string();
-                            std::error_code rel_ec;
-                            if (pch_path.is_absolute()) {
-                                const auto relative = fs::relative(pch_path, entry.path().parent_path(), rel_ec);
-                                if (!rel_ec && !relative.empty()) {
-                                    rel_pch = relative.generic_string();
-                                }
-                            }
-
-                            const std::string block =
-                                "  <ItemDefinitionGroup>\n"
-                                "    <ClCompile>\n"
-                                "      <PrecompiledHeader>Use</PrecompiledHeader>\n"
-                                "      <PrecompiledHeaderFile>" + rel_pch + "</PrecompiledHeaderFile>\n"
-                                "    </ClCompile>\n"
-                                "  </ItemDefinitionGroup>\n"
-                                "  <ItemGroup>\n"
-                                "    <ClCompile Include=\"pch.cpp\">\n"
-                                "      <PrecompiledHeader>Create</PrecompiledHeader>\n"
-                                "    </ClCompile>\n"
-                                "  </ItemGroup>\n";
-
-                            const std::regex project_end_regex(R"(^\s*</Project>)");
-                            std::size_t insert_line = end_of_file_insert_line(vcx_content);
-                            if (auto end_line = find_first_line_matching(vcx_content, project_end_regex)) {
-                                insert_line = *end_line;
-                            }
-
-                            TextEdit vcx_edit;
-                            vcx_edit.file = entry.path();
-                            vcx_edit.start_line = insert_line;
-                            vcx_edit.start_col = 0;
-                            vcx_edit.end_line = insert_line;
-                            vcx_edit.end_col = 0;
-                            vcx_edit.new_text = "\n" + block;
-                            suggestion.edits.push_back(vcx_edit);
-
-                            FileTarget vcx_target;
-                            vcx_target.path = entry.path();
-                            vcx_target.action = FileAction::Modify;
-                            vcx_target.line_start = insert_line + 1;
-                            vcx_target.line_end = insert_line + 8;
-                            vcx_target.note = "Enable PCH in MSBuild project";
-                            suggestion.secondary_files.push_back(vcx_target);
-
-                            const fs::path pch_cpp_path = entry.path().parent_path() / "pch.cpp";
-                            if (!fs::exists(pch_cpp_path)) {
-                                TextEdit pch_cpp_edit;
-                                pch_cpp_edit.file = pch_cpp_path;
-                                pch_cpp_edit.start_line = 0;
-                                pch_cpp_edit.start_col = 0;
-                                pch_cpp_edit.end_line = 0;
-                                pch_cpp_edit.end_col = 0;
-                                pch_cpp_edit.new_text = "#include \"" + rel_pch + "\"\n";
-                                suggestion.edits.push_back(pch_cpp_edit);
-
-                                FileTarget pch_cpp_target;
-                                pch_cpp_target.path = pch_cpp_path;
-                                pch_cpp_target.action = FileAction::Create;
-                                pch_cpp_target.note = "Create PCH source file for MSBuild";
-                                suggestion.secondary_files.push_back(pch_cpp_target);
-                            }
-                        }
-                    }
-                }
+                const auto build_plan = plan_msbuild_pch_edits(
+                    project_root,
+                    pch_path,
+                    [&]() { return context.is_cancelled(); }
+                );
+                suggestion.edits.insert(
+                    suggestion.edits.end(),
+                    build_plan.edits.begin(),
+                    build_plan.edits.end()
+                );
+                suggestion.secondary_files.insert(
+                    suggestion.secondary_files.end(),
+                    build_plan.files.begin(),
+                    build_plan.files.end()
+                );
             }
 
             if (!project_root.empty() && active_build_system == BuildSystemType::Bazel) {

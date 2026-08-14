@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/pch_suggester.hpp"
+#include "bha/suggestions/pch_build_planner.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -29,6 +30,71 @@ namespace bha::suggestions
 
     TEST_F(PCHSuggesterTest, SuggestionType) {
         EXPECT_EQ(suggester_->suggestion_type(), SuggestionType::PCHOptimization);
+    }
+
+    TEST(PCHBuildPlannerTest, PlansCMakeEditAfterMultilineTarget) {
+        const fs::path cmake_path = fs::temp_directory_path() / "bha_pch_planner_CMakeLists.txt";
+        const fs::path pch_path = cmake_path.parent_path() / "include" / "pch.h";
+        const std::string content =
+            "add_library(core\n"
+            "    src/core.cpp\n"
+            ")\n";
+
+        const auto plan = plan_cmake_pch_edits(CMakePCHTargetPlan{
+            cmake_path,
+            content,
+            "core",
+            0,
+            pch_path
+        });
+
+        ASSERT_EQ(plan.edits.size(), 1u);
+        ASSERT_EQ(plan.files.size(), 1u);
+        EXPECT_EQ(plan.edits.front().start_line, 3u);
+        EXPECT_NE(plan.edits.front().new_text.find("target_precompile_headers(core PRIVATE \"include/pch.h\")"),
+                  std::string::npos);
+    }
+
+    TEST(PCHBuildPlannerTest, SkipsExistingCMakePchTarget) {
+        const fs::path cmake_path = fs::temp_directory_path() / "bha_pch_planner_existing_CMakeLists.txt";
+        const fs::path pch_path = cmake_path.parent_path() / "pch.h";
+        const std::string content =
+            "add_library(core src/core.cpp)\n"
+            "target_precompile_headers(core PRIVATE pch.h)\n";
+
+        const auto plan = plan_cmake_pch_edits(CMakePCHTargetPlan{
+            cmake_path,
+            content,
+            "core",
+            0,
+            pch_path
+        });
+
+        EXPECT_TRUE(plan.edits.empty());
+        EXPECT_TRUE(plan.files.empty());
+    }
+
+    TEST(PCHBuildPlannerTest, PlansMSBuildProjectAndPchSourceEdits) {
+        const fs::path project_root = fs::temp_directory_path() / "bha_pch_msbuild_planner_test";
+        std::error_code ec;
+        fs::remove_all(project_root, ec);
+        fs::create_directories(project_root, ec);
+        {
+            std::ofstream project(project_root / "app.vcxproj");
+            project << "<Project>\n  <ItemGroup />\n</Project>\n";
+        }
+
+        const auto plan = plan_msbuild_pch_edits(project_root, project_root / "include" / "pch.h");
+
+        ASSERT_EQ(plan.edits.size(), 2u);
+        ASSERT_EQ(plan.files.size(), 2u);
+        EXPECT_EQ(plan.edits.front().file, project_root / "app.vcxproj");
+        EXPECT_NE(plan.edits.front().new_text.find("<PrecompiledHeader>Use</PrecompiledHeader>"),
+                  std::string::npos);
+        EXPECT_EQ(plan.edits.back().file, project_root / "pch.cpp");
+        EXPECT_NE(plan.edits.back().new_text.find("#include \"include/pch.h\""), std::string::npos);
+
+        fs::remove_all(project_root, ec);
     }
 
     TEST_F(PCHSuggesterTest, EmptyAnalysis) {
