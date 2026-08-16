@@ -13,6 +13,8 @@
 #if BHA_HAVE_CLANG_TOOLING
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
+#include <clang/AST/ExprCXX.h>
+#include <clang/AST/Expr.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/Type.h>
 #include <clang/AST/TypeLoc.h>
@@ -136,6 +138,38 @@ namespace bha::suggestions {
                 return true;
             }
 
+            bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
+                if (expression) {
+                    record_type_use(expression->getArgumentType(), "type-trait", true);
+                }
+                return true;
+            }
+
+            bool VisitCXXDeleteExpr(clang::CXXDeleteExpr* expression) {
+                if (expression && expression->getArgument()) {
+                    record_type_use(expression->getArgument()->getType(), "delete-expression", true);
+                }
+                return true;
+            }
+
+            bool VisitCXXMemberCallExpr(clang::CXXMemberCallExpr* expression) {
+                if (expression && expression->getImplicitObjectArgument()) {
+                    record_type_use(
+                        expression->getImplicitObjectArgument()->getType(),
+                        "member-call",
+                        true
+                    );
+                }
+                return true;
+            }
+
+            bool VisitCXXBaseSpecifier(clang::CXXBaseSpecifier* base) {
+                if (base) {
+                    record_type_use(base->getType(), "base-specifier", true);
+                }
+                return true;
+            }
+
             bool VisitFunctionDecl(clang::FunctionDecl* declaration) {
                 if (!declaration) {
                     return true;
@@ -187,13 +221,17 @@ namespace bha::suggestions {
             }
 
         private:
-            void record_type_use(clang::QualType type, std::string kind) {
+            void record_type_use(
+                clang::QualType type,
+                std::string kind,
+                const bool force_complete = false
+            ) {
                 if (type.isNull()) {
                     return;
                 }
 
-                const bool requires_complete_type =
-                    !type->isPointerType() && !type->isReferenceType();
+                const bool requires_complete_type = force_complete ||
+                    (!type->isPointerType() && !type->isReferenceType());
                 while (type->isPointerType() || type->isReferenceType()) {
                     type = type->getPointeeType();
                 }

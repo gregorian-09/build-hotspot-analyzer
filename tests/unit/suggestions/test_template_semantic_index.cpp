@@ -32,6 +32,8 @@ namespace bha::suggestions {
                 << "template <typename T> struct Box { T value{}; };\n"
                 << "Box<int> make_box();\n"
                 << "Box<int>* box_pointer = nullptr;\n"
+                << "constexpr auto box_size = sizeof(Box<int>);\n"
+                << "void destroy_box(Box<int>* value) { delete value; }\n"
                 << "template struct Box<int>;\n";
 
             const auto database = root_ / "compile_commands.json";
@@ -68,6 +70,12 @@ namespace bha::suggestions {
             }));
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
                 return use.kind == "variable-declaration" && !use.requires_complete_type;
+            }));
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "type-trait" && use.requires_complete_type;
+            }));
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "delete-expression" && use.requires_complete_type;
             }));
             EXPECT_EQ(match->source_file, source);
             EXPECT_EQ(index.find_exact(match->specialization), &*match);
