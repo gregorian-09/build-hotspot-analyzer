@@ -38,7 +38,7 @@ namespace bha::suggestions {
                 ? nullptr
                 : semantic_index.find_exact(candidate.full_signature);
             if (record == nullptr || !record->complete_definition ||
-                !record->has_external_linkage || record->use_files.empty() ||
+                !record->has_external_linkage || record->use_files.empty() || record->uses.empty() ||
                 !record->has_single_explicit_definition) {
                 ++result.items_skipped;
                 continue;

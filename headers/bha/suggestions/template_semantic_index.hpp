@@ -9,6 +9,13 @@
 
 namespace bha::suggestions {
 
+    struct TemplateSemanticUse {
+        std::string specialization;
+        fs::path source_file;
+        std::string kind;
+        bool requires_complete_type = false;
+    };
+
     enum class TemplateSemanticStatus {
         Unavailable,
         NoCompilationDatabase,
@@ -23,6 +30,7 @@ namespace bha::suggestions {
         fs::path source_file;
         fs::path declaration_file;
         std::vector<fs::path> use_files;
+        std::vector<TemplateSemanticUse> uses;
         std::vector<fs::path> explicit_definition_files;
         bool complete_definition = false;
         bool has_explicit_instantiation = false;

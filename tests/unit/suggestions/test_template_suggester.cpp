@@ -79,6 +79,7 @@ namespace bha::suggestions {
         std::ofstream(source)
             << "template <typename T> struct Box { T value{}; };\n"
             << "Box<int> make_box();\n"
+            << "Box<int>* box_pointer = nullptr;\n"
             << "template struct Box<int>;\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)

@@ -1,5 +1,6 @@
 #include "bha/suggestions/template_semantic_index.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -30,6 +31,7 @@ namespace bha::suggestions {
             std::ofstream(source)
                 << "template <typename T> struct Box { T value{}; };\n"
                 << "Box<int> make_box();\n"
+                << "Box<int>* box_pointer = nullptr;\n"
                 << "template struct Box<int>;\n";
 
             const auto database = root_ / "compile_commands.json";
@@ -60,6 +62,13 @@ namespace bha::suggestions {
             EXPECT_TRUE(match->has_external_linkage);
             EXPECT_TRUE(match->has_single_explicit_definition);
             EXPECT_FALSE(match->use_files.empty());
+            ASSERT_FALSE(match->uses.empty());
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "function-return" && use.requires_complete_type;
+            }));
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "variable-declaration" && !use.requires_complete_type;
+            }));
             EXPECT_EQ(match->source_file, source);
             EXPECT_EQ(index.find_exact(match->specialization), &*match);
             EXPECT_EQ(index.find_exact("Box<double>"), nullptr);

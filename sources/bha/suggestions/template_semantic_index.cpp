@@ -122,10 +122,25 @@ namespace bha::suggestions {
                 return true;
             }
 
+            bool VisitVarDecl(clang::VarDecl* declaration) {
+                if (declaration) {
+                    record_type_use(declaration->getType(), "variable-declaration");
+                }
+                return true;
+            }
+
+            bool VisitFieldDecl(clang::FieldDecl* declaration) {
+                if (declaration) {
+                    record_type_use(declaration->getType(), "field-declaration");
+                }
+                return true;
+            }
+
             bool VisitFunctionDecl(clang::FunctionDecl* declaration) {
                 if (!declaration) {
                     return true;
                 }
+                record_type_use(declaration->getReturnType(), "function-return");
                 const auto* info = declaration->getTemplateSpecializationInfo();
                 if (!info || !declaration->getTemplateSpecializationArgs()) {
                     return true;
@@ -167,11 +182,41 @@ namespace bha::suggestions {
                 return use_specializations_;
             }
 
+            [[nodiscard]] std::vector<TemplateSemanticUse> take_uses() {
+                return std::move(uses_);
+            }
+
         private:
+            void record_type_use(clang::QualType type, std::string kind) {
+                if (type.isNull()) {
+                    return;
+                }
+
+                const bool requires_complete_type =
+                    !type->isPointerType() && !type->isReferenceType();
+                while (type->isPointerType() || type->isReferenceType()) {
+                    type = type->getPointeeType();
+                }
+
+                const auto* record_type = type->getAs<clang::RecordType>();
+                const auto* specialization = record_type
+                    ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
+                    : nullptr;
+                if (!specialization || !specialization->getSpecializedTemplate()) {
+                    return;
+                }
+
+                const std::string key = specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
+                    render_template_arguments(specialization->getTemplateArgs(), context_);
+                use_specializations_.push_back(key);
+                uses_.push_back({key, source_file_, std::move(kind), requires_complete_type});
+            }
+
             clang::ASTContext& context_;
             fs::path source_file_;
             std::vector<TemplateSemanticRecord> records_;
             std::vector<std::string> use_specializations_;
+            std::vector<TemplateSemanticUse> uses_;
         };
 
         std::vector<std::string> tooling_arguments(
@@ -252,11 +297,18 @@ namespace bha::suggestions {
             TemplateVisitor visitor(ast->getASTContext(), command.source_file);
             visitor.TraverseDecl(ast->getASTContext().getTranslationUnitDecl());
             auto records = visitor.take_records();
+            auto uses = visitor.take_uses();
             const auto& use_specializations = visitor.use_specializations();
             for (auto& record : records) {
                 if (std::ranges::find(use_specializations, record.specialization) != use_specializations.end() &&
                     std::ranges::find(record.use_files, command.source_file) == record.use_files.end()) {
                     record.use_files.push_back(command.source_file);
+                }
+                for (auto& use : uses) {
+                    if (use.specialization == record.specialization) {
+                        use.specialization.clear();
+                        record.uses.push_back(std::move(use));
+                    }
                 }
             }
             records_.insert(records_.end(), records.begin(), records.end());
@@ -288,6 +340,19 @@ namespace bha::suggestions {
                 if (std::ranges::find(existing.explicit_definition_files, file) ==
                     existing.explicit_definition_files.end()) {
                     existing.explicit_definition_files.push_back(file);
+                }
+            }
+            for (auto& use : record.uses) {
+                const auto duplicate = std::ranges::find_if(
+                    existing.uses,
+                    [&use](const TemplateSemanticUse& candidate) {
+                        return candidate.source_file == use.source_file &&
+                               candidate.kind == use.kind &&
+                               candidate.requires_complete_type == use.requires_complete_type;
+                    }
+                );
+                if (duplicate == existing.uses.end()) {
+                    existing.uses.push_back(std::move(use));
                 }
             }
         }
