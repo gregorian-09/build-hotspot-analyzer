@@ -57,9 +57,18 @@ namespace bha {
             ProjectIndex index(root, database);
             const auto command = index.compile_command_for("main.cpp");
             ASSERT_TRUE(command.has_value());
+            EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::Loaded);
+            EXPECT_EQ(index.compile_commands().size(), 1u);
             ASSERT_EQ(command->command_line.size(), 4u);
             EXPECT_EQ(command->source_file, root / "src" / "main.cpp");
             EXPECT_EQ(command->command_line.back(), (root / "src" / "main.cpp").string());
+        }
+
+        TEST_F(ProjectIndexFixture, ReportsMissingCompileDatabase) {
+            ProjectIndex index(root, root / "missing-compile_commands.json");
+
+            EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::NotFound);
+            EXPECT_TRUE(index.compile_commands().empty());
         }
 
     }  // namespace

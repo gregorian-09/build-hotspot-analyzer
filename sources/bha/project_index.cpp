@@ -160,15 +160,32 @@ namespace bha {
 
     std::optional<CompilationUnit> ProjectIndex::compile_command_for(const fs::path& source_file) const {
         ensure_compile_commands_loaded();
-        const std::string requested_key = path_key(resolve(source_file));
+        const auto resolved_source = source_file.has_parent_path()
+            ? std::optional<fs::path>(resolve(source_file))
+            : find_file(source_file);
+        if (!resolved_source.has_value()) {
+            return std::nullopt;
+        }
+        const std::string requested_key = path_key(*resolved_source);
         std::scoped_lock lock(mutex_);
         for (const auto& command : compile_commands_) {
-            if (path_key(command.source_file) == requested_key ||
-                command.source_file.filename() == fs::path(source_file).filename()) {
+            if (path_key(command.source_file) == requested_key) {
                 return command;
             }
         }
         return std::nullopt;
+    }
+
+    std::vector<CompilationUnit> ProjectIndex::compile_commands() const {
+        ensure_compile_commands_loaded();
+        std::scoped_lock lock(mutex_);
+        return compile_commands_;
+    }
+
+    CompilationDatabaseStatus ProjectIndex::compile_commands_status() const {
+        ensure_compile_commands_loaded();
+        std::scoped_lock lock(mutex_);
+        return compile_commands_status_;
     }
 
     void ProjectIndex::ensure_files_indexed() const {
@@ -227,20 +244,37 @@ namespace bha {
                 }
             }
             if (database_path.empty()) {
+                std::scoped_lock lock(mutex_);
+                compile_commands_status_ = compile_commands_path_.has_value()
+                    ? CompilationDatabaseStatus::NotFound
+                    : CompilationDatabaseStatus::NotConfigured;
+                return;
+            }
+
+            std::error_code database_ec;
+            if (!fs::is_regular_file(database_path, database_ec)) {
+                std::scoped_lock lock(mutex_);
+                compile_commands_status_ = CompilationDatabaseStatus::NotFound;
                 return;
             }
 
             std::ifstream input(database_path);
             if (!input) {
+                std::scoped_lock lock(mutex_);
+                compile_commands_status_ = CompilationDatabaseStatus::Invalid;
                 return;
             }
             nlohmann::json database;
             try {
                 input >> database;
             } catch (const nlohmann::json::exception&) {
+                std::scoped_lock lock(mutex_);
+                compile_commands_status_ = CompilationDatabaseStatus::Invalid;
                 return;
             }
             if (!database.is_array()) {
+                std::scoped_lock lock(mutex_);
+                compile_commands_status_ = CompilationDatabaseStatus::Invalid;
                 return;
             }
 
@@ -286,6 +320,7 @@ namespace bha {
             }
             std::scoped_lock lock(mutex_);
             compile_commands_ = std::move(loaded);
+            compile_commands_status_ = CompilationDatabaseStatus::Loaded;
         });
     }
 
