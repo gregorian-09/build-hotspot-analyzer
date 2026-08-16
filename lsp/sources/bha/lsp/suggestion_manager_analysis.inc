@@ -48,6 +48,15 @@
         const std::function<bool()>& is_cancelled
     ) {
         auto start = std::chrono::steady_clock::now();
+        std::map<std::string, std::int64_t> phase_timings;
+        const auto record_phase = [&phase_timings](
+            const std::string_view name,
+            const std::chrono::steady_clock::time_point phase_start
+        ) {
+            phase_timings[std::string(name)] = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - phase_start
+            ).count();
+        };
 
         auto report = [&on_progress](const std::string& msg, const int pct) {
             if (on_progress) {
@@ -100,6 +109,8 @@
             report("Running build...", 10);
             if (auto build_result = adapter->build(project_root, options); !build_result.is_ok() || !build_result.value().success) {
                 throw std::runtime_error("Build failed");
+            } else {
+                phase_timings["build"] = build_result.value().build_time.count();
             }
         }
 
@@ -114,6 +125,7 @@
             compile_commands_path = compile_commands_result.value();
         }
         report_elapsed("Loading compile commands", phase_start, 25);
+        record_phase("compile_commands", phase_start);
 
         ensure_not_cancelled();
         report("Parsing trace files...", 30);
@@ -177,11 +189,13 @@
                 format_elapsed_ms(std::chrono::steady_clock::now() - phase_start),
             40
         );
+        record_phase("trace_parse", phase_start);
 
         if (build_trace.units.empty()) {
             throw std::runtime_error("No trace files found");
         }
 
+        const auto path_resolution_start = std::chrono::steady_clock::now();
         if (!project_root.empty()) {
             std::unordered_map<std::string, std::optional<fs::path>> resolve_cache;
             resolve_cache.reserve(build_trace.units.size() * 2);
@@ -222,6 +236,7 @@
                 }
             }
         }
+        record_phase("path_and_index", path_resolution_start);
 
         ensure_not_cancelled();
         report("Running analyzers...", 50);
@@ -234,10 +249,12 @@
             throw std::runtime_error("Analysis failed: " + analysis_result.error().message());
         }
         report_elapsed("Running analyzers", phase_start, 65);
+        record_phase("analysis", phase_start);
 
         ensure_not_cancelled();
         report("Generating suggestions...", 70);
         phase_start = std::chrono::steady_clock::now();
+        const auto suggestion_phase_start = phase_start;
 
         // Configure suggester options
         SuggesterOptions suggester_opts;
@@ -346,6 +363,7 @@
             }
             report_elapsed("Verified include-cleanup fallback", phase_start, 90);
         }
+        record_phase("suggestion_generation", suggestion_phase_start);
 
         ensure_not_cancelled();
         if (!project_root.empty()) {
@@ -442,6 +460,7 @@
         result.baseline_metrics = extract_build_metrics(analysis_cache_[analysis_id]);
         result.files_analyzed = files_analyzed;
         result.duration_ms = duration_ms;
+        result.phase_timings_ms = std::move(phase_timings);
 
         report("Analysis complete", 100);
 

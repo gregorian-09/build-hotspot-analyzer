@@ -1008,6 +1008,15 @@
     ) {
         ApplySuggestionResult result;
         result.success = false;
+        const auto apply_start = std::chrono::steady_clock::now();
+        const auto record_phase = [&result](
+            const std::string_view name,
+            const std::chrono::steady_clock::time_point phase_start
+        ) {
+            result.phase_timings_ms[std::string(name)] = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - phase_start
+            ).count();
+        };
 
         auto bha_it = bha_suggestions_.find(suggestion_id);
         if (bha_it == bha_suggestions_.end()) {
@@ -1052,9 +1061,12 @@
         if (!apply_ok) {
             return result;
         }
+        record_phase("apply_edits", apply_start);
 
+        const auto syntax_validation_start = std::chrono::steady_clock::now();
         if (enforce_syntax_validation &&
             !validate_compile_command_backed_suggestion(bha_sug, changed_files, result.errors)) {
+            record_phase("syntax_validation", syntax_validation_start);
             rollback_apply_suggestion(
                 result,
                 transactional_snapshot,
@@ -1062,10 +1074,15 @@
             );
             return result;
         }
+        if (enforce_syntax_validation) {
+            record_phase("syntax_validation", syntax_validation_start);
+        }
 
         append_changed_files(result, changed_files);
 
+        const auto rebuild_validation_start = std::chrono::steady_clock::now();
         if (!skip_rebuild && !validate_post_apply_rebuild(result)) {
+            record_phase("rebuild_validation", rebuild_validation_start);
             if (result.backup_id) {
                 rollback_apply_suggestion(
                     result,
@@ -1074,6 +1091,9 @@
                 );
             }
             return result;
+        }
+        if (!skip_rebuild) {
+            record_phase("rebuild_validation", rebuild_validation_start);
         }
 
         result.success = true;

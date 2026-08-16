@@ -10,6 +10,7 @@
 #include <cstring>
 #include <array>
 #include <chrono>
+#include <cstdint>
 #include <cmath>
 #include <cstdio>
 #include <ctime>
@@ -1678,6 +1679,7 @@ namespace bha::lsp
             BuildMetrics baseline_metrics;
             int files_analyzed = 0;
             int duration_ms = 0;
+            std::map<std::string, std::int64_t> phase_timings_ms;
             {
                 std::lock_guard const lock(suggestion_manager_mutex_);
                 auto analysis_result = suggestion_manager_->analyze_project(
@@ -1706,6 +1708,7 @@ namespace bha::lsp
                 baseline_metrics = analysis_result.baseline_metrics;
                 files_analyzed = analysis_result.files_analyzed;
                 duration_ms = analysis_result.duration_ms;
+                phase_timings_ms = std::move(analysis_result.phase_timings_ms);
             }
 
             WorkDoneProgressEnd end_progress;
@@ -1724,6 +1727,11 @@ namespace bha::lsp
             json metrics_json;
             to_json(metrics_json, baseline_metrics);
 
+            json phase_timings_json = json::object();
+            for (const auto& [phase, elapsed_ms] : phase_timings_ms) {
+                phase_timings_json[phase] = elapsed_ms;
+            }
+
             const auto [display_build_time_ms, display_build_time_source] =
                 resolve_trust_loop_baseline(std::filesystem::path(project_root));
 
@@ -1736,7 +1744,8 @@ namespace bha::lsp
                     {"source", display_build_time_source.value_or("trace-aggregate")}
                 }},
                 {"filesAnalyzed", files_analyzed},
-                {"durationMs", duration_ms}
+                {"durationMs", duration_ms},
+                {"phaseTimingsMs", phase_timings_json}
             };
             const json unreal_checks = build_unreal_environment_checks(std::filesystem::path(project_root));
             if (!unreal_checks.empty()) {

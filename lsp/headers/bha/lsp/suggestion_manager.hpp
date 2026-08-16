@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "bha/types.hpp"
 #include <string>
+#include <cstdint>
 #include <vector>
 #include <map>
 #include <list>
@@ -84,6 +85,8 @@ namespace bha::lsp
         int files_analyzed;
         /// Analysis wall-clock duration in milliseconds.
         int duration_ms;
+        /// Stable phase timings for profiling and regression benchmarks.
+        std::map<std::string, std::int64_t> phase_timings_ms;
     };
 
     /**
@@ -118,6 +121,8 @@ namespace bha::lsp
         std::vector<Diagnostic> errors;
         /// Backup identifier created prior to apply.
         std::optional<std::string> backup_id;
+        /// Stable phase timings for profiling and regression benchmarks.
+        std::map<std::string, std::int64_t> phase_timings_ms;
     };
 
     /**
