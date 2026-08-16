@@ -21,6 +21,7 @@ add_executable(bha_tests
         unit/suggestions/test_pimpl_eligibility.cpp
         unit/suggestions/test_pimpl_suggester.cpp
         unit/suggestions/test_template_suggester.cpp
+        unit/suggestions/test_template_semantic_index.cpp
         unit/suggestions/test_unity_build_suggester.cpp
         unit/suggestions/test_unreal_mode.cpp
         unit/suggestions/test_project_root.cpp

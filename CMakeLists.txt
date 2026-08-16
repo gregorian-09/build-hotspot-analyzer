@@ -12,6 +12,7 @@ project(bha
 option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
 option(BHA_BUILD_CLI "Build command-line interface" ON)
 option(BHA_BUILD_REFACTOR_TOOLS "Build optional semantic refactor tools" OFF)
+option(BHA_ENABLE_TEMPLATE_AST "Enable Clang AST-backed template indexing when LibTooling is available" ON)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS "Enable sanitizers (address, undefined)" OFF)
@@ -142,6 +143,46 @@ add_subdirectory(resources)
 # Main Library
 # =============================================================================
 
+set(BHA_HAVE_CLANG_TOOLING 0)
+if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
+    find_path(BHA_CLANG_TOOLING_INCLUDE_DIR
+            NAMES clang/Tooling/Tooling.h
+            PATHS
+                /usr/lib/llvm-18/include
+                /usr/lib/llvm-17/include
+                /usr/lib/llvm-16/include
+                /usr/lib/llvm-15/include
+                /usr/include
+    )
+    find_library(BHA_CLANG_CPP_LIBRARY
+            NAMES clang-cpp libclang-cpp
+            PATHS
+                /usr/lib/llvm-18/lib
+                /usr/lib/llvm-17/lib
+                /usr/lib/llvm-16/lib
+                /usr/lib/llvm-15/lib
+                /usr/lib/x86_64-linux-gnu
+    )
+    find_library(BHA_LLVM_LIBRARY
+            NAMES LLVM-18 LLVM
+            PATHS
+                /usr/lib/llvm-18/lib
+                /usr/lib/llvm-17/lib
+                /usr/lib/llvm-16/lib
+                /usr/lib/llvm-15/lib
+                /usr/lib/x86_64-linux-gnu
+                /lib/x86_64-linux-gnu
+    )
+
+    if(BHA_ENABLE_TEMPLATE_AST AND BHA_CLANG_TOOLING_INCLUDE_DIR AND
+            BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
+        set(BHA_HAVE_CLANG_TOOLING 1)
+        message(STATUS "Clang LibTooling found: enabling AST-backed template indexing")
+    elseif(BHA_ENABLE_TEMPLATE_AST)
+        message(STATUS "Clang LibTooling not found: template suggestions remain disabled")
+    endif()
+endif()
+
 # Header-only core library (for now)
 add_library(bha_core INTERFACE)
 add_library(bha::core ALIAS bha_core)
@@ -194,6 +235,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/suggestions/pimpl_suggester.cpp
         sources/bha/suggestions/suggester_registry.cpp
         sources/bha/suggestions/template_suggester.cpp
+        sources/bha/suggestions/template_semantic_index.cpp
         sources/bha/suggestions/unity_build_suggester.cpp
         sources/bha/analyzers/analyzer_registry.cpp
         sources/bha/analyzers/dependency_analyzer.cpp
@@ -221,6 +263,12 @@ target_link_libraries(bha_lib
             $<$<BOOL:${BHA_ENABLE_SANITIZERS}>:bha::sanitizers>
             $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
+
+target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_TOOLING=${BHA_HAVE_CLANG_TOOLING})
+if(BHA_HAVE_CLANG_TOOLING)
+    target_include_directories(bha_lib SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
+    target_link_libraries(bha_lib PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
+endif()
 
 # Ensure resources are generated before compiling bha_lib
 add_dependencies(bha_lib generate_resources)
@@ -254,35 +302,6 @@ if(BHA_BUILD_REFACTOR_TOOLS)
     add_executable(bha-refactor
             tools/refactor/main.cpp
             tools/refactor/pimpl_tooling.cpp
-    )
-
-    find_path(BHA_CLANG_TOOLING_INCLUDE_DIR
-            NAMES clang/Tooling/Tooling.h
-            PATHS
-                /usr/lib/llvm-18/include
-                /usr/lib/llvm-17/include
-                /usr/lib/llvm-16/include
-                /usr/lib/llvm-15/include
-                /usr/include
-    )
-    find_library(BHA_CLANG_CPP_LIBRARY
-            NAMES clang-cpp libclang-cpp
-            PATHS
-                /usr/lib/llvm-18/lib
-                /usr/lib/llvm-17/lib
-                /usr/lib/llvm-16/lib
-                /usr/lib/llvm-15/lib
-                /usr/lib/x86_64-linux-gnu
-    )
-    find_library(BHA_LLVM_LIBRARY
-            NAMES LLVM-18 LLVM
-            PATHS
-                /usr/lib/llvm-18/lib
-                /usr/lib/llvm-17/lib
-                /usr/lib/llvm-16/lib
-                /usr/lib/llvm-15/lib
-                /usr/lib/x86_64-linux-gnu
-                /lib/x86_64-linux-gnu
     )
 
     if(BHA_CLANG_TOOLING_INCLUDE_DIR AND BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
