@@ -172,6 +172,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/graph/graph.cpp
         sources/bha/project_index.cpp
         sources/bha/build_systems/adapter.cpp
+        sources/bha/build_systems/adapter_support.cpp
         sources/bha/refactor/pimpl_eligibility.cpp
         sources/bha/suggestions/consolidator.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
