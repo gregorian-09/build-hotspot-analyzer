@@ -10,7 +10,6 @@
 #include <cctype>
 #include <cmath>
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -96,50 +95,6 @@ namespace bha::suggestions
             }
 
             return headers;
-        }
-
-        std::vector<std::string> split_shell_command(const std::string& command) {
-            std::vector<std::string> parts;
-            std::string current;
-            char quote = '\0';
-            bool escaped = false;
-
-            for (const char ch : command) {
-                if (escaped) {
-                    current.push_back(ch);
-                    escaped = false;
-                    continue;
-                }
-                if (ch == '\\') {
-                    escaped = true;
-                    continue;
-                }
-                if (quote != '\0') {
-                    if (ch == quote) {
-                        quote = '\0';
-                    } else {
-                        current.push_back(ch);
-                    }
-                    continue;
-                }
-                if (ch == '"' || ch == '\'') {
-                    quote = ch;
-                    continue;
-                }
-                if (std::isspace(static_cast<unsigned char>(ch))) {
-                    if (!current.empty()) {
-                        parts.push_back(std::move(current));
-                        current.clear();
-                    }
-                    continue;
-                }
-                current.push_back(ch);
-            }
-
-            if (!current.empty()) {
-                parts.push_back(std::move(current));
-            }
-            return parts;
         }
 
         std::string shell_quote(const std::string& input) {
@@ -254,69 +209,12 @@ namespace bha::suggestions
             const SuggestionContext& context,
             const fs::path& source_file
         ) {
-            std::vector<std::string> args;
-            if (!context.options.compile_commands_path.has_value()) {
-                return args;
+            if (context.project_index) {
+                if (const auto command = context.project_index->compile_command_for(source_file)) {
+                    return command->command_line;
+                }
             }
-
-            std::ifstream in(*context.options.compile_commands_path);
-            if (!in) {
-                return args;
-            }
-
-            nlohmann::json compile_db;
-            try {
-                in >> compile_db;
-            } catch (const nlohmann::json::exception&) {
-                return args;
-            }
-            if (!compile_db.is_array()) {
-                return args;
-            }
-
-            const fs::path needle = source_file.lexically_normal();
-            for (const auto& entry : compile_db) {
-                if (!entry.is_object()) {
-                    continue;
-                }
-
-                fs::path candidate;
-                if (entry.contains("file") && entry["file"].is_string()) {
-                    candidate = entry["file"].get<std::string>();
-                }
-                if (entry.contains("directory") && entry["directory"].is_string() && candidate.is_relative()) {
-                    candidate = fs::path(entry["directory"].get<std::string>()) / candidate;
-                }
-                candidate = candidate.lexically_normal();
-                if (candidate != needle && candidate.filename() != needle.filename()) {
-                    continue;
-                }
-
-                if (entry.contains("arguments") && entry["arguments"].is_array()) {
-                    for (const auto& arg : entry["arguments"]) {
-                        if (arg.is_string()) {
-                            args.push_back(arg.get<std::string>());
-                        }
-                    }
-                } else if (entry.contains("command") && entry["command"].is_string()) {
-                    args = split_shell_command(entry["command"].get<std::string>());
-                }
-
-                if (!args.empty() && entry.contains("directory") && entry["directory"].is_string()) {
-                    const fs::path directory = entry["directory"].get<std::string>();
-                    for (auto& arg : args) {
-                        const fs::path path_arg(arg);
-                        if (path_arg.is_relative() &&
-                            (path_arg.extension() == ".c" || path_arg.extension() == ".cc" ||
-                             path_arg.extension() == ".cpp" || path_arg.extension() == ".cxx")) {
-                            arg = (directory / path_arg).lexically_normal().string();
-                        }
-                    }
-                }
-                return args;
-            }
-
-            return args;
+            return {};
         }
 
         bool has_compile_command_for_source(

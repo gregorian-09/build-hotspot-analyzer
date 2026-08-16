@@ -170,6 +170,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/intel_parser.cpp
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
+        sources/bha/project_index.cpp
         sources/bha/build_systems/adapter.cpp
         sources/bha/refactor/pimpl_eligibility.cpp
         sources/bha/suggestions/consolidator.cpp

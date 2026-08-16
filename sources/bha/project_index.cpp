@@ -1,0 +1,310 @@
+#include "bha/project_index.hpp"
+
+#include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+namespace bha {
+    namespace {
+
+        std::string lowercase_extension(const fs::path& path) {
+            std::string extension = path.extension().string();
+            std::ranges::transform(
+                extension,
+                extension.begin(),
+                [](const unsigned char value) { return static_cast<char>(std::tolower(value)); }
+            );
+            return extension;
+        }
+
+        std::vector<std::string> split_shell_command(const std::string& command) {
+            std::vector<std::string> parts;
+            std::string current;
+            char quote = '\0';
+            bool escaped = false;
+            for (const char character : command) {
+                if (escaped) {
+                    current.push_back(character);
+                    escaped = false;
+                    continue;
+                }
+                if (character == '\\' && quote != '\'') {
+                    escaped = true;
+                    continue;
+                }
+                if (quote != '\0') {
+                    if (character == quote) {
+                        quote = '\0';
+                    } else {
+                        current.push_back(character);
+                    }
+                    continue;
+                }
+                if (character == '\'' || character == '"') {
+                    quote = character;
+                } else if (std::isspace(static_cast<unsigned char>(character))) {
+                    if (!current.empty()) {
+                        parts.push_back(std::move(current));
+                        current.clear();
+                    }
+                } else {
+                    current.push_back(character);
+                }
+            }
+            if (escaped) {
+                current.push_back('\\');
+            }
+            if (!current.empty()) {
+                parts.push_back(std::move(current));
+            }
+            return parts;
+        }
+
+        std::string path_key(const fs::path& path) {
+            return path.lexically_normal().generic_string();
+        }
+
+    }  // namespace
+
+    ProjectIndex::ProjectIndex(fs::path project_root, std::optional<fs::path> compile_commands_path)
+        : project_root_(std::move(project_root)),
+          compile_commands_path_(std::move(compile_commands_path)) {
+        if (!project_root_.empty() && project_root_.is_relative()) {
+            project_root_ = fs::absolute(project_root_).lexically_normal();
+        }
+        if (compile_commands_path_.has_value() && compile_commands_path_->is_relative() && !project_root_.empty()) {
+            *compile_commands_path_ = (project_root_ / *compile_commands_path_).lexically_normal();
+        }
+        if (project_root_.empty() && compile_commands_path_.has_value()) {
+            project_root_ = compile_commands_path_->parent_path();
+        }
+    }
+
+    const fs::path& ProjectIndex::project_root() const noexcept {
+        return project_root_;
+    }
+
+    fs::path ProjectIndex::resolve(const fs::path& path) const {
+        if (path.empty()) {
+            return {};
+        }
+        if (path.is_absolute() || project_root_.empty()) {
+            return path.lexically_normal();
+        }
+        return (project_root_ / path).lexically_normal();
+    }
+
+    std::optional<fs::path> ProjectIndex::find_file(const fs::path& path) const {
+        if (path.empty()) {
+            return std::nullopt;
+        }
+        const fs::path resolved = resolve(path);
+        std::error_code ec;
+        if (fs::is_regular_file(resolved, ec)) {
+            return resolved;
+        }
+        if (path.has_parent_path()) {
+            return std::nullopt;
+        }
+
+        ensure_files_indexed();
+        const std::string filename = path.filename().generic_string();
+        std::scoped_lock lock(mutex_);
+        for (const auto& candidate : indexed_files_) {
+            if (candidate.filename().generic_string() == filename) {
+                return candidate;
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::optional<std::string> ProjectIndex::read_file(const fs::path& path) const {
+        const auto resolved = find_file(path);
+        if (!resolved.has_value()) {
+            return std::nullopt;
+        }
+        const std::string key = path_key(*resolved);
+        {
+            std::scoped_lock lock(mutex_);
+            if (const auto cached = file_contents_.find(key); cached != file_contents_.end()) {
+                return cached->second;
+            }
+        }
+
+        std::ifstream input(*resolved);
+        if (!input) {
+            return std::nullopt;
+        }
+        std::string content((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+        std::scoped_lock lock(mutex_);
+        file_contents_[key] = content;
+        return content;
+    }
+
+    std::vector<fs::path> ProjectIndex::files(const ProjectFileKind kind) const {
+        ensure_files_indexed();
+        std::scoped_lock lock(mutex_);
+        std::vector<fs::path> result;
+        for (const auto& path : indexed_files_) {
+            if (kind == ProjectFileKind::Source && !is_source_file(path)) {
+                continue;
+            }
+            if (kind == ProjectFileKind::Header && !is_header_file(path)) {
+                continue;
+            }
+            result.push_back(path);
+        }
+        return result;
+    }
+
+    std::optional<CompilationUnit> ProjectIndex::compile_command_for(const fs::path& source_file) const {
+        ensure_compile_commands_loaded();
+        const std::string requested_key = path_key(resolve(source_file));
+        std::scoped_lock lock(mutex_);
+        for (const auto& command : compile_commands_) {
+            if (path_key(command.source_file) == requested_key ||
+                command.source_file.filename() == fs::path(source_file).filename()) {
+                return command;
+            }
+        }
+        return std::nullopt;
+    }
+
+    void ProjectIndex::ensure_files_indexed() const {
+        std::call_once(files_once_, [this] {
+            if (project_root_.empty()) {
+                return;
+            }
+            std::vector<fs::path> discovered;
+            std::error_code ec;
+            const auto options = fs::directory_options::skip_permission_denied;
+            for (fs::recursive_directory_iterator it(project_root_, options, ec), end;
+                 it != end;
+                 it.increment(ec)) {
+                if (ec) {
+                    ec.clear();
+                    continue;
+                }
+                const auto& entry = *it;
+                std::error_code entry_ec;
+                if (entry.is_directory(entry_ec)) {
+                    if (should_skip_directory(entry.path())) {
+                        it.disable_recursion_pending();
+                    }
+                    continue;
+                }
+                if (entry.is_regular_file(entry_ec) &&
+                    (is_source_file(entry.path()) || is_header_file(entry.path()))) {
+                    discovered.push_back(entry.path().lexically_normal());
+                }
+            }
+            std::ranges::sort(discovered);
+            std::scoped_lock lock(mutex_);
+            indexed_files_ = std::move(discovered);
+        });
+    }
+
+    void ProjectIndex::ensure_compile_commands_loaded() const {
+        std::call_once(compile_commands_once_, [this] {
+            fs::path database_path;
+            if (compile_commands_path_.has_value()) {
+                database_path = *compile_commands_path_;
+            } else if (!project_root_.empty()) {
+                const std::vector<fs::path> candidates = {
+                    project_root_ / "compile_commands.json",
+                    project_root_ / "build" / "compile_commands.json",
+                    project_root_ / "out" / "build" / "compile_commands.json",
+                    project_root_ / "cmake-build-debug" / "compile_commands.json",
+                    project_root_ / "cmake-build-release" / "compile_commands.json"
+                };
+                for (const auto& candidate : candidates) {
+                    std::error_code ec;
+                    if (fs::is_regular_file(candidate, ec)) {
+                        database_path = candidate;
+                        break;
+                    }
+                }
+            }
+            if (database_path.empty()) {
+                return;
+            }
+
+            std::ifstream input(database_path);
+            if (!input) {
+                return;
+            }
+            nlohmann::json database;
+            try {
+                input >> database;
+            } catch (const nlohmann::json::exception&) {
+                return;
+            }
+            if (!database.is_array()) {
+                return;
+            }
+
+            std::vector<CompilationUnit> loaded;
+            for (const auto& entry : database) {
+                if (!entry.is_object() || !entry.contains("file") || !entry["file"].is_string()) {
+                    continue;
+                }
+                fs::path source = entry["file"].get<std::string>();
+                fs::path directory = database_path.parent_path();
+                if (entry.contains("directory") && entry["directory"].is_string()) {
+                    directory = entry["directory"].get<std::string>();
+                }
+                if (source.is_relative()) {
+                    source = directory / source;
+                }
+
+                std::vector<std::string> arguments;
+                if (entry.contains("arguments") && entry["arguments"].is_array()) {
+                    for (const auto& argument : entry["arguments"]) {
+                        if (argument.is_string()) {
+                            arguments.push_back(argument.get<std::string>());
+                        }
+                    }
+                } else if (entry.contains("command") && entry["command"].is_string()) {
+                    arguments = split_shell_command(entry["command"].get<std::string>());
+                }
+                if (arguments.empty()) {
+                    continue;
+                }
+                for (auto& argument : arguments) {
+                    const fs::path argument_path(argument);
+                    const std::string extension = lowercase_extension(argument_path);
+                    if (argument_path.is_relative() &&
+                        (extension == ".c" || extension == ".cc" || extension == ".cpp" || extension == ".cxx")) {
+                        argument = (directory / argument_path).lexically_normal().string();
+                    }
+                }
+                CompilationUnit unit;
+                unit.source_file = source.lexically_normal();
+                unit.command_line = std::move(arguments);
+                loaded.push_back(std::move(unit));
+            }
+            std::scoped_lock lock(mutex_);
+            compile_commands_ = std::move(loaded);
+        });
+    }
+
+    bool ProjectIndex::is_source_file(const fs::path& path) {
+        const std::string extension = lowercase_extension(path);
+        return extension == ".c" || extension == ".cc" || extension == ".cpp" ||
+               extension == ".cxx" || extension == ".m" || extension == ".mm";
+    }
+
+    bool ProjectIndex::is_header_file(const fs::path& path) {
+        const std::string extension = lowercase_extension(path);
+        return extension == ".h" || extension == ".hh" || extension == ".hpp" ||
+               extension == ".hxx" || extension == ".inl" || extension == ".ipp";
+    }
+
+    bool ProjectIndex::should_skip_directory(const fs::path& path) {
+        const std::string name = path.filename().string();
+        return name == ".git" || name == ".lsp-optimization-backup" || name == "build" ||
+               name == "out" || name.rfind("cmake-build-", 0) == 0 || name == "node_modules";
+    }
+
+}  // namespace bha

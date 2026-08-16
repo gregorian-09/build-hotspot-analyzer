@@ -22,6 +22,7 @@
  */
 
 #include "bha/types.hpp"
+#include "bha/project_index.hpp"
 #include "bha/result.hpp"
 #include "bha/error.hpp"
 #include "bha/analyzers/analyzer.hpp"
@@ -36,8 +37,8 @@
 #include <cmath>
 #include <fstream>
 #include <functional>
-#include <optional>
 #include <memory>
+#include <optional>
 #include <regex>
 #include <iomanip>
 #include <mutex>
@@ -76,6 +77,7 @@ namespace bha::suggestions {
         const analyzers::AnalysisResult& analysis;
         const SuggesterOptions& options;
         fs::path project_root;
+        std::shared_ptr<ProjectIndex> project_index;
 
         /// Optional cancellation token. Suggesters should check this periodically
         /// in long-running loops and return early if canceled.
@@ -102,6 +104,7 @@ namespace bha::suggestions {
               analysis(analysis_ref),
               options(options_ref),
               project_root(std::move(root)),
+              project_index(std::make_shared<ProjectIndex>(project_root, options_ref.compile_commands_path)),
               cancelled(cancelled_ptr),
               deadline(std::move(deadline_value)),
               target_files(std::move(files)),
@@ -124,11 +127,9 @@ namespace bha::suggestions {
                 return true;
             }
 
-            fs::path normalized_file = file;
-            if (normalized_file.is_relative() && !project_root.empty()) {
-                normalized_file = project_root / normalized_file;
-            }
-            normalized_file = normalized_file.lexically_normal();
+            fs::path normalized_file = project_index
+                ? project_index->resolve(file)
+                : file.lexically_normal();
             if (!target_files_lookup.empty()) {
                 if (normalized_file.parent_path().empty()) {
                     return target_files_lookup.contains(normalized_file.filename().string());
@@ -141,7 +142,10 @@ namespace bha::suggestions {
                     if (target.parent_path().empty()) {
                         return normalized_file.filename() == target;
                     }
-                    return normalized_file == target.lexically_normal();
+                    const fs::path normalized_target = project_index
+                        ? project_index->resolve(target)
+                        : target.lexically_normal();
+                    return normalized_file == normalized_target;
                 }
             );
         }

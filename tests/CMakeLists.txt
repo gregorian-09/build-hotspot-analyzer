@@ -12,6 +12,7 @@ add_executable(bha_tests
         unit/core/test_error.cpp
         unit/core/test_result.cpp
         unit/core/test_types.cpp
+        unit/core/test_project_index.cpp
         unit/suggestions/test_forward_decl_suggester.cpp
         unit/suggestions/test_explainability.cpp
         unit/suggestions/test_header_split_suggester.cpp
