@@ -4,6 +4,7 @@
 #include "bha/project_index.hpp"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace bha::suggestions {
@@ -21,8 +22,12 @@ namespace bha::suggestions {
         std::string specialization_kind;
         fs::path source_file;
         fs::path declaration_file;
+        std::vector<fs::path> use_files;
+        std::vector<fs::path> explicit_definition_files;
         bool complete_definition = false;
         bool has_explicit_instantiation = false;
+        bool has_external_linkage = false;
+        bool has_single_explicit_definition = false;
     };
 
     /**
@@ -38,6 +43,9 @@ namespace bha::suggestions {
         [[nodiscard]] TemplateSemanticStatus status() const noexcept;
         [[nodiscard]] const std::string& diagnostic() const noexcept;
         [[nodiscard]] const std::vector<TemplateSemanticRecord>& records() const noexcept;
+        [[nodiscard]] const TemplateSemanticRecord* find_exact(
+            std::string_view specialization
+        ) const noexcept;
 
     private:
         ProjectIndex& project_index_;

@@ -57,7 +57,49 @@ namespace bha::suggestions {
             ASSERT_NE(match, index.records().end());
             EXPECT_TRUE(match->complete_definition);
             EXPECT_TRUE(match->has_explicit_instantiation);
+            EXPECT_TRUE(match->has_external_linkage);
+            EXPECT_TRUE(match->has_single_explicit_definition);
+            EXPECT_FALSE(match->use_files.empty());
             EXPECT_EQ(match->source_file, source);
+            EXPECT_EQ(index.find_exact(match->specialization), &*match);
+            EXPECT_EQ(index.find_exact("Box<double>"), nullptr);
+        }
+
+        TEST_F(TemplateSemanticIndexTest, ReportsMissingCompilationDatabase) {
+            ProjectIndex project_index(root_);
+            TemplateSemanticIndex index(project_index);
+
+            index.build();
+
+            EXPECT_TRUE(
+                index.status() == TemplateSemanticStatus::NoCompilationDatabase ||
+                index.status() == TemplateSemanticStatus::Unavailable
+            );
+            EXPECT_TRUE(index.records().empty());
+        }
+
+        TEST_F(TemplateSemanticIndexTest, RejectsTranslationUnitWithClangDiagnostics) {
+            const auto source = root_ / "src" / "broken.cpp";
+            std::ofstream(source) << "template <typename T> struct Broken { T value; };\n"
+                                  << "Broken<int> broken(\n";
+
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/broken.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/broken.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            EXPECT_EQ(index.status(), TemplateSemanticStatus::Failed);
+            EXPECT_TRUE(index.records().empty());
+            EXPECT_FALSE(index.diagnostic().empty());
         }
 
     }  // namespace
