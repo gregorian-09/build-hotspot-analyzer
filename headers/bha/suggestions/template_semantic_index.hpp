@@ -36,6 +36,8 @@ namespace bha::suggestions {
         bool has_explicit_instantiation = false;
         bool has_external_linkage = false;
         bool has_single_explicit_definition = false;
+        bool has_dependent_arguments = false;
+        bool has_unsupported_scope = false;
     };
 
     /**

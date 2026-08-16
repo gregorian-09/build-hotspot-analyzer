@@ -103,6 +103,15 @@ namespace bha::suggestions {
                     declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
                     declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
                 record.has_external_linkage = primary->getFormalLinkage() == clang::Linkage::External;
+                record.has_dependent_arguments = std::ranges::any_of(
+                    declaration->getTemplateArgs().asArray(),
+                    [](const clang::TemplateArgument& argument) {
+                        return argument.isInstantiationDependent();
+                    }
+                );
+                record.has_unsupported_scope =
+                    !primary->getDeclContext()->isFileContext() ||
+                    primary->getNameAsString().empty();
                 if (declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
                     record.explicit_definition_files.push_back(source_file_);
                 }
@@ -201,6 +210,15 @@ namespace bha::suggestions {
                     declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
                     declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
                 record.has_external_linkage = primary->getFormalLinkage() == clang::Linkage::External;
+                record.has_dependent_arguments = std::ranges::any_of(
+                    declaration->getTemplateSpecializationArgs()->asArray(),
+                    [](const clang::TemplateArgument& argument) {
+                        return argument.isInstantiationDependent();
+                    }
+                );
+                record.has_unsupported_scope =
+                    !primary->getDeclContext()->isFileContext() ||
+                    primary->getNameAsString().empty();
                 if (declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
                     record.explicit_definition_files.push_back(source_file_);
                 }
@@ -366,6 +384,8 @@ namespace bha::suggestions {
             existing.has_explicit_instantiation =
                 existing.has_explicit_instantiation || record.has_explicit_instantiation;
             existing.has_external_linkage = existing.has_external_linkage || record.has_external_linkage;
+            existing.has_dependent_arguments = existing.has_dependent_arguments || record.has_dependent_arguments;
+            existing.has_unsupported_scope = existing.has_unsupported_scope || record.has_unsupported_scope;
             if (existing.declaration_file.empty()) {
                 existing.declaration_file = record.declaration_file;
             }

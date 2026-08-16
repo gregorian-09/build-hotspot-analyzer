@@ -63,6 +63,8 @@ namespace bha::suggestions {
             EXPECT_TRUE(match->has_explicit_instantiation);
             EXPECT_TRUE(match->has_external_linkage);
             EXPECT_TRUE(match->has_single_explicit_definition);
+            EXPECT_FALSE(match->has_dependent_arguments);
+            EXPECT_FALSE(match->has_unsupported_scope);
             EXPECT_FALSE(match->use_files.empty());
             ASSERT_FALSE(match->uses.empty());
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
@@ -93,6 +95,37 @@ namespace bha::suggestions {
                 index.status() == TemplateSemanticStatus::Unavailable
             );
             EXPECT_TRUE(index.records().empty());
+        }
+
+        TEST_F(TemplateSemanticIndexTest, RejectsMemberTemplateScopeForAutomaticOwnership) {
+            const auto source = root_ / "src" / "member.cpp";
+            std::ofstream(source)
+                << "struct Owner { template <typename T> struct Nested { T value{}; }; };\n"
+                << "Owner::Nested<int> nested;\n"
+                << "template struct Owner::Nested<int>;\n";
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/member.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/member.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
+            const auto match = std::ranges::find_if(
+                index.records(),
+                [](const auto& record) {
+                    return record.template_name.find("Nested") != std::string::npos;
+                }
+            );
+            ASSERT_NE(match, index.records().end());
+            EXPECT_TRUE(match->has_unsupported_scope);
         }
 
         TEST_F(TemplateSemanticIndexTest, RejectsTranslationUnitWithClangDiagnostics) {
