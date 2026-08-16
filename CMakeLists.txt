@@ -173,6 +173,17 @@ target_sources(bha_lib PRIVATE
         sources/bha/project_index.cpp
         sources/bha/build_systems/adapter.cpp
         sources/bha/build_systems/adapter_support.cpp
+        sources/bha/build_systems/adapter_registration.cpp
+        sources/bha/build_systems/cmake_adapter.cpp
+        sources/bha/build_systems/ninja_adapter.cpp
+        sources/bha/build_systems/make_adapter.cpp
+        sources/bha/build_systems/msbuild_adapter.cpp
+        sources/bha/build_systems/meson_adapter.cpp
+        sources/bha/build_systems/bazel_adapter.cpp
+        sources/bha/build_systems/buck2_adapter.cpp
+        sources/bha/build_systems/scons_adapter.cpp
+        sources/bha/build_systems/unreal_adapter.cpp
+        sources/bha/build_systems/xcode_adapter.cpp
         sources/bha/refactor/pimpl_eligibility.cpp
         sources/bha/suggestions/consolidator.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
