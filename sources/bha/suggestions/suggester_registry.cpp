@@ -765,6 +765,15 @@ namespace bha::suggestions
                     result_value.suggestions.size()
                 );
             }
+            if (options.on_suggester_diagnostic) {
+                for (const auto& diagnostic : result_value.diagnostics) {
+                    options.on_suggester_diagnostic(
+                        suggester->name(),
+                        diagnostic.code,
+                        diagnostic.message
+                    );
+                }
+            }
 
             if (options.max_suggester_time != Duration::zero() &&
                 suggester_elapsed >= options.max_suggester_time) {

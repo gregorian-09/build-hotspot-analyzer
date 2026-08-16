@@ -7,6 +7,7 @@
 #include "bha/analyzers/analyzer.hpp"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -19,6 +20,11 @@ namespace bha::suggestions {
      */
     struct SuggestionResult {
         std::vector<Suggestion> suggestions;
+        struct Diagnostic {
+            std::string code;
+            std::string message;
+        };
+        std::vector<Diagnostic> diagnostics;
         Duration generation_time = Duration::zero();
         std::size_t items_analyzed = 0;
         std::size_t items_skipped = 0;

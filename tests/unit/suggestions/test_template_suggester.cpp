@@ -36,6 +36,8 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code, "template.evidence.insufficient");
     }
 
     TEST_F(TemplateSuggesterTest, RejectsAggregateTiming) {
@@ -51,6 +53,8 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code, "template.evidence.insufficient");
     }
 
     TEST_F(TemplateSuggesterTest, RejectsUnvalidatedSpecializationTiming) {
@@ -67,6 +71,8 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code, "template.semantic.unvalidated");
     }
 
     TEST_F(TemplateSuggesterTest, CorrelatesValidatedTraceWithExactAstRecord) {

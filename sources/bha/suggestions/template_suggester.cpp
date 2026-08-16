@@ -17,6 +17,22 @@ namespace bha::suggestions {
             !context.trace.template_semantic_validated ||
             context.project_index == nullptr) {
             result.items_skipped = context.analysis.templates.templates.size();
+            if (context.trace.template_evidence != TemplateEvidence::PerSpecializationTimingWithLocations) {
+                result.diagnostics.push_back({
+                    "template.evidence.insufficient",
+                    "Template edits require per-specialization timing with source locations; aggregate or missing timing evidence was rejected."
+                });
+            } else if (!context.trace.template_semantic_validated) {
+                result.diagnostics.push_back({
+                    "template.semantic.unvalidated",
+                    "Template edits require semantic validation from the Clang AST index."
+                });
+            } else {
+                result.diagnostics.push_back({
+                    "template.index.unavailable",
+                    "Template edits require a project index backed by a compilation database."
+                });
+            }
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
@@ -24,6 +40,10 @@ namespace bha::suggestions {
         semantic_index.build();
         if (semantic_index.status() != TemplateSemanticStatus::Parsed) {
             result.items_skipped = context.analysis.templates.templates.size();
+            result.diagnostics.push_back({
+                "template.semantic.index_failed",
+                semantic_index.diagnostic()
+            });
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 

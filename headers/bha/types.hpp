@@ -894,6 +894,7 @@ namespace bha {
         std::size_t max_include_cleanup_scan_files = 25;
         std::size_t max_include_move_candidate_headers = 100;
         std::function<void(std::string_view, Duration, std::size_t)> on_suggester_completed;
+        std::function<void(std::string_view, std::string_view, std::string_view)> on_suggester_diagnostic;
         std::optional<fs::path> compile_commands_path;
         std::vector<std::string> protected_include_patterns;
         std::vector<SuggestionType> enabled_types;
