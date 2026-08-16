@@ -1795,6 +1795,15 @@ namespace bha::suggestions
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
+        // Aggregate timing identifies cost, but not a specialization that can be
+        // safely moved behind an extern/explicit-instantiation pair.
+        if (context.trace.template_evidence == TemplateEvidence::AggregateTiming) {
+            result.items_skipped = templates.templates.size();
+            auto end_time = std::chrono::steady_clock::now();
+            result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
+
         const auto& template_cfg = context.options.heuristics.templates;
         const std::size_t min_instantiation_count = std::max<std::size_t>(template_cfg.min_instantiation_count, 2);
         const auto min_template_time = template_cfg.min_total_time;

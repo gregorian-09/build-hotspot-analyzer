@@ -207,10 +207,12 @@ namespace bha::parsers {
 
         const auto lines = utils::split(content, '\n');
         Duration total_wall = Duration::zero();
+        bool saw_template_phase = false;
 
         for (const auto& line : lines) {
             if (auto timing = parse_timing_line(line)) {
                 total_wall += timing->wall_time;
+                saw_template_phase = saw_template_phase || timing->phase_name == "phase lang. deferred";
                 map_phase_to_breakdown(*timing, unit.metrics.breakdown);
             }
         }
@@ -222,6 +224,10 @@ namespace bha::parsers {
                                       unit.metrics.breakdown.template_instantiation;
         unit.metrics.backend_time = unit.metrics.breakdown.code_generation +
                                      unit.metrics.breakdown.optimization;
+
+        if (saw_template_phase || unit.metrics.breakdown.template_instantiation != Duration::zero()) {
+            unit.template_evidence = TemplateEvidence::AggregateTiming;
+        }
 
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }

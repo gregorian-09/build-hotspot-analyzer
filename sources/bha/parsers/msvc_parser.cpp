@@ -171,6 +171,10 @@ namespace bha::parsers {
             unit.metrics.total_time = unit.metrics.frontend_time + unit.metrics.backend_time;
         }
 
+        if (unit.metrics.breakdown.template_instantiation != Duration::zero()) {
+            unit.template_evidence = TemplateEvidence::AggregateTiming;
+        }
+
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }
 

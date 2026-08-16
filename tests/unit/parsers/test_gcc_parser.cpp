@@ -64,5 +64,6 @@ phase last asm                        :   0.10 (  5%)   0.02 (  1%)   0.12 (  6%
         EXPECT_GT(unit.metrics.breakdown.semantic_analysis.count(), 0);
         EXPECT_GT(unit.metrics.breakdown.optimization.count(), 0);
         EXPECT_GT(unit.metrics.breakdown.code_generation.count(), 0);
+        EXPECT_EQ(unit.template_evidence, TemplateEvidence::AggregateTiming);
     }
 }

@@ -154,6 +154,10 @@ namespace bha::cli
 
                     if (result.is_ok()) {
                         build_trace.total_time += result.value().metrics.total_time;
+                        if (static_cast<std::uint8_t>(result.value().template_evidence) >
+                            static_cast<std::uint8_t>(build_trace.template_evidence)) {
+                            build_trace.template_evidence = result.value().template_evidence;
+                        }
                         build_trace.units.push_back(std::move(result.value()));
                     } else {
                         print_warning("Failed to parse: " + trace_files[i].string() +

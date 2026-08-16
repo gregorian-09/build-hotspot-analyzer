@@ -92,7 +92,8 @@ namespace bha::parsers
         const auto it = std::ranges::find_if(unit.templates,
                                              [](const auto& t) { return t.full_signature == "TemplateA"; });
         ASSERT_NE(it, unit.templates.end());
-        EXPECT_GE(it->count, 2u);
+        EXPECT_EQ(it->count, 2u);
+        EXPECT_EQ(unit.template_evidence, TemplateEvidence::PerSpecializationTiming);
     }
 
     TEST_F(ClangParserTest, ParseContent_IncludeInfo) {

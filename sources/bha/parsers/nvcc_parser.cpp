@@ -243,6 +243,10 @@ namespace bha::parsers {
         unit.metrics.breakdown.code_generation = device_time;
         unit.metrics.breakdown.optimization = link_time;
 
+        if (unit.metrics.breakdown.template_instantiation != Duration::zero()) {
+            unit.template_evidence = TemplateEvidence::AggregateTiming;
+        }
+
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }
 

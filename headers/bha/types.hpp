@@ -30,6 +30,7 @@
 #include <filesystem>
 #include <functional>
 #include <string_view>
+#include <cstdint>
 
 #include "heuristics/config.hpp"
 
@@ -121,6 +122,19 @@ namespace bha {
         Clang,
         GCC,
         MSVC
+    };
+
+    /**
+     * Evidence level available for template optimization decisions.
+     *
+     * Aggregate timing can identify that templates are expensive, but it cannot
+     * identify a safe explicit-instantiation edit.
+     */
+    enum class TemplateEvidence : std::uint8_t {
+        None,
+        AggregateTiming,
+        PerSpecializationTiming,
+        PerSpecializationTimingWithLocations
     };
 
     /**
@@ -436,7 +450,7 @@ namespace bha {
         std::vector<std::string> type_arguments;
         Duration time = Duration::zero();
         SourceLocation location;
-        std::size_t count = 1;
+        std::size_t count = 0;
     };
 
     /**
@@ -458,6 +472,7 @@ namespace bha {
         FileMetrics metrics;
         std::vector<IncludeInfo> includes;
         std::vector<TemplateInstantiation> templates;
+        TemplateEvidence template_evidence = TemplateEvidence::None;
         std::vector<std::string> symbols_defined;
         std::vector<std::string> command_line;
     };
@@ -488,6 +503,7 @@ namespace bha {
         BuildSystemType build_system = BuildSystemType::Unknown;
         std::string configuration;
         std::string platform;
+        TemplateEvidence template_evidence = TemplateEvidence::None;
 
         std::optional<GitInfo> git_info;
 

@@ -66,5 +66,6 @@ time(c2.dll)=0.800s
         EXPECT_GT(unit.metrics.breakdown.template_instantiation.count(), 0);
         EXPECT_GT(unit.metrics.breakdown.optimization.count(), 0);
         EXPECT_GT(unit.metrics.breakdown.code_generation.count(), 0);
+        EXPECT_EQ(unit.template_evidence, TemplateEvidence::AggregateTiming);
     }
 }

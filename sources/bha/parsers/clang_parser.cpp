@@ -184,6 +184,7 @@ namespace bha::parsers {
                     if (tmpl.name.empty()) {
                         tmpl.name = event.name;
                         tmpl.full_signature = event.detail;
+                        tmpl.count = 0;
 
                         if (!event.file.empty()) {
                             tmpl.location.file = event.file;
@@ -397,6 +398,15 @@ namespace bha::parsers {
         unit.metrics.path = unit.source_file;
 
         process_template_events(events, unit.templates);
+        if (!unit.templates.empty()) {
+            const bool has_location = std::ranges::any_of(
+                unit.templates,
+                [](const auto& tmpl) { return tmpl.location.has_location(); }
+            );
+            unit.template_evidence = has_location
+                ? TemplateEvidence::PerSpecializationTimingWithLocations
+                : TemplateEvidence::PerSpecializationTiming;
+        }
         process_include_events(events, unit.includes);
         calculate_metrics(events, unit.metrics);
 

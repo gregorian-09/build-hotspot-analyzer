@@ -66,6 +66,28 @@ namespace bha::suggestions
         EXPECT_TRUE(result.value().suggestions.empty());
     }
 
+    TEST_F(TemplateSuggesterTest, RejectsAggregateOnlyTemplateEvidence) {
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::AggregateTiming;
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "AggregateOnly<int>";
+        tmpl.full_signature = "AggregateOnly<int>";
+        tmpl.total_time = std::chrono::milliseconds(500);
+        tmpl.instantiation_count = 20;
+        analysis.templates.templates.push_back(std::move(tmpl));
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, {}};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_EQ(result.value().items_skipped, 1u);
+    }
+
     TEST_F(TemplateSuggesterTest, SuggestsForExpensiveTemplate) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(60);
