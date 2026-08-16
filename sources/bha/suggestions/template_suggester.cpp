@@ -1795,9 +1795,11 @@ namespace bha::suggestions
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
-        // Aggregate timing identifies cost, but not a specialization that can be
-        // safely moved behind an extern/explicit-instantiation pair.
-        if (context.trace.template_evidence == TemplateEvidence::AggregateTiming) {
+        // Timing evidence without AST validation is never sufficient to generate
+        // an extern/explicit-instantiation pair.
+        if (context.trace.template_evidence == TemplateEvidence::AggregateTiming ||
+            (context.trace.template_evidence != TemplateEvidence::None &&
+             !context.trace.template_semantic_validated)) {
             result.items_skipped = templates.templates.size();
             auto end_time = std::chrono::steady_clock::now();
             result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);

@@ -504,6 +504,7 @@ namespace bha {
         std::string configuration;
         std::string platform;
         TemplateEvidence template_evidence = TemplateEvidence::None;
+        bool template_semantic_validated = false;
 
         std::optional<GitInfo> git_info;
 

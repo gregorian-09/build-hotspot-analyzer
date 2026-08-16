@@ -88,6 +88,28 @@ namespace bha::suggestions
         EXPECT_EQ(result.value().items_skipped, 1u);
     }
 
+    TEST_F(TemplateSuggesterTest, RejectsUnvalidatedSpecializationEvidence) {
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats tmpl;
+        tmpl.name = "Unvalidated<int>";
+        tmpl.full_signature = "Unvalidated<int>";
+        tmpl.total_time = std::chrono::milliseconds(500);
+        tmpl.instantiation_count = 20;
+        analysis.templates.templates.push_back(std::move(tmpl));
+
+        const SuggesterOptions options;
+        const SuggestionContext context{trace, analysis, options, {}};
+
+        auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_EQ(result.value().items_skipped, 1u);
+    }
+
     TEST_F(TemplateSuggesterTest, SuggestsForExpensiveTemplate) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(60);
