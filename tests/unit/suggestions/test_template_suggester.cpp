@@ -3,6 +3,8 @@
 #include "bha/suggestions/template_suggester.hpp"
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace bha::suggestions {
@@ -65,6 +67,45 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
+    }
+
+    TEST_F(TemplateSuggesterTest, CorrelatesValidatedTraceWithExactAstRecord) {
+        const auto root = std::filesystem::temp_directory_path() / "bha-template-suggester-test";
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+        std::filesystem::create_directories(root / "src", ec);
+
+        const auto source = root / "src" / "main.cpp";
+        std::ofstream(source)
+            << "template <typename T> struct Box { T value{}; };\n"
+            << "Box<int> make_box();\n"
+            << "template struct Box<int>;\n";
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\","
+            << "\"file\":\"src/main.cpp\","
+            << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/main.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "Box<int>";
+        candidate.total_time = std::chrono::milliseconds(500);
+        analysis.templates.templates.push_back(std::move(candidate));
+
+        SuggesterOptions options;
+        options.compile_commands_path = database;
+        const SuggestionContext context{trace, analysis, options, root};
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_EQ(result.value().items_analyzed, 1u);
+        EXPECT_EQ(result.value().items_skipped, 0u);
+
+        std::filesystem::remove_all(root, ec);
     }
 
 }  // namespace bha::suggestions
