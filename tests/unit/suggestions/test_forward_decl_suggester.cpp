@@ -3,6 +3,7 @@
 //
 
 #include "bha/suggestions/forward_decl_suggester.hpp"
+#include "bha/suggestions/forward_decl_semantic_index.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -64,6 +65,85 @@ namespace bha::suggestions
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, ASTRecordsIncompleteTypeSafeUse) {
+        const auto root = std::filesystem::temp_directory_path() / "bha-forward-decl-ast-safe-test";
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+
+        const auto header = root / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box(Box& input);\n";
+
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\","
+            << "\"file\":\"src/use.cpp\","
+            << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        ProjectIndex project_index(root, database);
+        const auto result = analyze_forward_declarations(
+            project_index,
+            header,
+            project_index.compile_commands()
+        );
+        if (!result.available && result.diagnostic.find("not available") != std::string::npos) {
+            GTEST_SKIP() << result.diagnostic;
+        }
+
+        ASSERT_TRUE(result.available) << result.diagnostic;
+        ASSERT_EQ(result.records.size(), 1u);
+        ASSERT_GE(result.records.front().uses.size(), 2u);
+        EXPECT_TRUE(std::ranges::all_of(result.records.front().uses, [](const auto& use) {
+            return !use.requires_complete_type;
+        }));
+
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, ASTRejectsByValueUse) {
+        const auto root = std::filesystem::temp_directory_path() / "bha-forward-decl-ast-value-test";
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+
+        const auto header = root / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box make_box() { return {}; }\n";
+
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\","
+            << "\"file\":\"src/use.cpp\","
+            << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        ProjectIndex project_index(root, database);
+        const auto result = analyze_forward_declarations(
+            project_index,
+            header,
+            project_index.compile_commands()
+        );
+        if (!result.available && result.diagnostic.find("not available") != std::string::npos) {
+            GTEST_SKIP() << result.diagnostic;
+        }
+
+        ASSERT_TRUE(result.available) << result.diagnostic;
+        ASSERT_EQ(result.records.size(), 1u);
+        EXPECT_TRUE(std::ranges::any_of(result.records.front().uses, [](const auto& use) {
+            return use.requires_complete_type;
+        }));
+
+        std::filesystem::remove_all(root, ec);
     }
 
     TEST_F(ForwardDeclSuggesterTest, SuggestsSafeForwardDeclarationEdit) {

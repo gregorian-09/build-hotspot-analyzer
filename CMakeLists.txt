@@ -253,6 +253,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/suggestions/suggester_registry.cpp
         sources/bha/suggestions/template_suggester.cpp
         sources/bha/suggestions/template_semantic_index.cpp
+        sources/bha/suggestions/forward_decl_semantic_index.cpp
         sources/bha/suggestions/unity_build_suggester.cpp
         sources/bha/analyzers/analyzer_registry.cpp
         sources/bha/analyzers/dependency_analyzer.cpp
