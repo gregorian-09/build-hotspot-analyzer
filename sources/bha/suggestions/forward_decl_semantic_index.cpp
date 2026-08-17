@@ -17,7 +17,6 @@
 #include <clang/AST/Type.h>
 #include <clang/AST/TypeLoc.h>
 #include <clang/Basic/SourceManager.h>
-#include <clang/Frontend/ASTUnit.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
 #include <clang/Lex/PPCallbacks.h>
@@ -352,47 +351,69 @@ namespace bha::suggestions {
             std::vector<ForwardDeclSemanticInclude>& includes_;
         };
 
-        class IncludeCollectorAction final : public clang::ASTFrontendAction {
+        class SemanticIndexConsumer final : public clang::ASTConsumer {
         public:
-            IncludeCollectorAction(
-                const fs::path& target_header,
-                std::vector<ForwardDeclSemanticInclude>& includes
+            SemanticIndexConsumer(
+                const fs::path& header,
+                std::vector<ForwardDeclSemanticRecord>& records
             )
-                : target_header_(target_header), includes_(includes) {}
+                : header_(header), records_(records) {}
+
+            void HandleTranslationUnit(clang::ASTContext& context) override {
+                ForwardDeclVisitor visitor(context, header_);
+                visitor.TraverseDecl(context.getTranslationUnitDecl());
+                auto parsed_records = visitor.take_records();
+                records_.insert(
+                    records_.end(),
+                    std::make_move_iterator(parsed_records.begin()),
+                    std::make_move_iterator(parsed_records.end())
+                );
+            }
+
+        private:
+            fs::path header_;
+            std::vector<ForwardDeclSemanticRecord>& records_;
+        };
+
+        class SemanticIndexAction final : public clang::ASTFrontendAction {
+        public:
+            SemanticIndexAction(
+                const fs::path& header,
+                std::vector<ForwardDeclSemanticRecord>& records,
+                std::vector<ForwardDeclSemanticInclude>& includes,
+                bool& had_errors
+            )
+                : header_(header), records_(records), includes_(includes), had_errors_(had_errors) {}
 
             std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
                 clang::CompilerInstance& compiler,
                 llvm::StringRef
             ) override {
+                compiler_ = &compiler;
                 compiler.getPreprocessor().addPPCallbacks(
                     std::make_unique<IncludeCollector>(
                         compiler.getSourceManager(),
-                        target_header_,
+                        header_,
                         includes_
                     )
                 );
-                return std::make_unique<clang::ASTConsumer>();
+                return std::make_unique<SemanticIndexConsumer>(
+                    header_,
+                    records_
+                );
+            }
+
+            void EndSourceFileAction() override {
+                had_errors_ = compiler_ == nullptr || compiler_->getDiagnostics().hasErrorOccurred();
             }
 
         private:
-            fs::path target_header_;
+            fs::path header_;
+            std::vector<ForwardDeclSemanticRecord>& records_;
             std::vector<ForwardDeclSemanticInclude>& includes_;
+            bool& had_errors_;
+            clang::CompilerInstance* compiler_ = nullptr;
         };
-
-        bool collect_includes(
-            const std::string& source,
-            const std::vector<std::string>& arguments,
-            const CompilationUnit& command,
-            const fs::path& header,
-            std::vector<ForwardDeclSemanticInclude>& includes
-        ) {
-            return clang::tooling::runToolOnCodeWithArgs(
-                std::make_unique<IncludeCollectorAction>(header, includes),
-                source,
-                arguments,
-                command.source_file.string()
-            );
-        }
 #endif
 
     }  // namespace
@@ -417,30 +438,25 @@ namespace bha::suggestions {
                 result.diagnostic = "Failed to read a compile-command-backed translation unit";
                 return result;
             }
-            auto ast = clang::tooling::buildASTFromCodeWithArgs(
-                *source,
-                tooling_arguments(command),
-                command.source_file.string()
-            );
-            if (!ast || ast->getDiagnostics().hasErrorOccurred()) {
-                result.diagnostic = "Clang failed to build a diagnostic-free AST for a translation unit";
-                return result;
-            }
-            if (!collect_includes(
+            std::vector<ForwardDeclSemanticRecord> records;
+            bool had_errors = false;
+            const auto arguments = tooling_arguments(command);
+            if (!clang::tooling::runToolOnCodeWithArgs(
+                    std::make_unique<SemanticIndexAction>(
+                        normalized_header,
+                        records,
+                        result.includes,
+                        had_errors
+                    ),
                     *source,
-                    tooling_arguments(command),
-                    command,
-                    normalized_header,
-                    result.includes
-                )) {
-                result.diagnostic = "Clang failed to collect include source locations";
+                    arguments,
+                    command.source_file.string()
+                ) || had_errors) {
+                result.diagnostic = "Clang failed to build a diagnostic-free AST and include index";
                 result.records.clear();
                 result.includes.clear();
                 return result;
             }
-            ForwardDeclVisitor visitor(ast->getASTContext(), normalized_header);
-            visitor.TraverseDecl(ast->getASTContext().getTranslationUnitDecl());
-            auto records = visitor.take_records();
             for (auto& record : records) {
                 auto existing = std::ranges::find_if(
                     result.records,
