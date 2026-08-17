@@ -27,8 +27,13 @@ namespace bha::suggestions {
         std::string template_name;
         std::string specialization;
         std::string specialization_kind;
+        std::string declaration_kind;
+        std::string canonical_extern_declaration;
+        std::string canonical_explicit_definition;
         fs::path source_file;
         fs::path declaration_file;
+        std::size_t declaration_line = 0;
+        std::size_t declaration_column = 0;
         std::vector<fs::path> use_files;
         std::vector<TemplateSemanticUse> uses;
         std::vector<fs::path> explicit_definition_files;

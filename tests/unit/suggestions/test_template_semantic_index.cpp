@@ -61,6 +61,10 @@ namespace bha::suggestions {
             ASSERT_NE(match, index.records().end());
             EXPECT_TRUE(match->complete_definition);
             EXPECT_TRUE(match->has_explicit_instantiation);
+            EXPECT_EQ(match->declaration_kind, "class");
+            EXPECT_EQ(match->canonical_extern_declaration, "extern template class Box<int>;");
+            EXPECT_EQ(match->canonical_explicit_definition, "template class Box<int>;");
+            EXPECT_GT(match->declaration_line, 0u);
             EXPECT_TRUE(match->has_external_linkage);
             EXPECT_TRUE(match->has_single_explicit_definition);
             EXPECT_FALSE(match->has_dependent_arguments);
@@ -84,7 +88,7 @@ namespace bha::suggestions {
             EXPECT_EQ(index.find_exact("Box<double>"), nullptr);
 
             EXPECT_TRUE(std::filesystem::is_regular_file(
-                root_ / ".bha" / "template-semantic-index-v1.json"
+                root_ / ".bha" / "template-semantic-index-v2.json"
             ));
             TemplateSemanticIndex cached_index(project_index);
             cached_index.build();
