@@ -308,28 +308,38 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v1");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v2");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 hash = fnv1a_append(hash, command.working_directory.generic_string());
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 for (const auto& argument : command.command_line) {
                     hash = fnv1a_append(hash, argument);
-                    hash = fnv1a_append(hash, "\0");
+                    hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 }
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 if (const auto source = project_index.read_file(command.source_file)) {
                     hash = fnv1a_append(hash, *source);
                 }
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
             }
             for (const auto& header : project_index.files(ProjectFileKind::Header)) {
                 std::error_code ec;
                 const auto size = fs::file_size(header, ec);
                 const auto timestamp = fs::last_write_time(header, ec);
                 hash = fnv1a_append(hash, header.generic_string());
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 hash = fnv1a_append(hash, std::to_string(ec ? 0 : size));
                 hash = fnv1a_append(
                     hash,
                     std::to_string(timestamp.time_since_epoch().count())
                 );
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
+                if (const auto content = project_index.read_file(header)) {
+                    hash = fnv1a_append(hash, *content);
+                }
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
             }
             std::ostringstream output;
             output << std::hex << hash;
