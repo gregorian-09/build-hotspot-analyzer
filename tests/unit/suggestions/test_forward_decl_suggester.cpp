@@ -36,8 +36,24 @@ namespace bha::suggestions {
             std::ofstream(root / "compile_commands.json")
                 << "[{\"directory\":\"" << root.string() << "\","
                 << "\"file\":\"src/use.cpp\","
-                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I" << (root / "include").string()
+                << "\",\"-c\",\"" << (root / "src/use.cpp").string() << "\"]}]";
             (void)source;
+        }
+
+        analyzers::AnalysisResult dependency_analysis(
+            const std::filesystem::path& header,
+            const std::filesystem::path& source
+        ) {
+            analyzers::AnalysisResult analysis;
+            analyzers::DependencyAnalysisResult::HeaderInfo info;
+            info.path = header;
+            info.total_parse_time = std::chrono::milliseconds(1000);
+            info.inclusion_count = 1;
+            info.including_files = 1;
+            info.included_by = {source};
+            analysis.dependencies.headers.push_back(std::move(info));
+            return analysis;
         }
     }
 
@@ -116,6 +132,68 @@ namespace bha::suggestions {
 
         SuggesterOptions options;
         options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, RejectsAliasUse) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\nstruct Box { int value; };\nusing BoxAlias = Box;\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "BoxAlias* make_box(BoxAlias& input);\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, RejectsTemplateDeclaration) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\ntemplate <typename T> struct Box { T value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box<int>* make_box(Box<int>& input);\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, RejectsDependentUse) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "template <typename T> struct Holder { Box* value; };\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
         const SuggestionContext context{trace, analysis, options, root_};
         const auto result = ForwardDeclSuggester{}.suggest(context);
 
