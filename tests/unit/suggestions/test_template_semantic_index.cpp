@@ -30,6 +30,7 @@ namespace bha::suggestions {
             const auto source = root_ / "src" / "main.cpp";
             std::ofstream(source)
                 << "template <typename T> struct Box { T value{}; };\n"
+                << "using BoxAlias = Box<int>;\n"
                 << "Box<int> make_box();\n"
                 << "Box<int>* box_pointer = nullptr;\n"
                 << "constexpr auto box_size = sizeof(Box<int>);\n"
@@ -79,6 +80,9 @@ namespace bha::suggestions {
             }));
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
                 return use.kind == "type-trait" && use.requires_complete_type;
+            }));
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "type-location" && use.requires_complete_type;
             }));
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
                 return use.kind == "delete-expression" && use.requires_complete_type;

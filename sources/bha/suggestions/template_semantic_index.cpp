@@ -179,7 +179,13 @@ namespace bha::suggestions {
             }
 
             bool VisitTypeLoc(clang::TypeLoc type_location) {
-                const auto* record_type = type_location.getType()->getAs<clang::RecordType>();
+                auto type = type_location.getType();
+                const bool requires_complete_type =
+                    !type->isPointerType() && !type->isReferenceType();
+                while (type->isPointerType() || type->isReferenceType()) {
+                    type = type->getPointeeType();
+                }
+                const auto* record_type = type->getAs<clang::RecordType>();
                 const auto* specialization = record_type
                     ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
                     : nullptr;
@@ -190,9 +196,16 @@ namespace bha::suggestions {
                     use_specializations_.push_back(key);
                     if (std::ranges::none_of(uses_, [&](const TemplateSemanticUse& use) {
                             return use.specialization == key && use.source_file == source_file_ &&
-                                   use.kind == "type-location";
+                                   use.kind == "type-location" &&
+                                   use.requires_complete_type == requires_complete_type;
                         })) {
-                        uses_.push_back({key, source_file_, "type-location", false, false});
+                        uses_.push_back({
+                            key,
+                            source_file_,
+                            "type-location",
+                            requires_complete_type,
+                            type->isInstantiationDependentType()
+                        });
                     }
                 }
                 return true;
