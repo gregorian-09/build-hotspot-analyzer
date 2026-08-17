@@ -192,7 +192,7 @@ namespace bha::suggestions {
                             return use.specialization == key && use.source_file == source_file_ &&
                                    use.kind == "type-location";
                         })) {
-                        uses_.push_back({key, source_file_, "type-location", false});
+                        uses_.push_back({key, source_file_, "type-location", false, false});
                     }
                 }
                 return true;
@@ -200,28 +200,60 @@ namespace bha::suggestions {
 
             bool VisitVarDecl(clang::VarDecl* declaration) {
                 if (declaration) {
-                    record_type_use(declaration->getType(), "variable-declaration");
+                    record_type_use(
+                        declaration->getType(),
+                        "variable-declaration",
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
 
             bool VisitFieldDecl(clang::FieldDecl* declaration) {
                 if (declaration) {
-                    record_type_use(declaration->getType(), "field-declaration");
+                    record_type_use(
+                        declaration->getType(),
+                        "field-declaration",
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
+                }
+                return true;
+            }
+
+            bool VisitParmVarDecl(clang::ParmVarDecl* declaration) {
+                if (declaration) {
+                    record_type_use(
+                        declaration->getType(),
+                        "parameter-declaration",
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
 
             bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
                 if (expression) {
-                    record_type_use(expression->getArgumentType(), "type-trait", true);
+                    record_type_use(
+                        expression->getArgumentType(),
+                        "type-trait",
+                        true,
+                        expression->getArgumentType()->isInstantiationDependentType()
+                    );
                 }
                 return true;
             }
 
             bool VisitCXXDeleteExpr(clang::CXXDeleteExpr* expression) {
                 if (expression && expression->getArgument()) {
-                    record_type_use(expression->getArgument()->getType(), "delete-expression", true);
+                    record_type_use(
+                        expression->getArgument()->getType(),
+                        "delete-expression",
+                        true,
+                        expression->getArgument()->getType()->isInstantiationDependentType()
+                    );
                 }
                 return true;
             }
@@ -231,7 +263,8 @@ namespace bha::suggestions {
                     record_type_use(
                         expression->getImplicitObjectArgument()->getType(),
                         "member-call",
-                        true
+                        true,
+                        expression->getImplicitObjectArgument()->getType()->isInstantiationDependentType()
                     );
                 }
                 return true;
@@ -239,7 +272,36 @@ namespace bha::suggestions {
 
             bool VisitCXXBaseSpecifier(clang::CXXBaseSpecifier* base) {
                 if (base) {
-                    record_type_use(base->getType(), "base-specifier", true);
+                    record_type_use(
+                        base->getType(),
+                        "base-specifier",
+                        true,
+                        base->getType()->isInstantiationDependentType()
+                    );
+                }
+                return true;
+            }
+
+            bool VisitCXXNewExpr(clang::CXXNewExpr* expression) {
+                if (expression) {
+                    record_type_use(
+                        expression->getAllocatedType(),
+                        "new-expression",
+                        true,
+                        expression->getAllocatedType()->isInstantiationDependentType()
+                    );
+                }
+                return true;
+            }
+
+            bool VisitCXXConstructExpr(clang::CXXConstructExpr* expression) {
+                if (expression) {
+                    record_type_use(
+                        expression->getType(),
+                        "construct-expression",
+                        true,
+                        expression->getType()->isInstantiationDependentType()
+                    );
                 }
                 return true;
             }
@@ -248,7 +310,12 @@ namespace bha::suggestions {
                 if (!declaration) {
                     return true;
                 }
-                record_type_use(declaration->getReturnType(), "function-return");
+                record_type_use(
+                    declaration->getReturnType(),
+                    "function-return",
+                    false,
+                    declaration->getDeclContext()->isDependentContext()
+                );
                 const auto* info = declaration->getTemplateSpecializationInfo();
                 if (!info || !declaration->getTemplateSpecializationArgs()) {
                     return true;
@@ -313,7 +380,8 @@ namespace bha::suggestions {
             void record_type_use(
                 clang::QualType type,
                 std::string kind,
-                const bool force_complete = false
+                const bool force_complete = false,
+                const bool in_dependent_context = false
             ) {
                 if (type.isNull()) {
                     return;
@@ -336,7 +404,13 @@ namespace bha::suggestions {
                 const std::string key = specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
                     render_template_arguments(specialization->getTemplateArgs(), context_);
                 use_specializations_.push_back(key);
-                uses_.push_back({key, source_file_, std::move(kind), requires_complete_type});
+                uses_.push_back({
+                    key,
+                    source_file_,
+                    std::move(kind),
+                    requires_complete_type,
+                    in_dependent_context || type->isInstantiationDependentType()
+                });
             }
 
             clang::ASTContext& context_;
@@ -523,7 +597,8 @@ namespace bha::suggestions {
             return {
                 {"source_file", use.source_file.generic_string()},
                 {"kind", use.kind},
-                {"requires_complete_type", use.requires_complete_type}
+                {"requires_complete_type", use.requires_complete_type},
+                {"in_dependent_context", use.in_dependent_context}
             };
         }
 
@@ -532,7 +607,8 @@ namespace bha::suggestions {
                 "",
                 value.value("source_file", ""),
                 value.value("kind", ""),
-                value.value("requires_complete_type", false)
+                value.value("requires_complete_type", false),
+                value.value("in_dependent_context", false)
             };
         }
 
@@ -571,6 +647,7 @@ namespace bha::suggestions {
                 {"has_external_linkage", record.has_external_linkage},
                 {"has_single_explicit_definition", record.has_single_explicit_definition},
                 {"has_dependent_arguments", record.has_dependent_arguments},
+                {"has_dependent_use_context", record.has_dependent_use_context},
                 {"has_unsupported_scope", record.has_unsupported_scope}
             };
         }
@@ -597,6 +674,7 @@ namespace bha::suggestions {
             record.has_external_linkage = value.value("has_external_linkage", false);
             record.has_single_explicit_definition = value.value("has_single_explicit_definition", false);
             record.has_dependent_arguments = value.value("has_dependent_arguments", false);
+            record.has_dependent_use_context = value.value("has_dependent_use_context", false);
             record.has_unsupported_scope = value.value("has_unsupported_scope", false);
             if (value.contains("use_files") && value["use_files"].is_array()) {
                 for (const auto& file : value["use_files"]) {
@@ -804,6 +882,8 @@ namespace bha::suggestions {
                 existing.has_explicit_instantiation_declaration || record.has_explicit_instantiation_declaration;
             existing.has_external_linkage = existing.has_external_linkage || record.has_external_linkage;
             existing.has_dependent_arguments = existing.has_dependent_arguments || record.has_dependent_arguments;
+            existing.has_dependent_use_context =
+                existing.has_dependent_use_context || record.has_dependent_use_context;
             existing.has_unsupported_scope = existing.has_unsupported_scope || record.has_unsupported_scope;
             if (existing.declaration_file.empty()) {
                 existing.declaration_file = record.declaration_file;
@@ -835,7 +915,8 @@ namespace bha::suggestions {
                     [&use](const TemplateSemanticUse& candidate) {
                         return candidate.source_file == use.source_file &&
                                candidate.kind == use.kind &&
-                               candidate.requires_complete_type == use.requires_complete_type;
+                               candidate.requires_complete_type == use.requires_complete_type &&
+                               candidate.in_dependent_context == use.in_dependent_context;
                     }
                 );
                 if (duplicate == existing.uses.end()) {
@@ -845,6 +926,10 @@ namespace bha::suggestions {
         }
 
         for (auto& record : merged) {
+            record.has_dependent_use_context = record.has_dependent_use_context ||
+                std::ranges::any_of(record.uses, [](const TemplateSemanticUse& use) {
+                    return use.in_dependent_context;
+                });
             record.has_single_explicit_definition = record.explicit_definition_files.size() == 1;
         }
         records_ = std::move(merged);

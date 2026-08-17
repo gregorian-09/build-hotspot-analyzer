@@ -141,6 +141,37 @@ namespace bha::suggestions {
             EXPECT_TRUE(match->has_unsupported_scope);
         }
 
+        TEST_F(TemplateSemanticIndexTest, RejectsDependentUseContextForAutomaticOwnership) {
+            const auto source = root_ / "src" / "dependent.cpp";
+            std::ofstream(source)
+                << "template <typename T> struct Box { T value{}; };\n"
+                << "template <typename U> struct Holder { Box<int> value; };\n"
+                << "Box<int> make_box();\n"
+                << "template struct Box<int>;\n";
+
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/dependent.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/dependent.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
+            const auto* match = index.find_exact("Box<int>");
+            ASSERT_NE(match, nullptr);
+            EXPECT_TRUE(match->has_dependent_use_context);
+            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
+                return use.kind == "field-declaration" && use.in_dependent_context;
+            }));
+        }
+
         TEST_F(TemplateSemanticIndexTest, RejectsDuplicateExplicitInstantiationOwners) {
             const auto first = root_ / "src" / "one.cpp";
             const auto second = root_ / "src" / "two.cpp";
