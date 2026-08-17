@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -345,6 +346,48 @@ namespace bha::suggestions {
             return hash;
         }
 
+        fs::path resolve_compiler_executable(const std::string& compiler) {
+            const fs::path direct(compiler);
+            if (direct.is_absolute() || direct.has_parent_path()) {
+                return direct.lexically_normal();
+            }
+
+            const char* path_value = std::getenv("PATH");
+            if (path_value == nullptr) {
+                return {};
+            }
+            const char separator =
+#ifdef _WIN32
+                ';';
+#else
+                ':';
+#endif
+            std::string search_path(path_value);
+            std::size_t start = 0;
+            while (start <= search_path.size()) {
+                const auto end = search_path.find(separator, start);
+                const auto directory = search_path.substr(start, end - start);
+                const fs::path candidate = (directory.empty() ? fs::path(".") : fs::path(directory)) / compiler;
+                std::error_code ec;
+                if (fs::is_regular_file(candidate, ec)) {
+                    return candidate.lexically_normal();
+                }
+#ifdef _WIN32
+                if (candidate.extension().empty()) {
+                    const fs::path exe_candidate = candidate.string() + ".exe";
+                    if (fs::is_regular_file(exe_candidate, ec)) {
+                        return exe_candidate.lexically_normal();
+                    }
+                }
+#endif
+                if (end == std::string::npos) {
+                    break;
+                }
+                start = end + 1;
+            }
+            return {};
+        }
+
         std::string cache_fingerprint(
             ProjectIndex& project_index,
             const std::vector<CompilationUnit>& commands
@@ -355,6 +398,17 @@ namespace bha::suggestions {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 hash = fnv1a_append(hash, command.working_directory.generic_string());
+                hash = fnv1a_append(hash, std::string_view{"\0", 1});
+                if (!command.command_line.empty()) {
+                    const auto compiler = resolve_compiler_executable(command.command_line.front());
+                    hash = fnv1a_append(hash, compiler.generic_string());
+                    std::error_code compiler_ec;
+                    hash = fnv1a_append(hash, std::to_string(fs::file_size(compiler, compiler_ec)));
+                    hash = fnv1a_append(
+                        hash,
+                        std::to_string(fs::last_write_time(compiler, compiler_ec).time_since_epoch().count())
+                    );
+                }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
                 for (const auto& argument : command.command_line) {
                     hash = fnv1a_append(hash, argument);
