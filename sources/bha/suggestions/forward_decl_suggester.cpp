@@ -69,9 +69,11 @@ namespace bha::suggestions {
 
         bool record_is_actionable(const ForwardDeclSemanticRecord& record) {
             return record.complete_definition && !record.macro_generated &&
+                !record.template_declaration &&
                 !record.unsupported_scope && !record.uses.empty() &&
                 std::ranges::all_of(record.uses, [](const auto& use) {
-                    return !use.requires_complete_type && !use.in_dependent_context;
+                    return !use.requires_complete_type && !use.in_dependent_context &&
+                        !use.through_alias && !use.through_template && !use.macro_expanded;
                 });
         }
 

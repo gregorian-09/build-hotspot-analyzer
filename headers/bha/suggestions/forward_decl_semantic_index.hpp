@@ -13,6 +13,9 @@ namespace bha::suggestions {
         std::string specialization;
         bool requires_complete_type = false;
         bool in_dependent_context = false;
+        bool through_alias = false;
+        bool through_template = false;
+        bool macro_expanded = false;
     };
 
     struct ForwardDeclSemanticRecord {
@@ -21,6 +24,7 @@ namespace bha::suggestions {
         std::string keyword;
         bool complete_definition = false;
         bool macro_generated = false;
+        bool template_declaration = false;
         bool unsupported_scope = false;
         std::vector<ForwardDeclSemanticUse> uses;
     };

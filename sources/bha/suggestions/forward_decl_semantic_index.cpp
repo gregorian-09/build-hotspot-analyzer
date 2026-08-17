@@ -113,6 +113,7 @@ namespace bha::suggestions {
                 record.qualified_name = canonical->getQualifiedNameAsString();
                 record.keyword = record_keyword(*canonical);
                 record.complete_definition = true;
+                record.template_declaration = declaration->getDescribedClassTemplate() != nullptr;
                 record.macro_generated = source_manager_.isMacroBodyExpansion(location) ||
                     source_manager_.isMacroArgExpansion(location);
                 record.unsupported_scope = !file_or_namespace_scope || record.qualified_name.empty();
@@ -122,28 +123,48 @@ namespace bha::suggestions {
 
             bool VisitVarDecl(clang::VarDecl* declaration) {
                 if (declaration) {
-                    record_use(declaration->getType(), declaration->getBeginLoc(), false);
+                    record_use(
+                        declaration->getType(),
+                        declaration->getBeginLoc(),
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
 
             bool VisitFieldDecl(clang::FieldDecl* declaration) {
                 if (declaration) {
-                    record_use(declaration->getType(), declaration->getBeginLoc(), false);
+                    record_use(
+                        declaration->getType(),
+                        declaration->getBeginLoc(),
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
 
             bool VisitParmVarDecl(clang::ParmVarDecl* declaration) {
                 if (declaration) {
-                    record_use(declaration->getType(), declaration->getBeginLoc(), false);
+                    record_use(
+                        declaration->getType(),
+                        declaration->getBeginLoc(),
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
 
             bool VisitFunctionDecl(clang::FunctionDecl* declaration) {
                 if (declaration) {
-                    record_use(declaration->getReturnType(), declaration->getBeginLoc(), false);
+                    record_use(
+                        declaration->getReturnType(),
+                        declaration->getBeginLoc(),
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    );
                 }
                 return true;
             }
@@ -202,7 +223,8 @@ namespace bha::suggestions {
             void record_use(
                 clang::QualType type,
                 const clang::SourceLocation location,
-                const bool force_complete
+                const bool force_complete,
+                const bool in_dependent_context = false
             ) {
                 if (type.isNull()) {
                     return;
@@ -213,8 +235,33 @@ namespace bha::suggestions {
                 }
                 const bool requires_complete = force_complete ||
                     (!type->isPointerType() && !type->isReferenceType());
+                const bool macro_expanded = source_manager_.isMacroBodyExpansion(location) ||
+                    source_manager_.isMacroArgExpansion(location);
+                bool through_alias = false;
+                bool through_template = false;
+                if (type->getAs<clang::TypedefType>() != nullptr) {
+                    through_alias = true;
+                }
+                if (const auto* template_type = type->getAs<clang::TemplateSpecializationType>()) {
+                    for (const auto& argument : template_type->template_arguments()) {
+                        if (argument.getKind() != clang::TemplateArgument::Type) {
+                            continue;
+                        }
+                        const auto argument_type = argument.getAsType();
+                        const auto* argument_record = argument_type->getAs<clang::RecordType>();
+                        if (argument_record && spelling_path(
+                                source_manager_,
+                                argument_record->getDecl()->getCanonicalDecl()->getLocation()
+                            ) == header_) {
+                            through_template = true;
+                        }
+                    }
+                }
                 while (type->isPointerType() || type->isReferenceType()) {
                     type = type->getPointeeType();
+                }
+                if (type->getAs<clang::TypedefType>() != nullptr) {
+                    through_alias = true;
                 }
                 const auto* record_type = type->getAs<clang::RecordType>();
                 const auto* declaration = record_type
@@ -236,7 +283,10 @@ namespace bha::suggestions {
                         use_file,
                         name,
                         requires_complete,
-                        type->isInstantiationDependentType()
+                        in_dependent_context || type->isInstantiationDependentType(),
+                        through_alias,
+                        through_template,
+                        macro_expanded
                     });
                 }
             }
@@ -396,6 +446,7 @@ namespace bha::suggestions {
                     continue;
                 }
                 existing->macro_generated = existing->macro_generated || record.macro_generated;
+                existing->template_declaration = existing->template_declaration || record.template_declaration;
                 existing->unsupported_scope = existing->unsupported_scope || record.unsupported_scope;
                 for (auto& use : record.uses) {
                     const bool duplicate = std::ranges::any_of(
@@ -403,7 +454,10 @@ namespace bha::suggestions {
                         [&](const auto& candidate) {
                             return candidate.source_file == use.source_file &&
                                 candidate.requires_complete_type == use.requires_complete_type &&
-                                candidate.in_dependent_context == use.in_dependent_context;
+                                candidate.in_dependent_context == use.in_dependent_context &&
+                                candidate.through_alias == use.through_alias &&
+                                candidate.through_template == use.through_template &&
+                                candidate.macro_expanded == use.macro_expanded;
                         }
                     );
                     if (!duplicate) {
