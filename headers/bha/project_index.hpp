@@ -6,6 +6,8 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <cstdint>
+#include <utility>
 #include <unordered_map>
 #include <vector>
 
@@ -58,6 +60,7 @@ namespace bha {
         mutable std::mutex mutex_;
         mutable std::vector<fs::path> indexed_files_;
         mutable std::unordered_map<std::string, std::string> file_contents_;
+        mutable std::unordered_map<std::string, std::pair<std::uintmax_t, fs::file_time_type>> file_metadata_;
         mutable std::vector<CompilationUnit> compile_commands_;
         mutable CompilationDatabaseStatus compile_commands_status_ =
             CompilationDatabaseStatus::NotConfigured;

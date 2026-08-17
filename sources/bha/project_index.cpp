@@ -179,9 +179,15 @@ namespace bha {
             return std::nullopt;
         }
         const std::string key = path_key(*resolved);
+        std::error_code metadata_ec;
+        const auto size = fs::file_size(*resolved, metadata_ec);
+        const auto timestamp = fs::last_write_time(*resolved, metadata_ec);
         {
             std::scoped_lock lock(mutex_);
-            if (const auto cached = file_contents_.find(key); cached != file_contents_.end()) {
+            const auto cached = file_contents_.find(key);
+            const auto metadata = file_metadata_.find(key);
+            if (cached != file_contents_.end() && metadata != file_metadata_.end() &&
+                metadata->second == std::pair{size, timestamp}) {
                 return cached->second;
             }
         }
@@ -193,6 +199,7 @@ namespace bha {
         std::string content((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
         std::scoped_lock lock(mutex_);
         file_contents_[key] = content;
+        file_metadata_[key] = {size, timestamp};
         return content;
     }
 

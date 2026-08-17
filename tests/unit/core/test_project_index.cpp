@@ -115,5 +115,18 @@ namespace bha {
             EXPECT_EQ(command->command_line[2], (root / "include").string());
         }
 
+        TEST_F(ProjectIndexFixture, RefreshesCachedFileContentsAfterSourceChanges) {
+            ProjectIndex index(root);
+            const auto first = index.read_file("src/main.cpp");
+            ASSERT_TRUE(first.has_value());
+
+            std::ofstream(root / "src" / "main.cpp", std::ios::trunc)
+                << "int changed = 1;\n";
+            const auto second = index.read_file("src/main.cpp");
+
+            ASSERT_TRUE(second.has_value());
+            EXPECT_EQ(*second, "int changed = 1;\n");
+        }
+
     }  // namespace
 }  // namespace bha
