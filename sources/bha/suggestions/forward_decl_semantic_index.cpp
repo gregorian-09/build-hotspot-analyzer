@@ -18,6 +18,9 @@
 #include <clang/AST/TypeLoc.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/ASTUnit.h>
+#include <clang/Frontend/CompilerInstance.h>
+#include <clang/Frontend/FrontendAction.h>
+#include <clang/Lex/PPCallbacks.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/raw_ostream.h>
 #endif
@@ -242,6 +245,97 @@ namespace bha::suggestions {
             fs::path header_;
             std::vector<ForwardDeclSemanticRecord> records_;
         };
+
+        class IncludeCollector final : public clang::PPCallbacks {
+        public:
+            IncludeCollector(
+                clang::SourceManager& source_manager,
+                const fs::path& target_header,
+                std::vector<ForwardDeclSemanticInclude>& includes
+            )
+                : source_manager_(source_manager),
+                  target_header_(target_header.lexically_normal()),
+                  includes_(includes) {}
+
+            void InclusionDirective(
+                clang::SourceLocation hash_location,
+                const clang::Token&,
+                llvm::StringRef,
+                bool,
+                clang::CharSourceRange filename_range,
+                clang::OptionalFileEntryRef file,
+                llvm::StringRef,
+                llvm::StringRef,
+                const clang::Module*,
+                clang::SrcMgr::CharacteristicKind
+            ) override {
+                if (!file.has_value()) {
+                    return;
+                }
+                const fs::path included = fs::path(file->getName().str()).lexically_normal();
+                if (included != target_header_) {
+                    return;
+                }
+                const fs::path including = spelling_path(source_manager_, hash_location);
+                if (including.empty()) {
+                    return;
+                }
+                includes_.push_back({
+                    including,
+                    included,
+                    source_manager_.getSpellingLineNumber(hash_location) - 1,
+                    source_manager_.getSpellingColumnNumber(hash_location) - 1,
+                    source_manager_.getSpellingColumnNumber(filename_range.getEnd()) - 1
+                });
+            }
+
+        private:
+            clang::SourceManager& source_manager_;
+            fs::path target_header_;
+            std::vector<ForwardDeclSemanticInclude>& includes_;
+        };
+
+        class IncludeCollectorAction final : public clang::ASTFrontendAction {
+        public:
+            IncludeCollectorAction(
+                const fs::path& target_header,
+                std::vector<ForwardDeclSemanticInclude>& includes
+            )
+                : target_header_(target_header), includes_(includes) {}
+
+            std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+                clang::CompilerInstance& compiler,
+                llvm::StringRef
+            ) override {
+                compiler.getPreprocessor().addPPCallbacks(
+                    std::make_unique<IncludeCollector>(
+                        compiler.getSourceManager(),
+                        target_header_,
+                        includes_
+                    )
+                );
+                return std::make_unique<clang::ASTConsumer>();
+            }
+
+        private:
+            fs::path target_header_;
+            std::vector<ForwardDeclSemanticInclude>& includes_;
+        };
+
+        bool collect_includes(
+            const std::string& source,
+            const std::vector<std::string>& arguments,
+            const CompilationUnit& command,
+            const fs::path& header,
+            std::vector<ForwardDeclSemanticInclude>& includes
+        ) {
+            return clang::tooling::runToolOnCodeWithArgs(
+                std::make_unique<IncludeCollectorAction>(header, includes),
+                source,
+                arguments,
+                command.source_file.string()
+            );
+        }
 #endif
 
     }  // namespace
@@ -273,6 +367,18 @@ namespace bha::suggestions {
             );
             if (!ast || ast->getDiagnostics().hasErrorOccurred()) {
                 result.diagnostic = "Clang failed to build a diagnostic-free AST for a translation unit";
+                return result;
+            }
+            if (!collect_includes(
+                    *source,
+                    tooling_arguments(command),
+                    command,
+                    normalized_header,
+                    result.includes
+                )) {
+                result.diagnostic = "Clang failed to collect include source locations";
+                result.records.clear();
+                result.includes.clear();
                 return result;
             }
             ForwardDeclVisitor visitor(ast->getASTContext(), normalized_header);

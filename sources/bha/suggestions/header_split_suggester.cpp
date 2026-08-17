@@ -202,17 +202,24 @@ namespace bha::suggestions {
             });
 
             std::unordered_set<std::string> edited;
-            for (const auto& file : use_files) {
-                const auto include = find_include_for_header(file, resolved_header.filename().string());
-                if (!include.has_value()) {
+            const std::unordered_set<std::string> use_file_keys = [&] {
+                std::unordered_set<std::string> keys;
+                for (const auto& file : use_files) {
+                    keys.insert(file.generic_string());
+                }
+                return keys;
+            }();
+            for (const auto& include : semantic.includes) {
+                const fs::path file = context.project_index->resolve(include.including_file);
+                if (!use_file_keys.contains(file.generic_string())) {
                     continue;
                 }
                 TextEdit replacement;
                 replacement.file = file;
-                replacement.start_line = include->line;
-                replacement.start_col = include->col_start;
-                replacement.end_line = include->line;
-                replacement.end_col = include->col_end;
+                replacement.start_line = include.line;
+                replacement.start_col = include.col_start;
+                replacement.end_line = include.line;
+                replacement.end_col = include.col_end;
                 replacement.new_text = "#include \"" + companion.filename().string() + "\"";
                 suggestion.edits.push_back(std::move(replacement));
                 if (edited.insert(file.generic_string()).second) {

@@ -217,16 +217,26 @@ namespace bha::suggestions {
                 "Unsupported macros, aliases, templates, dependent contexts, and complete-type uses are rejected"
             };
 
-            for (const auto& file : files) {
-                const auto include = find_include_for_header(file, header.path.filename().string());
-                if (!include.has_value()) {
+            const std::unordered_set<std::string> use_file_keys = [&] {
+                std::unordered_set<std::string> keys;
+                for (const auto& file : files) {
+                    keys.insert(file.generic_string());
+                }
+                return keys;
+            }();
+            for (const auto& include : semantic.includes) {
+                const fs::path file = context.project_index->resolve(include.including_file);
+                if (!use_file_keys.contains(file.generic_string())) {
                     continue;
                 }
-                suggestion.edits.push_back(make_replace_line_edit(
-                    file,
-                    include->line,
-                    format_separated_block(declaration_text)
-                ));
+                TextEdit edit;
+                edit.file = file;
+                edit.start_line = include.line;
+                edit.start_col = include.col_start;
+                edit.end_line = include.line;
+                edit.end_col = include.col_end;
+                edit.new_text = format_separated_block(declaration_text);
+                suggestion.edits.push_back(std::move(edit));
                 FileTarget target;
                 target.path = file;
                 target.action = FileAction::Modify;

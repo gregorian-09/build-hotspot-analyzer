@@ -25,8 +25,17 @@ namespace bha::suggestions {
         std::vector<ForwardDeclSemanticUse> uses;
     };
 
+    struct ForwardDeclSemanticInclude {
+        fs::path including_file;
+        fs::path included_file;
+        std::size_t line = 0;
+        std::size_t col_start = 0;
+        std::size_t col_end = 0;
+    };
+
     struct ForwardDeclSemanticResult {
         std::vector<ForwardDeclSemanticRecord> records;
+        std::vector<ForwardDeclSemanticInclude> includes;
         std::string diagnostic;
         bool available = false;
     };
