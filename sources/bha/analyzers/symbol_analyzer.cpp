@@ -287,7 +287,9 @@ namespace bha::analyzers
 
                 data.used_in.push_back(unit.source_file);
                 data.used_in_set.insert(src_key);
-                data.usage_count += tmpl.count;
+                // A trace record itself represents one observed event when callers
+                // do not provide an aggregate count explicitly.
+                data.usage_count += std::max<std::size_t>(tmpl.count, 1);
                 data.total_time += tmpl.time;
             }
         }
