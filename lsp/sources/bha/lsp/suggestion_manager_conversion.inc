@@ -501,8 +501,17 @@
                         }
                     } catch (const std::exception&) {
                         if (progress_log) {
-                            progress_log("Rerank analysis failed; continuing without reranking");
+                            progress_log("Rerank analysis failed; stopping remaining apply operations");
                         }
+                        Diagnostic diag;
+                        diag.severity = DiagnosticSeverity::Error;
+                        diag.source = "bha-lsp";
+                        diag.message =
+                            "Stopped apply-all after a successful edit because fresh trace analysis "
+                            "for remaining suggestions failed; stale savings were not applied.";
+                        result.errors.push_back(std::move(diag));
+                        result.skipped_count += pending.size();
+                        pending.clear();
                         rerank_remaining = false;
                     }
                 }

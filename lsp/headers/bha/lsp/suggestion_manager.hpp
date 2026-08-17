@@ -63,7 +63,9 @@ namespace bha::lsp
         int compile_command_validation_timeout_seconds = 120;
         std::size_t max_compile_command_validation_units = 3;
         bool enable_expensive_include_cleanup_fallbacks = false;
-        bool rerank_remaining_after_each_apply = false;
+        // Fresh traces are required before applying the next candidate. Continuing
+        // with estimates from the pre-edit trace would make the apply order stale.
+        bool rerank_remaining_after_each_apply = true;
         std::vector<std::string> protected_include_patterns;
 
         static SuggestionManagerConfig defaults() {
