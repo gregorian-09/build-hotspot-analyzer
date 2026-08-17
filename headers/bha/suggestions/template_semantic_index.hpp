@@ -34,11 +34,14 @@ namespace bha::suggestions {
         fs::path declaration_file;
         std::size_t declaration_line = 0;
         std::size_t declaration_column = 0;
+        std::size_t declaration_end_line = 0;
+        std::size_t declaration_end_column = 0;
         std::vector<fs::path> use_files;
         std::vector<TemplateSemanticUse> uses;
         std::vector<fs::path> explicit_definition_files;
         bool complete_definition = false;
         bool has_explicit_instantiation = false;
+        bool has_explicit_instantiation_declaration = false;
         bool has_external_linkage = false;
         bool has_single_explicit_definition = false;
         bool has_dependent_arguments = false;

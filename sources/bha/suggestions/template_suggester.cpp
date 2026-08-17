@@ -4,6 +4,63 @@
 
 #include "bha/suggestions/template_semantic_index.hpp"
 
+#include <algorithm>
+#include <filesystem>
+
+namespace {
+
+    std::optional<bha::TextEdit> make_extern_template_edit(
+        const bha::suggestions::TemplateSemanticRecord& record,
+        bha::ProjectIndex& project_index
+    ) {
+        if (record.declaration_kind != "class" ||
+            record.has_explicit_instantiation_declaration ||
+            !record.complete_definition || !record.has_external_linkage ||
+            !record.has_single_explicit_definition || record.has_dependent_arguments ||
+            record.has_unsupported_scope || record.declaration_file.empty() ||
+            record.declaration_end_line == 0 || record.explicit_definition_files.empty()) {
+            return std::nullopt;
+        }
+
+        const auto extension = record.declaration_file.extension().string();
+        if (extension != ".h" && extension != ".hh" && extension != ".hpp" &&
+            extension != ".hxx" && extension != ".inl" && extension != ".ipp") {
+            return std::nullopt;
+        }
+
+        const auto& owner = record.explicit_definition_files.front();
+        if (owner == record.declaration_file || !project_index.compile_command_for(owner).has_value()) {
+            return std::nullopt;
+        }
+        for (const auto& use_file : record.use_files) {
+            if (!project_index.compile_command_for(use_file).has_value()) {
+                return std::nullopt;
+            }
+        }
+
+        const auto declaration = project_index.read_file(record.declaration_file);
+        if (!declaration.has_value()) {
+            return std::nullopt;
+        }
+        const auto line_count = static_cast<std::size_t>(
+            std::count(declaration->begin(), declaration->end(), '\n')
+        ) + 1;
+        if (record.declaration_end_line > line_count) {
+            return std::nullopt;
+        }
+
+        bha::TextEdit edit;
+        edit.file = record.declaration_file;
+        edit.start_line = record.declaration_end_line;
+        edit.start_col = 0;
+        edit.end_line = edit.start_line;
+        edit.end_col = 0;
+        edit.new_text = record.canonical_extern_declaration + "\n";
+        return edit;
+    }
+
+}  // namespace
+
 namespace bha::suggestions {
 
     Result<SuggestionResult, Error> TemplateSuggester::suggest(
@@ -65,8 +122,39 @@ namespace bha::suggestions {
                 continue;
             }
 
-            // Validation is intentionally separate from edit generation. The
-            // AST record is now the only accepted evidence for future edits.
+            const auto edit = make_extern_template_edit(*record, *context.project_index);
+            if (!edit.has_value()) {
+                ++result.items_skipped;
+                continue;
+            }
+
+            Suggestion suggestion;
+            suggestion.type = SuggestionType::ExplicitTemplate;
+            suggestion.priority = Priority::High;
+            suggestion.confidence = 0.99;
+            suggestion.title = "Extern template for " + record->specialization;
+            suggestion.description =
+                "Add the Clang-derived extern template declaration to the header while "
+                "retaining the single explicit-instantiation definition.";
+            suggestion.rationale =
+                "The declaration, use sites, and unique explicit-instantiation owner were "
+                "verified from the compilation database and Clang AST.";
+            suggestion.estimated_savings = candidate.total_time;
+            suggestion.target_file.path = record->declaration_file;
+            suggestion.target_file.line_start = record->declaration_end_line + 1;
+            suggestion.target_file.line_end = record->declaration_end_line + 1;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Insert canonical AST-derived extern template declaration";
+            suggestion.edits.push_back(*edit);
+            suggestion.is_safe = true;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+            suggestion.implementation_steps = {
+                "Apply the canonical extern template declaration",
+                "Rebuild all compile-command-backed translation units",
+                "Verify the explicit-instantiation owner remains linked"
+            };
+            suggestion.verification = "Clang syntax validation and full rebuild validation are required";
+            result.suggestions.push_back(std::move(suggestion));
             ++result.items_analyzed;
         }
 

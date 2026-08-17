@@ -136,11 +136,20 @@ namespace bha::suggestions {
                     record.declaration_line = declaration_location.getSpellingLineNumber();
                     record.declaration_column = declaration_location.getSpellingColumnNumber();
                 }
+                const auto declaration_end = context_.getFullLoc(
+                    context_.getSourceManager().getSpellingLoc(primary->getSourceRange().getEnd())
+                );
+                if (declaration_end.isValid()) {
+                    record.declaration_end_line = declaration_end.getSpellingLineNumber();
+                    record.declaration_end_column = declaration_end.getSpellingColumnNumber();
+                }
                 record.use_files.push_back(source_file_);
                 record.complete_definition = declaration->getDefinition() != nullptr;
                 record.has_explicit_instantiation =
                     declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
                     declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
+                record.has_explicit_instantiation_declaration =
+                    declaration->getSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration;
                 record.has_external_linkage = primary->getFormalLinkage() == clang::Linkage::External;
                 record.has_dependent_arguments = std::ranges::any_of(
                     declaration->getTemplateArgs().asArray(),
@@ -164,10 +173,16 @@ namespace bha::suggestions {
                     ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
                     : nullptr;
                 if (specialization && specialization->getSpecializedTemplate()) {
-                    use_specializations_.push_back(
+                    const std::string key =
                         specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
-                        render_template_arguments(specialization->getTemplateArgs(), context_)
-                    );
+                        render_template_arguments(specialization->getTemplateArgs(), context_);
+                    use_specializations_.push_back(key);
+                    if (std::ranges::none_of(uses_, [&](const TemplateSemanticUse& use) {
+                            return use.specialization == key && use.source_file == source_file_ &&
+                                   use.kind == "type-location";
+                        })) {
+                        uses_.push_back({key, source_file_, "type-location", false});
+                    }
                 }
                 return true;
             }
@@ -335,7 +350,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v2");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v3");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -414,11 +429,14 @@ namespace bha::suggestions {
                 {"declaration_file", record.declaration_file.generic_string()},
                 {"declaration_line", record.declaration_line},
                 {"declaration_column", record.declaration_column},
+                {"declaration_end_line", record.declaration_end_line},
+                {"declaration_end_column", record.declaration_end_column},
                 {"use_files", use_files},
                 {"uses", uses},
                 {"explicit_definition_files", definitions},
                 {"complete_definition", record.complete_definition},
                 {"has_explicit_instantiation", record.has_explicit_instantiation},
+                {"has_explicit_instantiation_declaration", record.has_explicit_instantiation_declaration},
                 {"has_external_linkage", record.has_external_linkage},
                 {"has_single_explicit_definition", record.has_single_explicit_definition},
                 {"has_dependent_arguments", record.has_dependent_arguments},
@@ -438,8 +456,13 @@ namespace bha::suggestions {
             record.declaration_file = value.value("declaration_file", "");
             record.declaration_line = value.value("declaration_line", std::size_t{0});
             record.declaration_column = value.value("declaration_column", std::size_t{0});
+            record.declaration_end_line = value.value("declaration_end_line", std::size_t{0});
+            record.declaration_end_column = value.value("declaration_end_column", std::size_t{0});
             record.complete_definition = value.value("complete_definition", false);
             record.has_explicit_instantiation = value.value("has_explicit_instantiation", false);
+            record.has_explicit_instantiation_declaration = value.value(
+                "has_explicit_instantiation_declaration", false
+            );
             record.has_external_linkage = value.value("has_external_linkage", false);
             record.has_single_explicit_definition = value.value("has_single_explicit_definition", false);
             record.has_dependent_arguments = value.value("has_dependent_arguments", false);
@@ -529,7 +552,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v2" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v3" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -605,6 +628,8 @@ namespace bha::suggestions {
             existing.complete_definition = existing.complete_definition || record.complete_definition;
             existing.has_explicit_instantiation =
                 existing.has_explicit_instantiation || record.has_explicit_instantiation;
+            existing.has_explicit_instantiation_declaration =
+                existing.has_explicit_instantiation_declaration || record.has_explicit_instantiation_declaration;
             existing.has_external_linkage = existing.has_external_linkage || record.has_external_linkage;
             existing.has_dependent_arguments = existing.has_dependent_arguments || record.has_dependent_arguments;
             existing.has_unsupported_scope = existing.has_unsupported_scope || record.has_unsupported_scope;
@@ -614,6 +639,8 @@ namespace bha::suggestions {
             if (existing.declaration_line == 0) {
                 existing.declaration_line = record.declaration_line;
                 existing.declaration_column = record.declaration_column;
+                existing.declaration_end_line = record.declaration_end_line;
+                existing.declaration_end_column = record.declaration_end_column;
             }
             if (existing.canonical_extern_declaration.empty()) {
                 existing.canonical_extern_declaration = record.canonical_extern_declaration;
@@ -655,7 +682,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v2";
+                cache["schema"] = "bha-template-semantic-index-v3";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
