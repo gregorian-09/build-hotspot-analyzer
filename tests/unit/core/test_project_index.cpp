@@ -97,5 +97,23 @@ namespace bha {
             EXPECT_EQ(command->source_file, root / "src" / "main.cpp");
         }
 
+        TEST_F(ProjectIndexFixture, DiscoversCompileCommandsInCustomBuildDirectory) {
+            const fs::path database = root / "build-custom" / "compile_commands.json";
+            std::error_code ec;
+            fs::create_directories(database.parent_path(), ec);
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root.string() << "\","
+                << "\"file\":\"src/main.cpp\","
+                << "\"command\":\"clang++ -I include -c src/main.cpp\"}]";
+
+            ProjectIndex index(root);
+            const auto command = index.compile_command_for("src/main.cpp");
+
+            ASSERT_TRUE(command.has_value());
+            EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::Loaded);
+            EXPECT_EQ(command->command_line[1], "-I");
+            EXPECT_EQ(command->command_line[2], (root / "include").string());
+        }
+
     }  // namespace
 }  // namespace bha

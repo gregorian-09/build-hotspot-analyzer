@@ -141,6 +141,39 @@ namespace bha::suggestions {
             EXPECT_TRUE(match->has_unsupported_scope);
         }
 
+        TEST_F(TemplateSemanticIndexTest, RejectsDuplicateExplicitInstantiationOwners) {
+            const auto first = root_ / "src" / "one.cpp";
+            const auto second = root_ / "src" / "two.cpp";
+            const auto source =
+                "template <typename T> struct Box { T value{}; };\n"
+                "template struct Box<int>;\n";
+            std::ofstream(first) << source;
+            std::ofstream(second) << source;
+
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/one.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/one.cpp\"]},"
+                << "{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/two.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/two.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
+            const auto* match = index.find_exact("Box<int>");
+            ASSERT_NE(match, nullptr);
+            EXPECT_EQ(match->explicit_definition_files.size(), 2u);
+            EXPECT_FALSE(match->has_single_explicit_definition);
+        }
+
         TEST_F(TemplateSemanticIndexTest, RejectsTranslationUnitWithClangDiagnostics) {
             const auto source = root_ / "src" / "broken.cpp";
             std::ofstream(source) << "template <typename T> struct Broken { T value; };\n"

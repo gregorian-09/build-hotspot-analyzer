@@ -282,13 +282,28 @@ namespace bha {
             if (compile_commands_path_.has_value()) {
                 database_path = *compile_commands_path_;
             } else if (!project_root_.empty()) {
-                const std::vector<fs::path> candidates = {
+                std::vector<fs::path> candidates = {
                     project_root_ / "compile_commands.json",
                     project_root_ / "build" / "compile_commands.json",
+                    project_root_ / "build" / "Debug" / "compile_commands.json",
+                    project_root_ / "build" / "Release" / "compile_commands.json",
                     project_root_ / "out" / "build" / "compile_commands.json",
+                    project_root_ / "out" / "build" / "Debug" / "compile_commands.json",
+                    project_root_ / "out" / "build" / "Release" / "compile_commands.json",
                     project_root_ / "cmake-build-debug" / "compile_commands.json",
                     project_root_ / "cmake-build-release" / "compile_commands.json"
                 };
+                std::error_code iterator_ec;
+                for (const auto& entry : fs::directory_iterator(project_root_, iterator_ec)) {
+                    if (iterator_ec || !entry.is_directory()) {
+                        continue;
+                    }
+                    candidates.push_back(entry.path() / "compile_commands.json");
+                }
+                std::ranges::sort(candidates, [](const fs::path& lhs, const fs::path& rhs) {
+                    return lhs.generic_string() < rhs.generic_string();
+                });
+                candidates.erase(std::ranges::unique(candidates).begin(), candidates.end());
                 for (const auto& candidate : candidates) {
                     std::error_code ec;
                     if (fs::is_regular_file(candidate, ec)) {
