@@ -10,7 +10,6 @@ namespace bha::suggestions {
 
     struct ForwardDeclSemanticUse {
         fs::path source_file;
-        std::string specialization;
         bool requires_complete_type = false;
         bool in_dependent_context = false;
         bool through_alias = false;
@@ -32,6 +31,8 @@ namespace bha::suggestions {
     struct ForwardDeclSemanticInclude {
         fs::path including_file;
         fs::path included_file;
+        std::size_t offset = 0;
+        std::size_t length = 0;
         std::size_t line = 0;
         std::size_t col_start = 0;
         std::size_t col_end = 0;

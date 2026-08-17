@@ -26,7 +26,9 @@ namespace bha::suggestions {
                 std::ofstream(root_ / "compile_commands.json")
                     << "[{\"directory\":\"" << root_.string() << "\","
                     << "\"file\":\"src/use.cpp\","
-                    << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+                    << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
+                    << (root_ / "include").string() << "\",\"-c\",\""
+                    << (root_ / "src/use.cpp").string() << "\"]}]";
             }
 
             std::filesystem::path root_;

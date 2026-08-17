@@ -21,6 +21,7 @@
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
 #include <clang/Lex/PPCallbacks.h>
+#include <clang/Tooling/Core/Replacement.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/raw_ostream.h>
 #endif
@@ -281,7 +282,6 @@ namespace bha::suggestions {
                     }
                     record.uses.push_back({
                         use_file,
-                        name,
                         requires_complete,
                         in_dependent_context || type->isInstantiationDependentType(),
                         through_alias,
@@ -330,9 +330,16 @@ namespace bha::suggestions {
                 if (including.empty()) {
                     return;
                 }
+                const clang::tooling::Replacement typed_range(
+                    source_manager_,
+                    clang::CharSourceRange::getCharRange(hash_location, filename_range.getEnd()),
+                    ""
+                );
                 includes_.push_back({
                     including,
                     included,
+                    typed_range.getOffset(),
+                    typed_range.getLength(),
                     source_manager_.getSpellingLineNumber(hash_location) - 1,
                     source_manager_.getSpellingColumnNumber(hash_location) - 1,
                     source_manager_.getSpellingColumnNumber(filename_range.getEnd()) - 1
