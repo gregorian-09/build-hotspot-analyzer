@@ -1,8 +1,10 @@
 #include "bha/project_index.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <fstream>
+#include <string_view>
 #include <nlohmann/json.hpp>
 
 namespace bha {
@@ -63,6 +65,58 @@ namespace bha {
 
         std::string path_key(const fs::path& path) {
             return path.lexically_normal().generic_string();
+        }
+
+        fs::path absolute_from_directory(const fs::path& value, const fs::path& directory) {
+            if (value.empty() || value.is_absolute()) {
+                return value;
+            }
+            return (directory / value).lexically_normal();
+        }
+
+        void normalize_path_argument(
+            std::vector<std::string>& arguments,
+            const std::size_t index,
+            const fs::path& directory
+        ) {
+            const std::string& argument = arguments[index];
+            const auto normalize = [&](const std::size_t offset, const std::size_t length) {
+                const fs::path value = argument.substr(offset, length);
+                arguments[index] = argument.substr(0, offset) +
+                    absolute_from_directory(value, directory).string();
+            };
+
+            if (argument == "-I" || argument == "-isystem" || argument == "-iquote" ||
+                argument == "-idirafter" || argument == "-include" || argument == "-imacros") {
+                if (index + 1 < arguments.size()) {
+                    arguments[index + 1] = absolute_from_directory(arguments[index + 1], directory).string();
+                }
+                return;
+            }
+            if (argument.starts_with("-I") || argument.starts_with("-isystem") ||
+                argument.starts_with("-iquote") || argument.starts_with("-idirafter") ||
+                argument.starts_with("-include") || argument.starts_with("-imacros")) {
+                const std::array<std::string_view, 6> prefixes = {
+                    "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"
+                };
+                for (const auto prefix : prefixes) {
+                    if (argument.starts_with(prefix)) {
+                        normalize(prefix.size(), argument.size() - prefix.size());
+                        break;
+                    }
+                }
+                return;
+            }
+            if (argument == "/I" || argument == "/FI") {
+                if (index + 1 < arguments.size()) {
+                    arguments[index + 1] = absolute_from_directory(arguments[index + 1], directory).string();
+                }
+                return;
+            }
+            if (argument.starts_with("/I") || argument.starts_with("/FI")) {
+                const std::size_t offset = argument.starts_with("/I") ? 2 : 3;
+                normalize(offset, argument.size() - offset);
+            }
         }
 
     }  // namespace
@@ -279,20 +333,33 @@ namespace bha {
             }
 
             std::vector<CompilationUnit> loaded;
+            bool malformed_entry = false;
             for (const auto& entry : database) {
                 if (!entry.is_object() || !entry.contains("file") || !entry["file"].is_string()) {
+                    malformed_entry = true;
                     continue;
                 }
                 fs::path source = entry["file"].get<std::string>();
                 fs::path directory = database_path.parent_path();
                 if (entry.contains("directory") && entry["directory"].is_string()) {
                     directory = entry["directory"].get<std::string>();
+                    if (directory.is_relative()) {
+                        directory = database_path.parent_path() / directory;
+                    }
+                }
+                directory = directory.lexically_normal();
+                if (directory != directory.root_path() && directory.filename().empty()) {
+                    directory = directory.parent_path();
                 }
                 if (source.is_relative()) {
                     source = directory / source;
                 }
 
                 std::vector<std::string> arguments;
+                if (entry.contains("arguments") && entry.contains("command")) {
+                    malformed_entry = true;
+                    continue;
+                }
                 if (entry.contains("arguments") && entry["arguments"].is_array()) {
                     for (const auto& argument : entry["arguments"]) {
                         if (argument.is_string()) {
@@ -303,6 +370,7 @@ namespace bha {
                     arguments = split_shell_command(entry["command"].get<std::string>());
                 }
                 if (arguments.empty()) {
+                    malformed_entry = true;
                     continue;
                 }
                 for (auto& argument : arguments) {
@@ -313,14 +381,20 @@ namespace bha {
                         argument = (directory / argument_path).lexically_normal().string();
                     }
                 }
+                for (std::size_t index = 0; index < arguments.size(); ++index) {
+                    normalize_path_argument(arguments, index, directory);
+                }
                 CompilationUnit unit;
                 unit.source_file = source.lexically_normal();
+                unit.working_directory = directory.lexically_normal();
                 unit.command_line = std::move(arguments);
                 loaded.push_back(std::move(unit));
             }
             std::scoped_lock lock(mutex_);
             compile_commands_ = std::move(loaded);
-            compile_commands_status_ = CompilationDatabaseStatus::Loaded;
+            compile_commands_status_ = compile_commands_.empty() || malformed_entry
+                ? CompilationDatabaseStatus::Invalid
+                : CompilationDatabaseStatus::Loaded;
         });
     }
 

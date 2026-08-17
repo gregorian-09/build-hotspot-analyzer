@@ -469,6 +469,7 @@ namespace bha {
      */
     struct CompilationUnit {
         fs::path source_file;
+        fs::path working_directory;
         FileMetrics metrics;
         std::vector<IncludeInfo> includes;
         std::vector<TemplateInstantiation> templates;

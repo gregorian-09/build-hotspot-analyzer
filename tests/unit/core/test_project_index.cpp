@@ -61,6 +61,8 @@ namespace bha {
             EXPECT_EQ(index.compile_commands().size(), 1u);
             ASSERT_EQ(command->command_line.size(), 4u);
             EXPECT_EQ(command->source_file, root / "src" / "main.cpp");
+            EXPECT_EQ(command->working_directory, root);
+            EXPECT_EQ(command->command_line[1], "-I" + (root / "include").string());
             EXPECT_EQ(command->command_line.back(), (root / "src" / "main.cpp").string());
         }
 
@@ -69,6 +71,30 @@ namespace bha {
 
             EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::NotFound);
             EXPECT_TRUE(index.compile_commands().empty());
+        }
+
+        TEST_F(ProjectIndexFixture, RejectsEmptyCompilationDatabase) {
+            const fs::path database = root / "compile_commands.json";
+            std::ofstream(database) << "[]";
+
+            ProjectIndex index(root, database);
+
+            EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::Invalid);
+            EXPECT_TRUE(index.compile_commands().empty());
+        }
+
+        TEST_F(ProjectIndexFixture, ResolvesRelativeCompilationDirectory) {
+            const fs::path database = root / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\".\","
+                << "\"file\":\"src/main.cpp\","
+                << "\"arguments\":[\"clang++\",\"-c\",\"src/main.cpp\"]}]";
+
+            ProjectIndex index(root, database);
+            const auto command = index.compile_command_for("src/main.cpp");
+            ASSERT_TRUE(command.has_value());
+            EXPECT_EQ(command->working_directory, root);
+            EXPECT_EQ(command->source_file, root / "src" / "main.cpp");
         }
 
     }  // namespace
