@@ -222,5 +222,46 @@ namespace bha::suggestions {
             EXPECT_FALSE(index.diagnostic().empty());
         }
 
+        TEST_F(TemplateSemanticIndexTest, ReusesUnchangedTranslationUnitCacheEntries) {
+            const auto first = root_ / "src" / "first.cpp";
+            const auto second = root_ / "src" / "second.cpp";
+            std::ofstream(first)
+                << "template <typename T> struct First { T value{}; };\n"
+                << "template struct First<int>;\n";
+            std::ofstream(second)
+                << "template <typename T> struct Second { T value{}; };\n"
+                << "template struct Second<double>;\n";
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/first.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/first.cpp\"]},"
+                << "{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/second.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/second.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex initial(project_index);
+            initial.build();
+            if (initial.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << initial.diagnostic();
+            }
+            ASSERT_EQ(initial.status(), TemplateSemanticStatus::Parsed) << initial.diagnostic();
+            ASSERT_NE(initial.find_exact("First<int>"), nullptr);
+            ASSERT_NE(initial.find_exact("Second<double>"), nullptr);
+
+            std::ofstream(first, std::ios::trunc)
+                << "template <typename T> struct First { T value{}; };\n"
+                << "template struct First<long long>;\n";
+
+            TemplateSemanticIndex refreshed(project_index);
+            refreshed.build();
+
+            ASSERT_EQ(refreshed.status(), TemplateSemanticStatus::Parsed) << refreshed.diagnostic();
+            EXPECT_EQ(refreshed.find_exact("First<int>"), nullptr);
+            EXPECT_NE(refreshed.find_exact("First<long long>"), nullptr);
+            EXPECT_NE(refreshed.find_exact("Second<double>"), nullptr);
+        }
+
     }  // namespace
 }  // namespace bha::suggestions

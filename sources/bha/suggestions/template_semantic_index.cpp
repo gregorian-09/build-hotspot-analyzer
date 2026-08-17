@@ -443,7 +443,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v3");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v4");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -677,13 +677,14 @@ namespace bha::suggestions {
         const auto commands = project_index_.compile_commands();
         const auto fingerprint = cache_fingerprint(project_index_, commands);
         const auto cache_path = semantic_cache_path(project_index_);
+        std::optional<json> reusable_cache;
         if (!cache_path.empty()) {
             std::ifstream input(cache_path);
             if (input) {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v3" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v4" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -692,13 +693,43 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v4" &&
+                        cache.contains("translation_units") && cache["translation_units"].is_array()) {
+                        reusable_cache = std::move(cache);
+                    }
                 } catch (const nlohmann::json::exception&) {
                     // A corrupt or old cache is ignored and rebuilt below.
                 }
             }
         }
 
+        json translation_units = json::array();
         for (const auto& command : commands) {
+            const auto unit_fingerprint = cache_fingerprint(
+                project_index_,
+                std::vector<CompilationUnit>{command}
+            );
+            bool reused = false;
+            if (reusable_cache.has_value()) {
+                for (const auto& cached_unit : (*reusable_cache)["translation_units"]) {
+                    if (!cached_unit.is_object() ||
+                        cached_unit.value("source_file", "") != command.source_file.generic_string() ||
+                        cached_unit.value("fingerprint", "") != unit_fingerprint ||
+                        !cached_unit.contains("records") || !cached_unit["records"].is_array()) {
+                        continue;
+                    }
+                    for (const auto& value : cached_unit["records"]) {
+                        records_.push_back(deserialize_record(value));
+                    }
+                    translation_units.push_back(cached_unit);
+                    reused = true;
+                    break;
+                }
+            }
+            if (reused) {
+                continue;
+            }
+
             const auto arguments = tooling_arguments(command, command.source_file);
             if (!supported_compile_language(arguments)) {
                 status_ = TemplateSemanticStatus::Failed;
@@ -744,6 +775,16 @@ namespace bha::suggestions {
                 }
             }
             records_.insert(records_.end(), records.begin(), records.end());
+
+            json serialized_records = json::array();
+            for (const auto& record : records) {
+                serialized_records.push_back(serialize_record(record));
+            }
+            translation_units.push_back({
+                {"source_file", command.source_file.generic_string()},
+                {"fingerprint", unit_fingerprint},
+                {"records", std::move(serialized_records)}
+            });
         }
 
         std::vector<TemplateSemanticRecord> merged;
@@ -813,12 +854,13 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v3";
+                cache["schema"] = "bha-template-semantic-index-v4";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
                     cache["records"].push_back(serialize_record(record));
                 }
+                cache["translation_units"] = std::move(translation_units);
                 std::ofstream output(cache_path);
                 if (output) {
                     output << cache.dump(2);
