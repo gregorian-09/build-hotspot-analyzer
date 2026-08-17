@@ -1,768 +1,122 @@
-//
-// Created by gregorian-rayne on 12/29/25.
-//
-
 #include "bha/suggestions/forward_decl_suggester.hpp"
-#include "bha/suggestions/scope_utils.hpp"
-#include "bha/utils/type_decl_utils.hpp"
+#include "bha/suggestions/forward_decl_semantic_index.hpp"
 
 #include <algorithm>
-#include <array>
-#include <cctype>
-#include <fstream>
-#include <optional>
-#include <regex>
+#include <chrono>
+#include <filesystem>
 #include <sstream>
-#include <unordered_map>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
-#include "bha/heuristics/config.hpp"
-
-namespace bha::suggestions
-{
+namespace bha::suggestions {
     namespace {
 
-        enum class ForwardDeclKind {
-            Class,
-            Struct,
-            Union
-        };
-
-        struct ForwardDeclType {
-            std::string name;
-            ForwardDeclKind kind = ForwardDeclKind::Class;
-            std::vector<std::string> namespaces;
-            std::vector<ScopeFrame> scopes;
-            std::vector<IncludeDirective> support_includes;
-        };
-
-        struct UsageAnalysis {
-            bool eligible = false;
-            std::size_t pointer_or_reference_mentions = 0;
-        };
-
-        using IncludeIndex = std::unordered_map<std::string, std::vector<fs::path>>;
-
-        bool should_skip_index_directory(const fs::path& dir);
-
-        std::string strip_line_comments(const std::string& line) {
-            bool in_single_quote = false;
-            bool in_double_quote = false;
-            for (std::size_t i = 0; i < line.size(); ++i) {
-                const char ch = line[i];
-                if (in_single_quote || in_double_quote) {
-                    if (ch == '\\') {
-                        ++i;
-                        continue;
-                    }
-                    if (in_single_quote && ch == '\'') {
-                        in_single_quote = false;
-                        continue;
-                    }
-                    if (in_double_quote && ch == '"') {
-                        in_double_quote = false;
-                        continue;
-                    }
-                    continue;
+        std::vector<std::string> split_qualified_name(const std::string& name) {
+            std::vector<std::string> parts;
+            std::size_t begin = 0;
+            while (begin < name.size()) {
+                const std::size_t separator = name.find("::", begin);
+                if (separator == std::string::npos) {
+                    parts.push_back(name.substr(begin));
+                    break;
                 }
-                if (ch == '\'') {
-                    in_single_quote = true;
-                    continue;
-                }
-                if (ch == '"') {
-                    in_double_quote = true;
-                    continue;
-                }
-                if (ch == '/' && i + 1 < line.size() && line[i + 1] == '/') {
-                    return line.substr(0, i);
-                }
+                parts.push_back(name.substr(begin, separator - begin));
+                begin = separator + 2;
             }
-            return line;
+            return parts;
         }
 
-        std::string sanitize_source_for_usage(std::string content) {
-            std::string output;
-            output.reserve(content.size());
-            bool in_single_quote = false;
-            bool in_double_quote = false;
-            bool in_line_comment = false;
-            bool in_block_comment = false;
-
-            for (std::size_t i = 0; i < content.size(); ++i) {
-                const char ch = content[i];
-                const char next = i + 1 < content.size() ? content[i + 1] : '\0';
-
-                if (in_line_comment) {
-                    if (ch == '\n') {
-                        in_line_comment = false;
-                        output.push_back('\n');
-                    } else {
-                        output.push_back(' ');
-                    }
-                    continue;
-                }
-                if (in_block_comment) {
-                    if (ch == '*' && next == '/') {
-                        output.push_back(' ');
-                        output.push_back(' ');
-                        ++i;
-                        in_block_comment = false;
-                    } else if (ch == '\n') {
-                        output.push_back('\n');
-                    } else {
-                        output.push_back(' ');
-                    }
-                    continue;
-                }
-                if (in_single_quote) {
-                    output.push_back(ch == '\n' ? '\n' : ' ');
-                    if (ch == '\\' && next != '\0') {
-                        output.push_back(next == '\n' ? '\n' : ' ');
-                        ++i;
-                        continue;
-                    }
-                    if (ch == '\'') {
-                        in_single_quote = false;
-                    }
-                    continue;
-                }
-                if (in_double_quote) {
-                    output.push_back(ch == '\n' ? '\n' : ' ');
-                    if (ch == '\\' && next != '\0') {
-                        output.push_back(next == '\n' ? '\n' : ' ');
-                        ++i;
-                        continue;
-                    }
-                    if (ch == '"') {
-                        in_double_quote = false;
-                    }
-                    continue;
-                }
-                if (ch == '/' && next == '/') {
-                    output.push_back(' ');
-                    output.push_back(' ');
-                    ++i;
-                    in_line_comment = true;
-                    continue;
-                }
-                if (ch == '/' && next == '*') {
-                    output.push_back(' ');
-                    output.push_back(' ');
-                    ++i;
-                    in_block_comment = true;
-                    continue;
-                }
-                if (ch == '\'') {
-                    output.push_back(' ');
-                    in_single_quote = true;
-                    continue;
-                }
-                if (ch == '"') {
-                    output.push_back(' ');
-                    in_double_quote = true;
-                    continue;
-                }
-                output.push_back(ch);
+        std::string render_forward_declaration(const ForwardDeclSemanticRecord& record) {
+            if (record.keyword.empty() || record.qualified_name.empty() || record.unsupported_scope ||
+                record.macro_generated) {
+                return {};
             }
-
-            return output;
-        }
-
-        std::string join_namespace(const std::vector<std::string>& parts) {
-            std::string joined;
-            for (std::size_t i = 0; i < parts.size(); ++i) {
-                if (i > 0) {
-                    joined += "::";
-                }
-                joined += parts[i];
-            }
-            return joined;
-        }
-
-        std::string qualified_type_name(const ForwardDeclType& type) {
-            if (type.namespaces.empty()) {
-                return type.name;
-            }
-            return join_namespace(type.namespaces) + "::" + type.name;
-        }
-
-        bool has_macro_wrappers(const ForwardDeclType& type) {
-            return std::ranges::any_of(type.scopes, [](const ScopeFrame& scope) {
-                return scope.kind == ScopeFrameKind::MacroWrapper;
-            });
-        }
-
-        std::vector<IncludeDirective> missing_support_includes(
-            const ForwardDeclType& type,
-            const fs::path& includer_path
-        ) {
-            std::vector<IncludeDirective> filtered;
-            filtered.reserve(type.support_includes.size());
-            for (const auto& include : type.support_includes) {
-                if (!find_include_for_header(includer_path, include.header_name).has_value()) {
-                    filtered.push_back(include);
-                }
-            }
-            return filtered;
-        }
-
-        std::string forward_decl_keyword(const ForwardDeclType& type) {
-            switch (type.kind) {
-                case ForwardDeclKind::Class:
-                    return "class";
-                case ForwardDeclKind::Struct:
-                    return "struct";
-                case ForwardDeclKind::Union:
-                    return "union";
-            }
-            return "class";
-        }
-
-        std::string c_tag_name(const ForwardDeclType& type) {
-            return forward_decl_keyword(type) + " " + type.name;
-        }
-
-        std::string forward_declaration_text(
-            const ForwardDeclType& type,
-            const std::vector<IncludeDirective>& support_includes
-        ) {
-            GeneratedTextBuilder out;
-            std::vector<std::string> include_lines;
-            include_lines.reserve(support_includes.size());
-            for (const auto& include : support_includes) {
-                include_lines.push_back(include_directive_text(include));
-            }
-            append_include_block(out, include_lines);
-
-            if (type.scopes.empty()) {
-                out.add_line(forward_decl_keyword(type) + " " + type.name + ";");
-                return trim_whitespace_copy(out.str());
-            }
-
-            for (const auto& scope : type.scopes) {
-                if (scope.kind == ScopeFrameKind::Namespace) {
-                    out.add_line("namespace " + scope.name + " {");
-                } else {
-                    out.add_line(scope.macro.open_text);
-                }
-            }
-            out.add_line(forward_decl_keyword(type) + " " + type.name + ";");
-            for (std::size_t i = type.scopes.size(); i > 0; --i) {
-                const auto& scope = type.scopes[i - 1];
-                if (scope.kind == ScopeFrameKind::Namespace) {
-                    out.add_line("}  // namespace " + scope.name);
-                } else {
-                    out.add_line(scope.macro.close_text);
-                }
-            }
-            return trim_whitespace_copy(out.str());
-        }
-
-        std::vector<ForwardDeclType> parse_forward_declarable_types_from_header(const fs::path& header_path) {
-            std::ifstream in(header_path);
-            if (!in) {
+            const auto parts = split_qualified_name(record.qualified_name);
+            if (parts.empty()) {
                 return {};
             }
 
-            std::vector<ScopeFrame> scope_stack;
-            std::vector<ForwardDeclType> types;
-            std::unordered_set<std::string> seen_types;
-            std::size_t brace_depth = 0;
-            bool pending_template = false;
-            bool in_block_comment = false;
-
-            std::string raw_line;
-            while (std::getline(in, raw_line)) {
-                const std::string no_comment = strip_line_comments(raw_line);
-                const std::string line = trim_whitespace_copy(no_comment);
-
-                if (line.starts_with("template<") || line.starts_with("template <")) {
-                    pending_template = true;
-                }
-
-                static const std::regex namespace_regex(R"(\bnamespace\s+([A-Za-z_][A-Za-z0-9_:]*)\s*\{)");
-                for (auto begin = std::sregex_iterator(no_comment.begin(), no_comment.end(), namespace_regex),
-                          end = std::sregex_iterator();
-                     begin != end;
-                     ++begin) {
-                    const auto parts = split_namespace_path((*begin)[1].str());
-                    for (const auto& part : parts) {
-                        ScopeFrame frame;
-                        frame.kind = ScopeFrameKind::Namespace;
-                        frame.name = part;
-                        frame.open_depth = brace_depth + 1;
-                        scope_stack.push_back(std::move(frame));
-                    }
-                }
-
-                if (const auto macro_scope = parse_scope_macro_open(line); macro_scope.has_value()) {
-                    ScopeFrame frame;
-                    frame.kind = ScopeFrameKind::MacroWrapper;
-                    frame.macro = *macro_scope;
-                    scope_stack.push_back(std::move(frame));
-                } else if (const auto close_macro = parse_scope_macro_close(line); close_macro.has_value()) {
-                    for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
-                        if (it->kind != ScopeFrameKind::MacroWrapper) {
-                            continue;
-                        }
-                        if (it->macro.close_name != *close_macro) {
-                            continue;
-                        }
-                        it->macro.close_text = line;
-                        scope_stack.erase(std::next(it).base());
-                        break;
-                    }
-                }
-
-            if (!line.empty()) {
-                std::smatch class_match;
-                static const std::regex class_regex(R"(^\s*(class|struct|union)\b(.*)$)");
-                if (std::regex_search(line, class_match, class_regex)) {
-                    if (!pending_template) {
-                        const auto type_name = utils::extract_declared_type_name(class_match[2].str());
-                            if (!type_name.has_value()) {
-                                pending_template = false;
-                                continue;
-                            }
-                            ForwardDeclType type;
-                            type.name = *type_name;
-                            const std::string kind = class_match[1].str();
-                            type.kind = kind == "struct" ? ForwardDeclKind::Struct :
-                                        kind == "union" ? ForwardDeclKind::Union :
-                                                          ForwardDeclKind::Class;
-                            for (const auto& scope : scope_stack) {
-                                type.scopes.push_back(scope);
-                                if (scope.kind == ScopeFrameKind::Namespace) {
-                                    type.namespaces.push_back(scope.name);
-                                }
-                            }
-                            const std::string key = qualified_type_name(type);
-                            if (seen_types.insert(key).second) {
-                                types.push_back(std::move(type));
-                            }
-                        }
-                        pending_template = false;
-                    }
-                }
-
-                const std::string comment_free = bha::utils::strip_comments_and_strings(
-                    raw_line, in_block_comment);
-                const auto opens = static_cast<std::size_t>(std::count(comment_free.begin(), comment_free.end(), '{'));
-                const auto closes = static_cast<std::size_t>(std::count(comment_free.begin(), comment_free.end(), '}'));
-                brace_depth += opens;
-                if (closes >= brace_depth) {
-                    brace_depth = 0;
-                } else {
-                    brace_depth -= closes;
-                }
-
-                while (!scope_stack.empty()) {
-                    const auto& scope = scope_stack.back();
-                    if (scope.kind != ScopeFrameKind::Namespace) {
-                        break;
-                    }
-                    if (brace_depth >= scope.open_depth) {
-                        break;
-                    }
-                    scope_stack.pop_back();
-                }
-
-                if (!line.empty() && line.back() == ';' && !line.starts_with("template")) {
-                    pending_template = false;
-                }
+            std::ostringstream output;
+            for (std::size_t index = 0; index + 1 < parts.size(); ++index) {
+                output << "namespace " << parts[index] << " { ";
             }
-
-            return types;
+            output << record.keyword << " " << parts.back() << ";";
+            for (std::size_t index = 1; index < parts.size(); ++index) {
+                output << " }";
+            }
+            return output.str();
         }
 
-        std::optional<fs::path> resolve_include_target(
-            const fs::path& header_path,
-            const fs::path& project_root,
-            const IncludeDirective& include
+        std::string render_forward_declarations(
+            const std::vector<ForwardDeclSemanticRecord>& records
         ) {
-            const fs::path include_path(include.header_name);
-            const fs::path normalized_header = resolve_source_path(header_path).lexically_normal();
-            const fs::path repo_root = !project_root.empty()
-                ? project_root.lexically_normal()
-                : find_repository_root(normalized_header);
-
-            std::vector<fs::path> candidates;
-            if (!normalized_header.empty()) {
-                candidates.push_back((normalized_header.parent_path() / include_path).lexically_normal());
-            }
-            if (!repo_root.empty()) {
-                candidates.push_back((repo_root / include_path).lexically_normal());
-                if (auto found = find_file_in_repo(repo_root, include_path.filename()); found.has_value()) {
-                    candidates.push_back(found->lexically_normal());
+            std::vector<std::string> declarations;
+            declarations.reserve(records.size());
+            for (const auto& record : records) {
+                const auto declaration = render_forward_declaration(record);
+                if (!declaration.empty()) {
+                    declarations.push_back(declaration);
                 }
             }
-
-            for (const auto& candidate : candidates) {
-                if (!candidate.empty() && fs::exists(candidate)) {
-                    return candidate;
-                }
+            std::ranges::sort(declarations);
+            std::ostringstream output;
+            for (const auto& declaration : declarations) {
+                output << declaration << '\n';
             }
-            return std::nullopt;
+            return output.str();
         }
 
-        std::optional<std::vector<IncludeDirective>> resolve_support_includes(
-            const fs::path& header_path,
-            const fs::path& project_root,
-            const std::vector<ScopeFrame>& scopes
+        bool record_is_actionable(const ForwardDeclSemanticRecord& record) {
+            return record.complete_definition && !record.macro_generated &&
+                !record.unsupported_scope && !record.uses.empty() &&
+                std::ranges::all_of(record.uses, [](const auto& use) {
+                    return !use.requires_complete_type && !use.in_dependent_context;
+                });
+        }
+
+        std::vector<CompilationUnit> commands_for_header(
+            ProjectIndex& project_index,
+            const analyzers::DependencyAnalysisResult::HeaderInfo& header
         ) {
-            std::unordered_set<std::string> unresolved_macros;
-            for (const auto& scope : scopes) {
-                if (scope.kind != ScopeFrameKind::MacroWrapper) {
-                    continue;
-                }
-                unresolved_macros.insert(scope.macro.open_name);
-                unresolved_macros.insert(scope.macro.close_name);
-            }
-            if (unresolved_macros.empty()) {
-                return std::vector<IncludeDirective>{};
+            const auto all_commands = project_index.compile_commands();
+            if (header.included_by.empty()) {
+                return all_commands;
             }
 
-            std::vector<IncludeDirective> includes;
-            std::unordered_set<std::string> seen_headers;
-            for (const auto& include : find_include_directives(header_path)) {
-                const auto resolved = resolve_include_target(header_path, project_root, include);
-                if (!resolved.has_value()) {
-                    continue;
+            std::unordered_set<std::string> includers;
+            for (const auto& path : header.included_by) {
+                includers.insert(project_index.resolve(path).generic_string());
+            }
+            std::vector<CompilationUnit> commands;
+            for (const auto& command : all_commands) {
+                if (includers.contains(project_index.resolve(command.source_file).generic_string())) {
+                    commands.push_back(command);
                 }
+            }
+            return commands.empty() ? all_commands : commands;
+        }
 
-                bool needed = false;
-                std::vector<std::string> satisfied;
-                for (const auto& macro_name : unresolved_macros) {
-                    if (!file_defines_macro(*resolved, macro_name)) {
+        std::vector<fs::path> use_files(
+            const std::vector<ForwardDeclSemanticRecord>& records,
+            const fs::path& header,
+            ProjectIndex& project_index
+        ) {
+            std::vector<fs::path> files;
+            std::unordered_set<std::string> seen;
+            for (const auto& record : records) {
+                for (const auto& use : record.uses) {
+                    const fs::path file = project_index.resolve(use.source_file);
+                    if (file == project_index.resolve(header) || !fs::exists(file)) {
                         continue;
                     }
-                    satisfied.push_back(macro_name);
-                    needed = true;
-                }
-
-                if (!needed) {
-                    continue;
-                }
-
-                if (seen_headers.insert(include.header_name).second) {
-                    IncludeDirective support;
-                    support.header_name = include.header_name;
-                    support.is_system = include.is_system;
-                    includes.push_back(std::move(support));
-                }
-
-                for (const auto& macro_name : satisfied) {
-                    unresolved_macros.erase(macro_name);
-                }
-                if (unresolved_macros.empty()) {
-                    break;
-                }
-            }
-
-            if (!unresolved_macros.empty()) {
-                return std::nullopt;
-            }
-            return includes;
-        }
-
-        UsageAnalysis analyze_includer_usage(
-            const std::string& sanitized_text,
-            const ForwardDeclType& type
-        ) {
-            UsageAnalysis result;
-            const std::string qualified = qualified_type_name(type);
-            std::vector<std::string> spellings{qualified};
-            if (!type.namespaces.empty()) {
-                spellings.push_back(type.name);
-            } else if (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union) {
-                spellings.push_back(c_tag_name(type));
-            }
-
-            const auto usage = analyze_incomplete_type_usage(sanitized_text, spellings);
-            result.eligible = usage.has_mentions &&
-                !usage.requires_complete_type &&
-                usage.pointer_or_reference_mentions > 0;
-            result.pointer_or_reference_mentions = usage.pointer_or_reference_mentions;
-            return result;
-        }
-
-        bool references_non_target_exported_symbol(
-            const std::string& sanitized_text,
-            const std::vector<ExportedTypeSymbol>& exported_symbols,
-            const std::string& target_symbol
-        ) {
-            for (const auto& symbol : exported_symbols) {
-                if (symbol.name.empty() || symbol.name == target_symbol) {
-                    continue;
-                }
-                if (contains_identifier_token(sanitized_text, symbol.name)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        std::optional<fs::path> find_matching_source_file(const fs::path& header_path, const fs::path& project_root) {
-            static constexpr std::array<std::string_view, 5> kSourceExts = {
-                ".cpp", ".cc", ".cxx", ".c++", ".C"
-            };
-            for (const auto& ext : kSourceExts) {
-                fs::path candidate = header_path;
-                candidate.replace_extension(ext);
-                if (fs::exists(candidate)) {
-                    return candidate;
-                }
-            }
-
-            if (!project_root.empty() && fs::exists(project_root) && fs::is_directory(project_root)) {
-                const fs::path normalized_root = project_root.lexically_normal();
-                const fs::path normalized_header = header_path.lexically_normal();
-                if (header_path.is_absolute()) {
-                    const fs::path rel = normalized_header.lexically_relative(normalized_root);
-                    if (!rel.empty() && rel != "." && rel != "..") {
-                        for (const auto& ext : kSourceExts) {
-                            fs::path direct_candidate = normalized_root / rel;
-                            direct_candidate.replace_extension(ext);
-                            if (fs::exists(direct_candidate)) {
-                                return direct_candidate;
-                            }
-                        }
-
-                        auto rel_it = rel.begin();
-                        if (rel_it != rel.end() && rel_it->string() == "include") {
-                            fs::path rel_without_include;
-                            ++rel_it;
-                            for (; rel_it != rel.end(); ++rel_it) {
-                                rel_without_include /= *rel_it;
-                            }
-                            for (const auto& ext : kSourceExts) {
-                                fs::path src_candidate = normalized_root / "src" / rel_without_include;
-                                src_candidate.replace_extension(ext);
-                                if (fs::exists(src_candidate)) {
-                                    return src_candidate;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                std::vector<fs::path> candidates;
-                std::error_code ec;
-                fs::recursive_directory_iterator it(
-                    normalized_root,
-                    fs::directory_options::skip_permission_denied,
-                    ec
-                );
-                const fs::recursive_directory_iterator end;
-                for (; it != end; it.increment(ec)) {
-                    if (ec) {
-                        continue;
-                    }
-                    const auto& entry = *it;
-                    if (entry.is_directory()) {
-                        if (should_skip_index_directory(entry.path())) {
-                            it.disable_recursion_pending();
-                        }
-                        continue;
-                    }
-                    if (!entry.is_regular_file()) {
-                        continue;
-                    }
-                    const fs::path path = entry.path();
-                    if (!is_source_file_path(path)) {
-                        continue;
-                    }
-                    if (path.stem() != header_path.stem()) {
-                        continue;
-                    }
-                    candidates.push_back(path);
-                }
-
-                if (!candidates.empty()) {
-                    std::ranges::sort(candidates, [](const fs::path& lhs, const fs::path& rhs) {
-                        const bool lhs_src = lhs.parent_path().filename() == "src";
-                        const bool rhs_src = rhs.parent_path().filename() == "src";
-                        if (lhs_src != rhs_src) {
-                            return lhs_src > rhs_src;
-                        }
-                        return lhs.generic_string() < rhs.generic_string();
-                    });
-                    return candidates.front();
-                }
-            }
-            return std::nullopt;
-        }
-
-        bool should_skip_index_directory(const fs::path& dir) {
-            const std::string name = dir.filename().string();
-            return name == ".git" ||
-                   name == ".hg" ||
-                   name == ".svn" ||
-                   name == "build" ||
-                   name == "cmake-build-debug" ||
-                   name == "cmake-build-release" ||
-                   name == ".bha_traces" ||
-                   name == ".lsp-optimization-backup" ||
-                   name == "traces" ||
-                   name == "output";
-        }
-
-        IncludeIndex build_header_include_index(const fs::path& root) {
-            IncludeIndex index;
-            if (root.empty() || !fs::exists(root) || !fs::is_directory(root)) {
-                return index;
-            }
-
-            std::error_code ec;
-            fs::recursive_directory_iterator it(
-                root,
-                fs::directory_options::skip_permission_denied,
-                ec
-            );
-            const fs::recursive_directory_iterator end;
-            for (; it != end; it.increment(ec)) {
-                if (ec) {
-                    continue;
-                }
-                const auto& entry = *it;
-                if (entry.is_directory()) {
-                    if (should_skip_index_directory(entry.path())) {
-                        it.disable_recursion_pending();
-                    }
-                    continue;
-                }
-                if (!entry.is_regular_file()) {
-                    continue;
-                }
-                const fs::path& file = entry.path();
-                if (!is_header_file_path(file)) {
-                    continue;
-                }
-
-                for (const auto& directive : find_include_directives(file)) {
-                    if (directive.header_name.empty()) {
-                        continue;
-                    }
-                    index[directive.header_name].push_back(file);
-                    const std::string include_filename = fs::path(directive.header_name).filename().string();
-                    if (!include_filename.empty() && include_filename != directive.header_name) {
-                        index[include_filename].push_back(file);
+                    if (seen.insert(file.generic_string()).second) {
+                        files.push_back(file);
                     }
                 }
             }
-            return index;
-        }
-
-        bool is_small_repository_for_include_scan(const fs::path& root, const std::size_t max_files = 500) {
-            if (root.empty() || !fs::exists(root) || !fs::is_directory(root)) {
-                return false;
-            }
-            std::size_t files_seen = 0;
-            std::error_code ec;
-            fs::recursive_directory_iterator it(
-                root,
-                fs::directory_options::skip_permission_denied,
-                ec
-            );
-            const fs::recursive_directory_iterator end;
-            for (; it != end; it.increment(ec)) {
-                if (ec) {
-                    continue;
-                }
-                const auto& entry = *it;
-                if (entry.is_directory()) {
-                    if (should_skip_index_directory(entry.path())) {
-                        it.disable_recursion_pending();
-                    }
-                    continue;
-                }
-                if (entry.is_regular_file() && ++files_seen > max_files) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        Priority calculate_priority(
-            const Duration parse_time,
-            const std::size_t includer_count,
-            const heuristics::ForwardDeclConfig& config
-        ) {
-            const auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(parse_time);
-
-            if (parse_ms > std::chrono::milliseconds(500) && includer_count >= 10) {
-                return Priority::Critical;
-            }
-            if (parse_ms > std::chrono::milliseconds(200) && includer_count >= 5) {
-                return Priority::High;
-            }
-            if (parse_ms > config.min_parse_time) {
-                return Priority::Medium;
-            }
-            return Priority::Low;
-        }
-
-        std::string generate_before_code(
-            const fs::path& header_path,
-            const fs::path& includer_path,
-            const std::string& type_name
-        ) {
-            GeneratedTextBuilder out;
-            out.add_line("// " + includer_path.filename().string());
-            out.add_line("#pragma once");
-            out.add_blank_line();
-            out.add_line("#include \"" + header_path.filename().string() + "\"");
-            out.add_line("class Consumer {");
-            out.add_line("    " + type_name + "* ptr;");
-            out.add_line("    void process(" + type_name + "& ref);");
-            out.add_line("};");
-            return out.str();
-        }
-
-        bool uses_c_tag_syntax(
-            const std::string& sanitized_includer_content,
-            const ForwardDeclType& type
-        ) {
-            const std::regex tag_regex(
-                "\\b" + forward_decl_keyword(type) + "\\s+" +
-                bha::utils::regex_escape(type.name) + "\\b"
-            );
-            return std::regex_search(sanitized_includer_content, tag_regex);
-        }
-
-        std::string generate_after_code(
-            const fs::path& header_path,
-            const fs::path& includer_path,
-            const ForwardDeclType& type
-        ) {
-            const std::string type_name = type.scopes.empty() && (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union)
-                ? c_tag_name(type)
-                : qualified_type_name(type);
-            const std::string declaration = forward_declaration_text(type, type.support_includes);
-
-            GeneratedTextBuilder out;
-            out.add_line("// " + includer_path.filename().string() + " (header)");
-            out.add_line("#pragma once");
-            out.add_blank_line();
-            out.add_block(declaration);
-            out.add_blank_line();
-            out.add_line("class Consumer {");
-            out.add_line("    " + type_name + "* ptr;");
-            out.add_line("    void process(" + type_name + "& ref);");
-            out.add_line("};");
-            out.add_blank_line();
-            out.add_line("// " + includer_path.stem().string() + ".cpp (implementation)");
-            out.add_line("#include \"" + includer_path.filename().string() + "\"");
-            out.add_line("#include \"" + header_path.filename().string() + "\"");
-            return out.str();
-        }
-
-        std::string consumer_type_name_for_examples(const ForwardDeclType& type) {
-            if (type.scopes.empty() && (type.kind == ForwardDeclKind::Struct || type.kind == ForwardDeclKind::Union)) {
-                return c_tag_name(type);
-            }
-            return qualified_type_name(type);
+            std::ranges::sort(files);
+            return files;
         }
 
     }  // namespace
@@ -771,334 +125,126 @@ namespace bha::suggestions
         const SuggestionContext& context
     ) const {
         SuggestionResult result;
-        auto start_time = std::chrono::steady_clock::now();
-
-        const auto& deps = context.analysis.dependencies;
-        const auto& config = context.options.heuristics.forward_decl;
-
-        fs::path include_scan_root = context.project_root;
-        if (include_scan_root.empty() && !deps.headers.empty()) {
-            include_scan_root = find_repository_root(deps.headers.front().path);
-        }
-        const bool allow_repository_include_scan =
-            !context.options.restrict_to_trace ||
-            is_small_repository_for_include_scan(include_scan_root);
-        std::optional<IncludeIndex> include_index;
-        auto ensure_include_index = [&]() -> const IncludeIndex& {
-            if (!include_index.has_value()) {
-                include_index = build_header_include_index(include_scan_root);
-            }
-            return *include_index;
-        };
-
-        std::unordered_set<std::string> processed;
-        std::size_t analyzed = 0;
-        std::size_t skipped = 0;
-
-        std::vector<const analyzers::DependencyAnalysisResult::HeaderInfo*> candidate_headers;
-        candidate_headers.reserve(deps.headers.size());
-        for (const auto& header : deps.headers) {
-            if (!is_header_file_path(header.path) ||
-                header.total_parse_time < config.min_parse_time ||
-                header.included_by.empty()) {
-                continue;
-            }
-            candidate_headers.push_back(&header);
-        }
-        std::ranges::sort(
-            candidate_headers,
-            [](const auto* lhs, const auto* rhs) {
-                return lhs->total_parse_time > rhs->total_parse_time;
-            }
-        );
-        if (candidate_headers.size() > config.max_candidate_headers) {
-            candidate_headers.resize(config.max_candidate_headers);
+        const auto started = std::chrono::steady_clock::now();
+        if (!context.project_index ||
+            context.project_index->compile_commands_status() != CompilationDatabaseStatus::Loaded) {
+            result.diagnostics.push_back({
+                "forward_decl.semantic.index_required",
+                "Forward-declaration suggestions require a valid compile_commands.json"
+            });
+            result.generation_time = std::chrono::steady_clock::now() - started;
+            return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
-        for (const auto* header_ptr : candidate_headers) {
+        std::vector<const analyzers::DependencyAnalysisResult::HeaderInfo*> headers;
+        for (const auto& header : context.analysis.dependencies.headers) {
+            if (is_header_file_path(header.path) && !header.included_by.empty()) {
+                headers.push_back(&header);
+            }
+        }
+        std::ranges::sort(headers, [](const auto* left, const auto* right) {
+            return left->total_parse_time > right->total_parse_time;
+        });
+
+        const std::size_t limit = context.options.max_suggestions == 0
+            ? headers.size()
+            : std::min(headers.size(), context.options.max_suggestions);
+        for (std::size_t index = 0; index < limit; ++index) {
             if (context.is_cancelled()) {
                 break;
             }
-            const auto& header = *header_ptr;
-            ++analyzed;
-
-            if (!is_header_file_path(header.path)) {
-                ++skipped;
+            const auto& header = *headers[index];
+            ++result.items_analyzed;
+            const auto commands = commands_for_header(*context.project_index, header);
+            if (commands.empty()) {
+                ++result.items_skipped;
                 continue;
-            }
-            if (header.total_parse_time < config.min_parse_time) {
-                ++skipped;
-                continue;
-            }
-            if (header.included_by.empty()) {
-                ++skipped;
-                continue;
-            }
-            if (processed.contains(header.path.string())) {
-                ++skipped;
-                continue;
-            }
-            processed.insert(header.path.string());
-
-            auto forward_types = parse_forward_declarable_types_from_header(header.path);
-            if (forward_types.size() != 1) {
-                ++skipped;
-                continue;
-            }
-            const auto exported_symbols = extract_exported_type_symbols(header.path);
-            ForwardDeclType target_type = std::move(forward_types.front());
-            if (!target_type.namespaces.empty() && target_type.namespaces.front() == "std") {
-                ++skipped;
-                continue;
-            }
-            const ProjectLanguageProfile header_language = summarize_file_language_profile(header.path, context);
-            if (is_mixed_c_and_cxx_profile(header_language)) {
-                ++skipped;
-                continue;
-            }
-            if (is_c_like_profile(header_language)) {
-                if (target_type.kind == ForwardDeclKind::Class || !target_type.namespaces.empty()) {
-                    ++skipped;
-                    continue;
-                }
-            }
-            if (has_macro_wrappers(target_type)) {
-                const auto support_includes = resolve_support_includes(
-                    header.path,
-                    include_scan_root,
-                    target_type.scopes
-                );
-                if (!support_includes.has_value()) {
-                    ++skipped;
-                    continue;
-                }
-                target_type.support_includes = *support_includes;
             }
 
-            std::vector<fs::path> candidate_includers;
-            std::unordered_set<std::string> seen_includers;
-            auto add_includer_candidate = [&](const fs::path& candidate) {
-                if (!is_header_file_path(candidate)) {
-                    return;
-                }
-                if (candidate.lexically_normal() == header.path.lexically_normal()) {
-                    return;
-                }
-                const std::string key = candidate.lexically_normal().generic_string();
-                if (!seen_includers.insert(key).second) {
-                    return;
-                }
-                candidate_includers.push_back(candidate);
+            const auto semantic = analyze_forward_declarations(
+                *context.project_index,
+                header.path,
+                commands
+            );
+            if (!semantic.available) {
+                ++result.items_skipped;
+                continue;
+            }
+            if (std::ranges::any_of(semantic.records, [](const auto& record) {
+                    return !record_is_actionable(record);
+                })) {
+                ++result.items_skipped;
+                continue;
+            }
+            const auto files = use_files(semantic.records, header.path, *context.project_index);
+            if (files.empty()) {
+                ++result.items_skipped;
+                continue;
+            }
+            const auto declaration_text = render_forward_declarations(semantic.records);
+            if (declaration_text.empty()) {
+                ++result.items_skipped;
+                continue;
+            }
+
+            Suggestion suggestion;
+            suggestion.id = generate_suggestion_id("fwd-ast", header.path);
+            suggestion.type = SuggestionType::ForwardDeclaration;
+            suggestion.priority = Priority::High;
+            suggestion.confidence = 1.0;
+            suggestion.title = "Replace " + header.path.filename().string() +
+                " with AST-proven forward declarations";
+            suggestion.description =
+                "Clang AST evidence proves that all observed uses of the declarations "
+                "are pointer/reference-only and do not require complete types.";
+            suggestion.rationale =
+                "The candidate is derived from exact compile commands and canonical AST "
+                "declaration/use bindings. No text heuristic is used to establish safety.";
+            suggestion.estimated_savings = Duration::zero();
+            suggestion.target_file.path = files.front();
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Replace the full include with AST-derived declarations";
+            suggestion.is_safe = true;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+            suggestion.application_summary = "Apply only after compile-command validation";
+            suggestion.implementation_steps = {
+                "Replace the full include with the AST-derived forward declarations",
+                "Validate every affected translation unit with its original compile command",
+                "Rebuild the affected targets and compare a fresh trace"
+            };
+            suggestion.caveats = {
+                "Savings are intentionally unestimated until a post-edit trace is available",
+                "Unsupported macros, aliases, templates, dependent contexts, and complete-type uses are rejected"
             };
 
-            for (const auto& includer : header.included_by) {
-                add_includer_candidate(includer);
-            }
-
-            if (allow_repository_include_scan && !include_scan_root.empty() && fs::exists(include_scan_root)) {
-                const auto& index = ensure_include_index();
-                const std::string header_filename = header.path.filename().string();
-                if (const auto it = index.find(header_filename); it != index.end()) {
-                    for (const auto& includer : it->second) {
-                        add_includer_candidate(includer);
-                    }
-                }
-                if (!header.path.empty()) {
-                    fs::path relative_header = header.path;
-                    if (header.path.is_absolute()) {
-                        relative_header = header.path.lexically_relative(include_scan_root);
-                    }
-                    const std::string relative_key = relative_header.generic_string();
-                    if (!relative_key.empty() && relative_key != "." && relative_key != "..") {
-                        if (const auto it = index.find(relative_key); it != index.end()) {
-                            for (const auto& includer : it->second) {
-                                add_includer_candidate(includer);
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (const auto& includer_path : candidate_includers) {
-                if (context.is_cancelled()) {
-                    break;
-                }
-                if (!context.should_analyze(includer_path)) {
+            for (const auto& file : files) {
+                const auto include = find_include_for_header(file, header.path.filename().string());
+                if (!include.has_value()) {
                     continue;
                 }
-                if (!is_header_file_path(includer_path)) {
-                    continue;
-                }
-
-                std::ifstream header_in(includer_path);
-                if (!header_in) {
-                    continue;
-                }
-                const std::string includer_content(
-                    (std::istreambuf_iterator<char>(header_in)),
-                    std::istreambuf_iterator<char>()
-                );
-                const std::string sanitized = sanitize_source_for_usage(includer_content);
-
-                const std::string header_filename = header.path.filename().string();
-                auto include_dir = find_include_for_header(includer_path, header_filename);
-                if (!include_dir.has_value()) {
-                    continue;
-                }
-
-                const auto usage = analyze_includer_usage(sanitized, target_type);
-                if (!usage.eligible || usage.pointer_or_reference_mentions < config.min_usage_sites) {
-                    continue;
-                }
-                const ProjectLanguageProfile includer_language = summarize_file_language_profile(includer_path, context);
-                if (is_mixed_c_and_cxx_profile(includer_language)) {
-                    continue;
-                }
-                const bool c_mode = is_c_like_profile(header_language) || is_c_like_profile(includer_language);
-                if (c_mode) {
-                    if (target_type.kind == ForwardDeclKind::Class || !target_type.namespaces.empty()) {
-                        continue;
-                    }
-                    if (!uses_c_tag_syntax(sanitized, target_type)) {
-                        continue;
-                    }
-                }
-                if (references_non_target_exported_symbol(
-                        sanitized,
-                        exported_symbols,
-                        target_type.name
-                    )) {
-                    continue;
-                }
-
-                Suggestion suggestion;
-                suggestion.id = generate_suggestion_id(
-                    "fwd",
-                    header.path,
-                    includer_path.filename().string() + "-" + qualified_type_name(target_type)
-                );
-                suggestion.type = SuggestionType::ForwardDeclaration;
-                suggestion.priority = calculate_priority(
-                    header.total_parse_time,
-                    header.inclusion_count,
-                    config
-                );
-                suggestion.confidence = 0.85;
-
-                std::ostringstream title;
-                title << "Use forward declaration for '" << header.path.filename().string()
-                      << "' in " << includer_path.filename().string();
-                suggestion.title = title.str();
-
-                const auto parse_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    header.total_parse_time).count();
-
-                std::ostringstream desc;
-                desc << "Header '" << header.path.filename().string() << "' takes " << parse_ms
-                     << "ms to parse and is included in " << includer_path.filename().string()
-                     << ". Detected " << usage.pointer_or_reference_mentions
-                     << " pointer/reference-only use sites for " << qualified_type_name(target_type)
-                     << " in the header, so this include can be narrowed to a forward declaration.";
-                suggestion.description = desc.str();
-
-                suggestion.rationale =
-                    "Forward declarations reduce transitive include dependencies when a type is only "
-                    "used by pointer/reference in a header. This suggestion is generated only after "
-                    "excluding common unsafe contexts (by-value usage, inheritance, sizeof/new/delete, "
-                    "and qualified member access).";
-
-                const Duration savings_per_file = header.total_parse_time /
-                    std::max<std::size_t>(1, header.inclusion_count);
-                suggestion.estimated_savings = savings_per_file;
-                if (context.trace.total_time.count() > 0) {
-                    suggestion.estimated_savings_percent =
-                        100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                        static_cast<double>(context.trace.total_time.count());
-                }
-
-                suggestion.target_file.path = includer_path;
-                suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.note = "Replace #include with a safe forward declaration";
-                suggestion.target_file.line_start = include_dir->line + 1;
-                suggestion.target_file.line_end = include_dir->line + 1;
-                suggestion.target_file.col_start = include_dir->col_start + 1;
-                suggestion.target_file.col_end = include_dir->col_end + 1;
-
-                suggestion.before_code.file = includer_path;
-                suggestion.before_code.code = generate_before_code(
-                    header.path,
-                    includer_path,
-                    consumer_type_name_for_examples(target_type)
-                );
-                suggestion.after_code.file = includer_path;
-                suggestion.after_code.code = generate_after_code(
-                    header.path,
-                    includer_path,
-                    target_type
-                );
-
-                suggestion.implementation_steps = {
-                    "1. Replace the include with the generated forward declaration",
-                    "2. Keep the full include in the implementation file",
-                    "3. Rebuild and run tests to validate no hidden complete-type dependency exists"
-                };
-                suggestion.caveats = {
-                    "Forward declaring symbols from namespace std is undefined behavior; this suggester skips them",
-                    "By-value type usage, inheritance, and sizeof/new/delete contexts require full definitions",
-                    "If the corresponding source file is missing, add the include manually where full type use occurs"
-                };
-                suggestion.documentation_link =
-                    "https://google.github.io/styleguide/cppguide.html#Include_What_You_Use";
-                suggestion.verification =
-                    "Compile the project and run tests after applying edits.";
-                suggestion.impact.total_files_affected = 1;
-                suggestion.impact.cumulative_savings = savings_per_file;
-                suggestion.is_safe = true;
-
                 suggestion.edits.push_back(make_replace_line_edit(
-                    includer_path,
-                    include_dir->line,
-                    format_separated_block(forward_declaration_text(
-                        target_type,
-                        missing_support_includes(target_type, includer_path)
-                    ))
+                    file,
+                    include->line,
+                    format_separated_block(declaration_text)
                 ));
-
-                const fs::path source_scan_root =
-                    allow_repository_include_scan ? include_scan_root : fs::path{};
-                if (auto source_file = find_matching_source_file(includer_path, source_scan_root)) {
-                    if (!find_include_for_header(*source_file, header_filename).has_value()) {
-                        const auto insertion = make_preferred_include_insertion_edit(
-                            *source_file,
-                            "#include \"" + header_filename + "\""
-                        );
-                        suggestion.edits.push_back(insertion.edit);
-
-                        FileTarget source_target;
-                        source_target.path = *source_file;
-                        source_target.action = FileAction::AddInclude;
-                        source_target.line_start = insertion.inserted_line_one_based;
-                        source_target.line_end = insertion.inserted_line_one_based;
-                        source_target.note = "Add full include for complete type usage";
-                        suggestion.secondary_files.push_back(source_target);
-                    }
-                }
-
-                result.suggestions.push_back(std::move(suggestion));
+                FileTarget target;
+                target.path = file;
+                target.action = FileAction::Modify;
+                target.note = "AST-proven incomplete-type-safe use";
+                suggestion.secondary_files.push_back(std::move(target));
             }
+            if (suggestion.edits.empty()) {
+                ++result.items_skipped;
+                continue;
+            }
+            suggestion.impact.total_files_affected = suggestion.secondary_files.size();
+            result.suggestions.push_back(std::move(suggestion));
         }
 
-        result.items_analyzed = analyzed;
-        result.items_skipped = skipped;
-
-        std::ranges::sort(result.suggestions,
-                          [](const Suggestion& a, const Suggestion& b) {
-                              return a.estimated_savings > b.estimated_savings;
-                          });
-
-        const auto end_time = std::chrono::steady_clock::now();
-        result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
-
+        std::ranges::sort(result.suggestions, [](const auto& left, const auto& right) {
+            return left.id < right.id;
+        });
+        result.generation_time = std::chrono::steady_clock::now() - started;
         return Result<SuggestionResult, Error>::success(std::move(result));
     }
 

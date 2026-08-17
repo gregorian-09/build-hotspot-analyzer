@@ -84,12 +84,10 @@ namespace bha::suggestions {
         public:
             ForwardDeclVisitor(
                 clang::ASTContext& context,
-                const fs::path& header,
-                const fs::path& source
+                const fs::path& header
             )
                 : source_manager_(context.getSourceManager()),
-                  header_(header.lexically_normal()),
-                  source_(source.lexically_normal()) {}
+                  header_(header.lexically_normal()) {}
 
             bool VisitCXXRecordDecl(clang::CXXRecordDecl* declaration) {
                 if (!declaration || !declaration->getIdentifier() ||
@@ -203,7 +201,11 @@ namespace bha::suggestions {
                 const clang::SourceLocation location,
                 const bool force_complete
             ) {
-                if (type.isNull() || !source_manager_.isWrittenInMainFile(location)) {
+                if (type.isNull()) {
+                    return;
+                }
+                const fs::path use_file = spelling_path(source_manager_, location);
+                if (use_file.empty() || use_file == header_) {
                     return;
                 }
                 const bool requires_complete = force_complete ||
@@ -228,7 +230,7 @@ namespace bha::suggestions {
                         continue;
                     }
                     record.uses.push_back({
-                        source_,
+                        use_file,
                         name,
                         requires_complete,
                         type->isInstantiationDependentType()
@@ -238,7 +240,6 @@ namespace bha::suggestions {
 
             clang::SourceManager& source_manager_;
             fs::path header_;
-            fs::path source_;
             std::vector<ForwardDeclSemanticRecord> records_;
         };
 #endif
@@ -274,7 +275,7 @@ namespace bha::suggestions {
                 result.diagnostic = "Clang failed to build a diagnostic-free AST for a translation unit";
                 return result;
             }
-            ForwardDeclVisitor visitor(ast->getASTContext(), normalized_header, command.source_file);
+            ForwardDeclVisitor visitor(ast->getASTContext(), normalized_header);
             visitor.TraverseDecl(ast->getASTContext().getTranslationUnitDecl());
             auto records = visitor.take_records();
             for (auto& record : records) {
