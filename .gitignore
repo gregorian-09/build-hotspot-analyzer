@@ -20,6 +20,7 @@ nul
 *.iml
 
 .cache
+.bha/
 
 # Exclude internal files
 internal/

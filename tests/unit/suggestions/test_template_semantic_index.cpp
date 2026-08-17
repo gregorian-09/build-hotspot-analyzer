@@ -82,6 +82,15 @@ namespace bha::suggestions {
             EXPECT_EQ(match->source_file, source);
             EXPECT_EQ(index.find_exact(match->specialization), &*match);
             EXPECT_EQ(index.find_exact("Box<double>"), nullptr);
+
+            EXPECT_TRUE(std::filesystem::is_regular_file(
+                root_ / ".bha" / "template-semantic-index-v1.json"
+            ));
+            TemplateSemanticIndex cached_index(project_index);
+            cached_index.build();
+            ASSERT_EQ(cached_index.status(), TemplateSemanticStatus::Parsed);
+            ASSERT_EQ(cached_index.records().size(), index.records().size());
+            EXPECT_EQ(cached_index.find_exact(match->specialization)->specialization, match->specialization);
         }
 
         TEST_F(TemplateSemanticIndexTest, ReportsMissingCompilationDatabase) {

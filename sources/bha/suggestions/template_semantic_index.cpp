@@ -2,6 +2,10 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <nlohmann/json.hpp>
+#include <sstream>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
@@ -275,6 +279,132 @@ namespace bha::suggestions {
             std::vector<TemplateSemanticUse> uses_;
         };
 
+        using json = nlohmann::json;
+
+        std::uint64_t fnv1a_append(std::uint64_t hash, const std::string_view value) {
+            for (const char character : value) {
+                hash ^= static_cast<unsigned char>(character);
+                hash *= 1099511628211ULL;
+            }
+            return hash;
+        }
+
+        std::string cache_fingerprint(
+            ProjectIndex& project_index,
+            const std::vector<CompilationUnit>& commands
+        ) {
+            std::uint64_t hash = 1469598103934665603ULL;
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v1");
+            for (const auto& command : commands) {
+                hash = fnv1a_append(hash, command.source_file.generic_string());
+                hash = fnv1a_append(hash, command.working_directory.generic_string());
+                for (const auto& argument : command.command_line) {
+                    hash = fnv1a_append(hash, argument);
+                    hash = fnv1a_append(hash, "\0");
+                }
+                if (const auto source = project_index.read_file(command.source_file)) {
+                    hash = fnv1a_append(hash, *source);
+                }
+            }
+            for (const auto& header : project_index.files(ProjectFileKind::Header)) {
+                std::error_code ec;
+                const auto size = fs::file_size(header, ec);
+                const auto timestamp = fs::last_write_time(header, ec);
+                hash = fnv1a_append(hash, header.generic_string());
+                hash = fnv1a_append(hash, std::to_string(ec ? 0 : size));
+                hash = fnv1a_append(
+                    hash,
+                    std::to_string(timestamp.time_since_epoch().count())
+                );
+            }
+            std::ostringstream output;
+            output << std::hex << hash;
+            return output.str();
+        }
+
+        json serialize_use(const TemplateSemanticUse& use) {
+            return {
+                {"source_file", use.source_file.generic_string()},
+                {"kind", use.kind},
+                {"requires_complete_type", use.requires_complete_type}
+            };
+        }
+
+        TemplateSemanticUse deserialize_use(const json& value) {
+            return {
+                "",
+                value.value("source_file", ""),
+                value.value("kind", ""),
+                value.value("requires_complete_type", false)
+            };
+        }
+
+        json serialize_record(const TemplateSemanticRecord& record) {
+            json uses = json::array();
+            for (const auto& use : record.uses) {
+                uses.push_back(serialize_use(use));
+            }
+            json use_files = json::array();
+            for (const auto& file : record.use_files) {
+                use_files.push_back(file.generic_string());
+            }
+            json definitions = json::array();
+            for (const auto& file : record.explicit_definition_files) {
+                definitions.push_back(file.generic_string());
+            }
+            return {
+                {"template_name", record.template_name},
+                {"specialization", record.specialization},
+                {"specialization_kind", record.specialization_kind},
+                {"source_file", record.source_file.generic_string()},
+                {"declaration_file", record.declaration_file.generic_string()},
+                {"use_files", use_files},
+                {"uses", uses},
+                {"explicit_definition_files", definitions},
+                {"complete_definition", record.complete_definition},
+                {"has_explicit_instantiation", record.has_explicit_instantiation},
+                {"has_external_linkage", record.has_external_linkage},
+                {"has_single_explicit_definition", record.has_single_explicit_definition},
+                {"has_dependent_arguments", record.has_dependent_arguments},
+                {"has_unsupported_scope", record.has_unsupported_scope}
+            };
+        }
+
+        TemplateSemanticRecord deserialize_record(const json& value) {
+            TemplateSemanticRecord record;
+            record.template_name = value.value("template_name", "");
+            record.specialization = value.value("specialization", "");
+            record.specialization_kind = value.value("specialization_kind", "");
+            record.source_file = value.value("source_file", "");
+            record.declaration_file = value.value("declaration_file", "");
+            record.complete_definition = value.value("complete_definition", false);
+            record.has_explicit_instantiation = value.value("has_explicit_instantiation", false);
+            record.has_external_linkage = value.value("has_external_linkage", false);
+            record.has_single_explicit_definition = value.value("has_single_explicit_definition", false);
+            record.has_dependent_arguments = value.value("has_dependent_arguments", false);
+            record.has_unsupported_scope = value.value("has_unsupported_scope", false);
+            if (value.contains("use_files") && value["use_files"].is_array()) {
+                for (const auto& file : value["use_files"]) {
+                    record.use_files.emplace_back(file.get<std::string>());
+                }
+            }
+            if (value.contains("uses") && value["uses"].is_array()) {
+                for (const auto& use : value["uses"]) {
+                    record.uses.push_back(deserialize_use(use));
+                }
+            }
+            if (value.contains("explicit_definition_files") && value["explicit_definition_files"].is_array()) {
+                for (const auto& file : value["explicit_definition_files"]) {
+                    record.explicit_definition_files.emplace_back(file.get<std::string>());
+                }
+            }
+            return record;
+        }
+
+        fs::path semantic_cache_path(const ProjectIndex& project_index) {
+            return project_index.project_root() / ".bha" / "template-semantic-index-v1.json";
+        }
+
         std::vector<std::string> tooling_arguments(
             const CompilationUnit& command,
             const fs::path& source_file
@@ -329,7 +459,31 @@ namespace bha::suggestions {
             return;
         }
 
-        for (const auto& command : project_index_.compile_commands()) {
+        const auto commands = project_index_.compile_commands();
+        const auto fingerprint = cache_fingerprint(project_index_, commands);
+        const auto cache_path = semantic_cache_path(project_index_);
+        if (!cache_path.empty()) {
+            std::ifstream input(cache_path);
+            if (input) {
+                try {
+                    json cache;
+                    input >> cache;
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v1" &&
+                        cache.value("fingerprint", "") == fingerprint &&
+                        cache.contains("records") && cache["records"].is_array()) {
+                        for (const auto& value : cache["records"]) {
+                            records_.push_back(deserialize_record(value));
+                        }
+                        status_ = TemplateSemanticStatus::Parsed;
+                        return;
+                    }
+                } catch (const nlohmann::json::exception&) {
+                    // A corrupt or old cache is ignored and rebuilt below.
+                }
+            }
+        }
+
+        for (const auto& command : commands) {
             const auto source = project_index_.read_file(command.source_file);
             if (!source.has_value()) {
                 status_ = TemplateSemanticStatus::Failed;
@@ -419,6 +573,24 @@ namespace bha::suggestions {
             record.has_single_explicit_definition = record.explicit_definition_files.size() == 1;
         }
         records_ = std::move(merged);
+
+        if (!cache_path.empty()) {
+            std::error_code ec;
+            fs::create_directories(cache_path.parent_path(), ec);
+            if (!ec) {
+                json cache;
+                cache["schema"] = "bha-template-semantic-index-v1";
+                cache["fingerprint"] = fingerprint;
+                cache["records"] = json::array();
+                for (const auto& record : records_) {
+                    cache["records"].push_back(serialize_record(record));
+                }
+                std::ofstream output(cache_path);
+                if (output) {
+                    output << cache.dump(2);
+                }
+            }
+        }
 
         status_ = TemplateSemanticStatus::Parsed;
 #endif
