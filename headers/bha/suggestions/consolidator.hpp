@@ -93,13 +93,6 @@ namespace bha::suggestions
         ) ;
 
         /**
-         * Consolidates template instantiation suggestions.
-         */
-        static std::optional<Suggestion> consolidate_template(
-            const std::vector<Suggestion>& suggestions
-        ) ;
-
-        /**
          * Consolidates PIMPL pattern suggestions.
          */
         static std::optional<Suggestion> consolidate_pimpl(
