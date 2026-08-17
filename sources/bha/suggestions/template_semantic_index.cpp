@@ -15,6 +15,9 @@
 #ifndef BHA_HAVE_CLANG_TOOLING
 #define BHA_HAVE_CLANG_TOOLING 0
 #endif
+#ifndef BHA_HAVE_CLANG_DEP_SCANNING
+#define BHA_HAVE_CLANG_DEP_SCANNING 0
+#endif
 
 #if BHA_HAVE_CLANG_TOOLING
 #include <clang/AST/Decl.h>
@@ -27,6 +30,13 @@
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Tooling/Tooling.h>
+#if BHA_HAVE_CLANG_DEP_SCANNING
+#if __has_include(<clang/Tooling/DependencyScanning/DependencyScanningTool.h>)
+#include <clang/Tooling/DependencyScanning/DependencyScanningTool.h>
+#else
+#include <clang/Tooling/DependencyScanningTool.h>
+#endif
+#endif
 #include <llvm/Support/raw_ostream.h>
 #endif
 
@@ -388,6 +398,46 @@ namespace bha::suggestions {
             return {};
         }
 
+#if BHA_HAVE_CLANG_DEP_SCANNING
+        std::vector<fs::path> parse_dependency_files(
+            const std::string& dependency_file,
+            const fs::path& working_directory
+        ) {
+            const auto separator = dependency_file.find(':');
+            if (separator == std::string::npos) {
+                return {};
+            }
+
+            std::vector<fs::path> files;
+            std::string token;
+            const auto flush = [&]() {
+                if (!token.empty()) {
+                    fs::path path(token);
+                    if (path.is_relative()) {
+                        path = working_directory / path;
+                    }
+                    files.push_back(path.lexically_normal());
+                    token.clear();
+                }
+            };
+            for (std::size_t index = separator + 1; index < dependency_file.size(); ++index) {
+                const char character = dependency_file[index];
+                if (character == '\\' && index + 1 < dependency_file.size()) {
+                    const char escaped = dependency_file[++index];
+                    if (escaped != '\n') {
+                        token.push_back(escaped);
+                    }
+                } else if (std::isspace(static_cast<unsigned char>(character))) {
+                    flush();
+                } else {
+                    token.push_back(character);
+                }
+            }
+            flush();
+            return files;
+        }
+#endif
+
         std::string cache_fingerprint(
             ProjectIndex& project_index,
             const std::vector<CompilationUnit>& commands
@@ -419,7 +469,33 @@ namespace bha::suggestions {
                     hash = fnv1a_append(hash, *source);
                 }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
+#if BHA_HAVE_CLANG_DEP_SCANNING
+                clang::tooling::dependencies::DependencyScanningService service(
+                    clang::tooling::dependencies::ScanningMode::DependencyDirectivesScan,
+                    clang::tooling::dependencies::ScanningOutputFormat::Make
+                );
+                clang::tooling::dependencies::DependencyScanningTool scanner(service);
+                auto dependency_result = scanner.getDependencyFile(
+                    command.command_line,
+                    command.working_directory.string()
+                );
+                if (dependency_result) {
+                    for (const auto& dependency : parse_dependency_files(
+                        *dependency_result,
+                        command.working_directory
+                    )) {
+                        hash = fnv1a_append(hash, dependency.generic_string());
+                        if (const auto content = project_index.read_file(dependency)) {
+                            hash = fnv1a_append(hash, *content);
+                        }
+                        hash = fnv1a_append(hash, std::string_view{"\0", 1});
+                    }
+                } else {
+                    hash = fnv1a_append(hash, "dependency-scan-failed");
+                }
+#endif
             }
+#if !BHA_HAVE_CLANG_DEP_SCANNING
             for (const auto& header : project_index.files(ProjectFileKind::Header)) {
                 std::error_code ec;
                 const auto size = fs::file_size(header, ec);
@@ -437,6 +513,7 @@ namespace bha::suggestions {
                 }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
             }
+#endif
             std::ostringstream output;
             output << std::hex << hash;
             return output.str();

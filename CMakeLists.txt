@@ -144,6 +144,7 @@ add_subdirectory(resources)
 # =============================================================================
 
 set(BHA_HAVE_CLANG_TOOLING 0)
+set(BHA_HAVE_CLANG_DEP_SCANNING 0)
 if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
     find_path(BHA_CLANG_TOOLING_INCLUDE_DIR
             NAMES clang/Tooling/Tooling.h
@@ -174,10 +175,26 @@ if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
                 /lib/x86_64-linux-gnu
     )
 
+    find_path(BHA_CLANG_DEP_SCANNING_INCLUDE_DIR
+            NAMES
+                clang/Tooling/DependencyScanning/DependencyScanningTool.h
+                clang/Tooling/DependencyScanningTool.h
+            PATHS
+                /usr/lib/llvm-18/include
+                /usr/lib/llvm-17/include
+                /usr/lib/llvm-16/include
+                /usr/lib/llvm-15/include
+                /usr/include
+    )
+
     if(BHA_ENABLE_TEMPLATE_AST AND BHA_CLANG_TOOLING_INCLUDE_DIR AND
             BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
         set(BHA_HAVE_CLANG_TOOLING 1)
         message(STATUS "Clang LibTooling found: enabling AST-backed template indexing")
+        if(BHA_CLANG_DEP_SCANNING_INCLUDE_DIR)
+            set(BHA_HAVE_CLANG_DEP_SCANNING 1)
+            message(STATUS "Clang dependency scanning found: enabling exact header invalidation")
+        endif()
     elseif(BHA_ENABLE_TEMPLATE_AST)
         message(STATUS "Clang LibTooling not found: template suggestions remain disabled")
     endif()
@@ -265,6 +282,7 @@ target_link_libraries(bha_lib
 )
 
 target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_TOOLING=${BHA_HAVE_CLANG_TOOLING})
+target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_DEP_SCANNING=${BHA_HAVE_CLANG_DEP_SCANNING})
 if(BHA_HAVE_CLANG_TOOLING)
     target_include_directories(bha_lib SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
     target_link_libraries(bha_lib PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
