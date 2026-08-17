@@ -198,5 +198,29 @@ namespace bha::suggestions {
             EXPECT_FALSE(index.diagnostic().empty());
         }
 
+        TEST_F(TemplateSemanticIndexTest, RejectsUnsupportedLanguageMode) {
+            const auto source = root_ / "src" / "unsupported.cpp";
+            std::ofstream(source)
+                << "template <typename T> struct Box { T value{}; };\n"
+                << "template struct Box<int>;\n";
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/unsupported.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++2b-invalid\",\"-c\",\"src/unsupported.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            EXPECT_EQ(index.status(), TemplateSemanticStatus::Failed);
+            EXPECT_TRUE(index.records().empty());
+            EXPECT_FALSE(index.diagnostic().empty());
+        }
+
     }  // namespace
 }  // namespace bha::suggestions

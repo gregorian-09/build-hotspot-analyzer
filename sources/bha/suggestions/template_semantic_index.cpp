@@ -1,6 +1,7 @@
 #include "bha/suggestions/template_semantic_index.hpp"
 
 #include <algorithm>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -32,6 +33,32 @@ namespace bha::suggestions {
     namespace {
 
 #if BHA_HAVE_CLANG_TOOLING
+        bool supported_language_mode(const std::string_view mode) {
+            static constexpr std::array<std::string_view, 18> modes = {
+                "c++98", "gnu++98", "c++03", "gnu++03", "c++11", "gnu++11",
+                "c++14", "gnu++14", "c++17", "gnu++17", "c++20", "gnu++20",
+                "c++23", "gnu++23", "c++26", "gnu++26", "c++2b", "gnu++2b"
+            };
+            return std::ranges::find(modes, mode) != modes.end();
+        }
+
+        bool supported_compile_language(const std::vector<std::string>& arguments) {
+            for (const auto& argument : arguments) {
+                if (argument.starts_with("-std=")) {
+                    if (!supported_language_mode(argument.substr(5))) {
+                        return false;
+                    }
+                } else if (argument.starts_with("/std:")) {
+                    const auto mode = argument.substr(5);
+                    if (mode != "c++14" && mode != "c++17" && mode != "c++20" &&
+                        mode != "c++latest") {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         std::string specialization_kind(const clang::TemplateSpecializationKind kind) {
             switch (kind) {
                 case clang::TSK_ExplicitSpecialization:
@@ -518,6 +545,13 @@ namespace bha::suggestions {
         }
 
         for (const auto& command : commands) {
+            const auto arguments = tooling_arguments(command, command.source_file);
+            if (!supported_compile_language(arguments)) {
+                status_ = TemplateSemanticStatus::Failed;
+                diagnostic_ = "Unsupported language mode in compilation database command";
+                records_.clear();
+                return;
+            }
             const auto source = project_index_.read_file(command.source_file);
             if (!source.has_value()) {
                 status_ = TemplateSemanticStatus::Failed;
@@ -528,7 +562,7 @@ namespace bha::suggestions {
 
             auto ast = clang::tooling::buildASTFromCodeWithArgs(
                 *source,
-                tooling_arguments(command, command.source_file),
+                arguments,
                 command.source_file.string()
             );
             if (!ast || ast->getDiagnostics().hasErrorOccurred()) {
