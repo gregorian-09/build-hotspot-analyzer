@@ -1,4 +1,5 @@
 #include "bha/suggestions/include_suggester.hpp"
+#include "bha/suggestions/forward_decl_semantic_index.hpp"
 
 #include <algorithm>
 #include <array>
@@ -276,7 +277,17 @@ namespace bha::suggestions {
                     : *context.options.compile_commands_path)
                 : command.working_directory;
             for (const auto& diagnostic : run_include_cleaner(build_dir, command)) {
-                result.suggestions.push_back(make_removal_suggestion(diagnostic));
+                std::string validation_diagnostic;
+                if (validate_include_removal(
+                        *context.project_index,
+                        command,
+                        diagnostic.file,
+                        diagnostic.line,
+                        diagnostic.header_name,
+                        validation_diagnostic
+                    )) {
+                    result.suggestions.push_back(make_removal_suggestion(diagnostic));
+                }
             }
         }
 

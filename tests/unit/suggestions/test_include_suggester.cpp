@@ -119,6 +119,7 @@ namespace bha::suggestions {
 
     TEST_F(IncludeSuggesterTest, MapsClangDiagnosticToExactIncludeEdit) {
         const fs::path source = root_ / "main.cpp";
+        write_file(root_ / "unused.hpp", "#pragma once\n");
         write_file(source, "#include <vector>\n#include \"unused.hpp\"\nint main() { return 0; }\n");
         write_compile_database(source);
         ASSERT_EQ(set_env("BHA_FAKE_CLANG_TIDY_MODE", "unused"), 0);

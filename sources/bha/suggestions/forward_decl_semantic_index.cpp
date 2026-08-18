@@ -224,6 +224,31 @@ namespace bha::suggestions {
                 return true;
             }
 
+            bool VisitCXXNamedCastExpr(clang::CXXNamedCastExpr* expression) {
+                if (expression) {
+                    record_use(expression->getTypeAsWritten(), expression->getBeginLoc(), true);
+                    if (expression->getSubExpr()) {
+                        record_use(expression->getSubExpr()->getType(), expression->getBeginLoc(), true);
+                    }
+                }
+                return true;
+            }
+
+            bool VisitCXXTypeidExpr(clang::CXXTypeidExpr* expression) {
+                if (expression) {
+                    if (expression->isTypeOperand()) {
+                        record_use(
+                            expression->getTypeOperandSourceInfo()->getType(),
+                            expression->getBeginLoc(),
+                            true
+                        );
+                    } else if (expression->getExprOperand()) {
+                        record_use(expression->getExprOperand()->getType(), expression->getBeginLoc(), true);
+                    }
+                }
+                return true;
+            }
+
             bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
                 if (expression && expression->isArgumentType()) {
                     record_use(expression->getArgumentType(), expression->getBeginLoc(), true);
@@ -575,6 +600,99 @@ namespace bha::suggestions {
             clang::CompilerInstance* compiler_ = nullptr;
         };
 
+        class IncludeRangeCollector final : public clang::PPCallbacks {
+        public:
+            IncludeRangeCollector(
+                clang::SourceManager& source_manager,
+                const fs::path& source_file,
+                const std::size_t line,
+                const std::string_view spelling,
+                std::optional<clang::tooling::Replacement>& replacement
+            )
+                : source_manager_(source_manager),
+                  source_file_(source_file),
+                  line_(line),
+                  spelling_(spelling),
+                  replacement_(replacement) {}
+
+            void InclusionDirective(
+                clang::SourceLocation hash_location,
+                const clang::Token&,
+                llvm::StringRef filename,
+                bool,
+                clang::CharSourceRange filename_range,
+                clang::OptionalFileEntryRef,
+                llvm::StringRef,
+                llvm::StringRef,
+                const clang::Module*,
+                clang::SrcMgr::CharacteristicKind
+            ) override {
+                if (replacement_.has_value() ||
+                    spelling_path(source_manager_, hash_location) != source_file_ ||
+                    source_manager_.getSpellingLineNumber(hash_location) - 1 != line_ ||
+                    filename != spelling_) {
+                    return;
+                }
+                replacement_.emplace(
+                    source_manager_,
+                    clang::CharSourceRange::getCharRange(hash_location, filename_range.getEnd()),
+                    ""
+                );
+            }
+
+        private:
+            clang::SourceManager& source_manager_;
+            fs::path source_file_;
+            std::size_t line_;
+            std::string spelling_;
+            std::optional<clang::tooling::Replacement>& replacement_;
+        };
+
+        class IncludeValidationAction final : public clang::ASTFrontendAction {
+        public:
+            IncludeValidationAction(
+                const fs::path& source_file,
+                const std::size_t line,
+                const std::string_view spelling,
+                std::optional<clang::tooling::Replacement>& replacement,
+                bool& had_errors
+            )
+                : source_file_(source_file),
+                  line_(line),
+                  spelling_(spelling),
+                  replacement_(replacement),
+                  had_errors_(had_errors) {}
+
+            std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+                clang::CompilerInstance& compiler,
+                llvm::StringRef
+            ) override {
+                compiler_ = &compiler;
+                compiler.getPreprocessor().addPPCallbacks(
+                    std::make_unique<IncludeRangeCollector>(
+                        compiler.getSourceManager(),
+                        source_file_,
+                        line_,
+                        spelling_,
+                        replacement_
+                    )
+                );
+                return std::make_unique<clang::ASTConsumer>();
+            }
+
+            void EndSourceFileAction() override {
+                had_errors_ = compiler_ == nullptr || compiler_->getDiagnostics().hasErrorOccurred();
+            }
+
+        private:
+            fs::path source_file_;
+            std::size_t line_;
+            std::string spelling_;
+            std::optional<clang::tooling::Replacement>& replacement_;
+            bool& had_errors_;
+            clang::CompilerInstance* compiler_ = nullptr;
+        };
+
         llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> validation_filesystem(
             const fs::path& source_file,
             const std::string& source,
@@ -816,6 +934,74 @@ namespace bha::suggestions {
                 diagnostic = "Clang rejected the header-split replacement in " + file.string();
                 return false;
             }
+        }
+        return true;
+#endif
+    }
+
+    bool validate_include_removal(
+        ProjectIndex& project_index,
+        const CompilationUnit& command,
+        const fs::path& source_file,
+        const std::size_t include_line,
+        const std::string_view include_spelling,
+        std::string& diagnostic
+    ) {
+#if !BHA_HAVE_CLANG_TOOLING
+        (void)project_index;
+        (void)command;
+        (void)source_file;
+        (void)include_line;
+        (void)include_spelling;
+        diagnostic = "Clang LibTooling is required for include-removal validation";
+        return false;
+#else
+        const auto source = project_index.read_file(source_file);
+        if (!source.has_value()) {
+            diagnostic = "Failed to read the translation unit for include-removal validation";
+            return false;
+        }
+
+        std::optional<clang::tooling::Replacement> replacement;
+        bool had_errors = false;
+        if (!clang::tooling::runToolOnCodeWithArgs(
+                std::make_unique<IncludeValidationAction>(
+                    source_file,
+                    include_line,
+                    include_spelling,
+                    replacement,
+                    had_errors
+                ),
+                *source,
+                tooling_arguments(command),
+                source_file.string()
+            ) || had_errors || !replacement.has_value()) {
+            diagnostic = "Clang could not resolve the diagnostic include range";
+            return false;
+        }
+
+        clang::tooling::Replacements replacements;
+        if (auto error = replacements.add(*replacement)) {
+            diagnostic = llvm::toString(std::move(error));
+            return false;
+        }
+        auto modified = clang::tooling::applyAllReplacements(*source, replacements);
+        if (!modified) {
+            diagnostic = llvm::toString(modified.takeError());
+            return false;
+        }
+
+        bool modified_had_errors = false;
+        if (!clang::tooling::runToolOnCodeWithArgs(
+                std::make_unique<SyntaxValidationAction>(modified_had_errors),
+                *modified,
+                validation_filesystem(source_file, *modified),
+                tooling_arguments(command),
+                source_file.string(),
+                "bha-include-removal"
+            ) || modified_had_errors) {
+            diagnostic = "Clang rejected the include removal in " + source_file.string();
+            return false;
         }
         return true;
 #endif

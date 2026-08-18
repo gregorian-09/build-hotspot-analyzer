@@ -79,6 +79,15 @@ namespace bha::suggestions {
         std::string& diagnostic
     );
 
+    [[nodiscard]] bool validate_include_removal(
+        ProjectIndex& project_index,
+        const CompilationUnit& command,
+        const fs::path& source_file,
+        std::size_t include_line,
+        std::string_view include_spelling,
+        std::string& diagnostic
+    );
+
 }  // namespace bha::suggestions
 
 #endif  // BHA_FORWARD_DECL_SEMANTIC_INDEX_HPP

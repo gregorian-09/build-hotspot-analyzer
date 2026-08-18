@@ -297,4 +297,27 @@ namespace bha::suggestions {
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_TRUE(result.value().suggestions.front().is_safe);
     }
+
+    TEST_F(ForwardDeclSuggesterTest, RejectsExpressionCompleteTypeUses) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "#include <typeinfo>\n"
+            << "Box* make_box() { Box* value = nullptr; (void)sizeof(*value); "
+            << "(void)value->value; (void)static_cast<Box*>(value); (void)typeid(*value); "
+            << "return value; }\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
 }
