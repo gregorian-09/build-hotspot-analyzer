@@ -10,7 +10,6 @@
 namespace bha::suggestions {
 
     struct TemplateSemanticUse {
-        std::string specialization;
         fs::path source_file;
         std::string kind;
         bool requires_complete_type = false;

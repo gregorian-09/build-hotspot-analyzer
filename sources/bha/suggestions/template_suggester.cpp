@@ -2,6 +2,7 @@
 
 #include "bha/suggestions/template_suggester.hpp"
 
+#include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/template_semantic_index.hpp"
 
 #include <algorithm>
@@ -131,7 +132,7 @@ namespace bha::suggestions {
             Suggestion suggestion;
             suggestion.type = SuggestionType::ExplicitTemplate;
             suggestion.priority = Priority::High;
-            suggestion.confidence = 0.99;
+            suggestion.confidence = 1.0;
             suggestion.title = "Extern template for " + record->specialization;
             suggestion.description =
                 "Add the Clang-derived extern template declaration to the header while "
@@ -139,7 +140,7 @@ namespace bha::suggestions {
             suggestion.rationale =
                 "The declaration, use sites, and unique explicit-instantiation owner were "
                 "verified from the compilation database and Clang AST.";
-            suggestion.estimated_savings = candidate.total_time;
+            suggestion.estimated_savings = Duration::zero();
             suggestion.target_file.path = record->declaration_file;
             suggestion.target_file.line_start = record->declaration_end_line + 1;
             suggestion.target_file.line_end = record->declaration_end_line + 1;
@@ -152,6 +153,10 @@ namespace bha::suggestions {
                 "Apply the canonical extern template declaration",
                 "Rebuild all compile-command-backed translation units",
                 "Verify the explicit-instantiation owner remains linked"
+            };
+            suggestion.caveats = {
+                "Savings are intentionally unestimated until a post-edit trace is available",
+                "The edit is limited to a unique explicit class-instantiation owner"
             };
             suggestion.verification = "Clang syntax validation and full rebuild validation are required";
             result.suggestions.push_back(std::move(suggestion));

@@ -1,6 +1,7 @@
 // Template suggestions are emitted only from validated Clang AST records.
 
 #include "bha/suggestions/template_suggester.hpp"
+#include "bha/suggestions/suggester.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -207,6 +208,7 @@ namespace bha::suggestions {
         ASSERT_EQ(suggestion.edits.size(), 1u);
         EXPECT_EQ(suggestion.edits.front().file, header);
         EXPECT_EQ(suggestion.edits.front().new_text, "extern template class Box<int>;\n");
+        EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
         EXPECT_EQ(result.value().items_analyzed, 1u);
         EXPECT_EQ(result.value().items_skipped, 0u);
 

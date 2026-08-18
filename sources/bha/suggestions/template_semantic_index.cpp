@@ -193,18 +193,19 @@ namespace bha::suggestions {
                     const std::string key =
                         specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
                         render_template_arguments(specialization->getTemplateArgs(), context_);
-                    use_specializations_.push_back(key);
-                    if (std::ranges::none_of(uses_, [&](const TemplateSemanticUse& use) {
-                            return use.specialization == key && use.source_file == source_file_ &&
-                                   use.kind == "type-location" &&
-                                   use.requires_complete_type == requires_complete_type;
+                    if (std::ranges::none_of(uses_, [&](const PendingUse& use) {
+                            return use.specialization == key && use.use.source_file == source_file_ &&
+                                   use.use.kind == "type-location" &&
+                                   use.use.requires_complete_type == requires_complete_type;
                         })) {
                         uses_.push_back({
                             key,
-                            source_file_,
-                            "type-location",
-                            requires_complete_type,
-                            type->isInstantiationDependentType()
+                            {
+                                source_file_,
+                                "type-location",
+                                requires_complete_type,
+                                type->isInstantiationDependentType()
+                            }
                         });
                     }
                 }
@@ -381,11 +382,12 @@ namespace bha::suggestions {
                 return std::move(records_);
             }
 
-            [[nodiscard]] const std::vector<std::string>& use_specializations() const noexcept {
-                return use_specializations_;
-            }
+            struct PendingUse {
+                std::string specialization;
+                TemplateSemanticUse use;
+            };
 
-            [[nodiscard]] std::vector<TemplateSemanticUse> take_uses() {
+            [[nodiscard]] std::vector<PendingUse> take_uses() {
                 return std::move(uses_);
             }
 
@@ -416,21 +418,21 @@ namespace bha::suggestions {
 
                 const std::string key = specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
                     render_template_arguments(specialization->getTemplateArgs(), context_);
-                use_specializations_.push_back(key);
                 uses_.push_back({
                     key,
-                    source_file_,
-                    std::move(kind),
-                    requires_complete_type,
-                    in_dependent_context || type->isInstantiationDependentType()
+                    {
+                        source_file_,
+                        std::move(kind),
+                        requires_complete_type,
+                        in_dependent_context || type->isInstantiationDependentType()
+                    }
                 });
             }
 
             clang::ASTContext& context_;
             fs::path source_file_;
             std::vector<TemplateSemanticRecord> records_;
-            std::vector<std::string> use_specializations_;
-            std::vector<TemplateSemanticUse> uses_;
+            std::vector<PendingUse> uses_;
         };
 
         using json = nlohmann::json;
@@ -530,7 +532,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v4");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v5");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -617,7 +619,6 @@ namespace bha::suggestions {
 
         TemplateSemanticUse deserialize_use(const json& value) {
             return {
-                "",
                 value.value("source_file", ""),
                 value.value("kind", ""),
                 value.value("requires_complete_type", false),
@@ -708,7 +709,7 @@ namespace bha::suggestions {
         }
 
         fs::path semantic_cache_path(const ProjectIndex& project_index) {
-            return project_index.project_root() / ".bha" / "template-semantic-index-v2.json";
+            return project_index.project_root() / ".bha" / "template-semantic-index-v3.json";
         }
 
         std::vector<std::string> tooling_arguments(
@@ -775,7 +776,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v4" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v5" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -784,7 +785,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v4" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v5" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -852,16 +853,16 @@ namespace bha::suggestions {
             visitor.TraverseDecl(ast->getASTContext().getTranslationUnitDecl());
             auto records = visitor.take_records();
             auto uses = visitor.take_uses();
-            const auto& use_specializations = visitor.use_specializations();
             for (auto& record : records) {
-                if (std::ranges::find(use_specializations, record.specialization) != use_specializations.end() &&
+                if (std::ranges::any_of(uses, [&](const auto& use) {
+                        return use.specialization == record.specialization;
+                    }) &&
                     std::ranges::find(record.use_files, command.source_file) == record.use_files.end()) {
                     record.use_files.push_back(command.source_file);
                 }
                 for (auto& use : uses) {
                     if (use.specialization == record.specialization) {
-                        use.specialization.clear();
-                        record.uses.push_back(std::move(use));
+                        record.uses.push_back(std::move(use.use));
                     }
                 }
             }
@@ -952,7 +953,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v4";
+                cache["schema"] = "bha-template-semantic-index-v5";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {

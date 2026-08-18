@@ -92,7 +92,7 @@ namespace bha::suggestions {
             EXPECT_EQ(index.find_exact("Box<double>"), nullptr);
 
             EXPECT_TRUE(std::filesystem::is_regular_file(
-                root_ / ".bha" / "template-semantic-index-v2.json"
+                root_ / ".bha" / "template-semantic-index-v3.json"
             ));
             TemplateSemanticIndex cached_index(project_index);
             cached_index.build();

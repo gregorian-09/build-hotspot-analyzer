@@ -15,7 +15,7 @@
  * - Opportunities for extern template declarations
  */
 
-#include "bha/suggestions/suggester.hpp"
+#include "bha/suggestions/suggester_interface.hpp"
 
 namespace bha::suggestions {
 
