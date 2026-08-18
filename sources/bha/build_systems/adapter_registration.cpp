@@ -15,7 +15,6 @@ namespace bha::build_systems {
         register_buck2_adapter();
         register_scons_adapter();
         register_xcode_adapter();
-        register_unreal_adapter();
     }
 
     void register_all_adapters(const AdapterRegistrationMode mode) {

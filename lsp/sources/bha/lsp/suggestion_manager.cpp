@@ -5,7 +5,6 @@
 #include "bha/suggestions/all_suggesters.hpp"
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/consolidator.hpp"
-#include "bha/suggestions/unreal_context.hpp"
 #include "bha/lsp/uri.hpp"
 #include "bha/utils/path_utils.hpp"
 #include <nlohmann/json.hpp>
@@ -168,45 +167,6 @@ namespace bha::lsp
         }
 
         return *build_dir;
-    }
-
-    bool should_force_unreal_mode(
-        const fs::path& project_root,
-        const BuildTrace& trace
-    ) {
-        if (!project_root.empty()) {
-            fs::path current = project_root;
-            for (int hops = 0; hops < 6 && !current.empty(); ++hops) {
-                if (suggestions::is_unreal_project_root(current)) {
-                    return true;
-                }
-                const fs::path parent = current.parent_path();
-                if (parent.empty() || parent == current) {
-                    break;
-                }
-                current = parent;
-            }
-        }
-
-        std::size_t checked = 0;
-        for (const auto& unit : trace.units) {
-            if (++checked > 20) {
-                break;
-            }
-            fs::path current = unit.source_file.parent_path();
-            while (!current.empty() && current.has_parent_path()) {
-                if (suggestions::is_unreal_project_root(current)) {
-                    return true;
-                }
-                const fs::path parent = current.parent_path();
-                if (parent.empty() || parent == current) {
-                    break;
-                }
-                current = parent;
-            }
-        }
-
-        return false;
     }
 
     std::unordered_map<std::string, std::vector<fs::path>> index_sources_by_filename(
@@ -1436,63 +1396,6 @@ namespace bha::lsp
             return "The target class is outside the current supported automatic PIMPL refactor subset.";
         }
         return "No safe automatic apply path is available for this suggestion.";
-    }
-
-    bool is_unreal_module_rules_file(const fs::path& path) {
-        return path.filename().string().ends_with(".Build.cs");
-    }
-
-    bool is_unreal_target_rules_file(const fs::path& path) {
-        return path.filename().string().ends_with(".Target.cs");
-    }
-
-    bool is_unreal_suggestion(const bha::Suggestion& suggestion) {
-        const std::string title_lower = [&]() {
-            std::string t = suggestion.title;
-            std::ranges::transform(t, t.begin(), [](const unsigned char c) {
-                return static_cast<char>(std::tolower(c));
-            });
-            return t;
-        }();
-        if (title_lower.find("unreal") != std::string::npos) {
-            return true;
-        }
-        if (is_unreal_module_rules_file(suggestion.target_file.path) ||
-            is_unreal_target_rules_file(suggestion.target_file.path)) {
-            return true;
-        }
-        return std::ranges::any_of(suggestion.secondary_files, [](const bha::FileTarget& file) {
-            return is_unreal_module_rules_file(file.path) || is_unreal_target_rules_file(file.path);
-        });
-    }
-
-    std::optional<std::string> infer_unreal_safety_guard(const bha::Suggestion& suggestion) {
-        const auto blocked = format_auto_apply_blocked_reason(suggestion);
-        if (!blocked.has_value()) {
-            return std::nullopt;
-        }
-
-        std::string text = *blocked;
-        std::ranges::transform(text, text.begin(), [](const unsigned char c) {
-            return static_cast<char>(std::tolower(c));
-        });
-        if (text.find("generated.h") != std::string::npos ||
-            text.find("include-order") != std::string::npos) {
-            return "generated-header-last-include";
-        }
-        if (text.find("constructor block") != std::string::npos) {
-            return "rules-constructor-block-not-found";
-        }
-        if (text.find("ambiguous unreal module rules") != std::string::npos ||
-            text.find("ambiguous unreal target rules") != std::string::npos ||
-            text.find("duplicate unreal module") != std::string::npos ||
-            text.find("duplicate unreal target") != std::string::npos) {
-            return "ambiguous-rules-ownership";
-        }
-        if (text.find("uht") != std::string::npos) {
-            return "uht-safety";
-        }
-        return "unreal-safety-guard";
     }
 
     struct ExternalReplacement {

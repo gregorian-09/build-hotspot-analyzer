@@ -228,7 +228,6 @@ namespace bha::build_systems
     void register_buck2_adapter();
     void register_scons_adapter();
     void register_xcode_adapter();
-    void register_unreal_adapter();
 
     /// Register the verified default adapter set.
     void register_core_adapters();

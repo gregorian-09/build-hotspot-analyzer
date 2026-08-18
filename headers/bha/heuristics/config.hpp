@@ -175,32 +175,6 @@ namespace bha::heuristics
     };
 
     /**
-     * @brief Unreal Engine module-aware suggestion settings.
-     */
-    struct UnrealConfig {
-        /// Force Unreal mode even if project markers are not detected.
-        bool enabled = false;
-
-        /// Auto-enable Unreal mode when .uproject/.Build.cs markers are present.
-        bool auto_detect = true;
-
-        /// Emit module-level IWYU guidance.
-        bool emit_iwyu = true;
-
-        /// Emit module-level PCH guidance.
-        bool emit_pch = true;
-
-        /// Emit module-level unity-build guidance.
-        bool emit_unity = true;
-
-        /// Minimum source files in a module to consider unity suggestions.
-        std::size_t min_module_files_for_unity = 8;
-
-        /// Minimum aggregated include parse time to suggest module PCH usage.
-        std::chrono::milliseconds min_module_include_time_for_pch{300};
-    };
-
-    /**
      * @brief Global heuristics configuration.
      *
      * All values are based on ClangBuildAnalyzer and Microsoft Build Insights
@@ -214,7 +188,6 @@ namespace bha::heuristics
         HeaderConfig headers;
         UnityBuildConfig unity_build;
         ForwardDeclConfig forward_decl;
-        UnrealConfig unreal;
 
         /// Get default configuration with research-backed values.
         static HeuristicsConfig defaults() {

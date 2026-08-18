@@ -126,7 +126,6 @@ namespace bha::cli
                 {"include-unsafe", 0, "Include potentially unsafe suggestions", false, false, "", ""},
                 {"detailed", 'd', "Show detailed suggestion info", false, false, "", ""},
                 {"disable-consolidation", 0, "Disable suggestion consolidation", false, false, "", ""},
-                {"unreal-mode", 0, "Enable Unreal module-aware suggestions", false, false, "", ""},
 
                     // Heuristics configuration overrides
                 {"pch-min-includes", 0, "Min header inclusions for PCH (default: 10)", false, true, "10", "N"},
@@ -140,8 +139,6 @@ namespace bha::cli
                 {"header-min-includers", 0, "Min includers for header split (default: 5)", false, true, "5", "N"},
                 {"fwd-decl-min-time", 0, "Min parse time for fwd decl in ms (default: 50)", false, true, "50", "MS"},
                 {"codegen-threshold", 0, "Long code generation threshold in ms (default: 500)", false, true, "500", "MS"},
-                {"unreal-min-module-files", 0, "Min Unreal module source files for unity suggestions (default: 8)", false, true, "8", "N"},
-                {"unreal-min-pch-time", 0, "Min Unreal module include parse time for PCH in ms (default: 300)", false, true, "300", "MS"},
                 {"max-suggest-time", 0, "Max total suggestion time in ms (default: 0, no limit)", false, true, "0", "MS"},
                 {"max-suggester-time", 0, "Max time per suggester in ms (default: 0, no limit)", false, true, "0", "MS"},
                 {"max-analyze-time", 0, "Max total analysis time in ms (default: 0, no limit)", false, true, "0", "MS"},
@@ -349,9 +346,6 @@ namespace bha::cli
             auto& headers = suggester_opts.heuristics.headers;
             auto& unity_build = suggester_opts.heuristics.unity_build;
             auto& forward_decl = suggester_opts.heuristics.forward_decl;
-            auto& unreal = suggester_opts.heuristics.unreal;
-
-            unreal.enabled = args.get_flag("unreal-mode");
 
             if (auto val = args.get_int("pch-min-includes")) {
                 pch.min_include_count = static_cast<std::size_t>(*val);
@@ -391,13 +385,6 @@ namespace bha::cli
             if (auto val = args.get_int("codegen-threshold")) {
                 codegen.long_codegen_threshold = std::chrono::milliseconds(*val);
             }
-            if (auto val = args.get_int("unreal-min-module-files")) {
-                unreal.min_module_files_for_unity = static_cast<std::size_t>(*val);
-            }
-            if (auto val = args.get_int("unreal-min-pch-time")) {
-                unreal.min_module_include_time_for_pch = std::chrono::milliseconds(*val);
-            }
-
             if (args.get_flag("explain")) {
                 pch.min_include_count = 1;
                 pch.min_aggregate_time = std::chrono::milliseconds(1);
@@ -409,8 +396,6 @@ namespace bha::cli
                 headers.min_includers_for_split = 1;
                 forward_decl.min_parse_time = std::chrono::milliseconds(1);
                 codegen.long_codegen_threshold = std::chrono::milliseconds(1);
-                unreal.min_module_files_for_unity = 1;
-                unreal.min_module_include_time_for_pch = std::chrono::milliseconds(1);
             }
 
             if (auto val = args.get_int("max-files")) {
@@ -426,7 +411,6 @@ namespace bha::cli
             print_verbose("  Template min count: " + std::to_string(templates.min_instantiation_count));
             print_verbose("  Unity min files: " + std::to_string(unity_build.min_files_threshold));
             print_verbose("  Unity min time: " + std::to_string(unity_build.min_group_total_time.count()) + "ms");
-            print_verbose("  Unreal mode: " + std::string(unreal.enabled ? "enabled" : "auto-detect"));
 
             std::vector<fs::path> input_paths;
             input_paths.reserve(args.positional().size());

@@ -264,30 +264,6 @@
         lsp_sug.application_summary = format_application_summary(bha_sug);
         lsp_sug.application_guidance = format_application_guidance(bha_sug);
         lsp_sug.auto_apply_blocked_reason = format_auto_apply_blocked_reason(bha_sug);
-        if (is_unreal_suggestion(bha_sug)) {
-            lsp_sug.project_context = "unreal";
-            std::unordered_set<std::string> seen_module_rules;
-            std::unordered_set<std::string> seen_target_rules;
-            const auto add_file = [&](const fs::path& path) {
-                const std::string normalized = path.lexically_normal().string();
-                if (is_unreal_module_rules_file(path)) {
-                    if (seen_module_rules.insert(normalized).second) {
-                        lsp_sug.module_rules_files.push_back(normalized);
-                    }
-                }
-                if (is_unreal_target_rules_file(path)) {
-                    if (seen_target_rules.insert(normalized).second) {
-                        lsp_sug.target_rules_files.push_back(normalized);
-                    }
-                }
-            };
-            add_file(bha_sug.target_file.path);
-            for (const auto& file : bha_sug.secondary_files) {
-                add_file(file.path);
-            }
-            lsp_sug.safety_guard = infer_unreal_safety_guard(bha_sug);
-        }
-
         const auto savings_ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(
                 bha_sug.estimated_savings

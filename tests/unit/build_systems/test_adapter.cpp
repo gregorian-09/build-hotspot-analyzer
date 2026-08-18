@@ -201,28 +201,6 @@ TEST(BuildSystemRegistryTest, ExperimentalAdaptersRequireExplicitRegistration) {
     EXPECT_NE(ninja, nullptr);
     EXPECT_EQ(ninja->name(), "Ninja");
 
-    auto* unreal = registry.get("Unreal");
-    EXPECT_NE(unreal, nullptr);
-    EXPECT_EQ(unreal->name(), "Unreal");
-}
-
-TEST(BuildSystemRegistryTest, DetectsUnrealProjectFromUprojectAndTargetRules) {
-    register_all_adapters(AdapterRegistrationMode::IncludeExperimental);
-    const auto& registry = BuildSystemRegistry::instance();
-
-    TempDir temp;
-    write_file(temp.root / "Sample.uproject", "{\n}");
-    write_file(
-        temp.root / "Source" / "SampleEditor.Target.cs",
-        "using UnrealBuildTool;\n"
-        "public class SampleEditorTarget : TargetRules {\n"
-        "  public SampleEditorTarget(ReadOnlyTargetRules Target) : base(Target) {}\n"
-        "}\n"
-    );
-
-    auto* adapter = registry.detect(temp.root);
-    ASSERT_NE(adapter, nullptr);
-    EXPECT_EQ(adapter->name(), "Unreal");
 }
 
 TEST(BuildSystemRegistryTest, PrefersAvailableAdapterWhenHigherConfidenceToolIsMissing) {

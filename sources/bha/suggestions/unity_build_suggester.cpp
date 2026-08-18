@@ -7,7 +7,6 @@
 #include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/utils/cmake_target_parse_utils.hpp"
-#include "bha/suggestions/unreal_context.hpp"
 #include "bha/utils/path_utils.hpp"
 #include "bha/utils/regex_utils.hpp"
 #include "bha/utils/string_utils.hpp"
@@ -1317,238 +1316,6 @@ namespace bha::suggestions
             return Priority::Low;
         }
 
-        std::optional<Suggestion> build_unreal_module_unity_suggestion(const SuggestionContext& context) {
-            if (!context.options.heuristics.unreal.emit_unity) {
-                return std::nullopt;
-            }
-
-            const auto modules = collect_unreal_module_context(context);
-            const auto targets = discover_unreal_target_rules(context.project_root);
-            std::vector<UnrealModuleContext> candidates;
-            candidates.reserve(modules.size());
-            for (const auto& module : modules) {
-                if (module.rules.build_cs_path.empty()) {
-                    continue;
-                }
-                if (module.stats.source_files < context.options.heuristics.unreal.min_module_files_for_unity) {
-                    continue;
-                }
-                if (!module.rules.use_unity.has_value() || module.rules.use_unity.value()) {
-                    continue;
-                }
-                candidates.push_back(module);
-            }
-
-            if (candidates.empty()) {
-                return std::nullopt;
-            }
-
-            Suggestion suggestion;
-            suggestion.id = generate_suggestion_id("unreal-unity", candidates.front().rules.build_cs_path);
-            suggestion.type = SuggestionType::UnityBuild;
-            suggestion.priority = candidates.size() >= 2 ? Priority::High : Priority::Medium;
-            suggestion.confidence = 0.78;
-            suggestion.title = "Unreal Module Unity Build (UBT) Configuration (" + std::to_string(candidates.size()) + " modules)";
-
-            std::ostringstream desc;
-            desc << "Apply ModuleRules/TargetRules UnrealBuildTool (UBT) unity toggles for modules that explicitly disabled unity:\n";
-            for (const auto& module : candidates) {
-                const auto compile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    module.stats.total_compile_time
-                ).count();
-                desc << "  - " << module.rules.module_name
-                     << " (" << make_repo_relative(module.rules.build_cs_path)
-                     << ", " << module.stats.source_files << " source files"
-                     << ", compile " << compile_ms << "ms)\n";
-                desc << "    Set: bUseUnity = true;\n";
-            }
-            std::vector<UnrealTargetRules> target_overrides;
-            for (const auto& target : targets) {
-                if (target.use_unity.has_value() && !target.use_unity.value()) {
-                    target_overrides.push_back(target);
-                }
-            }
-            std::vector<UnrealTargetRules> adaptive_overrides;
-            for (const auto& target : targets) {
-                if (target.use_adaptive_unity.has_value() && !target.use_adaptive_unity.value()) {
-                    adaptive_overrides.push_back(target);
-                }
-            }
-            if (!target_overrides.empty()) {
-                desc << "Also update Unreal target overrides that disable unity globally:\n";
-                for (const auto& target : target_overrides) {
-                    desc << "  - " << target.target_name << " ("
-                         << make_repo_relative(target.target_cs_path)
-                         << ")\n"
-                         << "    Set: bUseUnity = true;\n";
-                }
-            }
-            if (!adaptive_overrides.empty()) {
-                desc << "Adaptive unity is disabled in these targets (consider enabling for incremental build throughput):\n";
-                for (const auto& target : adaptive_overrides) {
-                    desc << "  - " << target.target_name << " ("
-                         << make_repo_relative(target.target_cs_path)
-                         << ")\n"
-                         << "    Set: bUseAdaptiveUnityBuild = true;\n";
-                }
-            }
-            suggestion.description = desc.str();
-
-            suggestion.rationale =
-                "This changes only UBT settings in ModuleRules/TargetRules and avoids ad-hoc source amalgamation. "
-                "That keeps rollout reversible and aligned with Unreal build ownership.";
-
-            Duration total_compile_time = Duration::zero();
-            std::size_t total_files = 0;
-            for (const auto& module : candidates) {
-                total_compile_time += module.stats.total_compile_time;
-                total_files += module.stats.source_files;
-            }
-            suggestion.estimated_savings = total_compile_time / 8;
-            if (context.trace.total_time.count() > 0) {
-                suggestion.estimated_savings_percent =
-                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                    static_cast<double>(context.trace.total_time.count());
-            }
-            suggestion.impact.total_files_affected = total_files;
-            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
-
-            suggestion.target_file.path = candidates.front().rules.build_cs_path;
-            suggestion.target_file.action = FileAction::Modify;
-            suggestion.target_file.note = "Enable bUseUnity in Unreal ModuleRules";
-            if (candidates.front().rules.use_unity_line.has_value()) {
-                suggestion.target_file.line_start = *candidates.front().rules.use_unity_line;
-                suggestion.target_file.line_end = *candidates.front().rules.use_unity_line;
-            }
-            for (std::size_t i = 1; i < candidates.size(); ++i) {
-                FileTarget secondary;
-                secondary.path = candidates[i].rules.build_cs_path;
-                secondary.action = FileAction::Modify;
-                secondary.note = "Enable bUseUnity in Unreal ModuleRules";
-                if (candidates[i].rules.use_unity_line.has_value()) {
-                    secondary.line_start = *candidates[i].rules.use_unity_line;
-                    secondary.line_end = *candidates[i].rules.use_unity_line;
-                }
-                suggestion.secondary_files.push_back(std::move(secondary));
-            }
-            for (const auto& target : target_overrides) {
-                FileTarget secondary;
-                secondary.path = target.target_cs_path;
-                secondary.action = FileAction::Modify;
-                secondary.note = "Enable bUseUnity in Unreal TargetRules";
-                if (target.use_unity_line.has_value()) {
-                    secondary.line_start = *target.use_unity_line;
-                    secondary.line_end = *target.use_unity_line;
-                }
-                suggestion.secondary_files.push_back(std::move(secondary));
-            }
-            for (const auto& target : adaptive_overrides) {
-                FileTarget secondary;
-                secondary.path = target.target_cs_path;
-                secondary.action = FileAction::Modify;
-                secondary.note = "Enable bUseAdaptiveUnityBuild in Unreal TargetRules";
-                if (target.use_adaptive_unity_line.has_value()) {
-                    secondary.line_start = *target.use_adaptive_unity_line;
-                    secondary.line_end = *target.use_adaptive_unity_line;
-                }
-                suggestion.secondary_files.push_back(std::move(secondary));
-            }
-
-            suggestion.implementation_steps = {
-                "Set bUseUnity = true; in each listed <Module>.Build.cs file",
-                "Set bUseUnity = true; in listed <Target>.Target.cs files that override unity",
-                "Set bUseAdaptiveUnityBuild = true; in listed <Target>.Target.cs files where disabled",
-                "Run UnrealBuildTool for impacted targets",
-                "If any module has macro/ODR issues, keep unity disabled only for that module"
-            };
-            suggestion.caveats = {
-                "Keep unity disabled for modules with known UHT-generated-code sensitivity",
-                "Prefer module-level overrides instead of global unity toggles",
-                "Adaptive unity's writable-file working-set heuristic is source-control sensitive and may behave differently on Git than Perforce"
-            };
-            suggestion.verification =
-                "Build editor/game targets that consume these modules and compare clean build wall time.";
-
-            const auto module_name_collisions = find_unreal_module_name_collisions(modules);
-            const auto target_name_collisions = find_unreal_target_name_collisions(targets);
-            const bool has_name_collisions =
-                !module_name_collisions.empty() || !target_name_collisions.empty();
-
-            if (!has_name_collisions) {
-                for (const auto& module : candidates) {
-                    if (auto edit = make_unreal_assignment_edit(
-                        module.rules.build_cs_path,
-                        "bUseUnity",
-                        "true",
-                        module.rules.use_unity_line
-                    )) {
-                        suggestion.edits.push_back(std::move(*edit));
-                    }
-                }
-
-                for (const auto& target : target_overrides) {
-                    if (auto edit = make_unreal_assignment_edit(
-                        target.target_cs_path,
-                        "bUseUnity",
-                        "true",
-                        target.use_unity_line
-                    )) {
-                        suggestion.edits.push_back(std::move(*edit));
-                    }
-                }
-
-                for (const auto& target : adaptive_overrides) {
-                    if (auto edit = make_unreal_assignment_edit(
-                        target.target_cs_path,
-                        "bUseAdaptiveUnityBuild",
-                        "true",
-                        target.use_adaptive_unity_line
-                    )) {
-                        suggestion.edits.push_back(std::move(*edit));
-                    }
-                }
-            }
-
-            if (has_name_collisions) {
-                suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                suggestion.is_safe = false;
-                suggestion.application_summary = "Manual review only";
-                suggestion.application_guidance =
-                    "Duplicate Unreal module/target rule names were detected. Resolve rule ownership ambiguity before enabling unity toggles automatically.";
-                std::ostringstream reason;
-                bool wrote_any = false;
-                if (!module_name_collisions.empty()) {
-                    const auto& first = module_name_collisions.front();
-                    reason << "Ambiguous Unreal module rules for '" << first.name << "'";
-                    wrote_any = true;
-                }
-                if (!target_name_collisions.empty()) {
-                    const auto& first = target_name_collisions.front();
-                    if (wrote_any) {
-                        reason << "; ";
-                    }
-                    reason << "ambiguous Unreal target rules for '" << first.name << "'";
-                }
-                suggestion.auto_apply_blocked_reason = reason.str();
-            } else if (suggestion.edits.size() == candidates.size() + target_overrides.size() + adaptive_overrides.size()) {
-                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-                suggestion.is_safe = true;
-                suggestion.application_summary = "Auto-apply via direct text edits";
-                suggestion.application_guidance =
-                    "BHA can set module/target unity toggles directly, including adaptive-unity target settings. Rebuild affected Unreal targets to validate behavior.";
-            } else {
-                suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                suggestion.is_safe = false;
-                suggestion.application_summary = "Manual review only";
-                suggestion.application_guidance =
-                    "Automatic edit placement failed for one or more ModuleRules/TargetRules files. Apply listed Unity settings manually.";
-                suggestion.auto_apply_blocked_reason =
-                    "At least one ModuleRules or TargetRules constructor block could not be located for safe edit insertion.";
-            }
-
-            return suggestion;
-        }
-
     }  // namespace
 
     Result<SuggestionResult, Error> UnityBuildSuggester::suggest(
@@ -1556,16 +1323,6 @@ namespace bha::suggestions
     ) const {
         SuggestionResult result;
         auto start_time = std::chrono::steady_clock::now();
-
-        if (is_unreal_mode_active(context)) {
-            if (auto unreal_unity = build_unreal_module_unity_suggestion(context)) {
-                result.suggestions.push_back(std::move(*unreal_unity));
-                result.items_analyzed = 1;
-            }
-            auto end_time = std::chrono::steady_clock::now();
-            result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
-            return Result<SuggestionResult, Error>::success(std::move(result));
-        }
 
         const auto& files = context.analysis.files;
         const auto& deps = context.analysis.dependencies;
@@ -1671,7 +1428,7 @@ namespace bha::suggestions
                       << "This group shares " << group.total_includes
                       << " headers, making it a good candidate.\n\n"
                       << "**Research basis**: Based on techniques from Chromium's "
-                      << "jumbo builds and Unreal Engine 4's unity builds.";
+                      << "jumbo and unity builds.";
 
             suggestion.rationale = rationale.str();
 

@@ -294,9 +294,7 @@
             auto& headers = suggester_opts.heuristics.headers;
             auto& unity = suggester_opts.heuristics.unity_build;
             auto& forward_decl = suggester_opts.heuristics.forward_decl;
-            auto& codegen = suggester_opts.heuristics.codegen;
-            auto& unreal = suggester_opts.heuristics.unreal;
-            pch.min_include_count = 1;
+            auto& codegen = suggester_opts.heuristics.codegen;            pch.min_include_count = 1;
             pch.min_aggregate_time = std::chrono::milliseconds(1);
             templates.min_instantiation_count = 1;
             templates.min_total_time = std::chrono::milliseconds(1);
@@ -306,13 +304,7 @@
             unity.min_group_total_time = std::chrono::milliseconds(1);
             forward_decl.min_parse_time = std::chrono::milliseconds(1);
             codegen.long_codegen_threshold = std::chrono::milliseconds(1);
-            unreal.min_module_files_for_unity = 1;
-            unreal.min_module_include_time_for_pch = std::chrono::milliseconds(1);
         }
-        if (should_force_unreal_mode(project_root, build_trace)) {
-            suggester_opts.heuristics.unreal.enabled = true;
-        }
-
         // Generate suggestions using all registered suggesters
         auto suggestions_result = suggestions::generate_all_suggestions(
             build_trace,

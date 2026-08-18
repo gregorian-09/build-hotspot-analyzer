@@ -106,17 +106,6 @@ namespace bha::build_systems::detail {
     bool init_git_submodules(const fs::path& project_path);
     bool has_git_submodules(const fs::path& project_path);
 
-    std::optional<fs::path> find_unreal_uproject(const fs::path& project_path);
-    bool has_unreal_build_markers(const fs::path& project_path);
-    std::vector<std::string> discover_unreal_targets(const fs::path& project_path);
-    std::string select_unreal_target_name(
-        const fs::path& project_path,
-        const fs::path& uproject_path
-    );
-    std::string unreal_platform_name();
-    std::string unreal_configuration_from_build_type(const std::string& build_type);
-    std::optional<fs::path> resolve_unreal_build_script();
-
     bool adapter_tool_available(const IBuildSystemAdapter& adapter);
 
 }  // namespace bha::build_systems::detail

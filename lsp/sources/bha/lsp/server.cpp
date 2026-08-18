@@ -2,7 +2,6 @@
 #include "bha/lsp/uri.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
-#include "bha/suggestions/unreal_context.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iostream>
@@ -208,172 +207,6 @@ namespace bha::lsp
         std::ostringstream out;
         out << std::put_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
         return out.str();
-    }
-
-    bool command_exists(const std::string& name) {
-        if (name.empty()) {
-            return false;
-        }
-#ifdef _WIN32
-        const std::string cmd = "where " + name + " >nul 2>nul";
-#else
-        const std::string cmd = "command -v " + name + " >/dev/null 2>&1";
-#endif
-        return std::system(cmd.c_str()) == 0;
-    }
-
-    bool has_unreal_markers(const std::filesystem::path& project_root) {
-        return suggestions::is_unreal_project_root(project_root);
-    }
-
-    std::size_t count_unreal_rules_files(
-        const std::filesystem::path& project_root,
-        const std::string& suffix,
-        const std::size_t limit = 4000
-    ) {
-        namespace fs = std::filesystem;
-        const fs::path source_root = project_root / "Source";
-        if (!fs::exists(source_root)) {
-            return 0;
-        }
-        std::error_code ec;
-        std::size_t count = 0;
-        std::size_t scanned = 0;
-        for (const auto& entry : fs::recursive_directory_iterator(source_root, ec)) {
-            if (ec) {
-                break;
-            }
-            if (!entry.is_regular_file()) {
-                continue;
-            }
-            if (++scanned > limit) {
-                break;
-            }
-            const std::string name = entry.path().filename().string();
-            if (name.ends_with(suffix)) {
-                ++count;
-            }
-        }
-        return count;
-    }
-
-    bool has_file_with_extension(
-        const std::filesystem::path& directory,
-        const std::string& extension
-    ) {
-        namespace fs = std::filesystem;
-        if (!fs::exists(directory) || !fs::is_directory(directory)) {
-            return false;
-        }
-        std::error_code ec;
-        for (const auto& entry : fs::directory_iterator(directory, ec)) {
-            if (ec) {
-                return false;
-            }
-            if (!entry.is_regular_file()) {
-                continue;
-            }
-            if (entry.path().extension() == extension) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    json build_unreal_environment_checks(const std::filesystem::path& project_root) {
-        json checks = json::array();
-        if (!has_unreal_markers(project_root)) {
-            return checks;
-        }
-
-        checks.push_back({
-            {"id", "project-detected"},
-            {"status", "ok"},
-            {"severity", "info"},
-            {"message", "Detected Unreal project markers (.uproject or ModuleRules/TargetRules)."}
-        });
-
-        auto has_non_empty_env = [](const char* name) {
-            const char* value = std::getenv(name);
-            return value != nullptr && *value != '\0';
-        };
-        const bool has_engine_env =
-            has_non_empty_env("BHA_UE_BUILD_SCRIPT") ||
-            has_non_empty_env("UE_ENGINE_ROOT") ||
-            has_non_empty_env("UNREAL_ENGINE_ROOT");
-        const bool has_ubt_on_path = command_exists("UnrealBuildTool");
-        if (has_engine_env || has_ubt_on_path) {
-            checks.push_back({
-                {"id", "build-tooling"},
-                {"status", "ok"},
-                {"severity", "info"},
-                {"message", "Unreal build tooling is discoverable for rebuild validation."}
-            });
-        } else {
-            checks.push_back({
-                {"id", "build-tooling"},
-                {"status", "warning"},
-                {"severity", "warning"},
-                {"message", "Unreal build tooling is not discoverable from current environment."},
-                {"recommendedAction", "Set BHA_UE_BUILD_SCRIPT or UE_ENGINE_ROOT/UNREAL_ENGINE_ROOT, or add UnrealBuildTool to PATH."}
-            });
-        }
-
-        const std::size_t module_rules = count_unreal_rules_files(project_root, ".Build.cs");
-        const std::size_t target_rules = count_unreal_rules_files(project_root, ".Target.cs");
-        if (module_rules == 0) {
-            checks.push_back({
-                {"id", "module-rules"},
-                {"status", "warning"},
-                {"severity", "warning"},
-                {"message", "No *.Build.cs files were found under Source/."},
-                {"recommendedAction", "Verify module layout or point analysis to the actual Unreal workspace root."}
-            });
-        } else {
-            checks.push_back({
-                {"id", "module-rules"},
-                {"status", "ok"},
-                {"severity", "info"},
-                {"message", "Found " + std::to_string(module_rules) + " Unreal ModuleRules files."}
-            });
-        }
-
-        if (target_rules == 0) {
-            checks.push_back({
-                {"id", "target-rules"},
-                {"status", "warning"},
-                {"severity", "warning"},
-                {"message", "No *.Target.cs files were found under Source/; target inference may be limited."},
-                {"recommendedAction", "Add or expose target rules to improve build-target resolution."}
-            });
-        } else {
-            checks.push_back({
-                {"id", "target-rules"},
-                {"status", "ok"},
-                {"severity", "info"},
-                {"message", "Found " + std::to_string(target_rules) + " Unreal TargetRules files."}
-            });
-        }
-
-        const bool has_rider_workspace = std::filesystem::exists(project_root / ".idea");
-        const bool has_visual_studio_solution = has_file_with_extension(project_root, ".sln");
-        if (!has_rider_workspace && !has_visual_studio_solution) {
-            checks.push_back({
-                {"id", "ide-workflow"},
-                {"status", "info"},
-                {"severity", "info"},
-                {"message", "Optional: configure Rider or Visual Studio Unreal integration for smoother apply/rebuild workflow."}
-            });
-        } else {
-            checks.push_back({
-                {"id", "ide-workflow"},
-                {"status", "ok"},
-                {"severity", "info"},
-                {"message", "Detected Rider/Visual Studio project metadata for Unreal workflow."}
-            });
-        }
-
-        return checks;
     }
 
     LSPConfig LSPConfig::from_json(const json& j) {
@@ -1747,10 +1580,6 @@ namespace bha::lsp
                 {"durationMs", duration_ms},
                 {"phaseTimingsMs", phase_timings_json}
             };
-            const json unreal_checks = build_unreal_environment_checks(std::filesystem::path(project_root));
-            if (!unreal_checks.empty()) {
-                response["unrealEnvironmentChecks"] = unreal_checks;
-            }
             return response;
         } catch (const std::exception& e) {
             WorkDoneProgressEnd end_progress;
@@ -3234,40 +3063,6 @@ namespace bha::lsp
 
     std::string LSPServer::detect_build_command(const std::filesystem::path& project_root) {
         namespace fs = std::filesystem;
-
-        bool has_unreal_markers = false;
-        std::error_code ec;
-        for (const auto& entry : fs::directory_iterator(project_root, ec)) {
-            if (ec) {
-                break;
-            }
-            if (entry.is_regular_file() && entry.path().extension() == ".uproject") {
-                has_unreal_markers = true;
-                break;
-            }
-        }
-        if (!has_unreal_markers && fs::exists(project_root / "Source")) {
-            std::size_t scanned = 0;
-            for (const auto& entry : fs::recursive_directory_iterator(project_root / "Source", ec)) {
-                if (ec) {
-                    break;
-                }
-                if (!entry.is_regular_file()) {
-                    continue;
-                }
-                if (++scanned > 4000) {
-                    break;
-                }
-                const std::string name = entry.path().filename().string();
-                if (name.ends_with(".Build.cs") || name.ends_with(".Target.cs")) {
-                    has_unreal_markers = true;
-                    break;
-                }
-            }
-        }
-        if (has_unreal_markers) {
-            return "bha build --build-system unreal";
-        }
 
         if (fs::exists(project_root / "CMakeLists.txt") ||
             fs::exists(project_root / "build" / "build.ninja") ||
