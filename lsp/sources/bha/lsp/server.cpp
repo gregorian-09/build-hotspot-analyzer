@@ -235,8 +235,6 @@ namespace bha::lsp
 }
             if (opt.contains("includeUnsafeSuggestions")) { config.include_unsafe_suggestions = opt["includeUnsafeSuggestions"].get<bool>();
 }
-            if (opt.contains("enableExpensiveIncludeCleanupFallbacks")) { config.enable_expensive_include_cleanup_fallbacks = opt["enableExpensiveIncludeCleanupFallbacks"].get<bool>();
-}
             if (opt.contains("minConfidence")) { config.min_confidence = opt["minConfidence"].get<double>();
 }
 
@@ -282,7 +280,6 @@ namespace bha::lsp
                 {"persistTrustLoop", persist_trust_loop},
                 {"allowMissingCompileCommands", allow_missing_compile_commands},
                 {"includeUnsafeSuggestions", include_unsafe_suggestions},
-                {"enableExpensiveIncludeCleanupFallbacks", enable_expensive_include_cleanup_fallbacks},
                 {"minConfidence", min_confidence},
                 {"pch", {{"autoApply", per_optimization.pch_auto_apply}}},
                 {"headerSplitting", {{"autoApply", per_optimization.header_splitting_auto_apply}}},
@@ -1112,8 +1109,6 @@ namespace bha::lsp
         sm_config.backup_directory = config_.backup_directory;
         sm_config.allow_missing_compile_commands = config_.allow_missing_compile_commands;
         sm_config.include_unsafe_suggestions = config_.include_unsafe_suggestions;
-        sm_config.enable_expensive_include_cleanup_fallbacks =
-            config_.enable_expensive_include_cleanup_fallbacks;
         sm_config.min_confidence = config_.min_confidence;
         sm_config.enforce_compile_command_syntax_gate = true;
         sm_config.compile_command_validation_timeout_seconds = config_.build_timeout_seconds;

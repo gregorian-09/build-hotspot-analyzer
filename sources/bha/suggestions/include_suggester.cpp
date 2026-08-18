@@ -1,1358 +1,296 @@
-//
-// Created by gregorian-rayne on 12/29/25.
-//
-
 #include "bha/suggestions/include_suggester.hpp"
-#include "bha/utils/callable_decl_utils.hpp"
-#include "bha/utils/header_utils.hpp"
-#include "bha/utils/path_utils.hpp"
 
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cstdio>
 #include <cstdlib>
 #include <fstream>
-#include <regex>
 #include <sstream>
 #include <string_view>
-#include <unordered_map>
 #include <unordered_set>
 
-namespace bha::suggestions
-{
+namespace bha::suggestions {
     namespace {
-
-        struct TidyUnusedInclude {
+        struct IncludeDiagnostic {
             fs::path file;
             std::size_t line = 0;
             std::string header_name;
         };
 
-        struct ConditionalContext {
-            bool inside_conditional = false;
-            bool platform_guarded = false;
-            std::vector<std::string> active_conditions;
-        };
-
-        struct IncludeRemovalAssessment {
-            bool allow_direct_edits = true;
-            bool platform_sensitive = false;
-            std::string blocked_reason;
-        };
-
-        struct ClassifiedUnusedIncludes {
-            std::vector<TidyUnusedInclude> safe_diagnostics;
-            std::vector<TidyUnusedInclude> advisory_diagnostics;
-            std::vector<std::string> advisory_reasons;
-        };
-
         std::string shell_quote(const std::string& input) {
 #ifdef _WIN32
-            std::string escaped = "\"";
-            for (const char c : input) {
-                if (c == '"') {
-                    escaped += "\\\"";
+            std::string quoted = "\"";
+            for (const char character : input) {
+                if (character == '"') {
+                    quoted += "\\\"";
                 } else {
-                    escaped.push_back(c);
+                    quoted += character;
                 }
             }
-            escaped.push_back('"');
-            return escaped;
+            quoted += '"';
+            return quoted;
 #else
-            std::string escaped;
-            escaped.reserve(input.size() + 2);
-            escaped.push_back('\'');
-            for (const char c : input) {
-                if (c == '\'') {
-                    escaped += "'\\''";
+            std::string quoted = "'";
+            for (const char character : input) {
+                if (character == '\'') {
+                    quoted += "'\\''";
                 } else {
-                    escaped.push_back(c);
+                    quoted += character;
                 }
             }
-            escaped.push_back('\'');
-            return escaped;
+            quoted += '\'';
+            return quoted;
 #endif
         }
 
-        std::optional<fs::path> find_compile_commands_dir(const fs::path& project_root) {
-            if (project_root.empty()) {
-                return std::nullopt;
+        std::string trim(std::string value) {
+            const auto first = value.find_first_not_of(" \t\r");
+            if (first == std::string::npos) {
+                return {};
+            }
+            const auto last = value.find_last_not_of(" \t\r");
+            return value.substr(first, last - first + 1);
+        }
+
+        std::vector<IncludeDirective> parse_include_directives(const fs::path& file) {
+            std::vector<IncludeDirective> directives;
+            std::ifstream input(file);
+            if (!input) {
+                return directives;
             }
 
-            const std::array candidates{
-                project_root,
-                project_root / "build",
-                project_root / "out" / "build",
-                project_root / "cmake-build-debug",
-                project_root / "cmake-build-release"
-            };
-            for (const auto& dir : candidates) {
-                if (fs::exists(dir / "compile_commands.json")) {
-                    return dir;
-                }
-            }
-
-            std::error_code ec;
-            std::size_t scanned = 0;
-            for (const auto& entry : fs::recursive_directory_iterator(project_root, ec)) {
-                if (ec) {
-                    break;
-                }
-                if (!entry.is_regular_file()) {
+            std::string line;
+            std::size_t line_number = 0;
+            while (std::getline(input, line)) {
+                const std::string cleaned = trim(line);
+                if (!cleaned.starts_with('#')) {
+                    ++line_number;
                     continue;
                 }
-                if (++scanned > 2000) {
-                    break;
-                }
-                if (entry.path().filename() == "compile_commands.json") {
-                    return entry.path().parent_path();
-                }
-            }
 
-            return std::nullopt;
+                std::size_t cursor = 1;
+                while (cursor < cleaned.size() && std::isspace(static_cast<unsigned char>(cleaned[cursor]))) {
+                    ++cursor;
+                }
+                constexpr std::string_view include = "include";
+                if (cleaned.compare(cursor, include.size(), include) != 0) {
+                    ++line_number;
+                    continue;
+                }
+                cursor += include.size();
+                while (cursor < cleaned.size() && std::isspace(static_cast<unsigned char>(cleaned[cursor]))) {
+                    ++cursor;
+                }
+                if (cursor >= cleaned.size() || (cleaned[cursor] != '<' && cleaned[cursor] != '"')) {
+                    ++line_number;
+                    continue;
+                }
+
+                const char opener = cleaned[cursor++];
+                const char closer = opener == '<' ? '>' : '"';
+                const auto end = cleaned.find(closer, cursor);
+                if (end == std::string::npos || end == cursor) {
+                    ++line_number;
+                    continue;
+                }
+
+                IncludeDirective directive;
+                directive.line = line_number;
+                directive.col_start = 0;
+                directive.col_end = line.size();
+                directive.header_name = cleaned.substr(cursor, end - cursor);
+                directive.is_system = opener == '<';
+                directives.push_back(std::move(directive));
+                ++line_number;
+            }
+            return directives;
         }
 
-        std::optional<fs::path> resolve_compile_commands_dir(const SuggestionContext& context) {
-            if (context.options.compile_commands_path.has_value()) {
-                fs::path path = *context.options.compile_commands_path;
-                if (path.filename() == "compile_commands.json") {
-                    path = path.parent_path();
-                }
-                if (!path.empty() && fs::exists(path / "compile_commands.json")) {
-                    return path;
-                }
-            }
-            if (auto discovered = find_compile_commands_dir(context.project_root)) {
-                return discovered;
-            }
-            return std::nullopt;
-        }
-
-        std::vector<fs::path> collect_compile_commands_sources(const fs::path& build_dir) {
-            std::vector<fs::path> sources;
-            const fs::path compile_commands = build_dir / "compile_commands.json";
-            std::ifstream input(compile_commands);
-            if (!input) {
-                return sources;
-            }
-
-            const std::string content{
-                std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>()
-            };
-            const std::regex file_regex(R"re("file"\s*:\s*"([^"]+)")re");
-            std::smatch match;
-            auto it = content.cbegin();
-            std::unordered_set<std::string> seen;
-            while (std::regex_search(it, content.cend(), match, file_regex)) {
-                fs::path source = match[1].str();
-                source = source.lexically_normal();
-                const std::string key = source.generic_string();
-                if (seen.insert(key).second) {
-                    sources.push_back(std::move(source));
-                }
-                it = match.suffix().first;
-            }
-            return sources;
-        }
-
-        std::vector<TidyUnusedInclude> run_include_cleaner_for_file(
-            const fs::path& build_dir,
+        std::optional<std::size_t> parse_diagnostic_line(
+            const std::string& output,
             const fs::path& source_file
         ) {
-            std::vector<TidyUnusedInclude> results;
-            const fs::path resolved_source = resolve_source_path(source_file);
-            if (!fs::exists(resolved_source)) {
-                return results;
+            const std::string prefix = source_file.string() + ":";
+            if (!output.starts_with(prefix)) {
+                return std::nullopt;
+            }
+            const auto line_end = output.find(':', prefix.size());
+            if (line_end == std::string::npos || line_end == prefix.size()) {
+                return std::nullopt;
+            }
+            try {
+                const auto line = std::stoul(output.substr(prefix.size(), line_end - prefix.size()));
+                return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
+            } catch (const std::exception&) {
+                return std::nullopt;
+            }
+        }
+
+        std::vector<IncludeDiagnostic> run_include_cleaner(
+            const fs::path& build_dir,
+            const CompilationUnit& command
+        ) {
+            std::vector<IncludeDiagnostic> diagnostics;
+            const fs::path source_file = command.source_file.lexically_normal();
+            if (!fs::exists(source_file)) {
+                return diagnostics;
             }
 
-            static const auto clang_tidy_binary = []() -> std::string {
-                if (const char* env = std::getenv("BHA_CLANG_TIDY")) {
-                    return env;
-                }
-                const std::array candidates{
-                    fs::path("/usr/bin/clang-tidy"),
-                    fs::path("/usr/local/bin/clang-tidy"),
-                };
-                for (const auto& candidate : candidates) {
-                    if (fs::exists(candidate)) {
-                        return candidate.string();
-                    }
-                }
-                return "clang-tidy";
-            }();
-
-            std::string clang_tidy_command = shell_quote(clang_tidy_binary);
+            const char* configured_binary = std::getenv("BHA_CLANG_TIDY");
+            const std::string binary = configured_binary != nullptr && *configured_binary != '\0'
+                ? configured_binary
+                : "clang-tidy";
+            std::string tidy = shell_quote(binary);
 #ifdef _WIN32
-            const std::string tidy_extension = fs::path(clang_tidy_binary).extension().string();
-            if (tidy_extension == ".cmd" || tidy_extension == ".bat") {
-                clang_tidy_command = "cmd /d /q /c call " + clang_tidy_command;
+            const auto extension = fs::path(binary).extension().string();
+            if (extension == ".cmd" || extension == ".bat") {
+                tidy = "cmd /d /q /c call " + tidy;
             }
 #endif
 
-            const std::string cmd =
-                clang_tidy_command + " -checks=" + shell_quote("-*,misc-include-cleaner") +
+            const std::string command_line = tidy +
+                " -checks=" + shell_quote("-*,misc-include-cleaner") +
                 " -p " + shell_quote(build_dir.string()) +
-                " " + shell_quote(resolved_source.string()) + " --quiet 2>&1";
-
-            FILE* pipe = popen(cmd.c_str(), "r");
-            if (!pipe) {
-                return results;
+                " " + shell_quote(source_file.string()) + " --quiet 2>&1";
+            FILE* pipe = popen(command_line.c_str(), "r");
+            if (pipe == nullptr) {
+                return diagnostics;
             }
 
             std::string output;
-            char buffer[4096];
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                output += buffer;
-                if (output.size() > 1024 * 1024) {
-                    break;
-                }
+            std::array<char, 4096> buffer{};
+            while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
+                output += buffer.data();
             }
             pclose(pipe);
 
-            if (output.empty()) {
-                return results;
-            }
-
-            std::istringstream stream(output);
+            constexpr std::string_view diagnostic_tag = "[misc-include-cleaner]";
+            constexpr std::string_view header_prefix = "included header ";
+            constexpr std::string_view unused_suffix = " is not used directly";
+            std::istringstream lines(output);
             std::string line;
-            while (std::getline(stream, line)) {
-                if (line.find("[misc-include-cleaner]") == std::string::npos ||
-                    line.find("not used directly") == std::string::npos ||
-                    line.find(": warning:") == std::string::npos) {
+            const auto directives = parse_include_directives(source_file);
+            while (std::getline(lines, line)) {
+                if (line.find(diagnostic_tag) == std::string::npos ||
+                    line.find(unused_suffix) == std::string::npos) {
                     continue;
                 }
-
-                const auto warning_pos = line.find(": warning:");
-                if (warning_pos == std::string::npos || warning_pos == 0) {
+                const auto line_number = parse_diagnostic_line(line, source_file);
+                if (!line_number.has_value()) {
                     continue;
                 }
-                const auto column_colon = line.rfind(':', warning_pos - 1);
-                if (column_colon == std::string::npos || column_colon == 0) {
+                const auto header_start = line.find(header_prefix);
+                const auto header_end = line.find(unused_suffix, header_start + header_prefix.size());
+                if (header_start == std::string::npos || header_end == std::string::npos) {
                     continue;
                 }
-                const auto line_colon = line.rfind(':', column_colon - 1);
-                if (line_colon == std::string::npos) {
-                    continue;
-                }
-
-                fs::path diag_file = line.substr(0, line_colon);
-                std::error_code ec;
-                if (diag_file.is_relative()) {
-                    diag_file = fs::absolute(diag_file, ec);
-                    if (ec) {
-                        continue;
-                    }
-                }
-                std::size_t line_number = 0;
-                try {
-                    line_number = std::stoul(
-                        line.substr(line_colon + 1, column_colon - line_colon - 1)
-                    );
-                } catch (...) {
-                    continue;
-                }
-                if (line_number == 0) {
-                    continue;
-                }
-
-                const auto directives = find_include_directives(diag_file);
-                auto it = std::find_if(
+                const auto directive = std::find_if(
                     directives.begin(),
                     directives.end(),
-                    [&](const IncludeDirective& include_dir) {
-                        return include_dir.line + 1 == line_number;
+                    [&](const IncludeDirective& candidate) {
+                        return candidate.line == *line_number;
                     }
                 );
-                if (it == directives.end()) {
+                if (directive == directives.end()) {
                     continue;
                 }
-
-                TidyUnusedInclude diag;
-                diag.file = diag_file;
-                diag.line = it->line;
-                diag.header_name = it->header_name;
-                results.push_back(std::move(diag));
+                diagnostics.push_back({
+                    source_file,
+                    *line_number,
+                    line.substr(header_start + header_prefix.size(), header_end - header_start - header_prefix.size())
+                });
             }
-
-            return results;
+            return diagnostics;
         }
 
-        std::unordered_map<std::string, std::vector<TidyUnusedInclude>> collect_tidy_unused_includes(
-            const fs::path& build_dir,
-            const std::vector<fs::path>& source_files,
-            const SuggestionContext& context
-        ) {
-            std::unordered_map<std::string, std::vector<TidyUnusedInclude>> results;
-            for (const auto& source_file : source_files) {
-                if (context.is_cancelled()) {
-                    break;
-                }
-                const fs::path resolved_source = resolve_source_path(source_file).lexically_normal();
-                const std::string key = resolved_source.generic_string();
-                auto diagnostics = run_include_cleaner_for_file(build_dir, resolved_source);
-                if (!diagnostics.empty()) {
-                    results.emplace(key, std::move(diagnostics));
-                }
-            }
-            return results;
-        }
-
-        bool matches_candidate_header(
-            const std::string& include_name,
-            const fs::path& header_path
-        ) {
-            const fs::path include_path(include_name);
-            const fs::path normalized_header = header_path.lexically_normal();
-            return include_path.filename() == normalized_header.filename() ||
-                   include_path.generic_string() == normalized_header.generic_string();
-        }
-
-        const analyzers::DependencyAnalysisResult::HeaderInfo* find_header_info(
-            const analyzers::DependencyAnalysisResult& deps,
-            const std::string& include_name
-        ) {
-            for (const auto& header : deps.headers) {
-                if (matches_candidate_header(include_name, header.path)) {
-                    return &header;
-                }
-            }
-            return nullptr;
-        }
-
-        [[nodiscard]] std::string uppercase_copy(std::string input) {
-            std::ranges::transform(
-                input,
-                input.begin(),
-                [](const unsigned char ch) {
-                    return static_cast<char>(std::toupper(ch));
-                }
-            );
-            return input;
-        }
-
-        [[nodiscard]] bool contains_any_token(
-            const std::string& haystack,
-            const std::initializer_list<std::string_view> tokens
-        ) {
-            for (const auto& token : tokens) {
-                if (haystack.find(token) != std::string::npos) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        [[nodiscard]] bool condition_mentions_platform(const std::string& condition) {
-            const std::string upper = uppercase_copy(condition);
-            return contains_any_token(
-                upper,
-                {
-                    "_WIN32",
-                    "_WIN64",
-                    "WIN32",
-                    "WIN64",
-                    "__WINDOWS__",
-                    "__MINGW32__",
-                    "__MINGW64__",
-                    "__CYGWIN__",
-                    "__LINUX__",
-                    "__GNU_LINUX__",
-                    "__APPLE__",
-                    "__MACH__",
-                    "TARGET_OS_",
-                    "__ANDROID__",
-                    "__FREEBSD__",
-                    "__NETBSD__",
-                    "__OPENBSD__",
-                    "__UNIX__",
-                    "__UNIX",
-                    "__POSIX__",
-                    "_POSIX_"
-                }
-            );
-        }
-
-        [[nodiscard]] bool header_name_is_platform_specific(const std::string& header_name) {
-            const std::string normalized = uppercase_copy(fs::path(header_name).generic_string());
-            return contains_any_token(
-                normalized,
-                {
-                    "WINDOWS.H",
-                    "WINUSER.H",
-                    "WINSOCK",
-                    "WINNT.H",
-                    "WINBASE.H",
-                    "WINDEF.H",
-                    "AFX",
-                    "ATL",
-                    "LINUX/",
-                    "SYS/",
-                    "UNISTD.H",
-                    "PTHREAD.H",
-                    "MACH/",
-                    "COREFOUNDATION/",
-                    "IOKIT/",
-                    "X11/",
-                    "WAYLAND/",
-                    "ANDROID/"
-                }
-            );
-        }
-
-        [[nodiscard]] ConditionalContext analyze_conditional_context(
-            const fs::path& file,
-            const std::size_t target_line
-        ) {
-            ConditionalContext context;
-            auto lines_result = utils::read_lines(file);
-            if (lines_result.is_err()) {
-                return context;
-            }
-
-            struct ConditionalFrame {
-                std::string expression;
-                bool platform_guarded = false;
-            };
-
-            std::vector<ConditionalFrame> stack;
-            stack.reserve(8);
-            bool in_block_comment = false;
-
-            for (std::size_t index = 0; index < lines_result.value().size(); ++index) {
-                if (index == target_line) {
-                    context.inside_conditional = !stack.empty();
-                    for (const auto& frame : stack) {
-                        context.active_conditions.push_back(frame.expression);
-                        context.platform_guarded = context.platform_guarded || frame.platform_guarded;
-                    }
-                    return context;
-                }
-
-                const std::string cleaned = trim_whitespace_copy(
-                    strip_comments_and_strings(lines_result.value()[index], in_block_comment)
-                );
-                if (!cleaned.starts_with('#')) {
-                    continue;
-                }
-
-                auto directive = trim_whitespace_copy(cleaned.substr(1));
-                if (directive.starts_with("ifdef")) {
-                    directive = trim_whitespace_copy(directive.substr(5));
-                    stack.push_back({directive, condition_mentions_platform(directive)});
-                    continue;
-                }
-                if (directive.starts_with("ifndef")) {
-                    directive = trim_whitespace_copy(directive.substr(6));
-                    const std::string expression = "!defined(" + directive + ")";
-                    stack.push_back({expression, condition_mentions_platform(directive)});
-                    continue;
-                }
-                if (directive.starts_with("if")) {
-                    directive = trim_whitespace_copy(directive.substr(2));
-                    stack.push_back({directive, condition_mentions_platform(directive)});
-                    continue;
-                }
-                if (directive.starts_with("elif")) {
-                    directive = trim_whitespace_copy(directive.substr(4));
-                    if (!stack.empty()) {
-                        stack.back() = {directive, condition_mentions_platform(directive)};
-                    }
-                    continue;
-                }
-                if (directive == "else") {
-                    if (!stack.empty()) {
-                        const bool platform_guarded = stack.back().platform_guarded;
-                        stack.back() = {"else", platform_guarded};
-                    }
-                    continue;
-                }
-                if (directive == "endif") {
-                    if (!stack.empty()) {
-                        stack.pop_back();
-                    }
-                }
-            }
-
-            return context;
-        }
-
-        [[nodiscard]] IncludeRemovalAssessment assess_include_removal_safety(
-            const TidyUnusedInclude& diag
-        ) {
-            IncludeRemovalAssessment assessment;
-            const ConditionalContext conditional = analyze_conditional_context(diag.file, diag.line);
-            const bool conditional_include = conditional.inside_conditional;
-            const bool platform_specific_header = header_name_is_platform_specific(diag.header_name);
-            assessment.platform_sensitive = conditional.platform_guarded || platform_specific_header;
-
-            if (!conditional_include && !assessment.platform_sensitive) {
-                return assessment;
-            }
-
-            assessment.allow_direct_edits = false;
-            std::ostringstream reason;
-            if (conditional_include) {
-                reason << "Include is inside conditional compilation";
-                if (!conditional.active_conditions.empty()) {
-                    reason << " (";
-                    for (std::size_t i = 0; i < conditional.active_conditions.size(); ++i) {
-                        if (i > 0) {
-                            reason << ", ";
-                        }
-                        reason << conditional.active_conditions[i];
-                    }
-                    reason << ")";
-                }
-            }
-            if (assessment.platform_sensitive) {
-                if (!assessment.blocked_reason.empty() || reason.tellp() > 0) {
-                    reason << "; ";
-                }
-                reason << "header appears platform-specific for the active toolchain/configuration";
-            }
-            assessment.blocked_reason = reason.str();
-            return assessment;
-        }
-
-        bool file_references_any_identifier(
-            const fs::path& file_path,
-            const std::vector<std::string>& identifiers
-        ) {
-            if (identifiers.empty()) {
-                return false;
-            }
-
-            auto lines_result = utils::read_lines(file_path);
-            if (lines_result.is_err()) {
-                return false;
-            }
-
-            bool in_block_comment = false;
-            for (const auto& raw_line : lines_result.value()) {
-                const std::string line = strip_comments_and_strings(raw_line, in_block_comment);
-                for (const auto& identifier : identifiers) {
-                    if (contains_identifier_token(line, identifier)) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        struct MoveToCppAssessment {
-            bool mentions_symbol = false;
-            bool unsafe_usage = false;
-        };
-
-        bool has_forward_declaration_for_symbol(
-            const std::string& sanitized_text,
-            const std::string& symbol
-        ) {
-            if (symbol.empty()) {
-                return false;
-            }
-            const std::regex forward_decl_regex(
-                "(?:^|\\n)\\s*(?:class|struct)\\s+" + std::regex_replace(
-                    symbol,
-                    std::regex(R"([.^$|()\\[\]{}*+?])"),
-                    R"(\$&)"
-                ) + "\\s*;"
-            );
-            return std::regex_search(sanitized_text, forward_decl_regex);
-        }
-
-        MoveToCppAssessment assess_move_to_cpp(
-            const fs::path& including_header,
-            const ExportedTypeSurface& surface
-        ) {
-            MoveToCppAssessment assessment;
-            if (surface.direct_symbols.empty() && surface.transitive_symbols.empty()) {
-                return assessment;
-            }
-
-            std::ifstream in(including_header);
-            if (!in) {
-                return assessment;
-            }
-
-            const std::string content{
-                std::istreambuf_iterator<char>(in),
-                std::istreambuf_iterator<char>()
-            };
-            std::string sanitized;
-            sanitized.reserve(content.size());
-            bool in_block = false;
-            std::istringstream stream(content);
-            std::string raw_line;
-            while (std::getline(stream, raw_line)) {
-                sanitized += strip_comments_and_strings(raw_line, in_block);
-                sanitized.push_back('\n');
-            }
-
-            for (const auto& symbol : surface.direct_symbols) {
-                if (!contains_identifier_token(sanitized, symbol.name)) {
-                    continue;
-                }
-
-                assessment.mentions_symbol = true;
-                if (!is_forward_declarable(symbol)) {
-                    assessment.unsafe_usage = true;
-                    break;
-                }
-
-                const auto usage = analyze_incomplete_type_usage(sanitized, {symbol.name});
-                if (usage.requires_complete_type) {
-                    assessment.unsafe_usage = true;
-                    break;
-                }
-                if (!usage.has_mentions) {
-                    continue;
-                }
-                if (!has_forward_declaration_for_symbol(sanitized, symbol.name) ||
-                    usage.pointer_or_reference_mentions == 0) {
-                    assessment.unsafe_usage = true;
-                    break;
-                }
-            }
-
-            if (assessment.unsafe_usage) {
-                return assessment;
-            }
-
-            for (const auto& symbol : surface.transitive_symbols) {
-                if (!contains_identifier_token(sanitized, symbol.name)) {
-                    continue;
-                }
-
-                assessment.mentions_symbol = true;
-                assessment.unsafe_usage = true;
-                break;
-            }
-
-            return assessment;
-        }
-
-        std::optional<fs::path> find_corresponding_source(
-            const fs::path& header_path,
-            const fs::path& project_root,
-            const std::vector<fs::path>& source_files
-        ) {
-            static const std::array source_exts{".cpp", ".cc", ".cxx", ".c"};
-
-            const fs::path normalized = header_path.lexically_normal();
-            for (const auto& ext : source_exts) {
-                fs::path candidate = normalized;
-                candidate.replace_extension(ext);
-                if (fs::exists(candidate)) {
-                    return candidate.lexically_normal();
-                }
-            }
-
-            if (!project_root.empty()) {
-                const fs::path include_root = (project_root / "include").lexically_normal();
-                if (utils::is_under(normalized, include_root)) {
-                    const fs::path rel = normalized.lexically_relative(include_root);
-                    if (!rel.empty()) {
-                        for (const auto& ext : source_exts) {
-                            fs::path candidate = project_root / "src" / rel;
-                            candidate.replace_extension(ext);
-                            if (fs::exists(candidate)) {
-                                return candidate.lexically_normal();
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (const auto& source : source_files) {
-                const fs::path normalized_source = source.lexically_normal();
-                if (normalized_source.stem() != normalized.stem()) {
-                    continue;
-                }
-                return normalized_source;
-            }
-
-            return std::nullopt;
-        }
-
-        std::optional<fs::path> resolve_local_include_path(
-            const std::string& include_name,
-            const fs::path& including_file,
-            const fs::path& project_root
-        ) {
-            return resolve_project_include_path(include_name, including_file, project_root);
-        }
-
-        std::optional<fs::path> resolve_unused_include_header_path(
-            const analyzers::DependencyAnalysisResult& deps,
-            const TidyUnusedInclude& diag,
-            const fs::path& project_root
-        ) {
-            if (const auto* resolved_header_info = find_header_info(deps, diag.header_name);
-                resolved_header_info != nullptr) {
-                return resolve_project_path(resolved_header_info->path, project_root);
-            }
-            return resolve_local_include_path(diag.header_name, diag.file, project_root);
-        }
-
-        bool is_primary_self_header_include(
-            const TidyUnusedInclude& diag,
-            const std::optional<fs::path>& resolved_header
-        ) {
-            if (!is_source_file_path(diag.file)) {
-                return false;
-            }
-
-            const auto directives = find_include_directives(diag.file);
-            if (directives.empty()) {
-                return false;
-            }
-
-            const auto first_include = directives.front();
-            const fs::path source_path = diag.file.lexically_normal();
-            const std::string source_stem = source_path.stem().string();
-            if (source_stem.empty()) {
-                return false;
-            }
-
-            const fs::path include_header_name = fs::path(diag.header_name).filename();
-            const bool matches_source_stem = include_header_name.stem() == source_stem ||
-                (resolved_header.has_value() && resolved_header->stem() == source_stem);
-            if (!matches_source_stem) {
-                return false;
-            }
-
-            if (first_include.line != diag.line || first_include.is_system) {
-                return false;
-            }
-
-            if (first_include.header_name == diag.header_name) {
-                return true;
-            }
-            return resolved_header.has_value() &&
-                fs::path(first_include.header_name).filename() == resolved_header->filename();
-        }
-
-        ClassifiedUnusedIncludes classify_unused_include_diagnostics(
-            const analyzers::DependencyAnalysisResult& deps,
-            const std::vector<TidyUnusedInclude>& diagnostics,
-            const fs::path& project_root,
-            const std::vector<std::string>& protected_include_patterns
-        ) {
-            ClassifiedUnusedIncludes classified;
-            std::unordered_map<std::string, std::vector<std::string>> callable_symbol_cache;
-            classified.safe_diagnostics.reserve(diagnostics.size());
-            classified.advisory_diagnostics.reserve(diagnostics.size());
-
-            for (const auto& diag : diagnostics) {
-                const auto resolved_header = resolve_unused_include_header_path(
-                    deps,
-                    diag,
-                    project_root
-                );
-                IncludeRemovalAssessment assessment = assess_include_removal_safety(diag);
-                if (assessment.allow_direct_edits &&
-                    is_primary_self_header_include(diag, resolved_header)) {
-                    assessment.allow_direct_edits = false;
-                    assessment.blocked_reason =
-                        "primary self-header include should stay in the translation unit";
-                }
-                if (assessment.allow_direct_edits &&
-                    matches_protected_include_policy(
-                        diag.header_name,
-                        resolved_header,
-                        protected_include_patterns
-                    )) {
-                    assessment.allow_direct_edits = false;
-                    assessment.platform_sensitive = true;
-                    assessment.blocked_reason =
-                        "header matches protected include policy and may vary by platform or configuration";
-                }
-
-                if (assessment.allow_direct_edits) {
-                    if (resolved_header.has_value()) {
-                        const std::string cache_key = resolved_header->lexically_normal().generic_string();
-                        auto cache_it = callable_symbol_cache.find(cache_key);
-                        if (cache_it == callable_symbol_cache.end()) {
-                            cache_it = callable_symbol_cache.emplace(
-                                cache_key,
-                                utils::extract_declared_callable_names(*resolved_header)
-                            ).first;
-                        }
-
-                        if (!cache_it->second.empty() &&
-                            file_references_any_identifier(diag.file, cache_it->second)) {
-                            assessment.allow_direct_edits = false;
-                            assessment.blocked_reason =
-                                "source file references callable API declared by the included header";
-                        }
-                    }
-                }
-
-                if (assessment.allow_direct_edits) {
-                    classified.safe_diagnostics.push_back(diag);
-                    continue;
-                }
-                classified.advisory_diagnostics.push_back(diag);
-                if (!assessment.blocked_reason.empty()) {
-                    classified.advisory_reasons.push_back(assessment.blocked_reason);
-                }
-            }
-
-            return classified;
-        }
-
-        Suggestion build_include_removal_suggestion(
-            const SuggestionContext& context,
-            const std::string& header_name,
-            const std::vector<TidyUnusedInclude>& selected_diagnostics,
-            std::vector<std::string> advisory_reasons,
-            const Duration estimated_savings,
-            const bool direct_edits
-        ) {
+        Suggestion make_removal_suggestion(const IncludeDiagnostic& diagnostic) {
             Suggestion suggestion;
-            suggestion.id = generate_suggestion_id(
-                direct_edits ? "unused-explicit" : "unused-explicit-advisory",
-                fs::path(header_name)
-            );
+            suggestion.id = generate_suggestion_id("clang-include-cleaner", diagnostic.file, diagnostic.header_name);
             suggestion.type = SuggestionType::IncludeRemoval;
-            suggestion.priority = selected_diagnostics.size() >= 10 ? Priority::High : Priority::Medium;
-            suggestion.confidence = direct_edits ? 0.98 : 0.72;
-            suggestion.title = (direct_edits
-                ? "Remove unused include of "
-                : "Review conditional/platform-specific include of ") +
-                fs::path(header_name).filename().string();
-            suggestion.estimated_savings = estimated_savings;
-            if (context.trace.total_time.count() > 0) {
-                suggestion.estimated_savings_percent =
-                    100.0 * static_cast<double>(estimated_savings.count()) /
-                    static_cast<double>(context.trace.total_time.count());
-            }
-
-            std::ostringstream desc;
-            desc << "clang-tidy misc-include-cleaner reported '" << header_name
-                 << "' as unused in " << selected_diagnostics.size() << " translation units.";
-            suggestion.description = desc.str();
-            suggestion.rationale =
-                "This suggestion is based on explicit semantic diagnostics from clang-tidy, but BHA avoids auto-removing includes when the active build configuration may hide cross-platform or conditional dependencies.";
-
-            suggestion.target_file.path = selected_diagnostics.front().file;
-            suggestion.target_file.action = FileAction::Modify;
-            suggestion.target_file.line_start = selected_diagnostics.front().line + 1;
-            suggestion.target_file.line_end = selected_diagnostics.front().line + 1;
-            suggestion.target_file.note = direct_edits
-                ? "Remove unused include confirmed by clang-tidy"
-                : "Review include manually before removing it";
-
-            suggestion.impact.total_files_affected = selected_diagnostics.size();
-            suggestion.impact.cumulative_savings = estimated_savings;
-            suggestion.caveats = {
-                "Diagnostics reflect the active compile_commands.json configuration",
-                "Cross-platform and feature-gated builds may still require these includes in other variants"
-            };
-            suggestion.verification = "Compile all supported targets after applying the edits";
-
-            if (direct_edits) {
-                suggestion.is_safe = true;
-                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-                for (const auto& diag : selected_diagnostics) {
-                    suggestion.edits.push_back(make_delete_include_edit(diag.file, diag.line));
-                }
-                suggestion.implementation_steps = {
-                    "Apply the explicit removals reported by clang-tidy misc-include-cleaner",
-                    "Rebuild and run tests",
-                    "Re-run clang-tidy to confirm the include-cleaner warnings are gone"
-                };
-            } else {
-                suggestion.is_safe = false;
-                suggestion.application_mode = SuggestionApplicationMode::Advisory;
-                suggestion.application_summary = "Manual review only";
-                suggestion.application_guidance =
-                    "Re-check these includes in other platform or feature configurations before removing them. Only auto-remove includes that are unused in all supported variants.";
-                if (!advisory_reasons.empty()) {
-                    std::sort(advisory_reasons.begin(), advisory_reasons.end());
-                    advisory_reasons.erase(
-                        std::unique(advisory_reasons.begin(), advisory_reasons.end()),
-                        advisory_reasons.end()
-                    );
-                    std::ostringstream reason;
-                    for (std::size_t i = 0; i < advisory_reasons.size(); ++i) {
-                        if (i > 0) {
-                            reason << "; ";
-                        }
-                        reason << advisory_reasons[i];
-                    }
-                    suggestion.auto_apply_blocked_reason = reason.str();
-                }
-                suggestion.implementation_steps = {
-                    "Verify the include across the project's supported platforms or feature sets",
-                    "Remove it manually only if it stays unused in each relevant configuration",
-                    "Rebuild and rerun clang-tidy for each supported variant"
-                };
-            }
-
-            return suggestion;
-        }
-
-        std::vector<fs::path> collect_source_files(
-            const analyzers::AnalysisResult& analysis,
-            const fs::path& project_root,
-            std::unordered_set<std::string>& source_seen
-        ) {
-            std::vector<fs::path> source_files;
-            source_files.reserve(analysis.files.size());
-
-            for (const auto& file_result : analysis.files) {
-                if (!is_source_file_path(file_result.file)) {
-                    continue;
-                }
-                fs::path resolved_source = resolve_project_path(file_result.file, project_root);
-                const std::string key = resolved_source.generic_string();
-                if (source_seen.insert(key).second) {
-                    source_files.push_back(std::move(resolved_source));
-                }
-            }
-
-            return source_files;
-        }
-
-        std::vector<fs::path> collect_candidate_headers(
-            const SuggestionContext& context,
-            const analyzers::DependencyAnalysisResult& deps,
-            std::vector<fs::path>& source_files,
-            std::unordered_set<std::string>& source_seen,
-            std::unordered_map<std::string, std::vector<fs::path>>& header_includers
-        ) {
-            std::vector<fs::path> candidate_headers;
-            std::unordered_set<std::string> header_seen;
-
-            for (const auto& file_result : context.analysis.files) {
-                if (!is_header_file_path(file_result.file)) {
-                    continue;
-                }
-                fs::path header = resolve_project_path(file_result.file, context.project_root);
-                const std::string key = header.generic_string();
-                if (header_seen.insert(key).second) {
-                    candidate_headers.push_back(std::move(header));
-                }
-            }
-
-            for (const auto& header_info : deps.headers) {
-                if (!is_header_file_path(header_info.path)) {
-                    continue;
-                }
-
-                const fs::path header = resolve_project_path(header_info.path, context.project_root);
-                const std::string header_key = header.generic_string();
-                if (header_seen.insert(header_key).second) {
-                    candidate_headers.push_back(header);
-                }
-
-                auto& includers = header_includers[header_key];
-                includers.reserve(includers.size() + header_info.included_by.size());
-                for (const auto& includer : header_info.included_by) {
-                    fs::path resolved_includer = resolve_project_path(includer, context.project_root);
-                    if (!is_source_file_path(resolved_includer)) {
-                        continue;
-                    }
-                    const std::string key = resolved_includer.generic_string();
-                    if (source_seen.insert(key).second) {
-                        source_files.push_back(resolved_includer);
-                    }
-                    includers.push_back(std::move(resolved_includer));
-                }
-            }
-
-            for (const auto& source_file : source_files) {
-                if (!fs::exists(source_file)) {
-                    continue;
-                }
-                const auto source_includes = find_include_directives(source_file);
-                for (const auto& include_dir : source_includes) {
-                    if (include_dir.is_system) {
-                        continue;
-                    }
-                    const auto included_header = resolve_local_include_path(
-                        include_dir.header_name,
-                        source_file,
-                        context.project_root
-                    );
-                    if (!included_header.has_value() || !is_header_file_path(*included_header)) {
-                        continue;
-                    }
-                    const std::string key = included_header->generic_string();
-                    if (header_seen.insert(key).second) {
-                        candidate_headers.push_back(*included_header);
-                    }
-                }
-            }
-
-            return candidate_headers;
-        }
-
-        std::optional<Suggestion> build_move_to_cpp_suggestion(
-            const SuggestionContext& context,
-            const fs::path& including_header,
-            const fs::path& source_file,
-            const IncludeDirective& include_dir,
-            const fs::path& included_header,
-            const analyzers::DependencyAnalysisResult::HeaderInfo* header_info,
-            const ExportedTypeSurface& exported_surface
-        ) {
-            if (find_include_for_header(source_file, include_dir.header_name).has_value()) {
-                return std::nullopt;
-            }
-            if (find_include_for_header(source_file, included_header.filename().string()).has_value()) {
-                return std::nullopt;
-            }
-
-            const auto assessment = assess_move_to_cpp(including_header, exported_surface);
-            if (!assessment.mentions_symbol || assessment.unsafe_usage) {
-                return std::nullopt;
-            }
-
-            auto include_decl = find_include_for_header(including_header, include_dir.header_name);
-            if (!include_decl.has_value()) {
-                include_decl = find_include_for_header(including_header, included_header.filename().string());
-            }
-            if (!include_decl.has_value()) {
-                return std::nullopt;
-            }
-
-            Suggestion suggestion;
-            suggestion.id = generate_suggestion_id("move", included_header, including_header.filename().string());
-            suggestion.type = SuggestionType::MoveToCpp;
-            const Duration include_parse_time = header_info != nullptr
-                ? header_info->total_parse_time
-                : Duration::zero();
-            const std::size_t include_count = header_info != nullptr
-                ? std::max<std::size_t>(header_info->inclusion_count, 1)
-                : 1;
-            suggestion.priority = include_parse_time > std::chrono::milliseconds(200)
-                ? Priority::Medium
-                : Priority::Low;
-            suggestion.confidence = 0.82;
+            suggestion.priority = Priority::Low;
+            suggestion.confidence = 1.0;
+            suggestion.title = "Remove unused include " + diagnostic.header_name;
+            suggestion.description = "Clang misc-include-cleaner reported this include as unused in the active translation unit.";
+            suggestion.rationale = "The edit is emitted only from a compiler-backed include-cleaner diagnostic; BHA does not infer unusedness from source text or timing thresholds.";
+            suggestion.estimated_savings = Duration::zero();
+            suggestion.estimated_savings_percent = 0.0;
             suggestion.is_safe = true;
             suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-
-            std::ostringstream title;
-            title << "Move " << included_header.filename().string()
-                  << " include from " << including_header.filename().string()
-                  << " to " << source_file.filename().string();
-            suggestion.title = title.str();
-
-            std::ostringstream desc;
-            desc << "Header '" << make_repo_relative(including_header)
-                 << "' already forward-declares symbols from '"
-                 << make_repo_relative(included_header)
-                 << "' and only uses them in incomplete-type-safe contexts. "
-                 << "Move the include to '" << make_repo_relative(source_file)
-                 << "' to reduce transitive dependencies.";
-            suggestion.description = desc.str();
-
-            suggestion.rationale =
-                "When a header only needs forward declarations, placing heavy includes in the .cpp "
-                "reduces incremental rebuild fanout while keeping translation units self-sufficient.";
-
-            suggestion.estimated_savings = include_parse_time / include_count;
-            if (context.trace.total_time.count() > 0) {
-                suggestion.estimated_savings_percent =
-                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                    static_cast<double>(context.trace.total_time.count());
-            }
-
-            suggestion.target_file.path = including_header;
-            suggestion.target_file.action = FileAction::Modify;
-            suggestion.target_file.line_start = include_decl->line + 1;
-            suggestion.target_file.line_end = include_decl->line + 1;
-            suggestion.target_file.note = "Remove header include after confirming forward declaration coverage";
-
-            suggestion.edits.push_back(make_delete_include_edit(including_header, include_decl->line));
-
-            const std::string include_line = "#include \"" + include_dir.header_name + "\"";
-            const auto insertion = make_preferred_include_insertion_edit(source_file, include_line);
-            suggestion.edits.push_back(insertion.edit);
-
-            FileTarget cpp_target;
-            cpp_target.path = source_file;
-            cpp_target.action = FileAction::AddInclude;
-            cpp_target.line_start = insertion.inserted_line_one_based;
-            cpp_target.line_end = insertion.inserted_line_one_based;
-            cpp_target.note = "Add moved include to source file";
-            suggestion.secondary_files.push_back(std::move(cpp_target));
-
-            suggestion.impact.total_files_affected = 2;
-            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
-            suggestion.implementation_steps = {
-                "Remove the include from the header",
-                "Add the include to the corresponding source file",
-                "Rebuild to verify the header still compiles with forward declarations only"
+            suggestion.target_file = {
+                diagnostic.file,
+                diagnostic.line + 1,
+                diagnostic.line + 1,
+                0,
+                0,
+                FileAction::Modify,
+                "Remove include confirmed by clang misc-include-cleaner"
             };
+            suggestion.impact.total_files_affected = 1;
+            suggestion.impact.cumulative_savings = Duration::zero();
             suggestion.caveats = {
-                "Do not move includes required by inline definitions or templates in the header",
-                "Re-verify after API changes in the moved header"
+                "Evidence is specific to the compile command used for this translation unit",
+                "Re-run the suggester for each supported configuration"
             };
-            suggestion.verification = "Run a full rebuild and unit tests after applying the edit";
+            suggestion.verification = "Rebuild the affected configuration and rerun clang misc-include-cleaner";
+            suggestion.implementation_steps = {
+                "Apply the exact include removal reported by Clang",
+                "Rebuild the affected translation unit",
+                "Re-run misc-include-cleaner to confirm the diagnostic is gone"
+            };
 
+            TextEdit edit;
+            edit.file = diagnostic.file;
+            edit.start_line = diagnostic.line;
+            edit.end_line = diagnostic.line + 1;
+            edit.end_col = 0;
+            suggestion.edits.push_back(std::move(edit));
             return suggestion;
         }
+    }
 
-    }  // namespace
-
-    Result<SuggestionResult, Error> IncludeSuggester::suggest(
-        const SuggestionContext& context
-    ) const {
+    Result<SuggestionResult, Error> IncludeSuggester::suggest(const SuggestionContext& context) const {
         SuggestionResult result;
-        auto start_time = std::chrono::steady_clock::now();
-
-        if (context.options.max_include_cleanup_scan_files == 0 &&
-            context.options.max_include_move_candidate_headers == 0) {
-            auto end_time = std::chrono::steady_clock::now();
-            result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
+        const auto started = std::chrono::steady_clock::now();
+        if (!context.project_index || context.project_index->compile_commands_status() != CompilationDatabaseStatus::Loaded) {
+            result.generation_time = std::chrono::duration_cast<Duration>(
+                std::chrono::steady_clock::now() - started
+            );
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
-        const auto& deps = context.analysis.dependencies;
-        const auto compile_commands_dir = resolve_compile_commands_dir(context);
-        std::unordered_map<std::string, std::vector<TidyUnusedInclude>> tidy_unused_cache;
-        std::unordered_set<std::string> clang_tidy_scanned;
-
-        std::size_t analyzed = 0;
-        std::size_t skipped = 0;
-
-        if (compile_commands_dir.has_value()) {
-            std::vector<fs::path> to_scan;
-            const auto compile_db_sources = collect_compile_commands_sources(*compile_commands_dir);
-            const std::size_t scan_limit = context.options.max_include_cleanup_scan_files;
-            to_scan.reserve(std::min<std::size_t>(compile_db_sources.size(), scan_limit));
-            for (const auto& source_file : compile_db_sources) {
-                if (scan_limit == 0 || context.is_cancelled()) {
-                    break;
-                }
-                const auto ext = source_file.extension().string();
-                if (ext != ".c" && ext != ".cc" && ext != ".cpp" && ext != ".cxx") {
-                    continue;
-                }
-                const fs::path resolved = source_file.lexically_normal();
-                const std::string key = resolved.generic_string();
-                if (!clang_tidy_scanned.insert(key).second) {
-                    continue;
-                }
-                to_scan.push_back(resolved);
-                if (to_scan.size() >= scan_limit) {
-                    break;
-                }
-            }
-
-            tidy_unused_cache = collect_tidy_unused_includes(*compile_commands_dir, to_scan, context);
-
-            std::unordered_map<std::string, std::vector<TidyUnusedInclude>> grouped_diagnostics;
-            for (const auto& [_, diagnostics] : tidy_unused_cache) {
-                for (const auto& diag : diagnostics) {
-                    grouped_diagnostics[diag.header_name].push_back(diag);
-                }
-            }
-
-            for (auto& [header_name, diagnostics] : grouped_diagnostics) {
-                if (diagnostics.empty()) {
-                    continue;
-                }
-
-                auto classified = classify_unused_include_diagnostics(
-                    deps,
-                    diagnostics,
-                    context.project_root,
-                    context.options.protected_include_patterns
-                );
-
-                const std::string header_name_copy = header_name;
-                const auto* header_info = find_header_info(deps, header_name_copy);
-                const auto estimated_savings = header_info != nullptr
-                    ? header_info->total_parse_time / 4
-                    : Duration::zero();
-
-                if (!classified.safe_diagnostics.empty()) {
-                    result.suggestions.push_back(build_include_removal_suggestion(
-                        context,
-                        header_name_copy,
-                        classified.safe_diagnostics,
-                        {},
-                        estimated_savings,
-                        true
-                    ));
-                }
-                if (!classified.advisory_diagnostics.empty()) {
-                    result.suggestions.push_back(build_include_removal_suggestion(
-                        context,
-                        header_name_copy,
-                        classified.advisory_diagnostics,
-                        classified.advisory_reasons,
-                        estimated_savings,
-                        false
-                    ));
-                }
-            }
-        }
-
-        std::unordered_set<std::string> source_seen;
-        std::vector<fs::path> source_files = collect_source_files(
-            context.analysis,
-            context.project_root,
-            source_seen
-        );
-        std::unordered_map<std::string, std::vector<fs::path>> header_includers;
-        std::vector<fs::path> candidate_headers = collect_candidate_headers(
-            context,
-            deps,
-            source_files,
-            source_seen,
-            header_includers
-        );
-        if (candidate_headers.size() > context.options.max_include_move_candidate_headers) {
-            std::unordered_map<std::string, Duration> header_parse_times;
-            header_parse_times.reserve(deps.headers.size());
-            for (const auto& header_info : deps.headers) {
-                const fs::path header = resolve_project_path(header_info.path, context.project_root);
-                header_parse_times[header.generic_string()] = header_info.total_parse_time;
-            }
-            std::ranges::sort(
-                candidate_headers,
-                [&](const fs::path& lhs, const fs::path& rhs) {
-                    const auto lhs_it = header_parse_times.find(lhs.generic_string());
-                    const auto rhs_it = header_parse_times.find(rhs.generic_string());
-                    const Duration lhs_time = lhs_it != header_parse_times.end() ? lhs_it->second : Duration::zero();
-                    const Duration rhs_time = rhs_it != header_parse_times.end() ? rhs_it->second : Duration::zero();
-                    if (lhs_time != rhs_time) {
-                        return lhs_time > rhs_time;
-                    }
-                    return lhs.generic_string() < rhs.generic_string();
-                }
-            );
-            candidate_headers.resize(context.options.max_include_move_candidate_headers);
-        }
-
-        std::unordered_set<std::string> emitted_move_keys;
-        std::unordered_map<std::string, ExportedTypeSurface> exported_surface_cache;
-
-        for (const auto& including_header : candidate_headers) {
-            if (context.is_cancelled()) {
+        const auto commands = context.project_index->compile_commands();
+        std::unordered_set<std::string> seen_sources;
+        for (const auto& command : commands) {
+            if (context.is_cancelled() || !is_source_file_path(command.source_file)) {
                 break;
             }
-
-            const bool header_selected = context.should_analyze(including_header);
-            if (!header_selected && !context.target_files.empty()) {
-                const auto includers_it = header_includers.find(including_header.generic_string());
-                const bool includer_selected = includers_it != header_includers.end() &&
-                    std::ranges::any_of(
-                        includers_it->second,
-                        [&](const fs::path& includer) {
-                            return context.should_analyze(includer);
-                        }
-                    );
-                if (!includer_selected) {
-                    continue;
-                }
-            } else if (!header_selected) {
+            const fs::path source = command.source_file.lexically_normal();
+            if (!seen_sources.insert(source.generic_string()).second ||
+                !context.should_analyze(source)) {
                 continue;
             }
-            ++analyzed;
-
-            if (!fs::exists(including_header)) {
-                ++skipped;
-                continue;
-            }
-
-            const auto source_file = find_corresponding_source(including_header, context.project_root, source_files);
-            if (!source_file.has_value() || !fs::exists(*source_file)) {
-                ++skipped;
-                continue;
-            }
-
-            const auto header_includes = find_include_directives(including_header);
-            bool emitted_from_header = false;
-
-            for (const auto& include_dir : header_includes) {
-                if (include_dir.is_system) {
-                    continue;
-                }
-
-                const auto* header_info = find_header_info(deps, include_dir.header_name);
-                std::optional<fs::path> resolved_include_header;
-                if (header_info != nullptr) {
-                    resolved_include_header = resolve_project_path(header_info->path, context.project_root);
-                } else {
-                    resolved_include_header = resolve_local_include_path(
-                        include_dir.header_name,
-                        including_header,
-                        context.project_root
-                    );
-                }
-
-                if (!resolved_include_header.has_value()) {
-                    continue;
-                }
-                const fs::path included_header = resolved_include_header->lexically_normal();
-                if (utils::is_likely_system_header_path(included_header)) {
-                    continue;
-                }
-                if (!included_header.empty() && included_header == including_header) {
-                    continue;
-                }
-
-                const std::string dedup_key = including_header.generic_string() + "|" + included_header.generic_string();
-                if (!emitted_move_keys.insert(dedup_key).second) {
-                    continue;
-                }
-
-                const std::string cache_key = included_header.generic_string();
-                auto cache_it = exported_surface_cache.find(cache_key);
-                if (cache_it == exported_surface_cache.end()) {
-                    cache_it = exported_surface_cache.emplace(
-                        cache_key,
-                        fs::exists(included_header)
-                            ? collect_exported_type_surface(included_header, context.project_root)
-                            : ExportedTypeSurface{}
-                    ).first;
-                }
-
-                if (auto suggestion = build_move_to_cpp_suggestion(
-                        context,
-                        including_header,
-                        *source_file,
-                        include_dir,
-                        included_header,
-                        header_info,
-                        cache_it->second
-                    )) {
-                    result.suggestions.push_back(std::move(*suggestion));
-                    emitted_from_header = true;
-                }
-            }
-
-            if (!emitted_from_header) {
-                ++skipped;
+            const fs::path build_dir = context.options.compile_commands_path.has_value()
+                ? (context.options.compile_commands_path->filename() == "compile_commands.json"
+                    ? context.options.compile_commands_path->parent_path()
+                    : *context.options.compile_commands_path)
+                : command.working_directory;
+            for (const auto& diagnostic : run_include_cleaner(build_dir, command)) {
+                result.suggestions.push_back(make_removal_suggestion(diagnostic));
             }
         }
 
-        result.items_analyzed = analyzed;
-        result.items_skipped = skipped;
-
-        std::ranges::sort(result.suggestions,
-                          [](const Suggestion& a, const Suggestion& b) {
-                              return a.estimated_savings > b.estimated_savings;
-                          });
-
-        auto end_time = std::chrono::steady_clock::now();
-        result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
-
+        std::ranges::sort(result.suggestions, [](const Suggestion& left, const Suggestion& right) {
+            return left.id < right.id;
+        });
+        result.items_analyzed = seen_sources.size();
+        result.generation_time = std::chrono::duration_cast<Duration>(
+            std::chrono::steady_clock::now() - started
+        );
         return Result<SuggestionResult, Error>::success(std::move(result));
     }
 
     void register_include_suggester() {
-        SuggesterRegistry::instance().register_suggester(
-            std::make_unique<IncludeSuggester>()
-        );
+        SuggesterRegistry::instance().register_suggester(std::make_unique<IncludeSuggester>());
     }
 }  // namespace bha::suggestions

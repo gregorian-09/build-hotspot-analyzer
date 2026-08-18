@@ -9,10 +9,8 @@
  * @file include_suggester.hpp
  * @brief Include optimization suggestions.
  *
- * Analyzes include patterns to identify:
- * - Headers that can be removed (unused includes)
- * - Headers that should be included directly (IWYU)
- * - Headers that can be moved from .h to .cpp
+ * Emits removals only when Clang's misc-include-cleaner reports an unused
+ * include for a translation unit in the active compilation database.
  */
 
 #include "bha/suggestions/suggester.hpp"
@@ -31,7 +29,7 @@ namespace bha::suggestions {
 
         /// Human-readable behavior summary for UI/CLI surfaces.
         [[nodiscard]] std::string_view description() const noexcept override {
-            return "Identifies include optimizations (removal, IWYU, movement)";
+            return "Identifies unused includes from Clang semantic diagnostics";
         }
 
         /// Primary suggestion type emitted by this suggester.
@@ -41,11 +39,11 @@ namespace bha::suggestions {
 
         /// Full set of suggestion types this suggester may emit.
         [[nodiscard]] std::vector<SuggestionType> supported_types() const override {
-            return {SuggestionType::IncludeRemoval, SuggestionType::MoveToCpp};
+            return {SuggestionType::IncludeRemoval};
         }
 
         /**
-         * @brief Generate include-cleanup and move-to-cpp suggestions.
+         * @brief Generate compiler-diagnostic-backed include removal suggestions.
          *
          * @param context Analysis context containing traces, analyzer outputs, and options.
          * @return Suggestion generation result or structured error.

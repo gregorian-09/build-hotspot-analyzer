@@ -152,8 +152,8 @@ namespace bha::suggestions {
     /**
      * @brief Compute the canonical suggester ID for one implementation.
      *
-     * For mixed suggesters (for example include cleanup + move-to-cpp), this
-     * function picks the shared user-facing ID used by catalog/filters.
+     * Include cleanup is intentionally represented by one compiler-backed
+     * catalog entry; this suggester no longer emits MoveToCpp suggestions.
      *
      * @param suggester Suggester instance.
      * @return Canonical ID string.
@@ -172,13 +172,8 @@ namespace bha::suggestions {
                 return "unity-build";
             case SuggestionType::PIMPLPattern:
                 return "pimpl";
-            case SuggestionType::IncludeRemoval: {
-                const auto supported = suggester.supported_types();
-                if (std::ranges::find(supported, SuggestionType::MoveToCpp) != supported.end()) {
-                    return "include";
-                }
+            case SuggestionType::IncludeRemoval:
                 return "include-removal";
-            }
             case SuggestionType::MoveToCpp:
                 return "move-to-cpp";
         }

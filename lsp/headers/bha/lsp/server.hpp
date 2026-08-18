@@ -44,8 +44,6 @@ namespace bha::lsp
         bool allow_missing_compile_commands = true;
         /// Allow suggesters marked unsafe/advisory.
         bool include_unsafe_suggestions = false;
-        /// Enable slower fallback passes for include-cleanup validation.
-        bool enable_expensive_include_cleanup_fallbacks = false;
         /// Global confidence gate for returned suggestions.
         double min_confidence = 0.5;
 

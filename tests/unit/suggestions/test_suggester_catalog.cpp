@@ -82,7 +82,7 @@ namespace bha::suggestions {
             return descriptor.id == "pch";
         });
         const auto has_include = std::ranges::any_of(descriptors, [](const SuggesterDescriptor& descriptor) {
-            return descriptor.id == "include";
+            return descriptor.id == "include-removal";
         });
 
         EXPECT_TRUE(has_pch);
@@ -96,9 +96,9 @@ namespace bha::suggestions {
         ASSERT_TRUE(by_class.has_value());
         EXPECT_EQ(by_class->id, "pch");
 
-        const auto by_type = find_suggester_descriptor("move-to-cpp");
+        const auto by_type = find_suggester_descriptor("include-removal");
         ASSERT_TRUE(by_type.has_value());
-        EXPECT_EQ(by_type->id, "include");
+        EXPECT_EQ(by_type->id, "include-removal");
     }
 
     TEST(SuggesterCatalogTest, ParsesSuggestionTypeTokens) {

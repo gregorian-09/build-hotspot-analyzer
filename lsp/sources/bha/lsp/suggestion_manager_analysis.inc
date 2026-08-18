@@ -262,10 +262,6 @@
         suggester_opts.include_unsafe = config_.include_unsafe_suggestions;
         suggester_opts.enable_consolidation = true;
         suggester_opts.compile_commands_path = compile_commands_path;
-        suggester_opts.max_include_cleanup_scan_files =
-            config_.enable_expensive_include_cleanup_fallbacks ? 25 : 0;
-        suggester_opts.max_include_move_candidate_headers =
-            config_.enable_expensive_include_cleanup_fallbacks ? 100 : 0;
         suggester_opts.heuristics.forward_decl.max_candidate_headers = 25;
         suggester_opts.heuristics.templates.max_candidate_instantiations = 25;
         suggester_opts.on_suggester_completed =
@@ -324,37 +320,6 @@
             85
         );
 
-        bool has_include_removal = std::ranges::any_of(
-            bha_suggestions,
-            [](const bha::Suggestion& suggestion) {
-                return suggestion.type == bha::SuggestionType::IncludeRemoval;
-            }
-        );
-        if (config_.enable_expensive_include_cleanup_fallbacks && !has_include_removal) {
-            phase_start = std::chrono::steady_clock::now();
-            report("Running include-cleanup fallback...", 86);
-            auto cli_include_removals = load_include_removal_suggestions_via_cli(project_root, traces_dir);
-            if (!cli_include_removals.empty()) {
-                for (auto& suggestion : cli_include_removals) {
-                    bha_suggestions.push_back(std::move(suggestion));
-                }
-                has_include_removal = true;
-            }
-            report_elapsed("Include-cleanup CLI fallback", phase_start, 88);
-        }
-        if (config_.enable_expensive_include_cleanup_fallbacks && !has_include_removal && compile_commands_path.has_value()) {
-            phase_start = std::chrono::steady_clock::now();
-            report("Running verified include-cleanup fallback...", 88);
-            if (auto verified_include = build_verified_include_removal_suggestion(
-                *compile_commands_path,
-                project_root,
-                build_trace,
-                config_.protected_include_patterns
-            )) {
-                bha_suggestions.push_back(std::move(*verified_include));
-            }
-            report_elapsed("Verified include-cleanup fallback", phase_start, 90);
-        }
         record_phase("suggestion_generation", suggestion_phase_start);
 
         ensure_not_cancelled();
