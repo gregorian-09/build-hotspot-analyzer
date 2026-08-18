@@ -226,12 +226,19 @@ namespace bha::suggestions {
             }
 
             bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
-                if (expression) {
+                if (expression && expression->isArgumentType()) {
                     record_type_use(
                         expression->getArgumentType(),
                         "type-trait",
                         true,
                         expression->getArgumentType()->isInstantiationDependentType()
+                    );
+                } else if (expression && expression->getArgumentExpr()) {
+                    record_type_use(
+                        expression->getArgumentExpr()->getType(),
+                        "type-trait-expression",
+                        true,
+                        expression->getArgumentExpr()->getType()->isInstantiationDependentType()
                     );
                 }
                 return true;
@@ -381,28 +388,38 @@ namespace bha::suggestions {
 
                 type = type.getCanonicalType();
 
-                const bool requires_complete_type = force_complete ||
+                bool requires_complete_type = force_complete ||
                     (!type->isPointerType() && !type->isReferenceType());
                 while (type->isPointerType() || type->isReferenceType()) {
                     type = type->getPointeeType();
+                }
+                while (type->isArrayType()) {
+                    requires_complete_type = true;
+                    type = type->getAsArrayTypeUnsafe()->getElementType();
                 }
 
                 const auto* record_type = type->getAs<clang::RecordType>();
                 const auto* specialization = record_type
                     ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
                     : nullptr;
+                const auto record_nested_arguments = [this, &in_dependent_context](
+                    const auto& arguments
+                ) {
+                    for (const auto& argument : arguments) {
+                        if (argument.getKind() == clang::TemplateArgument::Type) {
+                            record_type_use(
+                                argument.getAsType(),
+                                "template-argument",
+                                true,
+                                in_dependent_context || argument.getAsType()->isInstantiationDependentType()
+                            );
+                        }
+                    }
+                };
+
                 if (!specialization || !specialization->getSpecializedTemplate()) {
                     if (const auto* template_type = type->getAs<clang::TemplateSpecializationType>()) {
-                        for (const auto& argument : template_type->template_arguments()) {
-                            if (argument.getKind() == clang::TemplateArgument::Type) {
-                                record_type_use(
-                                    argument.getAsType(),
-                                    "template-argument",
-                                    true,
-                                    in_dependent_context || argument.getAsType()->isInstantiationDependentType()
-                                );
-                            }
-                        }
+                        record_nested_arguments(template_type->template_arguments());
                     }
                     return;
                 }
@@ -418,6 +435,7 @@ namespace bha::suggestions {
                         in_dependent_context || type->isInstantiationDependentType()
                     }
                 });
+                record_nested_arguments(specialization->getTemplateArgs().asArray());
             }
 
             clang::ASTContext& context_;

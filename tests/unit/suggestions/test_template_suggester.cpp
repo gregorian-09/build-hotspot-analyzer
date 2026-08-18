@@ -234,8 +234,11 @@ namespace bha::suggestions {
             << "#include \"box.hpp\"\n"
             << "template struct Box<int>;\n";
         std::ofstream(root / "src" / "use.cpp")
+            << "#include <vector>\n"
             << "#include \"box.hpp\"\n"
-            << "constexpr auto box_size = sizeof(Box<int>);\n";
+            << "constexpr auto box_size = sizeof(Box<int>);\n"
+            << "std::vector<Box<int>> boxes;\n"
+            << "Box<int> boxed_array[2];\n";
         std::ofstream(root / "compile_commands.json")
             << "[{\"directory\":\"" << root.string() << "\","
             << "\"file\":\"src/box.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
@@ -260,6 +263,14 @@ namespace bha::suggestions {
         ASSERT_NE(record, nullptr);
         EXPECT_TRUE(std::ranges::any_of(record->uses, [&](const auto& use) {
             return use.source_file == root / "src" / "use.cpp" && use.requires_complete_type;
+        }));
+        EXPECT_TRUE(std::ranges::any_of(record->uses, [&](const auto& use) {
+            return use.source_file == root / "src" / "use.cpp" &&
+                use.kind == "template-argument" && use.requires_complete_type;
+        }));
+        EXPECT_TRUE(std::ranges::any_of(record->uses, [&](const auto& use) {
+            return use.source_file == root / "src" / "use.cpp" &&
+                use.kind == "variable-declaration" && use.requires_complete_type;
         }));
         const auto result = suggester_.suggest(context);
 
