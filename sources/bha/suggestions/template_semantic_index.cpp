@@ -29,6 +29,8 @@
 #include <clang/AST/TypeLoc.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/ASTUnit.h>
+#include <clang/Lex/Lexer.h>
+#include <clang/Tooling/Core/Replacement.h>
 #include <clang/Tooling/Tooling.h>
 #if BHA_HAVE_CLANG_DEP_SCANNING
 #if __has_include(<clang/Tooling/DependencyScanning/DependencyScanningTool.h>)
@@ -154,6 +156,15 @@ namespace bha::suggestions {
                     record.declaration_end_line = declaration_end.getSpellingLineNumber();
                     record.declaration_end_column = declaration_end.getSpellingColumnNumber();
                 }
+                const auto end_token = clang::Lexer::getLocForEndOfToken(
+                    context_.getSourceManager().getSpellingLoc(primary->getSourceRange().getEnd()),
+                    0,
+                    context_.getSourceManager(),
+                    context_.getLangOpts()
+                );
+                if (end_token.isValid()) {
+                    record.declaration_end_offset = context_.getSourceManager().getFileOffset(end_token);
+                }
                 record.use_files.push_back(source_file_);
                 record.complete_definition = declaration->getDefinition() != nullptr;
                 record.has_explicit_instantiation =
@@ -175,40 +186,6 @@ namespace bha::suggestions {
                     record.explicit_definition_files.push_back(source_file_);
                 }
                 records_.push_back(std::move(record));
-                return true;
-            }
-
-            bool VisitTypeLoc(clang::TypeLoc type_location) {
-                auto type = type_location.getType();
-                const bool requires_complete_type =
-                    !type->isPointerType() && !type->isReferenceType();
-                while (type->isPointerType() || type->isReferenceType()) {
-                    type = type->getPointeeType();
-                }
-                const auto* record_type = type->getAs<clang::RecordType>();
-                const auto* specialization = record_type
-                    ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
-                    : nullptr;
-                if (specialization && specialization->getSpecializedTemplate()) {
-                    const std::string key =
-                        specialization->getSpecializedTemplate()->getQualifiedNameAsString() +
-                        render_template_arguments(specialization->getTemplateArgs(), context_);
-                    if (std::ranges::none_of(uses_, [&](const PendingUse& use) {
-                            return use.specialization == key && use.use.source_file == source_file_ &&
-                                   use.use.kind == "type-location" &&
-                                   use.use.requires_complete_type == requires_complete_type;
-                        })) {
-                        uses_.push_back({
-                            key,
-                            {
-                                source_file_,
-                                "type-location",
-                                requires_complete_type,
-                                type->isInstantiationDependentType()
-                            }
-                        });
-                    }
-                }
                 return true;
             }
 
@@ -402,6 +379,8 @@ namespace bha::suggestions {
                     return;
                 }
 
+                type = type.getCanonicalType();
+
                 const bool requires_complete_type = force_complete ||
                     (!type->isPointerType() && !type->isReferenceType());
                 while (type->isPointerType() || type->isReferenceType()) {
@@ -413,6 +392,18 @@ namespace bha::suggestions {
                     ? llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record_type->getDecl())
                     : nullptr;
                 if (!specialization || !specialization->getSpecializedTemplate()) {
+                    if (const auto* template_type = type->getAs<clang::TemplateSpecializationType>()) {
+                        for (const auto& argument : template_type->template_arguments()) {
+                            if (argument.getKind() == clang::TemplateArgument::Type) {
+                                record_type_use(
+                                    argument.getAsType(),
+                                    "template-argument",
+                                    true,
+                                    in_dependent_context || argument.getAsType()->isInstantiationDependentType()
+                                );
+                            }
+                        }
+                    }
                     return;
                 }
 
@@ -532,7 +523,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v5");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v6");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -652,6 +643,7 @@ namespace bha::suggestions {
                 {"declaration_column", record.declaration_column},
                 {"declaration_end_line", record.declaration_end_line},
                 {"declaration_end_column", record.declaration_end_column},
+                {"declaration_end_offset", record.declaration_end_offset},
                 {"use_files", use_files},
                 {"uses", uses},
                 {"explicit_definition_files", definitions},
@@ -680,6 +672,7 @@ namespace bha::suggestions {
             record.declaration_column = value.value("declaration_column", std::size_t{0});
             record.declaration_end_line = value.value("declaration_end_line", std::size_t{0});
             record.declaration_end_column = value.value("declaration_end_column", std::size_t{0});
+            record.declaration_end_offset = value.value("declaration_end_offset", std::size_t{0});
             record.complete_definition = value.value("complete_definition", false);
             record.has_explicit_instantiation = value.value("has_explicit_instantiation", false);
             record.has_explicit_instantiation_declaration = value.value(
@@ -776,7 +769,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v5" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v6" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -785,7 +778,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v5" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v6" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -796,6 +789,7 @@ namespace bha::suggestions {
         }
 
         json translation_units = json::array();
+        std::unordered_map<std::string, std::vector<TemplateSemanticUse>> all_uses;
         for (const auto& command : commands) {
             const auto unit_fingerprint = cache_fingerprint(
                 project_index_,
@@ -812,6 +806,17 @@ namespace bha::suggestions {
                     }
                     for (const auto& value : cached_unit["records"]) {
                         records_.push_back(deserialize_record(value));
+                    }
+                    if (cached_unit.contains("uses") && cached_unit["uses"].is_array()) {
+                        for (const auto& value : cached_unit["uses"]) {
+                            if (!value.is_object() || !value.contains("specialization") ||
+                                !value.contains("use")) {
+                                continue;
+                            }
+                            all_uses[value.value("specialization", "")].push_back(
+                                deserialize_use(value["use"])
+                            );
+                        }
                     }
                     translation_units.push_back(cached_unit);
                     reused = true;
@@ -853,29 +858,27 @@ namespace bha::suggestions {
             visitor.TraverseDecl(ast->getASTContext().getTranslationUnitDecl());
             auto records = visitor.take_records();
             auto uses = visitor.take_uses();
-            for (auto& record : records) {
-                if (std::ranges::any_of(uses, [&](const auto& use) {
-                        return use.specialization == record.specialization;
-                    }) &&
-                    std::ranges::find(record.use_files, command.source_file) == record.use_files.end()) {
-                    record.use_files.push_back(command.source_file);
-                }
-                for (auto& use : uses) {
-                    if (use.specialization == record.specialization) {
-                        record.uses.push_back(std::move(use.use));
-                    }
-                }
-            }
-            records_.insert(records_.end(), records.begin(), records.end());
-
             json serialized_records = json::array();
             for (const auto& record : records) {
                 serialized_records.push_back(serialize_record(record));
             }
+            json serialized_uses = json::array();
+            for (const auto& use : uses) {
+                serialized_uses.push_back({
+                    {"specialization", use.specialization},
+                    {"use", serialize_use(use.use)}
+                });
+            }
+            for (auto& use : uses) {
+                all_uses[use.specialization].push_back(std::move(use.use));
+            }
+            records_.insert(records_.end(), records.begin(), records.end());
+
             translation_units.push_back({
                 {"source_file", command.source_file.generic_string()},
                 {"fingerprint", unit_fingerprint},
-                {"records", std::move(serialized_records)}
+                {"records", std::move(serialized_records)},
+                {"uses", std::move(serialized_uses)}
             });
         }
 
@@ -907,6 +910,7 @@ namespace bha::suggestions {
                 existing.declaration_column = record.declaration_column;
                 existing.declaration_end_line = record.declaration_end_line;
                 existing.declaration_end_column = record.declaration_end_column;
+                existing.declaration_end_offset = record.declaration_end_offset;
             }
             if (existing.canonical_extern_declaration.empty()) {
                 existing.canonical_extern_declaration = record.canonical_extern_declaration;
@@ -939,6 +943,32 @@ namespace bha::suggestions {
             }
         }
 
+        for (auto& [specialization, uses] : all_uses) {
+            const auto record_it = record_indices.find(specialization);
+            if (record_it == record_indices.end()) {
+                continue;
+            }
+            auto& record = merged[record_it->second];
+            for (auto& use : uses) {
+                const auto duplicate = std::ranges::find_if(
+                    record.uses,
+                    [&use](const TemplateSemanticUse& candidate) {
+                        return candidate.source_file == use.source_file &&
+                               candidate.kind == use.kind &&
+                               candidate.requires_complete_type == use.requires_complete_type &&
+                               candidate.in_dependent_context == use.in_dependent_context;
+                    }
+                );
+                if (duplicate == record.uses.end()) {
+                    record.uses.push_back(std::move(use));
+                    const auto& source_file = record.uses.back().source_file;
+                    if (std::ranges::find(record.use_files, source_file) == record.use_files.end()) {
+                        record.use_files.push_back(source_file);
+                    }
+                }
+            }
+        }
+
         for (auto& record : merged) {
             record.has_dependent_use_context = record.has_dependent_use_context ||
                 std::ranges::any_of(record.uses, [](const TemplateSemanticUse& use) {
@@ -953,7 +983,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v5";
+                cache["schema"] = "bha-template-semantic-index-v6";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {

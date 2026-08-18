@@ -1,6 +1,7 @@
 #include "bha/suggestions/template_semantic_index.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -12,7 +13,10 @@ namespace bha::suggestions {
         class TemplateSemanticIndexTest : public ::testing::Test {
         protected:
             void SetUp() override {
-                root_ = std::filesystem::temp_directory_path() / "bha-template-semantic-index-test";
+                root_ = std::filesystem::temp_directory_path() /
+                    ("bha-template-semantic-index-test-" + std::to_string(
+                        std::chrono::steady_clock::now().time_since_epoch().count()
+                    ));
                 std::error_code ec;
                 std::filesystem::remove_all(root_, ec);
                 std::filesystem::create_directories(root_ / "src", ec);
@@ -80,9 +84,6 @@ namespace bha::suggestions {
             }));
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
                 return use.kind == "type-trait" && use.requires_complete_type;
-            }));
-            EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
-                return use.kind == "type-location" && use.requires_complete_type;
             }));
             EXPECT_TRUE(std::ranges::any_of(match->uses, [](const auto& use) {
                 return use.kind == "delete-expression" && use.requires_complete_type;

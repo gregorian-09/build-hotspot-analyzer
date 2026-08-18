@@ -8,6 +8,14 @@
 #include <algorithm>
 #include <filesystem>
 
+#ifndef BHA_HAVE_CLANG_TOOLING
+#define BHA_HAVE_CLANG_TOOLING 0
+#endif
+
+#if BHA_HAVE_CLANG_TOOLING
+#include <clang/Tooling/Core/Replacement.h>
+#endif
+
 namespace {
 
     std::optional<bha::TextEdit> make_extern_template_edit(
@@ -49,6 +57,22 @@ namespace {
         if (record.declaration_end_line > line_count) {
             return std::nullopt;
         }
+
+#if BHA_HAVE_CLANG_TOOLING
+        const clang::tooling::Replacement typed_replacement(
+            record.declaration_file.string(),
+            static_cast<unsigned>(record.declaration_end_offset),
+            0,
+            record.canonical_extern_declaration + "\n"
+        );
+        if (typed_replacement.getFilePath().empty() ||
+            typed_replacement.getOffset() != record.declaration_end_offset ||
+            typed_replacement.getLength() != 0) {
+            return std::nullopt;
+        }
+#else
+        return std::nullopt;
+#endif
 
         bha::TextEdit edit;
         edit.file = record.declaration_file;
@@ -115,10 +139,21 @@ namespace bha::suggestions {
             const auto* record = candidate.full_signature.empty()
                 ? nullptr
                 : semantic_index.find_exact(candidate.full_signature);
+            const auto has_unsafe_consumer_use = record != nullptr && std::ranges::any_of(
+                record->uses,
+                [&record](const auto& use) {
+                    return use.requires_complete_type &&
+                        std::ranges::find(
+                            record->explicit_definition_files,
+                            use.source_file
+                        ) == record->explicit_definition_files.end();
+                }
+            );
             if (record == nullptr || !record->complete_definition ||
                 !record->has_external_linkage || record->use_files.empty() || record->uses.empty() ||
                 !record->has_single_explicit_definition || record->has_dependent_arguments ||
-                record->has_dependent_use_context || record->has_unsupported_scope) {
+                record->has_dependent_use_context || record->has_unsupported_scope ||
+                has_unsafe_consumer_use) {
                 ++result.items_skipped;
                 continue;
             }

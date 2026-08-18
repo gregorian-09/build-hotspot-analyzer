@@ -36,6 +36,7 @@ namespace bha::suggestions {
         std::size_t declaration_column = 0;
         std::size_t declaration_end_line = 0;
         std::size_t declaration_end_column = 0;
+        std::size_t declaration_end_offset = 0;
         std::vector<fs::path> use_files;
         std::vector<TemplateSemanticUse> uses;
         std::vector<fs::path> explicit_definition_files;
