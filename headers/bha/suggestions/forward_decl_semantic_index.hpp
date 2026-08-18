@@ -4,6 +4,7 @@
 #include "bha/project_index.hpp"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace bha::suggestions {
@@ -49,6 +50,14 @@ namespace bha::suggestions {
         ProjectIndex& project_index,
         const fs::path& header,
         const std::vector<CompilationUnit>& commands
+    );
+
+    [[nodiscard]] bool validate_forward_decl_replacements(
+        ProjectIndex& project_index,
+        const std::vector<CompilationUnit>& commands,
+        const std::vector<ForwardDeclSemanticInclude>& includes,
+        std::string_view replacement_text,
+        std::string& diagnostic
     );
 
 }  // namespace bha::suggestions

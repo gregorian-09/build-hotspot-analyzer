@@ -249,6 +249,17 @@ namespace bha::suggestions {
                 ++result.items_skipped;
                 continue;
             }
+            std::string validation_diagnostic;
+            if (!validate_forward_decl_replacements(
+                    *context.project_index,
+                    commands,
+                    semantic.includes,
+                    format_separated_block(declaration_text),
+                    validation_diagnostic
+                )) {
+                ++result.items_skipped;
+                continue;
+            }
             suggestion.impact.total_files_affected = suggestion.secondary_files.size();
             result.suggestions.push_back(std::move(suggestion));
         }

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <string_view>
 
@@ -23,6 +24,7 @@
 #include <clang/Tooling/Core/Replacement.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/Error.h>
 #endif
 
 namespace bha::suggestions {
@@ -170,7 +172,7 @@ namespace bha::suggestions {
             }
 
             bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
-                if (expression) {
+                if (expression && expression->isArgumentType()) {
                     record_use(expression->getArgumentType(), expression->getBeginLoc(), true);
                 }
                 return true;
@@ -233,60 +235,132 @@ namespace bha::suggestions {
                 if (use_file.empty() || use_file == header_) {
                     return;
                 }
-                const bool requires_complete = force_complete ||
-                    (!type->isPointerType() && !type->isReferenceType());
                 const bool macro_expanded = source_manager_.isMacroBodyExpansion(location) ||
                     source_manager_.isMacroArgExpansion(location);
-                bool through_alias = false;
-                bool through_template = false;
-                if (type->getAs<clang::TypedefType>() != nullptr) {
-                    through_alias = true;
+                collect_record_uses(
+                    type,
+                    use_file,
+                    force_complete || (!type->isPointerType() && !type->isReferenceType()),
+                    in_dependent_context,
+                    false,
+                    macro_expanded
+                );
+            }
+
+            void collect_record_uses(
+                clang::QualType type,
+                const fs::path& use_file,
+                const bool requires_complete,
+                const bool in_dependent_context,
+                const bool through_template,
+                const bool macro_expanded
+            ) {
+                if (type.isNull()) {
+                    return;
+                }
+                bool through_alias = type->getAs<clang::TypedefType>() != nullptr;
+                if (through_alias) {
+                    collect_record_uses(
+                        type->getAs<clang::TypedefType>()->desugar(),
+                        use_file,
+                        requires_complete,
+                        in_dependent_context,
+                        through_template,
+                        macro_expanded
+                    );
+                    return;
+                }
+                if (type->isPointerType() || type->isReferenceType()) {
+                    collect_record_uses(
+                        type->getPointeeType(),
+                        use_file,
+                        requires_complete,
+                        in_dependent_context,
+                        through_template,
+                        macro_expanded
+                    );
+                    return;
+                }
+                if (const auto* array = type->getAsArrayTypeUnsafe()) {
+                    collect_record_uses(
+                        array->getElementType(),
+                        use_file,
+                        true,
+                        in_dependent_context,
+                        through_template,
+                        macro_expanded
+                    );
+                    return;
                 }
                 if (const auto* template_type = type->getAs<clang::TemplateSpecializationType>()) {
+                    const bool nested_template = true;
+                    if (const auto* template_decl = template_type->getAsCXXRecordDecl()) {
+                        record_if_from_header(
+                            template_decl,
+                            use_file,
+                            requires_complete,
+                            in_dependent_context,
+                            nested_template,
+                            macro_expanded,
+                            through_alias
+                        );
+                    }
                     for (const auto& argument : template_type->template_arguments()) {
-                        if (argument.getKind() != clang::TemplateArgument::Type) {
-                            continue;
-                        }
-                        const auto argument_type = argument.getAsType();
-                        const auto* argument_record = argument_type->getAs<clang::RecordType>();
-                        if (argument_record && spelling_path(
-                                source_manager_,
-                                argument_record->getDecl()->getCanonicalDecl()->getLocation()
-                            ) == header_) {
-                            through_template = true;
+                        if (argument.getKind() == clang::TemplateArgument::Type) {
+                            collect_record_uses(
+                                argument.getAsType(),
+                                use_file,
+                                requires_complete,
+                                in_dependent_context || argument.getAsType()->isInstantiationDependentType(),
+                                nested_template,
+                                macro_expanded
+                            );
                         }
                     }
+                    return;
                 }
-                while (type->isPointerType() || type->isReferenceType()) {
-                    type = type->getPointeeType();
+                if (const auto* record_type = type->getAs<clang::RecordType>()) {
+                    if (const auto* declaration = llvm::dyn_cast<clang::CXXRecordDecl>(record_type->getDecl())) {
+                        record_if_from_header(
+                            declaration,
+                            use_file,
+                            requires_complete,
+                            in_dependent_context || type->isInstantiationDependentType(),
+                            through_template,
+                            macro_expanded,
+                            through_alias
+                        );
+                    }
                 }
-                if (type->getAs<clang::TypedefType>() != nullptr) {
-                    through_alias = true;
-                }
-                const auto* record_type = type->getAs<clang::RecordType>();
-                const auto* declaration = record_type
-                    ? llvm::dyn_cast<clang::CXXRecordDecl>(record_type->getDecl())
-                    : nullptr;
+            }
+
+            void record_if_from_header(
+                const clang::CXXRecordDecl* declaration,
+                const fs::path& use_file,
+                const bool requires_complete,
+                const bool in_dependent_context,
+                const bool through_template,
+                const bool macro_expanded,
+                const bool through_alias
+            ) {
                 if (!declaration || !declaration->getCanonicalDecl()) {
                     return;
                 }
-                const auto canonical_location = declaration->getCanonicalDecl()->getLocation();
-                if (spelling_path(source_manager_, canonical_location) != header_) {
+                if (spelling_path(source_manager_, declaration->getCanonicalDecl()->getLocation()) != header_) {
                     return;
                 }
                 const std::string name = declaration->getCanonicalDecl()->getQualifiedNameAsString();
                 for (auto& record : records_) {
-                    if (record.qualified_name != name) {
-                        continue;
+                    if (record.qualified_name == name) {
+                        record.uses.push_back({
+                            use_file,
+                            requires_complete,
+                            in_dependent_context,
+                            through_alias,
+                            through_template,
+                            macro_expanded
+                        });
                     }
-                    record.uses.push_back({
-                        use_file,
-                        requires_complete,
-                        in_dependent_context || type->isInstantiationDependentType(),
-                        through_alias,
-                        through_template,
-                        macro_expanded
-                    });
                 }
             }
 
@@ -414,6 +488,27 @@ namespace bha::suggestions {
             bool& had_errors_;
             clang::CompilerInstance* compiler_ = nullptr;
         };
+
+        class SyntaxValidationAction final : public clang::ASTFrontendAction {
+        public:
+            explicit SyntaxValidationAction(bool& had_errors) : had_errors_(had_errors) {}
+
+            std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+                clang::CompilerInstance& compiler,
+                llvm::StringRef
+            ) override {
+                compiler_ = &compiler;
+                return std::make_unique<clang::ASTConsumer>();
+            }
+
+            void EndSourceFileAction() override {
+                had_errors_ = compiler_ == nullptr || compiler_->getDiagnostics().hasErrorOccurred();
+            }
+
+        private:
+            bool& had_errors_;
+            clang::CompilerInstance* compiler_ = nullptr;
+        };
 #endif
 
     }  // namespace
@@ -494,6 +589,67 @@ namespace bha::suggestions {
             result.diagnostic = "No AST declaration from the target header was observed";
         }
         return result;
+#endif
+    }
+
+    bool validate_forward_decl_replacements(
+        ProjectIndex& project_index,
+        const std::vector<CompilationUnit>& commands,
+        const std::vector<ForwardDeclSemanticInclude>& includes,
+        const std::string_view replacement_text,
+        std::string& diagnostic
+    ) {
+#if !BHA_HAVE_CLANG_TOOLING
+        (void)project_index;
+        (void)commands;
+        (void)includes;
+        (void)replacement_text;
+        diagnostic = "Clang LibTooling is required for forward-declaration validation";
+        return false;
+#else
+        std::map<std::string, clang::tooling::Replacements> replacements_by_file;
+        for (const auto& include : includes) {
+            const auto file = project_index.resolve(include.including_file).lexically_normal();
+            const clang::tooling::Replacement replacement(
+                file.string(),
+                static_cast<unsigned>(include.offset),
+                static_cast<unsigned>(include.length),
+                replacement_text
+            );
+            if (auto error = replacements_by_file[file.generic_string()].add(replacement)) {
+                diagnostic = llvm::toString(std::move(error));
+                return false;
+            }
+        }
+
+        for (const auto& command : commands) {
+            const auto file = project_index.resolve(command.source_file).lexically_normal();
+            const auto replacements = replacements_by_file.find(file.generic_string());
+            if (replacements == replacements_by_file.end()) {
+                continue;
+            }
+            const auto source = project_index.read_file(file);
+            if (!source.has_value()) {
+                diagnostic = "Failed to read an affected translation unit for validation";
+                return false;
+            }
+            auto modified = clang::tooling::applyAllReplacements(*source, replacements->second);
+            if (!modified) {
+                diagnostic = llvm::toString(modified.takeError());
+                return false;
+            }
+            bool had_errors = false;
+            if (!clang::tooling::runToolOnCodeWithArgs(
+                    std::make_unique<SyntaxValidationAction>(had_errors),
+                    *modified,
+                    tooling_arguments(command),
+                    file.string()
+                ) || had_errors) {
+                diagnostic = "Clang rejected the forward-declaration replacement in " + file.string();
+                return false;
+            }
+        }
+        return true;
 #endif
     }
 
