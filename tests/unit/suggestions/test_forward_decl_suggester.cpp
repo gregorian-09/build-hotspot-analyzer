@@ -41,6 +41,17 @@ namespace bha::suggestions {
             (void)source;
         }
 
+        void write_nested_compile_commands(
+            const std::filesystem::path& root
+        ) {
+            std::error_code ec;
+            std::filesystem::create_directories(root / "build", ec);
+            std::ofstream(root / "build" / "compile_commands.json")
+                << "[{\"directory\":\".\","
+                << "\"file\":\"../src/use.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I../include\",\"-c\",\"../src/use.cpp\"]}]";
+        }
+
         analyzers::AnalysisResult dependency_analysis(
             const std::filesystem::path& header,
             const std::filesystem::path& source
@@ -264,5 +275,26 @@ namespace bha::suggestions {
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& text = result.value().suggestions.front().edits.front().new_text;
         EXPECT_NE(text.find("inline namespace v2"), std::string::npos);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, ReplaysRelativeCompileArgumentsFromNestedDatabase) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box();\n";
+        write_nested_compile_commands(root_);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "build" / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        EXPECT_TRUE(result.value().suggestions.front().is_safe);
     }
 }
