@@ -19,6 +19,9 @@ namespace bha::suggestions {
 
         std::string command_environment_key(const CompilationUnit& command) {
             std::ostringstream key;
+            // A PCH is language-specific. Keep this in the identity even when
+            // two commands otherwise have identical preprocessor options.
+            key << to_string(detect_source_language_mode(command)) << '\0';
             if (!command.command_line.empty()) {
                 key << command.command_line.front() << '\0';
             }
@@ -36,8 +39,7 @@ namespace bha::suggestions {
                     continue;
                 }
                 const fs::path path_argument(argument);
-                if (path_argument == command.source_file ||
-                    path_argument.filename() == command.source_file.filename()) {
+                if (path_argument.lexically_normal() == command.source_file.lexically_normal()) {
                     continue;
                 }
                 key << argument << '\0';
@@ -49,13 +51,14 @@ namespace bha::suggestions {
             ProjectIndex& project_index,
             const analyzers::DependencyAnalysisResult::HeaderInfo& header
         ) {
-            if (header.included_by.size() < 2) {
-                return false;
-            }
-
             std::unordered_set<std::string> includers;
             for (const auto& file : header.included_by) {
                 includers.insert(resolved(project_index, file).generic_string());
+            }
+            // Repeated include events in one TU do not provide independent
+            // PCH evidence: include guards may already eliminate the work.
+            if (includers.size() < 2) {
+                return false;
             }
 
             std::optional<std::string> environment;
@@ -63,6 +66,9 @@ namespace bha::suggestions {
             for (const auto& command : project_index.compile_commands()) {
                 if (!includers.contains(resolved(project_index, command.source_file).generic_string())) {
                     continue;
+                }
+                if (detect_source_language_mode(command) == SourceLanguageMode::Unknown) {
+                    return false;
                 }
                 const auto current = command_environment_key(command);
                 if (!environment.has_value()) {
@@ -72,7 +78,7 @@ namespace bha::suggestions {
                 }
                 ++matched;
             }
-            return matched == includers.size();
+            return matched == includers.size() && environment.has_value();
         }
 
         Suggestion make_advisory(
@@ -145,7 +151,7 @@ namespace bha::suggestions {
             }
             ++result.items_analyzed;
             if (header.path.empty() || !is_header_file_path(header.path) ||
-                header.inclusion_count < 2 || header.included_by.size() < 2 ||
+                header.inclusion_count < 2 ||
                 header.total_parse_time <= Duration::zero() ||
                 !fs::exists(context.project_index->resolve(header.path)) ||
                 !has_matching_compile_environment(*context.project_index, header)) {

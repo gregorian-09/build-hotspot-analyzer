@@ -141,4 +141,48 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
     }
+
+    TEST_F(PCHSuggesterTest, RejectsDuplicateIncludeEventsFromOneTranslationUnit) {
+        write_sources();
+        write_database();
+        const auto header = root_ / "include" / "common.hpp";
+        const auto one = root_ / "src" / "one.cpp";
+        const auto analysis = dependency_analysis(header, {one, one});
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{BuildTrace{}, analysis, options, root_};
+
+        const auto result = PCHSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
+    TEST_F(PCHSuggesterTest, RejectsMixedLanguageCompileEnvironments) {
+        write_sources();
+        write_database();
+        const auto header = root_ / "include" / "common.hpp";
+        const auto one = root_ / "src" / "one.cpp";
+        const auto two = root_ / "src" / "two.cpp";
+        std::ofstream(root_ / "compile_commands.json")
+            << "[{\"directory\":\"" << root_.string() << "\","
+            << "\"file\":\"" << one.string() << "\","
+            << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
+            << (root_ / "include").string() << "\",\"-c\",\""
+            << one.string() << "\"]},"
+            << "{\"directory\":\"" << root_.string() << "\","
+            << "\"file\":\"" << two.string() << "\","
+            << "\"arguments\":[\"clang++\",\"-x\",\"c\",\"-I"
+            << (root_ / "include").string() << "\",\"-c\",\""
+            << two.string() << "\"]}]";
+        const auto analysis = dependency_analysis(header, {one, two});
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{BuildTrace{}, analysis, options, root_};
+
+        const auto result = PCHSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
 }
