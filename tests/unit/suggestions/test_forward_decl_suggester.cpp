@@ -241,4 +241,28 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
     }
+
+    TEST_F(ForwardDeclSuggesterTest, PreservesInlineNamespaceInDeclaration) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "namespace api { inline namespace v2 { struct Box { int value; }; } }\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "api::Box* make_box();\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& text = result.value().suggestions.front().edits.front().new_text;
+        EXPECT_NE(text.find("inline namespace v2"), std::string::npos);
+    }
 }

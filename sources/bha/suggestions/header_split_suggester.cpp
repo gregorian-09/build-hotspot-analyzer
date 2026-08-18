@@ -12,21 +12,6 @@
 namespace bha::suggestions {
     namespace {
 
-        std::vector<std::string> split_qualified_name(const std::string& name) {
-            std::vector<std::string> parts;
-            std::size_t begin = 0;
-            while (begin < name.size()) {
-                const std::size_t separator = name.find("::", begin);
-                if (separator == std::string::npos) {
-                    parts.push_back(name.substr(begin));
-                    break;
-                }
-                parts.push_back(name.substr(begin, separator - begin));
-                begin = separator + 2;
-            }
-            return parts;
-        }
-
         std::string render_forward_header(
             const fs::path& header,
             const std::vector<ForwardDeclSemanticRecord>& records
@@ -34,19 +19,18 @@ namespace bha::suggestions {
             std::ostringstream output;
             output << "#pragma once\n\n";
             for (const auto& record : records) {
-                if (record.keyword.empty() || record.qualified_name.empty() ||
+                if (record.keyword.empty() || record.unqualified_name.empty() ||
                     record.unsupported_scope || record.macro_generated) {
                     return {};
                 }
-                const auto parts = split_qualified_name(record.qualified_name);
-                if (parts.empty()) {
-                    return {};
+                for (const auto& namespace_context : record.namespaces) {
+                    if (namespace_context.inline_namespace) {
+                        output << "inline ";
+                    }
+                    output << "namespace " << namespace_context.name << " {\n";
                 }
-                for (std::size_t index = 0; index + 1 < parts.size(); ++index) {
-                    output << "namespace " << parts[index] << " {\n";
-                }
-                output << record.keyword << " " << parts.back() << ";\n";
-                for (std::size_t index = 1; index < parts.size(); ++index) {
+                output << record.keyword << " " << record.unqualified_name << ";\n";
+                for (std::size_t index = 0; index < record.namespaces.size(); ++index) {
                     output << "}\n";
                 }
             }
@@ -88,6 +72,22 @@ namespace bha::suggestions {
 
         std::string companion_name(const fs::path& header) {
             return header.stem().string() + "_fwd" + header.extension().string();
+        }
+
+        std::string companion_include(
+            const ForwardDeclSemanticInclude& include,
+            const fs::path& companion
+        ) {
+            if (include.include_spelling.empty()) {
+                return {};
+            }
+            const fs::path spelling(include.include_spelling);
+            if (spelling.is_absolute() || spelling.filename().empty()) {
+                return {};
+            }
+            const auto replacement_path = (spelling.parent_path() / companion.filename()).generic_string();
+            return std::string("#include ") + (include.angled ? "<" : "\"") +
+                replacement_path + (include.angled ? ">" : "\"");
         }
 
     }  // namespace
@@ -153,6 +153,10 @@ namespace bha::suggestions {
 
             const fs::path resolved_header = context.project_index->resolve(header_info->path);
             const fs::path companion = resolved_header.parent_path() / companion_name(resolved_header);
+            if (fs::exists(companion)) {
+                ++result.items_skipped;
+                continue;
+            }
             Suggestion suggestion;
             suggestion.id = generate_suggestion_id("split-ast", resolved_header);
             suggestion.type = SuggestionType::HeaderSplit;
@@ -204,6 +208,8 @@ namespace bha::suggestions {
             });
 
             std::unordered_set<std::string> edited;
+            std::vector<ForwardDeclSemanticInclude> selected_includes;
+            std::string include_replacement;
             const std::unordered_set<std::string> use_file_keys = [&] {
                 std::unordered_set<std::string> keys;
                 for (const auto& file : use_files) {
@@ -216,15 +222,30 @@ namespace bha::suggestions {
                 if (!use_file_keys.contains(file.generic_string())) {
                     continue;
                 }
+                const auto replacement_text = companion_include(include, companion);
+                if (replacement_text.empty() ||
+                    (!include_replacement.empty() && include_replacement != replacement_text)) {
+                    include_replacement.clear();
+                    break;
+                }
+                include_replacement = replacement_text;
+                const auto edit_key = file.generic_string() + ":" +
+                    std::to_string(include.offset) + ":" + std::to_string(include.length);
+                if (!edited.insert(edit_key).second) {
+                    continue;
+                }
+                selected_includes.push_back(include);
                 TextEdit replacement;
                 replacement.file = file;
                 replacement.start_line = include.line;
                 replacement.start_col = include.col_start;
                 replacement.end_line = include.line;
                 replacement.end_col = include.col_end;
-                replacement.new_text = "#include \"" + companion.filename().string() + "\"";
+                replacement.new_text = replacement_text;
                 suggestion.edits.push_back(std::move(replacement));
-                if (edited.insert(file.generic_string()).second) {
+                if (std::ranges::none_of(
+                        suggestion.secondary_files,
+                        [&](const auto& target) { return target.path == file; })) {
                     suggestion.secondary_files.push_back({
                         file,
                         0,
@@ -237,6 +258,23 @@ namespace bha::suggestions {
                 }
             }
             if (suggestion.edits.size() == 1) {
+                ++result.items_skipped;
+                continue;
+            }
+            if (include_replacement.empty()) {
+                ++result.items_skipped;
+                continue;
+            }
+            std::string validation_diagnostic;
+            if (!validate_header_split_replacements(
+                    *context.project_index,
+                    commands,
+                    selected_includes,
+                    include_replacement,
+                    companion,
+                    content,
+                    validation_diagnostic
+                )) {
                 ++result.items_skipped;
                 continue;
             }

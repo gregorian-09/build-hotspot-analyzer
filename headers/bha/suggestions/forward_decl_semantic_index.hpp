@@ -9,6 +9,11 @@
 
 namespace bha::suggestions {
 
+    struct ForwardDeclSemanticNamespace {
+        std::string name;
+        bool inline_namespace = false;
+    };
+
     struct ForwardDeclSemanticUse {
         fs::path source_file;
         bool requires_complete_type = false;
@@ -21,7 +26,9 @@ namespace bha::suggestions {
     struct ForwardDeclSemanticRecord {
         fs::path declaration_file;
         std::string qualified_name;
+        std::string unqualified_name;
         std::string keyword;
+        std::vector<ForwardDeclSemanticNamespace> namespaces;
         bool complete_definition = false;
         bool macro_generated = false;
         bool template_declaration = false;
@@ -32,6 +39,8 @@ namespace bha::suggestions {
     struct ForwardDeclSemanticInclude {
         fs::path including_file;
         fs::path included_file;
+        std::string include_spelling;
+        bool angled = false;
         std::size_t offset = 0;
         std::size_t length = 0;
         std::size_t line = 0;
@@ -57,6 +66,16 @@ namespace bha::suggestions {
         const std::vector<CompilationUnit>& commands,
         const std::vector<ForwardDeclSemanticInclude>& includes,
         std::string_view replacement_text,
+        std::string& diagnostic
+    );
+
+    [[nodiscard]] bool validate_header_split_replacements(
+        ProjectIndex& project_index,
+        const std::vector<CompilationUnit>& commands,
+        const std::vector<ForwardDeclSemanticInclude>& includes,
+        std::string_view replacement_text,
+        const fs::path& generated_file,
+        std::string_view generated_content,
         std::string& diagnostic
     );
 

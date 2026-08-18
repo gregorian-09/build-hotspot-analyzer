@@ -13,6 +13,7 @@
 
 #if BHA_HAVE_CLANG_TOOLING
 #include <clang/AST/DeclCXX.h>
+#include <clang/AST/Decl.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/Type.h>
@@ -25,6 +26,8 @@
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Support/Error.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/VirtualFileSystem.h>
 #endif
 
 namespace bha::suggestions {
@@ -55,6 +58,33 @@ namespace bha::suggestions {
                     return {};
             }
             return {};
+        }
+
+        std::vector<ForwardDeclSemanticNamespace> declaration_namespaces(
+            const clang::DeclContext* context,
+            bool& unsupported
+        ) {
+            std::vector<ForwardDeclSemanticNamespace> result;
+            for (const auto* current = context; current != nullptr; current = current->getParent()) {
+                const auto* namespace_decl = llvm::dyn_cast<clang::NamespaceDecl>(current);
+                if (!namespace_decl) {
+                    if (!current->isTranslationUnit()) {
+                        unsupported = true;
+                    }
+                    break;
+                }
+                if (namespace_decl->isAnonymousNamespace() || namespace_decl->hasAttrs() ||
+                    !namespace_decl->getIdentifier()) {
+                    unsupported = true;
+                    break;
+                }
+                result.push_back({
+                    namespace_decl->getNameAsString(),
+                    namespace_decl->isInline()
+                });
+            }
+            std::ranges::reverse(result);
+            return result;
         }
 
         std::vector<std::string> tooling_arguments(const CompilationUnit& command) {
@@ -113,12 +143,15 @@ namespace bha::suggestions {
                 ForwardDeclSemanticRecord record;
                 record.declaration_file = header_;
                 record.qualified_name = canonical->getQualifiedNameAsString();
+                record.unqualified_name = canonical->getNameAsString();
                 record.keyword = record_keyword(*canonical);
                 record.complete_definition = true;
                 record.template_declaration = declaration->getDescribedClassTemplate() != nullptr;
                 record.macro_generated = source_manager_.isMacroBodyExpansion(location) ||
                     source_manager_.isMacroArgExpansion(location);
-                record.unsupported_scope = !file_or_namespace_scope || record.qualified_name.empty();
+                record.namespaces = declaration_namespaces(context, record.unsupported_scope);
+                record.unsupported_scope = record.unsupported_scope ||
+                    !file_or_namespace_scope || record.qualified_name.empty();
                 records_.push_back(std::move(record));
                 return true;
             }
@@ -171,9 +204,31 @@ namespace bha::suggestions {
                 return true;
             }
 
+            bool VisitTypedefNameDecl(clang::TypedefNameDecl* declaration) {
+                if (declaration) {
+                    record_use(
+                        declaration->getUnderlyingType(),
+                        declaration->getBeginLoc(),
+                        false,
+                        declaration->getDeclContext()->isDependentContext(),
+                        true
+                    );
+                }
+                return true;
+            }
+
+            bool VisitMemberExpr(clang::MemberExpr* expression) {
+                if (expression && expression->getBase()) {
+                    record_use(expression->getBase()->getType(), expression->getBeginLoc(), true);
+                }
+                return true;
+            }
+
             bool VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr* expression) {
                 if (expression && expression->isArgumentType()) {
                     record_use(expression->getArgumentType(), expression->getBeginLoc(), true);
+                } else if (expression && expression->getArgumentExpr()) {
+                    record_use(expression->getArgumentExpr()->getType(), expression->getBeginLoc(), true);
                 }
                 return true;
             }
@@ -226,7 +281,8 @@ namespace bha::suggestions {
                 clang::QualType type,
                 const clang::SourceLocation location,
                 const bool force_complete,
-                const bool in_dependent_context = false
+                const bool in_dependent_context = false,
+                const bool through_alias = false
             ) {
                 if (type.isNull()) {
                     return;
@@ -243,7 +299,8 @@ namespace bha::suggestions {
                     force_complete || (!type->isPointerType() && !type->isReferenceType()),
                     in_dependent_context,
                     false,
-                    macro_expanded
+                    macro_expanded,
+                    through_alias
                 );
             }
 
@@ -253,20 +310,23 @@ namespace bha::suggestions {
                 const bool requires_complete,
                 const bool in_dependent_context,
                 const bool through_template,
-                const bool macro_expanded
+                const bool macro_expanded,
+                const bool inherited_alias
             ) {
                 if (type.isNull()) {
                     return;
                 }
-                bool through_alias = type->getAs<clang::TypedefType>() != nullptr;
-                if (through_alias) {
+                const auto* typedef_type = type->getAs<clang::TypedefType>();
+                const bool through_alias = inherited_alias || typedef_type != nullptr;
+                if (typedef_type != nullptr) {
                     collect_record_uses(
-                        type->getAs<clang::TypedefType>()->desugar(),
+                        typedef_type->desugar(),
                         use_file,
                         requires_complete,
                         in_dependent_context,
                         through_template,
-                        macro_expanded
+                        macro_expanded,
+                        true
                     );
                     return;
                 }
@@ -277,7 +337,8 @@ namespace bha::suggestions {
                         requires_complete,
                         in_dependent_context,
                         through_template,
-                        macro_expanded
+                        macro_expanded,
+                        through_alias
                     );
                     return;
                 }
@@ -288,7 +349,8 @@ namespace bha::suggestions {
                         true,
                         in_dependent_context,
                         through_template,
-                        macro_expanded
+                        macro_expanded,
+                        through_alias
                     );
                     return;
                 }
@@ -313,7 +375,8 @@ namespace bha::suggestions {
                                 requires_complete,
                                 in_dependent_context || argument.getAsType()->isInstantiationDependentType(),
                                 nested_template,
-                                macro_expanded
+                                macro_expanded,
+                                through_alias
                             );
                         }
                     }
@@ -383,8 +446,8 @@ namespace bha::suggestions {
             void InclusionDirective(
                 clang::SourceLocation hash_location,
                 const clang::Token&,
-                llvm::StringRef,
-                bool,
+                llvm::StringRef filename,
+                bool is_angled,
                 clang::CharSourceRange filename_range,
                 clang::OptionalFileEntryRef file,
                 llvm::StringRef,
@@ -411,6 +474,8 @@ namespace bha::suggestions {
                 includes_.push_back({
                     including,
                     included,
+                    filename.str(),
+                    is_angled,
                     typed_range.getOffset(),
                     typed_range.getLength(),
                     source_manager_.getSpellingLineNumber(hash_location) - 1,
@@ -509,6 +574,35 @@ namespace bha::suggestions {
             bool& had_errors_;
             clang::CompilerInstance* compiler_ = nullptr;
         };
+
+        llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> validation_filesystem(
+            const fs::path& source_file,
+            const std::string& source,
+            const fs::path* generated_file = nullptr,
+            const std::string_view* generated_content = nullptr
+        ) {
+            auto memory = llvm::makeIntrusiveRefCnt<llvm::vfs::InMemoryFileSystem>();
+            memory->addFile(
+                source_file.string(),
+                0,
+                llvm::MemoryBuffer::getMemBufferCopy(source, source_file.string())
+            );
+            if (generated_file != nullptr && generated_content != nullptr) {
+                memory->addFile(
+                    generated_file->string(),
+                    0,
+                    llvm::MemoryBuffer::getMemBufferCopy(
+                        *generated_content,
+                        generated_file->string()
+                    )
+                );
+            }
+            auto overlay = llvm::makeIntrusiveRefCnt<llvm::vfs::OverlayFileSystem>(
+                llvm::vfs::getRealFileSystem()
+            );
+            overlay->pushOverlay(memory);
+            return overlay;
+        }
 #endif
 
     }  // namespace
@@ -642,10 +736,84 @@ namespace bha::suggestions {
             if (!clang::tooling::runToolOnCodeWithArgs(
                     std::make_unique<SyntaxValidationAction>(had_errors),
                     *modified,
+                    validation_filesystem(file, *modified),
                     tooling_arguments(command),
                     file.string()
                 ) || had_errors) {
                 diagnostic = "Clang rejected the forward-declaration replacement in " + file.string();
+                return false;
+            }
+        }
+        return true;
+#endif
+    }
+
+    bool validate_header_split_replacements(
+        ProjectIndex& project_index,
+        const std::vector<CompilationUnit>& commands,
+        const std::vector<ForwardDeclSemanticInclude>& includes,
+        const std::string_view replacement_text,
+        const fs::path& generated_file,
+        const std::string_view generated_content,
+        std::string& diagnostic
+    ) {
+#if !BHA_HAVE_CLANG_TOOLING
+        (void)project_index;
+        (void)commands;
+        (void)includes;
+        (void)replacement_text;
+        (void)generated_file;
+        (void)generated_content;
+        diagnostic = "Clang LibTooling is required for header-split validation";
+        return false;
+#else
+        std::map<std::string, clang::tooling::Replacements> replacements_by_file;
+        for (const auto& include : includes) {
+            const auto file = project_index.resolve(include.including_file).lexically_normal();
+            const clang::tooling::Replacement replacement(
+                file.string(),
+                static_cast<unsigned>(include.offset),
+                static_cast<unsigned>(include.length),
+                replacement_text
+            );
+            if (auto error = replacements_by_file[file.generic_string()].add(replacement)) {
+                diagnostic = llvm::toString(std::move(error));
+                return false;
+            }
+        }
+
+        const auto generated = project_index.resolve(generated_file).lexically_normal();
+        for (const auto& command : commands) {
+            const auto file = project_index.resolve(command.source_file).lexically_normal();
+            const auto replacements = replacements_by_file.find(file.generic_string());
+            if (replacements == replacements_by_file.end()) {
+                continue;
+            }
+            const auto source = project_index.read_file(file);
+            if (!source.has_value()) {
+                diagnostic = "Failed to read an affected translation unit for validation";
+                return false;
+            }
+            auto modified = clang::tooling::applyAllReplacements(*source, replacements->second);
+            if (!modified) {
+                diagnostic = llvm::toString(modified.takeError());
+                return false;
+            }
+            bool had_errors = false;
+            if (!clang::tooling::runToolOnCodeWithArgs(
+                    std::make_unique<SyntaxValidationAction>(had_errors),
+                    *modified,
+                    validation_filesystem(
+                        file,
+                        *modified,
+                        &generated,
+                        &generated_content
+                    ),
+                    tooling_arguments(command),
+                    file.string(),
+                    "bha-header-split"
+                ) || had_errors) {
+                diagnostic = "Clang rejected the header-split replacement in " + file.string();
                 return false;
             }
         }

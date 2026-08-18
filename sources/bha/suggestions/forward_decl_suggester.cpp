@@ -12,37 +12,21 @@
 namespace bha::suggestions {
     namespace {
 
-        std::vector<std::string> split_qualified_name(const std::string& name) {
-            std::vector<std::string> parts;
-            std::size_t begin = 0;
-            while (begin < name.size()) {
-                const std::size_t separator = name.find("::", begin);
-                if (separator == std::string::npos) {
-                    parts.push_back(name.substr(begin));
-                    break;
-                }
-                parts.push_back(name.substr(begin, separator - begin));
-                begin = separator + 2;
-            }
-            return parts;
-        }
-
         std::string render_forward_declaration(const ForwardDeclSemanticRecord& record) {
-            if (record.keyword.empty() || record.qualified_name.empty() || record.unsupported_scope ||
+            if (record.keyword.empty() || record.unqualified_name.empty() || record.unsupported_scope ||
                 record.macro_generated) {
-                return {};
-            }
-            const auto parts = split_qualified_name(record.qualified_name);
-            if (parts.empty()) {
                 return {};
             }
 
             std::ostringstream output;
-            for (std::size_t index = 0; index + 1 < parts.size(); ++index) {
-                output << "namespace " << parts[index] << " { ";
+            for (const auto& namespace_context : record.namespaces) {
+                if (namespace_context.inline_namespace) {
+                    output << "inline ";
+                }
+                output << "namespace " << namespace_context.name << " { ";
             }
-            output << record.keyword << " " << parts.back() << ";";
-            for (std::size_t index = 1; index < parts.size(); ++index) {
+            output << record.keyword << " " << record.unqualified_name << ";";
+            for (std::size_t index = 0; index < record.namespaces.size(); ++index) {
                 output << " }";
             }
             return output.str();
@@ -226,11 +210,19 @@ namespace bha::suggestions {
                 }
                 return keys;
             }();
+            std::unordered_set<std::string> edited_ranges;
+            std::vector<ForwardDeclSemanticInclude> selected_includes;
             for (const auto& include : semantic.includes) {
                 const fs::path file = context.project_index->resolve(include.including_file);
                 if (!use_file_keys.contains(file.generic_string())) {
                     continue;
                 }
+                const auto edit_key = file.generic_string() + ":" +
+                    std::to_string(include.offset) + ":" + std::to_string(include.length);
+                if (!edited_ranges.insert(edit_key).second) {
+                    continue;
+                }
+                selected_includes.push_back(include);
                 TextEdit edit;
                 edit.file = file;
                 edit.start_line = include.line;
@@ -253,7 +245,7 @@ namespace bha::suggestions {
             if (!validate_forward_decl_replacements(
                     *context.project_index,
                     commands,
-                    semantic.includes,
+                    selected_includes,
                     format_separated_block(declaration_text),
                     validation_diagnostic
                 )) {
