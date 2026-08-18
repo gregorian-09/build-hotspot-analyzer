@@ -19,6 +19,10 @@ namespace bha::suggestions {
 
         std::string command_environment_key(const CompilationUnit& command) {
             std::ostringstream key;
+            if (!command.command_line.empty()) {
+                key << command.command_line.front() << '\0';
+            }
+            key << command.working_directory.lexically_normal().generic_string() << '\0';
             for (std::size_t index = 1; index < command.command_line.size(); ++index) {
                 const auto& argument = command.command_line[index];
                 if (argument == "-c" || argument == "/c") {
