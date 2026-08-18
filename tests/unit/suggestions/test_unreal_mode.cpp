@@ -1,5 +1,4 @@
 #include "bha/suggestions/include_suggester.hpp"
-#include "bha/suggestions/pch_suggester.hpp"
 #include "bha/suggestions/unity_build_suggester.hpp"
 
 #include <gtest/gtest.h>
@@ -91,36 +90,6 @@ namespace bha::suggestions {
         EXPECT_TRUE(suggestion.is_safe);
         ASSERT_EQ(suggestion.edits.size(), 1u);
         EXPECT_TRUE(suggestion.edits.front().new_text.find("bEnforceIWYU = true;") != std::string::npos);
-    }
-
-    TEST(UnrealModeSuggesterTest, PCHSuggesterEmitsModuleLevelPCHSuggestion) {
-        TempDir temp("bha-unreal-pch-");
-        write_file(temp.root / "Game.uproject", "{\n}");
-        write_file(
-            temp.root / "Source" / "CoreModule" / "CoreModule.Build.cs",
-            "using UnrealBuildTool;\n"
-            "public class CoreModule : ModuleRules {\n"
-            "  public CoreModule(ReadOnlyTargetRules Target) : base(Target) {\n"
-            "    PCHUsage = PCHUsageMode.NoPCHs;\n"
-            "  }\n"
-            "}\n"
-        );
-
-        PCHSuggester suggester;
-        auto context = make_context(temp.root);
-        auto result = suggester.suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_EQ(result.value().suggestions.size(), 1u);
-        const auto& suggestion = result.value().suggestions.front();
-        EXPECT_EQ(suggestion.type, SuggestionType::PCHOptimization);
-        EXPECT_TRUE(suggestion.title.find("Unreal Module PCH") != std::string::npos);
-        EXPECT_TRUE(suggestion.title.find("UBT") != std::string::npos);
-        EXPECT_TRUE(suggestion.description.find("UnrealBuildTool (UBT)") != std::string::npos);
-        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
-        EXPECT_TRUE(suggestion.is_safe);
-        ASSERT_EQ(suggestion.edits.size(), 1u);
-        EXPECT_TRUE(suggestion.edits.front().new_text.find("PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;") != std::string::npos);
     }
 
     TEST(UnrealModeSuggesterTest, UnitySuggesterEmitsModuleLevelUnitySuggestion) {
@@ -284,42 +253,6 @@ namespace bha::suggestions {
         );
 
         IncludeSuggester suggester;
-        auto context = make_context(temp.root);
-        auto result = suggester.suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_EQ(result.value().suggestions.size(), 1u);
-        const auto& suggestion = result.value().suggestions.front();
-        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
-        EXPECT_FALSE(suggestion.is_safe);
-        EXPECT_TRUE(suggestion.edits.empty());
-        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
-        EXPECT_TRUE(suggestion.auto_apply_blocked_reason->find("Ambiguous Unreal module rules") != std::string::npos);
-    }
-
-    TEST(UnrealModeSuggesterTest, PCHSuggesterBlocksAutoApplyForAmbiguousModuleRules) {
-        TempDir temp("bha-unreal-pch-ambiguous-module-");
-        write_file(temp.root / "Game.uproject", "{\n}");
-        write_file(
-            temp.root / "Source" / "CoreModule" / "CoreModule.Build.cs",
-            "using UnrealBuildTool;\n"
-            "public class CoreModule : ModuleRules {\n"
-            "  public CoreModule(ReadOnlyTargetRules Target) : base(Target) {\n"
-            "    PCHUsage = PCHUsageMode.NoPCHs;\n"
-            "  }\n"
-            "}\n"
-        );
-        write_file(
-            temp.root / "Plugins" / "Mirror" / "Source" / "CoreModule" / "CoreModule.Build.cs",
-            "using UnrealBuildTool;\n"
-            "public class CoreModule : ModuleRules {\n"
-            "  public CoreModule(ReadOnlyTargetRules Target) : base(Target) {\n"
-            "    PCHUsage = PCHUsageMode.NoPCHs;\n"
-            "  }\n"
-            "}\n"
-        );
-
-        PCHSuggester suggester;
         auto context = make_context(temp.root);
         auto result = suggester.suggest(context);
 

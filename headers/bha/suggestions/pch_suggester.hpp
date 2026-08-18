@@ -9,16 +9,12 @@
  * @file pch_suggester.hpp
  * @brief Precompiled header suggestions.
  *
- * Identifies headers that are expensive to parse and included frequently,
- * making them good candidates for precompiled headers.
- *
- * Criteria for PCH candidates:
- * - Header is included in multiple translation units
- * - Total parse time exceeds threshold
- * - Header is stable (not frequently modified)
+ * Identifies repeated header inclusion backed by exact compilation database
+ * environments. The suggester is advisory-only: PCH configuration and savings
+ * require build-system-specific validation and a fresh trace.
  */
 
-#include "bha/suggestions/suggester.hpp"
+#include "bha/suggestions/suggester_interface.hpp"
 
 namespace bha::suggestions {
 

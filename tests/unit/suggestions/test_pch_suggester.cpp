@@ -1,733 +1,143 @@
-//
-// Created by gregorian-rayne on 12/29/25.
-//
-
 #include "bha/suggestions/pch_suggester.hpp"
-#include "bha/suggestions/pch_build_planner.hpp"
+#include "bha/suggestions/suggester.hpp"
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
 
-namespace bha::suggestions
-{
-    class PCHSuggesterTest : public ::testing::Test {
-    protected:
-        void SetUp() override {
-            suggester_ = std::make_unique<PCHSuggester>();
-        }
+namespace bha::suggestions {
+    namespace {
+        class PCHSuggesterTest : public ::testing::Test {
+        protected:
+            void SetUp() override {
+                root_ = std::filesystem::temp_directory_path() / "bha-pch-evidence-test";
+                std::error_code ec;
+                std::filesystem::remove_all(root_, ec);
+                std::filesystem::create_directories(root_ / "include", ec);
+                std::filesystem::create_directories(root_ / "src", ec);
+            }
 
-        std::unique_ptr<PCHSuggester> suggester_;
-    };
+            void TearDown() override {
+                std::error_code ec;
+                std::filesystem::remove_all(root_, ec);
+            }
 
-    TEST_F(PCHSuggesterTest, Name) {
-        EXPECT_EQ(suggester_->name(), "PCHSuggester");
+            void write_sources() {
+                std::ofstream(root_ / "include" / "common.hpp") << "#pragma once\nstruct Common {};\n";
+                std::ofstream(root_ / "src" / "one.cpp") << "#include \"common.hpp\"\nCommon one;\n";
+                std::ofstream(root_ / "src" / "two.cpp") << "#include \"common.hpp\"\nCommon two;\n";
+            }
+
+            void write_database(const std::string& second_standard = "c++20") {
+                std::ofstream(root_ / "compile_commands.json")
+                    << "[{\"directory\":\"" << root_.string() << "\","
+                    << "\"file\":\"" << (root_ / "src" / "one.cpp").string() << "\","
+                    << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
+                    << (root_ / "include").string() << "\",\"-c\",\""
+                    << (root_ / "src" / "one.cpp").string() << "\"]},"
+                    << "{\"directory\":\"" << root_.string() << "\","
+                    << "\"file\":\"" << (root_ / "src" / "two.cpp").string() << "\","
+                    << "\"arguments\":[\"clang++\",\"-std=" << second_standard << "\",\"-I"
+                    << (root_ / "include").string() << "\",\"-c\",\""
+                    << (root_ / "src" / "two.cpp").string() << "\"]}]";
+            }
+
+            analyzers::AnalysisResult dependency_analysis(
+                const std::filesystem::path& header,
+                const std::vector<std::filesystem::path>& includers
+            ) const {
+                analyzers::AnalysisResult analysis;
+                analyzers::DependencyAnalysisResult::HeaderInfo info;
+                info.path = header;
+                info.total_parse_time = std::chrono::milliseconds(1000);
+                info.inclusion_count = includers.size();
+                info.including_files = includers.size();
+                info.included_by = includers;
+                analysis.dependencies.headers.push_back(std::move(info));
+                return analysis;
+            }
+
+            std::filesystem::path root_;
+        };
     }
 
-    TEST_F(PCHSuggesterTest, Description) {
-        EXPECT_FALSE(suggester_->description().empty());
+    TEST(PCHSuggesterContractTest, ReportsIdentity) {
+        PCHSuggester suggester;
+        EXPECT_EQ(suggester.name(), "PCHSuggester");
+        EXPECT_FALSE(suggester.description().empty());
+        EXPECT_EQ(suggester.suggestion_type(), SuggestionType::PCHOptimization);
     }
 
-    TEST_F(PCHSuggesterTest, SuggestionType) {
-        EXPECT_EQ(suggester_->suggestion_type(), SuggestionType::PCHOptimization);
-    }
-
-    TEST(PCHBuildPlannerTest, PlansCMakeEditAfterMultilineTarget) {
-        const fs::path cmake_path = fs::temp_directory_path() / "bha_pch_planner_CMakeLists.txt";
-        const fs::path pch_path = cmake_path.parent_path() / "include" / "pch.h";
-        const std::string content =
-            "add_library(core\n"
-            "    src/core.cpp\n"
-            ")\n";
-
-        const auto plan = plan_cmake_pch_edits(CMakePCHTargetPlan{
-            cmake_path,
-            content,
-            "core",
-            0,
-            pch_path
-        });
-
-        ASSERT_EQ(plan.edits.size(), 1u);
-        ASSERT_EQ(plan.files.size(), 1u);
-        EXPECT_EQ(plan.edits.front().start_line, 3u);
-        EXPECT_NE(plan.edits.front().new_text.find("target_precompile_headers(core PRIVATE \"include/pch.h\")"),
-                  std::string::npos);
-    }
-
-    TEST(PCHBuildPlannerTest, SkipsExistingCMakePchTarget) {
-        const fs::path cmake_path = fs::temp_directory_path() / "bha_pch_planner_existing_CMakeLists.txt";
-        const fs::path pch_path = cmake_path.parent_path() / "pch.h";
-        const std::string content =
-            "add_library(core src/core.cpp)\n"
-            "target_precompile_headers(core PRIVATE pch.h)\n";
-
-        const auto plan = plan_cmake_pch_edits(CMakePCHTargetPlan{
-            cmake_path,
-            content,
-            "core",
-            0,
-            pch_path
-        });
-
-        EXPECT_TRUE(plan.edits.empty());
-        EXPECT_TRUE(plan.files.empty());
-    }
-
-    TEST(PCHBuildPlannerTest, PlansMSBuildProjectAndPchSourceEdits) {
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_msbuild_planner_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root, ec);
-        {
-            std::ofstream project(project_root / "app.vcxproj");
-            project << "<Project>\n  <ItemGroup />\n</Project>\n";
-        }
-
-        const auto plan = plan_msbuild_pch_edits(project_root, project_root / "include" / "pch.h");
-
-        ASSERT_EQ(plan.edits.size(), 2u);
-        ASSERT_EQ(plan.files.size(), 2u);
-        EXPECT_EQ(plan.edits.front().file, project_root / "app.vcxproj");
-        EXPECT_NE(plan.edits.front().new_text.find("<PrecompiledHeader>Use</PrecompiledHeader>"),
-                  std::string::npos);
-        EXPECT_EQ(plan.edits.back().file, project_root / "pch.cpp");
-        EXPECT_NE(plan.edits.back().new_text.find("#include \"include/pch.h\""), std::string::npos);
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, EmptyAnalysis) {
+    TEST(PCHSuggesterContractTest, RequiresCompilationDatabase) {
+        PCHSuggester suggester;
         const BuildTrace trace;
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
-
         const SuggestionContext context{trace, analysis, options, {}};
-        auto result = suggester_->suggest(context);
+
+        const auto result = suggester.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code, "pch.evidence.compile_database_required");
     }
 
-    TEST_F(PCHSuggesterTest, SuggestsForExpensiveHeader) {
+    TEST_F(PCHSuggesterTest, EmitsAdvisoryOnlyForRepeatedExactEnvironment) {
+        write_sources();
+        write_database();
+        const auto header = root_ / "include" / "common.hpp";
+        const auto one = root_ / "src" / "one.cpp";
+        const auto two = root_ / "src" / "two.cpp";
+
         BuildTrace trace;
-        trace.total_time = std::chrono::seconds(10);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = "expensive_header.h";
-        header.total_parse_time = std::chrono::milliseconds(500);
-        header.inclusion_count = 20;
-        header.including_files = 15;
-        header.is_stable = true;
-        header.is_external = false;
-        analysis.dependencies.headers.push_back(header);
-
+        const auto analysis = dependency_analysis(header, {one, two});
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = PCHSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_GE(result.value().suggestions.size(), 1u);
-
-        if (!result.value().suggestions.empty()) {
-            const auto& suggestion = result.value().suggestions[0];
-            EXPECT_EQ(suggestion.type, SuggestionType::PCHOptimization);
-            EXPECT_TRUE(suggestion.is_safe);
-            EXPECT_GT(suggestion.estimated_savings.count(), 0);
-        }
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_TRUE(suggestion.edits.empty());
+        EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
+        EXPECT_EQ(suggestion.confidence, 1.0);
     }
 
-    TEST_F(PCHSuggesterTest, EstimatedSavingsRemainBoundedByAggregateParseTime) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(30);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = "pch_candidate.h";
-        header.total_parse_time = std::chrono::seconds(4);
-        header.inclusion_count = 200;
-        header.including_files = 160;
-        header.is_stable = true;
-        analysis.dependencies.headers.push_back(header);
-
+    TEST_F(PCHSuggesterTest, RejectsDifferentCompileEnvironments) {
+        write_sources();
+        write_database("c++17");
+        const auto analysis = dependency_analysis(
+            root_ / "include" / "common.hpp",
+            {root_ / "src" / "one.cpp", root_ / "src" / "two.cpp"}
+        );
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-        EXPECT_LT(result.value().suggestions.front().estimated_savings,
-                  std::chrono::milliseconds(1500));
-    }
-
-    TEST_F(PCHSuggesterTest, DetectsHeadersThatForbidDirectInclusion) {
-        namespace fs = std::filesystem;
-        const fs::path temp_dir = fs::temp_directory_path() / "bha_pch_direct_include_guard_test";
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
-        fs::create_directories(temp_dir, ec);
-
-        const fs::path guarded_header = temp_dir / "hresetintrin.h";
-        {
-            std::ofstream out(guarded_header);
-            out << "#error \"Never use <hresetintrin.h> directly; include <x86gprintrin.h> instead.\"\n";
-        }
-
-        const auto umbrella = direct_include_guard_umbrella_header(guarded_header);
-        ASSERT_TRUE(umbrella.has_value());
-        EXPECT_EQ(*umbrella, "x86gprintrin.h");
-        EXPECT_TRUE(matches_protected_include_policy("hresetintrin.h", guarded_header, {}));
-
-        fs::remove_all(temp_dir, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, SkipsHeadersThatForbidDirectInclusion) {
-        namespace fs = std::filesystem;
-        const fs::path temp_dir = fs::temp_directory_path() / "bha_pch_skip_direct_include_guard_test";
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
-        fs::create_directories(temp_dir, ec);
-
-        const fs::path guarded_header = temp_dir / "hresetintrin.h";
-        {
-            std::ofstream out(guarded_header);
-            out << "#error \"Never use <hresetintrin.h> directly; include <x86gprintrin.h> instead.\"\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(30);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = guarded_header;
-        header.total_parse_time = std::chrono::seconds(4);
-        header.inclusion_count = 200;
-        header.including_files = 160;
-        header.is_stable = true;
-        header.is_external = true;
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, temp_dir};
-
-        auto result = suggester_->suggest(context);
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{BuildTrace{}, analysis, options, root_};
+        const auto result = PCHSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
-
-        fs::remove_all(temp_dir, ec);
+        EXPECT_EQ(result.value().items_skipped, 1u);
     }
 
-    TEST_F(PCHSuggesterTest, SkipsLowInclusionCount) {
-        BuildTrace trace;
-        analyzers::AnalysisResult analysis;
-
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = "rarely_included.h";
-        header.total_parse_time = std::chrono::milliseconds(500);
-        header.inclusion_count = 2;
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().suggestions.empty());
-        EXPECT_GT(result.value().items_skipped, 0u);
-    }
-
-    TEST_F(PCHSuggesterTest, CMakeTargetSelectionUsesCompileUnitHints) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_target_selection_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "src");
-        fs::create_directories(project_root / "tests");
-
-        {
-            std::ofstream cmake(project_root / "CMakeLists.txt");
-            cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                  << "project(pch_target_selection LANGUAGES CXX)\n"
-                  << "add_executable(GTest tests/test_main.cpp)\n"
-                  << "add_library(core src/core.cpp)\n";
-        }
-        {
-            std::ofstream core_src(project_root / "src" / "core.cpp");
-            core_src << "#include \"heavy.hpp\"\n";
-        }
-        {
-            std::ofstream test_src(project_root / "tests" / "test_main.cpp");
-            test_src << "int main(){return 0;}\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(8);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit core_unit;
-        core_unit.source_file = project_root / "src" / "core.cpp";
-        core_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
-            core_unit.source_file.string()
-        };
-        trace.units.push_back(core_unit);
-
-        CompilationUnit test_unit;
-        test_unit.source_file = project_root / "tests" / "test_main.cpp";
-        test_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "GTest.dir" / "tests" / "test_main.cpp.o").string(),
-            test_unit.source_file.string()
-        };
-        trace.units.push_back(test_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(1200);
-        header.inclusion_count = 20;
-        header.including_files = 12;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {project_root / "src" / "core.cpp"};
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
-
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto cmake_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.file == (project_root / "CMakeLists.txt");
-            }
+    TEST_F(PCHSuggesterTest, RejectsMissingIncluderCompileCommand) {
+        write_sources();
+        write_database();
+        const auto missing = root_ / "src" / "missing.cpp";
+        const auto analysis = dependency_analysis(
+            root_ / "include" / "common.hpp",
+            {root_ / "src" / "one.cpp", missing}
         );
-        ASSERT_NE(cmake_edit, suggestion.edits.end());
-        EXPECT_NE(cmake_edit->new_text.find("target_precompile_headers(core PRIVATE"),
-                  std::string::npos);
-        EXPECT_EQ(cmake_edit->new_text.find("target_precompile_headers(GTest PRIVATE"),
-                  std::string::npos);
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, GeneratedPchUsesIncludeRelativeHeaderSpelling) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_relative_include_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "src");
-
-        {
-            std::ofstream cmake(project_root / "CMakeLists.txt");
-            cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                  << "project(pch_relative_include LANGUAGES CXX)\n"
-                  << "add_library(core src/core.cpp)\n";
-        }
-        {
-            std::ofstream header(project_root / "include" / "heavy.hpp");
-            header << "#pragma once\n";
-        }
-        {
-            std::ofstream core_src(project_root / "src" / "core.cpp");
-            core_src << "#include \"heavy.hpp\"\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(8);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit core_unit;
-        core_unit.source_file = project_root / "src" / "core.cpp";
-        core_unit.command_line = {
-            "clang++",
-            "-c",
-            "-I",
-            (project_root / "include").string(),
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
-            core_unit.source_file.string()
-        };
-        trace.units.push_back(core_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(1200);
-        header.inclusion_count = 20;
-        header.including_files = 12;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {core_unit.source_file};
-        analysis.dependencies.headers.push_back(header);
-
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const SuggestionContext context{BuildTrace{}, analysis, options, root_};
+        const auto result = PCHSuggester{}.suggest(context);
 
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto pch_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.file == (project_root / "include" / "pch.h");
-            }
-        );
-        ASSERT_NE(pch_edit, suggestion.edits.end());
-        EXPECT_NE(pch_edit->new_text.find("#include \"heavy.hpp\""), std::string::npos);
-        EXPECT_EQ(pch_edit->new_text.find("#include \"include/heavy.hpp\""), std::string::npos);
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, CMakeTargetSelectionPreservesTargetSuffixExpressions) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_target_suffix_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "tools");
-
-        {
-            std::ofstream cmake(project_root / "CMakeLists.txt");
-            cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                  << "project(pch_target_suffix LANGUAGES CXX)\n"
-                  << "set(ARTIFACT_SUFFIX \"\")\n"
-                  << "add_executable(block_cache_trace_analyzer${ARTIFACT_SUFFIX}\n"
-                  << "  tools/block_cache_trace_analyzer_tool.cc)\n";
-        }
-        {
-            std::ofstream tool_src(project_root / "tools" / "block_cache_trace_analyzer_tool.cc");
-            tool_src << "#include \"../include/heavy.hpp\"\n"
-                     << "int main(){return 0;}\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(8);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit tool_unit;
-        tool_unit.source_file = project_root / "tools" / "block_cache_trace_analyzer_tool.cc";
-        tool_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "block_cache_trace_analyzer.dir" / "tools" /
-             "block_cache_trace_analyzer_tool.cc.o")
-                .string(),
-            tool_unit.source_file.string()
-        };
-        trace.units.push_back(tool_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(1200);
-        header.inclusion_count = 20;
-        header.including_files = 12;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {tool_unit.source_file};
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
-
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto cmake_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.file == (project_root / "CMakeLists.txt");
-            }
-        );
-        ASSERT_NE(cmake_edit, suggestion.edits.end());
-        EXPECT_NE(
-            cmake_edit->new_text.find(
-                "target_precompile_headers(block_cache_trace_analyzer${ARTIFACT_SUFFIX} PRIVATE"),
-            std::string::npos
-        );
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, CMakeTargetSelectionSkipsBackupDirectories) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_backup_filter_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "src");
-        fs::create_directories(project_root / ".lsp-optimization-backup" / "run-1" / "files" / "src");
-
-        {
-            std::ofstream root_cmake(project_root / "CMakeLists.txt");
-            root_cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                       << "project(pch_backup_filter LANGUAGES CXX)\n"
-                       << "add_subdirectory(src)\n";
-        }
-        {
-            std::ofstream src_cmake(project_root / "src" / "CMakeLists.txt");
-            src_cmake << "add_library(core core.cpp)\n";
-        }
-        {
-            std::ofstream backup_cmake(project_root / ".lsp-optimization-backup" / "run-1" / "files" / "src" / "CMakeLists.txt");
-            backup_cmake << "add_library(core core.cpp)\n";
-        }
-        {
-            std::ofstream core_src(project_root / "src" / "core.cpp");
-            core_src << "#include \"heavy.hpp\"\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(6);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit core_unit;
-        core_unit.source_file = project_root / "src" / "core.cpp";
-        core_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
-            core_unit.source_file.string()
-        };
-        trace.units.push_back(core_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(900);
-        header.inclusion_count = 15;
-        header.including_files = 8;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {project_root / "src" / "core.cpp"};
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
-
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto cmake_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.new_text.find("target_precompile_headers(core PRIVATE") != std::string::npos;
-            }
-        );
-        ASSERT_NE(cmake_edit, suggestion.edits.end());
-        EXPECT_EQ(cmake_edit->file, project_root / "src" / "CMakeLists.txt");
-        EXPECT_EQ(cmake_edit->file.string().find(".lsp-optimization-backup"), std::string::npos);
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, CMakePchEditUsesEndOfMultilineTargetBlock) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_multiline_target_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "src");
-
-        {
-            std::ofstream root_cmake(project_root / "CMakeLists.txt");
-            root_cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                       << "project(pch_multiline LANGUAGES CXX)\n"
-                       << "add_library(core\n"
-                       << "    src/core.cpp\n"
-                       << ")\n";
-        }
-        {
-            std::ofstream core_src(project_root / "src" / "core.cpp");
-            core_src << "#include \"heavy.hpp\"\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(6);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit core_unit;
-        core_unit.source_file = project_root / "src" / "core.cpp";
-        core_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
-            core_unit.source_file.string()
-        };
-        trace.units.push_back(core_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(1000);
-        header.inclusion_count = 16;
-        header.including_files = 9;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {project_root / "src" / "core.cpp"};
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
-
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto cmake_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.file == (project_root / "CMakeLists.txt") &&
-                       edit.new_text.find("target_precompile_headers(core PRIVATE") != std::string::npos;
-            }
-        );
-        ASSERT_NE(cmake_edit, suggestion.edits.end());
-        EXPECT_EQ(cmake_edit->start_line, 5u);
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, CMakeExistingMultilinePchConfigPreventsDuplicateTargetEdit) {
-        namespace fs = std::filesystem;
-        const fs::path project_root = fs::temp_directory_path() / "bha_pch_existing_multiline_config_test";
-        std::error_code ec;
-        fs::remove_all(project_root, ec);
-        fs::create_directories(project_root / "include");
-        fs::create_directories(project_root / "src");
-
-        {
-            std::ofstream cmake(project_root / "CMakeLists.txt");
-            cmake << "cmake_minimum_required(VERSION 3.20)\n"
-                  << "project(pch_existing_multiline LANGUAGES CXX)\n"
-                  << "add_library(core src/core.cpp)\n"
-                  << "target_precompile_headers(\n"
-                  << "  core\n"
-                  << "  PRIVATE\n"
-                  << "    include/pch.h\n"
-                  << ")\n";
-        }
-        {
-            std::ofstream pch(project_root / "include" / "pch.h");
-            pch << "#pragma once\n";
-        }
-        {
-            std::ofstream core_src(project_root / "src" / "core.cpp");
-            core_src << "#include \"heavy.hpp\"\n";
-        }
-
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(6);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit core_unit;
-        core_unit.source_file = project_root / "src" / "core.cpp";
-        core_unit.command_line = {
-            "clang++",
-            "-c",
-            "-o",
-            (project_root / "build" / "CMakeFiles" / "core.dir" / "src" / "core.cpp.o").string(),
-            core_unit.source_file.string()
-        };
-        trace.units.push_back(core_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = project_root / "include" / "heavy.hpp";
-        header.total_parse_time = std::chrono::milliseconds(1000);
-        header.inclusion_count = 16;
-        header.including_files = 9;
-        header.is_stable = true;
-        header.is_external = false;
-        header.included_by = {project_root / "src" / "core.cpp"};
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, project_root};
-
-        auto result = suggester_->suggest(context);
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().suggestions.empty());
-
-        const auto& suggestion = result.value().suggestions.front();
-        const auto duplicate_cmake_edit = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [](const TextEdit& edit) {
-                return edit.new_text.find("target_precompile_headers(core PRIVATE") != std::string::npos;
-            }
-        );
-        EXPECT_EQ(duplicate_cmake_edit, suggestion.edits.end());
-
-        const auto pch_update = std::find_if(
-            suggestion.edits.begin(),
-            suggestion.edits.end(),
-            [&](const TextEdit& edit) {
-                return edit.file == (project_root / "include" / "pch.h") &&
-                       edit.new_text.find("#include \"heavy.hpp\"") != std::string::npos;
-            }
-        );
-        EXPECT_NE(pch_update, suggestion.edits.end());
-
-        fs::remove_all(project_root, ec);
-    }
-
-    TEST_F(PCHSuggesterTest, COnlyTraceSkipsExternalPchSuggestions) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(6);
-        trace.build_system = BuildSystemType::CMake;
-
-        CompilationUnit c_unit;
-        c_unit.source_file = "src/wl_init.c";
-        c_unit.command_line = {"clang", "-c", "src/wl_init.c"};
-        trace.units.push_back(c_unit);
-
-        analyzers::AnalysisResult analysis;
-        analyzers::DependencyAnalysisResult::HeaderInfo header;
-        header.path = "/usr/include/xkbcommon/xkbcommon.h";
-        header.total_parse_time = std::chrono::milliseconds(900);
-        header.inclusion_count = 15;
-        header.including_files = 8;
-        header.is_stable = true;
-        header.is_external = true;
-        analysis.dependencies.headers.push_back(header);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
     }

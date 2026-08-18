@@ -247,7 +247,6 @@ target_sources(bha_lib PRIVATE
         sources/bha/suggestions/forward_decl_suggester.cpp
         sources/bha/suggestions/header_split_suggester.cpp
         sources/bha/suggestions/include_suggester.cpp
-        sources/bha/suggestions/pch_build_planner.cpp
         sources/bha/suggestions/pch_suggester.cpp
         sources/bha/suggestions/pimpl_suggester.cpp
         sources/bha/suggestions/suggester_registry.cpp
