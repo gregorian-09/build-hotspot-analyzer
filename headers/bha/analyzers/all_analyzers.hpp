@@ -14,7 +14,6 @@
 #include "bha/analyzers/dependency_analyzer.hpp"
 #include "bha/analyzers/template_analyzer.hpp"
 #include "bha/analyzers/symbol_analyzer.hpp"
-#include "bha/analyzers/pch_analyzer.hpp"
 #include "bha/analyzers/performance_analyzer.hpp"
 
 namespace bha::analyzers {
@@ -27,7 +26,6 @@ namespace bha::analyzers {
         register_dependency_analyzer();
         register_template_analyzer();
         register_symbol_analyzer();
-        register_pch_analyzer();
         register_performance_analyzer();
     }
 

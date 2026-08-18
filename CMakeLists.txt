@@ -256,7 +256,6 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/analyzer_registry.cpp
         sources/bha/analyzers/dependency_analyzer.cpp
         sources/bha/analyzers/file_analyzer.cpp
-        sources/bha/analyzers/pch_analyzer.cpp
         sources/bha/analyzers/performance_analyzer.cpp
         sources/bha/analyzers/symbol_analyzer.cpp
         sources/bha/analyzers/template_analyzer.cpp

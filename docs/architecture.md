@@ -103,7 +103,6 @@ flowchart TD
     A --> C[DependencyAnalyzer]
     A --> D[TemplateAnalyzer]
     A --> E[SymbolAnalyzer]
-    A --> F[PCHAnalyzer]
     A --> G[PerformanceAnalyzer]
     B --> H[Merge]
     C --> H
@@ -286,4 +285,3 @@ Recommended for all new components:
 - unit tests for positive/negative paths
 - explicit timeout behavior tests
 - benchmark harness validation on at least one non-trivial external repo
-
