@@ -48,6 +48,7 @@ namespace bha::suggestions {
         bool has_dependent_arguments = false;
         bool has_dependent_use_context = false;
         bool has_unsupported_scope = false;
+        bool has_unsupported_function_form = false;
     };
 
     /**

@@ -22,18 +22,21 @@ namespace {
         const bha::suggestions::TemplateSemanticRecord& record,
         bha::ProjectIndex& project_index
     ) {
-        if (record.declaration_kind != "class" ||
+        if ((record.declaration_kind != "class" && record.declaration_kind != "function") ||
             record.has_explicit_instantiation_declaration ||
             !record.complete_definition || !record.has_external_linkage ||
             !record.has_single_explicit_definition || record.has_dependent_arguments ||
-            record.has_unsupported_scope || record.declaration_file.empty() ||
+            record.has_unsupported_scope || record.has_unsupported_function_form ||
+            record.declaration_file.empty() ||
             record.declaration_end_line == 0 || record.explicit_definition_files.empty()) {
             return std::nullopt;
         }
 
         const auto extension = record.declaration_file.extension().string();
-        if (extension != ".h" && extension != ".hh" && extension != ".hpp" &&
-            extension != ".hxx" && extension != ".inl" && extension != ".ipp") {
+        const auto normalized_extension = bha::suggestions::lowercase_ascii(extension);
+        if (normalized_extension != ".h" && normalized_extension != ".hh" &&
+            normalized_extension != ".hpp" && normalized_extension != ".hxx" &&
+            normalized_extension != ".inl" && normalized_extension != ".ipp") {
             return std::nullopt;
         }
 
@@ -191,7 +194,7 @@ namespace bha::suggestions {
             };
             suggestion.caveats = {
                 "Savings are intentionally unestimated until a post-edit trace is available",
-                "The edit is limited to a unique explicit class-instantiation owner"
+                "The edit is limited to a unique explicit instantiation owner and a supported declaration form"
             };
             suggestion.verification = "Clang syntax validation and full rebuild validation are required";
             result.suggestions.push_back(std::move(suggestion));

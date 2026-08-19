@@ -280,4 +280,97 @@ namespace bha::suggestions {
         std::filesystem::remove_all(root, ec);
     }
 
+    TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForFunctionTemplate) {
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-template-function-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ));
+        std::error_code ec;
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+
+        const auto header = root / "include" / "identity.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "template <typename T> T identity(T value) { return value; }\n";
+        const auto owner = root / "src" / "identity.cpp";
+        std::ofstream(owner)
+            << "#include \"identity.hpp\"\n"
+            << "template int identity<int>(int);\n";
+        const auto use = root / "src" / "use.cpp";
+        std::ofstream(use)
+            << "#include \"identity.hpp\"\n"
+            << "int use_identity() { return identity(42); }\n";
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\","
+            << "\"file\":\"src/identity.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/identity.cpp\"]},"
+            << "{\"directory\":\"" << root.string() << "\","
+            << "\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "identity<int>";
+        analysis.templates.templates.push_back(std::move(candidate));
+        SuggesterOptions options;
+        options.compile_commands_path = database;
+        const SuggestionContext context{trace, analysis, options, root};
+
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& suggestion = result.value().suggestions.front();
+        ASSERT_EQ(suggestion.edits.size(), 1u);
+        EXPECT_EQ(suggestion.edits.front().file, header);
+        EXPECT_EQ(
+            suggestion.edits.front().new_text,
+            "extern template int identity<int>(int);\n"
+        );
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST_F(TemplateSuggesterTest, RejectsInlineFunctionTemplate) {
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-template-inline-function-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ));
+        std::error_code ec;
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+        std::ofstream(root / "include" / "identity.hpp")
+            << "#pragma once\n"
+            << "template <typename T> inline T identity(T value) { return value; }\n";
+        std::ofstream(root / "src" / "identity.cpp")
+            << "#include \"identity.hpp\"\n"
+            << "template int identity<int>(int);\n";
+        std::ofstream(root / "src" / "use.cpp")
+            << "#include \"identity.hpp\"\n"
+            << "int use_identity() { return identity(42); }\n";
+        std::ofstream(root / "compile_commands.json")
+            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/identity.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/identity.cpp\"]},"
+            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "identity<int>";
+        analysis.templates.templates.push_back(std::move(candidate));
+        SuggesterOptions options;
+        options.compile_commands_path = root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, root};
+
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+    }
+
 }  // namespace bha::suggestions

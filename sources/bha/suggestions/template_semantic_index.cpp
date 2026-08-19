@@ -106,6 +106,42 @@ namespace bha::suggestions {
             return rendered;
         }
 
+        std::string render_function_instantiation(
+            const clang::FunctionDecl& declaration,
+            const clang::FunctionTemplateDecl& primary,
+            const clang::TemplateArgumentList& arguments,
+            const clang::ASTContext& context
+        ) {
+            std::string rendered;
+            llvm::raw_string_ostream output(rendered);
+            declaration.getReturnType().print(output, context.getPrintingPolicy());
+            output << ' ' << primary.getQualifiedNameAsString()
+                   << render_template_arguments(arguments, context) << '(';
+            for (unsigned index = 0; index < declaration.getNumParams(); ++index) {
+                if (index != 0) {
+                    output << ", ";
+                }
+                declaration.getParamDecl(index)->getType().print(output, context.getPrintingPolicy());
+            }
+            if (declaration.isVariadic()) {
+                if (declaration.getNumParams() != 0) {
+                    output << ", ";
+                }
+                output << "...";
+            }
+            output << ')';
+            output.flush();
+            return rendered;
+        }
+
+        std::string function_specialization_key(
+            const clang::FunctionTemplateDecl& primary,
+            const clang::TemplateArgumentList& arguments,
+            const clang::ASTContext& context
+        ) {
+            return primary.getQualifiedNameAsString() + render_template_arguments(arguments, context);
+        }
+
         fs::path source_path(
             const clang::SourceManager& source_manager,
             const clang::SourceLocation location
@@ -314,51 +350,125 @@ namespace bha::suggestions {
                     false,
                     declaration->getDeclContext()->isDependentContext()
                 );
-                const auto* info = declaration->getTemplateSpecializationInfo();
-                if (!info || !declaration->getTemplateSpecializationArgs()) {
-                    return true;
-                }
-
-                const auto* primary = info->getTemplate();
+                auto* primary = declaration->getPrimaryTemplate();
                 if (!primary) {
+                    if (auto* pattern = declaration->getTemplateInstantiationPattern()) {
+                        primary = pattern->getDescribedFunctionTemplate();
+                    }
+                }
+                if (!primary || !declaration->getTemplateSpecializationArgs()) {
                     return true;
                 }
-
-                TemplateSemanticRecord record;
-                record.template_name = primary->getQualifiedNameAsString();
-                record.specialization = record.template_name + render_template_arguments(
-                    *declaration->getTemplateSpecializationArgs(), context_
+                record_function_specialization(
+                    *declaration,
+                    *primary,
+                    *declaration->getTemplateSpecializationArgs()
                 );
+                return true;
+            }
+
+            bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl* declaration) {
+                if (!declaration) {
+                    return true;
+                }
+                for (auto* specialization : declaration->specializations()) {
+                    if (!specialization || !specialization->getTemplateSpecializationArgs()) {
+                        continue;
+                    }
+                    record_function_specialization(
+                        *specialization,
+                        *declaration,
+                        *specialization->getTemplateSpecializationArgs()
+                    );
+                }
+                return true;
+            }
+
+        private:
+            void record_function_specialization(
+                const clang::FunctionDecl& declaration,
+                const clang::FunctionTemplateDecl& primary,
+                const clang::TemplateArgumentList& arguments
+            ) {
+                TemplateSemanticRecord record;
+                record.template_name = primary.getQualifiedNameAsString();
+                record.specialization = record.template_name + render_template_arguments(arguments, context_);
                 record.specialization_kind = specialization_kind(
-                    declaration->getTemplateSpecializationKind()
+                    declaration.getTemplateSpecializationKind()
                 );
                 record.declaration_kind = "function";
+                const auto function_instantiation = render_function_instantiation(
+                    declaration,
+                    primary,
+                    arguments,
+                    context_
+                );
+                record.canonical_extern_declaration = "extern template " + function_instantiation + ";";
+                record.canonical_explicit_definition = "template " + function_instantiation + ";";
                 record.source_file = source_file_;
-                record.declaration_file = source_path(context_.getSourceManager(), primary->getLocation());
-                const auto declaration_location = context_.getFullLoc(primary->getLocation());
+                record.declaration_file = source_path(context_.getSourceManager(), primary.getLocation());
+                const auto declaration_location = context_.getFullLoc(primary.getLocation());
                 if (declaration_location.isValid()) {
                     record.declaration_line = declaration_location.getSpellingLineNumber();
                     record.declaration_column = declaration_location.getSpellingColumnNumber();
                 }
+                const auto declaration_end = context_.getFullLoc(
+                    context_.getSourceManager().getSpellingLoc(primary.getSourceRange().getEnd())
+                );
+                if (declaration_end.isValid()) {
+                    record.declaration_end_line = declaration_end.getSpellingLineNumber();
+                    record.declaration_end_column = declaration_end.getSpellingColumnNumber();
+                }
+                const auto end_token = clang::Lexer::getLocForEndOfToken(
+                    context_.getSourceManager().getSpellingLoc(primary.getSourceRange().getEnd()),
+                    0,
+                    context_.getSourceManager(),
+                    context_.getLangOpts()
+                );
+                if (end_token.isValid()) {
+                    record.declaration_end_offset = context_.getSourceManager().getFileOffset(end_token);
+                }
                 record.use_files.push_back(source_file_);
-                record.complete_definition = declaration->doesThisDeclarationHaveABody();
+                record.complete_definition = primary.getTemplatedDecl()->doesThisDeclarationHaveABody();
                 record.has_explicit_instantiation =
-                    declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
-                    declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
-                record.has_external_linkage = primary->getFormalLinkage() == clang::Linkage::External;
+                    declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
+                    declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
+                record.has_external_linkage = primary.getFormalLinkage() == clang::Linkage::External;
                 record.has_dependent_arguments = std::ranges::any_of(
-                    declaration->getTemplateSpecializationArgs()->asArray(),
+                    arguments.asArray(),
                     [](const clang::TemplateArgument& argument) {
                         return argument.isInstantiationDependent();
                     }
                 );
                 record.has_unsupported_scope =
-                    !primary->getDeclContext()->isFileContext() ||
-                    primary->getNameAsString().empty();
-                if (declaration->getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
+                    !primary.getDeclContext()->isFileContext() ||
+                    primary.getNameAsString().empty();
+                record.has_unsupported_function_form =
+                    declaration.isInlineSpecified() || declaration.isConstexpr() ||
+                    declaration.isConsteval() || declaration.isDeleted() ||
+                    declaration.isDefaulted() || declaration.isVariadic() ||
+                    declaration.getExceptionSpecType() != clang::EST_None;
+                if (declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
                     record.explicit_definition_files.push_back(source_file_);
                 }
                 records_.push_back(std::move(record));
+            }
+
+        public:
+            bool VisitCallExpr(clang::CallExpr* expression) {
+                if (expression) {
+                    record_function_use(expression->getDirectCallee(), "function-call");
+                }
+                return true;
+            }
+
+            bool VisitDeclRefExpr(clang::DeclRefExpr* expression) {
+                if (expression) {
+                    record_function_use(
+                        llvm::dyn_cast<clang::FunctionDecl>(expression->getDecl()),
+                        "function-reference"
+                    );
+                }
                 return true;
             }
 
@@ -376,6 +486,34 @@ namespace bha::suggestions {
             }
 
         private:
+            void record_function_use(
+                const clang::FunctionDecl* declaration,
+                std::string kind
+            ) {
+                if (!declaration) {
+                    return;
+                }
+                auto* primary = declaration->getPrimaryTemplate();
+                if (!primary) {
+                    if (auto* pattern = declaration->getTemplateInstantiationPattern()) {
+                        primary = pattern->getDescribedFunctionTemplate();
+                    }
+                }
+                if (!primary || !declaration->getTemplateSpecializationArgs()) {
+                    return;
+                }
+                const auto& arguments = *declaration->getTemplateSpecializationArgs();
+                uses_.push_back({
+                    function_specialization_key(*primary, arguments, context_),
+                    {
+                        source_file_,
+                        std::move(kind),
+                        false,
+                        declaration->getDeclContext()->isDependentContext()
+                    }
+                });
+            }
+
             void record_type_use(
                 clang::QualType type,
                 std::string kind,
@@ -541,7 +679,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v6");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v7");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -672,7 +810,8 @@ namespace bha::suggestions {
                 {"has_single_explicit_definition", record.has_single_explicit_definition},
                 {"has_dependent_arguments", record.has_dependent_arguments},
                 {"has_dependent_use_context", record.has_dependent_use_context},
-                {"has_unsupported_scope", record.has_unsupported_scope}
+                {"has_unsupported_scope", record.has_unsupported_scope},
+                {"has_unsupported_function_form", record.has_unsupported_function_form}
             };
         }
 
@@ -701,6 +840,9 @@ namespace bha::suggestions {
             record.has_dependent_arguments = value.value("has_dependent_arguments", false);
             record.has_dependent_use_context = value.value("has_dependent_use_context", false);
             record.has_unsupported_scope = value.value("has_unsupported_scope", false);
+            record.has_unsupported_function_form = value.value(
+                "has_unsupported_function_form", false
+            );
             if (value.contains("use_files") && value["use_files"].is_array()) {
                 for (const auto& file : value["use_files"]) {
                     record.use_files.emplace_back(file.get<std::string>());
@@ -787,7 +929,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v6" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v7" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -796,7 +938,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v6" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v7" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -920,6 +1062,16 @@ namespace bha::suggestions {
             existing.has_dependent_use_context =
                 existing.has_dependent_use_context || record.has_dependent_use_context;
             existing.has_unsupported_scope = existing.has_unsupported_scope || record.has_unsupported_scope;
+            existing.has_unsupported_function_form =
+                existing.has_unsupported_function_form || record.has_unsupported_function_form;
+            if (existing.declaration_kind == "function" && record.declaration_kind == "function" &&
+                !existing.canonical_extern_declaration.empty() &&
+                !record.canonical_extern_declaration.empty() &&
+                existing.canonical_extern_declaration != record.canonical_extern_declaration) {
+                // Trace signatures may omit overload parameter types. Distinct
+                // overloads must never collapse into one edit candidate.
+                existing.has_unsupported_function_form = true;
+            }
             if (existing.declaration_file.empty()) {
                 existing.declaration_file = record.declaration_file;
             }
@@ -1001,7 +1153,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v6";
+                cache["schema"] = "bha-template-semantic-index-v7";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
