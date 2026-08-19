@@ -483,12 +483,12 @@ namespace bha::suggestions {
         std::ofstream(header)
             << "#pragma once\n"
             << "struct Utility {\n"
-            << "  template <typename T> T identity(T value) const & { return value; }\n"
+            << "  template <typename T> T identity(T value) const & noexcept(false) { return value; }\n"
             << "};\n";
         const auto owner = root / "src" / "utility.cpp";
         std::ofstream(owner)
             << "#include \"utility.hpp\"\n"
-            << "template int Utility::identity<int>(int) const &;\n";
+            << "template int Utility::identity<int>(int) const & noexcept(false);\n";
         const auto use = root / "src" / "use.cpp";
         std::ofstream(use)
             << "#include \"utility.hpp\"\n"
@@ -516,7 +516,105 @@ namespace bha::suggestions {
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
-            "extern template int Utility::identity<int>(int) const &;\n"
+            "extern template int Utility::identity<int>(int) const & noexcept(false);\n"
+        );
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForClassTemplateMember) {
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-template-class-member-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ));
+        std::error_code ec;
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+        const auto header = root / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "template <typename C> struct Box {\n"
+            << "  template <typename T> T get(T value) const &;\n"
+            << "};\n";
+        const auto owner = root / "src" / "box.cpp";
+        std::ofstream(owner)
+            << "#include \"box.hpp\"\n"
+            << "template <typename C> template <typename T> T Box<C>::get(T value) const & { return value; }\n"
+            << "template int Box<int>::get<int>(int) const &;\n";
+        const auto use = root / "src" / "use.cpp";
+        std::ofstream(use)
+            << "#include \"box.hpp\"\n"
+            << "template <typename U> struct Holder { Box<int> box; };\n"
+            << "int use_box() { return Box<int>{}.get(42); }\n";
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/box.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
+            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "Box<int>::get<int>";
+        analysis.templates.templates.push_back(std::move(candidate));
+        SuggesterOptions options;
+        options.compile_commands_path = database;
+        const SuggestionContext context{trace, analysis, options, root};
+
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
+        EXPECT_EQ(
+            result.value().suggestions.front().edits.front().new_text,
+            "extern template int Box<int>::get<int>(int) const &;\n"
+        );
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForVariadicFunctionTemplate) {
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-template-variadic-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ));
+        std::error_code ec;
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+        std::ofstream(root / "include" / "logging.hpp")
+            << "#pragma once\n"
+            << "template <typename T> void log_value(T value, ...);\n";
+        std::ofstream(root / "src" / "logging.cpp")
+            << "#include \"logging.hpp\"\n"
+            << "template <typename T> void log_value(T, ...) {}\n"
+            << "template void log_value<int>(int, ...);\n";
+        std::ofstream(root / "src" / "use.cpp")
+            << "#include \"logging.hpp\"\n"
+            << "void use_log() { log_value(1, 2); }\n";
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/logging.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/logging.cpp\"]},"
+            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "log_value<int>";
+        analysis.templates.templates.push_back(std::move(candidate));
+        SuggesterOptions options;
+        options.compile_commands_path = database;
+        const SuggestionContext context{trace, analysis, options, root};
+
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
+        EXPECT_EQ(
+            result.value().suggestions.front().edits.front().new_text,
+            "extern template void log_value<int>(int, ...);\n"
         );
         std::filesystem::remove_all(root, ec);
     }

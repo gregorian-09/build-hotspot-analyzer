@@ -157,7 +157,7 @@ namespace bha::suggestions {
             if (record == nullptr || !record->complete_definition ||
                 !record->has_external_linkage || record->use_files.empty() || record->uses.empty() ||
                 !record->has_single_explicit_definition || record->has_dependent_arguments ||
-                record->has_dependent_use_context || record->has_unsupported_scope ||
+                record->has_unsupported_scope ||
                 has_unsafe_consumer_use) {
                 ++result.items_skipped;
                 continue;

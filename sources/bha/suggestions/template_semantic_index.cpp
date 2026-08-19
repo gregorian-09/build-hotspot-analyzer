@@ -113,10 +113,17 @@ namespace bha::suggestions {
             const clang::TemplateArgumentList& arguments,
             const clang::ASTContext& context
         ) {
+            std::string qualified_name = primary.getQualifiedNameAsString();
+            if (llvm::isa<clang::CXXMethodDecl>(&declaration)) {
+                const auto declaration_name = declaration.getQualifiedNameAsString();
+                if (declaration_name.find('<') != std::string::npos) {
+                    qualified_name = declaration_name;
+                }
+            }
             std::string rendered;
             llvm::raw_string_ostream output(rendered);
             declaration.getReturnType().print(output, context.getPrintingPolicy());
-            output << ' ' << primary.getQualifiedNameAsString()
+            output << ' ' << qualified_name
                    << render_template_arguments(arguments, context) << '(';
             for (unsigned index = 0; index < declaration.getNumParams(); ++index) {
                 if (index != 0) {
@@ -150,19 +157,19 @@ namespace bha::suggestions {
                         break;
                 }
             }
-            if (declaration.getExceptionSpecType() == clang::EST_BasicNoexcept) {
-                output << " noexcept";
+            switch (declaration.getExceptionSpecType()) {
+                case clang::EST_BasicNoexcept:
+                case clang::EST_NoexceptTrue:
+                    output << " noexcept";
+                    break;
+                case clang::EST_NoexceptFalse:
+                    output << " noexcept(false)";
+                    break;
+                default:
+                    break;
             }
             output.flush();
             return rendered;
-        }
-
-        std::string function_specialization_key(
-            const clang::FunctionTemplateDecl& primary,
-            const clang::TemplateArgumentList& arguments,
-            const clang::ASTContext& context
-        ) {
-            return primary.getQualifiedNameAsString() + render_template_arguments(arguments, context);
         }
 
         std::string render_variable_instantiation(
@@ -194,6 +201,10 @@ namespace bha::suggestions {
         public:
             explicit TemplateVisitor(clang::ASTContext& context, fs::path source_file)
                 : context_(context), source_file_(std::move(source_file)) {}
+
+            bool shouldVisitTemplateInstantiations() const {
+                return true;
+            }
 
             bool VisitClassTemplateSpecializationDecl(
                 clang::ClassTemplateSpecializationDecl* declaration
@@ -510,7 +521,7 @@ namespace bha::suggestions {
             ) {
                 TemplateSemanticRecord record;
                 record.template_name = primary.getQualifiedNameAsString();
-                record.specialization = record.template_name + render_template_arguments(arguments, context_);
+                record.specialization = function_specialization_key(declaration, primary, arguments, context_);
                 record.specialization_kind = specialization_kind(
                     declaration.getTemplateSpecializationKind()
                 );
@@ -547,7 +558,10 @@ namespace bha::suggestions {
                     record.declaration_end_offset = context_.getSourceManager().getFileOffset(end_token);
                 }
                 record.use_files.push_back(source_file_);
-                record.complete_definition = primary.getTemplatedDecl()->doesThisDeclarationHaveABody();
+                const auto* instantiation_pattern = declaration.getTemplateInstantiationPattern();
+                record.complete_definition = primary.getTemplatedDecl()->doesThisDeclarationHaveABody() ||
+                    (instantiation_pattern != nullptr &&
+                     instantiation_pattern->doesThisDeclarationHaveABody());
                 record.has_explicit_instantiation =
                     declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
                     declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;
@@ -561,17 +575,29 @@ namespace bha::suggestions {
                 const auto* parent_record = llvm::dyn_cast<clang::CXXRecordDecl>(
                     primary.getDeclContext()
                 );
+                const auto* class_specialization = parent_record == nullptr
+                    ? nullptr
+                    : llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(parent_record);
                 const bool dependent_member_owner = parent_record != nullptr &&
-                    (parent_record->isDependentContext() || parent_record->getDescribedClassTemplate());
+                    (parent_record->isDependentContext() ||
+                     (class_specialization == nullptr && parent_record->getDescribedClassTemplate()) ||
+                     (class_specialization != nullptr && std::ranges::any_of(
+                         class_specialization->getTemplateArgs().asArray(),
+                         [](const clang::TemplateArgument& argument) {
+                             return argument.isInstantiationDependent();
+                         }
+                     )));
                 record.has_unsupported_scope =
                     (parent_record == nullptr && !primary.getDeclContext()->isFileContext()) ||
                     dependent_member_owner || primary.getNameAsString().empty();
                 record.has_unsupported_function_form =
                     declaration.isInlineSpecified() || declaration.isConstexpr() ||
                     declaration.isConsteval() || declaration.isDeleted() ||
-                    declaration.isDefaulted() || declaration.isVariadic() ||
+                    declaration.isDefaulted() ||
                     (declaration.getExceptionSpecType() != clang::EST_None &&
-                     declaration.getExceptionSpecType() != clang::EST_BasicNoexcept);
+                     declaration.getExceptionSpecType() != clang::EST_BasicNoexcept &&
+                     declaration.getExceptionSpecType() != clang::EST_NoexceptTrue &&
+                     declaration.getExceptionSpecType() != clang::EST_NoexceptFalse);
                 if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
                     record.has_unsupported_function_form =
                         record.has_unsupported_function_form || method->isVirtual();
@@ -618,6 +644,22 @@ namespace bha::suggestions {
             }
 
         private:
+            std::string function_specialization_key(
+                const clang::FunctionDecl& declaration,
+                const clang::FunctionTemplateDecl& primary,
+                const clang::TemplateArgumentList& arguments,
+                const clang::ASTContext& context
+            ) const {
+                std::string qualified_name = primary.getQualifiedNameAsString();
+                if (llvm::isa<clang::CXXMethodDecl>(&declaration)) {
+                    const auto declaration_name = declaration.getQualifiedNameAsString();
+                    if (declaration_name.find('<') != std::string::npos) {
+                        qualified_name = declaration_name;
+                    }
+                }
+                return qualified_name + render_template_arguments(arguments, context);
+            }
+
             void record_function_use(
                 const clang::FunctionDecl* declaration,
                 std::string kind
@@ -636,7 +678,7 @@ namespace bha::suggestions {
                 }
                 const auto& arguments = *declaration->getTemplateSpecializationArgs();
                 uses_.push_back({
-                    function_specialization_key(*primary, arguments, context_),
+                    function_specialization_key(*declaration, *primary, arguments, context_),
                     {
                         source_file_,
                         std::move(kind),
@@ -832,7 +874,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v10");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v11");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -1086,7 +1128,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v10" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v11" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -1095,7 +1137,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v10" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v11" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -1312,7 +1354,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v10";
+                cache["schema"] = "bha-template-semantic-index-v11";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
