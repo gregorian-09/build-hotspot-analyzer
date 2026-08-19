@@ -99,8 +99,6 @@ namespace bha::suggestions {
                 return "header-split";
             case SuggestionType::IncludeRemoval:
                 return "include-removal";
-            case SuggestionType::MoveToCpp:
-                return "move-to-cpp";
             case SuggestionType::ExplicitTemplate:
                 return "template-instantiation";
             case SuggestionType::UnityBuild:
@@ -134,9 +132,6 @@ namespace bha::suggestions {
         if (normalized == "include-removal" || normalized == "include-cleanup" || normalized == "include") {
             return SuggestionType::IncludeRemoval;
         }
-        if (normalized == "move-to-cpp") {
-            return SuggestionType::MoveToCpp;
-        }
         if (normalized == "template-instantiation" || normalized == "explicit-template" || normalized == "template") {
             return SuggestionType::ExplicitTemplate;
         }
@@ -153,7 +148,7 @@ namespace bha::suggestions {
      * @brief Compute the canonical suggester ID for one implementation.
      *
      * Include cleanup is intentionally represented by one compiler-backed
-     * catalog entry; this suggester no longer emits MoveToCpp suggestions.
+     * catalog entry.
      *
      * @param suggester Suggester instance.
      * @return Canonical ID string.
@@ -174,8 +169,6 @@ namespace bha::suggestions {
                 return "pimpl";
             case SuggestionType::IncludeRemoval:
                 return "include-removal";
-            case SuggestionType::MoveToCpp:
-                return "move-to-cpp";
         }
         return normalize_suggester_token(suggester.name());
     }
@@ -238,7 +231,6 @@ namespace bha::suggestions {
         const auto supported = suggester.supported_types();
         return std::ranges::find(supported, SuggestionType::PCHOptimization) != supported.end() ||
                std::ranges::find(supported, SuggestionType::IncludeRemoval) != supported.end() ||
-               std::ranges::find(supported, SuggestionType::MoveToCpp) != supported.end() ||
                std::ranges::find(supported, SuggestionType::ExplicitTemplate) != supported.end() ||
                std::ranges::find(supported, SuggestionType::UnityBuild) != supported.end() ||
                std::ranges::find(supported, SuggestionType::ForwardDeclaration) != supported.end();

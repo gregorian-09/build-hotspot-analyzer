@@ -127,7 +127,6 @@ Available suggestion families:
 - pch
 - forward-decl
 - include-removal
-- move-to-cpp
 - template-instantiation
 - unity-build
 - header-split

@@ -74,8 +74,7 @@ namespace bha::lsp
         TemplateOptimization,
         IncludeReduction,
         ForwardDeclaration,
-        PIMPLPattern,
-        MoveToCpp
+        PIMPLPattern
     };
 
     /// User-facing prioritization buckets.

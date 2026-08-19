@@ -81,8 +81,6 @@ namespace bha::cli
                 return "forward-decl";
             case lsp::SuggestionType::PIMPLPattern:
                 return "pimpl";
-            case lsp::SuggestionType::MoveToCpp:
-                return "move-to-cpp";
             }
             return "unknown";
         }

@@ -230,9 +230,6 @@
         case bha::SuggestionType::PIMPLPattern:
             lsp_sug.type = SuggestionType::PIMPLPattern;
             break;
-        case bha::SuggestionType::MoveToCpp:
-            lsp_sug.type = SuggestionType::MoveToCpp;
-            break;
         }
 
         switch (bha_sug.priority) {

@@ -60,7 +60,6 @@ BHA is built to close that gap with a single workflow:
 - `pch`
 - `forward-decl`
 - `include-removal`
-- `move-to-cpp`
 - `template-instantiation`
 - `unity-build`
 - `header-split`

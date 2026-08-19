@@ -529,7 +529,6 @@ namespace bha {
         PCHOptimization,
         PIMPLPattern,
         IncludeRemoval,
-        MoveToCpp,
         ExplicitTemplate,
         UnityBuild
     };
@@ -544,7 +543,6 @@ namespace bha {
             case SuggestionType::PCHOptimization:       return "PCH Optimization";
             case SuggestionType::PIMPLPattern:          return "PIMPL Pattern";
             case SuggestionType::IncludeRemoval:        return "Include Removal";
-            case SuggestionType::MoveToCpp:             return "Move to CPP";
             case SuggestionType::ExplicitTemplate:      return "Explicit Template";
             case SuggestionType::UnityBuild:            return "Unity Build";
         }

@@ -127,7 +127,6 @@ namespace bha
         EXPECT_STREQ(to_string(SuggestionType::PCHOptimization), "PCH Optimization");
         EXPECT_STREQ(to_string(SuggestionType::PIMPLPattern), "PIMPL Pattern");
         EXPECT_STREQ(to_string(SuggestionType::IncludeRemoval), "Include Removal");
-        EXPECT_STREQ(to_string(SuggestionType::MoveToCpp), "Move to CPP");
         EXPECT_STREQ(to_string(SuggestionType::ExplicitTemplate), "Explicit Template");
         EXPECT_STREQ(to_string(SuggestionType::UnityBuild), "Unity Build");
     }

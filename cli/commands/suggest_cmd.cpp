@@ -229,7 +229,7 @@ namespace bha::cli
                         }
                     } else {
                         print_error("Unknown suggestion type: " + type_str);
-                        print_error("Valid types: pch, forward-decl, header-split, include-removal, move-to-cpp, template-instantiation, unity-build, pimpl.");
+                        print_error("Valid types: pch, forward-decl, header-split, include-removal, template-instantiation, unity-build, pimpl.");
                         return 1;
                     }
                 }

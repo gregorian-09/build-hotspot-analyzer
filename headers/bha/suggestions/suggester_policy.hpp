@@ -27,7 +27,6 @@ namespace bha::suggestions {
                     .language_support = SuggesterLanguageSupport::CAndCXX,
                     .abi_sensitivity = SuggesterAbiSensitivity::HeaderSurface
                 };
-            case SuggestionType::MoveToCpp:
             case SuggestionType::ForwardDeclaration:
                 return {
                     .language_support = SuggesterLanguageSupport::CAndCXX,

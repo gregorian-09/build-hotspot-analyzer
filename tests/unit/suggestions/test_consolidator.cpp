@@ -142,26 +142,6 @@ namespace bha::suggestions
         EXPECT_EQ(result.size(), suggestions.size());
     }
 
-    TEST_F(ConsolidatorTest, LeavesMoveToCppSuggestionsUnconsolidated) {
-        Suggestion first;
-        first.type = SuggestionType::MoveToCpp;
-        first.title = "Move include A";
-        first.target_file.path = "a.hpp";
-
-        Suggestion second;
-        second.type = SuggestionType::MoveToCpp;
-        second.title = "Move include B";
-        second.target_file.path = "b.hpp";
-
-        const auto result = consolidator_->consolidate({first, second});
-
-        ASSERT_EQ(result.size(), 2u);
-        EXPECT_EQ(result[0].type, SuggestionType::MoveToCpp);
-        EXPECT_EQ(result[1].type, SuggestionType::MoveToCpp);
-        EXPECT_EQ(result[0].title, "Move include A");
-        EXPECT_EQ(result[1].title, "Move include B");
-    }
-
     TEST_F(ConsolidatorTest, LeavesExplicitTemplateSuggestionsUnconsolidated) {
         Suggestion first;
         first.type = SuggestionType::ExplicitTemplate;

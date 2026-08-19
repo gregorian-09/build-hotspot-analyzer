@@ -58,7 +58,6 @@ Application mode:
 Guardrails:
 - suggestion quality is evidence-driven, not based on include frequency alone
 
-### 4. `move-to-cpp`
 
 Purpose:
 - move includes from header to source when only implementation needs the full type

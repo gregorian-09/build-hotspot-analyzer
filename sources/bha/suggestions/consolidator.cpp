@@ -241,8 +241,7 @@ namespace bha::suggestions
             SuggestionType::IncludeRemoval,
             SuggestionType::ForwardDeclaration,
             SuggestionType::ExplicitTemplate,
-            SuggestionType::PIMPLPattern,
-            SuggestionType::MoveToCpp
+            SuggestionType::PIMPLPattern
         }) {
             auto group = group_by_type(suggestions, type);
             if (group.empty()) {
@@ -272,9 +271,6 @@ namespace bha::suggestions
                 continue;
             case SuggestionType::PIMPLPattern:
                 result = consolidate_pimpl(group);
-                break;
-            case SuggestionType::MoveToCpp:
-                consolidated.insert(consolidated.end(), group.begin(), group.end());
                 break;
             }
 

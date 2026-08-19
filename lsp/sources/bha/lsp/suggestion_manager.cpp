@@ -1122,7 +1122,6 @@ namespace bha::lsp
         switch (suggestion.type) {
             case bha::SuggestionType::ForwardDeclaration:
             case bha::SuggestionType::IncludeRemoval:
-            case bha::SuggestionType::MoveToCpp:
             case bha::SuggestionType::HeaderSplit:
             case bha::SuggestionType::ExplicitTemplate:
             case bha::SuggestionType::PCHOptimization:
@@ -1138,8 +1137,6 @@ namespace bha::lsp
                 return "Forward declaration";
             case bha::SuggestionType::IncludeRemoval:
                 return "Include cleanup";
-            case bha::SuggestionType::MoveToCpp:
-                return "Move-to-cpp";
             case bha::SuggestionType::HeaderSplit:
                 return "Header split";
             case bha::SuggestionType::ExplicitTemplate:

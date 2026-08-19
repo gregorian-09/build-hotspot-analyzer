@@ -58,7 +58,6 @@ namespace bha::lsp
             bool include_reduction_auto_apply = false;
             bool forward_declaration_auto_apply = false;
             bool pimpl_auto_apply = false;
-            bool move_to_cpp_auto_apply = false;
         } per_optimization;
 
         /**

@@ -83,7 +83,6 @@ Configuration is read from `settings.optimization`.
       "includeReduction": { "autoApply": false },
       "forwardDeclaration": { "autoApply": false },
       "pimpl": { "autoApply": false },
-      "moveToCpp": { "autoApply": false }
     }
   }
 }

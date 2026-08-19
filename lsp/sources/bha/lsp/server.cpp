@@ -259,9 +259,6 @@ namespace bha::lsp
             if (opt.contains("pimpl") && opt["pimpl"].contains("autoApply")) {
                 config.per_optimization.pimpl_auto_apply = opt["pimpl"]["autoApply"].get<bool>();
 }
-            if (opt.contains("moveToCpp") && opt["moveToCpp"].contains("autoApply")) {
-                config.per_optimization.move_to_cpp_auto_apply = opt["moveToCpp"]["autoApply"].get<bool>();
-}
         }
         return config;
     }
@@ -287,8 +284,7 @@ namespace bha::lsp
                 {"templateOptimization", {{"autoApply", per_optimization.template_optimization_auto_apply}}},
                 {"includeReduction", {{"autoApply", per_optimization.include_reduction_auto_apply}}},
                 {"forwardDeclaration", {{"autoApply", per_optimization.forward_declaration_auto_apply}}},
-                {"pimpl", {{"autoApply", per_optimization.pimpl_auto_apply}}},
-                {"moveToCpp", {{"autoApply", per_optimization.move_to_cpp_auto_apply}}}
+                {"pimpl", {{"autoApply", per_optimization.pimpl_auto_apply}}}
             }}
         };
     }

@@ -98,7 +98,6 @@ Relevant scripts in `tests/`:
 - `run_template_subproject.py`
 - `run_forward_decl_subproject.py`
 - `run_header_split_subproject.py`
-- `run_move_to_cpp_subproject.py`
 - `run_pimpl_subproject.py`
 
 These scripts are used to validate:
