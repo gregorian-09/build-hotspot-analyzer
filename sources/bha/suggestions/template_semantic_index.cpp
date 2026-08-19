@@ -21,6 +21,7 @@
 
 #if BHA_HAVE_CLANG_TOOLING
 #include <clang/AST/Decl.h>
+#include <clang/AST/DeclCXX.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/Expr.h>
@@ -130,6 +131,28 @@ namespace bha::suggestions {
                 output << "...";
             }
             output << ')';
+            if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
+                const auto qualifiers = method->getMethodQualifiers();
+                if (qualifiers.hasConst()) {
+                    output << " const";
+                }
+                if (qualifiers.hasVolatile()) {
+                    output << " volatile";
+                }
+                switch (method->getType()->castAs<clang::FunctionProtoType>()->getRefQualifier()) {
+                    case clang::RQ_LValue:
+                        output << " &";
+                        break;
+                    case clang::RQ_RValue:
+                        output << " &&";
+                        break;
+                    case clang::RQ_None:
+                        break;
+                }
+            }
+            if (declaration.getExceptionSpecType() == clang::EST_BasicNoexcept) {
+                output << " noexcept";
+            }
             output.flush();
             return rendered;
         }
@@ -547,10 +570,11 @@ namespace bha::suggestions {
                     declaration.isInlineSpecified() || declaration.isConstexpr() ||
                     declaration.isConsteval() || declaration.isDeleted() ||
                     declaration.isDefaulted() || declaration.isVariadic() ||
-                    declaration.getExceptionSpecType() != clang::EST_None;
+                    (declaration.getExceptionSpecType() != clang::EST_None &&
+                     declaration.getExceptionSpecType() != clang::EST_BasicNoexcept);
                 if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
                     record.has_unsupported_function_form =
-                        record.has_unsupported_function_form || !method->isStatic() || method->isVirtual();
+                        record.has_unsupported_function_form || method->isVirtual();
                 }
                 if (declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
                     record.explicit_definition_files.push_back(source_file_);
@@ -808,7 +832,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v9");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v10");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -1062,7 +1086,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v9" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v10" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -1071,7 +1095,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v9" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v10" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -1288,7 +1312,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v9";
+                cache["schema"] = "bha-template-semantic-index-v10";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
