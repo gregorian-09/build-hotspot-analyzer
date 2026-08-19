@@ -535,14 +535,23 @@ namespace bha::suggestions {
                         return argument.isInstantiationDependent();
                     }
                 );
+                const auto* parent_record = llvm::dyn_cast<clang::CXXRecordDecl>(
+                    primary.getDeclContext()
+                );
+                const bool dependent_member_owner = parent_record != nullptr &&
+                    (parent_record->isDependentContext() || parent_record->getDescribedClassTemplate());
                 record.has_unsupported_scope =
-                    !primary.getDeclContext()->isFileContext() ||
-                    primary.getNameAsString().empty();
+                    (parent_record == nullptr && !primary.getDeclContext()->isFileContext()) ||
+                    dependent_member_owner || primary.getNameAsString().empty();
                 record.has_unsupported_function_form =
                     declaration.isInlineSpecified() || declaration.isConstexpr() ||
                     declaration.isConsteval() || declaration.isDeleted() ||
                     declaration.isDefaulted() || declaration.isVariadic() ||
                     declaration.getExceptionSpecType() != clang::EST_None;
+                if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
+                    record.has_unsupported_function_form =
+                        record.has_unsupported_function_form || !method->isStatic() || method->isVirtual();
+                }
                 if (declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition) {
                     record.explicit_definition_files.push_back(source_file_);
                 }
@@ -799,7 +808,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v8");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v9");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -1053,7 +1062,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v8" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v9" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -1062,7 +1071,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v8" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v9" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -1279,7 +1288,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v8";
+                cache["schema"] = "bha-template-semantic-index-v9";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {
