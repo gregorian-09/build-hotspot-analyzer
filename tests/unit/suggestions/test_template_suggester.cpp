@@ -373,4 +373,52 @@ namespace bha::suggestions {
         std::filesystem::remove_all(root, ec);
     }
 
+    TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForVariableTemplate) {
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-template-variable-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ));
+        std::error_code ec;
+        std::filesystem::create_directories(root / "include", ec);
+        std::filesystem::create_directories(root / "src", ec);
+        const auto header = root / "include" / "value.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "template <typename T> T value = T{42};\n";
+        const auto owner = root / "src" / "value.cpp";
+        std::ofstream(owner)
+            << "#include \"value.hpp\"\n"
+            << "template int value<int>;\n";
+        const auto use = root / "src" / "use.cpp";
+        std::ofstream(use)
+            << "#include \"value.hpp\"\n"
+            << "int use_value() { return value<int>; }\n";
+        const auto database = root / "compile_commands.json";
+        std::ofstream(database)
+            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/value.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/value.cpp\"]},"
+            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+
+        BuildTrace trace;
+        trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
+        trace.template_semantic_validated = true;
+        analyzers::AnalysisResult analysis;
+        analyzers::TemplateAnalysisResult::TemplateStats candidate;
+        candidate.full_signature = "value<int>";
+        analysis.templates.templates.push_back(std::move(candidate));
+        SuggesterOptions options;
+        options.compile_commands_path = database;
+        const SuggestionContext context{trace, analysis, options, root};
+
+        const auto result = suggester_.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
+        EXPECT_EQ(
+            result.value().suggestions.front().edits.front().new_text,
+            "extern template int value<int>;\n"
+        );
+        std::filesystem::remove_all(root, ec);
+    }
+
 }  // namespace bha::suggestions

@@ -22,11 +22,13 @@ namespace {
         const bha::suggestions::TemplateSemanticRecord& record,
         bha::ProjectIndex& project_index
     ) {
-        if ((record.declaration_kind != "class" && record.declaration_kind != "function") ||
+        if ((record.declaration_kind != "class" && record.declaration_kind != "function" &&
+             record.declaration_kind != "variable") ||
             record.has_explicit_instantiation_declaration ||
             !record.complete_definition || !record.has_external_linkage ||
             !record.has_single_explicit_definition || record.has_dependent_arguments ||
             record.has_unsupported_scope || record.has_unsupported_function_form ||
+            record.has_unsupported_variable_form ||
             record.declaration_file.empty() ||
             record.declaration_end_line == 0 || record.explicit_definition_files.empty()) {
             return std::nullopt;
