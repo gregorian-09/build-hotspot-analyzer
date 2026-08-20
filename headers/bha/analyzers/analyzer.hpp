@@ -82,14 +82,6 @@ namespace bha::analyzers {
             /// Composite impact score used for optimization prioritization.
             double impact_score = 0.0;
 
-            /// Source-control modification count where available.
-            std::size_t modification_count = 0;
-            /// Last modification timestamp where available.
-            Timestamp last_modified;
-            /// Elapsed duration since last modification.
-            Duration time_since_modification = Duration::zero();
-            /// Heuristic stability indicator (rarely modified).
-            bool is_stable = false;
             /// True when the header is outside project-owned source roots.
             bool is_external = false;
         };

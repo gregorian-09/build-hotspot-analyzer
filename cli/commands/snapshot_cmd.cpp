@@ -247,8 +247,6 @@ namespace bha::cli
                     std::cout << R"(    "name": ")" << s.name << "\",\n";
                     std::cout << R"(    "description": ")" << s.description << "\",\n";
                     std::cout << R"(    "created_at": ")" << format_time(s.created_at) << "\",\n";
-                    std::cout << R"(    "git_commit": ")" << s.git_commit << "\",\n";
-                    std::cout << R"(    "git_branch": ")" << s.git_branch << "\",\n";
                     std::cout << "    \"file_count\": " << s.file_count << ",\n";
                     std::cout << "    \"total_build_time_ms\": "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(s.total_build_time).count() << ",\n";
@@ -261,8 +259,7 @@ namespace bha::cli
                     {"Name", 20, false, std::nullopt},
                     {"Created", 20, false, std::nullopt},
                     {"Build Time", 12, true, std::nullopt},
-                    {"Files", 8, true, std::nullopt},
-                    {"Git", 25, false, std::nullopt}
+                    {"Files", 8, true, std::nullopt}
                 });
 
                 for (const auto& s : snapshots) {
@@ -271,20 +268,11 @@ namespace bha::cli
                         snap_name += " *";  // Mark baseline
                     }
 
-                    std::string git_info;
-                    if (!s.git_branch.empty()) {
-                        git_info = s.git_branch;
-                        if (!s.git_commit.empty() && s.git_commit.size() >= 7) {
-                            git_info += " (" + s.git_commit.substr(0, 7) + ")";
-                        }
-                    }
-
                     table.add_row({
                         snap_name,
                         format_time(s.created_at),
                         format_duration_short(s.total_build_time),
-                        std::to_string(s.file_count),
-                        git_info.empty() ? "-" : git_info
+                        std::to_string(s.file_count)
                     });
                 }
 
@@ -390,8 +378,6 @@ namespace bha::cli
                 std::cout << R"(  "name": ")" << meta.name << "\",\n";
                 std::cout << R"(  "description": ")" << meta.description << "\",\n";
                 std::cout << R"(  "created_at": ")" << format_time(meta.created_at) << "\",\n";
-                std::cout << R"(  "git_commit": ")" << meta.git_commit << "\",\n";
-                std::cout << R"(  "git_branch": ")" << meta.git_branch << "\",\n";
                 std::cout << "  \"file_count\": " << meta.file_count << ",\n";
                 std::cout << "  \"total_build_time_ms\": "
                           << std::chrono::duration_cast<std::chrono::milliseconds>(meta.total_build_time).count() << ",\n";
@@ -404,13 +390,6 @@ namespace bha::cli
                 if (!meta.description.empty()) {
                     std::cout << "Description: " << meta.description << "\n";
                 }
-                if (!meta.git_branch.empty()) {
-                    std::cout << "Git Branch:  " << meta.git_branch << "\n";
-                }
-                if (!meta.git_commit.empty()) {
-                    std::cout << "Git Commit:  " << meta.git_commit << "\n";
-                }
-
                 std::cout << "\n" << bold("Build Summary") << "\n";
                 std::cout << "  Total Build Time:  " << format_duration_short(snapshot_analysis.performance.total_build_time) << "\n";
                 std::cout << "  Files Analyzed:    " << snapshot_analysis.files.size() << "\n";
@@ -509,8 +488,6 @@ namespace bha::cli
                 std::cout << "{\n";
                 std::cout << "  \"baseline\": \"" << *baseline << "\",\n";
                 std::cout << R"(  "created_at": ")" << format_time(metadata.created_at) << "\",\n";
-                std::cout << R"(  "git_commit": ")" << metadata.git_commit << "\",\n";
-                std::cout << R"(  "git_branch": ")" << metadata.git_branch << "\",\n";
                 std::cout << "  \"file_count\": " << metadata.file_count << ",\n";
                 std::cout << "  \"total_build_time_ms\": "
                           << std::chrono::duration_cast<std::chrono::milliseconds>(metadata.total_build_time).count() << "\n";
@@ -520,12 +497,6 @@ namespace bha::cli
 
             std::cout << bold("Baseline Snapshot: ") << *baseline << "\n\n";
             std::cout << "Created:    " << format_time(metadata.created_at) << "\n";
-            if (!metadata.git_branch.empty()) {
-                std::cout << "Git Branch: " << metadata.git_branch << "\n";
-            }
-            if (!metadata.git_commit.empty()) {
-                std::cout << "Git Commit: " << metadata.git_commit << "\n";
-            }
             std::cout << "Files:      " << metadata.file_count << "\n";
             std::cout << "Build Time: " << format_duration_short(metadata.total_build_time) << "\n";
             return 0;

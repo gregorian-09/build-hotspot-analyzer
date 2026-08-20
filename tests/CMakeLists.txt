@@ -32,7 +32,6 @@ add_executable(bha_tests
         unit/analyzers/test_template_analyzer.cpp
         unit/exporters/test_exporter.cpp
         unit/storage/test_storage_compare.cpp
-        unit/git/test_git_integration.cpp
 )
 
 if(BHA_ENABLE_LSP)

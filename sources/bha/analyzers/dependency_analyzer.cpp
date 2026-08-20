@@ -3,13 +3,10 @@
 //
 
 #include "bha/analyzers/dependency_analyzer.hpp"
-#include "bha/git/git_integration.hpp"
 #include "bha/utils/include_parse_utils.hpp"
 
 #include <algorithm>
 #include <cmath>
-#include <fstream>
-#include <iomanip>
 #include <optional>
 #include <ranges>
 #include <sstream>
@@ -39,104 +36,6 @@ namespace bha::analyzers
                    path_str.find("third_party") != std::string::npos ||
                    path_str.find("external") != std::string::npos ||
                    path_str.find("dependencies") != std::string::npos;
-        }
-
-        struct FileModificationInfo {
-            std::size_t modification_count = 0;
-            Timestamp last_modified;
-            Duration time_since_modification = Duration::zero();
-        };
-
-        using FileHistoryCache = std::unordered_map<std::string, FileModificationInfo>;
-
-        FileHistoryCache build_file_history_cache(
-            const std::vector<fs::path>& paths,
-            const fs::path& repo_dir
-        ) {
-            FileHistoryCache cache;
-            if (paths.empty() || repo_dir.empty()) {
-                return cache;
-            }
-
-            constexpr std::size_t BATCH_SIZE = 500;
-
-            for (std::size_t batch_start = 0; batch_start < paths.size(); batch_start += BATCH_SIZE) {
-                const auto batch_end = std::min(batch_start + BATCH_SIZE, paths.size());
-
-                std::vector<std::string> args;
-                args.reserve(5 + (batch_end - batch_start));
-                args.emplace_back("log");
-                args.emplace_back("--format=@@%H@@%aI");
-                args.emplace_back("--name-only");
-                args.emplace_back("--");
-                for (std::size_t i = batch_start; i < batch_end; ++i) {
-                    args.push_back(paths[i].string());
-                }
-
-                auto log_result = git::execute_git(args, repo_dir, std::chrono::seconds(30));
-                if (log_result.is_err() || log_result.value().exit_code != 0) {
-                    continue;
-                }
-
-                const std::string& output = log_result.value().stdout_output;
-                std::istringstream stream(output);
-                std::string line;
-
-                Timestamp latest_commit_date;
-                bool have_date = false;
-                std::vector<std::string> block_files;
-
-                auto flush_block = [&]() {
-                    if (!have_date || block_files.empty()) return;
-                    for (const auto& f : block_files) {
-                        auto& info = cache[f];
-                        ++info.modification_count;
-                        if (info.modification_count == 1 ||
-                            latest_commit_date > info.last_modified) {
-                            info.last_modified = latest_commit_date;
-                        }
-                    }
-                    have_date = false;
-                    block_files.clear();
-                };
-
-                while (std::getline(stream, line)) {
-                    if (line.empty()) {
-                        flush_block();
-                        continue;
-                    }
-
-                    if (line.starts_with("@@")) {
-                        flush_block();
-                        const auto date_pos = line.rfind("@@");
-                        if (date_pos > 2) {
-                            const std::string date_str(line.substr(date_pos + 2));
-                            std::tm tm{};
-                            std::istringstream date_ss(date_str);
-                            date_ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%S");
-                            if (!date_ss.fail()) {
-                                latest_commit_date =
-                                    std::chrono::system_clock::from_time_t(std::mktime(&tm));
-                                have_date = true;
-                            }
-                        }
-                        continue;
-                    }
-
-                    block_files.push_back(line);
-                }
-                flush_block();
-            }
-
-            const auto now = std::chrono::system_clock::now();
-            for (auto& [key, info] : cache) {
-                if (info.modification_count > 0) {
-                    info.time_since_modification =
-                        std::chrono::duration_cast<Duration>(now - info.last_modified);
-                }
-            }
-
-            return cache;
         }
 
         struct IncludeDirective {
@@ -433,30 +332,7 @@ namespace bha::analyzers
             }
         }
 
-        std::optional<fs::path> repo_root;
-        if (trace.git_info.has_value()) {
-            if (auto root_result = git::get_repository_root(); root_result.is_ok()) {
-                repo_root = root_result.value();
-            }
-        }
-
         result.dependencies.headers.reserve(header_map.size());
-
-        // Build batched git history cache for all non-external headers.
-        // Replaces O(N) separate git subprocesses with O(N/500) batched calls.
-        FileHistoryCache history_cache;
-        if (repo_root.has_value()) {
-            std::vector<fs::path> internal_paths;
-            internal_paths.reserve(header_map.size());
-            for (const auto& stats : header_map | std::views::values) {
-                if (!is_external_header(stats.path)) {
-                    internal_paths.push_back(stats.path);
-                }
-            }
-            if (!internal_paths.empty()) {
-                history_cache = build_file_history_cache(internal_paths, *repo_root);
-            }
-        }
 
         for (auto& [path, total_parse_time, inclusion_count, including_files] : header_map | std::views::values) {
             DependencyAnalysisResult::HeaderInfo info;
@@ -474,25 +350,6 @@ namespace bha::analyzers
             info.impact_score = time_factor * std::sqrt(count_factor);
 
             info.is_external = is_external_header(path);
-
-            if (!history_cache.empty() && !info.is_external) {
-                const auto cache_it = history_cache.find(path_key(path));
-                if (cache_it != history_cache.end()) {
-                    info.modification_count = cache_it->second.modification_count;
-                    info.last_modified = cache_it->second.last_modified;
-                    info.time_since_modification = cache_it->second.time_since_modification;
-                }
-
-                constexpr auto six_months = std::chrono::hours(24 * 30 * 6);
-                constexpr std::size_t stable_mod_threshold = 5;
-
-                info.is_stable = (info.time_since_modification >= six_months) ||
-                                (info.modification_count > 0 &&
-                                 info.modification_count <= stable_mod_threshold &&
-                                 info.time_since_modification >= std::chrono::hours(24 * 30));
-            } else if (info.is_external) {
-                info.is_stable = true;
-            }
 
             result.dependencies.headers.push_back(std::move(info));
         }

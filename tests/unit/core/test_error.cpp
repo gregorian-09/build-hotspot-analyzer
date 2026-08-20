@@ -67,11 +67,6 @@ namespace bha
         EXPECT_EQ(error.code(), ErrorCode::PluginError);
     }
 
-    TEST(ErrorTest, GitErrorFactory) {
-        const auto error = Error::git_error("not a git repository");
-        EXPECT_EQ(error.code(), ErrorCode::GitError);
-    }
-
     TEST(ErrorTest, InternalErrorFactory) {
         const auto error = Error::internal_error("unexpected state");
         EXPECT_EQ(error.code(), ErrorCode::InternalError);
@@ -111,7 +106,6 @@ namespace bha
         EXPECT_STREQ(error_code_to_string(ErrorCode::ConfigError), "ConfigError");
         EXPECT_STREQ(error_code_to_string(ErrorCode::AnalysisError), "AnalysisError");
         EXPECT_STREQ(error_code_to_string(ErrorCode::PluginError), "PluginError");
-        EXPECT_STREQ(error_code_to_string(ErrorCode::GitError), "GitError");
         EXPECT_STREQ(error_code_to_string(ErrorCode::InternalError), "InternalError");
     }
 

@@ -34,7 +34,7 @@ ctest --test-dir build --output-on-failure
 
 ## Test Coverage Snapshot
 
-Current suite includes parser, analyzer, suggester, exporter, storage, git, and build-adapter tests.
+Current suite includes parser, analyzer, suggester, exporter, storage, and build-adapter tests.
 
 Current ctest inventory (local run on 2026-03-15): `338` tests.
 

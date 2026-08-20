@@ -37,8 +37,6 @@ namespace bha::storage
         std::string name;                    // User-provided name
         std::string description;             // Optional description
         Timestamp created_at;                // When the snapshot was created
-        std::string git_commit;              // Git commit hash (if available)
-        std::string git_branch;              // Git branch name (if available)
         std::string compiler;                // Compiler used
         std::string compiler_version;        // Compiler version
         std::size_t file_count;              // Number of files analyzed
@@ -212,8 +210,6 @@ namespace bha::storage
         fs::path baseline_file() const { return root_ / ".baseline"; }
 
         Result<void, Error> ensure_directory() const;
-        static std::string get_git_commit();
-        static std::string get_git_branch();
     };
 
     /**

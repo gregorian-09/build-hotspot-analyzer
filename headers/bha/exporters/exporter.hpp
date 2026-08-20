@@ -111,10 +111,6 @@ namespace bha::exporters
         std::string project_name;
         /// Project root path string.
         std::string project_path;
-        /// Git commit hash when available.
-        std::string git_commit;
-        /// Git branch name when available.
-        std::string git_branch;
         /// Total analysis runtime.
         Duration total_analysis_time = Duration::zero();
         /// Number of files analyzed.

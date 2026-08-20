@@ -22,7 +22,6 @@
  * - ConfigError: Configuration validation failed
  * - AnalysisError: Build analysis failed
  * - PluginError: Plugin loading or execution failed
- * - GitError: Git operation failed
  * - InternalError: Unexpected internal error
  *
  * Usage:
@@ -67,7 +66,6 @@ namespace bha {
         ConfigError,      ///< Configuration error
         AnalysisError,    ///< Analysis operation failed
         PluginError,      ///< Plugin operation failed
-        GitError,         ///< Git operation failed
         InternalError     ///< Internal/unexpected error
     };
 
@@ -87,7 +85,6 @@ namespace bha {
             case ErrorCode::ConfigError:     return "ConfigError";
             case ErrorCode::AnalysisError:   return "AnalysisError";
             case ErrorCode::PluginError:     return "PluginError";
-            case ErrorCode::GitError:        return "GitError";
             case ErrorCode::InternalError:   return "InternalError";
         }
         return "Unknown";
@@ -202,17 +199,6 @@ namespace bha {
 
         static Error plugin_error(std::string message, std::string context) {
             return {ErrorCode::PluginError, std::move(message), std::move(context)};
-        }
-
-        /**
-         * Creates a Git error.
-         */
-        static Error git_error(std::string message) {
-            return {ErrorCode::GitError, std::move(message)};
-        }
-
-        static Error git_error(std::string message, std::string context) {
-            return {ErrorCode::GitError, std::move(message), std::move(context)};
         }
 
         /**

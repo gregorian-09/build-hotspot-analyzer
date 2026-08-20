@@ -723,8 +723,6 @@ namespace bha::exporters
                 h["parse_time_ms"] = duration_to_ms(header.total_parse_time);
                 h["impact_score"] = header.impact_score;
                 h["included_by"] = header.included_by;
-                h["modification_count"] = header.modification_count;
-                h["is_stable"] = header.is_stable;
                 h["is_external"] = header.is_external;
                 headers_array.push_back(h);
             }

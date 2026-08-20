@@ -15,7 +15,6 @@
  * - Basic Types: Duration, Timestamp, SourceLocation
  * - Build Trace Data: CompilationUnit, BuildTrace, IncludeInfo, etc.
  * - Suggestion Data: Suggestion, FileTarget, CodeExample, Impact
- * - Git Integration: GitInfo, CommitImpact, AuthorStats, Blame data
  *
  * All types are designed to be:
  * - Move-friendly for efficient transfer
@@ -479,19 +478,6 @@ namespace bha {
     };
 
     /**
-     * Git repository information at build time.
-     */
-    struct GitInfo {
-        std::string commit_hash;
-        std::string branch;
-        std::string author;
-        std::string author_email;
-        Timestamp commit_time;
-        std::string message;
-        bool is_dirty = false;
-    };
-
-    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -506,8 +492,6 @@ namespace bha {
         std::string platform;
         TemplateEvidence template_evidence = TemplateEvidence::None;
         bool template_semantic_validated = false;
-
-        std::optional<GitInfo> git_info;
 
         std::vector<CompilationUnit> units;
 
@@ -806,58 +790,6 @@ namespace bha {
         }
         return suggestion.application_mode;
     }
-
-    // ============================================================================
-    // Git Integration Data
-    // ============================================================================
-
-    /**
-     * Impact of a specific commit on build times.
-     */
-    struct CommitImpact {
-        std::string commit_hash;
-        std::string author;
-        Timestamp timestamp;
-        std::string message;
-
-        Duration time_delta = Duration::zero();
-        std::vector<fs::path> files_changed;
-        std::vector<Suggestion> suggested_fixes;
-    };
-
-    /**
-     * Build time statistics per author.
-     */
-    struct AuthorStats {
-        std::string author;
-        std::string email;
-        std::size_t commits = 0;
-        std::size_t files_changed = 0;
-        Duration time_added = Duration::zero();
-        Duration time_saved = Duration::zero();
-        Duration net_impact = Duration::zero();
-    };
-
-    /**
-     * Blame information for a single line of code.
-     */
-    struct LineBlame {
-        std::size_t line_number = 0;
-        Duration time_contribution = Duration::zero();
-        std::string author;
-        std::string commit_hash;
-        std::string code;
-    };
-
-    /**
-     * Blame information for an entire file.
-     */
-    struct FileBlame {
-        fs::path file;
-        Duration total_time = Duration::zero();
-        std::vector<LineBlame> lines;
-        std::vector<Suggestion> suggestions;
-    };
 
     // ============================================================================
     // Configuration Types

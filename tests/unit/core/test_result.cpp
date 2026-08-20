@@ -139,7 +139,7 @@ namespace bha
     }
 
     TEST(VoidResultTest, AndThenOnFailure) {
-        const auto result = Result<void, Error>::failure(Error::git_error("not a repo"));
+        const auto result = Result<void, Error>::failure(Error::analysis_error("analysis failed"));
         int counter = 0;
         const auto chained = result.and_then([&counter]() {
             ++counter;

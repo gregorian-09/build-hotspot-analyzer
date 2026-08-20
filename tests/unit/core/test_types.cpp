@@ -175,7 +175,6 @@ namespace bha
         EXPECT_EQ(trace.compiler, CompilerType::Unknown);
         EXPECT_TRUE(trace.compiler_version.empty());
         EXPECT_EQ(trace.build_system, BuildSystemType::Unknown);
-        EXPECT_FALSE(trace.git_info.has_value());
     }
 
     TEST(SuggestionTest, DefaultValues) {

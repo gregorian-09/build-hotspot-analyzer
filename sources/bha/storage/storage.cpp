@@ -9,17 +9,10 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cstdio>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <sys/wait.h>
-#endif
 
 namespace bha::storage
 {
@@ -56,40 +49,6 @@ namespace bha::storage
             return std::chrono::duration_cast<Duration>(
                 std::chrono::microseconds(static_cast<int64_t>(ms * 1000))
             );
-        }
-
-        /**
-         * Executes a command and returns output.
-         */
-        std::string execute_command(const std::string& cmd) {
-            std::string result;
-
-#ifdef _WIN32
-            FILE* pipe = _popen(cmd.c_str(), "r");
-#else
-            FILE* pipe = popen(cmd.c_str(), "r");
-#endif
-
-            if (!pipe) {
-                return "";
-            }
-
-            char buffer[128];
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                result += buffer;
-            }
-
-#ifdef _WIN32
-            _pclose(pipe);
-#else
-            pclose(pipe);
-#endif
-
-            while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
-                result.pop_back();
-            }
-
-            return result;
         }
 
         /**
@@ -416,16 +375,6 @@ namespace bha::storage
         }
     }
 
-    std::string SnapshotStore::get_git_commit()
-    {
-        return execute_command("git rev-parse HEAD 2>/dev/null");
-    }
-
-    std::string SnapshotStore::get_git_branch()
-    {
-        return execute_command("git rev-parse --abbrev-ref HEAD 2>/dev/null");
-    }
-
     Result<void, Error> SnapshotStore::save(
         const std::string& name,
         const analyzers::AnalysisResult& analysis,
@@ -445,8 +394,6 @@ namespace bha::storage
         j["name"] = name;
         j["description"] = description;
         j["created_at"] = utils::format_timestamp_iso8601(std::chrono::system_clock::now());
-        j["git_commit"] = get_git_commit();
-        j["git_branch"] = get_git_branch();
         j["file_count"] = analysis.files.size();
         j["total_build_time_ms"] = duration_to_ms(analysis.performance.total_build_time);
         j["tags"] = tags;
@@ -512,8 +459,6 @@ namespace bha::storage
             snapshot.metadata.name = j.value("name", name);
             snapshot.metadata.description = j.value("description", "");
             snapshot.metadata.created_at = parse_timestamp(j.value("created_at", ""));
-            snapshot.metadata.git_commit = j.value("git_commit", "");
-            snapshot.metadata.git_branch = j.value("git_branch", "");
             snapshot.metadata.file_count = j.value("file_count", std::size_t{0});
             snapshot.metadata.total_build_time = ms_to_duration(j.value("total_build_time_ms", 0.0));
 
