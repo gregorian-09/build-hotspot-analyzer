@@ -187,16 +187,11 @@ namespace bha::suggestions {
                 return;
             }
             existing->end_line = std::max(existing->end_line, target.end_line);
-            existing->sources.insert(
-                existing->sources.end(),
-                target.sources.begin(),
-                target.sources.end()
-            );
-            std::ranges::sort(existing->sources, {}, path_key);
-            existing->sources.erase(
-                std::unique(existing->sources.begin(), existing->sources.end()),
-                existing->sources.end()
-            );
+            for (const auto& source : target.sources) {
+                if (std::ranges::find(existing->sources, source) == existing->sources.end()) {
+                    existing->sources.push_back(source);
+                }
+            }
         }
 
         std::vector<CMakeTarget> parse_cmake_targets(
@@ -236,7 +231,9 @@ namespace bha::suggestions {
                         target.sources.clear();
                         break;
                     }
-                    target.sources.push_back(source);
+                    if (std::ranges::find(target.sources, source) == target.sources.end()) {
+                        target.sources.push_back(source);
+                    }
                 }
                 if (!target.sources.empty()) {
                     merge_target(targets, std::move(target));

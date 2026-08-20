@@ -206,6 +206,39 @@ namespace bha::suggestions {
         EXPECT_GT(result.value().items_skipped, 0u);
     }
 
+    TEST_F(UnityBuildSuggesterTest, PreservesCMakeSourceOrderInValidatedTarget) {
+        TempDir temp("bha-unity-source-order-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnitySourceOrder)\n"
+                   "add_library(core src/z.cpp)\n"
+                   "target_sources(core PRIVATE src/a.cpp)\n");
+        write_file(temp.root / "src" / "z.cpp", "int z() { return 1; }\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "z.cpp", temp.root / "src" / "a.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "z.cpp", temp.root / "src" / "a.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& sources = result.value().suggestions.front().secondary_files;
+        ASSERT_EQ(sources.size(), 2u);
+        EXPECT_EQ(sources[0].path, temp.root / "src" / "z.cpp");
+        EXPECT_EQ(sources[1].path, temp.root / "src" / "a.cpp");
+    }
+
     TEST_F(UnityBuildSuggesterTest, SkipsCrossTargetGroupsWhenNoSingleTargetOwnsAllFiles) {
         TempDir temp("bha-unity-cross-target-");
         write_file(temp.root / "CMakeLists.txt",
