@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -88,6 +89,7 @@ def apply_text_edits(edits: list[dict], project_root: Path) -> List[Path]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build and validate unity-build edits on dedicated subproject")
     parser.add_argument("--timeout", type=int, default=7200, help="timeout per external command in seconds")
+    parser.add_argument("--bha-bin", type=Path, default=None, help="path to the BHA executable")
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parent.parent
@@ -97,7 +99,20 @@ def main() -> int:
     build_dir = project_root / "build"
     trace_dir = project_root / "traces"
 
-    bha_bin = repo_root / "build" / "bha"
+    bha_bin = args.bha_bin
+    if bha_bin is None and os.environ.get("BHA_BIN"):
+        bha_bin = Path(os.environ["BHA_BIN"])
+    if bha_bin is None:
+        bha_bin = next(
+            (candidate for candidate in (
+                repo_root / "build-linux-clang" / "bha",
+                repo_root / "build-linux-gcc" / "bha",
+                repo_root / "build" / "bha",
+            ) if candidate.exists()),
+            repo_root / "build-linux-clang" / "bha",
+        )
+    if not bha_bin.is_absolute():
+        bha_bin = (repo_root / bha_bin).resolve()
     if not bha_bin.exists():
         print(f"error: bha binary missing: {bha_bin}")
         return 2
