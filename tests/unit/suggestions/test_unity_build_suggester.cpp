@@ -242,6 +242,121 @@ namespace bha::suggestions {
         EXPECT_GT(result.value().items_skipped, 0u);
     }
 
+    TEST_F(UnityBuildSuggesterTest, RejectsTargetSourcesWithoutBuiltinDeclaration) {
+        TempDir temp("bha-unity-source-extension-only-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnitySourceExtensionOnly)\n"
+                   "target_sources(core PRIVATE src/a.cpp src/b.cpp)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, RejectsTargetSourcesSplitAcrossCMakeFiles) {
+        TempDir temp("bha-unity-cross-cmake-file-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityCrossCMakeFile)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "add_subdirectory(extra)\n");
+        write_file(temp.root / "extra" / "CMakeLists.txt",
+                   "target_sources(core PRIVATE ../src/c.cpp)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_file(temp.root / "src" / "c.cpp", "int c() { return 3; }\n");
+        write_compile_database(temp.root, {
+            temp.root / "src" / "a.cpp",
+            temp.root / "src" / "b.cpp",
+            temp.root / "src" / "c.cpp"
+        });
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {
+                 temp.root / "src" / "a.cpp",
+                 temp.root / "src" / "b.cpp",
+                 temp.root / "src" / "c.cpp"
+             }) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, IgnoresInterfaceSourcesWhenResolvingTargetSources) {
+        TempDir temp("bha-unity-interface-sources-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityInterfaceSources)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "target_sources(core INTERFACE src/interface_a.cpp src/interface_b.cpp)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_file(temp.root / "src" / "interface_a.cpp", "int interface_a() { return 3; }\n");
+        write_file(temp.root / "src" / "interface_b.cpp", "int interface_b() { return 4; }\n");
+        write_compile_database(temp.root, {
+            temp.root / "src" / "a.cpp",
+            temp.root / "src" / "b.cpp",
+            temp.root / "src" / "interface_a.cpp",
+            temp.root / "src" / "interface_b.cpp"
+        });
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {
+                 temp.root / "src" / "a.cpp",
+                 temp.root / "src" / "b.cpp",
+                 temp.root / "src" / "interface_a.cpp",
+                 temp.root / "src" / "interface_b.cpp"
+             }) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().suggestions.size(), 1u);
+        const auto& sources = result.value().suggestions.front().secondary_files;
+        ASSERT_EQ(sources.size(), 2u);
+        EXPECT_EQ(sources[0].path, temp.root / "src" / "a.cpp");
+        EXPECT_EQ(sources[1].path, temp.root / "src" / "b.cpp");
+    }
+
     TEST_F(UnityBuildSuggesterTest, PreservesCMakeSourceOrderInValidatedTarget) {
         TempDir temp("bha-unity-source-order-");
         write_file(temp.root / "CMakeLists.txt",

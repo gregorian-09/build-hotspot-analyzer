@@ -67,11 +67,21 @@ namespace bha::utils {
         }
 
         if (lower_command == "target_sources") {
+            std::string scope;
             for (; i < tokens.size(); ++i) {
-                if (is_scope_or_target_keyword(tokens[i])) {
+                const std::string lower_token = to_lower_ascii(tokens[i]);
+                if (lower_token == "file_set") {
+                    // File-set semantics require CMake evaluation; do not
+                    // infer compiled target sources from a text scan.
+                    return {};
+                }
+                if (lower_token == "public" || lower_token == "private" ||
+                    lower_token == "interface") {
+                    scope = lower_token;
                     continue;
                 }
-                if (is_probable_source_token(tokens[i], mode)) {
+                if (scope != "interface" && !scope.empty() &&
+                    is_probable_source_token(tokens[i], mode)) {
                     sources.push_back(tokens[i]);
                 }
             }

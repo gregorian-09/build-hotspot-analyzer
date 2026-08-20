@@ -43,6 +43,8 @@ namespace bha::suggestions {
             std::string name;
             std::vector<fs::path> sources;
             std::size_t end_line = 0;
+            bool builtin_declaration = false;
+            bool interface_target = false;
         };
 
         struct CompileEvidence {
@@ -187,6 +189,8 @@ namespace bha::suggestions {
                 return;
             }
             existing->end_line = std::max(existing->end_line, target.end_line);
+            existing->builtin_declaration = existing->builtin_declaration || target.builtin_declaration;
+            existing->interface_target = existing->interface_target || target.interface_target;
             for (const auto& source : target.sources) {
                 if (std::ranges::find(existing->sources, source) == existing->sources.end()) {
                     existing->sources.push_back(source);
@@ -218,13 +222,18 @@ namespace bha::suggestions {
                     command.arguments,
                     utils::CMakeSourceTokenMode::Strict
                 );
-                if (source_tokens.empty()) {
+                const bool builtin_declaration = command.name != "target_sources";
+                if (source_tokens.empty() && !builtin_declaration) {
                     continue;
                 }
                 CMakeTarget target;
                 target.cmake_file = cmake_file;
                 target.name = *target_name;
                 target.end_line = command.end_line;
+                target.builtin_declaration = builtin_declaration;
+                if (command.name == "add_library" && command.arguments.size() > 1) {
+                    target.interface_target = lowercase(command.arguments[1]) == "interface";
+                }
                 for (const auto& token : source_tokens) {
                     const fs::path source = resolve_source_token(token, cmake_file, project_root);
                     if (!fs::is_regular_file(source)) {
@@ -235,7 +244,7 @@ namespace bha::suggestions {
                         target.sources.push_back(source);
                     }
                 }
-                if (!target.sources.empty()) {
+                if (target.builtin_declaration || !target.sources.empty()) {
                     merge_target(targets, std::move(target));
                 }
             }
@@ -553,25 +562,38 @@ namespace bha::suggestions {
             }
         }
 
-        std::unordered_set<std::string> seen_targets;
         std::size_t analyzed_targets = 0;
         std::size_t skipped_targets = 0;
         bool global_unity_cache = false;
         bool global_unity_loaded = false;
 
-        for (const auto& [cmake_file, content] : cmake_files(
-                 project_root,
-                 [&]() { return context.is_cancelled(); }
-             )) {
+        const auto project_cmake_files = cmake_files(
+            project_root,
+            [&]() { return context.is_cancelled(); }
+        );
+        std::vector<CMakeTarget> targets;
+        std::unordered_map<std::string, fs::path> target_declaration_files;
+        std::unordered_set<std::string> ambiguous_targets;
+        for (const auto& [cmake_file, content] : project_cmake_files) {
+            for (auto target : parse_cmake_targets(cmake_file, project_root, content)) {
+                const auto [owner, inserted] = target_declaration_files.emplace(target.name, cmake_file);
+                if (!inserted && owner->second != cmake_file) {
+                    ambiguous_targets.insert(target.name);
+                }
+                targets.push_back(std::move(target));
+            }
+        }
+
+        for (auto& target : targets) {
             if (context.is_cancelled()) {
                 break;
             }
-            for (auto target : parse_cmake_targets(cmake_file, project_root, content)) {
-                ++analyzed_targets;
-                if (!seen_targets.insert(target.name).second) {
-                    ++skipped_targets;
-                    continue;
-                }
+            ++analyzed_targets;
+            if (ambiguous_targets.contains(target.name) || !target.builtin_declaration ||
+                target.interface_target) {
+                ++skipped_targets;
+                continue;
+            }
                 // A unity build is only meaningful for a target with at least
                 // two independently compiled translation units.
                 if (target.sources.size() < 2) {
@@ -694,7 +716,6 @@ namespace bha::suggestions {
                 suggestion.impact.total_files_affected = target.sources.size();
                 suggestion.impact.cumulative_savings = Duration::zero();
                 result.suggestions.push_back(std::move(suggestion));
-            }
         }
 
         result.items_analyzed = analyzed_targets;
