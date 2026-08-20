@@ -242,6 +242,128 @@ namespace bha::suggestions {
         EXPECT_GT(result.value().items_skipped, 0u);
     }
 
+    TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetUsesGroupUnityMode) {
+        TempDir temp("bha-unity-group-mode-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityGroupMode)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "set_target_properties(core PROPERTIES UNITY_BUILD_MODE GROUP)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetInjectsCodeAroundUnityIncludes) {
+        TempDir temp("bha-unity-injected-code-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityInjectedCode)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "set_target_properties(core PROPERTIES\n"
+                   "  UNITY_BUILD_CODE_BEFORE_INCLUDE \"#define BHA_UNITY_MARKER 1\"\n"
+                   ")\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, SkipsWhenUnityPropertyHasNoValue) {
+        TempDir temp("bha-unity-missing-property-value-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityMissingPropertyValue)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "set_property(TARGET core PROPERTY UNITY_BUILD)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetPropertiesUnityPropertyHasNoValue) {
+        TempDir temp("bha-unity-missing-target-property-value-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityMissingTargetPropertyValue)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "set_target_properties(core PROPERTIES UNITY_BUILD)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
     TEST_F(UnityBuildSuggesterTest, RejectsTargetSourcesWithoutBuiltinDeclaration) {
         TempDir temp("bha-unity-source-extension-only-");
         write_file(temp.root / "CMakeLists.txt",

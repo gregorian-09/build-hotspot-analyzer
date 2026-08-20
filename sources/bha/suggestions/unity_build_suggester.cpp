@@ -301,6 +301,38 @@ namespace bha::suggestions {
             return false;
         }
 
+        void record_unity_target_property(
+            std::string_view property,
+            const std::optional<std::string_view>& value,
+            TargetState& target_state
+        ) {
+            const std::string name = lowercase(property);
+            if (name == "unity_build") {
+                if (!value.has_value()) {
+                    target_state.unity_state_unknown = true;
+                    return;
+                }
+                bool known = false;
+                const bool enabled = cmake_truth_value(*value, known);
+                target_state.unity_enabled = target_state.unity_enabled || enabled;
+                target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
+                return;
+            }
+            if (name == "unity_build_mode") {
+                // GROUP requires per-source UNITY_GROUP modeling. Only the
+                // default-compatible BATCH mode is accepted here.
+                target_state.unity_state_unknown = target_state.unity_state_unknown ||
+                    !value.has_value() || lowercase(*value) != "batch";
+                return;
+            }
+            if (name == "unity_build_code_before_include" ||
+                name == "unity_build_code_after_include") {
+                // These properties inject arbitrary code around every source
+                // include and therefore are outside the synthetic TU model.
+                target_state.unity_state_unknown = true;
+            }
+        }
+
         void record_unity_state(
             const std::vector<CMakeCommand>& commands,
             std::string_view target_name,
@@ -318,7 +350,7 @@ namespace bha::suggestions {
                     continue;
                 }
 
-                if (command.name == "set_property" && command.arguments.size() >= 4 &&
+                if (command.name == "set_property" && command.arguments.size() >= 2 &&
                     lowercase(command.arguments[0]) == "target") {
                     const auto property = std::ranges::find_if(
                         command.arguments.begin() + 1,
@@ -329,14 +361,18 @@ namespace bha::suggestions {
                     );
                     const bool target_list_contains_candidate = property != command.arguments.end() &&
                         std::ranges::find(command.arguments.begin() + 1, property, std::string(target_name)) != property;
-                    if (!target_list_contains_candidate || property + 2 >= command.arguments.end() ||
-                        lowercase(*(property + 1)) != "unity_build") {
+                    if (!target_list_contains_candidate || property == command.arguments.end()) {
                         continue;
                     }
-                    bool known = false;
-                    const bool enabled = cmake_truth_value(*(property + 2), known);
-                    target_state.unity_enabled = target_state.unity_enabled || enabled;
-                    target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
+                    if (property + 1 == command.arguments.end()) {
+                        target_state.unity_state_unknown = true;
+                        continue;
+                    }
+                    const auto property_name = property + 1;
+                    const auto value = property + 2 < command.arguments.end()
+                        ? std::optional<std::string_view>(*(property + 2))
+                        : std::nullopt;
+                    record_unity_target_property(*property_name, value, target_state);
                     continue;
                 }
 
@@ -361,14 +397,19 @@ namespace bha::suggestions {
                 const auto property_index = static_cast<std::size_t>(
                     std::distance(command.arguments.begin(), properties)
                 );
-                for (std::size_t index = property_index + 1; index + 1 < command.arguments.size(); index += 2) {
-                    if (lowercase(command.arguments[index]) != "unity_build") {
-                        continue;
-                    }
-                    bool known = false;
-                    const bool enabled = cmake_truth_value(command.arguments[index + 1], known);
-                    target_state.unity_enabled = target_state.unity_enabled || enabled;
-                    target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
+                if (property_index + 1 >= command.arguments.size()) {
+                    target_state.unity_state_unknown = true;
+                    continue;
+                }
+                for (std::size_t index = property_index + 1; index < command.arguments.size(); index += 2) {
+                    const auto value = index + 1 < command.arguments.size()
+                        ? std::optional<std::string_view>(command.arguments[index + 1])
+                        : std::nullopt;
+                    record_unity_target_property(
+                        command.arguments[index],
+                        value,
+                        target_state
+                    );
                 }
             }
         }
@@ -594,128 +635,128 @@ namespace bha::suggestions {
                 ++skipped_targets;
                 continue;
             }
-                // A unity build is only meaningful for a target with at least
-                // two independently compiled translation units.
-                if (target.sources.size() < 2) {
-                    ++skipped_targets;
-                    continue;
-                }
+            // A unity build is only meaningful for a target with at least
+            // two independently compiled translation units.
+            if (target.sources.size() < 2) {
+                ++skipped_targets;
+                continue;
+            }
 
-                std::vector<CompileEvidence> evidence;
-                evidence.reserve(target.sources.size());
-                std::optional<std::vector<std::string>> environment;
-                bool compatible = true;
-                for (const auto& source : target.sources) {
-                    const auto file = analyzed_files.find(path_key(source));
-                    const auto command = context.project_index->compile_command_for(source);
-                    if (file == analyzed_files.end() || !command.has_value() ||
-                        file->second.compile_time <= Duration::zero()) {
-                        compatible = false;
-                        break;
-                    }
-                    const auto current_environment = normalized_environment(*command, source);
-                    if (!current_environment.has_value() ||
-                        (environment.has_value() && *environment != *current_environment)) {
-                        compatible = false;
-                        break;
-                    }
-                    if (!environment.has_value()) {
-                        environment = current_environment;
-                    }
-                    evidence.push_back({source, *command, file->second.compile_time});
+            std::vector<CompileEvidence> evidence;
+            evidence.reserve(target.sources.size());
+            std::optional<std::vector<std::string>> environment;
+            bool compatible = true;
+            for (const auto& source : target.sources) {
+                const auto file = analyzed_files.find(path_key(source));
+                const auto command = context.project_index->compile_command_for(source);
+                if (file == analyzed_files.end() || !command.has_value() ||
+                    file->second.compile_time <= Duration::zero()) {
+                    compatible = false;
+                    break;
                 }
-                if (!compatible) {
-                    ++skipped_targets;
-                    continue;
+                const auto current_environment = normalized_environment(*command, source);
+                if (!current_environment.has_value() ||
+                    (environment.has_value() && *environment != *current_environment)) {
+                    compatible = false;
+                    break;
                 }
+                if (!environment.has_value()) {
+                    environment = current_environment;
+                }
+                evidence.push_back({source, *command, file->second.compile_time});
+            }
+            if (!compatible) {
+                ++skipped_targets;
+                continue;
+            }
 
-                if (!global_unity_loaded) {
-                    bool ignored_global_state = false;
-                    const auto state = target_unity_state(
-                        project_root,
-                        "__bha_unity_global_probe__",
-                        [&]() { return context.is_cancelled(); },
-                        ignored_global_state
-                    );
-                    static_cast<void>(state);
-                    global_unity_cache = ignored_global_state;
-                    global_unity_loaded = true;
-                }
-                bool global_unity = global_unity_cache;
-                TargetState state = target_unity_state(
+            if (!global_unity_loaded) {
+                bool ignored_global_state = false;
+                const auto state = target_unity_state(
                     project_root,
-                    target.name,
+                    "__bha_unity_global_probe__",
                     [&]() { return context.is_cancelled(); },
-                    global_unity
+                    ignored_global_state
                 );
-                if (global_unity || state.unity_enabled || state.unity_state_unknown) {
-                    ++skipped_targets;
-                    continue;
-                }
+                static_cast<void>(state);
+                global_unity_cache = ignored_global_state;
+                global_unity_loaded = true;
+            }
+            bool global_unity = global_unity_cache;
+            TargetState state = target_unity_state(
+                project_root,
+                target.name,
+                [&]() { return context.is_cancelled(); },
+                global_unity
+            );
+            if (global_unity || state.unity_enabled || state.unity_state_unknown) {
+                ++skipped_targets;
+                continue;
+            }
 
-                std::string validation_diagnostic;
-                if (!validate_unity_translation_unit(evidence, validation_diagnostic)) {
-                    ++skipped_targets;
-                    continue;
-                }
+            std::string validation_diagnostic;
+            if (!validate_unity_translation_unit(evidence, validation_diagnostic)) {
+                ++skipped_targets;
+                continue;
+            }
 
-                Suggestion suggestion;
-                suggestion.id = generate_suggestion_id("unity", analyzed_targets, target.name);
-                suggestion.type = SuggestionType::UnityBuild;
-                suggestion.priority = Priority::Medium;
-                suggestion.confidence = 1.0;
-                suggestion.title = "Enable CMake unity build for target " + target.name;
-                suggestion.description =
-                    "Enable CMake UNITY_BUILD for the exact target source set after Clang "
-                    "accepted the proposed include-ordered unity translation unit.";
-                suggestion.rationale =
-                    "The target source list was resolved exactly from CMake, every source "
-                    "has a compile-database command with the same environment, and the "
-                    "merged translation unit passed Clang syntax validation.";
-                suggestion.estimated_savings = Duration::zero();
-                suggestion.target_file.path = target.cmake_file;
-                suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.note = "Enable UNITY_BUILD for target " + target.name;
-                suggestion.secondary_files.reserve(target.sources.size());
-                for (const auto& source : target.sources) {
-                    FileTarget file_target;
-                    file_target.path = source;
-                    file_target.action = FileAction::Modify;
-                    file_target.note = "Validated source included by proposed unity translation unit";
-                    suggestion.secondary_files.push_back(std::move(file_target));
-                }
+            Suggestion suggestion;
+            suggestion.id = generate_suggestion_id("unity", analyzed_targets, target.name);
+            suggestion.type = SuggestionType::UnityBuild;
+            suggestion.priority = Priority::Medium;
+            suggestion.confidence = 1.0;
+            suggestion.title = "Enable CMake unity build for target " + target.name;
+            suggestion.description =
+                "Enable CMake UNITY_BUILD for the exact target source set after Clang "
+                "accepted the proposed include-ordered unity translation unit.";
+            suggestion.rationale =
+                "The target source list was resolved exactly from CMake, every source "
+                "has a compile-database command with the same environment, and the "
+                "merged translation unit passed Clang syntax validation.";
+            suggestion.estimated_savings = Duration::zero();
+            suggestion.target_file.path = target.cmake_file;
+            suggestion.target_file.action = FileAction::Modify;
+            suggestion.target_file.note = "Enable UNITY_BUILD for target " + target.name;
+            suggestion.secondary_files.reserve(target.sources.size());
+            for (const auto& source : target.sources) {
+                FileTarget file_target;
+                file_target.path = source;
+                file_target.action = FileAction::Modify;
+                file_target.note = "Validated source included by proposed unity translation unit";
+                suggestion.secondary_files.push_back(std::move(file_target));
+            }
 
-                const std::size_t insert_line = target.end_line + 1;
-                TextEdit edit;
-                edit.file = target.cmake_file;
-                edit.start_line = insert_line;
-                edit.start_col = 0;
-                edit.end_line = insert_line;
-                edit.end_col = 0;
-                edit.new_text = "\nif(TARGET " + target.name + ")\n"
-                    "  set_property(TARGET " + target.name + " PROPERTY UNITY_BUILD ON)\n";
-                edit.new_text += "endif()\n";
-                suggestion.edits.push_back(edit);
-                suggestion.after_code.file = target.cmake_file.filename().string();
-                suggestion.after_code.code = edit.new_text;
-                suggestion.implementation_steps = {
-                    "Apply the target-scoped CMake UNITY_BUILD edit",
-                    "Configure and build the target with the project compiler",
-                    "Run the target tests and compare a fresh build trace"
-                };
-                suggestion.caveats = {
-                    "Savings are intentionally unestimated until a post-edit trace is available",
-                    "CMake unity builds combine sources in target order and can expose include-order or ODR issues",
-                    "CMake may exclude sources marked SKIP_UNITY_BUILD_INCLUSION"
-                };
-                suggestion.verification =
-                    "Clang merged-TU syntax validation passed; configure, build, and test the target "
-                    "with the project compiler before accepting the edit";
-                suggestion.is_safe = true;
-                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
-                suggestion.impact.total_files_affected = target.sources.size();
-                suggestion.impact.cumulative_savings = Duration::zero();
-                result.suggestions.push_back(std::move(suggestion));
+            const std::size_t insert_line = target.end_line + 1;
+            TextEdit edit;
+            edit.file = target.cmake_file;
+            edit.start_line = insert_line;
+            edit.start_col = 0;
+            edit.end_line = insert_line;
+            edit.end_col = 0;
+            edit.new_text = "\nif(TARGET " + target.name + ")\n"
+                "  set_property(TARGET " + target.name + " PROPERTY UNITY_BUILD ON)\n";
+            edit.new_text += "endif()\n";
+            suggestion.edits.push_back(edit);
+            suggestion.after_code.file = target.cmake_file.filename().string();
+            suggestion.after_code.code = edit.new_text;
+            suggestion.implementation_steps = {
+                "Apply the target-scoped CMake UNITY_BUILD edit",
+                "Configure and build the target with the project compiler",
+                "Run the target tests and compare a fresh build trace"
+            };
+            suggestion.caveats = {
+                "Savings are intentionally unestimated until a post-edit trace is available",
+                "CMake unity builds combine sources in target order and can expose include-order or ODR issues",
+                "CMake may exclude sources marked SKIP_UNITY_BUILD_INCLUSION"
+            };
+            suggestion.verification =
+                "Clang merged-TU syntax validation passed; configure, build, and test the target "
+                "with the project compiler before accepting the edit";
+            suggestion.is_safe = true;
+            suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+            suggestion.impact.total_files_affected = target.sources.size();
+            suggestion.impact.cumulative_savings = Duration::zero();
+            result.suggestions.push_back(std::move(suggestion));
         }
 
         result.items_analyzed = analyzed_targets;
