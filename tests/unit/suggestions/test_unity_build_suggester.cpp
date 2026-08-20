@@ -206,6 +206,42 @@ namespace bha::suggestions {
         EXPECT_GT(result.value().items_skipped, 0u);
     }
 
+    TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetIsInMultiTargetUnityProperty) {
+        TempDir temp("bha-unity-multi-target-property-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityMultiTargetProperty)\n"
+                   "add_library(other src/other.cpp)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n"
+                   "set_property(TARGET other core PROPERTY UNITY_BUILD ON)\n");
+        write_file(temp.root / "src" / "other.cpp", "int other() { return 0; }\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {
+            temp.root / "src" / "other.cpp",
+            temp.root / "src" / "a.cpp",
+            temp.root / "src" / "b.cpp"
+        });
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
     TEST_F(UnityBuildSuggesterTest, PreservesCMakeSourceOrderInValidatedTarget) {
         TempDir temp("bha-unity-source-order-");
         write_file(temp.root / "CMakeLists.txt",

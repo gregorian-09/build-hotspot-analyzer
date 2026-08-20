@@ -309,13 +309,23 @@ namespace bha::suggestions {
                     continue;
                 }
 
-                if (command.name == "set_property" && command.arguments.size() >= 5 &&
-                    lowercase(command.arguments[0]) == "target" &&
-                    command.arguments[1] == target_name &&
-                    lowercase(command.arguments[2]) == "property" &&
-                    lowercase(command.arguments[3]) == "unity_build") {
+                if (command.name == "set_property" && command.arguments.size() >= 4 &&
+                    lowercase(command.arguments[0]) == "target") {
+                    const auto property = std::ranges::find_if(
+                        command.arguments.begin() + 1,
+                        command.arguments.end(),
+                        [](const std::string& argument) {
+                            return lowercase(argument) == "property";
+                        }
+                    );
+                    const bool target_list_contains_candidate = property != command.arguments.end() &&
+                        std::ranges::find(command.arguments.begin() + 1, property, std::string(target_name)) != property;
+                    if (!target_list_contains_candidate || property + 2 >= command.arguments.end() ||
+                        lowercase(*(property + 1)) != "unity_build") {
+                        continue;
+                    }
                     bool known = false;
-                    const bool enabled = cmake_truth_value(command.arguments[4], known);
+                    const bool enabled = cmake_truth_value(*(property + 2), known);
                     target_state.unity_enabled = target_state.unity_enabled || enabled;
                     target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
                     continue;
