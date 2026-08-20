@@ -132,9 +132,6 @@ namespace bha::cli
                 {"pch-min-time", 0, "Min aggregate parse time for PCH in ms (default: 500)", false, true, "500", "MS"},
                 {"template-min-count", 0, "Min template instantiation count (default: 5)", false, true, "5", "N"},
                 {"template-min-time", 0, "Min template time in ms (default: 100)", false, true, "100", "MS"},
-                {"unity-files-per-unit", 0, "Files per unity build unit (default: 50)", false, true, "50", "N"},
-                {"unity-min-files", 0, "Min files for unity build (default: 10)", false, true, "10", "N"},
-                {"unity-min-time", 0, "Min aggregate unity group compile time in ms (default: 10)", false, true, "10", "MS"},
                 {"header-min-time", 0, "Min header parse time in ms (default: 100)", false, true, "100", "MS"},
                 {"header-min-includers", 0, "Min includers for header split (default: 5)", false, true, "5", "N"},
                 {"fwd-decl-min-time", 0, "Min parse time for fwd decl in ms (default: 50)", false, true, "50", "MS"},
@@ -344,7 +341,6 @@ namespace bha::cli
             auto& templates = suggester_opts.heuristics.templates;
             auto& codegen = suggester_opts.heuristics.codegen;
             auto& headers = suggester_opts.heuristics.headers;
-            auto& unity_build = suggester_opts.heuristics.unity_build;
             auto& forward_decl = suggester_opts.heuristics.forward_decl;
 
             if (auto val = args.get_int("pch-min-includes")) {
@@ -359,16 +355,6 @@ namespace bha::cli
             }
             if (auto val = args.get_int("template-min-time")) {
                 templates.min_total_time = std::chrono::milliseconds(*val);
-            }
-
-            if (auto val = args.get_int("unity-files-per-unit")) {
-                unity_build.files_per_unit = static_cast<std::size_t>(*val);
-            }
-            if (auto val = args.get_int("unity-min-files")) {
-                unity_build.min_files_threshold = static_cast<std::size_t>(*val);
-            }
-            if (auto val = args.get_int("unity-min-time")) {
-                unity_build.min_group_total_time = std::chrono::milliseconds(*val);
             }
 
             if (auto val = args.get_int("header-min-time")) {
@@ -390,8 +376,6 @@ namespace bha::cli
                 pch.min_aggregate_time = std::chrono::milliseconds(1);
                 templates.min_instantiation_count = 1;
                 templates.min_total_time = std::chrono::milliseconds(1);
-                unity_build.min_files_threshold = 2;
-                unity_build.min_group_total_time = std::chrono::milliseconds(1);
                 headers.min_parse_time = std::chrono::milliseconds(1);
                 headers.min_includers_for_split = 1;
                 forward_decl.min_parse_time = std::chrono::milliseconds(1);
@@ -409,8 +393,6 @@ namespace bha::cli
             print_verbose("  PCH min includes: " + std::to_string(pch.min_include_count));
             print_verbose("  PCH min time: " + std::to_string(pch.min_aggregate_time.count()) + "ms");
             print_verbose("  Template min count: " + std::to_string(templates.min_instantiation_count));
-            print_verbose("  Unity min files: " + std::to_string(unity_build.min_files_threshold));
-            print_verbose("  Unity min time: " + std::to_string(unity_build.min_group_total_time.count()) + "ms");
 
             std::vector<fs::path> input_paths;
             input_paths.reserve(args.positional().size());

@@ -288,7 +288,6 @@
             auto& pch = suggester_opts.heuristics.pch;
             auto& templates = suggester_opts.heuristics.templates;
             auto& headers = suggester_opts.heuristics.headers;
-            auto& unity = suggester_opts.heuristics.unity_build;
             auto& forward_decl = suggester_opts.heuristics.forward_decl;
             auto& codegen = suggester_opts.heuristics.codegen;            pch.min_include_count = 1;
             pch.min_aggregate_time = std::chrono::milliseconds(1);
@@ -296,8 +295,6 @@
             templates.min_total_time = std::chrono::milliseconds(1);
             headers.min_parse_time = std::chrono::milliseconds(1);
             headers.min_includers_for_split = 1;
-            unity.min_files_threshold = 2;
-            unity.min_group_total_time = std::chrono::milliseconds(1);
             forward_decl.min_parse_time = std::chrono::milliseconds(1);
             codegen.long_codegen_threshold = std::chrono::milliseconds(1);
         }

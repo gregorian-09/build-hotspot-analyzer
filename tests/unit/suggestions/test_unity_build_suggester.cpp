@@ -33,6 +33,41 @@ namespace bha::suggestions {
             std::ofstream out(path);
             out << content;
         }
+
+        std::string json_escape(const std::string& value) {
+            std::string escaped;
+            escaped.reserve(value.size());
+            for (const char character : value) {
+                if (character == '\\' || character == '"') {
+                    escaped.push_back('\\');
+                }
+                escaped.push_back(character);
+            }
+            return escaped;
+        }
+
+        void write_compile_database(
+            const fs::path& root,
+            const std::vector<fs::path>& sources,
+            const std::vector<std::string>& extra_arguments = {}
+        ) {
+            std::ofstream out(root / "compile_commands.json");
+            out << '[';
+            for (std::size_t index = 0; index < sources.size(); ++index) {
+                if (index != 0) {
+                    out << ',';
+                }
+                const fs::path relative = fs::relative(sources[index], root);
+                out << "{\"directory\":\"" << json_escape(root.string())
+                    << "\",\"file\":\"" << json_escape(relative.generic_string())
+                    << "\",\"arguments\":[\"clang++\",\"-std=c++20\"";
+                for (const auto& argument : extra_arguments) {
+                    out << ",\"" << json_escape(argument) << "\"";
+                }
+                out << ",\"-c\",\"" << json_escape(relative.generic_string()) << "\"]}";
+            }
+            out << ']';
+        }
     }  // namespace
 
     class UnityBuildSuggesterTest : public ::testing::Test {
@@ -49,11 +84,11 @@ namespace bha::suggestions {
         EXPECT_EQ(suggester_->suggestion_type(), SuggestionType::UnityBuild);
     }
 
-    TEST_F(UnityBuildSuggesterTest, RespectsMinFilesThreshold) {
-        TempDir temp("bha-unity-min-files-");
+    TEST_F(UnityBuildSuggesterTest, RequiresCompileCommandsForTargetSources) {
+        TempDir temp("bha-unity-compile-commands-");
         write_file(temp.root / "CMakeLists.txt",
                    "cmake_minimum_required(VERSION 3.20)\n"
-                   "project(UnityMinFiles)\n"
+                   "project(UnityCompileCommands)\n"
                    "add_library(core src/a.cpp src/b.cpp)\n");
         write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
         write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
@@ -72,38 +107,24 @@ namespace bha::suggestions {
         analysis.files.push_back(b);
 
         SuggesterOptions options;
-        options.heuristics.unity_build.min_files_threshold = 3;
-        options.heuristics.unity_build.files_per_unit = 10;
-
         const SuggestionContext context{trace, analysis, options, temp.root};
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
-        EXPECT_GT(result.value().items_skipped, 0u);
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code, "unity.compile_commands.required");
     }
 
-    TEST_F(UnityBuildSuggesterTest, GeneratesTargetScopedCMakeEditForMacroTarget) {
+    TEST_F(UnityBuildSuggesterTest, GeneratesTargetScopedCMakeEditForBuiltinTarget) {
         TempDir temp("bha-unity-cmake-target-");
         write_file(temp.root / "CMakeLists.txt",
                    "cmake_minimum_required(VERSION 3.20)\n"
                    "project(UnityTarget)\n"
-                   "include(CMakeParseArguments)\n"
-                   "function(my_cc_library)\n"
-                   "  set(options)\n"
-                   "  set(oneValueArgs NAME)\n"
-                   "  set(multiValueArgs SRCS)\n"
-                   "  cmake_parse_arguments(MY \"${options}\" \"${oneValueArgs}\" \"${multiValueArgs}\" ${ARGN})\n"
-                   "  add_library(${MY_NAME} ${MY_SRCS})\n"
-                   "endfunction()\n"
-                   "my_cc_library(\n"
-                   "  NAME corelib\n"
-                   "  SRCS\n"
-                   "    src/a.cpp\n"
-                   "    src/b.cpp\n"
-                   ")\n");
+                   "add_library(corelib src/a.cpp src/b.cpp)\n");
         write_file(temp.root / "src" / "a.cpp", "static int sa() { return 1; }\nint a() { return sa(); }\n");
         write_file(temp.root / "src" / "b.cpp", "static int sb() { return 2; }\nint b() { return sb(); }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
 
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(3);
@@ -119,8 +140,7 @@ namespace bha::suggestions {
         analysis.files.push_back(b);
 
         SuggesterOptions options;
-        options.heuristics.unity_build.min_files_threshold = 2;
-        options.heuristics.unity_build.files_per_unit = 10;
+        options.compile_commands_path = temp.root / "compile_commands.json";
 
         const SuggestionContext context{trace, analysis, options, temp.root};
         auto result = suggester_->suggest(context);
@@ -138,9 +158,6 @@ namespace bha::suggestions {
                     if (edit.new_text.find("set_property(TARGET corelib PROPERTY UNITY_BUILD ON)") != std::string::npos) {
                         found_cmake_edit = true;
                     }
-                    if (edit.new_text.find("set(CMAKE_UNITY_BUILD ON)") != std::string::npos) {
-                        found_global_edit = true;
-                    }
                 }
                 if (file.find("_unity_") != std::string::npos && edit.file.extension() == ".cpp") {
                     found_manual_unity_file = true;
@@ -151,6 +168,7 @@ namespace bha::suggestions {
         EXPECT_TRUE(found_cmake_edit);
         EXPECT_FALSE(found_global_edit);
         EXPECT_FALSE(found_manual_unity_file);
+        EXPECT_EQ(result.value().suggestions.front().estimated_savings, Duration::zero());
     }
 
     TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetAlreadyHasUnityEnabled) {
@@ -162,6 +180,7 @@ namespace bha::suggestions {
                    "set_property(TARGET core PROPERTY UNITY_BUILD ON)\n");
         write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
         write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
 
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(2);
@@ -177,8 +196,7 @@ namespace bha::suggestions {
         analysis.files.push_back(b);
 
         SuggesterOptions options;
-        options.heuristics.unity_build.min_files_threshold = 2;
-        options.heuristics.unity_build.files_per_unit = 10;
+        options.compile_commands_path = temp.root / "compile_commands.json";
 
         const SuggestionContext context{trace, analysis, options, temp.root};
         auto result = suggester_->suggest(context);
@@ -197,6 +215,7 @@ namespace bha::suggestions {
                    "add_library(beta src/b.cpp)\n");
         write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
         write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
 
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(2);
@@ -212,8 +231,7 @@ namespace bha::suggestions {
         analysis.files.push_back(b);
 
         SuggesterOptions options;
-        options.heuristics.unity_build.min_files_threshold = 2;
-        options.heuristics.unity_build.files_per_unit = 10;
+        options.compile_commands_path = temp.root / "compile_commands.json";
 
         const SuggestionContext context{trace, analysis, options, temp.root};
         auto result = suggester_->suggest(context);
@@ -221,5 +239,69 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, RejectsMergedTranslationUnitWithStaticDefinitionCollision) {
+        TempDir temp("bha-unity-static-collision-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityCollision)\n"
+                   "add_library(core src/a.cpp src/b.cpp)\n");
+        write_file(temp.root / "src" / "a.cpp",
+                   "static int collision() { return 1; }\n"
+                   "int a() { return collision(); }\n");
+        write_file(temp.root / "src" / "b.cpp",
+                   "static int collision() { return 2; }\n"
+                   "int b() { return collision(); }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_GT(result.value().items_skipped, 0u);
+    }
+
+    TEST_F(UnityBuildSuggesterTest, RejectsMacroTargetWithoutExactCMakeSourceOwnership) {
+        TempDir temp("bha-unity-macro-target-");
+        write_file(temp.root / "CMakeLists.txt",
+                   "cmake_minimum_required(VERSION 3.20)\n"
+                   "project(UnityMacro)\n"
+                   "function(my_library)\n"
+                   "  add_library(${ARGV0} ${ARGN})\n"
+                   "endfunction()\n"
+                   "my_library(core src/a.cpp src/b.cpp)\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"});
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
     }
 }  // namespace bha::suggestions

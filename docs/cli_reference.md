@@ -84,7 +84,6 @@ Important options:
 - heuristic controls:
   - `--pch-*`
   - `--template-*`
-  - `--unity-*`
   - `--header-*`
   - `--fwd-decl-min-time`
   - `--codegen-threshold`

@@ -135,30 +135,6 @@ namespace bha::heuristics
     };
 
     /**
-     * @brief Unity build configuration.
-     *
-     * Reference: Chromium Jumbo Builds
-     * - Uses 50 files per jumbo/unity unit
-     * - Header parsing typically 40-50% of compile time
-     */
-    struct UnityBuildConfig {
-        /// Files to group per unity file (Chromium: 50)
-        std::size_t files_per_unit = 50;
-
-        /// Minimum files to consider unity build worthwhile
-        std::size_t min_files_threshold = 10;
-
-        /// Minimum aggregate compile time for a unity group
-        std::chrono::milliseconds min_group_total_time{10};
-
-        /// Estimated ratio of compile time spent on header parsing (40-50%)
-        double header_parsing_ratio = 0.45;
-
-        /// Max allowed conflict risk (0-1). Higher risk groups are skipped.
-        double max_conflict_risk = 0.7;
-    };
-
-    /**
      * @brief Forward declaration suggestion thresholds.
      */
     struct ForwardDeclConfig {
@@ -186,7 +162,6 @@ namespace bha::heuristics
         TemplateConfig templates;
         CodeGenConfig codegen;
         HeaderConfig headers;
-        UnityBuildConfig unity_build;
         ForwardDeclConfig forward_decl;
 
         /// Get default configuration with research-backed values.

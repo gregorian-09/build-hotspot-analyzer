@@ -72,13 +72,6 @@ namespace bha::suggestions
         ) ;
 
         /**
-         * Consolidates unity build suggestions.
-         */
-        [[nodiscard]] std::optional<Suggestion> consolidate_unity_build(
-            const std::vector<Suggestion>& suggestions
-        ) const;
-
-        /**
          * Consolidates include removal suggestions.
          */
         static std::optional<Suggestion> consolidate_include_removal(

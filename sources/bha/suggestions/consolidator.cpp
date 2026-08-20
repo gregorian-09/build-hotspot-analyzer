@@ -180,49 +180,6 @@ namespace bha::suggestions
             return filtered;
         }
 
-        fs::path common_parent_path(const fs::path& lhs, const fs::path& rhs) {
-            fs::path result;
-            auto lit = lhs.begin();
-            auto rit = rhs.begin();
-            for (; lit != lhs.end() && rit != rhs.end() && *lit == *rit; ++lit, ++rit) {
-                result /= *lit;
-            }
-            return result;
-        }
-
-        fs::path compute_common_directory(const std::unordered_set<std::string>& files) {
-            fs::path common_dir;
-            for (const auto& file : files) {
-                const fs::path path(file);
-                if (!path.is_absolute()) {
-                    continue;
-                }
-                const fs::path dir = path.parent_path();
-                if (dir.empty()) {
-                    continue;
-                }
-                if (common_dir.empty()) {
-                    common_dir = dir;
-                } else {
-                    common_dir = common_parent_path(common_dir, dir);
-                }
-                if (common_dir.empty()) {
-                    break;
-                }
-            }
-            return common_dir;
-        }
-
-        std::string resolve_unity_include_path(const fs::path& path) {
-            const fs::path resolved = resolve_source_path(path);
-            std::string rel = make_repo_relative(resolved);
-            if (!fs::path(rel).parent_path().empty()) {
-                return rel;
-            }
-
-            return rel;
-        }
-
     }  // namespace
 
     std::vector<Suggestion> SuggestionConsolidator::consolidate(
@@ -258,8 +215,10 @@ namespace bha::suggestions
                 result = consolidate_header_split(group);
                 break;
             case SuggestionType::UnityBuild:
-                result = consolidate_unity_build(group);
-                break;
+                // Unity suggestions already contain an exact target-scoped edit;
+                // never replace it with the retired generated-file workflow.
+                consolidated.insert(consolidated.end(), group.begin(), group.end());
+                continue;
             case SuggestionType::IncludeRemoval:
                 result = consolidate_include_removal(group);
                 break;
@@ -603,146 +562,6 @@ namespace bha::suggestions
         consolidated.confidence = 0.7;
 
         consolidated.edits = merge_edits(suggestions);
-
-        return consolidated;
-    }
-
-    std::optional<Suggestion> SuggestionConsolidator::consolidate_unity_build(
-        const std::vector<Suggestion>& suggestions
-    ) const {
-        if (suggestions.empty()) {
-            return std::nullopt;
-        }
-
-        Suggestion consolidated;
-        consolidated.type = SuggestionType::UnityBuild;
-        consolidated.priority = Priority::Medium;
-
-        std::unordered_set<std::string> all_files;
-        for (const auto& sug : suggestions) {
-            for (const auto& sec : sug.secondary_files) {
-                if (!sec.path.empty()) {
-                    const fs::path resolved = resolve_source_path(sec.path);
-                    all_files.insert(resolved.string());
-                }
-            }
-            if (sug.secondary_files.empty() && !sug.target_file.path.empty()) {
-                const fs::path resolved = resolve_source_path(sug.target_file.path);
-                all_files.insert(resolved.string());
-            }
-        }
-
-        std::unordered_set<std::string> source_files;
-        for (const auto& file : all_files) {
-            if (is_source_file_path(fs::path(file))) {
-                source_files.insert(file);
-            }
-        }
-
-        if (source_files.empty()) {
-            return std::nullopt;
-        }
-
-        const std::size_t files_per_group = std::max<std::size_t>(1, options_.max_items_per_suggestion / 3);
-        std::vector sorted_files(source_files.begin(), source_files.end());
-        std::ranges::sort(sorted_files);
-
-        fs::path unity_base_dir;
-        for (const auto& file : sorted_files) {
-            const fs::path path(file);
-            if (!path.is_absolute()) {
-                continue;
-            }
-            unity_base_dir = find_repository_root(path);
-            if (!unity_base_dir.empty()) {
-                if (fs::exists(unity_base_dir / "src")) {
-                    unity_base_dir /= "src";
-                }
-                break;
-            }
-        }
-        if (unity_base_dir.empty()) {
-            unity_base_dir = compute_common_directory(source_files);
-        }
-
-        // Generate unity build file edits
-        bool first_unity = true;
-        std::size_t group_num = 1;
-        for (std::size_t i = 0; i < sorted_files.size(); i += files_per_group) {
-            const fs::path unity_path = unity_base_dir.empty()
-                ? fs::path("unity_build_" + std::to_string(group_num) + ".cpp")
-                : unity_base_dir / ("unity_build_" + std::to_string(group_num) + ".cpp");
-
-            std::ostringstream unity_content;
-            unity_content << "// unity_build_" << group_num << ".cpp\n";
-            unity_content << "// Generated unity build file - combines multiple translation units\n\n";
-            const fs::path unity_dir = unity_path.parent_path();
-            for (std::size_t j = i; j < std::min(i + files_per_group, sorted_files.size()); ++j) {
-                const fs::path source_path = resolve_source_path(fs::path(sorted_files[j]));
-                std::error_code ec;
-                fs::path rel = fs::relative(source_path, unity_dir, ec);
-                if (ec || rel.empty()) {
-                    rel = resolve_unity_include_path(source_path);
-                }
-                unity_content << "#include \"" << rel.generic_string() << "\"\n";
-            }
-
-            consolidated.edits.push_back(make_replace_file_edit(unity_path, unity_content.str()));
-
-            FileTarget unity_target;
-            unity_target.path = unity_path;
-            unity_target.action = FileAction::Create;
-            unity_target.note = "Create unity build file";
-            if (first_unity) {
-                consolidated.target_file = unity_target;
-                first_unity = false;
-            } else {
-                consolidated.secondary_files.push_back(unity_target);
-            }
-
-            ++group_num;
-        }
-
-        std::ostringstream desc;
-        desc << "Group compatible source files into unity builds to reduce compilation overhead.\n\n";
-        desc << "**Summary:** " << all_files.size() << " source files grouped into "
-             << (group_num - 1) << " unity build files.\n\n";
-        desc << "**Build system changes needed:**\n";
-        desc << "  - Remove original source files from build targets\n";
-        desc << "  - Add unity_build_*.cpp files to build targets\n\n";
-        desc << "See the **Text Edits** section below for the generated unity build files.";
-
-        consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
-        consolidated.title = "Unity Build Optimization (" + std::to_string(all_files.size()) + " files)";
-
-        consolidated.rationale = "Unity builds reduce header parsing overhead by combining source files. "
-                                 "Best for files with similar dependencies.";
-
-        consolidated.implementation_steps = {
-            "1. Create unity build source files (unity_build_*.cpp)",
-            "2. Add #include directives for grouped source files",
-            "3. Remove original source files from build targets",
-            "4. Add unity build files to build targets",
-            "5. Verify no symbol conflicts or ODR violations",
-            "6. Measure build time improvement"
-        };
-
-        consolidated.is_safe = false;
-        consolidated.confidence = 0.65;
-
-        Duration total_savings = Duration::zero();
-        double total_percent = 0.0;
-        for (const auto& sug : suggestions) {
-            total_savings += sug.estimated_savings;
-            total_percent += sug.estimated_savings_percent;
-        }
-        consolidated.estimated_savings = total_savings;
-        consolidated.estimated_savings_percent = total_percent;
-
-        append_build_system_targets(suggestions, consolidated.secondary_files);
-        append_build_system_edits(suggestions, consolidated.edits);
-        consolidated.edits = merge_text_edits(std::move(consolidated.edits));
 
         return consolidated;
     }

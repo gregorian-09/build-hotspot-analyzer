@@ -143,12 +143,6 @@ def main() -> int:
         "--disable-consolidation",
         "--limit",
         "20",
-        "--unity-min-files",
-        "2",
-        "--unity-files-per-unit",
-        "8",
-        "--unity-min-time",
-        "1",
         "--include-unsafe",
     ]
     suggest = run_cmd(suggest_cmd, project_root, args.timeout)

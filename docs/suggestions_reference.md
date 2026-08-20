@@ -95,10 +95,11 @@ Inputs:
 - build-system files
 
 Application mode:
-- `direct-edits` when conflict heuristics consider grouping safe
+- `direct-edits` when the exact target and merged translation unit pass validation
 
 Guardrails:
-- skips high-conflict or ambiguous target ownership scenarios
+- requires exact CMake target ownership, compile-database evidence for every
+  source, and Clang syntax validation of the merged translation unit
 
 ### 7. `header-split`
 
@@ -183,7 +184,6 @@ Recommended policy:
 BHA exposes threshold flags for key suggesters:
 - PCH (`--pch-*`)
 - template (`--template-*`)
-- unity (`--unity-*`)
 - header split (`--header-*`)
 - forward declaration (`--fwd-decl-min-time`)
 - codegen (`--codegen-threshold`)

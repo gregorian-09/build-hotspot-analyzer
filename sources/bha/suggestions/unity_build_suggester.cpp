@@ -1,1319 +1,507 @@
-//
-// Created by gregorian-rayne on 12/29/25.
-//
-
 #include "bha/suggestions/unity_build_suggester.hpp"
+
 #include "bha/utils/cmake_classification_utils.hpp"
-#include "bha/utils/cmake_macro_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/utils/cmake_target_parse_utils.hpp"
 #include "bha/utils/path_utils.hpp"
-#include "bha/utils/regex_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
-#include <array>
-#include <cmath>
-#include <cctype>
+#include <chrono>
+#include <filesystem>
 #include <fstream>
-#include <limits>
-#include <numeric>
-#include <queue>
-#include <regex>
+#include <functional>
+#include <optional>
+#include <ranges>
 #include <sstream>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
-namespace bha::suggestions
-{
+#ifndef BHA_HAVE_CLANG_TOOLING
+#define BHA_HAVE_CLANG_TOOLING 0
+#endif
+
+#if BHA_HAVE_CLANG_TOOLING
+#include <clang/Frontend/FrontendActions.h>
+#include <clang/Tooling/Tooling.h>
+#endif
+
+namespace bha::suggestions {
     namespace {
-
-        /**
-         * Symbol conflict types that can occur in unity builds.
-         *
-         * Based on research from Chromium and LLVM unity build implementations:
-         * - Static functions/variables with same name across files
-         * - Anonymous namespace collisions
-         * - Macro redefinitions
-         */
-        enum class ConflictType {
-            None,
-            StaticSymbol,        // static function/variable name collision
-            AnonymousNamespace,  // anonymous namespace symbol collision
-            MacroRedefinition,   // #define collision
-            UnguardedHeader,     // header without include guards included by both
-            IncludedSource       // source file included by another source
-        };
-
-        /**
-         * Detected conflict between files.
-         */
-        struct SymbolConflict {
-            std::string symbol_name;
-            ConflictType type = ConflictType::None;
-            fs::path file_a;
-            fs::path file_b;
-            std::string description;
-        };
-
-        /**
-         * File metadata for unity build analysis.
-         *
-         * Includes symbol information for conflict detection.
-         */
-        struct FileMetadata {
-            fs::path path;
-            Duration compile_time = Duration::zero();
-
-            // Symbol information for conflict detection
-            std::unordered_set<std::string> static_symbols;
-            std::unordered_set<std::string> anon_namespace_symbols;
-            std::unordered_map<std::string, std::string> defined_macros;
-            std::unordered_set<std::string> unguarded_headers;
-            std::unordered_set<std::string> included_sources;
-
-            // Include information
-            std::unordered_set<std::string> includes;
-            std::size_t include_depth = 0;
-
-            // Memory estimate (preprocessed size as proxy)
-            std::size_t memory_estimate = 0;
-        };
-
-        /**
-         * Represents a group of source files for unity building.
-         */
-        struct UnityGroup {
-            std::vector<FileMetadata> files;
-            std::unordered_set<std::string> common_includes;
-            Duration total_compile_time = Duration::zero();
-            std::size_t total_includes = 0;
-            std::size_t total_memory_estimate = 0;
-            std::string suggested_name;
-            std::vector<SymbolConflict> potential_conflicts;
-            double conflict_risk_score = 0.0;  // 0-1, higher = more conflicts
-        };
-
-        /**
-         * Distance matrix for hierarchical clustering.
-         *
-         * Uses Jaccard distance (1 - similarity) based on include patterns.
-         * Also factors in compile time similarity for better grouping.
-         */
-        class DistanceMatrix {
-        public:
-            explicit DistanceMatrix(const std::size_t n)
-                : n_(n), distances_(n * n, 0.0) {}
-
-            void set(const std::size_t i, const std::size_t j, const double distance) {
-                distances_[i * n_ + j] = distance;
-                distances_[j * n_ + i] = distance;
-            }
-
-            [[nodiscard]] double get(const std::size_t i, const std::size_t j) const {
-                return distances_[i * n_ + j];
-            }
-
-            [[nodiscard]] std::size_t size() const { return n_; }
-
-        private:
-            std::size_t n_;
-            std::vector<double> distances_;
-        };
-
-        /**
-         * Extracts the directory/module name from a path for grouping.
-         */
-        std::string get_module_name(const fs::path& path) {
-            const fs::path parent = path.parent_path();
-            if (parent.empty() || parent == path.root_path()) {
-                return "root";
-            }
-            return parent.filename().string();
-        }
-
-        /**
-         * Calculates Jaccard similarity between two include sets.
-         *
-         * Jaccard similarity: |A ∩ B| / |A ∪ B|
-         * Range: [0, 1] where 1 = identical sets
-         */
-        double calculate_jaccard_similarity(
-            const std::unordered_set<std::string>& set_a,
-            const std::unordered_set<std::string>& set_b
-        ) {
-            if (set_a.empty() && set_b.empty()) {
-                return 1.0;
-            }
-            if (set_a.empty() || set_b.empty()) {
-                return 0.0;
-            }
-
-            std::size_t intersection = 0;
-            for (const auto& item : set_a) {
-                if (set_b.contains(item)) {
-                    ++intersection;
-                }
-            }
-
-            const std::size_t union_size = set_a.size() + set_b.size() - intersection;
-            return static_cast<double>(intersection) / static_cast<double>(union_size);
-        }
-
-        /**
-         * Calculates compile time similarity.
-         *
-         * Files with similar compile times are better candidates for unity builds
-         * as they balance the workload better.
-         *
-         * Uses normalized difference: 1 - |a-b| / max(a,b)
-         */
-        double calculate_time_similarity(const Duration time_a, const Duration time_b) {
-            const auto a = time_a.count();
-            const auto b = time_b.count();
-
-            if (a == 0 && b == 0) {
-                return 1.0;
-            }
-
-            const auto max_time = std::max(a, b);
-            const auto diff = std::abs(a - b);
-
-            return 1.0 - static_cast<double>(diff) / static_cast<double>(max_time);
-        }
-
-        /**
-         * Calculates composite distance between two files.
-         *
-         * Weighted combination of:
-         * - Include similarity (60%): Files sharing headers benefit most
-         * - Compile time similarity (20%): Balance workload
-         * - Directory distance (20%): Files in same directory often related
-         *
-         * Based on research from Chromium's jumbo build implementation.
-         */
-        double calculate_file_distance(
-            const FileMetadata& file_a,
-            const FileMetadata& file_b
-        ) {
-            const double include_sim = calculate_jaccard_similarity(
-                file_a.includes, file_b.includes);
-
-            const double time_sim = calculate_time_similarity(
-                file_a.compile_time, file_b.compile_time);
-
-            const double dir_sim = (file_a.path.parent_path() == file_b.path.parent_path())
-                             ? 1.0 : 0.0;
-
-            const double similarity = 0.6 * include_sim + 0.2 * time_sim + 0.2 * dir_sim;
-
-            return 1.0 - similarity; // Distance = 1 - similarity
-        }
-
-        /**
-         * Detects potential symbol conflicts between two files.
-         *
-         * Checks for:
-         * - Static symbol collisions
-         * - Anonymous namespace collisions
-         * - Macro redefinitions
-         * - Unguarded header re-inclusion
-         *
-         * Based on common issues found in Chromium and UE4 unity builds.
-         */
-        std::vector<SymbolConflict> detect_conflicts(
-            const FileMetadata& file_a,
-            const FileMetadata& file_b
-        ) {
-            std::vector<SymbolConflict> conflicts;
-
-            // Check static symbol collisions
-            for (const auto& sym : file_a.static_symbols) {
-                if (file_b.static_symbols.contains(sym)) {
-                    SymbolConflict conflict;
-                    conflict.symbol_name = sym;
-                    conflict.type = ConflictType::StaticSymbol;
-                    conflict.file_a = file_a.path;
-                    conflict.file_b = file_b.path;
-                    conflict.description = "Static symbol '" + sym +
-                        "' defined in both files - will cause linker error in unity build";
-                    conflicts.push_back(conflict);
-                }
-            }
-
-            // Check anonymous namespace collisions
-            for (const auto& sym : file_a.anon_namespace_symbols) {
-                if (file_b.anon_namespace_symbols.contains(sym)) {
-                    SymbolConflict conflict;
-                    conflict.symbol_name = sym;
-                    conflict.type = ConflictType::AnonymousNamespace;
-                    conflict.file_a = file_a.path;
-                    conflict.file_b = file_b.path;
-                    conflict.description = "Anonymous namespace symbol '" + sym +
-                        "' in both files - will cause ODR violation";
-                    conflicts.push_back(conflict);
-                }
-            }
-
-            // Check macro redefinitions
-            for (const auto& [macro, value_a] : file_a.defined_macros) {
-                const auto it = file_b.defined_macros.find(macro);
-                if (it != file_b.defined_macros.end()) {
-                    const std::string& value_b = it->second;
-                    if (value_a == value_b) {
-                        continue;
-                    }
-                    SymbolConflict conflict;
-                    conflict.symbol_name = macro;
-                    conflict.type = ConflictType::MacroRedefinition;
-                    conflict.file_a = file_a.path;
-                    conflict.file_b = file_b.path;
-                    conflict.description = "Macro '" + macro +
-                        "' defined with different values in both files - may cause unexpected behavior";
-                    conflicts.push_back(conflict);
-                }
-            }
-
-            for (const auto& header : file_a.unguarded_headers) {
-                if (file_b.unguarded_headers.contains(header)) {
-                    SymbolConflict conflict;
-                    conflict.symbol_name = header;
-                    conflict.type = ConflictType::UnguardedHeader;
-                    conflict.file_a = file_a.path;
-                    conflict.file_b = file_b.path;
-                    conflict.description = "Header '" + header +
-                        "' lacks include guards and is included by both files";
-                    conflicts.push_back(conflict);
-                }
-            }
-
-            return conflicts;
-        }
-
-        /**
-         * Calculates conflict risk score for a group.
-         *
-         * Returns a score from 0 to 1 where:
-         * - 0: No detected conflicts
-         * - 0.5: Some potential conflicts (macros, anonymous namespace)
-         * - 1.0: Definite conflicts (static symbols)
-         */
-        double calculate_conflict_risk(const std::vector<SymbolConflict>& conflicts) {
-            if (conflicts.empty()) {
-                return 0.0;
-            }
-
-            double risk = 0.0;
-            for (const auto& conflict : conflicts) {
-                switch (conflict.type) {
-                case ConflictType::StaticSymbol:
-                    risk = std::max(risk, 1.0);  // Definite error
-                    break;
-                case ConflictType::AnonymousNamespace:
-                    risk = std::max(risk, 0.8);  // Likely error
-                    break;
-                case ConflictType::MacroRedefinition:
-                    risk = std::max(risk, 0.5);  // Potential issue
-                    break;
-                case ConflictType::UnguardedHeader:
-                    risk = std::max(risk, 0.7);  // Likely redefinition
-                    break;
-                case ConflictType::IncludedSource:
-                    risk = std::max(risk, 0.9);  // Very likely error
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            return std::min(risk, 1.0);
-        }
-
-        /**
-         * Agglomerative hierarchical clustering with complete linkage.
-         *
-         * Groups files based on include similarity and compile time characteristics.
-         * Complete linkage ensures all files in a cluster are similar to each other.
-         *
-         * Based on clustering approach used in LLVM's unity builds.
-         */
-        std::vector<std::vector<std::size_t>> hierarchical_clustering(
-            const std::vector<FileMetadata>& files,
-            double distance_threshold,
-            const std::size_t max_cluster_size
-        ) {
-            const std::size_t n = files.size();
-            if (n == 0) {
-                return {};
-            }
-
-            DistanceMatrix distances(n);
-            for (std::size_t i = 0; i < n; ++i) {
-                for (std::size_t j = i + 1; j < n; ++j) {
-                    const double dist = calculate_file_distance(files[i], files[j]);
-                    distances.set(i, j, dist);
-                }
-            }
-
-            std::vector<std::vector<std::size_t>> clusters;
-            clusters.reserve(n);
-            for (std::size_t i = 0; i < n; ++i) {
-                clusters.push_back({i});
-            }
-
-            std::vector active(n, true);
-
-            // Agglomerative clustering loop
-            while (true) {
-                // Find the closest pair of active clusters
-                double min_distance = std::numeric_limits<double>::max();
-                std::size_t best_i = 0, best_j = 0;
-                bool found = false;
-
-                for (std::size_t i = 0; i < clusters.size(); ++i) {
-                    if (!active[i]) {
-                        continue;
-                    }
-
-                    for (std::size_t j = i + 1; j < clusters.size(); ++j) {
-                        if (!active[j]) {
-                            continue;
-                        }
-
-                        // Check size constraint
-                        if (clusters[i].size() + clusters[j].size() > max_cluster_size) {
-                            continue;
-                        }
-
-                        // Complete linkage: max distance between any two points
-                        double max_dist = 0.0;
-                        for (const std::size_t idx_i : clusters[i]) {
-                            for (const std::size_t idx_j : clusters[j]) {
-                                max_dist = std::max(max_dist, distances.get(idx_i, idx_j));
-                            }
-                        }
-
-                        if (max_dist < min_distance) {
-                            min_distance = max_dist;
-                            best_i = i;
-                            best_j = j;
-                            found = true;
-                        }
-                    }
-                }
-
-                if (!found || min_distance > distance_threshold) {
-                    break;
-                }
-
-                // Merge clusters
-                for (const std::size_t idx : clusters[best_j]) {
-                    clusters[best_i].push_back(idx);
-                }
-                active[best_j] = false;
-            }
-
-            // Collect final clusters (only those with 2+ files)
-            std::vector<std::vector<std::size_t>> result;
-            for (std::size_t i = 0; i < clusters.size(); ++i) {
-                if (active[i] && clusters[i].size() >= 2) {
-                    result.push_back(clusters[i]);
-                }
-            }
-
-            return result;
-        }
-
-        std::string strip_comments(const std::string& line, bool& in_block) {
-            std::string out;
-            out.reserve(line.size());
-            for (std::size_t i = 0; i < line.size(); ++i) {
-                if (!in_block && i + 1 < line.size() && line[i] == '/' && line[i + 1] == '*') {
-                    in_block = true;
-                    ++i;
-                    continue;
-                }
-                if (in_block && i + 1 < line.size() && line[i] == '*' && line[i + 1] == '/') {
-                    in_block = false;
-                    ++i;
-                    continue;
-                }
-                if (!in_block && i + 1 < line.size() && line[i] == '/' && line[i + 1] == '/') {
-                    break;
-                }
-                if (!in_block) {
-                    out.push_back(line[i]);
-                }
-            }
-            return out;
-        }
-
-        struct CMakeTargetInfo {
+        struct CMakeCommand {
             std::string name;
+            std::vector<std::string> arguments;
             std::size_t start_line = 0;
             std::size_t end_line = 0;
-            bool is_macro = false;
-            std::vector<std::string> source_tokens;
         };
 
-        struct CMakeTargetSelection {
-            fs::path cmake_path;
-            CMakeTargetInfo target;
-            int score = 0;
-            std::size_t exact_hits = 0;
+        struct CMakeTarget {
+            fs::path cmake_file;
+            std::string name;
+            std::vector<fs::path> sources;
+            std::size_t end_line = 0;
         };
 
-        bool contains_ci(std::string_view haystack, std::string_view needle) {
-            if (needle.empty()) {
-                return true;
-            }
-            return utils::to_lower_ascii(haystack).find(utils::to_lower_ascii(needle)) != std::string::npos;
+        struct CompileEvidence {
+            fs::path source;
+            CompilationUnit command;
+            Duration compile_time = Duration::zero();
+        };
+
+        struct TargetState {
+            bool unity_enabled = false;
+            bool unity_state_unknown = false;
+        };
+
+        std::string lowercase(std::string_view value) {
+            return utils::to_lower_ascii(value);
         }
 
-        bool path_has_component_ci(const fs::path& path, std::string_view component) {
-            const std::string needle = utils::to_lower_ascii(component);
-            for (const auto& part : path) {
-                if (utils::to_lower_ascii(part.string()) == needle) {
-                    return true;
-                }
-            }
-            return false;
+        std::string path_key(const fs::path& path) {
+            return path.lexically_normal().generic_string();
         }
 
-        bool is_probable_generated_unity_source(const fs::path& path) {
-            const std::string filename = utils::to_lower_ascii(path.filename().string());
-            if (filename.rfind("unity_", 0) == std::string::npos &&
-                filename.find("_unity_") == std::string::npos) {
-                return false;
-            }
-            return path_has_component_ci(path, "unity") ||
-                   path_has_component_ci(path, "cmakefiles") ||
-                   path_has_component_ci(path, "build");
+        bool is_cxx_source(const fs::path& path) {
+            const std::string extension = lowercase(path.extension().string());
+            return extension == ".cc" || extension == ".cpp" || extension == ".cxx" ||
+                   extension == ".c++";
         }
 
-        bool is_target_like_macro(std::string_view name) {
-            const std::string lower = utils::to_lower_ascii(name);
-            return lower.find("library") != std::string::npos ||
-                   lower.find("executable") != std::string::npos ||
-                   lower.find("binary") != std::string::npos ||
-                   lower.find("target") != std::string::npos;
-        }
-
-        std::vector<CMakeTargetInfo> parse_cmake_targets(const std::string& content) {
-            std::vector<CMakeTargetInfo> targets;
-            std::unordered_map<std::string, std::size_t> by_name;
-
-            auto upsert_target = [&](CMakeTargetInfo&& candidate) {
-                if (!utils::is_probable_cmake_target_name(
-                        candidate.name, utils::CMakeTargetNameMode::Strict)) {
-                    return;
-                }
-                if (auto it = by_name.find(candidate.name); it != by_name.end()) {
-                    auto& existing = targets[it->second];
-                    existing.end_line = std::max(existing.end_line, candidate.end_line);
-                    existing.source_tokens.insert(
-                        existing.source_tokens.end(),
-                        candidate.source_tokens.begin(),
-                        candidate.source_tokens.end()
-                    );
-                    if (!existing.is_macro && candidate.is_macro) {
-                        existing.is_macro = true;
+        std::string remove_cmake_comment(std::string_view line) {
+            bool in_quote = false;
+            char quote = '\0';
+            for (std::size_t index = 0; index < line.size(); ++index) {
+                const char character = line[index];
+                if (in_quote) {
+                    if (character == quote) {
+                        in_quote = false;
                     }
-                    return;
+                    continue;
                 }
-                by_name.emplace(candidate.name, targets.size());
-                targets.push_back(std::move(candidate));
-            };
+                if (character == '"' || character == '\'') {
+                    in_quote = true;
+                    quote = character;
+                    continue;
+                }
+                if (character == '#') {
+                    return std::string(line.substr(0, index));
+                }
+            }
+            return std::string(line);
+        }
 
+        std::vector<CMakeCommand> parse_cmake_commands(const std::string& content) {
+            std::vector<CMakeCommand> commands;
             std::istringstream input(content);
             std::string line;
-            std::size_t line_num = 0;
             std::string pending;
             std::size_t pending_line = 0;
-            int paren_depth = 0;
+            std::size_t line_number = 0;
+            int parenthesis_depth = 0;
             bool collecting = false;
 
             while (std::getline(input, line)) {
-                std::string trimmed = line;
-                trimmed.erase(0, trimmed.find_first_not_of(" \t"));
-                if (trimmed.empty() || trimmed.rfind("#", 0) == 0) {
-                    ++line_num;
+                line = remove_cmake_comment(line);
+                const auto first = line.find_first_not_of(" \t\r\n");
+                const std::string trimmed = first == std::string::npos
+                    ? std::string{}
+                    : line.substr(first);
+                if (trimmed.empty()) {
+                    ++line_number;
                     continue;
                 }
 
                 if (!collecting) {
-                    const auto start = utils::parse_cmake_command_start(trimmed);
-                    if (!start) {
-                        ++line_num;
+                    if (!utils::parse_cmake_command_start(trimmed).has_value()) {
+                        ++line_number;
                         continue;
                     }
-                    collecting = true;
                     pending = trimmed;
-                    pending_line = line_num;
-                    paren_depth = 0;
+                    pending_line = line_number;
+                    parenthesis_depth = 0;
+                    collecting = true;
                 } else {
-                    pending += " " + trimmed;
+                    pending += " ";
+                    pending += trimmed;
                 }
 
-                paren_depth += utils::count_paren_delta_outside_quotes(trimmed);
-                if (collecting && paren_depth <= 0) {
-                    const auto open = pending.find('(');
-                    const auto close = pending.rfind(')');
-                    if (open != std::string::npos && close != std::string::npos && close > open) {
-                        const std::string command = utils::to_lower_ascii(pending.substr(0, open));
-                        const std::string args = pending.substr(open + 1, close - open - 1);
-                        const auto tokens = utils::tokenize_cmake_args(args);
-
-                        if (command == "add_library" || command == "add_executable" || command == "target_sources") {
-                            if (auto target_name = utils::extract_builtin_target_name(
-                                    command, tokens, utils::CMakeTargetNameMode::Strict)) {
-                                CMakeTargetInfo target;
-                                target.name = *target_name;
-                                target.start_line = pending_line;
-                                target.end_line = line_num;
-                                target.source_tokens = utils::extract_builtin_sources(
-                                    command, tokens, utils::CMakeSourceTokenMode::Strict
-                                );
-                                upsert_target(std::move(target));
-                            }
-                        } else if (is_target_like_macro(command)) {
-                            if (auto target_name = utils::extract_cmake_macro_target_name(
-                                    tokens, utils::CMakeTargetNameMode::Strict)) {
-                                CMakeTargetInfo target;
-                                target.name = *target_name;
-                                target.start_line = pending_line;
-                                target.end_line = line_num;
-                                target.is_macro = true;
-                                target.source_tokens = utils::extract_cmake_macro_sources(
-                                    tokens, utils::CMakeSourceTokenMode::Strict
-                                );
-                                upsert_target(std::move(target));
-                            }
+                parenthesis_depth += utils::count_paren_delta_outside_quotes(trimmed);
+                if (parenthesis_depth <= 0) {
+                    const auto start = utils::parse_cmake_command_start(pending);
+                    if (start.has_value()) {
+                        const std::size_t close = pending.rfind(')');
+                        if (close != std::string::npos && close > start->open_pos) {
+                            CMakeCommand command;
+                            command.name = lowercase(pending.substr(0, start->open_pos));
+                            command.arguments = utils::tokenize_cmake_args(
+                                std::string_view(pending).substr(
+                                    start->open_pos + 1,
+                                    close - start->open_pos - 1
+                                )
+                            );
+                            command.start_line = pending_line;
+                            command.end_line = line_number;
+                            commands.push_back(std::move(command));
                         }
                     }
-                    collecting = false;
                     pending.clear();
+                    collecting = false;
                 }
-
-                ++line_num;
+                ++line_number;
             }
+            return commands;
+        }
 
-            for (auto& target : targets) {
-                std::ranges::sort(target.source_tokens);
-                target.source_tokens.erase(
-                    std::unique(target.source_tokens.begin(), target.source_tokens.end()),
-                    target.source_tokens.end()
+        fs::path resolve_source_token(
+            const std::string& token,
+            const fs::path& cmake_file,
+            const fs::path& project_root
+        ) {
+            const fs::path value(token);
+            if (value.is_absolute()) {
+                return value.lexically_normal();
+            }
+            const fs::path relative_to_cmake = (cmake_file.parent_path() / value).lexically_normal();
+            if (fs::is_regular_file(relative_to_cmake)) {
+                return relative_to_cmake;
+            }
+            return (project_root / value).lexically_normal();
+        }
+
+        void merge_target(
+            std::vector<CMakeTarget>& targets,
+            CMakeTarget target
+        ) {
+            const auto existing = std::ranges::find_if(
+                targets,
+                [&](const CMakeTarget& candidate) {
+                    return candidate.cmake_file == target.cmake_file &&
+                           candidate.name == target.name;
+                }
+            );
+            if (existing == targets.end()) {
+                targets.push_back(std::move(target));
+                return;
+            }
+            existing->end_line = std::max(existing->end_line, target.end_line);
+            existing->sources.insert(
+                existing->sources.end(),
+                target.sources.begin(),
+                target.sources.end()
+            );
+            std::ranges::sort(existing->sources, {}, path_key);
+            existing->sources.erase(
+                std::unique(existing->sources.begin(), existing->sources.end()),
+                existing->sources.end()
+            );
+        }
+
+        std::vector<CMakeTarget> parse_cmake_targets(
+            const fs::path& cmake_file,
+            const fs::path& project_root,
+            const std::string& content
+        ) {
+            std::vector<CMakeTarget> targets;
+            for (const auto& command : parse_cmake_commands(content)) {
+                if (command.name != "add_library" && command.name != "add_executable" &&
+                    command.name != "target_sources") {
+                    continue;
+                }
+                const auto target_name = utils::extract_builtin_target_name(
+                    command.name,
+                    command.arguments,
+                    utils::CMakeTargetNameMode::Strict
                 );
+                if (!target_name.has_value()) {
+                    continue;
+                }
+                const auto source_tokens = utils::extract_builtin_sources(
+                    command.name,
+                    command.arguments,
+                    utils::CMakeSourceTokenMode::Strict
+                );
+                if (source_tokens.empty()) {
+                    continue;
+                }
+                CMakeTarget target;
+                target.cmake_file = cmake_file;
+                target.name = *target_name;
+                target.end_line = command.end_line;
+                for (const auto& token : source_tokens) {
+                    const fs::path source = resolve_source_token(token, cmake_file, project_root);
+                    if (!fs::is_regular_file(source)) {
+                        target.sources.clear();
+                        break;
+                    }
+                    target.sources.push_back(source);
+                }
+                if (!target.sources.empty()) {
+                    merge_target(targets, std::move(target));
+                }
             }
-
             return targets;
         }
 
-        bool cmake_has_global_unity_enabled(const std::string& content) {
-            static const std::regex global_re(R"(set\s*\(\s*CMAKE_UNITY_BUILD\s+ON\b)", std::regex::icase);
-            return std::regex_search(content, global_re);
-        }
-
-        bool cmake_target_has_unity_enabled(const std::string& content, const std::string& target_name) {
-            const std::string escaped = utils::regex_escape(target_name);
-            const std::regex set_prop_re(
-                "set_property\\s*\\(\\s*TARGET\\s+" + escaped + "\\s+PROPERTY\\s+UNITY_BUILD\\s+ON\\b",
-                std::regex::icase
-            );
-            if (std::regex_search(content, set_prop_re)) {
-                return true;
-            }
-            const std::regex target_props_re(
-                "set_target_properties\\s*\\(\\s*" + escaped + "\\b[^\\)]*UNITY_BUILD\\s+ON",
-                std::regex::icase
-            );
-            return std::regex_search(content, target_props_re);
-        }
-
-        std::string normalized_key(const fs::path& path) {
-            std::error_code ec;
-            fs::path normalized = path;
-            if (normalized.is_relative()) {
-                normalized = fs::absolute(normalized, ec);
-                if (ec) {
-                    normalized = path.lexically_normal();
-                }
-            } else {
-                normalized = normalized.lexically_normal();
-            }
-            return normalized.generic_string();
-        }
-
-        fs::path resolve_cmake_source_token(
-            const std::string& token,
-            const fs::path& cmake_dir,
-            const fs::path& project_root
-        ) {
-            if (token.empty()) {
-                return {};
-            }
-            const fs::path candidate(token);
-            if (candidate.is_absolute()) {
-                return candidate.lexically_normal();
-            }
-
-            std::vector<fs::path> probes;
-            probes.push_back((cmake_dir / candidate).lexically_normal());
-            if (!project_root.empty()) {
-                probes.push_back((project_root / candidate).lexically_normal());
-            }
-
-            std::error_code ec;
-            for (const auto& probe : probes) {
-                if (fs::exists(probe, ec) && !ec) {
-                    return probe;
-                }
-                ec.clear();
-            }
-            return probes.front();
-        }
-
-        struct CMakeTargetScore {
-            int score = 0;
-            std::size_t exact_hits = 0;
-            std::size_t name_hits = 0;
-        };
-
-        CMakeTargetScore score_cmake_target_for_group(
-            const CMakeTargetInfo& target,
-            const fs::path& cmake_path,
+        std::vector<std::pair<fs::path, std::string>> cmake_files(
             const fs::path& project_root,
-            const std::unordered_set<std::string>& group_keys,
-            const std::unordered_set<std::string>& group_filenames
-        ) {
-            CMakeTargetScore result;
-            const fs::path cmake_dir = cmake_path.parent_path();
-
-            for (const auto& token : target.source_tokens) {
-                const fs::path resolved = resolve_cmake_source_token(token, cmake_dir, project_root);
-                if (resolved.empty()) {
-                    continue;
-                }
-                if (const std::string key = normalized_key(resolved); group_keys.contains(key)) {
-                    result.score += 60;
-                    ++result.exact_hits;
-                    continue;
-                }
-                if (group_filenames.contains(utils::to_lower_ascii(resolved.filename().string()))) {
-                    result.score += 8;
-                    ++result.name_hits;
-                }
-            }
-
-            const std::string lower_target = utils::to_lower_ascii(target.name);
-            if (contains_ci(lower_target, "test") ||
-                contains_ci(lower_target, "bench") ||
-                contains_ci(lower_target, "mock") ||
-                contains_ci(lower_target, "example")) {
-                result.score -= 20;
-            }
-
-            if (result.exact_hits > 0) {
-                result.score += 15;
-            } else if (result.name_hits == 0 && target.source_tokens.empty()) {
-                result.score -= 5;
-            }
-
-            return result;
-        }
-
-        bool cmake_tree_has_global_unity_enabled(const fs::path& project_root, const std::function<bool()>& should_cancel) {
-            if (project_root.empty() || !fs::exists(project_root)) {
-                return false;
-            }
-            std::error_code ec;
-            fs::recursive_directory_iterator it(project_root, ec);
-            const fs::recursive_directory_iterator end;
-            for (; it != end && !ec; ++it) {
-                if (should_cancel && should_cancel()) {
-                    break;
-                }
-                const fs::path path = it->path();
-                if (it->is_directory(ec) && utils::is_excluded_cmake_path(path)) {
-                    it.disable_recursion_pending();
-                    ec.clear();
-                    continue;
-                }
-                if (!it->is_regular_file(ec) || path.filename() != "CMakeLists.txt") {
-                    ec.clear();
-                    continue;
-                }
-                std::ifstream in(path);
-                if (!in) {
-                    continue;
-                }
-                const std::string content((std::istreambuf_iterator<char>(in)),
-                                          std::istreambuf_iterator<char>());
-                if (cmake_has_global_unity_enabled(content)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        std::optional<CMakeTargetSelection> find_best_cmake_target_for_group(
-            const fs::path& project_root,
-            const std::vector<fs::path>& group_files,
             const std::function<bool()>& should_cancel
         ) {
-            if (project_root.empty() || !fs::exists(project_root)) {
-                return std::nullopt;
-            }
-
-            std::unordered_set<std::string> group_keys;
-            std::unordered_set<std::string> group_filenames;
-            for (const auto& path : group_files) {
-                const fs::path resolved = resolve_source_path(path);
-                group_keys.insert(normalized_key(resolved));
-                group_filenames.insert(utils::to_lower_ascii(resolved.filename().string()));
-            }
-
-            std::optional<CMakeTargetSelection> best;
-            std::error_code ec;
-            fs::recursive_directory_iterator it(project_root, ec);
+            std::vector<std::pair<fs::path, std::string>> files;
+            std::error_code error;
+            fs::recursive_directory_iterator iterator(project_root, error);
             const fs::recursive_directory_iterator end;
-            for (; it != end && !ec; ++it) {
+            for (; iterator != end && !error; ++iterator) {
                 if (should_cancel && should_cancel()) {
                     break;
                 }
-                const fs::path path = it->path();
-                if (it->is_directory(ec) && utils::is_excluded_cmake_path(path)) {
-                    it.disable_recursion_pending();
-                    ec.clear();
+                const fs::path path = iterator->path();
+                if (iterator->is_directory(error) && utils::is_excluded_cmake_path(path)) {
+                    iterator.disable_recursion_pending();
+                    error.clear();
                     continue;
                 }
-                if (!it->is_regular_file(ec) || path.filename() != "CMakeLists.txt") {
-                    ec.clear();
+                if (!iterator->is_regular_file(error) || path.filename() != "CMakeLists.txt") {
+                    error.clear();
                     continue;
                 }
-
-                std::ifstream in(path);
-                if (!in) {
+                std::ifstream input(path);
+                if (!input) {
                     continue;
                 }
-                const std::string content((std::istreambuf_iterator<char>(in)),
-                                          std::istreambuf_iterator<char>());
-                auto targets = parse_cmake_targets(content);
-                for (const auto& target : targets) {
-                    const auto target_score = score_cmake_target_for_group(
-                        target,
-                        path,
-                        project_root,
-                        group_keys,
-                        group_filenames
-                    );
-                    if (target_score.score <= 0) {
-                        continue;
-                    }
-                    if (!best || target_score.score > best->score ||
-                        (target_score.score == best->score && path.generic_string() < best->cmake_path.generic_string())) {
-                        CMakeTargetSelection selection;
-                        selection.cmake_path = path;
-                        selection.target = target;
-                        selection.score = target_score.score;
-                        selection.exact_hits = target_score.exact_hits;
-                        best = std::move(selection);
-                    }
-                }
+                files.emplace_back(
+                    path,
+                    std::string(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>())
+                );
             }
-
-            if (best && best->exact_hits != group_files.size()) {
-                return std::nullopt;
-            }
-
-            return best;
+            return files;
         }
 
-        bool header_has_guard(const fs::path& header_path, std::unordered_map<std::string, bool>& cache) {
-            const std::string key = header_path.string();
-            if (auto it = cache.find(key); it != cache.end()) {
-                return it->second;
-            }
-
-            std::ifstream in(header_path);
-            if (!in) {
-                cache.emplace(key, true);
+        bool cmake_truth_value(std::string_view value, bool& known) {
+            const std::string normalized = lowercase(value);
+            if (normalized == "on" || normalized == "true" || normalized == "yes" ||
+                normalized == "1") {
+                known = true;
                 return true;
             }
-
-            std::string content;
-            content.reserve(4096);
-            std::string line;
-            std::size_t lines = 0;
-            while (std::getline(in, line) && lines++ < 200) {
-                content.append(line);
-                content.push_back('\n');
+            if (normalized == "off" || normalized == "false" || normalized == "no" ||
+                normalized == "0") {
+                known = true;
+                return false;
             }
-
-            if (content.find("#pragma once") != std::string::npos) {
-                cache.emplace(key, true);
-                return true;
-            }
-
-            const std::regex guard_ifndef(R"(^\s*#\s*ifndef\s+([A-Za-z_]\w+))");
-            const std::regex guard_define(R"(^\s*#\s*define\s+([A-Za-z_]\w+))");
-            std::smatch match;
-            std::string guard_name;
-
-            std::istringstream input(content);
-            lines = 0;
-            while (std::getline(input, line) && lines++ < 200) {
-                if (guard_name.empty() && std::regex_search(line, match, guard_ifndef)) {
-                    guard_name = match[1].str();
-                    continue;
-                }
-                if (!guard_name.empty() && std::regex_search(line, match, guard_define)) {
-                    if (match[1].str() == guard_name) {
-                        cache.emplace(key, true);
-                        return true;
-                    }
-                }
-            }
-
-            cache.emplace(key, false);
+            known = false;
             return false;
         }
 
-        void scan_source_for_conflicts(const fs::path& path, FileMetadata& meta) {
-            std::ifstream in(path);
-            if (!in) {
-                return;
-            }
-
-            const std::regex static_func(R"(^\s*static\s+(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
-            const std::regex static_var(R"(^\s*static\s+(?:const\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*(=|;|\[))");
-            const std::regex func_decl(R"(^\s*(?:inline\s+)?(?:constexpr\s+)?[\w:\<\>\*\&\s]+\s+([A-Za-z_]\w*)\s*\()");
-            const std::regex macro_def(R"(^\s*#\s*define\s+([A-Za-z_]\w*)(?:\s+(.*))?$)");
-            const std::regex macro_undef(R"(^\s*#\s*undef\s+([A-Za-z_]\w+))");
-            const std::regex anon_ns(R"(\bnamespace\s*\{)");
-            const std::regex include_re(R"(^\s*#\s*include\s+[<\"]([^>\"]+)[>\"])");
-
-            bool in_block = false;
-            int brace_depth = 0;
-            int anon_start_depth = -1;
-            std::string line;
-
-            while (std::getline(in, line)) {
-                const std::string cleaned = strip_comments(line, in_block);
-                const std::string trimmed = std::string(utils::trim_left(cleaned));
-                if (trimmed.empty()) {
-                    continue;
-                }
-
-                if (std::regex_search(trimmed, macro_def)) {
-                    std::smatch match;
-                    if (std::regex_search(trimmed, match, macro_def)) {
-                        std::string value;
-                        if (match.size() >= 3) {
-                            value = match[2].str();
-                            value.erase(0, value.find_first_not_of(" \t\r\n"));
-                            const auto last = value.find_last_not_of(" \t\r\n");
-                            if (last == std::string::npos) {
-                                value.clear();
-                            } else {
-                                value.erase(last + 1);
-                            }
-                        }
-                        meta.defined_macros[match[1].str()] = value;
-                    }
-                }
-                if (std::regex_search(trimmed, macro_undef)) {
-                    std::smatch match;
-                    if (std::regex_search(trimmed, match, macro_undef)) {
-                        meta.defined_macros.erase(match[1].str());
-                    }
-                }
-
-                if (trimmed.find("static_assert") == std::string::npos) {
-                    std::smatch match;
-                    if (std::regex_search(trimmed, match, static_func) ||
-                        std::regex_search(trimmed, match, static_var)) {
-                        meta.static_symbols.insert(match[1].str());
-                    }
-                }
-
-                if (std::regex_search(trimmed, include_re)) {
-                    std::smatch match;
-                    if (std::regex_search(trimmed, match, include_re)) {
-                        const fs::path include_path(match[1].str());
-                        const std::string ext = include_path.extension().string();
-                        if (ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".c++") {
-                            meta.included_sources.insert(match[1].str());
-                        }
-                    }
-                }
-
-                if (std::regex_search(trimmed, anon_ns)) {
-                    anon_start_depth = brace_depth;
-                }
-
-                for (const char c : trimmed) {
-                    if (c == '{') {
-                        ++brace_depth;
-                    } else if (c == '}') {
-                        --brace_depth;
-                        if (anon_start_depth >= 0 && brace_depth <= anon_start_depth) {
-                            anon_start_depth = -1;
-                        }
-                    }
-                }
-
-                if (anon_start_depth >= 0) {
-                    std::smatch match;
-                    if (trimmed.find("static_assert") == std::string::npos &&
-                        std::regex_search(trimmed, match, func_decl)) {
-                        meta.anon_namespace_symbols.insert(match[1].str());
-                    }
-                }
-            }
-        }
-
-        /**
-         * Builds file metadata from analysis results.
-         *
-         * Extracts symbol information for conflict detection.
-         */
-        std::vector<FileMetadata> build_file_metadata(
-            const std::vector<analyzers::FileAnalysisResult>& files,
-            const analyzers::DependencyAnalysisResult& deps,
-            const analyzers::SymbolAnalysisResult& symbols
+        void record_unity_state(
+            const std::vector<CMakeCommand>& commands,
+            std::string_view target_name,
+            bool& global_unity,
+            TargetState& target_state
         ) {
-            std::vector<FileMetadata> metadata;
-            std::unordered_map<std::string, bool> guard_cache;
-
-            std::unordered_map<std::string, std::unordered_set<std::string>> file_includes;
-            for (const auto& header : deps.headers) {
-                for (const auto& includer : header.included_by) {
-                    file_includes[resolve_source_path(includer).string()].insert(header.path.string());
-                }
-            }
-
-            // Build symbol map per file
-            // Note: Using heuristics since SymbolInfo doesn't have linkage info
-            std::unordered_map<std::string, std::unordered_set<std::string>> file_static_symbols;
-            std::unordered_map<std::string, std::unordered_set<std::string>> file_anon_symbols;
-
-            for (const auto& sym : symbols.symbols) {
-                const std::string file_key = sym.defined_in.string();
-
-                bool likely_internal = false;
-                bool likely_anon_namespace = false;
-
-                if (!sym.name.empty()) {
-                    likely_internal =
-                        sym.name[0] == '_' ||
-                        (sym.name.find("::") != std::string::npos &&
-                         std::islower(static_cast<unsigned char>(sym.name[0]))) ||
-                        sym.name.find("_L") == 0 ||
-                        sym.name.find("_Z") == 0;
-
-                    likely_anon_namespace =
-                        sym.name.find("_GLOBAL__N") != std::string::npos ||
-                        sym.name.find("(anonymous namespace)") != std::string::npos ||
-                        sym.name.find("::$") != std::string::npos ||
-                        sym.name.find("anonymous") != std::string::npos;
-                }
-
-                if (likely_internal && !likely_anon_namespace) {
-                    file_static_symbols[file_key].insert(sym.name);
-                }
-
-                if (likely_anon_namespace) {
-                    file_anon_symbols[file_key].insert(sym.name);
-                }
-            }
-
-            for (const auto& file : files) {
-                if (!is_source_file_path(file.file)) {
-                    continue;
-                }
-                const fs::path resolved_path = resolve_source_path(file.file);
-                if (is_probable_generated_unity_source(resolved_path)) {
+            for (const auto& command : commands) {
+                if (command.name == "set" && command.arguments.size() >= 2 &&
+                    lowercase(command.arguments[0]) == "cmake_unity_build") {
+                    bool known = false;
+                    const bool enabled = cmake_truth_value(command.arguments[1], known);
+                    if (!known || enabled) {
+                        global_unity = global_unity || enabled || !known;
+                    }
                     continue;
                 }
 
-                FileMetadata meta;
-                meta.path = resolved_path;
-                meta.compile_time = file.compile_time;
-
-                const std::string file_key = resolved_path.string();
-
-                if (file_includes.contains(file_key)) {
-                    meta.includes = file_includes[file_key];
+                if (command.name == "set_property" && command.arguments.size() >= 5 &&
+                    lowercase(command.arguments[0]) == "target" &&
+                    command.arguments[1] == target_name &&
+                    lowercase(command.arguments[2]) == "property" &&
+                    lowercase(command.arguments[3]) == "unity_build") {
+                    bool known = false;
+                    const bool enabled = cmake_truth_value(command.arguments[4], known);
+                    target_state.unity_enabled = target_state.unity_enabled || enabled;
+                    target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
+                    continue;
                 }
 
-                if (file_static_symbols.contains(file_key)) {
-                    meta.static_symbols = file_static_symbols[file_key];
+                if (command.name != "set_target_properties") {
+                    continue;
                 }
-
-                if (file_anon_symbols.contains(file_key)) {
-                    meta.anon_namespace_symbols = file_anon_symbols[file_key];
+                const auto properties = std::ranges::find_if(
+                    command.arguments,
+                    [](const std::string& argument) {
+                        return lowercase(argument) == "properties";
+                    }
+                );
+                if (properties == command.arguments.end()) {
+                    continue;
                 }
-
-                scan_source_for_conflicts(resolved_path, meta);
-
-                for (const auto& include_path : meta.includes) {
-                    const fs::path header_path(include_path);
-                    if (header_path.extension() != ".h" &&
-                        header_path.extension() != ".hpp" &&
-                        header_path.extension() != ".hh" &&
-                        header_path.extension() != ".hxx") {
+                const auto target = std::ranges::find(
+                    command.arguments.begin(), properties, std::string(target_name)
+                );
+                if (target == properties) {
+                    continue;
+                }
+                const auto property_index = static_cast<std::size_t>(
+                    std::distance(command.arguments.begin(), properties)
+                );
+                for (std::size_t index = property_index + 1; index + 1 < command.arguments.size(); index += 2) {
+                    if (lowercase(command.arguments[index]) != "unity_build") {
                         continue;
                     }
-                    if (!fs::exists(header_path)) {
-                        continue;
-                    }
-                    if (!header_has_guard(header_path, guard_cache)) {
-                        meta.unguarded_headers.insert(header_path.string());
-                    }
+                    bool known = false;
+                    const bool enabled = cmake_truth_value(command.arguments[index + 1], known);
+                    target_state.unity_enabled = target_state.unity_enabled || enabled;
+                    target_state.unity_state_unknown = target_state.unity_state_unknown || !known;
                 }
-
-                // Note: Memory estimation not currently implemented
-                // Would require line count data from compiler trace
-
-                meta.include_depth = file.include_count;  // Use include_count as proxy
-
-                metadata.push_back(meta);
             }
-
-            return metadata;
         }
 
-        /**
-         * Estimates savings from unity building based on research.
-         *
-         * Model based on measurements from Chromium and UE4:
-         * - Header parsing: 30-60% of compile time [1][2]
-         * - Template instantiation: 10-20% of compile time
-         * - Shared savings: (1 - 1/N) * shared_ratio
-         *
-         * Research sources:
-         * [1] Microsoft C++ Build Insights
-         * [2] Aras Pranckevičius compile time investigation
-         * [3] JetBrains Unity Build Study (18-54% reduction)
-         * [5] Chromium Jumbo Builds (50 files per unit)
-         */
-        Duration estimate_unity_savings(
-            const UnityGroup& group,
-            const heuristics::UnityBuildConfig& config
-        ) {
-            if (group.files.size() < 2) {
-                return Duration::zero();
-            }
-
-            const auto total_ns = group.total_compile_time.count();
-            const auto n = static_cast<double>(group.files.size());
-
-            // Base shared ratio from header parsing
-            // Research: headers are 40-60% of compile time
-            double header_ratio = config.header_parsing_ratio;
-
-            // Adjust based on common include count
-            // More shared includes = higher savings
-            if (group.total_includes > 30) {
-                header_ratio = std::min(0.60, header_ratio + 0.15);
-            } else if (group.total_includes > 15) {
-                header_ratio = std::min(0.55, header_ratio + 0.10);
-            } else if (group.total_includes < 5) {
-                header_ratio = std::max(0.30, header_ratio - 0.10);
-            }
-
-            // Template instantiation sharing (~10% additional)
-            constexpr double template_ratio = 0.10;
-
-            // Total shared ratio
-            const double shared_ratio = header_ratio + template_ratio;
-
-            // Savings = shared_ratio * (N-1) / N
-            // (parsing once instead of N times)
-            double savings_ratio = shared_ratio * (n - 1.0) / n;
-
-            // Reduce savings estimate for conflict risk
-            savings_ratio *= (1.0 - group.conflict_risk_score * 0.5);
-
-            return Duration(static_cast<Duration::rep>(
-                static_cast<double>(total_ns) * savings_ratio
-            ));
-        }
-
-        /// Overload using default config for sorting/comparison
-        Duration estimate_unity_savings(const UnityGroup& group) {
-            static const auto default_config = heuristics::HeuristicsConfig::defaults().unity_build;
-            return estimate_unity_savings(group, default_config);
-        }
-
-        /**
-         * Estimates peak memory usage for a unity group.
-         *
-         * Unity builds use more memory as all files are parsed together.
-         * Based on measurements, peak memory is roughly:
-         * max(individual) + 0.3 * sum(others)
-         */
-        std::size_t estimate_memory_usage(const UnityGroup& group) {
-            if (group.files.empty()) {
-                return 0;
-            }
-
-            std::size_t max_mem = 0;
-            std::size_t total_mem = 0;
-
-            for (const auto& file : group.files) {
-                max_mem = std::max(max_mem, file.memory_estimate);
-                total_mem += file.memory_estimate;
-            }
-
-            // Peak = largest + 30% of others (overlap from shared headers)
-            return max_mem + static_cast<std::size_t>(
-                0.3 * static_cast<double>(total_mem - max_mem));
-        }
-
-        /**
-         * Creates unity groups from file metadata.
-         */
-        std::vector<UnityGroup> create_unity_groups(
-            const std::vector<FileMetadata>& files,
-            std::size_t max_files_per_group,
-            Duration max_time_per_group,
-            std::size_t max_memory_per_group,
-            double max_conflict_risk
-        ) {
-            if (files.empty()) {
+        std::string compiler_identity(const CompilationUnit& command) {
+            if (command.command_line.empty()) {
                 return {};
             }
+            return lowercase(fs::path(command.command_line.front()).filename().string());
+        }
 
-            std::unordered_map<std::string, std::vector<std::size_t>> dir_groups;
-            for (std::size_t i = 0; i < files.size(); ++i) {
-                const std::string dir = get_module_name(files[i].path);
-                dir_groups[dir].push_back(i);
+        bool is_output_option(std::string_view argument) {
+            return argument == "-o" || argument == "-MF" || argument == "-MT" ||
+                   argument == "-MQ" || argument == "/Fo" || argument == "/Fd" ||
+                   argument == "/Fp" || argument == "/Fa" || argument == "/Fe";
+        }
+
+        bool is_attached_output_option(std::string_view argument) {
+            return argument.starts_with("-o") || argument.starts_with("-MF") ||
+                   argument.starts_with("-MT") || argument.starts_with("-MQ") ||
+                   argument.starts_with("/Fo") || argument.starts_with("/Fd") ||
+                   argument.starts_with("/Fp") || argument.starts_with("/Fa") ||
+                   argument.starts_with("/Fe");
+        }
+
+        bool is_pch_option(std::string_view argument) {
+            return argument == "-include-pch" || argument == "-Winvalid-pch" ||
+                   argument == "/Yc" || argument == "/Yu" || argument.starts_with("/Yc") ||
+                   argument.starts_with("/Yu");
+        }
+
+        std::optional<std::vector<std::string>> syntax_arguments(
+            const CompilationUnit& command,
+            const fs::path& source
+        ) {
+            if (command.command_line.size() < 2) {
+                return std::nullopt;
             }
-
-            std::vector<UnityGroup> result;
-
-            for (auto& [dir, indices] : dir_groups) {
-                if (indices.size() < 2) {
+            std::vector<std::string> arguments;
+            arguments.reserve(command.command_line.size());
+            for (std::size_t index = 1; index < command.command_line.size(); ++index) {
+                const std::string& argument = command.command_line[index];
+                if (is_pch_option(argument)) {
+                    return std::nullopt;
+                }
+                if (path_key(fs::path(argument)) == path_key(source)) {
                     continue;
                 }
-
-                std::vector<FileMetadata> dir_files;
-                for (const std::size_t idx : indices) {
-                    dir_files.push_back(files[idx]);
+                if (is_output_option(argument)) {
+                    ++index;
+                    continue;
                 }
-
-                // Distance threshold 0.5 means at least 50% similarity required
-                auto clusters = hierarchical_clustering(
-                    dir_files,
-                    0.5,  // distance threshold
-                    max_files_per_group
-                );
-
-                for (const auto& cluster : clusters) {
-                    UnityGroup group;
-                    group.suggested_name = dir + "_unity_" + std::to_string(result.size());
-
-                    // Compute common includes (intersection)
-                    bool first = true;
-                    for (const std::size_t idx : cluster) {
-                        const auto& file = dir_files[idx];
-                        group.files.push_back(file);
-                        group.total_compile_time += file.compile_time;
-                        group.total_memory_estimate += file.memory_estimate;
-
-                        if (first) {
-                            group.common_includes = file.includes;
-                            first = false;
-                        } else {
-                            std::unordered_set<std::string> intersection;
-                            for (const auto& inc : group.common_includes) {
-                                if (file.includes.contains(inc)) {
-                                    intersection.insert(inc);
-                                }
-                            }
-                            group.common_includes = std::move(intersection);
-                        }
-                    }
-
-                    if (group.total_compile_time > max_time_per_group) {
-                        continue;  // Skip groups that are too expensive
-                    }
-
-                    if (const std::size_t peak_memory = estimate_memory_usage(group);
-                        peak_memory > max_memory_per_group) {
-                        continue;  // Skip groups that use too much memory
-                    }
-
-                    for (std::size_t i = 0; i < group.files.size(); ++i) {
-                        for (std::size_t j = i + 1; j < group.files.size(); ++j) {
-                            for (auto conflicts = detect_conflicts(group.files[i], group.files[j]); auto& conflict : conflicts) {
-                                group.potential_conflicts.push_back(std::move(conflict));
-                            }
-                        }
-                    }
-
-                    for (const auto& file : group.files) {
-                        if (file.included_sources.empty()) {
-                            continue;
-                        }
-                        for (const auto& include : file.included_sources) {
-                            SymbolConflict conflict;
-                            conflict.symbol_name = include;
-                            conflict.type = ConflictType::IncludedSource;
-                            conflict.file_a = file.path;
-                            conflict.file_b = file.path;
-                            conflict.description = "Source file include '" + include +
-                                "' inside " + file.path.filename().string() +
-                                " - unity build likely causes multiple definitions";
-                            group.potential_conflicts.push_back(std::move(conflict));
-                        }
-                    }
-
-                    group.conflict_risk_score = calculate_conflict_risk(group.potential_conflicts);
-                    group.total_includes = group.common_includes.size();
-
-                    if (group.conflict_risk_score >= max_conflict_risk) {
-                        continue;
-                    }
-
-                    result.push_back(std::move(group));
+                if (is_attached_output_option(argument) || argument == "-MD" ||
+                    argument == "-MMD" || argument == "-MP" || argument == "-fsyntax-only") {
+                    continue;
                 }
+                arguments.push_back(argument);
             }
+            return arguments;
+        }
 
-            std::ranges::sort(result,
-                              [](const UnityGroup& a, const UnityGroup& b) {
-                                  return estimate_unity_savings(a) > estimate_unity_savings(b);
-                              });
-
+        std::string escape_include_path(const fs::path& path) {
+            std::string escaped = path.generic_string();
+            std::string result;
+            result.reserve(escaped.size() + 4);
+            for (const char character : escaped) {
+                if (character == '\\' || character == '"') {
+                    result.push_back('\\');
+                }
+                result.push_back(character);
+            }
             return result;
         }
 
-        /**
-         * Calculates priority based on group characteristics.
-         */
-        Priority calculate_priority(const UnityGroup& group) {
-            const auto time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                group.total_compile_time).count();
-
-            if (group.conflict_risk_score > 0.8) {
-                return Priority::Low;  // High conflict risk = low priority
+#if BHA_HAVE_CLANG_TOOLING
+        bool validate_unity_translation_unit(
+            const std::vector<CompileEvidence>& evidence,
+            std::string& diagnostic
+        ) {
+            if (evidence.empty()) {
+                diagnostic = "No compile evidence was available for the unity group";
+                return false;
+            }
+            const auto arguments = syntax_arguments(evidence.front().command, evidence.front().source);
+            if (!arguments.has_value()) {
+                diagnostic = "The compile command uses a precompiled-header mode that cannot be replayed safely";
+                return false;
             }
 
-            double score = static_cast<double>(group.files.size()) *
-                           std::log(static_cast<double>(time_ms) + 1.0);
-
-            // Reduce score for conflict risk
-            score *= (1.0 - group.conflict_risk_score);
-
-            if (score > 50.0 && group.files.size() >= 5) {
-                return Priority::High;
+            std::string code;
+            for (const auto& item : evidence) {
+                code += "#include \"";
+                code += escape_include_path(item.source);
+                code += "\"\n";
             }
-            if (score > 20.0 && group.files.size() >= 3) {
-                return Priority::Medium;
+            const fs::path virtual_file = evidence.front().command.working_directory /
+                "__bha_unity_validation__.cpp";
+            const std::string compiler = compiler_identity(evidence.front().command);
+            const bool clang_cl = compiler.find("clang-cl") != std::string::npos ||
+                compiler == "cl.exe" || compiler == "cl";
+            const bool valid = clang::tooling::runToolOnCodeWithArgs(
+                std::make_unique<clang::SyntaxOnlyAction>(),
+                code,
+                *arguments,
+                virtual_file.string(),
+                clang_cl ? "clang-cl" : "clang++"
+            );
+            if (!valid) {
+                diagnostic = "Clang rejected the proposed unity translation unit";
             }
-            return Priority::Low;
+            return valid;
+        }
+#else
+        bool validate_unity_translation_unit(
+            const std::vector<CompileEvidence>&,
+            std::string& diagnostic
+        ) {
+            diagnostic = "Unity suggestions require Clang LibTooling for merged-TU validation";
+            return false;
+        }
+#endif
+
+        std::optional<std::vector<std::string>> normalized_environment(
+            const CompilationUnit& command,
+            const fs::path& source
+        ) {
+            const auto arguments = syntax_arguments(command, source);
+            if (!arguments.has_value()) {
+                return std::nullopt;
+            }
+            std::vector<std::string> normalized;
+            normalized.reserve(arguments->size() + 1);
+            normalized.push_back(compiler_identity(command));
+            normalized.insert(normalized.end(), arguments->begin(), arguments->end());
+            return normalized;
+        }
+
+        TargetState target_unity_state(
+            const fs::path& project_root,
+            std::string_view target_name,
+            const std::function<bool()>& should_cancel,
+            bool& global_unity
+        ) {
+            TargetState state;
+            for (const auto& [cmake_file, content] : cmake_files(project_root, should_cancel)) {
+                static_cast<void>(cmake_file);
+                record_unity_state(parse_cmake_commands(content), target_name, global_unity, state);
+            }
+            return state;
         }
 
     }  // namespace
@@ -1322,331 +510,191 @@ namespace bha::suggestions
         const SuggestionContext& context
     ) const {
         SuggestionResult result;
-        auto start_time = std::chrono::steady_clock::now();
+        const auto start = std::chrono::steady_clock::now();
 
-        const auto& files = context.analysis.files;
-        const auto& deps = context.analysis.dependencies;
-        const auto& symbols = context.analysis.symbols;
-        const auto& unity_config = context.options.heuristics.unity_build;
-
-        auto metadata = build_file_metadata(files, deps, symbols);
-        if (!context.project_root.empty()) {
-            const fs::path root = context.project_root.is_relative()
-                ? fs::absolute(context.project_root)
-                : context.project_root;
-            metadata.erase(
-                std::remove_if(metadata.begin(), metadata.end(),
-                    [&](const FileMetadata& meta) {
-                        const fs::path resolved = resolve_source_path(meta.path);
-                        return !utils::is_under(resolved, root);
-                    }),
-                metadata.end()
+        if (!context.project_index ||
+            context.project_index->compile_commands_status() != CompilationDatabaseStatus::Loaded) {
+            result.diagnostics.push_back({
+                "unity.compile_commands.required",
+                "Unity suggestions require a valid compile_commands.json for every source in the target"
+            });
+            result.generation_time = std::chrono::duration_cast<Duration>(
+                std::chrono::steady_clock::now() - start
             );
+            return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
-        const std::size_t max_files = unity_config.files_per_unit;
-        const Duration max_time = std::chrono::seconds(30);
-        const std::size_t max_memory = 4ULL * 1024 * 1024 * 1024;
-        auto groups = create_unity_groups(metadata, max_files, max_time, max_memory, unity_config.max_conflict_risk);
+        const fs::path project_root = context.project_root.empty()
+            ? context.project_index->project_root()
+            : context.project_index->resolve(context.project_root);
+        if (project_root.empty() || !fs::is_directory(project_root)) {
+            result.diagnostics.push_back({
+                "unity.project_root.required",
+                "Unity suggestions require a project root containing CMakeLists.txt"
+            });
+            result.generation_time = std::chrono::duration_cast<Duration>(
+                std::chrono::steady_clock::now() - start
+            );
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
 
-        const std::size_t analyzed = files.size();
-        std::size_t skipped = 0;
-        std::size_t group_counter = 0;
-        std::unordered_set<std::string> seen_group_fingerprints;
-        std::unordered_map<std::string, bool> global_unity_cache;
+        std::unordered_map<std::string, analyzers::FileAnalysisResult> analyzed_files;
+        for (const auto& file : context.analysis.files) {
+            const fs::path source = context.project_index->resolve(file.file);
+            if (is_cxx_source(source) && context.should_analyze(source)) {
+                analyzed_files.emplace(path_key(source), file);
+            }
+        }
 
-        for (const auto& group : groups) {
+        std::unordered_set<std::string> seen_targets;
+        std::size_t analyzed_targets = 0;
+        std::size_t skipped_targets = 0;
+        bool global_unity_cache = false;
+        bool global_unity_loaded = false;
+
+        for (const auto& [cmake_file, content] : cmake_files(
+                 project_root,
+                 [&]() { return context.is_cancelled(); }
+             )) {
             if (context.is_cancelled()) {
                 break;
             }
-            const std::size_t min_group_size = std::max<std::size_t>(2, unity_config.min_files_threshold);
-            if (group.files.size() < min_group_size) {
-                ++skipped;
-                continue;
-            }
-
-            if (group.conflict_risk_score > unity_config.max_conflict_risk) {
-                ++skipped;
-                continue;
-            }
-
-            if (group.total_compile_time < unity_config.min_group_total_time) {
-                ++skipped;
-                continue;
-            }
-
-            std::vector<std::string> fingerprint_parts;
-            fingerprint_parts.reserve(group.files.size());
-            for (const auto& file : group.files) {
-                fingerprint_parts.push_back(normalized_key(resolve_source_path(file.path)));
-            }
-            std::ranges::sort(fingerprint_parts);
-            std::ostringstream fingerprint_stream;
-            for (const auto& value : fingerprint_parts) {
-                fingerprint_stream << value << '\n';
-            }
-            if (!seen_group_fingerprints.insert(fingerprint_stream.str()).second) {
-                ++skipped;
-                continue;
-            }
-
-            Suggestion suggestion;
-            suggestion.id = generate_suggestion_id("unity", group_counter++, group.suggested_name);
-            suggestion.type = SuggestionType::UnityBuild;
-            suggestion.priority = calculate_priority(group);
-            suggestion.confidence = 0.85 - group.conflict_risk_score * 0.5;
-
-            std::ostringstream title;
-            title << "Create unity build group: " << group.suggested_name;
-            suggestion.title = title.str();
-
-            auto time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                group.total_compile_time).count();
-            auto memory_mb = estimate_memory_usage(group) / (1024 * 1024);
-
-            std::ostringstream desc;
-            desc << "Group " << group.files.size() << " source files into a unity build.\n"
-                 << "• Combined compile time: " << time_ms << "ms\n"
-                 << "• Shared includes: " << group.total_includes << "\n"
-                 << "• Estimated peak memory: " << memory_mb << "MB\n";
-
-            if (!group.potential_conflicts.empty()) {
-                desc << "• WARNING: " << group.potential_conflicts.size()
-                     << " potential symbol conflicts detected";
-            }
-
-            suggestion.description = desc.str();
-
-            std::ostringstream rationale;
-            rationale << "Unity builds combine multiple source files into a single "
-                      << "translation unit, reducing overall compile time by:\n\n"
-                      << "1. **Parsing shared headers once** instead of per-file "
-                      << "(typically 40-60% of compile time)\n"
-                      << "2. **Sharing template instantiations** across files\n"
-                      << "3. **Reducing linker workload** (fewer object files)\n"
-                      << "4. **Improving cache utilization** during compilation\n\n"
-                      << "This group shares " << group.total_includes
-                      << " headers, making it a good candidate.\n\n"
-                      << "**Research basis**: Based on techniques from Chromium's "
-                      << "jumbo and unity builds.";
-
-            suggestion.rationale = rationale.str();
-
-            suggestion.estimated_savings = estimate_unity_savings(group, unity_config);
-
-            if (context.trace.total_time.count() > 0) {
-                suggestion.estimated_savings_percent =
-                    100.0 * static_cast<double>(suggestion.estimated_savings.count()) /
-                    static_cast<double>(context.trace.total_time.count());
-            }
-
-            for (const auto& file : group.files) {
-                FileTarget target;
-                target.path = resolve_source_path(file.path);
-                target.action = FileAction::Modify;
-                target.note = "Include in unity build";
-                suggestion.secondary_files.push_back(target);
-            }
-
-            std::ostringstream cmake_example;
-            cmake_example << "if(TARGET <target>)\n"
-                          << "  set_property(TARGET <target> PROPERTY UNITY_BUILD ON)\n"
-                          << "  set_property(TARGET <target> PROPERTY UNITY_BUILD_BATCH_SIZE "
-                          << group.files.size() << ")\n"
-                          << "  set_property(TARGET <target> PROPERTY UNITY_BUILD_UNIQUE_ID BHA_UNITY_BUILD_FILE_ID)\n"
-                          << "endif()";
-
-            suggestion.before_code.file = "CMakeLists.txt";
-            suggestion.before_code.code = cmake_example.str();
-
-            suggestion.implementation_steps = {
-                "1. Review potential conflicts listed in the suggestion",
-                "2. Enable UNITY_BUILD on the owning target (not globally)",
-                "3. Set UNITY_BUILD_BATCH_SIZE for that target",
-                "4. Set UNITY_BUILD_UNIQUE_ID to avoid anonymous namespace collisions",
-                "5. Exclude problematic files via SKIP_UNITY_BUILD_INCLUSION when needed",
-                "6. Build and verify no compilation errors",
-                "7. Run tests to ensure no behavioral changes",
-                "8. Measure build time improvement"
-            };
-
-            suggestion.impact.total_files_affected = group.files.size();
-            suggestion.impact.cumulative_savings = suggestion.estimated_savings;
-
-            std::vector<std::string> caveats = {
-                "Static/anonymous namespace symbols may conflict",
-                "Incremental builds slower (entire unity file rebuilds)",
-                "Debug symbols harder to navigate",
-                "Peak memory usage increases (~" + std::to_string(memory_mb) + "MB)",
-                "Include order dependencies may cause issues"
-            };
-
-            if (!group.potential_conflicts.empty()) {
-                caveats.insert(caveats.begin(),
-                    "WARNING: " + std::to_string(group.potential_conflicts.size()) +
-                    " potential conflicts must be resolved first");
-            }
-
-            suggestion.caveats = caveats;
-
-            suggestion.verification =
-                "1. Build with unity configuration and verify no errors\n"
-                "2. Check for ODR violations with -fsanitize=undefined\n"
-                "3. Run full test suite\n"
-                "4. Measure full build time improvement\n"
-                "5. Measure incremental build time impact\n"
-                "6. Monitor peak memory usage during build";
-
-            suggestion.is_safe = group.potential_conflicts.empty();
-
-            fs::path project_root = context.project_root;
-            if (project_root.empty() && !group.files.empty()) {
-                const fs::path source_path = resolve_source_path(group.files[0].path);
-                project_root = find_repository_root(source_path);
-                if (project_root.empty()) {
-                    project_root = source_path.parent_path();
+            for (auto target : parse_cmake_targets(cmake_file, project_root, content)) {
+                ++analyzed_targets;
+                if (!seen_targets.insert(target.name).second) {
+                    ++skipped_targets;
+                    continue;
                 }
-            }
+                // A unity build is only meaningful for a target with at least
+                // two independently compiled translation units.
+                if (target.sources.size() < 2) {
+                    ++skipped_targets;
+                    continue;
+                }
 
-            std::vector<fs::path> group_source_paths;
-            group_source_paths.reserve(group.files.size());
-            for (const auto& file : group.files) {
-                group_source_paths.push_back(resolve_source_path(file.path));
-            }
+                std::vector<CompileEvidence> evidence;
+                evidence.reserve(target.sources.size());
+                std::optional<std::vector<std::string>> environment;
+                bool compatible = true;
+                for (const auto& source : target.sources) {
+                    const auto file = analyzed_files.find(path_key(source));
+                    const auto command = context.project_index->compile_command_for(source);
+                    if (file == analyzed_files.end() || !command.has_value() ||
+                        file->second.compile_time <= Duration::zero()) {
+                        compatible = false;
+                        break;
+                    }
+                    const auto current_environment = normalized_environment(*command, source);
+                    if (!current_environment.has_value() ||
+                        (environment.has_value() && *environment != *current_environment)) {
+                        compatible = false;
+                        break;
+                    }
+                    if (!environment.has_value()) {
+                        environment = current_environment;
+                    }
+                    evidence.push_back({source, *command, file->second.compile_time});
+                }
+                if (!compatible) {
+                    ++skipped_targets;
+                    continue;
+                }
 
-            bool edits_added = false;
-            bool used_cmake = false;
-            if (!project_root.empty() && fs::exists(project_root / "CMakeLists.txt")) {
-                used_cmake = true;
-                const std::string root_key = project_root.generic_string();
-                bool has_global_unity = false;
-                if (auto it = global_unity_cache.find(root_key); it != global_unity_cache.end()) {
-                    has_global_unity = it->second;
-                } else {
-                    has_global_unity = cmake_tree_has_global_unity_enabled(
+                if (!global_unity_loaded) {
+                    bool ignored_global_state = false;
+                    const auto state = target_unity_state(
                         project_root,
-                        [&]() { return context.is_cancelled(); }
+                        "__bha_unity_global_probe__",
+                        [&]() { return context.is_cancelled(); },
+                        ignored_global_state
                     );
-                    global_unity_cache.emplace(root_key, has_global_unity);
+                    static_cast<void>(state);
+                    global_unity_cache = ignored_global_state;
+                    global_unity_loaded = true;
                 }
-                if (has_global_unity) {
-                    ++skipped;
-                    continue;
-                }
-
-                auto selected_target = find_best_cmake_target_for_group(
+                bool global_unity = global_unity_cache;
+                TargetState state = target_unity_state(
                     project_root,
-                    group_source_paths,
-                    [&]() { return context.is_cancelled(); }
+                    target.name,
+                    [&]() { return context.is_cancelled(); },
+                    global_unity
                 );
-                if (!selected_target) {
-                    ++skipped;
+                if (global_unity || state.unity_enabled || state.unity_state_unknown) {
+                    ++skipped_targets;
                     continue;
                 }
 
-                std::ifstream cmake_in(selected_target->cmake_path);
-                const std::string cmake_content((std::istreambuf_iterator<char>(cmake_in)),
-                                                std::istreambuf_iterator<char>());
-                if (cmake_target_has_unity_enabled(cmake_content, selected_target->target.name)) {
-                    ++skipped;
+                std::string validation_diagnostic;
+                if (!validate_unity_translation_unit(evidence, validation_diagnostic)) {
+                    ++skipped_targets;
                     continue;
                 }
 
-                const std::size_t insert_line = selected_target->target.end_line + 1;
-                TextEdit cmake_edit;
-                cmake_edit.file = selected_target->cmake_path;
-                cmake_edit.start_line = insert_line;
-                cmake_edit.start_col = 0;
-                cmake_edit.end_line = insert_line;
-                cmake_edit.end_col = 0;
-                cmake_edit.new_text =
-                    "\nif(TARGET " + selected_target->target.name + ")\n"
-                    "  set_property(TARGET " + selected_target->target.name + " PROPERTY UNITY_BUILD ON)\n"
-                    "  set_property(TARGET " + selected_target->target.name + " PROPERTY UNITY_BUILD_BATCH_SIZE " + std::to_string(group.files.size()) + ")\n"
-                    "  set_property(TARGET " + selected_target->target.name + " PROPERTY UNITY_BUILD_UNIQUE_ID BHA_UNITY_BUILD_FILE_ID)\n"
-                    "endif()\n";
-                suggestion.edits.push_back(cmake_edit);
-
-                suggestion.target_file.path = selected_target->cmake_path;
+                Suggestion suggestion;
+                suggestion.id = generate_suggestion_id("unity", analyzed_targets, target.name);
+                suggestion.type = SuggestionType::UnityBuild;
+                suggestion.priority = Priority::Medium;
+                suggestion.confidence = 1.0;
+                suggestion.title = "Enable CMake unity build for target " + target.name;
+                suggestion.description =
+                    "Enable CMake UNITY_BUILD for the exact target source set after Clang "
+                    "accepted the proposed include-ordered unity translation unit.";
+                suggestion.rationale =
+                    "The target source list was resolved exactly from CMake, every source "
+                    "has a compile-database command with the same environment, and the "
+                    "merged translation unit passed Clang syntax validation.";
+                suggestion.estimated_savings = Duration::zero();
+                suggestion.target_file.path = target.cmake_file;
                 suggestion.target_file.action = FileAction::Modify;
-                suggestion.target_file.note = "Enable UNITY_BUILD on target " + selected_target->target.name;
-
-                FileTarget cmake_target;
-                cmake_target.path = selected_target->cmake_path;
-                cmake_target.action = FileAction::Modify;
-                cmake_target.line_start = insert_line + 1;
-                cmake_target.line_end = insert_line + 4;
-                cmake_target.note = "Enable UNITY_BUILD for target " + selected_target->target.name;
-                suggestion.secondary_files.push_back(cmake_target);
-
-                suggestion.after_code.file = selected_target->cmake_path.filename().string();
-                suggestion.after_code.code = cmake_edit.new_text;
-                edits_added = true;
-            }
-
-            if (!used_cmake) {
-                fs::path unity_file_path = project_root / "src" / (group.suggested_name + ".cpp");
-                if (!fs::exists(unity_file_path.parent_path())) {
-                    unity_file_path = project_root / (group.suggested_name + ".cpp");
+                suggestion.target_file.note = "Enable UNITY_BUILD for target " + target.name;
+                suggestion.secondary_files.reserve(target.sources.size());
+                for (const auto& source : target.sources) {
+                    FileTarget file_target;
+                    file_target.path = source;
+                    file_target.action = FileAction::Modify;
+                    file_target.note = "Validated source included by proposed unity translation unit";
+                    suggestion.secondary_files.push_back(std::move(file_target));
                 }
 
-                std::ostringstream unity_content;
-                unity_content << "// " << group.suggested_name << ".cpp\n"
-                              << "// Unity build file - auto-generated by BHA\n"
-                              << "// Combines " << group.files.size() << " source files\n"
-                              << "// Estimated savings: "
-                              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                                     suggestion.estimated_savings).count()
-                              << "ms\n\n";
-
-                if (!group.potential_conflicts.empty()) {
-                    unity_content << "// WARNING: Potential conflicts detected:\n";
-                    for (const auto& conflict : group.potential_conflicts) {
-                        unity_content << "//   - " << conflict.description << "\n";
-                    }
-                    unity_content << "\n";
-                }
-
-                const fs::path unity_dir = unity_file_path.parent_path();
-                for (const auto& source_path : group_source_paths) {
-                    std::error_code ec;
-                    fs::path rel = fs::relative(source_path, unity_dir, ec);
-                    if (ec || rel.empty()) {
-                        rel = make_repo_relative(source_path);
-                    }
-                    unity_content << "#include \"" << rel.generic_string() << "\"\n";
-                }
-
-                TextEdit create_unity;
-                create_unity.file = unity_file_path;
-                create_unity.start_line = 0;
-                create_unity.start_col = 0;
-                create_unity.end_line = 0;
-                create_unity.end_col = 0;
-                create_unity.new_text = unity_content.str();
-                suggestion.edits.push_back(create_unity);
-
-                suggestion.target_file.path = unity_file_path;
-                suggestion.target_file.action = FileAction::Create;
-                suggestion.target_file.note = "Create unity build file";
-                suggestion.after_code.file = group.suggested_name + ".cpp";
-                suggestion.after_code.code = unity_content.str();
-                edits_added = true;
+                const std::size_t insert_line = target.end_line + 1;
+                TextEdit edit;
+                edit.file = target.cmake_file;
+                edit.start_line = insert_line;
+                edit.start_col = 0;
+                edit.end_line = insert_line;
+                edit.end_col = 0;
+                edit.new_text = "\nif(TARGET " + target.name + ")\n"
+                    "  set_property(TARGET " + target.name + " PROPERTY UNITY_BUILD ON)\n";
+                edit.new_text += "endif()\n";
+                suggestion.edits.push_back(edit);
+                suggestion.after_code.file = target.cmake_file.filename().string();
+                suggestion.after_code.code = edit.new_text;
+                suggestion.implementation_steps = {
+                    "Apply the target-scoped CMake UNITY_BUILD edit",
+                    "Configure and build the target with the project compiler",
+                    "Run the target tests and compare a fresh build trace"
+                };
+                suggestion.caveats = {
+                    "Savings are intentionally unestimated until a post-edit trace is available",
+                    "CMake unity builds combine sources in target order and can expose include-order or ODR issues",
+                    "CMake may exclude sources marked SKIP_UNITY_BUILD_INCLUSION"
+                };
+                suggestion.verification =
+                    "Clang merged-TU syntax validation passed; configure, build, and test the target "
+                    "with the project compiler before accepting the edit";
+                suggestion.is_safe = true;
+                suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
+                suggestion.impact.total_files_affected = target.sources.size();
+                suggestion.impact.cumulative_savings = Duration::zero();
+                result.suggestions.push_back(std::move(suggestion));
             }
-
-            if (!edits_added || suggestion.edits.empty()) {
-                ++skipped;
-                continue;
-            }
-            result.suggestions.push_back(std::move(suggestion));
         }
 
-        result.items_analyzed = analyzed;
-        result.items_skipped = skipped;
-
-        auto end_time = std::chrono::steady_clock::now();
-        result.generation_time = std::chrono::duration_cast<Duration>(end_time - start_time);
-
+        result.items_analyzed = analyzed_targets;
+        result.items_skipped = skipped_targets;
+        result.generation_time = std::chrono::duration_cast<Duration>(
+            std::chrono::steady_clock::now() - start
+        );
         return Result<SuggestionResult, Error>::success(std::move(result));
     }
 
