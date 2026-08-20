@@ -124,6 +124,21 @@ def main() -> int:
         shutil.rmtree(work_root)
     shutil.copytree(fixture, project_root)
 
+    file_api_query = build_dir / ".cmake" / "api" / "v1" / "query" / "client-bha" / "query.json"
+    file_api_query.parent.mkdir(parents=True, exist_ok=True)
+    file_api_query.write_text(
+        json.dumps(
+            {
+                "requests": [
+                    {"kind": "codemodel", "version": 2},
+                    {"kind": "cmakeFiles", "version": 1},
+                    {"kind": "cache", "version": 2},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
     print("[1/5] Building fixture and collecting traces...")
     build_cmd = [
         str(bha_bin),
@@ -137,7 +152,6 @@ def main() -> int:
         "--output",
         str(trace_dir),
         "--memory",
-        "--clean",
     ]
     build = run_cmd(build_cmd, project_root, args.timeout)
     if build.returncode != 0:

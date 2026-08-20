@@ -1,9 +1,6 @@
 #include "bha/suggestions/unity_build_suggester.hpp"
 
-#include "bha/utils/cmake_classification_utils.hpp"
 #include "bha/utils/cmake_parse_utils.hpp"
-#include "bha/utils/cmake_target_parse_utils.hpp"
-#include "bha/utils/path_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <algorithm>
@@ -11,12 +8,12 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <iterator>
 #include <optional>
 #include <ranges>
 #include <sstream>
 #include <string_view>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -29,6 +26,8 @@
 #include <clang/Tooling/Tooling.h>
 #endif
 
+#include <nlohmann/json.hpp>
+
 namespace bha::suggestions {
     namespace {
         struct CMakeCommand {
@@ -38,13 +37,17 @@ namespace bha::suggestions {
             std::size_t end_line = 0;
         };
 
-        struct CMakeTarget {
+        struct FileApiTarget {
             fs::path cmake_file;
             std::string name;
             std::vector<fs::path> sources;
             std::size_t end_line = 0;
-            bool builtin_declaration = false;
-            bool interface_target = false;
+        };
+
+        struct FileApiModel {
+            std::vector<FileApiTarget> targets;
+            std::vector<CMakeCommand> cmake_commands;
+            bool global_unity = false;
         };
 
         struct CompileEvidence {
@@ -58,18 +61,13 @@ namespace bha::suggestions {
             bool unity_state_unknown = false;
         };
 
-        std::string lowercase(std::string_view value) {
-            return utils::to_lower_ascii(value);
-        }
+        std::string lowercase(std::string_view value) { return utils::lowercase_ascii(value); }
 
-        std::string path_key(const fs::path& path) {
-            return path.lexically_normal().generic_string();
-        }
+        std::string path_key(const fs::path& path) { return path.lexically_normal().generic_string(); }
 
         bool is_cxx_source(const fs::path& path) {
             const std::string extension = lowercase(path.extension().string());
-            return extension == ".cc" || extension == ".cpp" || extension == ".cxx" ||
-                   extension == ".c++";
+            return extension == ".cc" || extension == ".cpp" || extension == ".cxx" || extension == ".c++";
         }
 
         std::string remove_cmake_comment(std::string_view line) {
@@ -108,9 +106,7 @@ namespace bha::suggestions {
             while (std::getline(input, line)) {
                 line = remove_cmake_comment(line);
                 const auto first = line.find_first_not_of(" \t\r\n");
-                const std::string trimmed = first == std::string::npos
-                    ? std::string{}
-                    : line.substr(first);
+                const std::string trimmed = first == std::string::npos ? std::string{} : line.substr(first);
                 if (trimmed.empty()) {
                     ++line_number;
                     continue;
@@ -139,11 +135,7 @@ namespace bha::suggestions {
                             CMakeCommand command;
                             command.name = lowercase(pending.substr(0, start->open_pos));
                             command.arguments = utils::tokenize_cmake_args(
-                                std::string_view(pending).substr(
-                                    start->open_pos + 1,
-                                    close - start->open_pos - 1
-                                )
-                            );
+                                std::string_view(pending).substr(start->open_pos + 1, close - start->open_pos - 1));
                             command.start_line = pending_line;
                             command.end_line = line_number;
                             commands.push_back(std::move(command));
@@ -157,143 +149,328 @@ namespace bha::suggestions {
             return commands;
         }
 
-        fs::path resolve_source_token(
-            const std::string& token,
-            const fs::path& cmake_file,
-            const fs::path& project_root
-        ) {
-            const fs::path value(token);
-            if (value.is_absolute()) {
-                return value.lexically_normal();
+        using Json = nlohmann::json;
+
+        bool cmake_truth_value(std::string_view value, bool& known);
+
+        bool is_path_within(const fs::path& path, const fs::path& directory) {
+            const fs::path relative = path.lexically_normal().lexically_relative(directory.lexically_normal());
+            if (relative.empty()) {
+                return false;
             }
-            const fs::path relative_to_cmake = (cmake_file.parent_path() / value).lexically_normal();
-            if (fs::is_regular_file(relative_to_cmake)) {
-                return relative_to_cmake;
-            }
-            return (project_root / value).lexically_normal();
+            const auto first = relative.begin();
+            return first == relative.end() || *first != "..";
         }
 
-        void merge_target(
-            std::vector<CMakeTarget>& targets,
-            CMakeTarget target
-        ) {
-            const auto existing = std::ranges::find_if(
-                targets,
-                [&](const CMakeTarget& candidate) {
-                    return candidate.cmake_file == target.cmake_file &&
-                           candidate.name == target.name;
-                }
-            );
-            if (existing == targets.end()) {
-                targets.push_back(std::move(target));
-                return;
+        bool is_at_least_as_new(const fs::path& candidate, const fs::path& reference) {
+            std::error_code error;
+            const auto candidate_time = fs::last_write_time(candidate, error);
+            if (error) {
+                return false;
             }
-            existing->end_line = std::max(existing->end_line, target.end_line);
-            existing->builtin_declaration = existing->builtin_declaration || target.builtin_declaration;
-            existing->interface_target = existing->interface_target || target.interface_target;
-            for (const auto& source : target.sources) {
-                if (std::ranges::find(existing->sources, source) == existing->sources.end()) {
-                    existing->sources.push_back(source);
+            const auto reference_time = fs::last_write_time(reference, error);
+            return !error && candidate_time >= reference_time;
+        }
+
+        std::optional<Json> read_json_file(const fs::path& path) {
+            std::ifstream input(path);
+            if (!input) {
+                return std::nullopt;
                 }
+            try {
+                Json value;
+                input >> value;
+                return value;
+            } catch (const Json::exception&) {
+                return std::nullopt;
             }
         }
 
-        std::vector<CMakeTarget> parse_cmake_targets(
-            const fs::path& cmake_file,
-            const fs::path& project_root,
-            const std::string& content
-        ) {
-            std::vector<CMakeTarget> targets;
+        std::optional<fs::path> latest_file_api_index(const fs::path& build_directory) {
+            const fs::path reply_directory = build_directory / ".cmake" / "api" / "v1" / "reply";
+            std::error_code error;
+            if (!fs::is_directory(reply_directory, error)) {
+                return std::nullopt;
+            }
+            std::optional<fs::path> latest;
+            for (const auto& entry : fs::directory_iterator(reply_directory, error)) {
+                if (error || !entry.is_regular_file(error)) {
+                    error.clear();
+                    continue;
+                }
+                const std::string name = entry.path().filename().string();
+                if (!name.starts_with("index-")) {
+                    continue;
+                }
+                if (!latest.has_value() || name > latest->filename().string()) {
+                    latest = entry.path();
+                }
+            }
+            return latest;
+        }
+
+        std::optional<Json> file_api_object(const Json& index, std::string_view kind, const fs::path& reply_directory) {
+            const int expected_major = kind == "codemodel" ? 2 : kind == "cmakeFiles" ? 1
+                                                             : kind == "cache"        ? 2
+                                                                                      : 0;
+            if (expected_major == 0) {
+                return std::nullopt;
+            }
+            if (!index.contains("objects") || !index["objects"].is_array()) {
+                return std::nullopt;
+            }
+            for (const auto& object : index["objects"]) {
+                if (!object.is_object() || object.value("kind", "") != kind || !object.contains("version") ||
+                    !object["version"].is_object() || object["version"].value("major", 0) != expected_major ||
+                    !object.contains("jsonFile") || !object["jsonFile"].is_string()) {
+                    continue;
+                }
+                const fs::path json_file = (reply_directory / object["jsonFile"].get<std::string>()).lexically_normal();
+                if (!is_path_within(json_file, reply_directory)) {
+                    return std::nullopt;
+                }
+                return read_json_file(json_file);
+            }
+            return std::nullopt;
+        }
+
+        fs::path resolve_file_api_path(std::string_view value, const fs::path& source_root) {
+            const fs::path path(value);
+            return path.is_absolute() ? path.lexically_normal() : (source_root / path).lexically_normal();
+        }
+
+        std::optional<std::pair<fs::path, std::size_t>> direct_cmake_declaration(const fs::path& cmake_file,
+                                                                                 std::string_view target_name,
+                                                                                 std::string_view command_name,
+                                                                                 std::size_t backtrace_line) {
+            std::ifstream input(cmake_file);
+            if (!input) {
+                return std::nullopt;
+            }
+            const std::string content{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+            const std::size_t zero_based_line = backtrace_line == 0 ? 0 : backtrace_line - 1;
             for (const auto& command : parse_cmake_commands(content)) {
-                if (command.name != "add_library" && command.name != "add_executable" &&
-                    command.name != "target_sources") {
+                if (command.name != command_name || command.arguments.empty() ||
+                    command.arguments.front() != target_name || zero_based_line < command.start_line ||
+                    zero_based_line > command.end_line) {
                     continue;
                 }
-                const auto target_name = utils::extract_builtin_target_name(
-                    command.name,
-                    command.arguments,
-                    utils::CMakeTargetNameMode::Strict
-                );
-                if (!target_name.has_value()) {
+                return std::pair{cmake_file, command.end_line};
+            }
+            return std::nullopt;
+        }
+
+        std::optional<FileApiTarget> parse_file_api_target(const Json& target, const fs::path& source_root,
+                                                           const fs::path& build_root) {
+            if (!target.is_object() || !target.contains("name") || !target["name"].is_string() ||
+                !target.contains("type") || !target["type"].is_string() || target.value("imported", false) ||
+                target.value("abstract", false) || target.value("type", "") == "INTERFACE_LIBRARY" ||
+                target.value("type", "") == "UTILITY") {
+                return std::nullopt;
+            }
+            const std::string type = target["type"].get<std::string>();
+            if (type != "EXECUTABLE" && type != "STATIC_LIBRARY" && type != "SHARED_LIBRARY" &&
+                type != "MODULE_LIBRARY" && type != "OBJECT_LIBRARY") {
+                return std::nullopt;
+            }
+            if (!target.contains("backtrace") || !target["backtrace"].is_number_unsigned() ||
+                !target.contains("backtraceGraph") || !target["backtraceGraph"].is_object()) {
+                return std::nullopt;
+            }
+
+            const Json& graph = target["backtraceGraph"];
+            if (!graph.contains("nodes") || !graph["nodes"].is_array() || !graph.contains("files") ||
+                !graph["files"].is_array() || !graph.contains("commands") || !graph["commands"].is_array()) {
+                return std::nullopt;
+            }
+            const std::size_t backtrace = target["backtrace"].get<std::size_t>();
+            if (backtrace >= graph["nodes"].size()) {
+                return std::nullopt;
+            }
+            const Json& node = graph["nodes"][backtrace];
+            if (!node.contains("file") || !node["file"].is_number_unsigned() || !node.contains("line") ||
+                !node["line"].is_number_unsigned() || !node.contains("command") ||
+                !node["command"].is_number_unsigned()) {
+                return std::nullopt;
+            }
+            const std::size_t file_index = node["file"].get<std::size_t>();
+            const std::size_t command_index = node["command"].get<std::size_t>();
+            if (file_index >= graph["files"].size() || command_index >= graph["commands"].size() ||
+                !graph["files"][file_index].is_string() || !graph["commands"][command_index].is_string()) {
+                return std::nullopt;
+            }
+            const std::string command_name = lowercase(graph["commands"][command_index].get<std::string>());
+            if (command_name != "add_library" && command_name != "add_executable") {
+                return std::nullopt;
+            }
+            const fs::path cmake_file =
+                resolve_file_api_path(graph["files"][file_index].get<std::string>(), source_root);
+            const auto declaration = direct_cmake_declaration(cmake_file, target["name"].get<std::string>(),
+                                                              command_name, node["line"].get<std::size_t>());
+            if (!declaration.has_value()) {
+                return std::nullopt;
+            }
+            if (!is_path_within(cmake_file, source_root)) {
+                return std::nullopt;
+            }
+
+            if (!target.contains("sources") || !target["sources"].is_array() || !target.contains("compileGroups") ||
+                !target["compileGroups"].is_array()) {
+                return std::nullopt;
+            }
+            std::vector<fs::path> sources;
+            for (const auto& source : target["sources"]) {
+                if (!source.is_object() || !source.contains("path") || !source["path"].is_string()) {
+                    return std::nullopt;
+                }
+                const fs::path path = resolve_file_api_path(source["path"].get<std::string>(), source_root);
+                const bool has_compile_group =
+                    source.contains("compileGroupIndex") && source["compileGroupIndex"].is_number_unsigned();
+                if (!has_compile_group) {
+                    if (is_cxx_source(path)) {
+                        return std::nullopt;
+                    }
                     continue;
                 }
-                const auto source_tokens = utils::extract_builtin_sources(
-                    command.name,
-                    command.arguments,
-                    utils::CMakeSourceTokenMode::Strict
-                );
-                const bool builtin_declaration = command.name != "target_sources";
-                if (source_tokens.empty() && !builtin_declaration) {
-                    continue;
+                if (source.value("isGenerated", false) || is_path_within(path, build_root) || !is_cxx_source(path) ||
+                    !fs::is_regular_file(path)) {
+                    return std::nullopt;
                 }
-                CMakeTarget target;
-                target.cmake_file = cmake_file;
-                target.name = *target_name;
-                target.end_line = command.end_line;
-                target.builtin_declaration = builtin_declaration;
-                if (command.name == "add_library" && command.arguments.size() > 1) {
-                    target.interface_target = lowercase(command.arguments[1]) == "interface";
+                const std::size_t group_index = source["compileGroupIndex"].get<std::size_t>();
+                if (group_index >= target["compileGroups"].size() ||
+                    !target["compileGroups"][group_index].is_object() ||
+                    target["compileGroups"][group_index].value("language", "") != "CXX") {
+                    return std::nullopt;
                 }
-                for (const auto& token : source_tokens) {
-                    const fs::path source = resolve_source_token(token, cmake_file, project_root);
-                    if (!fs::is_regular_file(source)) {
-                        target.sources.clear();
+                if (std::ranges::find(sources, path) != sources.end()) {
+                    return std::nullopt;
+                }
+                sources.push_back(path);
+            }
+            if (sources.empty()) {
+                return std::nullopt;
+            }
+
+            FileApiTarget result;
+            result.cmake_file = declaration->first;
+            result.name = target["name"].get<std::string>();
+            result.sources = std::move(sources);
+            result.end_line = declaration->second;
+            return result;
+        }
+
+        std::optional<FileApiModel> load_file_api_model(const fs::path& project_root,
+                                                        const fs::path& compile_commands_path,
+                                                        const std::function<bool()>& should_cancel) {
+            try {
+                if (should_cancel && should_cancel()) {
+                    return std::nullopt;
+                }
+                const auto index_path = latest_file_api_index(compile_commands_path.parent_path());
+                if (!index_path.has_value() || !fs::is_regular_file(compile_commands_path) ||
+                    !is_at_least_as_new(*index_path, compile_commands_path)) {
+                    return std::nullopt;
+                }
+                const auto index = read_json_file(*index_path);
+                if (!index.has_value()) {
+                    return std::nullopt;
+                }
+                const fs::path reply_directory = index_path->parent_path();
+                const auto codemodel = file_api_object(*index, "codemodel", reply_directory);
+                const auto cmake_files_object = file_api_object(*index, "cmakeFiles", reply_directory);
+                if (!codemodel.has_value() || !cmake_files_object.has_value() || !codemodel->contains("paths") ||
+                    !(*codemodel)["paths"].is_object() || !(*codemodel)["paths"].contains("source") ||
+                    !(*codemodel)["paths"]["source"].is_string() || !(*codemodel)["paths"].contains("build") ||
+                    !(*codemodel)["paths"]["build"].is_string() || !codemodel->contains("configurations") ||
+                    !(*codemodel)["configurations"].is_array() || (*codemodel)["configurations"].size() != 1 ||
+                    !cmake_files_object->contains("paths") || !(*cmake_files_object)["paths"].is_object() ||
+                    !cmake_files_object->contains("inputs") || !(*cmake_files_object)["inputs"].is_array() ||
+                    (cmake_files_object->contains("globsDependent") &&
+                     (!(*cmake_files_object)["globsDependent"].is_array() ||
+                      !(*cmake_files_object)["globsDependent"].empty()))) {
+                    return std::nullopt;
+                }
+
+                const fs::path source_root =
+                    fs::path((*codemodel)["paths"]["source"].get<std::string>()).lexically_normal();
+                const fs::path build_root =
+                    fs::path((*codemodel)["paths"]["build"].get<std::string>()).lexically_normal();
+                if (path_key(source_root) != path_key(project_root)) {
+                    return std::nullopt;
+                }
+                const Json& configuration = (*codemodel)["configurations"][0];
+                if (!configuration.contains("targets") || !configuration["targets"].is_array()) {
+                    return std::nullopt;
+                }
+
+                FileApiModel model;
+                for (const auto& input : (*cmake_files_object)["inputs"]) {
+                    if (should_cancel && should_cancel()) {
+                        return std::nullopt;
+                    }
+                    if (!input.is_object() || input.value("isGenerated", false) || input.value("isExternal", false) ||
+                        !input.contains("path") || !input["path"].is_string()) {
+                        continue;
+                    }
+                    const fs::path path = resolve_file_api_path(input["path"].get<std::string>(), source_root);
+                    std::ifstream file(path);
+                    if (!file || !is_at_least_as_new(*index_path, path)) {
+                        return std::nullopt;
+                    }
+                    const std::string content{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+                    auto commands = parse_cmake_commands(content);
+                    model.cmake_commands.insert(model.cmake_commands.end(), std::make_move_iterator(commands.begin()),
+                                                std::make_move_iterator(commands.end()));
+                }
+
+                if (const auto cache = file_api_object(*index, "cache", reply_directory);
+                    cache.has_value() && cache->contains("entries") && (*cache)["entries"].is_array()) {
+                    for (const auto& entry : (*cache)["entries"]) {
+                        if (!entry.is_object() || entry.value("name", "") != "CMAKE_UNITY_BUILD") {
+                            continue;
+                        }
+                        bool known = false;
+                        const bool enabled = cmake_truth_value(entry.value("value", ""), known);
+                        model.global_unity = enabled || !known;
                         break;
                     }
-                    if (std::ranges::find(target.sources, source) == target.sources.end()) {
-                        target.sources.push_back(source);
+                }
+
+                for (const auto& target_reference : configuration["targets"]) {
+                    if (should_cancel && should_cancel()) {
+                        return std::nullopt;
+                    }
+                    if (!target_reference.is_object() || !target_reference.contains("jsonFile") ||
+                        !target_reference["jsonFile"].is_string()) {
+                        continue;
+                    }
+                    const fs::path target_path =
+                        (reply_directory / target_reference["jsonFile"].get<std::string>()).lexically_normal();
+                    if (!is_path_within(target_path, reply_directory)) {
+                        return std::nullopt;
+                    }
+                    const auto target = read_json_file(target_path);
+                    if (!target.has_value()) {
+                        return std::nullopt;
+                    }
+                    if (const auto parsed = parse_file_api_target(*target, source_root, build_root);
+                        parsed.has_value()) {
+                        model.targets.push_back(*parsed);
                     }
                 }
-                if (target.builtin_declaration || !target.sources.empty()) {
-                    merge_target(targets, std::move(target));
-                }
+                return model;
+            } catch (const Json::exception&) {
+                return std::nullopt;
             }
-            return targets;
-        }
-
-        std::vector<std::pair<fs::path, std::string>> cmake_files(
-            const fs::path& project_root,
-            const std::function<bool()>& should_cancel
-        ) {
-            std::vector<std::pair<fs::path, std::string>> files;
-            std::error_code error;
-            fs::recursive_directory_iterator iterator(project_root, error);
-            const fs::recursive_directory_iterator end;
-            for (; iterator != end && !error; ++iterator) {
-                if (should_cancel && should_cancel()) {
-                    break;
-                }
-                const fs::path path = iterator->path();
-                if (iterator->is_directory(error) && utils::is_excluded_cmake_path(path)) {
-                    iterator.disable_recursion_pending();
-                    error.clear();
-                    continue;
-                }
-                if (!iterator->is_regular_file(error) || path.filename() != "CMakeLists.txt") {
-                    error.clear();
-                    continue;
-                }
-                std::ifstream input(path);
-                if (!input) {
-                    continue;
-                }
-                files.emplace_back(
-                    path,
-                    std::string(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>())
-                );
-            }
-            return files;
         }
 
         bool cmake_truth_value(std::string_view value, bool& known) {
             const std::string normalized = lowercase(value);
-            if (normalized == "on" || normalized == "true" || normalized == "yes" ||
-                normalized == "1") {
+            if (normalized == "on" || normalized == "true" || normalized == "yes" || normalized == "1") {
                 known = true;
                 return true;
             }
-            if (normalized == "off" || normalized == "false" || normalized == "no" ||
-                normalized == "0") {
+            if (normalized == "off" || normalized == "false" || normalized == "no" || normalized == "0") {
                 known = true;
                 return false;
             }
@@ -301,11 +478,13 @@ namespace bha::suggestions {
             return false;
         }
 
-        void record_unity_target_property(
-            std::string_view property,
-            const std::optional<std::string_view>& value,
-            TargetState& target_state
-        ) {
+        bool cmake_expression_is_dynamic(std::string_view value) {
+            return value.find('$') != std::string_view::npos || value.find('<') != std::string_view::npos ||
+                   value.find('>') != std::string_view::npos;
+        }
+
+        void record_unity_target_property(std::string_view property, const std::optional<std::string_view>& value,
+                                          TargetState& target_state) {
             const std::string name = lowercase(property);
             if (name == "unity_build") {
                 if (!value.has_value()) {
@@ -321,24 +500,19 @@ namespace bha::suggestions {
             if (name == "unity_build_mode") {
                 // GROUP requires per-source UNITY_GROUP modeling. Only the
                 // default-compatible BATCH mode is accepted here.
-                target_state.unity_state_unknown = target_state.unity_state_unknown ||
-                    !value.has_value() || lowercase(*value) != "batch";
+                target_state.unity_state_unknown =
+                    target_state.unity_state_unknown || !value.has_value() || lowercase(*value) != "batch";
                 return;
             }
-            if (name == "unity_build_code_before_include" ||
-                name == "unity_build_code_after_include") {
+            if (name == "unity_build_code_before_include" || name == "unity_build_code_after_include") {
                 // These properties inject arbitrary code around every source
                 // include and therefore are outside the synthetic TU model.
                 target_state.unity_state_unknown = true;
             }
         }
 
-        void record_unity_state(
-            const std::vector<CMakeCommand>& commands,
-            std::string_view target_name,
-            bool& global_unity,
-            TargetState& target_state
-        ) {
+        void record_unity_state(const std::vector<CMakeCommand>& commands, std::string_view target_name,
+                                bool& global_unity, TargetState& target_state) {
             for (const auto& command : commands) {
                 if (command.name == "set" && command.arguments.size() >= 2 &&
                     lowercase(command.arguments[0]) == "cmake_unity_build") {
@@ -353,15 +527,19 @@ namespace bha::suggestions {
                 if (command.name == "set_property" && command.arguments.size() >= 2 &&
                     lowercase(command.arguments[0]) == "target") {
                     const auto property = std::ranges::find_if(
-                        command.arguments.begin() + 1,
-                        command.arguments.end(),
-                        [](const std::string& argument) {
-                            return lowercase(argument) == "property";
-                        }
-                    );
-                    const bool target_list_contains_candidate = property != command.arguments.end() &&
-                        std::ranges::find(command.arguments.begin() + 1, property, std::string(target_name)) != property;
+                        command.arguments.begin() + 1, command.arguments.end(),
+                        [](const std::string& argument) { return lowercase(argument) == "property"; });
+                    const bool target_list_contains_candidate =
+                        property != command.arguments.end() &&
+                        std::ranges::find(command.arguments.begin() + 1, property, std::string(target_name)) !=
+                            property;
                     if (!target_list_contains_candidate || property == command.arguments.end()) {
+                        if (property != command.arguments.end() &&
+                            std::ranges::any_of(
+                                command.arguments.begin() + 1, property,
+                                [](const std::string& argument) { return cmake_expression_is_dynamic(argument); })) {
+                            target_state.unity_state_unknown = true;
+                        }
                         continue;
                     }
                     if (property + 1 == command.arguments.end()) {
@@ -380,36 +558,34 @@ namespace bha::suggestions {
                     continue;
                 }
                 const auto properties = std::ranges::find_if(
-                    command.arguments,
-                    [](const std::string& argument) {
-                        return lowercase(argument) == "properties";
-                    }
-                );
+                    command.arguments, [](const std::string& argument) { return lowercase(argument) == "properties"; });
                 if (properties == command.arguments.end()) {
                     continue;
                 }
-                const auto target = std::ranges::find(
-                    command.arguments.begin(), properties, std::string(target_name)
-                );
+                const auto target = std::ranges::find(command.arguments.begin(), properties, std::string(target_name));
                 if (target == properties) {
+                    if (std::ranges::any_of(command.arguments.begin(), properties, [](const std::string& argument) {
+                            return cmake_expression_is_dynamic(argument);
+                        })) {
+                        target_state.unity_state_unknown = true;
+                    }
                     continue;
                 }
-                const auto property_index = static_cast<std::size_t>(
-                    std::distance(command.arguments.begin(), properties)
-                );
+                const auto property_index =
+                    static_cast<std::size_t>(std::distance(command.arguments.begin(), properties));
                 if (property_index + 1 >= command.arguments.size()) {
                     target_state.unity_state_unknown = true;
                     continue;
                 }
                 for (std::size_t index = property_index + 1; index < command.arguments.size(); index += 2) {
+                    if (cmake_expression_is_dynamic(command.arguments[index])) {
+                        target_state.unity_state_unknown = true;
+                        continue;
+                    }
                     const auto value = index + 1 < command.arguments.size()
                         ? std::optional<std::string_view>(command.arguments[index + 1])
                         : std::nullopt;
-                    record_unity_target_property(
-                        command.arguments[index],
-                        value,
-                        target_state
-                    );
+                    record_unity_target_property(command.arguments[index], value, target_state);
                 }
             }
         }
@@ -422,29 +598,24 @@ namespace bha::suggestions {
         }
 
         bool is_output_option(std::string_view argument) {
-            return argument == "-o" || argument == "-MF" || argument == "-MT" ||
-                   argument == "-MQ" || argument == "/Fo" || argument == "/Fd" ||
-                   argument == "/Fp" || argument == "/Fa" || argument == "/Fe";
+            return argument == "-o" || argument == "-MF" || argument == "-MT" || argument == "-MQ" ||
+                   argument == "/Fo" || argument == "/Fd" || argument == "/Fp" || argument == "/Fa" ||
+                   argument == "/Fe";
         }
 
         bool is_attached_output_option(std::string_view argument) {
-            return argument.starts_with("-o") || argument.starts_with("-MF") ||
-                   argument.starts_with("-MT") || argument.starts_with("-MQ") ||
-                   argument.starts_with("/Fo") || argument.starts_with("/Fd") ||
-                   argument.starts_with("/Fp") || argument.starts_with("/Fa") ||
-                   argument.starts_with("/Fe");
+            return argument.starts_with("-o") || argument.starts_with("-MF") || argument.starts_with("-MT") ||
+                   argument.starts_with("-MQ") || argument.starts_with("/Fo") || argument.starts_with("/Fd") ||
+                   argument.starts_with("/Fp") || argument.starts_with("/Fa") || argument.starts_with("/Fe");
         }
 
         bool is_pch_option(std::string_view argument) {
-            return argument == "-include-pch" || argument == "-Winvalid-pch" ||
-                   argument == "/Yc" || argument == "/Yu" || argument.starts_with("/Yc") ||
-                   argument.starts_with("/Yu");
+            return argument == "-include-pch" || argument == "-Winvalid-pch" || argument == "/Yc" ||
+                   argument == "/Yu" || argument.starts_with("/Yc") || argument.starts_with("/Yu");
         }
 
-        std::optional<std::vector<std::string>> syntax_arguments(
-            const CompilationUnit& command,
-            const fs::path& source
-        ) {
+        std::optional<std::vector<std::string>> syntax_arguments(const CompilationUnit& command,
+                                                                 const fs::path& source) {
             if (command.command_line.size() < 2) {
                 return std::nullopt;
             }
@@ -462,8 +633,8 @@ namespace bha::suggestions {
                     ++index;
                     continue;
                 }
-                if (is_attached_output_option(argument) || argument == "-MD" ||
-                    argument == "-MMD" || argument == "-MP" || argument == "-fsyntax-only") {
+                if (is_attached_output_option(argument) || argument == "-MD" || argument == "-MMD" ||
+                    argument == "-MP" || argument == "-fsyntax-only") {
                     continue;
                 }
                 arguments.push_back(argument);
@@ -485,17 +656,15 @@ namespace bha::suggestions {
         }
 
 #if BHA_HAVE_CLANG_TOOLING
-        bool validate_unity_translation_unit(
-            const std::vector<CompileEvidence>& evidence,
-            std::string& diagnostic
-        ) {
+        bool validate_unity_translation_unit(const std::vector<CompileEvidence>& evidence, std::string& diagnostic) {
             if (evidence.empty()) {
                 diagnostic = "No compile evidence was available for the unity group";
                 return false;
             }
             const auto arguments = syntax_arguments(evidence.front().command, evidence.front().source);
             if (!arguments.has_value()) {
-                diagnostic = "The compile command uses a precompiled-header mode that cannot be replayed safely";
+                diagnostic = "The compile command uses a precompiled-header mode that "
+                             "cannot be replayed safely";
                 return false;
             }
 
@@ -505,37 +674,27 @@ namespace bha::suggestions {
                 code += escape_include_path(item.source);
                 code += "\"\n";
             }
-            const fs::path virtual_file = evidence.front().command.working_directory /
-                "__bha_unity_validation__.cpp";
+            const fs::path virtual_file = evidence.front().command.working_directory / "__bha_unity_validation__.cpp";
             const std::string compiler = compiler_identity(evidence.front().command);
-            const bool clang_cl = compiler.find("clang-cl") != std::string::npos ||
-                compiler == "cl.exe" || compiler == "cl";
-            const bool valid = clang::tooling::runToolOnCodeWithArgs(
-                std::make_unique<clang::SyntaxOnlyAction>(),
-                code,
-                *arguments,
-                virtual_file.string(),
-                clang_cl ? "clang-cl" : "clang++"
-            );
+            const bool clang_cl =
+                compiler.find("clang-cl") != std::string::npos || compiler == "cl.exe" || compiler == "cl";
+            const bool valid =
+                clang::tooling::runToolOnCodeWithArgs(std::make_unique<clang::SyntaxOnlyAction>(), code, *arguments,
+                                                      virtual_file.string(), clang_cl ? "clang-cl" : "clang++");
             if (!valid) {
                 diagnostic = "Clang rejected the proposed unity translation unit";
             }
             return valid;
         }
 #else
-        bool validate_unity_translation_unit(
-            const std::vector<CompileEvidence>&,
-            std::string& diagnostic
-        ) {
+        bool validate_unity_translation_unit(const std::vector<CompileEvidence>&, std::string& diagnostic) {
             diagnostic = "Unity suggestions require Clang LibTooling for merged-TU validation";
             return false;
         }
 #endif
 
-        std::optional<std::vector<std::string>> normalized_environment(
-            const CompilationUnit& command,
-            const fs::path& source
-        ) {
+        std::optional<std::vector<std::string>> normalized_environment(const CompilationUnit& command,
+                                                                       const fs::path& source) {
             const auto arguments = syntax_arguments(command, source);
             if (!arguments.has_value()) {
                 return std::nullopt;
@@ -547,37 +706,25 @@ namespace bha::suggestions {
             return normalized;
         }
 
-        TargetState target_unity_state(
-            const fs::path& project_root,
-            std::string_view target_name,
-            const std::function<bool()>& should_cancel,
-            bool& global_unity
-        ) {
+        TargetState target_unity_state(const std::vector<CMakeCommand>& cmake_commands, std::string_view target_name,
+                                       bool& global_unity) {
             TargetState state;
-            for (const auto& [cmake_file, content] : cmake_files(project_root, should_cancel)) {
-                static_cast<void>(cmake_file);
-                record_unity_state(parse_cmake_commands(content), target_name, global_unity, state);
-            }
+            record_unity_state(cmake_commands, target_name, global_unity, state);
             return state;
         }
 
     }  // namespace
 
-    Result<SuggestionResult, Error> UnityBuildSuggester::suggest(
-        const SuggestionContext& context
-    ) const {
+    Result<SuggestionResult, Error> UnityBuildSuggester::suggest(const SuggestionContext& context) const {
         SuggestionResult result;
         const auto start = std::chrono::steady_clock::now();
 
         if (!context.project_index ||
             context.project_index->compile_commands_status() != CompilationDatabaseStatus::Loaded) {
-            result.diagnostics.push_back({
-                "unity.compile_commands.required",
-                "Unity suggestions require a valid compile_commands.json for every source in the target"
-            });
-            result.generation_time = std::chrono::duration_cast<Duration>(
-                std::chrono::steady_clock::now() - start
-            );
+            result.diagnostics.push_back({"unity.compile_commands.required",
+                                          "Unity suggestions require a valid compile_commands.json for every "
+                                          "source in the target"});
+            result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
@@ -585,13 +732,32 @@ namespace bha::suggestions {
             ? context.project_index->project_root()
             : context.project_index->resolve(context.project_root);
         if (project_root.empty() || !fs::is_directory(project_root)) {
-            result.diagnostics.push_back({
-                "unity.project_root.required",
-                "Unity suggestions require a project root containing CMakeLists.txt"
-            });
-            result.generation_time = std::chrono::duration_cast<Duration>(
-                std::chrono::steady_clock::now() - start
-            );
+            result.diagnostics.push_back(
+                {"unity.project_root.required", "Unity suggestions require a project root containing CMakeLists.txt"});
+            result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
+
+        if (!context.options.compile_commands_path.has_value()) {
+            result.diagnostics.push_back({"unity.file_api.required", "Unity suggestions require a CMake File "
+                                                                     "API reply beside compile_commands.json"});
+            result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
+        const fs::path compile_commands_path =
+            context.options.compile_commands_path->is_relative()
+                ? (project_root / *context.options.compile_commands_path).lexically_normal()
+                : context.options.compile_commands_path->lexically_normal();
+        const auto file_api_model =
+            load_file_api_model(project_root, compile_commands_path, [&]() { return context.is_cancelled(); });
+        if (!file_api_model.has_value()) {
+            if (context.is_cancelled()) {
+                result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
+                return Result<SuggestionResult, Error>::success(std::move(result));
+            }
+            result.diagnostics.push_back({"unity.file_api.required", "Unity suggestions require a current CMake "
+                                                                     "File API codemodel and cmakeFiles reply"});
+            result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<SuggestionResult, Error>::success(std::move(result));
         }
 
@@ -605,33 +771,17 @@ namespace bha::suggestions {
 
         std::size_t analyzed_targets = 0;
         std::size_t skipped_targets = 0;
-        bool global_unity_cache = false;
-        bool global_unity_loaded = false;
-
-        const auto project_cmake_files = cmake_files(
-            project_root,
-            [&]() { return context.is_cancelled(); }
-        );
-        std::vector<CMakeTarget> targets;
-        std::unordered_map<std::string, fs::path> target_declaration_files;
-        std::unordered_set<std::string> ambiguous_targets;
-        for (const auto& [cmake_file, content] : project_cmake_files) {
-            for (auto target : parse_cmake_targets(cmake_file, project_root, content)) {
-                const auto [owner, inserted] = target_declaration_files.emplace(target.name, cmake_file);
-                if (!inserted && owner->second != cmake_file) {
-                    ambiguous_targets.insert(target.name);
-                }
-                targets.push_back(std::move(target));
-            }
+        std::unordered_map<std::string, std::size_t> target_name_counts;
+        for (const auto& target : file_api_model->targets) {
+            ++target_name_counts[target.name];
         }
 
-        for (auto& target : targets) {
+        for (const auto& target : file_api_model->targets) {
             if (context.is_cancelled()) {
                 break;
             }
             ++analyzed_targets;
-            if (ambiguous_targets.contains(target.name) || !target.builtin_declaration ||
-                target.interface_target) {
+            if (target_name_counts[target.name] != 1) {
                 ++skipped_targets;
                 continue;
             }
@@ -670,25 +820,8 @@ namespace bha::suggestions {
                 continue;
             }
 
-            if (!global_unity_loaded) {
-                bool ignored_global_state = false;
-                const auto state = target_unity_state(
-                    project_root,
-                    "__bha_unity_global_probe__",
-                    [&]() { return context.is_cancelled(); },
-                    ignored_global_state
-                );
-                static_cast<void>(state);
-                global_unity_cache = ignored_global_state;
-                global_unity_loaded = true;
-            }
-            bool global_unity = global_unity_cache;
-            TargetState state = target_unity_state(
-                project_root,
-                target.name,
-                [&]() { return context.is_cancelled(); },
-                global_unity
-            );
+            bool global_unity = file_api_model->global_unity;
+            TargetState state = target_unity_state(file_api_model->cmake_commands, target.name, global_unity);
             if (global_unity || state.unity_enabled || state.unity_state_unknown) {
                 ++skipped_targets;
                 continue;
@@ -706,13 +839,14 @@ namespace bha::suggestions {
             suggestion.priority = Priority::Medium;
             suggestion.confidence = 1.0;
             suggestion.title = "Enable CMake unity build for target " + target.name;
-            suggestion.description =
-                "Enable CMake UNITY_BUILD for the exact target source set after Clang "
+            suggestion.description = "Enable CMake UNITY_BUILD for the configured target source set after "
+                                     "Clang "
                 "accepted the proposed include-ordered unity translation unit.";
-            suggestion.rationale =
-                "The target source list was resolved exactly from CMake, every source "
-                "has a compile-database command with the same environment, and the "
-                "merged translation unit passed Clang syntax validation.";
+            suggestion.rationale = "The target source list and source order came from the configured "
+                                   "CMake "
+                                   "File API codemodel, every source has a compile-database command with "
+                                   "the same environment, and the merged translation unit passed Clang "
+                                   "syntax validation.";
             suggestion.estimated_savings = Duration::zero();
             suggestion.target_file.path = target.cmake_file;
             suggestion.target_file.action = FileAction::Modify;
@@ -733,25 +867,29 @@ namespace bha::suggestions {
             edit.start_col = 0;
             edit.end_line = insert_line;
             edit.end_col = 0;
-            edit.new_text = "\nif(TARGET " + target.name + ")\n"
-                "  set_property(TARGET " + target.name + " PROPERTY UNITY_BUILD ON)\n";
+            edit.new_text = "\nif(TARGET " + target.name +
+                            ")\n"
+                            "  set_property(TARGET " +
+                            target.name + " PROPERTY UNITY_BUILD ON)\n";
             edit.new_text += "endif()\n";
             suggestion.edits.push_back(edit);
             suggestion.after_code.file = target.cmake_file.filename().string();
             suggestion.after_code.code = edit.new_text;
-            suggestion.implementation_steps = {
-                "Apply the target-scoped CMake UNITY_BUILD edit",
+            suggestion.implementation_steps = {"Apply the target-scoped CMake UNITY_BUILD edit",
                 "Configure and build the target with the project compiler",
-                "Run the target tests and compare a fresh build trace"
-            };
-            suggestion.caveats = {
-                "Savings are intentionally unestimated until a post-edit trace is available",
-                "CMake unity builds combine sources in target order and can expose include-order or ODR issues",
-                "CMake may exclude sources marked SKIP_UNITY_BUILD_INCLUSION"
-            };
-            suggestion.verification =
-                "Clang merged-TU syntax validation passed; configure, build, and test the target "
-                "with the project compiler before accepting the edit";
+                                               "Run the target tests and compare a fresh build trace"};
+            suggestion.caveats = {"Savings are intentionally unestimated until a post-edit trace is "
+                                  "available",
+                                  "CMake unity builds combine sources in target order and can expose "
+                                  "include-order or ODR issues",
+                                  "CMake may exclude sources marked SKIP_UNITY_BUILD_INCLUSION",
+                                  "A current single-configuration CMake File API reply is required; "
+                                  "unsupported or stale build models fail closed"};
+            suggestion.verification = "The configured CMake File API target model and "
+                                      "Clang merged-TU syntax validation "
+                                      "passed; configure, build, and test the target "
+                                      "with the project compiler before "
+                                      "accepting the edit";
             suggestion.is_safe = true;
             suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
             suggestion.impact.total_files_affected = target.sources.size();
@@ -761,15 +899,11 @@ namespace bha::suggestions {
 
         result.items_analyzed = analyzed_targets;
         result.items_skipped = skipped_targets;
-        result.generation_time = std::chrono::duration_cast<Duration>(
-            std::chrono::steady_clock::now() - start
-        );
+        result.generation_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
         return Result<SuggestionResult, Error>::success(std::move(result));
     }
 
     void register_unity_build_suggester() {
-        SuggesterRegistry::instance().register_suggester(
-            std::make_unique<UnityBuildSuggester>()
-        );
+        SuggesterRegistry::instance().register_suggester(std::make_unique<UnityBuildSuggester>());
     }
 }  // namespace bha::suggestions
