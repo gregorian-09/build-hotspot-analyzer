@@ -29,6 +29,7 @@ add_executable(bha_tests
         unit/analyzers/test_dependency_analyzer.cpp
         unit/analyzers/test_file_analyzer.cpp
         unit/analyzers/test_build_session_analyzer.cpp
+        unit/analyzers/test_linker_analyzer.cpp
         unit/analyzers/test_performance_analyzer.cpp
         unit/analyzers/test_symbol_analyzer.cpp
         unit/analyzers/test_template_analyzer.cpp

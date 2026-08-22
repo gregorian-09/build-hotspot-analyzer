@@ -106,6 +106,25 @@ namespace bha::exporters::test
         session_capability.provenance.scope = "build-session";
         result.build_session.metric_capabilities.push_back(session_capability);
 
+        result.linker.invocations = 1;
+        result.linker.timed_invocations = 1;
+        result.linker.output_size_observations = 1;
+        result.linker.wall_clock_time = std::chrono::seconds(2);
+        result.linker.output_bytes = 4096;
+        result.linker.metric_capabilities.push_back({
+            "link.output_bytes",
+            MetricProvenance{
+                EvidenceKind::Derived,
+                "LinkerAnalyzer",
+                "",
+                "build-session-events",
+                "link-command",
+                TimingDomain::WallClock,
+                TimingAggregation::Exclusive,
+                ""
+            }
+        });
+
         MetricCapability capability;
         capability.metric = "compile.translation_unit.wall_time";
         capability.provenance.evidence = EvidenceKind::Observed;
@@ -270,6 +289,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"compile.translation_unit.wall_time\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build_session\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

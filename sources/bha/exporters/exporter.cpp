@@ -429,6 +429,23 @@ namespace bha::exporters
             }
         }
 
+        if (analysis.linker.invocations > 0) {
+            summary["linker"] = {
+                {"invocations", analysis.linker.invocations},
+                {"timed_invocations", analysis.linker.timed_invocations},
+                {"output_size_observations", analysis.linker.output_size_observations},
+                {"wall_clock_time_ms", duration_to_ms(analysis.linker.wall_clock_time)},
+                {"output_bytes", analysis.linker.output_bytes},
+                {"lto_time_ms", duration_to_ms(analysis.linker.lto_time)},
+                {"metric_capabilities", json::array()}
+            };
+            for (const auto& capability : analysis.linker.metric_capabilities) {
+                summary["linker"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
+            }
+        }
+
         json capabilities = json::array();
         for (const auto& capability : analysis.metric_capabilities) {
             capabilities.push_back(serialize_metric_capability(capability));

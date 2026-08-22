@@ -230,6 +230,26 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact linker metrics available from build-session producers.
+     */
+    struct LinkerAnalysisResult {
+        /// Number of link command events in the captured session.
+        std::size_t invocations = 0;
+        /// Number of link commands with producer-provided exact timing.
+        std::size_t timed_invocations = 0;
+        /// Number of link commands with aligned producer output-size data.
+        std::size_t output_size_observations = 0;
+        /// Sum of exact link command durations.
+        Duration wall_clock_time = Duration::zero();
+        /// Sum of producer-reported link output sizes.
+        std::uintmax_t output_bytes = 0;
+        /// LTO time, populated only by a linker trace adapter.
+        Duration lto_time = Duration::zero();
+        /// Provenance and availability for linker metrics.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Cacheability/distributed-build suitability summary.
      */
     struct CacheDistributionAnalysisResult {
@@ -284,6 +304,8 @@ namespace bha::analyzers {
         CacheDistributionAnalysisResult cache_distribution;
         /// Build-system scheduler and command-event metrics.
         BuildSessionAnalysisResult build_session;
+        /// Linker and LTO metrics.
+        LinkerAnalysisResult linker;
         /// Evidence and capability state for metrics in this result.
         std::vector<MetricCapability> metric_capabilities;
 

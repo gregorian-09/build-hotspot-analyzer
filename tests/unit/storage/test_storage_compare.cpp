@@ -140,6 +140,19 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     session_capability.provenance.timing_domain = TimingDomain::WallClock;
     session_capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
     analysis.build_session.metric_capabilities.push_back(session_capability);
+    analysis.linker.invocations = 2;
+    analysis.linker.timed_invocations = 1;
+    analysis.linker.output_size_observations = 1;
+    analysis.linker.wall_clock_time = std::chrono::milliseconds(2200);
+    analysis.linker.output_bytes = 8192;
+    MetricCapability linker_capability;
+    linker_capability.metric = "lto.wall_time";
+    linker_capability.provenance.evidence = EvidenceKind::Unavailable;
+    linker_capability.provenance.producer = "LinkerAnalyzer";
+    linker_capability.provenance.capture_mode = "build-session-events";
+    linker_capability.provenance.scope = "link-command";
+    linker_capability.provenance.limitation = "No linker time-trace evidence is attached";
+    analysis.linker.metric_capabilities.push_back(linker_capability);
 
     MetricCapability capability;
     capability.metric = "compile.translation_unit.wall_time";
@@ -187,6 +200,16 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     ASSERT_EQ(session.metric_capabilities.size(), 1u);
     EXPECT_EQ(session.metric_capabilities.front().metric, "build.command.wall_time");
     EXPECT_EQ(session.metric_capabilities.front().provenance.capture_mode, "api-v1-index");
+
+    const auto& linker = load_result.value().analysis.linker;
+    EXPECT_EQ(linker.invocations, 2u);
+    EXPECT_EQ(linker.timed_invocations, 1u);
+    EXPECT_EQ(linker.output_size_observations, 1u);
+    EXPECT_EQ(linker.wall_clock_time, std::chrono::milliseconds(2200));
+    EXPECT_EQ(linker.output_bytes, 8192u);
+    ASSERT_EQ(linker.metric_capabilities.size(), 1u);
+    EXPECT_EQ(linker.metric_capabilities.front().metric, "lto.wall_time");
+    EXPECT_EQ(linker.metric_capabilities.front().provenance.evidence, EvidenceKind::Unavailable);
 
     ASSERT_EQ(load_result.value().analysis.metric_capabilities.size(), 1u);
     const auto& loaded_capability = load_result.value().analysis.metric_capabilities.front();

@@ -373,6 +373,36 @@ namespace bha::storage
             return session;
         }
 
+        nlohmann::json serialize_linker(
+            const analyzers::LinkerAnalysisResult& linker
+        ) {
+            return {
+                {"invocations", linker.invocations},
+                {"timed_invocations", linker.timed_invocations},
+                {"output_size_observations", linker.output_size_observations},
+                {"wall_clock_time_ms", duration_to_ms(linker.wall_clock_time)},
+                {"output_bytes", linker.output_bytes},
+                {"lto_time_ms", duration_to_ms(linker.lto_time)},
+                {"metric_capabilities", serialize_metric_capabilities(linker.metric_capabilities)}
+            };
+        }
+
+        analyzers::LinkerAnalysisResult deserialize_linker(
+            const nlohmann::json& j
+        ) {
+            analyzers::LinkerAnalysisResult linker;
+            linker.invocations = j.value("invocations", std::size_t{0});
+            linker.timed_invocations = j.value("timed_invocations", std::size_t{0});
+            linker.output_size_observations = j.value("output_size_observations", std::size_t{0});
+            linker.wall_clock_time = ms_to_duration(j.value("wall_clock_time_ms", 0.0));
+            linker.output_bytes = j.value("output_bytes", std::uintmax_t{0});
+            linker.lto_time = ms_to_duration(j.value("lto_time_ms", 0.0));
+            if (j.contains("metric_capabilities")) {
+                linker.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
+            return linker;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -531,6 +561,7 @@ namespace bha::storage
         j["templates"] = serialize_templates(analysis.templates);
         j["cache_distribution"] = serialize_cache_distribution(analysis.cache_distribution);
         j["build_session"] = serialize_build_session(analysis.build_session);
+        j["linker"] = serialize_linker(analysis.linker);
         j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
@@ -614,6 +645,10 @@ namespace bha::storage
 
             if (j.contains("build_session")) {
                 snapshot.analysis.build_session = deserialize_build_session(j["build_session"]);
+            }
+
+            if (j.contains("linker")) {
+                snapshot.analysis.linker = deserialize_linker(j["linker"]);
             }
 
             if (j.contains("metric_capabilities")) {
