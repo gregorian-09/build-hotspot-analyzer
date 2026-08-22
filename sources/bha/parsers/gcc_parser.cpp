@@ -93,66 +93,34 @@ namespace bha::parsers {
 
         void map_phase_to_breakdown(const TimingLine& timing, TimeBreakdown& breakdown) {
             const auto& name = timing.phase_name;
-            const auto add_parsing_time = [&breakdown, &timing]() {
-                breakdown.parsing += timing.wall_time;
-            };
-            const auto add_code_generation_time = [&breakdown, &timing]() {
-                breakdown.code_generation += timing.wall_time;
-            };
 
             // Official GCC phase names (must match exactly from timevar.def)
             if (name == "phase parsing" || name == "phase late parsing cleanups") {
-                add_parsing_time();
+                breakdown.parsing += timing.wall_time;
             }
             else if (name == "phase lang. deferred") {
-                // Language-specific deferred work includes template instantiation
-                breakdown.semantic_analysis += timing.wall_time;
+                // GCC reports this as one aggregate phase; it is not a
+                // per-template or semantic-only measurement.
+                breakdown.unclassified += timing.wall_time;
             }
             else if (name == "phase opt and generate") {
-                // This combines optimization and code generation
-                breakdown.optimization += timing.wall_time / 2;
-                breakdown.code_generation += timing.wall_time / 2;
+                // This phase combines optimization and code generation.
+                breakdown.unclassified += timing.wall_time;
             }
             else if (name == "phase last asm") {
-                breakdown.code_generation += timing.wall_time;
+                breakdown.unclassified += timing.wall_time;
             }
             else if (name == "phase stream in" || name == "phase stream out") {
-                // LTO phases are optimization-related
-                breakdown.optimization += timing.wall_time;
+                // LTO stream phases are not normalized optimization timings.
+                breakdown.unclassified += timing.wall_time;
             }
             else if (name == "phase finalize") {
-                add_code_generation_time();
+                breakdown.unclassified += timing.wall_time;
             }
             else {
-                // For non-phase timing variables, heuristic matching is employed
-                const auto lower = utils::to_lower(name);
-
-                if (utils::contains(lower, "preprocess")) {
-                    breakdown.preprocessing += timing.wall_time;
-                }
-                else if (utils::contains(lower, "pars")) {
-                    breakdown.parsing += timing.wall_time;
-                }
-                else if (utils::contains(lower, "template") ||
-                         utils::contains(lower, "instantiat")) {
-                    breakdown.template_instantiation += timing.wall_time;
-                }
-                else if (utils::contains(lower, "semantic") ||
-                         utils::contains(lower, "name lookup") ||
-                         utils::contains(lower, "overload")) {
-                    breakdown.semantic_analysis += timing.wall_time;
-                }
-                else if (utils::contains(lower, "optim") ||
-                         utils::contains(lower, "inline")) {
-                    breakdown.optimization += timing.wall_time;
-                }
-                else if (utils::contains(lower, "expand") ||
-                         utils::contains(lower, "rtl") ||
-                         utils::contains(lower, "codegen") ||
-                         utils::contains(lower, "final") ||
-                         utils::contains(lower, "assemb")) {
-                    add_code_generation_time();
-                }
+                // Preserve unrecognized GCC timing variables without
+                // guessing a normalized compiler phase.
+                breakdown.unclassified += timing.wall_time;
             }
         }
     }  // namespace
@@ -207,6 +175,8 @@ namespace bha::parsers {
 
         const auto lines = utils::split(content, '\n');
         Duration total_wall = Duration::zero();
+        Duration frontend_time = Duration::zero();
+        Duration backend_time = Duration::zero();
         bool saw_template_phase = false;
 
         for (const auto& line : lines) {
@@ -214,16 +184,24 @@ namespace bha::parsers {
                 total_wall += timing->wall_time;
                 saw_template_phase = saw_template_phase || timing->phase_name == "phase lang. deferred";
                 map_phase_to_breakdown(*timing, unit.metrics.breakdown);
+
+                if (timing->phase_name == "phase parsing" ||
+                    timing->phase_name == "phase lang. deferred" ||
+                    timing->phase_name == "phase late parsing cleanups") {
+                    frontend_time += timing->wall_time;
+                }
+                else if (timing->phase_name == "phase opt and generate" ||
+                         timing->phase_name == "phase last asm" ||
+                         timing->phase_name == "phase stream in" ||
+                         timing->phase_name == "phase stream out") {
+                    backend_time += timing->wall_time;
+                }
             }
         }
 
         unit.metrics.total_time = total_wall;
-        unit.metrics.frontend_time = unit.metrics.breakdown.preprocessing +
-                                      unit.metrics.breakdown.parsing +
-                                      unit.metrics.breakdown.semantic_analysis +
-                                      unit.metrics.breakdown.template_instantiation;
-        unit.metrics.backend_time = unit.metrics.breakdown.code_generation +
-                                     unit.metrics.breakdown.optimization;
+        unit.metrics.frontend_time = frontend_time;
+        unit.metrics.backend_time = backend_time;
 
         if (saw_template_phase || unit.metrics.breakdown.template_instantiation != Duration::zero()) {
             unit.template_evidence = TemplateEvidence::AggregateTiming;

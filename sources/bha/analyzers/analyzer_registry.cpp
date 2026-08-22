@@ -136,6 +136,9 @@ namespace bha::analyzers
                         if (file.breakdown.optimization != Duration::zero()) {
                             existing.breakdown.optimization = file.breakdown.optimization;
                         }
+                        if (file.breakdown.unclassified != Duration::zero()) {
+                            existing.breakdown.unclassified = file.breakdown.unclassified;
+                        }
 
                         if (file.memory.max_stack_bytes > 0) {
                             existing.memory.max_stack_bytes = file.memory.max_stack_bytes;

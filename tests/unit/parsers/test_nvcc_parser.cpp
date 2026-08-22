@@ -62,6 +62,10 @@ fatbinary: 0.2s
 
         EXPECT_EQ(unit.source_file, fs::path("/src/kernel.cu"));
         EXPECT_GT(unit.metrics.total_time.count(), 0);
+        EXPECT_EQ(unit.metrics.breakdown.parsing, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.template_instantiation, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.unclassified, unit.metrics.total_time);
+        EXPECT_EQ(unit.template_evidence, TemplateEvidence::None);
     }
 
     TEST_F(NVCCParserTest, ParseContent_SupportsSpacedPhaseNamesAndMinuteSecondDurations) {

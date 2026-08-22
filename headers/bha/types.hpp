@@ -485,10 +485,13 @@ namespace bha {
         Duration template_instantiation = Duration::zero();
         Duration code_generation = Duration::zero();
         Duration optimization = Duration::zero();
+        /// Time reported by the producer without a safe normalized category.
+        Duration unclassified = Duration::zero();
 
         [[nodiscard]] Duration total() const noexcept {
             return preprocessing + parsing + semantic_analysis +
-                   template_instantiation + code_generation + optimization;
+                   template_instantiation + code_generation + optimization +
+                   unclassified;
         }
     };
 

@@ -58,6 +58,8 @@ LOOP END
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(result.value().source_file, fs::path("C:\\project\\src\\main.cpp"));
         EXPECT_GT(result.value().metrics.total_time.count(), 0);
+        EXPECT_EQ(result.value().metrics.breakdown.optimization, Duration::zero());
+        EXPECT_EQ(result.value().metrics.breakdown.unclassified, result.value().metrics.total_time);
     }
 
     class IntelOneAPIParserTest : public ::testing::Test {

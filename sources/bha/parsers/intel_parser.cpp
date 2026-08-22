@@ -117,7 +117,7 @@ namespace bha::parsers {
         }
 
         unit.metrics.total_time = total_time;
-        unit.metrics.breakdown.optimization = total_time;
+        unit.metrics.breakdown.unclassified = total_time;
 
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }

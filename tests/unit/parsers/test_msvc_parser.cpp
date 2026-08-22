@@ -60,12 +60,12 @@ time(c2.dll)=0.800s
         EXPECT_GT(unit.metrics.frontend_time.count(), 0);
         EXPECT_GT(unit.metrics.backend_time.count(), 0);
 
-        // Verify heuristic breakdown is calculated
-        EXPECT_GT(unit.metrics.breakdown.parsing.count(), 0);
-        EXPECT_GT(unit.metrics.breakdown.semantic_analysis.count(), 0);
-        EXPECT_GT(unit.metrics.breakdown.template_instantiation.count(), 0);
-        EXPECT_GT(unit.metrics.breakdown.optimization.count(), 0);
-        EXPECT_GT(unit.metrics.breakdown.code_generation.count(), 0);
-        EXPECT_EQ(unit.template_evidence, TemplateEvidence::AggregateTiming);
+        EXPECT_EQ(unit.metrics.breakdown.parsing, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.semantic_analysis, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.template_instantiation, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.optimization, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.code_generation, Duration::zero());
+        EXPECT_EQ(unit.metrics.breakdown.unclassified, std::chrono::seconds(2));
+        EXPECT_EQ(unit.template_evidence, TemplateEvidence::None);
     }
 }

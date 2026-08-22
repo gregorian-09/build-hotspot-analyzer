@@ -34,9 +34,10 @@ namespace bha
         breakdown.template_instantiation = std::chrono::milliseconds(150);
         breakdown.code_generation = std::chrono::milliseconds(50);
         breakdown.optimization = std::chrono::milliseconds(200);
+        breakdown.unclassified = std::chrono::milliseconds(100);
 
         const auto total = breakdown.total();
-        EXPECT_TRUE(total == std::chrono::milliseconds(1000));
+        EXPECT_TRUE(total == std::chrono::milliseconds(1100));
     }
 
     TEST(CompilerTypeTest, ToString) {

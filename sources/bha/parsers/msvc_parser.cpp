@@ -142,20 +142,11 @@ namespace bha::parsers {
 
             if (utils::contains(lower_target, "c1xx")) {
                 unit.metrics.frontend_time = timing->total_time;
-
-                // Heuristic breakdown: Frontend includes parsing, semantic analysis, and templates
-                // Estimate 40% parsing, 30% semantic analysis, 30% template instantiation
-                unit.metrics.breakdown.parsing = std::chrono::duration_cast<Duration>(timing->total_time * 0.4);
-                unit.metrics.breakdown.semantic_analysis = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
-                unit.metrics.breakdown.template_instantiation = std::chrono::duration_cast<Duration>(timing->total_time * 0.3);
+                unit.metrics.breakdown.unclassified += timing->total_time;
             }
             else if (utils::contains(lower_target, "c2")) {
                 unit.metrics.backend_time = timing->total_time;
-
-                // Heuristic breakdown: Backend includes optimization and code generation
-                // Estimate 50% optimization, 50% code generation
-                unit.metrics.breakdown.optimization = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
-                unit.metrics.breakdown.code_generation = std::chrono::duration_cast<Duration>(timing->total_time * 0.5);
+                unit.metrics.breakdown.unclassified += timing->total_time;
             }
             else if (utils::ends_with(lower_target, ".cpp") ||
                      utils::ends_with(lower_target, ".cxx") ||
@@ -169,10 +160,6 @@ namespace bha::parsers {
 
         if (unit.metrics.total_time == Duration::zero()) {
             unit.metrics.total_time = unit.metrics.frontend_time + unit.metrics.backend_time;
-        }
-
-        if (unit.metrics.breakdown.template_instantiation != Duration::zero()) {
-            unit.template_evidence = TemplateEvidence::AggregateTiming;
         }
 
         return Result<CompilationUnit, Error>::success(std::move(unit));

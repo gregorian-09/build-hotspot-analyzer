@@ -236,16 +236,7 @@ namespace bha::parsers {
         unit.metrics.total_time = total_time;
         unit.metrics.frontend_time = host_time;
         unit.metrics.backend_time = device_time + link_time;
-
-        unit.metrics.breakdown.parsing = host_time / 3;
-        unit.metrics.breakdown.semantic_analysis = host_time / 3;
-        unit.metrics.breakdown.template_instantiation = host_time / 3;
-        unit.metrics.breakdown.code_generation = device_time;
-        unit.metrics.breakdown.optimization = link_time;
-
-        if (unit.metrics.breakdown.template_instantiation != Duration::zero()) {
-            unit.template_evidence = TemplateEvidence::AggregateTiming;
-        }
+        unit.metrics.breakdown.unclassified = total_time;
 
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }
