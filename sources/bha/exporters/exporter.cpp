@@ -454,6 +454,37 @@ namespace bha::exporters
             }
         }
 
+        if (!analysis.targets.targets.empty()) {
+            summary["targets"] = {
+                {"target_commands", analysis.targets.target_commands},
+                {"matched_commands", analysis.targets.matched_commands},
+                {"unmatched_commands", analysis.targets.unmatched_commands},
+                {"targets", json::array()},
+                {"metric_capabilities", json::array()}
+            };
+            for (const auto& target : analysis.targets.targets) {
+                summary["targets"]["targets"].push_back({
+                    {"id", target.id},
+                    {"name", target.name},
+                    {"type", target.type},
+                    {"dependencies", target.dependencies},
+                    {"compile_commands", target.compile_commands},
+                    {"timed_compile_commands", target.timed_compile_commands},
+                    {"compile_wall_clock_time_ms", duration_to_ms(target.compile_wall_clock_time)},
+                    {"link_commands", target.link_commands},
+                    {"timed_link_commands", target.timed_link_commands},
+                    {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
+                    {"output_size_observations", target.output_size_observations},
+                    {"output_bytes", target.output_bytes}
+                });
+            }
+            for (const auto& capability : analysis.targets.metric_capabilities) {
+                summary["targets"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
+            }
+        }
+
         json capabilities = json::array();
         for (const auto& capability : analysis.metric_capabilities) {
             capabilities.push_back(serialize_metric_capability(capability));

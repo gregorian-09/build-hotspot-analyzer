@@ -127,6 +127,32 @@ namespace bha::exporters::test
             }
         });
 
+        result.targets.target_commands = 1;
+        result.targets.matched_commands = 1;
+        analyzers::BuildTargetAnalysisResult::TargetInfo target;
+        target.id = "app-id";
+        target.name = "app";
+        target.type = "EXECUTABLE";
+        target.compile_commands = 1;
+        target.timed_compile_commands = 1;
+        target.compile_wall_clock_time = std::chrono::milliseconds(700);
+        target.output_size_observations = 1;
+        target.output_bytes = 2048;
+        result.targets.targets.push_back(target);
+        result.targets.metric_capabilities.push_back({
+            "build.target.command_ownership",
+            MetricProvenance{
+                EvidenceKind::Derived,
+                "BuildTargetAnalyzer",
+                "",
+                "cmake-file-api-v1+instrumentation-v1",
+                "target",
+                TimingDomain::WallClock,
+                TimingAggregation::Exclusive,
+                ""
+            }
+        });
+
         MetricCapability capability;
         capability.metric = "compile.translation_unit.wall_time";
         capability.provenance.evidence = EvidenceKind::Observed;
@@ -293,6 +319,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"targets\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"build.target.command_ownership\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

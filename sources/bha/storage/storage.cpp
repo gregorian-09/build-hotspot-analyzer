@@ -418,6 +418,81 @@ namespace bha::storage
             return linker;
         }
 
+        nlohmann::json serialize_build_targets(
+            const analyzers::BuildTargetAnalysisResult& targets
+        ) {
+            nlohmann::json result = {
+                {"target_commands", targets.target_commands},
+                {"matched_commands", targets.matched_commands},
+                {"unmatched_commands", targets.unmatched_commands},
+                {"targets", nlohmann::json::array()},
+                {"metric_capabilities", serialize_metric_capabilities(targets.metric_capabilities)}
+            };
+            for (const auto& target : targets.targets) {
+                result["targets"].push_back({
+                    {"id", target.id},
+                    {"name", target.name},
+                    {"type", target.type},
+                    {"dependencies", target.dependencies},
+                    {"compile_commands", target.compile_commands},
+                    {"timed_compile_commands", target.timed_compile_commands},
+                    {"compile_wall_clock_time_ms", duration_to_ms(target.compile_wall_clock_time)},
+                    {"link_commands", target.link_commands},
+                    {"timed_link_commands", target.timed_link_commands},
+                    {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
+                    {"output_size_observations", target.output_size_observations},
+                    {"output_bytes", target.output_bytes}
+                });
+            }
+            return result;
+        }
+
+        analyzers::BuildTargetAnalysisResult deserialize_build_targets(
+            const nlohmann::json& j
+        ) {
+            analyzers::BuildTargetAnalysisResult targets;
+            targets.target_commands = j.value("target_commands", std::size_t{0});
+            targets.matched_commands = j.value("matched_commands", std::size_t{0});
+            targets.unmatched_commands = j.value("unmatched_commands", std::size_t{0});
+            if (j.contains("targets")) {
+                for (const auto& target_json : j["targets"]) {
+                    analyzers::BuildTargetAnalysisResult::TargetInfo target;
+                    target.id = target_json.value("id", "");
+                    target.name = target_json.value("name", "");
+                    target.type = target_json.value("type", "");
+                    if (target_json.contains("dependencies")) {
+                        target.dependencies = target_json["dependencies"].get<std::vector<std::string>>();
+                    }
+                    target.compile_commands = target_json.value("compile_commands", std::size_t{0});
+                    target.timed_compile_commands = target_json.value(
+                        "timed_compile_commands",
+                        std::size_t{0}
+                    );
+                    target.compile_wall_clock_time = ms_to_duration(
+                        target_json.value("compile_wall_clock_time_ms", 0.0)
+                    );
+                    target.link_commands = target_json.value("link_commands", std::size_t{0});
+                    target.timed_link_commands = target_json.value(
+                        "timed_link_commands",
+                        std::size_t{0}
+                    );
+                    target.link_wall_clock_time = ms_to_duration(
+                        target_json.value("link_wall_clock_time_ms", 0.0)
+                    );
+                    target.output_size_observations = target_json.value(
+                        "output_size_observations",
+                        std::size_t{0}
+                    );
+                    target.output_bytes = target_json.value("output_bytes", std::uintmax_t{0});
+                    targets.targets.push_back(std::move(target));
+                }
+            }
+            if (j.contains("metric_capabilities")) {
+                targets.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
+            return targets;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -577,6 +652,7 @@ namespace bha::storage
         j["cache_distribution"] = serialize_cache_distribution(analysis.cache_distribution);
         j["build_session"] = serialize_build_session(analysis.build_session);
         j["linker"] = serialize_linker(analysis.linker);
+        j["targets"] = serialize_build_targets(analysis.targets);
         j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
@@ -664,6 +740,10 @@ namespace bha::storage
 
             if (j.contains("linker")) {
                 snapshot.analysis.linker = deserialize_linker(j["linker"]);
+            }
+
+            if (j.contains("targets")) {
+                snapshot.analysis.targets = deserialize_build_targets(j["targets"]);
             }
 
             if (j.contains("metric_capabilities")) {

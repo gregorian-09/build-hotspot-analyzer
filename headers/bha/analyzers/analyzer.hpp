@@ -252,6 +252,37 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact command metrics joined to CMake target ownership.
+     */
+    struct BuildTargetAnalysisResult {
+        struct TargetInfo {
+            std::string id;
+            std::string name;
+            std::string type;
+            std::vector<std::string> dependencies;
+            std::size_t compile_commands = 0;
+            std::size_t timed_compile_commands = 0;
+            Duration compile_wall_clock_time = Duration::zero();
+            std::size_t link_commands = 0;
+            std::size_t timed_link_commands = 0;
+            Duration link_wall_clock_time = Duration::zero();
+            std::size_t output_size_observations = 0;
+            std::uintmax_t output_bytes = 0;
+        };
+
+        /// Target entries in the selected producer configuration.
+        std::vector<TargetInfo> targets;
+        /// Compile/link events that included a producer target field.
+        std::size_t target_commands = 0;
+        /// Events joined to exactly one File API target name.
+        std::size_t matched_commands = 0;
+        /// Events that could not be joined without inference.
+        std::size_t unmatched_commands = 0;
+        /// Provenance and availability for target-scoped metrics.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Cacheability/distributed-build suitability summary.
      */
     struct CacheDistributionAnalysisResult {
@@ -308,6 +339,8 @@ namespace bha::analyzers {
         BuildSessionAnalysisResult build_session;
         /// Linker and LTO metrics.
         LinkerAnalysisResult linker;
+        /// Target ownership and target-scoped build metrics.
+        BuildTargetAnalysisResult targets;
         /// Evidence and capability state for metrics in this result.
         std::vector<MetricCapability> metric_capabilities;
 
