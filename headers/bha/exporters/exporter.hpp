@@ -15,7 +15,6 @@
  * - JSON (machine-readable, versioned schema)
  * - HTML (interactive visualization dashboard)
  * - CSV (tabular data for spreadsheets)
- * - SARIF (Static Analysis Results Interchange Format)
  *
  * Design principles:
  * - Streaming support for large datasets
@@ -45,7 +44,6 @@ namespace bha::exporters
         JSON,
         HTML,
         CSV,
-        SARIF,
         Markdown
     };
 
@@ -319,40 +317,6 @@ namespace bha::exporters
         [[nodiscard]] ExportFormat format() const noexcept override { return ExportFormat::CSV; }
         [[nodiscard]] std::string_view file_extension() const noexcept override { return ".csv"; }
         [[nodiscard]] std::string_view format_name() const noexcept override { return "CSV"; }
-
-        [[nodiscard]] Result<void, Error> export_to_file(
-            const fs::path& path,
-            const analyzers::AnalysisResult& analysis,
-            const std::vector<Suggestion>& suggestions,
-            const ExportOptions& options,
-            ExportProgressCallback progress
-        ) const override;
-
-        [[nodiscard]] Result<void, Error> export_to_stream(
-            std::ostream& stream,
-            const analyzers::AnalysisResult& analysis,
-            const std::vector<Suggestion>& suggestions,
-            const ExportOptions& options,
-            ExportProgressCallback progress
-        ) const override;
-
-        [[nodiscard]] Result<std::string, Error> export_to_string(
-            const analyzers::AnalysisResult& analysis,
-            const std::vector<Suggestion>& suggestions,
-            const ExportOptions& options
-        ) const override;
-    };
-
-    /**
-     * SARIF Exporter.
-     *
-     * Exports suggestions as SARIF 2.1.0 for code-scanning pipelines.
-     */
-    class SarifExporter : public IExporter {
-    public:
-        [[nodiscard]] ExportFormat format() const noexcept override { return ExportFormat::SARIF; }
-        [[nodiscard]] std::string_view file_extension() const noexcept override { return ".sarif"; }
-        [[nodiscard]] std::string_view format_name() const noexcept override { return "SARIF"; }
 
         [[nodiscard]] Result<void, Error> export_to_file(
             const fs::path& path,

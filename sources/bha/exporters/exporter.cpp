@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
-#include <cstdint>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
@@ -258,96 +257,6 @@ namespace bha::exporters
             return "This suggestion is intentionally advisory. Review and apply it manually.";
         }
 
-        std::string normalize_output_path(const fs::path& path, const fs::path& project_root) {
-            fs::path normalized = path.lexically_normal();
-            if (!project_root.empty()) {
-                const fs::path normalized_root = project_root.lexically_normal();
-                std::error_code ec;
-                if (normalized.is_absolute() && normalized_root.is_absolute() &&
-                    fs::exists(normalized, ec) && !ec) {
-                    const fs::path relative = normalized.lexically_relative(normalized_root);
-                    const bool points_within_root =
-                        !relative.empty() &&
-                        relative.begin() != relative.end() &&
-                        (*relative.begin()) != fs::path("..");
-                    if (points_within_root && relative != normalized) {
-                        normalized = relative;
-                    }
-                }
-            }
-            std::string uri = normalized.generic_string();
-            while (uri.size() >= 2 && uri[0] == '.' && uri[1] == '/') {
-                uri.erase(0, 2);
-            }
-            return uri;
-        }
-
-        std::size_t normalize_line(const std::size_t line) {
-            return line == 0 ? 1 : line;
-        }
-
-        std::string sarif_level_for_priority(const Priority priority) {
-            switch (priority) {
-                case Priority::Critical:
-                case Priority::High:
-                    return "warning";
-                case Priority::Medium:
-                case Priority::Low:
-                    return "note";
-            }
-            return "note";
-        }
-
-        std::string stable_fingerprint(const Suggestion& suggestion) {
-            std::string seed;
-            seed.reserve(256);
-            seed.append(suggestion.id);
-            seed.push_back('|');
-            seed.append(to_string(suggestion.type));
-            seed.push_back('|');
-            seed.append(suggestion.target_file.path.generic_string());
-            seed.push_back('|');
-            seed.append(std::to_string(suggestion.target_file.line_start));
-            seed.push_back('|');
-            seed.append(suggestion.title);
-
-            constexpr std::uint64_t offset_basis = 1469598103934665603ULL;
-            constexpr std::uint64_t prime = 1099511628211ULL;
-
-            std::uint64_t hash = offset_basis;
-            for (const char ch : seed) {
-                hash ^= static_cast<std::uint64_t>(static_cast<unsigned char>(ch));
-                hash *= prime;
-            }
-
-            std::ostringstream ss;
-            ss << std::hex << std::setfill('0') << std::setw(16) << hash;
-            return ss.str();
-        }
-
-        std::string suggestion_type_slug(const SuggestionType type) {
-            const std::string raw = to_string(type);
-            std::string slug;
-            slug.reserve(raw.size());
-            bool prev_dash = false;
-            for (const char ch : raw) {
-                const auto uch = static_cast<unsigned char>(ch);
-                if (std::isalnum(uch) != 0) {
-                    slug.push_back(static_cast<char>(std::tolower(uch)));
-                    prev_dash = false;
-                    continue;
-                }
-                if (!prev_dash) {
-                    slug.push_back('-');
-                    prev_dash = true;
-                }
-            }
-            while (!slug.empty() && slug.back() == '-') {
-                slug.pop_back();
-            }
-            return slug.empty() ? "suggestion" : slug;
-        }
-
     }  // namespace
 
     // =============================================================================
@@ -359,7 +268,6 @@ namespace bha::exporters
         case ExportFormat::JSON: return "json";
         case ExportFormat::HTML: return "html";
         case ExportFormat::CSV: return "csv";
-        case ExportFormat::SARIF: return "sarif";
         case ExportFormat::Markdown: return "markdown";
         }
         return "unknown";
@@ -374,9 +282,6 @@ namespace bha::exporters
         }
         if (str == "csv" || str == "CSV") {
             return ExportFormat::CSV;
-        }
-        if (str == "sarif" || str == "SARIF") {
-            return ExportFormat::SARIF;
         }
         if (str == "markdown" || str == "md" || str == "Markdown") {
             return ExportFormat::Markdown;
@@ -406,10 +311,6 @@ namespace bha::exporters
             return Result<std::unique_ptr<IExporter>, Error>::success(
                 std::make_unique<MarkdownExporter>()
             );
-        case ExportFormat::SARIF:
-            return Result<std::unique_ptr<IExporter>, Error>::success(
-                std::make_unique<SarifExporter>()
-            );
         }
         return Result<std::unique_ptr<IExporter>, Error>::failure(
             Error(ErrorCode::InvalidArgument, "Unknown export format")
@@ -433,10 +334,6 @@ namespace bha::exporters
         if (ext == ".md" || ext == ".markdown") {
             return create(ExportFormat::Markdown);
         }
-        if (ext == ".sarif") {
-            return create(ExportFormat::SARIF);
-        }
-
         return Result<std::unique_ptr<IExporter>, Error>::failure(
             Error(ErrorCode::InvalidArgument, "Cannot determine format from extension: " + ext)
         );
@@ -447,7 +344,6 @@ namespace bha::exporters
             ExportFormat::JSON,
             ExportFormat::HTML,
             ExportFormat::CSV,
-            ExportFormat::SARIF,
             ExportFormat::Markdown
         };
     }
@@ -1338,150 +1234,6 @@ namespace bha::exporters
     }
 
     Result<std::string, Error> CsvExporter::export_to_string(
-        const analyzers::AnalysisResult& analysis,
-        const std::vector<Suggestion>& suggestions,
-        const ExportOptions& options
-    ) const {
-        std::ostringstream ss;
-        if (auto result = export_to_stream(ss, analysis, suggestions, options, nullptr); result.is_err()) {
-            return Result<std::string, Error>::failure(result.error());
-        }
-        return Result<std::string, Error>::success(ss.str());
-    }
-
-    // =============================================================================
-    // SARIF Exporter
-    // =============================================================================
-
-    Result<void, Error> SarifExporter::export_to_file(
-        const fs::path& path,
-        const analyzers::AnalysisResult& analysis,
-        const std::vector<Suggestion>& suggestions,
-        const ExportOptions& options,
-        const ExportProgressCallback progress
-    ) const {
-        std::ofstream file(path);
-        if (!file.is_open()) {
-            return Result<void, Error>::failure(
-                Error(ErrorCode::IoError, "Failed to open file for writing: " + path.string())
-            );
-        }
-        return export_to_stream(file, analysis, suggestions, options, progress);
-    }
-
-    Result<void, Error> SarifExporter::export_to_stream(
-        std::ostream& stream,
-        [[maybe_unused]] const analyzers::AnalysisResult& analysis,
-        const std::vector<Suggestion>& suggestions,
-        const ExportOptions& options,
-        ExportProgressCallback progress
-    ) const {
-        using json = nlohmann::json;
-
-        json root;
-        root["$schema"] = "https://json.schemastore.org/sarif-2.1.0.json";
-        root["version"] = "2.1.0";
-
-        json run;
-        run["tool"]["driver"]["name"] = "Build Hotspot Analyzer";
-        run["tool"]["driver"]["version"] = "0.1.0";
-        run["tool"]["driver"]["rules"] = json::array();
-        run["results"] = json::array();
-        run["invocations"] = json::array({json{{"executionSuccessful", true}}});
-        const fs::path sarif_root = fs::current_path();
-
-        std::map<std::string, json> rules_by_id;
-        std::size_t emitted = 0;
-        const std::size_t max_suggestions = options.max_suggestions;
-
-        for (const auto& suggestion : suggestions) {
-            if (!options.include_suggestions) {
-                break;
-            }
-            if (suggestion.confidence < options.min_confidence) {
-                continue;
-            }
-            if (max_suggestions > 0 && emitted >= max_suggestions) {
-                break;
-            }
-
-            const std::string rule_id = std::string("bha/") + suggestion_type_slug(suggestion.type);
-            if (!rules_by_id.contains(rule_id)) {
-                json rule;
-                rule["id"] = rule_id;
-                rule["name"] = to_string(suggestion.type);
-                rule["shortDescription"] = {
-                    {"text", suggestion.title.empty() ? std::string(to_string(suggestion.type)) : suggestion.title}
-                };
-                if (!suggestion.rationale.empty()) {
-                    rule["fullDescription"] = {
-                        {"text", suggestion.rationale}
-                    };
-                }
-                rule["defaultConfiguration"] = {
-                    {"level", sarif_level_for_priority(suggestion.priority)}
-                };
-                if (suggestion.documentation_link && !suggestion.documentation_link->empty()) {
-                    rule["helpUri"] = *suggestion.documentation_link;
-                }
-                rules_by_id.emplace(rule_id, std::move(rule));
-            }
-
-            json result;
-            result["ruleId"] = rule_id;
-            result["level"] = sarif_level_for_priority(suggestion.priority);
-            result["message"] = {
-                {"text", suggestion.title + ": " + suggestion.description}
-            };
-            result["partialFingerprints"] = {
-                {"bhaFingerprint", stable_fingerprint(suggestion)}
-            };
-            result["properties"] = {
-                {"bhaType", to_string(suggestion.type)},
-                {"bhaPriority", to_string(suggestion.priority)},
-                {"bhaConfidence", suggestion.confidence},
-                {"bhaEstimatedSavingsMs", duration_to_ms(suggestion.estimated_savings)},
-                {"bhaApplicationMode", to_string(resolve_application_mode(suggestion))}
-            };
-
-            const std::string location_path = normalize_output_path(suggestion.target_file.path, sarif_root);
-            if (!location_path.empty()) {
-                json location;
-                location["physicalLocation"]["artifactLocation"]["uri"] = location_path;
-
-                json region;
-                region["startLine"] = normalize_line(suggestion.target_file.line_start);
-                if (suggestion.target_file.line_end > 0) {
-                    region["endLine"] = normalize_line(suggestion.target_file.line_end);
-                }
-                if (suggestion.target_file.col_start > 0) {
-                    region["startColumn"] = suggestion.target_file.col_start;
-                }
-                if (suggestion.target_file.col_end > 0) {
-                    region["endColumn"] = suggestion.target_file.col_end;
-                }
-                location["physicalLocation"]["region"] = std::move(region);
-                result["locations"] = json::array({std::move(location)});
-            }
-
-            run["results"].push_back(std::move(result));
-            ++emitted;
-
-            if (progress) {
-                progress(emitted, suggestions.size(), "sarif-results");
-            }
-        }
-
-        for (const auto& [_, rule] : rules_by_id) {
-            run["tool"]["driver"]["rules"].push_back(rule);
-        }
-
-        root["runs"] = json::array({std::move(run)});
-        stream << (options.pretty_print ? root.dump(2) : root.dump());
-        return Result<void, Error>::success();
-    }
-
-    Result<std::string, Error> SarifExporter::export_to_string(
         const analyzers::AnalysisResult& analysis,
         const std::vector<Suggestion>& suggestions,
         const ExportOptions& options

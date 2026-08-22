@@ -114,4 +114,4 @@ Real-repo methodology and recorded run references:
 2. Representative integration harnesses pass.
 3. No major regressions in snapshot compare and benchmark reports.
 4. CLI help output and docs are synchronized.
-5. Export formats (including SARIF) validated in CI.
+5. Export formats validated in CI.

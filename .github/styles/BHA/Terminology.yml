@@ -1,8 +1,6 @@
 extends: existence
-message: "Use official casing for product names (for example, GitHub, GitLab, SARIF)."
+message: "Use official casing for product names (for example, GitHub and GitLab)."
 level: warning
 tokens:
   - Github
   - Gitlab
-  - Sarif
-

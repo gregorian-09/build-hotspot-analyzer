@@ -30,7 +30,7 @@ Excluded from this matrix:
 | LSP protocol reference | `docs/lsp_reference.md` | Complete | Runtime config, command contracts, payloads |
 | IDE usage and distribution | `docs/ide_integrations.md` | Complete | VS Code, Neovim, Emacs, publish prerequisites |
 | Suggestion families and safety | `docs/suggestions_reference.md` | Complete | All suggesters, trust loop, safety gates |
-| Export formats and CI wiring | `docs/export_ci.md` | Complete | JSON/HTML/CSV/SARIF + CI usage |
+| Export formats and CI wiring | `docs/export_ci.md` | Complete | JSON/HTML/CSV/Markdown + CI usage |
 | Regression gates and snapshot model | `docs/cli_reference.md`, `docs/export_ci.md` | Complete | Thresholds and category gate behavior |
 | Architecture and component boundaries | `docs/architecture.md` | Complete | Data flow, modules, extension points |
 | Development workflow | `docs/development.md` | Complete | Local dev loop, tests, release readiness |
@@ -39,7 +39,6 @@ Excluded from this matrix:
 | Documentation policy and quality gates | `docs/docs_strategy.md` | Complete | Diataxis, linting, docs CI |
 | LSP apply semantics and rollback | `docs/lsp_reference.md`, `docs/suggestions_reference.md` | Complete | Apply modes, backup, rollback, trust loop |
 | Cache/distribution and explainability outputs | `docs/architecture.md`, `docs/export_ci.md`, `docs/suggestions_reference.md` | Complete | Output payload semantics documented |
-| SARIF code-scanning output | `docs/export_ci.md` | Complete | SARIF output and CI upload workflow |
 | Branding and visual assets | `docs/assets/*` | Complete | Primary, monochrome, and icon logo variants |
 
 ## Maintenance Rule

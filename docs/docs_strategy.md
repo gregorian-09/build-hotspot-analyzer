@@ -35,7 +35,7 @@ This separation prevents mixed-purpose pages and improves discoverability.
 - Treat doc updates as part of definition-of-done for behavior changes.
 
 4. CI-oriented outputs
-- Document SARIF export paths clearly.
+- Document supported export paths clearly.
 - Document non-zero gate behaviors and operational consequences.
 
 5. Change-safe guidance

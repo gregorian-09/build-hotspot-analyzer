@@ -60,12 +60,6 @@ Interactive HTML:
 bha export traces --format html --dark-mode -o report.html
 ```
 
-CI-friendly SARIF:
-
-```bash
-bha export traces --format sarif -o bha.sarif
-```
-
 Markdown summary:
 
 ```bash

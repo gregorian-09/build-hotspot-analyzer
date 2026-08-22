@@ -32,7 +32,7 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string_view description() const noexcept override {
-            return "Export analysis results to JSON, HTML, CSV, SARIF, or Markdown";
+            return "Export analysis results to JSON, HTML, CSV, or Markdown";
         }
 
         [[nodiscard]] std::string usage() const override {
@@ -42,15 +42,14 @@ namespace bha::cli
                    "  bha export --format json -o report.json traces/\n"
                    "  bha export --format html -o report.html build/*.json\n"
                    "  bha export --format csv -o data.csv trace.json\n"
-                   "  bha export --format sarif -o bha.sarif traces/\n"
                    "  bha export --format json -o report.json traces/";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
             return {
                 {"output", 'o', "Output file (required)", true, true, "", "FILE"},
-                {"format", 'f', "Output format (json, html, csv, sarif, md)", false, true, "", "FORMAT"},
-                {"include-suggestions", 's', "Include optimization suggestions (csv/md/sarif)", false, false, "", ""},
+                {"format", 'f', "Output format (json, html, csv, md)", false, true, "", "FORMAT"},
+                {"include-suggestions", 's', "Include optimization suggestions (csv/md)", false, false, "", ""},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
@@ -100,7 +99,7 @@ namespace bha::cli
                 auto parsed = exporters::string_to_format(*format_str);
                 if (!parsed) {
                     print_error("Unknown format: " + *format_str);
-                    print_error("Supported formats: json, html, csv, sarif, md");
+                    print_error("Supported formats: json, html, csv, md");
                     return 1;
                 }
                 format = *parsed;
@@ -108,7 +107,6 @@ namespace bha::cli
                 if (auto ext = output_path.extension().string(); ext == ".json") format = exporters::ExportFormat::JSON;
                 else if (ext == ".html" || ext == ".htm") format = exporters::ExportFormat::HTML;
                 else if (ext == ".csv") format = exporters::ExportFormat::CSV;
-                else if (ext == ".sarif") format = exporters::ExportFormat::SARIF;
                 else if (ext == ".md") format = exporters::ExportFormat::Markdown;
                 else {
                     print_error("Cannot determine format from extension: " + ext);
@@ -224,10 +222,8 @@ namespace bha::cli
 
             const bool supports_suggestions_payload =
                 format == exporters::ExportFormat::CSV ||
-                format == exporters::ExportFormat::Markdown ||
-                format == exporters::ExportFormat::SARIF;
+                format == exporters::ExportFormat::Markdown;
             const bool include_suggestions =
-                format == exporters::ExportFormat::SARIF ||
                 (args.get_flag("include-suggestions") && supports_suggestions_payload);
             if (args.get_flag("include-suggestions") && !supports_suggestions_payload) {
                 print_verbose("Suggestions payload is disabled for JSON/HTML exports");

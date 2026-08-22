@@ -9,7 +9,7 @@ Core responsibilities:
 - run normalized analysis across compilation units
 - generate suggestions with confidence, rationale, and estimated savings
 - optionally apply edits with backup, rebuild validation, and rollback
-- export outputs for developers, CI, and code-scanning systems
+- export outputs for developers and CI
 
 ```mermaid
 flowchart LR
@@ -21,7 +21,7 @@ flowchart LR
     F --> G[Suggestion Set]
     E --> H[Exporter Factory]
     G --> H
-    H --> I[HTML/JSON/CSV/SARIF/Markdown]
+    H --> I[HTML/JSON/CSV/Markdown]
     G --> J[LSP apply workflows]
     J --> K[Backups + build validation + rollback]
 ```
@@ -230,7 +230,6 @@ Exporter factory supports:
 - JSON
 - HTML
 - CSV
-- SARIF
 - Markdown
 
 Export layer also serializes:

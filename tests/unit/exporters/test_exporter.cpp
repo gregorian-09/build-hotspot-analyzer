@@ -185,17 +185,9 @@ namespace bha::exporters::test
         EXPECT_EQ(result.value()->format_name(), "Markdown");
     }
 
-    TEST_F(ExporterFactoryTest, CreateSarifExporter) {
-        auto result = ExporterFactory::create(ExportFormat::SARIF);
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_EQ(result.value()->format(), ExportFormat::SARIF);
-        EXPECT_EQ(result.value()->file_extension(), ".sarif");
-        EXPECT_EQ(result.value()->format_name(), "SARIF");
-    }
-
     TEST_F(ExporterFactoryTest, AvailableFormats) {
         auto formats = ExporterFactory::available_formats();
-        EXPECT_GE(formats.size(), 5u);
+        EXPECT_GE(formats.size(), 4u);
 
         auto has_format = [&formats](const ExportFormat fmt) {
             return std::ranges::find(formats, fmt) != formats.end();
@@ -204,7 +196,6 @@ namespace bha::exporters::test
         EXPECT_TRUE(has_format(ExportFormat::JSON));
         EXPECT_TRUE(has_format(ExportFormat::HTML));
         EXPECT_TRUE(has_format(ExportFormat::CSV));
-        EXPECT_TRUE(has_format(ExportFormat::SARIF));
         EXPECT_TRUE(has_format(ExportFormat::Markdown));
     }
 
@@ -363,45 +354,6 @@ namespace bha::exporters::test
     }
 
     // ============================================================================
-    // SARIF Exporter Tests
-    // ============================================================================
-
-    class SarifExporterTest : public ::testing::Test {
-    protected:
-        void SetUp() override {
-            auto result = ExporterFactory::create(ExportFormat::SARIF);
-            ASSERT_TRUE(result.is_ok());
-            exporter_ = std::move(result.value());
-            analysis = create_sample_analysis();
-            suggestions = create_sample_suggestions();
-        }
-
-        std::unique_ptr<IExporter> exporter_;
-        analyzers::AnalysisResult analysis;
-        std::vector<Suggestion> suggestions;
-    };
-
-    TEST_F(SarifExporterTest, ExportToString) {
-        auto result = exporter_->export_to_string(analysis, suggestions, {});
-        ASSERT_TRUE(result.is_ok());
-
-        const auto& sarif_str = result.value();
-        EXPECT_FALSE(sarif_str.empty());
-        EXPECT_TRUE(sarif_str.find("\"version\": \"2.1.0\"") != std::string::npos);
-        EXPECT_TRUE(sarif_str.find("\"runs\"") != std::string::npos);
-        EXPECT_TRUE(sarif_str.find("\"results\"") != std::string::npos);
-    }
-
-    TEST_F(SarifExporterTest, IncludesSuggestionRuleAndLocation) {
-        auto result = exporter_->export_to_string(analysis, suggestions, {});
-        ASSERT_TRUE(result.is_ok());
-
-        const auto& sarif_str = result.value();
-        EXPECT_TRUE(sarif_str.find("\"ruleId\": \"bha/forward-declaration\"") != std::string::npos);
-        EXPECT_TRUE(sarif_str.find("include/header.h") != std::string::npos);
-    }
-
-    // ============================================================================
     // Markdown Exporter Tests
     // ============================================================================
 
@@ -446,7 +398,6 @@ namespace bha::exporters::test
         EXPECT_EQ(format_to_string(ExportFormat::JSON), "json");
         EXPECT_EQ(format_to_string(ExportFormat::HTML), "html");
         EXPECT_EQ(format_to_string(ExportFormat::CSV), "csv");
-        EXPECT_EQ(format_to_string(ExportFormat::SARIF), "sarif");
         EXPECT_EQ(format_to_string(ExportFormat::Markdown), "markdown");
     }
 
@@ -457,8 +408,6 @@ namespace bha::exporters::test
         EXPECT_EQ(string_to_format("HTML"), ExportFormat::HTML);
         EXPECT_EQ(string_to_format("csv"), ExportFormat::CSV);
         EXPECT_EQ(string_to_format("CSV"), ExportFormat::CSV);
-        EXPECT_EQ(string_to_format("sarif"), ExportFormat::SARIF);
-        EXPECT_EQ(string_to_format("SARIF"), ExportFormat::SARIF);
         EXPECT_EQ(string_to_format("markdown"), ExportFormat::Markdown);
         EXPECT_EQ(string_to_format("md"), ExportFormat::Markdown);
 

@@ -6,7 +6,6 @@ BHA supports:
 - `json`
 - `html`
 - `csv`
-- `sarif`
 - `md`
 
 Basic usage:
@@ -21,26 +20,12 @@ bha export traces --format <format> -o output.<ext>
 - `json`: for automation and downstream analytics ingestion.
 - `csv`: for spreadsheet and ad-hoc trend slicing.
 - `md`: for lightweight PR reports.
-- `sarif`: for code scanning ecosystems.
 
 ## Suggestion Payload Behavior
 
 Suggestion payload inclusion is intentionally controlled by format and flags:
 - use `--include-suggestions` for `csv` / `md`
-- `sarif` is suggestion-oriented by design
 - HTML/JSON exports are analysis-first to reduce report noise
-
-## SARIF for Code Scanning
-
-Generate SARIF:
-
-```bash
-bha export traces --format sarif -o bha.sarif
-```
-
-Common CI usage:
-- upload `bha.sarif` artifact to code scanning stage
-- review optimization alerts alongside security/static-analysis findings
 
 ## Snapshot-Based Regression Gates
 
@@ -65,7 +50,7 @@ Gate semantics:
 ## Recommended CI Flow
 
 1. Build with trace capture.
-2. Run `bha analyze` and `bha export` (json/html/sarif).
+2. Run `bha analyze` and `bha export` (json/html/csv/md).
 3. Save snapshot for current commit.
 4. Compare against baseline snapshot with gates.
 5. Optionally run LSP/runner auto-apply in dedicated optimization jobs.
