@@ -177,10 +177,11 @@ namespace bha::suggestions {
                     const auto* copy_constructor = llvm::dyn_cast<clang::CXXConstructorDecl>(method);
                     const bool explicit_copy_constructor =
                         copy_constructor != nullptr && copy_constructor->isCopyConstructor() &&
-                        !copy_constructor->isImplicit() && !copy_constructor->isDefaulted();
+                        !copy_constructor->isImplicit() && !copy_constructor->isDefaulted() &&
+                        !copy_constructor->isDeleted();
                     const bool explicit_copy_assignment =
                         method->isCopyAssignmentOperator() && !method->isImplicit() &&
-                        !method->isDefaulted();
+                        !method->isDefaulted() && !method->isDeleted();
                     if (explicit_copy_constructor || explicit_copy_assignment) {
                         candidate.eligibility.has_explicit_copy_definition = true;
                     }
@@ -268,25 +269,28 @@ namespace bha::suggestions {
             suggestion.impact.cumulative_savings = Duration::zero();
             suggestion.implementation_steps = {
                 "Design the Impl boundary for the AST-identified class",
-                "Implement the header and source changes with a semantic refactoring tool",
+                "Run bha-refactor with the exact compilation database, source, header, and class name",
                 "Run syntax and full-build validation for every affected compile command",
                 "Collect a post-edit trace before claiming a build-time saving"
             };
             suggestion.caveats = {
-                "This is an advisory candidate only; BHA emits no structural PIMPL edits",
+                "This is an advisory candidate only; the analysis pipeline does not auto-apply PIMPL edits",
+                "The structural tool accepts only its documented fail-closed class subset",
                 "Estimated savings remain zero until a post-edit trace measures the change",
                 "Unsupported class shapes are rejected by the semantic eligibility rules"
             };
             suggestion.verification =
-                "Apply only after a complete AST replacement backend exists, then run Clang "
-                "syntax validation, the full build, and a fresh trace comparison";
+                "Run the structural AST replacement tool, inspect its replacements, then run "
+                "Clang syntax validation, the full build, and a fresh trace comparison";
             suggestion.is_safe = false;
             suggestion.application_mode = SuggestionApplicationMode::Advisory;
             suggestion.application_summary = "Manual review only";
             suggestion.application_guidance =
-                "Review the class design manually; automatic PIMPL transformation is disabled";
+                "Review the class design manually, then invoke bha-refactor explicitly; automatic "
+                "PIMPL application from suggestions remains disabled";
             suggestion.auto_apply_blocked_reason =
-                "Automatic PIMPL edits are disabled until a complete structural Clang replacement backend is implemented";
+                "PIMPL suggestions remain advisory; explicit structural refactor invocation and "
+                "post-edit build validation are required";
             return suggestion;
         }
 #endif

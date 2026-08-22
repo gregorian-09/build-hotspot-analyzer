@@ -114,7 +114,7 @@ namespace bha::suggestions {
         EXPECT_FALSE(suggestion.is_safe);
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
         ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
-        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("structural Clang"),
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("structural refactor"),
                   std::string::npos);
 #else
         EXPECT_TRUE(result.value().suggestions.empty());
