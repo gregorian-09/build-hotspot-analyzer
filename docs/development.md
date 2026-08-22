@@ -98,11 +98,10 @@ Relevant scripts in `tests/`:
 - `run_template_subproject.py`
 - `run_forward_decl_subproject.py`
 - `run_header_split_subproject.py`
-- `run_pimpl_subproject.py`
 
 These scripts are used to validate:
 - suggestion generation quality
-- auto-apply behavior
+- semantic evidence and fail-closed behavior
 - rebuild validation and rollback behavior
 - real-repo benchmark deltas
 

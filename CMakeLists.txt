@@ -325,7 +325,7 @@ if(BHA_BUILD_REFACTOR_TOOLS)
         target_include_directories(bha-refactor SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
         target_link_libraries(bha-refactor PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
     else()
-        message(STATUS "Clang LibTooling headers or libraries not found: bha-refactor will use the text-edit fallback engine")
+        message(STATUS "Clang LibTooling headers or libraries not found: bha-refactor will reject PIMPL refactor requests")
         target_compile_definitions(bha-refactor PRIVATE BHA_HAVE_CLANG_TOOLING=0)
     endif()
 

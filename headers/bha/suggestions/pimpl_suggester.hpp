@@ -18,9 +18,10 @@ namespace bha::suggestions {
      * @class PIMPLSuggester
      * @brief Suggests classes that could benefit from the PIMPL idiom.
      *
-     * Identifies source files with high compile-time impact due to their
-     * inclusion dependencies and suggests applying the PIMPL pattern to
-     * reduce compile-time coupling.
+     * Identifies project-owned classes with private data members from a
+     * compile-command-backed Clang AST. The current output is advisory only;
+     * structural PIMPL edits are not emitted until a complete AST replacement
+     * backend exists.
      */
     class PIMPLSuggester : public ISuggester {
     public:
@@ -41,7 +42,7 @@ namespace bha::suggestions {
         }
 
         /**
-         * @brief Generate PIMPL-pattern suggestions.
+         * @brief Generate AST-backed advisory PIMPL candidates.
          *
          * @param context Analysis context containing traces, analyzer outputs, and options.
          * @return Suggestion generation result or structured error.
@@ -49,25 +50,6 @@ namespace bha::suggestions {
         [[nodiscard]] Result<SuggestionResult, Error> suggest(
             const SuggestionContext& context) const override;
     };
-
-    /**
-     * @brief Generates concrete PIMPL text edits for the strict, compile-validated subset.
-     *
-     * This is used by the external refactor tool path so it can reuse the same
-     * AST-backed class extraction and strict edit generator as the suggester.
-     *
-     * @param compile_commands_path Compile database used for semantic validation.
-     * @param source_file Source file owning the target class implementation.
-     * @param header_file Header file declaring the target class.
-     * @param class_name Exact class name to refactor.
-     * @return Ordered edit list when refactor is safe, otherwise detailed error.
-     */
-    [[nodiscard]] Result<std::vector<TextEdit>, Error> generate_pimpl_refactor_edits(
-        const fs::path& compile_commands_path,
-        const fs::path& source_file,
-        const fs::path& header_file,
-        std::string_view class_name
-    );
 
     /**
      * @brief Registers the PIMPL suggester with the global registry.

@@ -1,18 +1,12 @@
-#include <algorithm>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <iterator>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <unordered_set>
-#include <vector>
 
 #include "bha/refactor/pimpl_tooling.hpp"
 #include "bha/refactor/types.hpp"
-#include "bha/suggestions/pimpl_suggester.hpp"
 
 namespace {
 
@@ -76,7 +70,7 @@ namespace {
 
     int emit_result(const bha::refactor::Result& result, const bool pretty) {
         std::cout << nlohmann::json(result).dump(pretty ? 2 : -1) << '\n';
-        return 0;
+        return result.success ? 0 : 1;
     }
 
     void add_diagnostic(
@@ -92,63 +86,6 @@ namespace {
         diagnostic.file = std::move(file);
         diagnostic.line = line;
         result.diagnostics.push_back(std::move(diagnostic));
-    }
-
-    std::optional<std::size_t> line_col_to_offset(
-        const std::string& content,
-        const std::size_t line,
-        const std::size_t col
-    ) {
-        std::size_t current_line = 0;
-        std::size_t line_start = 0;
-
-        for (std::size_t index = 0; index < content.size(); ++index) {
-            if (current_line == line) {
-                const std::size_t offset = line_start + col;
-                return std::min(offset, content.size());
-            }
-            if (content[index] == '\n') {
-                ++current_line;
-                line_start = index + 1;
-            }
-        }
-
-        if (current_line == line) {
-            return std::min(line_start + col, content.size());
-        }
-        if (line > current_line) {
-            return content.size();
-        }
-        return std::nullopt;
-    }
-
-    std::optional<bha::refactor::Replacement> to_replacement(
-        const bha::TextEdit& edit
-    ) {
-        std::ifstream in(edit.file, std::ios::binary);
-        if (!in) {
-            return std::nullopt;
-        }
-        const std::string content(
-            (std::istreambuf_iterator<char>(in)),
-            std::istreambuf_iterator<char>()
-        );
-
-        auto start_offset = line_col_to_offset(content, edit.start_line, edit.start_col);
-        auto end_offset = line_col_to_offset(content, edit.end_line, edit.end_col);
-        if (!start_offset || !end_offset) {
-            return std::nullopt;
-        }
-        if (*start_offset > *end_offset) {
-            std::swap(start_offset, end_offset);
-        }
-
-        bha::refactor::Replacement replacement;
-        replacement.file = edit.file;
-        replacement.offset = *start_offset;
-        replacement.length = *end_offset - *start_offset;
-        replacement.replacement_text = edit.new_text;
-        return replacement;
     }
 
 }  // namespace
@@ -236,68 +173,6 @@ int main(const int argc, char* argv[]) {
     }
 
     auto tooling_result = bha::refactor::run_pimpl_refactor_with_clang_tooling(request);
-    if (tooling_result.success) {
-        const bool pretty = option_or_default(parsed->options, "output-format", "json") == "json";
-        return emit_result(tooling_result, pretty);
-    }
-    if (!tooling_result.allow_fallback) {
-        const bool pretty = option_or_default(parsed->options, "output-format", "json") == "json";
-        return emit_result(tooling_result, pretty);
-    }
-
-    auto edits_result = bha::suggestions::generate_pimpl_refactor_edits(
-        request.compile_commands_path,
-        request.source_file,
-        request.header_file,
-        request.class_name
-    );
-    if (edits_result.is_err()) {
-        result.engine = "text-fallback";
-        result.diagnostics.insert(
-            result.diagnostics.end(),
-            tooling_result.diagnostics.begin(),
-            tooling_result.diagnostics.end()
-        );
-        add_diagnostic(result, DiagnosticSeverity::Error, edits_result.error().message());
-        const bool pretty = option_or_default(parsed->options, "output-format", "json") == "json";
-        return emit_result(result, pretty);
-    }
-
-    result.engine = "text-fallback";
-    result.diagnostics.insert(
-        result.diagnostics.end(),
-        tooling_result.diagnostics.begin(),
-        tooling_result.diagnostics.end()
-    );
-    std::unordered_set<std::string> seen_files;
-    for (const auto& edit : edits_result.value()) {
-        if (auto replacement = to_replacement(edit)) {
-            if (seen_files.insert(replacement->file.string()).second) {
-                result.files.push_back(replacement->file);
-            }
-            result.replacements.push_back(std::move(*replacement));
-        } else {
-            add_diagnostic(
-                result,
-                DiagnosticSeverity::Error,
-                "Failed to translate a generated text edit into a byte-range replacement",
-                edit.file
-            );
-        }
-    }
-
-    if (result.replacements.empty()) {
-        add_diagnostic(
-            result,
-            DiagnosticSeverity::Error,
-            "No replacements were generated for the requested PIMPL refactor"
-        );
-    } else {
-        result.success = true;
-        result.validated_structure = true;
-        result.summary.copy_mode = "strict-subset";
-    }
-
     const bool pretty = option_or_default(parsed->options, "output-format", "json") == "json";
-    return emit_result(result, pretty);
+    return emit_result(tooling_result, pretty);
 }

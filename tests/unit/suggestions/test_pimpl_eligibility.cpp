@@ -54,23 +54,4 @@ namespace bha::refactor {
         EXPECT_FALSE(supports_pimpl_external_refactor(state));
     }
 
-    TEST(PimplEligibilityTest, AdvisoryDescriptionsReflectSharedState) {
-        PimplEligibilityState state;
-        state.has_private_methods = true;
-        state.has_private_inline_method_bodies = true;
-        state.has_macro_generated_private_declarations = true;
-        state.has_copy_constructor = true;
-        state.has_explicit_copy_definition = true;
-
-        const auto notes = describe_pimpl_advisory_conditions(state);
-
-        EXPECT_EQ(notes.size(), 6u);
-        EXPECT_NE(notes[0].find("No compile_commands entry"), std::string::npos);
-        EXPECT_NE(notes[1].find("Private methods were detected"), std::string::npos);
-        EXPECT_NE(notes[2].find("Private inline method bodies"), std::string::npos);
-        EXPECT_NE(notes[3].find("Macro-generated private declarations"), std::string::npos);
-        EXPECT_NE(notes[4].find("Copy semantics are present"), std::string::npos);
-        EXPECT_NE(notes[5].find("User-defined copy constructor/assignment"), std::string::npos);
-    }
-
 }  // namespace bha::refactor

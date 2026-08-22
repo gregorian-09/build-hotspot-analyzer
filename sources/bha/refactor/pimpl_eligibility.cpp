@@ -26,9 +26,6 @@ namespace bha::refactor {
         if (state.has_macro_generated_private_declarations) {
             return PimplEligibilityBlocker::MacroGeneratedPrivateDeclarations;
         }
-        if (state.has_preprocessor_in_class) {
-            return PimplEligibilityBlocker::PreprocessorInClass;
-        }
         if (state.has_explicit_copy_definition) {
             return PimplEligibilityBlocker::ExplicitCopyDefinitions;
         }
@@ -55,67 +52,10 @@ namespace bha::refactor {
                 return "Private inline method bodies in the class definition are not supported by the automatic PIMPL refactor; use manual refactoring for this class shape";
             case PimplEligibilityBlocker::MacroGeneratedPrivateDeclarations:
                 return "Private declarations produced through macro expansions are not supported by the automatic PIMPL refactor";
-            case PimplEligibilityBlocker::PreprocessorInClass:
-                return "Preprocessor directives inside the class definition are not supported by the automatic PIMPL refactor";
             case PimplEligibilityBlocker::ExplicitCopyDefinitions:
                 return "User-defined copy constructor or copy assignment bodies were detected; automatic PIMPL refactoring is disabled to preserve copy semantics safely";
         }
         return "Automatic PIMPL refactoring is not supported for this class shape";
-    }
-
-    std::vector<std::string> describe_pimpl_advisory_conditions(const PimplEligibilityState& state) {
-        std::vector<std::string> notes;
-        if (!state.has_compile_context) {
-            notes.emplace_back(
-                "No compile_commands entry was found for this translation unit, so semantic validation is incomplete"
-            );
-        }
-        if (state.has_template_declaration) {
-            notes.emplace_back(
-                "Template classes are excluded from future automated PIMPL rewrites"
-            );
-        }
-        if (state.has_inheritance) {
-            notes.emplace_back(
-                "Inheritance increases rewrite risk and currently blocks future automatic refactoring"
-            );
-        }
-        if (state.has_virtual_members) {
-            notes.emplace_back(
-                "Virtual members increase ABI and lifetime risk for automatic PIMPL rewrites"
-            );
-        }
-        if (state.has_private_methods) {
-            notes.emplace_back(
-                "Private methods were detected; automatic rewrites will need semantic body migration first"
-            );
-        }
-        if (state.has_private_inline_method_bodies) {
-            notes.emplace_back(
-                "Private inline method bodies in the class definition currently block automatic PIMPL refactoring"
-            );
-        }
-        if (state.has_macro_generated_private_declarations) {
-            notes.emplace_back(
-                "Macro-generated private declarations currently block automatic PIMPL refactoring"
-            );
-        }
-        if (state.has_preprocessor_in_class) {
-            notes.emplace_back(
-                "Preprocessor directives in the header block future automated PIMPL rewrites"
-            );
-        }
-        if (state.has_copy_constructor) {
-            notes.emplace_back(
-                "Copy semantics are present and must be preserved explicitly in any future automated rewrite"
-            );
-        }
-        if (state.has_explicit_copy_definition) {
-            notes.emplace_back(
-                "User-defined copy constructor/assignment bodies are present; automatic PIMPL refactoring stays disabled for this class"
-            );
-        }
-        return notes;
     }
 
 }  // namespace bha::refactor

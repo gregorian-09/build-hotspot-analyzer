@@ -8,9 +8,7 @@
 
 #include <cstddef>
 #include <optional>
-#include <string>
 #include <string_view>
-#include <vector>
 
 namespace bha::refactor {
 
@@ -25,7 +23,6 @@ namespace bha::refactor {
         VirtualMembers,
         PrivateInlineMethodBodies,
         MacroGeneratedPrivateDeclarations,
-        PreprocessorInClass,
         ExplicitCopyDefinitions,
     };
 
@@ -43,18 +40,12 @@ namespace bha::refactor {
         bool has_inheritance = false;
         /// Class declares virtual members.
         bool has_virtual_members = false;
-        /// Class contains private methods.
-        bool has_private_methods = false;
         /// Class has inline private method bodies.
         bool has_private_inline_method_bodies = false;
         /// Private declarations include macro expansions.
         bool has_macro_generated_private_declarations = false;
-        /// Class declares copy constructor.
-        bool has_copy_constructor = false;
         /// Class defines explicit copy operations that require manual handling.
         bool has_explicit_copy_definition = false;
-        /// Preprocessor directives appear inside class body.
-        bool has_preprocessor_in_class = false;
         /// Count of non-static private data members.
         std::size_t private_data_members = 0;
     };
@@ -85,16 +76,6 @@ namespace bha::refactor {
     [[nodiscard]] std::string_view pimpl_blocker_message(
         PimplEligibilityBlocker blocker
     ) noexcept;
-
-    /**
-     * @brief Produce advisory (non-blocking) notes for a partially supported class.
-     *
-     * @param state Eligibility state snapshot.
-     * @return Ordered list of advisory conditions.
-     */
-    [[nodiscard]] std::vector<std::string> describe_pimpl_advisory_conditions(
-        const PimplEligibilityState& state
-    );
 
 }  // namespace bha::refactor
 

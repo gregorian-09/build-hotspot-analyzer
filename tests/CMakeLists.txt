@@ -48,6 +48,8 @@ target_link_libraries(bha_tests
         $<$<BOOL:${BHA_ENABLE_COVERAGE}>:bha::coverage>
 )
 
+target_compile_definitions(bha_tests PRIVATE BHA_HAVE_CLANG_TOOLING=${BHA_HAVE_CLANG_TOOLING})
+
 if(BHA_ENABLE_LSP)
     target_link_libraries(bha_tests PRIVATE bha::lsp_core)
     target_include_directories(bha_tests PRIVATE ${PROJECT_SOURCE_DIR}/lsp/headers)

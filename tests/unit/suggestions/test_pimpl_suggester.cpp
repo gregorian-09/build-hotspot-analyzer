@@ -1,267 +1,173 @@
-//
-// Created by gregorian-rayne on 12/29/25.
-//
-
 #include "bha/suggestions/pimpl_suggester.hpp"
 
+#include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
+#include <utility>
 
-namespace bha::suggestions
-{
-    class PIMPLSuggesterTest : public ::testing::Test {
-    protected:
-        void SetUp() override {
-            suggester_ = std::make_unique<PIMPLSuggester>();
-        }
+namespace bha::suggestions {
+    namespace {
+        class PimplSuggesterTest : public ::testing::Test {
+        protected:
+            void SetUp() override {
+                root_ = std::filesystem::temp_directory_path() / "bha-pimpl-suggester-test";
+                std::error_code ec;
+                std::filesystem::remove_all(root_, ec);
+                std::filesystem::create_directories(root_ / "include", ec);
+                std::filesystem::create_directories(root_ / "src", ec);
+            }
 
-        std::unique_ptr<PIMPLSuggester> suggester_;
-    };
+            void TearDown() override {
+                std::error_code ec;
+                std::filesystem::remove_all(root_, ec);
+            }
 
-    TEST_F(PIMPLSuggesterTest, Name) {
-        EXPECT_EQ(suggester_->name(), "PIMPLSuggester");
+            void write_compile_commands(const std::filesystem::path& source) {
+                std::ofstream database(root_ / "compile_commands.json");
+                database << "[{\"directory\":\"" << root_.string() << "\","
+                         << "\"file\":\"" << source.string() << "\","
+                         << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
+                         << (root_ / "include").string() << "\",\"-c\",\""
+                         << source.string() << "\"]}]";
+            }
+
+            void write_measured_source(const std::filesystem::path& source) {
+                std::ofstream(source)
+                    << "#include \"widget.hpp\"\n"
+                    << "int demo::Widget::value_copy() const { return value_; }\n";
+            }
+
+            analyzers::AnalysisResult measured_analysis(
+                const std::filesystem::path& source
+            ) const {
+                analyzers::AnalysisResult analysis;
+                analyzers::FileAnalysisResult file;
+                file.file = source;
+                file.compile_time = std::chrono::milliseconds(1);
+                analysis.files.push_back(std::move(file));
+                return analysis;
+            }
+
+            std::filesystem::path root_;
+        };
     }
 
-    TEST_F(PIMPLSuggesterTest, Description) {
-        EXPECT_FALSE(suggester_->description().empty());
+    TEST(PimplSuggesterContractTest, ReportsIdentity) {
+        PIMPLSuggester suggester;
+        EXPECT_EQ(suggester.name(), "PIMPLSuggester");
+        EXPECT_FALSE(suggester.description().empty());
+        EXPECT_EQ(suggester.suggestion_type(), SuggestionType::PIMPLPattern);
     }
 
-    TEST_F(PIMPLSuggesterTest, SuggestionType) {
-        EXPECT_EQ(suggester_->suggestion_type(), SuggestionType::PIMPLPattern);
-    }
-
-    TEST_F(PIMPLSuggesterTest, EmptyAnalysis) {
+    TEST(PimplSuggesterContractTest, RequiresCompilationDatabase) {
         const BuildTrace trace;
         const analyzers::AnalysisResult analysis;
         const SuggesterOptions options;
-
         const SuggestionContext context{trace, analysis, options, {}};
-        auto result = suggester_->suggest(context);
+
+        const auto result = PIMPLSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code,
+                  "pimpl.evidence.compile_database_required");
     }
 
-    TEST_F(PIMPLSuggesterTest, SuggestsForSlowSourceWithManyIncludes) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(120);
-
-        analyzers::AnalysisResult analysis;
-
-        analyzers::FileAnalysisResult file;
-        file.file = "widget.cpp";
-        file.compile_time = std::chrono::milliseconds(2000);
-        analysis.files.push_back(file);
-
-        for (int i = 0; i < 8; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header;
-            header.path = "dep" + std::to_string(i) + ".h";
-            header.total_parse_time = std::chrono::milliseconds(100);
-            header.included_by = {"widget.cpp"};
-            analysis.dependencies.headers.push_back(header);
-        }
+    TEST_F(PimplSuggesterTest, EmitsOnlyAstBackedAdvisoryEvidence) {
+        const auto header = root_ / "include" / "widget.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "namespace demo {\n"
+            << "class Widget {\n"
+            << "private:\n"
+            << "    int value_;\n"
+            << "public:\n"
+            << "    int value_copy() const;\n"
+            << "};\n"
+            << "}\n";
+        const auto source = root_ / "src" / "widget.cpp";
+        write_measured_source(source);
+        write_compile_commands(source);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const BuildTrace trace;
+        const auto analysis = measured_analysis(source);
+        const SuggestionContext context{trace, analysis, options, root_};
 
-        auto result = suggester_->suggest(context);
+        const auto result = PIMPLSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_GE(result.value().suggestions.size(), 1u);
-
-        if (!result.value().suggestions.empty()) {
-            const auto& suggestion = result.value().suggestions[0];
-            EXPECT_EQ(suggestion.type, SuggestionType::PIMPLPattern);
-            EXPECT_FALSE(suggestion.is_safe);
-            EXPECT_GT(suggestion.estimated_savings.count(), 0);
-            EXPECT_TRUE(suggestion.edits.empty());
-            EXPECT_TRUE(suggestion.after_code.code.empty());
-            EXPECT_FALSE(suggestion.implementation_steps.empty());
-            EXPECT_FALSE(suggestion.caveats.empty());
-        }
+#if BHA_HAVE_CLANG_TOOLING
+        ASSERT_EQ(result.value().suggestions.size(), 1u)
+            << "diagnostics=" << result.value().diagnostics.size();
+        const auto& suggestion = result.value().suggestions.front();
+        EXPECT_EQ(suggestion.type, SuggestionType::PIMPLPattern);
+        EXPECT_EQ(suggestion.target_file.path, header);
+        EXPECT_EQ(suggestion.target_file.line_start, 3u);
+        EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
+        EXPECT_DOUBLE_EQ(suggestion.estimated_savings_percent, 0.0);
+        EXPECT_TRUE(suggestion.edits.empty());
+        EXPECT_TRUE(suggestion.after_code.code.empty());
+        EXPECT_FALSE(suggestion.is_safe);
+        EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::Advisory);
+        ASSERT_TRUE(suggestion.auto_apply_blocked_reason.has_value());
+        EXPECT_NE(suggestion.auto_apply_blocked_reason->find("structural Clang"),
+                  std::string::npos);
+#else
+        EXPECT_TRUE(result.value().suggestions.empty());
+        ASSERT_EQ(result.value().diagnostics.size(), 1u);
+        EXPECT_EQ(result.value().diagnostics.front().code,
+                  "pimpl.evidence.clang_tooling_required");
+#endif
     }
 
-    TEST_F(PIMPLSuggesterTest, SkipsHeaderFiles) {
-        BuildTrace trace;
-
-        analyzers::AnalysisResult analysis;
-
-        analyzers::FileAnalysisResult file;
-        file.file = "widget.h";
-        file.compile_time = std::chrono::milliseconds(5000);
-        analysis.files.push_back(file);
+    TEST_F(PimplSuggesterTest, RejectsUnsupportedAstShapes) {
+        const auto header = root_ / "include" / "widget.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "class Widget {\n"
+            << "private: int value_;\n"
+            << "public: virtual int value_copy() const { return value_; }\n"
+            << "};\n";
+        const auto source = root_ / "src" / "widget.cpp";
+        std::ofstream(source) << "#include \"widget.hpp\"\n";
+        write_compile_commands(source);
 
         SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const BuildTrace trace;
+        const auto analysis = measured_analysis(source);
+        const SuggestionContext context{trace, analysis, options, root_};
 
-        auto result = suggester_->suggest(context);
+        const auto result = PIMPLSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+#if BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+#else
+        EXPECT_TRUE(result.value().suggestions.empty());
+#endif
+    }
+
+    TEST_F(PimplSuggesterTest, DoesNotInferHeadersForSourceLocalClasses) {
+        const auto source = root_ / "src" / "widget.cpp";
+        std::ofstream(source)
+            << "class Widget { private: int value_; };\n"
+            << "int use_widget() { return 0; }\n";
+        write_compile_commands(source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        const BuildTrace trace;
+        const auto analysis = measured_analysis(source);
+        const SuggestionContext context{trace, analysis, options, root_};
+
+        const auto result = PIMPLSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
-        EXPECT_GT(result.value().items_skipped, 0u);
-    }
-
-    TEST_F(PIMPLSuggesterTest, SkipsFastCompiles) {
-        BuildTrace trace;
-
-        analyzers::AnalysisResult analysis;
-
-        analyzers::FileAnalysisResult file;
-        file.file = "fast.cpp";
-        file.compile_time = std::chrono::milliseconds(100);
-        analysis.files.push_back(file);
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().suggestions.empty());
-    }
-
-    TEST_F(PIMPLSuggesterTest, SkipsFilesWithFewIncludes) {
-        BuildTrace trace;
-
-        analyzers::AnalysisResult analysis;
-
-        // Add a slow source file with few includes
-        analyzers::FileAnalysisResult file;
-        file.file = "isolated.cpp";
-        file.compile_time = std::chrono::milliseconds(5000);
-        analysis.files.push_back(file);
-
-        for (int i = 0; i < 2; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header;
-            header.path = "dep" + std::to_string(i) + ".h";
-            header.included_by = {"isolated.cpp"};
-            analysis.dependencies.headers.push_back(header);
-        }
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().suggestions.empty());
-    }
-
-    TEST_F(PIMPLSuggesterTest, SkipsExistingImplFiles) {
-        BuildTrace trace;
-
-        analyzers::AnalysisResult analysis;
-
-        analyzers::FileAnalysisResult file;
-        file.file = "widget_impl.cpp";
-        file.compile_time = std::chrono::milliseconds(5000);
-        analysis.files.push_back(file);
-
-        for (int i = 0; i < 10; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header;
-            header.path = "dep" + std::to_string(i) + ".h";
-            header.included_by = {"widget_impl.cpp"};
-            analysis.dependencies.headers.push_back(header);
-        }
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().suggestions.empty());
-    }
-
-    TEST_F(PIMPLSuggesterTest, CalculatesCorrectPriority) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(300);
-
-        analyzers::AnalysisResult analysis;
-
-        // Critical: > 5000ms, >= 20 includes
-        analyzers::FileAnalysisResult critical_file;
-        critical_file.file = "critical.cpp";
-        critical_file.compile_time = std::chrono::milliseconds(6000);
-        analysis.files.push_back(critical_file);
-
-        // High: > 2000ms, >= 10 includes
-        analyzers::FileAnalysisResult high_file;
-        high_file.file = "high.cpp";
-        high_file.compile_time = std::chrono::milliseconds(3000);
-        analysis.files.push_back(high_file);
-
-        for (int i = 0; i < 25; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header;
-            header.path = "critical_dep" + std::to_string(i) + ".h";
-            header.included_by = {"critical.cpp"};
-            analysis.dependencies.headers.push_back(header);
-        }
-
-        for (int i = 0; i < 12; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header;
-            header.path = "high_dep" + std::to_string(i) + ".h";
-            header.included_by = {"high.cpp"};
-            analysis.dependencies.headers.push_back(header);
-        }
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_GE(result.value().suggestions.size(), 2u);
-
-        std::unordered_map<std::string, Priority> priorities;
-        for (const auto& s : result.value().suggestions) {
-            if (s.id.find("critical.cpp") != std::string::npos) {
-                priorities["critical"] = s.priority;
-            } else if (s.id.find("high.cpp") != std::string::npos) {
-                priorities["high"] = s.priority;
-            }
-        }
-
-        EXPECT_EQ(priorities["critical"], Priority::Critical);
-        EXPECT_EQ(priorities["high"], Priority::High);
-    }
-
-    TEST_F(PIMPLSuggesterTest, SortsByEstimatedSavings) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(120);
-
-        analyzers::AnalysisResult analysis;
-
-        analyzers::FileAnalysisResult small_file;
-        small_file.file = "small.cpp";
-        small_file.compile_time = std::chrono::milliseconds(1500);
-        analysis.files.push_back(small_file);
-
-        analyzers::FileAnalysisResult big_file;
-        big_file.file = "big.cpp";
-        big_file.compile_time = std::chrono::milliseconds(5000);
-        analysis.files.push_back(big_file);
-
-        for (int i = 0; i < 10; ++i) {
-            analyzers::DependencyAnalysisResult::HeaderInfo header1;
-            header1.path = "small_dep" + std::to_string(i) + ".h";
-            header1.included_by = {"small.cpp"};
-            analysis.dependencies.headers.push_back(header1);
-
-            analyzers::DependencyAnalysisResult::HeaderInfo header2;
-            header2.path = "big_dep" + std::to_string(i) + ".h";
-            header2.included_by = {"big.cpp"};
-            analysis.dependencies.headers.push_back(header2);
-        }
-
-        SuggesterOptions options;
-        SuggestionContext context{trace, analysis, options, {}};
-
-        auto result = suggester_->suggest(context);
-
-        ASSERT_TRUE(result.is_ok());
-        ASSERT_GE(result.value().suggestions.size(), 2u);
-
-        EXPECT_TRUE(result.value().suggestions[0].estimated_savings >=
-                  result.value().suggestions[1].estimated_savings);
     }
 }
