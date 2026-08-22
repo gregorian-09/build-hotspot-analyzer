@@ -298,32 +298,6 @@ namespace bha::exporters
             return "note";
         }
 
-        std::string gitlab_severity_for_priority(const Priority priority) {
-            switch (priority) {
-                case Priority::Critical:
-                    return "critical";
-                case Priority::High:
-                    return "major";
-                case Priority::Medium:
-                    return "minor";
-                case Priority::Low:
-                    return "info";
-            }
-            return "minor";
-        }
-
-        std::string github_command_for_priority(const Priority priority) {
-            switch (priority) {
-                case Priority::Critical:
-                case Priority::High:
-                    return "warning";
-                case Priority::Medium:
-                case Priority::Low:
-                    return "notice";
-            }
-            return "notice";
-        }
-
         std::string stable_fingerprint(const Suggestion& suggestion) {
             std::string seed;
             seed.reserve(256);
@@ -351,18 +325,6 @@ namespace bha::exporters
             return ss.str();
         }
 
-        void replace_all_inplace(
-            std::string& value,
-            const std::string_view from,
-            const std::string_view to
-        ) {
-            std::size_t pos = 0;
-            while ((pos = value.find(from, pos)) != std::string::npos) {
-                value.replace(pos, from.size(), to);
-                pos += to.size();
-            }
-        }
-
         std::string suggestion_type_slug(const SuggestionType type) {
             const std::string raw = to_string(type);
             std::string slug;
@@ -384,43 +346,6 @@ namespace bha::exporters
                 slug.pop_back();
             }
             return slug.empty() ? "suggestion" : slug;
-        }
-
-        std::string escape_github_data(std::string text) {
-            replace_all_inplace(text, "%", "%25");
-            replace_all_inplace(text, "\r", "%0D");
-            replace_all_inplace(text, "\n", "%0A");
-            return text;
-        }
-
-        std::string escape_github_property(std::string text) {
-            auto escaped = escape_github_data(std::move(text));
-            replace_all_inplace(escaped, ":", "%3A");
-            replace_all_inplace(escaped, ",", "%2C");
-            return escaped;
-        }
-
-        nlohmann::json build_gitlab_code_quality_issue(
-            const Suggestion& suggestion,
-            const fs::path& project_root
-        ) {
-            using json = nlohmann::json;
-
-            const std::string path = normalize_output_path(suggestion.target_file.path, project_root);
-            if (path.empty()) {
-                return json();
-            }
-
-            json issue;
-            issue["description"] = suggestion.title + ": " + suggestion.description;
-            issue["check_name"] = std::string("bha/") + suggestion_type_slug(suggestion.type);
-            issue["fingerprint"] = stable_fingerprint(suggestion);
-            issue["severity"] = gitlab_severity_for_priority(suggestion.priority);
-            issue["location"] = {
-                {"path", path},
-                {"lines", {{"begin", normalize_line(suggestion.target_file.line_start)}}}
-            };
-            return issue;
         }
 
     }  // namespace
@@ -457,93 +382,6 @@ namespace bha::exporters
             return ExportFormat::Markdown;
         }
         return std::nullopt;
-    }
-
-    std::string_view pr_annotation_format_to_string(const PRAnnotationFormat format) noexcept {
-        switch (format) {
-            case PRAnnotationFormat::GitHub:
-                return "github";
-            case PRAnnotationFormat::GitLabCodeQuality:
-                return "gitlab";
-        }
-        return "unknown";
-    }
-
-    std::optional<PRAnnotationFormat> string_to_pr_annotation_format(const std::string_view str) noexcept {
-        if (str == "github" || str == "gh" || str == "actions") {
-            return PRAnnotationFormat::GitHub;
-        }
-        if (str == "gitlab" || str == "gitlab-codequality" || str == "codequality") {
-            return PRAnnotationFormat::GitLabCodeQuality;
-        }
-        return std::nullopt;
-    }
-
-    Result<std::string, Error> export_pr_annotations(
-        const std::vector<Suggestion>& suggestions,
-        const PRAnnotationFormat format,
-        const fs::path& project_root,
-        const std::size_t max_suggestions
-    ) {
-        std::vector<const Suggestion*> filtered;
-        filtered.reserve(suggestions.size());
-        for (const auto& suggestion : suggestions) {
-            filtered.push_back(&suggestion);
-        }
-        if (max_suggestions > 0 && filtered.size() > max_suggestions) {
-            filtered.resize(max_suggestions);
-        }
-
-        if (format == PRAnnotationFormat::GitHub) {
-            std::ostringstream out;
-            for (const auto* suggestion : filtered) {
-                const std::string command = github_command_for_priority(suggestion->priority);
-                std::ostringstream metadata;
-                const std::string path = normalize_output_path(suggestion->target_file.path, project_root);
-                bool has_property = false;
-                auto append_property = [&](const std::string& key, const std::string& value) {
-                    if (has_property) {
-                        metadata << ",";
-                    }
-                    metadata << key << "=" << value;
-                    has_property = true;
-                };
-                if (!path.empty()) {
-                    append_property("file", escape_github_property(path));
-                    append_property("line", std::to_string(normalize_line(suggestion->target_file.line_start)));
-                    append_property("endLine", std::to_string(normalize_line(
-                        suggestion->target_file.line_end > 0
-                            ? suggestion->target_file.line_end
-                            : suggestion->target_file.line_start
-                    )));
-                    if (suggestion->target_file.col_start > 0) {
-                        append_property("col", std::to_string(suggestion->target_file.col_start));
-                    }
-                    if (suggestion->target_file.col_end > 0) {
-                        append_property("endColumn", std::to_string(suggestion->target_file.col_end));
-                    }
-                }
-                append_property("title", escape_github_property(
-                    "BHA " + std::string(to_string(suggestion->type))
-                ));
-
-                const std::string message = suggestion->title + ": " + suggestion->description;
-                out << "::" << command << " " << metadata.str()
-                    << "::" << escape_github_data(message) << "\n";
-            }
-            return Result<std::string, Error>::success(out.str());
-        }
-
-        using json = nlohmann::json;
-        json issues = json::array();
-        for (const auto* suggestion : filtered) {
-            auto issue = build_gitlab_code_quality_issue(*suggestion, project_root);
-            if (issue.is_null()) {
-                continue;
-            }
-            issues.push_back(std::move(issue));
-        }
-        return Result<std::string, Error>::success(issues.dump(2));
     }
 
     // =============================================================================

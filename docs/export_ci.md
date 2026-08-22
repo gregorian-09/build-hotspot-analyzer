@@ -30,19 +30,6 @@ Suggestion payload inclusion is intentionally controlled by format and flags:
 - `sarif` is suggestion-oriented by design
 - HTML/JSON exports are analysis-first to reduce report noise
 
-## PR-Native Annotations
-
-Generate annotation output for PR pipelines:
-
-```bash
-bha export traces --format json -o report.json --pr-annotations github
-bha export traces --format json -o report.json --pr-annotations gitlab --annotations-output gl-codequality.json
-```
-
-Supported formats:
-- GitHub workflow commands
-- GitLab Code Quality JSON
-
 ## SARIF for Code Scanning
 
 Generate SARIF:
@@ -81,8 +68,7 @@ Gate semantics:
 2. Run `bha analyze` and `bha export` (json/html/sarif).
 3. Save snapshot for current commit.
 4. Compare against baseline snapshot with gates.
-5. Emit PR annotations.
-6. Optionally run LSP/runner auto-apply in dedicated optimization jobs.
+5. Optionally run LSP/runner auto-apply in dedicated optimization jobs.
 
 ## Trust Loop in CI/IDE
 

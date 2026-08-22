@@ -210,8 +210,6 @@ Important options:
 - `-o`, `--output` (required)
 - `-f`, `--format`
 - `-s`, `--include-suggestions` (for `csv`/`md`/`sarif`)
-- `--pr-annotations` (`github`, `gitlab`)
-- `--annotations-output`
 - `--dark-mode`
 - `--title`
 - `--max-files`
@@ -232,7 +230,7 @@ Examples:
 ```bash
 bha export traces --format html --dark-mode -o report.html
 bha export traces --format sarif -o bha.sarif
-bha export traces --format json --pr-annotations github --annotations-output gha.txt -o report.json
+bha export traces --format json -o report.json
 ```
 
 ---

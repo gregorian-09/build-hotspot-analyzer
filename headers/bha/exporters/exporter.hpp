@@ -235,37 +235,6 @@ namespace bha::exporters
     [[nodiscard]] std::optional<ExportFormat> string_to_format(std::string_view str) noexcept;
 
     /**
-     * PR annotation output formats.
-     */
-    enum class PRAnnotationFormat {
-        GitHub,
-        GitLabCodeQuality
-    };
-
-    /**
-     * Converts PR annotation format to string.
-     */
-    [[nodiscard]] std::string_view pr_annotation_format_to_string(PRAnnotationFormat format) noexcept;
-
-    /**
-     * Parses PR annotation format from string.
-     */
-    [[nodiscard]] std::optional<PRAnnotationFormat> string_to_pr_annotation_format(std::string_view str) noexcept;
-
-    /**
-     * Exports suggestions as PR-native annotations.
-     *
-     * - GitHub: workflow command annotations (`::warning ...::message`)
-     * - GitLabCodeQuality: Code Quality JSON artifact format
-     */
-    [[nodiscard]] Result<std::string, Error> export_pr_annotations(
-        const std::vector<Suggestion>& suggestions,
-        PRAnnotationFormat format,
-        const fs::path& project_root = {},
-        std::size_t max_suggestions = 0
-    );
-
-    /**
      * JSON Exporter.
      *
      * Exports analysis results to JSON format with a versioned schema.

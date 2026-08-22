@@ -233,10 +233,6 @@ Exporter factory supports:
 - SARIF
 - Markdown
 
-Additional output surfaces:
-- GitHub PR annotations
-- GitLab code-quality annotations
-
 Export layer also serializes:
 - cache/distribution suitability metrics
 - explainability payloads where available

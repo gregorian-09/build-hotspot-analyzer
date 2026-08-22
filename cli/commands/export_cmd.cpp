@@ -15,7 +15,6 @@
 #include "bha/exporters/exporter.hpp"
 
 #include <iostream>
-#include <fstream>
 #include <filesystem>
 #include <unordered_map>
 
@@ -44,7 +43,7 @@ namespace bha::cli
                    "  bha export --format html -o report.html build/*.json\n"
                    "  bha export --format csv -o data.csv trace.json\n"
                    "  bha export --format sarif -o bha.sarif traces/\n"
-                   "  bha export --format json -o report.json --pr-annotations github traces/";
+                   "  bha export --format json -o report.json traces/";
         }
 
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
@@ -52,8 +51,6 @@ namespace bha::cli
                 {"output", 'o', "Output file (required)", true, true, "", "FILE"},
                 {"format", 'f', "Output format (json, html, csv, sarif, md)", false, true, "", "FORMAT"},
                 {"include-suggestions", 's', "Include optimization suggestions (csv/md/sarif)", false, false, "", ""},
-                {"pr-annotations", 0, "Emit PR annotations (github, gitlab)", false, true, "", "FORMAT"},
-                {"annotations-output", 0, "Output file for annotations (default: stdout)", false, true, "", "FILE"},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
@@ -118,17 +115,6 @@ namespace bha::cli
                     print_error("Use --format to specify the output format");
                     return 1;
                 }
-            }
-
-            std::optional<exporters::PRAnnotationFormat> pr_annotation_format;
-            if (auto format_name = args.get("pr-annotations")) {
-                auto parsed = exporters::string_to_pr_annotation_format(*format_name);
-                if (!parsed) {
-                    print_error("Unknown PR annotation format: " + *format_name);
-                    print_error("Supported formats: github, gitlab");
-                    return 1;
-                }
-                pr_annotation_format = parsed;
             }
 
             // Collect trace files AND memory files
@@ -246,8 +232,7 @@ namespace bha::cli
             if (args.get_flag("include-suggestions") && !supports_suggestions_payload) {
                 print_verbose("Suggestions payload is disabled for JSON/HTML exports");
             }
-            const bool needs_suggestions_for_annotations = pr_annotation_format.has_value();
-            const bool needs_suggestions = include_suggestions || needs_suggestions_for_annotations;
+            const bool needs_suggestions = include_suggestions;
 
             // Generate suggestions if requested and supported by target payload
             std::vector<Suggestion> suggestions;
@@ -323,37 +308,6 @@ namespace bha::cli
             if (!export_result.is_ok()) {
                 print_error("Export failed: " + export_result.error().message());
                 return 1;
-            }
-
-            if (pr_annotation_format.has_value()) {
-                auto annotation_result = exporters::export_pr_annotations(
-                    suggestions,
-                    *pr_annotation_format,
-                    project_root,
-                    export_opts.max_suggestions
-                );
-                if (!annotation_result.is_ok()) {
-                    print_error("Failed to generate PR annotations: " + annotation_result.error().message());
-                    return 1;
-                }
-
-                if (auto annotations_path = args.get("annotations-output")) {
-                    std::ofstream out(*annotations_path);
-                    if (!out.is_open()) {
-                        print_error("Failed to open annotations output file: " + *annotations_path);
-                        return 1;
-                    }
-                    out << annotation_result.value();
-                    if (!is_quiet()) {
-                        std::cout << "Exported " << exporters::pr_annotation_format_to_string(*pr_annotation_format)
-                                  << " annotations to " << *annotations_path << "\n";
-                    }
-                } else {
-                    std::cout << annotation_result.value();
-                    if (!annotation_result.value().empty() && annotation_result.value().back() != '\n') {
-                        std::cout << "\n";
-                    }
-                }
             }
 
             if (!is_quiet()) {

@@ -5,8 +5,6 @@
 #include <gtest/gtest.h>
 #include <sstream>
 #include <filesystem>
-#include <nlohmann/json.hpp>
-
 #include "bha/exporters/exporter.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
@@ -467,34 +465,4 @@ namespace bha::exporters::test
         EXPECT_FALSE(string_to_format("invalid").has_value());
     }
 
-    TEST(AnnotationFormatTest, ParseFormat) {
-        EXPECT_EQ(string_to_pr_annotation_format("github"), PRAnnotationFormat::GitHub);
-        EXPECT_EQ(string_to_pr_annotation_format("gitlab"), PRAnnotationFormat::GitLabCodeQuality);
-        EXPECT_EQ(string_to_pr_annotation_format("codequality"), PRAnnotationFormat::GitLabCodeQuality);
-        EXPECT_FALSE(string_to_pr_annotation_format("invalid").has_value());
-    }
-
-    TEST(AnnotationExportTest, GitHubAnnotationsContainWorkflowCommands) {
-        auto suggestions = create_sample_suggestions();
-        auto result = export_pr_annotations(suggestions, PRAnnotationFormat::GitHub);
-        ASSERT_TRUE(result.is_ok());
-        const auto& text = result.value();
-        EXPECT_TRUE(text.find("::warning") != std::string::npos);
-        EXPECT_TRUE(text.find("file=include/header.h") != std::string::npos);
-        EXPECT_TRUE(text.find("line=10") != std::string::npos);
-    }
-
-    TEST(AnnotationExportTest, GitLabAnnotationsAreValidCodeQualityJson) {
-        auto suggestions = create_sample_suggestions();
-        auto result = export_pr_annotations(suggestions, PRAnnotationFormat::GitLabCodeQuality);
-        ASSERT_TRUE(result.is_ok());
-        const auto parsed = nlohmann::json::parse(result.value());
-        ASSERT_TRUE(parsed.is_array());
-        ASSERT_FALSE(parsed.empty());
-        EXPECT_TRUE(parsed.front().contains("description"));
-        EXPECT_TRUE(parsed.front().contains("check_name"));
-        EXPECT_TRUE(parsed.front().contains("fingerprint"));
-        EXPECT_TRUE(parsed.front().contains("severity"));
-        EXPECT_TRUE(parsed.front().contains("location"));
-    }
 }  // namespace bha::exporters::test

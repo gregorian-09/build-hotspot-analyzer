@@ -13,7 +13,7 @@ It combines:
 - structured build-time analysis
 - actionable optimization suggestions
 - optional safe auto-apply and rollback workflows
-- export pipelines for HTML, JSON, SARIF, CSV, Markdown, and PR annotations
+- export pipelines for HTML, JSON, SARIF, CSV, and Markdown
 - LSP-powered IDE integrations for editor-driven workflows
 
 ## Why BHA Exists
@@ -83,7 +83,6 @@ BHA is built to close that gap with a single workflow:
 - `csv`
 - `sarif`
 - `md`
-- GitHub and GitLab annotation formats
 
 ## Project Layout
 
@@ -275,7 +274,7 @@ The VS Code extension icon is synchronized from:
 - `docs/lsp_reference.md`: LSP commands, settings, and apply flow
 - `docs/ide_integrations.md`: VS Code, Neovim, Emacs, local setup, and user-facing distribution
 - `docs/suggestions_reference.md`: suggester behavior, guardrails, and constraints
-- `docs/export_ci.md`: exporters, SARIF, PR annotations, and CI usage
+- `docs/export_ci.md`: exporters, SARIF, and CI usage
 - `docs/architecture.md`: internal architecture and component layout
 - `docs/development.md`: contributor workflow and testing
 - `docs/coverage_matrix.md`: documentation coverage status
