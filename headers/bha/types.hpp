@@ -280,6 +280,36 @@ namespace bha {
         return "unknown";
     }
 
+    /**
+     * Role of one build-system command event.
+     */
+    enum class BuildStepRole : std::uint8_t {
+        Unknown,
+        Configure,
+        Generate,
+        Build,
+        Compile,
+        Link,
+        Custom,
+        Test,
+        Install
+    };
+
+    inline const char* to_string(const BuildStepRole role) noexcept {
+        switch (role) {
+            case BuildStepRole::Unknown:   return "unknown";
+            case BuildStepRole::Configure: return "configure";
+            case BuildStepRole::Generate:  return "generate";
+            case BuildStepRole::Build:     return "build";
+            case BuildStepRole::Compile:   return "compile";
+            case BuildStepRole::Link:      return "link";
+            case BuildStepRole::Custom:    return "custom";
+            case BuildStepRole::Test:      return "test";
+            case BuildStepRole::Install:   return "install";
+        }
+        return "unknown";
+    }
+
     [[nodiscard]] inline CompilerFamily compiler_family(const CompilerType type) noexcept {
         switch (type) {
             case CompilerType::Clang:
@@ -567,6 +597,48 @@ namespace bha {
     };
 
     /**
+     * One build-system command with producer-provided timing.
+     */
+    struct BuildCommandEvent {
+        std::string id;
+        BuildStepRole role = BuildStepRole::Unknown;
+        std::string command;
+        fs::path working_directory;
+        std::string target;
+        std::string language;
+        fs::path source;
+        std::vector<fs::path> outputs;
+        std::vector<std::uintmax_t> output_sizes;
+        std::string test_name;
+        std::string configuration;
+        std::optional<Timestamp> start_time;
+        Duration duration = Duration::zero();
+        std::optional<int> result;
+        std::vector<std::string> dependency_ids;
+        MetricProvenance timing_provenance;
+
+        [[nodiscard]] bool has_exact_timing() const noexcept {
+            return start_time.has_value() && duration >= Duration::zero() &&
+                   timing_provenance.evidence == EvidenceKind::Observed;
+        }
+    };
+
+    /**
+     * Build-system event session independent of compiler-specific trace files.
+     */
+    struct BuildSession {
+        std::string id;
+        BuildSystemType build_system = BuildSystemType::Unknown;
+        std::string build_system_version;
+        std::string configuration;
+        std::string platform;
+        std::string instrumentation_hook;
+        bool dependency_graph_complete = false;
+        std::vector<BuildCommandEvent> commands;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -582,6 +654,7 @@ namespace bha {
         TemplateEvidence template_evidence = TemplateEvidence::None;
         bool template_semantic_validated = false;
         std::vector<MetricCapability> metric_capabilities;
+        std::optional<BuildSession> build_session;
 
         std::vector<CompilationUnit> units;
 

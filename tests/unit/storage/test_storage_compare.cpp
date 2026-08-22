@@ -122,6 +122,24 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.cache_distribution.distributed_suitability_score = 61.5;
     analysis.cache_distribution.heavy_translation_units = 4;
     analysis.cache_distribution.homogeneous_command_units = 7;
+    analysis.build_session.timed_commands = 10;
+    analysis.build_session.total_commands = 12;
+    analysis.build_session.wall_clock_time = std::chrono::milliseconds(5000);
+    analysis.build_session.serial_time = std::chrono::milliseconds(9000);
+    analysis.build_session.peak_parallelism = 4;
+    analysis.build_session.average_parallelism = 1.8;
+    analysis.build_session.critical_path_time = std::chrono::milliseconds(4200);
+    analysis.build_session.critical_path = {"compile-a", "link"};
+
+    MetricCapability session_capability;
+    session_capability.metric = "build.command.wall_time";
+    session_capability.provenance.evidence = EvidenceKind::Observed;
+    session_capability.provenance.producer = "cmake-instrumentation";
+    session_capability.provenance.capture_mode = "api-v1-index";
+    session_capability.provenance.scope = "command";
+    session_capability.provenance.timing_domain = TimingDomain::WallClock;
+    session_capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+    analysis.build_session.metric_capabilities.push_back(session_capability);
 
     MetricCapability capability;
     capability.metric = "compile.translation_unit.wall_time";
@@ -155,6 +173,20 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_DOUBLE_EQ(cache.distributed_suitability_score, 61.5);
     EXPECT_EQ(cache.heavy_translation_units, 4u);
     EXPECT_EQ(cache.homogeneous_command_units, 7u);
+
+    const auto& session = load_result.value().analysis.build_session;
+    EXPECT_EQ(session.timed_commands, 10u);
+    EXPECT_EQ(session.total_commands, 12u);
+    EXPECT_EQ(session.wall_clock_time, std::chrono::milliseconds(5000));
+    EXPECT_EQ(session.serial_time, std::chrono::milliseconds(9000));
+    EXPECT_EQ(session.peak_parallelism, 4u);
+    EXPECT_DOUBLE_EQ(session.average_parallelism, 1.8);
+    EXPECT_EQ(session.critical_path_time, std::chrono::milliseconds(4200));
+    ASSERT_EQ(session.critical_path.size(), 2u);
+    EXPECT_EQ(session.critical_path.front(), "compile-a");
+    ASSERT_EQ(session.metric_capabilities.size(), 1u);
+    EXPECT_EQ(session.metric_capabilities.front().metric, "build.command.wall_time");
+    EXPECT_EQ(session.metric_capabilities.front().provenance.capture_mode, "api-v1-index");
 
     ASSERT_EQ(load_result.value().analysis.metric_capabilities.size(), 1u);
     const auto& loaded_capability = load_result.value().analysis.metric_capabilities.front();

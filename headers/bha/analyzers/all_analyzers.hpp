@@ -15,6 +15,7 @@
 #include "bha/analyzers/template_analyzer.hpp"
 #include "bha/analyzers/symbol_analyzer.hpp"
 #include "bha/analyzers/performance_analyzer.hpp"
+#include "bha/analyzers/build_session_analyzer.hpp"
 
 namespace bha::analyzers {
 
@@ -27,6 +28,7 @@ namespace bha::analyzers {
         register_template_analyzer();
         register_symbol_analyzer();
         register_performance_analyzer();
+        register_build_session_analyzer();
     }
 
 }  // namespace bha::analyzers

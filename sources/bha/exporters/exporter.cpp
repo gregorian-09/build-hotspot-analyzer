@@ -50,6 +50,21 @@ namespace bha::exporters
             return ss.str();
         }
 
+        nlohmann::json serialize_metric_capability(const MetricCapability& capability) {
+            const auto& provenance = capability.provenance;
+            return {
+                {"metric", capability.metric},
+                {"evidence", to_string(provenance.evidence)},
+                {"producer", provenance.producer},
+                {"producer_version", provenance.producer_version},
+                {"capture_mode", provenance.capture_mode},
+                {"scope", provenance.scope},
+                {"timing_domain", to_string(provenance.timing_domain)},
+                {"timing_aggregation", to_string(provenance.timing_aggregation)},
+                {"limitation", provenance.limitation}
+            };
+        }
+
         /**
          * Normalizes path separators to forward slashes for consistent graph IDs.
          * Uses generic_string() for fs::path which is cross-platform portable.
@@ -395,20 +410,28 @@ namespace bha::exporters
         summary["cache_risk_compilations"] = analysis.cache_distribution.cache_risk_compilations;
         summary["distributed_suitability_score"] = analysis.cache_distribution.distributed_suitability_score;
 
+        if (analysis.build_session.total_commands > 0) {
+            summary["build_session"] = {
+                {"timed_commands", analysis.build_session.timed_commands},
+                {"total_commands", analysis.build_session.total_commands},
+                {"wall_clock_time_ms", duration_to_ms(analysis.build_session.wall_clock_time)},
+                {"serial_time_ms", duration_to_ms(analysis.build_session.serial_time)},
+                {"peak_parallelism", analysis.build_session.peak_parallelism},
+                {"average_parallelism", analysis.build_session.average_parallelism},
+                {"critical_path_time_ms", duration_to_ms(analysis.build_session.critical_path_time)},
+                {"critical_path", analysis.build_session.critical_path},
+                {"metric_capabilities", json::array()}
+            };
+            for (const auto& capability : analysis.build_session.metric_capabilities) {
+                summary["build_session"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
+            }
+        }
+
         json capabilities = json::array();
         for (const auto& capability : analysis.metric_capabilities) {
-            const auto& provenance = capability.provenance;
-            capabilities.push_back({
-                {"metric", capability.metric},
-                {"evidence", to_string(provenance.evidence)},
-                {"producer", provenance.producer},
-                {"producer_version", provenance.producer_version},
-                {"capture_mode", provenance.capture_mode},
-                {"scope", provenance.scope},
-                {"timing_domain", to_string(provenance.timing_domain)},
-                {"timing_aggregation", to_string(provenance.timing_aggregation)},
-                {"limitation", provenance.limitation}
-            });
+            capabilities.push_back(serialize_metric_capability(capability));
         }
         summary["metric_capabilities"] = std::move(capabilities);
 

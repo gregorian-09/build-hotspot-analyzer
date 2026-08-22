@@ -241,6 +241,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/build_systems/buck2_adapter.cpp
         sources/bha/build_systems/scons_adapter.cpp
         sources/bha/build_systems/xcode_adapter.cpp
+        sources/bha/build_sessions/cmake_instrumentation.cpp
         sources/bha/refactor/pimpl_eligibility.cpp
         sources/bha/suggestions/consolidator.cpp
         sources/bha/suggestions/forward_decl_suggester.cpp
@@ -256,6 +257,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/analyzer_registry.cpp
         sources/bha/analyzers/dependency_analyzer.cpp
         sources/bha/analyzers/file_analyzer.cpp
+        sources/bha/analyzers/build_session_analyzer.cpp
         sources/bha/analyzers/performance_analyzer.cpp
         sources/bha/analyzers/symbol_analyzer.cpp
         sources/bha/analyzers/template_analyzer.cpp

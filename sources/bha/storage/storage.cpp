@@ -337,6 +337,42 @@ namespace bha::storage
             return cache;
         }
 
+        nlohmann::json serialize_build_session(
+            const analyzers::BuildSessionAnalysisResult& session
+        ) {
+            return {
+                {"timed_commands", session.timed_commands},
+                {"total_commands", session.total_commands},
+                {"wall_clock_time_ms", duration_to_ms(session.wall_clock_time)},
+                {"serial_time_ms", duration_to_ms(session.serial_time)},
+                {"peak_parallelism", session.peak_parallelism},
+                {"average_parallelism", session.average_parallelism},
+                {"critical_path_time_ms", duration_to_ms(session.critical_path_time)},
+                {"critical_path", session.critical_path},
+                {"metric_capabilities", serialize_metric_capabilities(session.metric_capabilities)}
+            };
+        }
+
+        analyzers::BuildSessionAnalysisResult deserialize_build_session(
+            const nlohmann::json& j
+        ) {
+            analyzers::BuildSessionAnalysisResult session;
+            session.timed_commands = j.value("timed_commands", std::size_t{0});
+            session.total_commands = j.value("total_commands", std::size_t{0});
+            session.wall_clock_time = ms_to_duration(j.value("wall_clock_time_ms", 0.0));
+            session.serial_time = ms_to_duration(j.value("serial_time_ms", 0.0));
+            session.peak_parallelism = j.value("peak_parallelism", std::size_t{0});
+            session.average_parallelism = j.value("average_parallelism", 0.0);
+            session.critical_path_time = ms_to_duration(j.value("critical_path_time_ms", 0.0));
+            if (j.contains("critical_path")) {
+                session.critical_path = j["critical_path"].get<std::vector<std::string>>();
+            }
+            if (j.contains("metric_capabilities")) {
+                session.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
+            return session;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -494,6 +530,7 @@ namespace bha::storage
 
         j["templates"] = serialize_templates(analysis.templates);
         j["cache_distribution"] = serialize_cache_distribution(analysis.cache_distribution);
+        j["build_session"] = serialize_build_session(analysis.build_session);
         j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
@@ -573,6 +610,10 @@ namespace bha::storage
 
             if (j.contains("cache_distribution")) {
                 snapshot.analysis.cache_distribution = deserialize_cache_distribution(j["cache_distribution"]);
+            }
+
+            if (j.contains("build_session")) {
+                snapshot.analysis.build_session = deserialize_build_session(j["build_session"]);
             }
 
             if (j.contains("metric_capabilities")) {

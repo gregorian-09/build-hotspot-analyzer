@@ -206,6 +206,30 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact build-session scheduler metrics.
+     */
+    struct BuildSessionAnalysisResult {
+        /// Number of commands with producer-provided exact timing.
+        std::size_t timed_commands = 0;
+        /// Total commands in the captured build session.
+        std::size_t total_commands = 0;
+        /// Elapsed span from the first command start to the last command end.
+        Duration wall_clock_time = Duration::zero();
+        /// Sum of timed command durations.
+        Duration serial_time = Duration::zero();
+        /// Maximum number of overlapping timed commands.
+        std::size_t peak_parallelism = 0;
+        /// Average parallelism derived from serial time divided by wall time.
+        double average_parallelism = 0.0;
+        /// Longest dependency-respecting command path when edges are complete.
+        Duration critical_path_time = Duration::zero();
+        /// Command IDs on the exact critical path.
+        std::vector<std::string> critical_path;
+        /// Provenance and availability for session-level metrics.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Cacheability/distributed-build suitability summary.
      */
     struct CacheDistributionAnalysisResult {
@@ -258,6 +282,8 @@ namespace bha::analyzers {
         SymbolAnalysisResult symbols;
         /// Cache/distribution suitability metrics.
         CacheDistributionAnalysisResult cache_distribution;
+        /// Build-system scheduler and command-event metrics.
+        BuildSessionAnalysisResult build_session;
         /// Evidence and capability state for metrics in this result.
         std::vector<MetricCapability> metric_capabilities;
 

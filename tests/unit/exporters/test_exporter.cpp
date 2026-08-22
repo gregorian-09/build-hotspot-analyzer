@@ -90,6 +90,22 @@ namespace bha::exporters::test
         result.cache_distribution.heavy_translation_units = 8;
         result.cache_distribution.homogeneous_command_units = 22;
 
+        result.build_session.timed_commands = 2;
+        result.build_session.total_commands = 2;
+        result.build_session.wall_clock_time = std::chrono::seconds(2);
+        result.build_session.serial_time = std::chrono::seconds(3);
+        result.build_session.peak_parallelism = 2;
+        result.build_session.average_parallelism = 1.5;
+        result.build_session.critical_path_time = std::chrono::seconds(2);
+        result.build_session.critical_path = {"compile-a", "link"};
+
+        MetricCapability session_capability;
+        session_capability.metric = "build.scheduler.parallelism";
+        session_capability.provenance.evidence = EvidenceKind::Derived;
+        session_capability.provenance.producer = "BuildSessionAnalyzer";
+        session_capability.provenance.scope = "build-session";
+        result.build_session.metric_capabilities.push_back(session_capability);
+
         MetricCapability capability;
         capability.metric = "compile.translation_unit.wall_time";
         capability.provenance.evidence = EvidenceKind::Observed;
@@ -252,6 +268,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"cache_hit_opportunity_percent\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"metric_capabilities\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"compile.translation_unit.wall_time\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"build_session\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

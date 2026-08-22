@@ -2,6 +2,7 @@
 // Created by gregorian-rayne on 12/30/25.
 //
 
+#include <algorithm>
 #include <ranges>
 
 #include "bha/analyzers/analyzer.hpp"
@@ -188,6 +189,20 @@ namespace bha::analyzers
 
             if (partial.cache_distribution.total_compilations > 0) {
                 combined_result.cache_distribution = partial.cache_distribution;
+            }
+
+            if (partial.build_session.total_commands > 0) {
+                for (const auto& capability : partial.build_session.metric_capabilities) {
+                    const auto existing = std::ranges::find(
+                        combined_result.metric_capabilities,
+                        capability.metric,
+                        &MetricCapability::metric
+                    );
+                    if (existing == combined_result.metric_capabilities.end()) {
+                        combined_result.metric_capabilities.push_back(capability);
+                    }
+                }
+                combined_result.build_session = std::move(partial.build_session);
             }
         }
 

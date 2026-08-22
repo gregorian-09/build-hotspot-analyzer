@@ -8,6 +8,7 @@ add_executable(bha_tests
         unit/parsers/test_nvcc_parser.cpp
         unit/parsers/test_memory_parser.cpp
         unit/build_systems/test_adapter.cpp
+        unit/build_sessions/test_cmake_instrumentation.cpp
         unit/graph/test_graph.cpp
         unit/core/test_error.cpp
         unit/core/test_result.cpp
@@ -27,6 +28,7 @@ add_executable(bha_tests
         unit/suggestions/test_suggester_catalog.cpp
         unit/analyzers/test_dependency_analyzer.cpp
         unit/analyzers/test_file_analyzer.cpp
+        unit/analyzers/test_build_session_analyzer.cpp
         unit/analyzers/test_performance_analyzer.cpp
         unit/analyzers/test_symbol_analyzer.cpp
         unit/analyzers/test_template_analyzer.cpp
