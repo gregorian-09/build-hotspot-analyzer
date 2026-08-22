@@ -639,6 +639,29 @@ namespace bha {
     };
 
     /**
+     * One exact event from a linker Chrome Trace Event profile.
+     */
+    struct LinkerTraceEvent {
+        std::string name;
+        Duration start_offset = Duration::zero();
+        Duration duration = Duration::zero();
+        std::string detail;
+    };
+
+    /**
+     * Exact linker metrics extracted from a producer time trace.
+     */
+    struct LinkerTrace {
+        std::string id;
+        std::string producer = "lld";
+        std::string producer_version;
+        std::vector<LinkerTraceEvent> events;
+        std::optional<Duration> execute_linker_time;
+        std::optional<Duration> lto_time;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -655,6 +678,7 @@ namespace bha {
         bool template_semantic_validated = false;
         std::vector<MetricCapability> metric_capabilities;
         std::optional<BuildSession> build_session;
+        std::optional<LinkerTrace> linker_trace;
 
         std::vector<CompilationUnit> units;
 

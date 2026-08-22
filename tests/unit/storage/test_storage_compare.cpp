@@ -145,13 +145,16 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.linker.output_size_observations = 1;
     analysis.linker.wall_clock_time = std::chrono::milliseconds(2200);
     analysis.linker.output_bytes = 8192;
+    analysis.linker.trace_wall_clock_time = std::chrono::milliseconds(2400);
+    analysis.linker.lto_time = std::chrono::milliseconds(1100);
     MetricCapability linker_capability;
     linker_capability.metric = "lto.wall_time";
-    linker_capability.provenance.evidence = EvidenceKind::Unavailable;
-    linker_capability.provenance.producer = "LinkerAnalyzer";
-    linker_capability.provenance.capture_mode = "build-session-events";
-    linker_capability.provenance.scope = "link-command";
-    linker_capability.provenance.limitation = "No linker time-trace evidence is attached";
+    linker_capability.provenance.evidence = EvidenceKind::Observed;
+    linker_capability.provenance.producer = "lld";
+    linker_capability.provenance.capture_mode = "--time-trace";
+    linker_capability.provenance.scope = "Total LTO";
+    linker_capability.provenance.timing_domain = TimingDomain::WallClock;
+    linker_capability.provenance.timing_aggregation = TimingAggregation::Inclusive;
     analysis.linker.metric_capabilities.push_back(linker_capability);
 
     MetricCapability capability;
@@ -207,9 +210,13 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(linker.output_size_observations, 1u);
     EXPECT_EQ(linker.wall_clock_time, std::chrono::milliseconds(2200));
     EXPECT_EQ(linker.output_bytes, 8192u);
+    ASSERT_TRUE(linker.trace_wall_clock_time.has_value());
+    EXPECT_EQ(*linker.trace_wall_clock_time, std::chrono::milliseconds(2400));
+    ASSERT_TRUE(linker.lto_time.has_value());
+    EXPECT_EQ(*linker.lto_time, std::chrono::milliseconds(1100));
     ASSERT_EQ(linker.metric_capabilities.size(), 1u);
     EXPECT_EQ(linker.metric_capabilities.front().metric, "lto.wall_time");
-    EXPECT_EQ(linker.metric_capabilities.front().provenance.evidence, EvidenceKind::Unavailable);
+    EXPECT_EQ(linker.metric_capabilities.front().provenance.evidence, EvidenceKind::Observed);
 
     ASSERT_EQ(load_result.value().analysis.metric_capabilities.size(), 1u);
     const auto& loaded_capability = load_result.value().analysis.metric_capabilities.front();

@@ -114,4 +114,31 @@ namespace bha::analyzers::test {
         EXPECT_TRUE(result.value().linker.metric_capabilities.empty());
     }
 
+    TEST(LinkerAnalyzerTest, UsesAttachedLinkerTraceForLtoEvidence) {
+        BuildTrace trace;
+        trace.linker_trace = LinkerTrace{};
+        trace.linker_trace->execute_linker_time = std::chrono::milliseconds(20);
+        trace.linker_trace->lto_time = std::chrono::milliseconds(12);
+
+        LinkerAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().linker;
+        EXPECT_EQ(analysis.invocations, 1u);
+        ASSERT_TRUE(analysis.trace_wall_clock_time.has_value());
+        EXPECT_EQ(*analysis.trace_wall_clock_time, std::chrono::milliseconds(20));
+        ASSERT_TRUE(analysis.lto_time.has_value());
+        EXPECT_EQ(*analysis.lto_time, std::chrono::milliseconds(12));
+
+        const auto* lto = find_capability(analysis, "lto.wall_time");
+        ASSERT_NE(lto, nullptr);
+        EXPECT_EQ(lto->provenance.evidence, EvidenceKind::Observed);
+        EXPECT_EQ(lto->provenance.producer, "lld");
+
+        const auto* trace_wall_time = find_capability(analysis, "linker.trace.wall_time");
+        ASSERT_NE(trace_wall_time, nullptr);
+        EXPECT_EQ(trace_wall_time->provenance.evidence, EvidenceKind::Observed);
+    }
+
 }  // namespace bha::analyzers::test

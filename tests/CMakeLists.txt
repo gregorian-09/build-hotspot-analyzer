@@ -5,6 +5,7 @@ add_executable(bha_tests
         unit/parsers/test_gcc_parser.cpp
         unit/parsers/test_msvc_parser.cpp
         unit/parsers/test_intel_parser.cpp
+        unit/parsers/test_lld_trace_parser.cpp
         unit/parsers/test_nvcc_parser.cpp
         unit/parsers/test_memory_parser.cpp
         unit/build_systems/test_adapter.cpp

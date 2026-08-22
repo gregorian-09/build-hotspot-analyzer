@@ -436,9 +436,17 @@ namespace bha::exporters
                 {"output_size_observations", analysis.linker.output_size_observations},
                 {"wall_clock_time_ms", duration_to_ms(analysis.linker.wall_clock_time)},
                 {"output_bytes", analysis.linker.output_bytes},
-                {"lto_time_ms", duration_to_ms(analysis.linker.lto_time)},
+                {"trace_wall_clock_time_ms", nullptr},
+                {"lto_time_ms", nullptr},
                 {"metric_capabilities", json::array()}
             };
+            if (analysis.linker.trace_wall_clock_time.has_value()) {
+                summary["linker"]["trace_wall_clock_time_ms"] =
+                    duration_to_ms(*analysis.linker.trace_wall_clock_time);
+            }
+            if (analysis.linker.lto_time.has_value()) {
+                summary["linker"]["lto_time_ms"] = duration_to_ms(*analysis.linker.lto_time);
+            }
             for (const auto& capability : analysis.linker.metric_capabilities) {
                 summary["linker"]["metric_capabilities"].push_back(
                     serialize_metric_capability(capability)

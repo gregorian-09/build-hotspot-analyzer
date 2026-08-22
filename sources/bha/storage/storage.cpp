@@ -376,15 +376,23 @@ namespace bha::storage
         nlohmann::json serialize_linker(
             const analyzers::LinkerAnalysisResult& linker
         ) {
-            return {
+            nlohmann::json result = {
                 {"invocations", linker.invocations},
                 {"timed_invocations", linker.timed_invocations},
                 {"output_size_observations", linker.output_size_observations},
                 {"wall_clock_time_ms", duration_to_ms(linker.wall_clock_time)},
                 {"output_bytes", linker.output_bytes},
-                {"lto_time_ms", duration_to_ms(linker.lto_time)},
+                {"trace_wall_clock_time_ms", nullptr},
+                {"lto_time_ms", nullptr},
                 {"metric_capabilities", serialize_metric_capabilities(linker.metric_capabilities)}
             };
+            if (linker.trace_wall_clock_time.has_value()) {
+                result["trace_wall_clock_time_ms"] = duration_to_ms(*linker.trace_wall_clock_time);
+            }
+            if (linker.lto_time.has_value()) {
+                result["lto_time_ms"] = duration_to_ms(*linker.lto_time);
+            }
+            return result;
         }
 
         analyzers::LinkerAnalysisResult deserialize_linker(
@@ -396,7 +404,14 @@ namespace bha::storage
             linker.output_size_observations = j.value("output_size_observations", std::size_t{0});
             linker.wall_clock_time = ms_to_duration(j.value("wall_clock_time_ms", 0.0));
             linker.output_bytes = j.value("output_bytes", std::uintmax_t{0});
-            linker.lto_time = ms_to_duration(j.value("lto_time_ms", 0.0));
+            if (j.contains("trace_wall_clock_time_ms") && !j["trace_wall_clock_time_ms"].is_null()) {
+                linker.trace_wall_clock_time = ms_to_duration(
+                    j["trace_wall_clock_time_ms"].get<double>()
+                );
+            }
+            if (j.contains("lto_time_ms") && !j["lto_time_ms"].is_null()) {
+                linker.lto_time = ms_to_duration(j["lto_time_ms"].get<double>());
+            }
             if (j.contains("metric_capabilities")) {
                 linker.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
             }

@@ -226,6 +226,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/parser_registry.cpp
         sources/bha/parsers/msvc_parser.cpp
         sources/bha/parsers/intel_parser.cpp
+        sources/bha/parsers/lld_trace_parser.cpp
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/project_index.cpp

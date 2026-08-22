@@ -243,8 +243,10 @@ namespace bha::analyzers {
         Duration wall_clock_time = Duration::zero();
         /// Sum of producer-reported link output sizes.
         std::uintmax_t output_bytes = 0;
+        /// Linker trace wall time, populated only by a linker trace adapter.
+        std::optional<Duration> trace_wall_clock_time;
         /// LTO time, populated only by a linker trace adapter.
-        Duration lto_time = Duration::zero();
+        std::optional<Duration> lto_time;
         /// Provenance and availability for linker metrics.
         std::vector<MetricCapability> metric_capabilities;
     };

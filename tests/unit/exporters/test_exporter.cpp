@@ -111,6 +111,8 @@ namespace bha::exporters::test
         result.linker.output_size_observations = 1;
         result.linker.wall_clock_time = std::chrono::seconds(2);
         result.linker.output_bytes = 4096;
+        result.linker.trace_wall_clock_time = std::chrono::milliseconds(2200);
+        result.linker.lto_time = std::chrono::milliseconds(900);
         result.linker.metric_capabilities.push_back({
             "link.output_bytes",
             MetricProvenance{
