@@ -662,6 +662,36 @@ namespace bha {
     };
 
     /**
+     * Target metadata read from a build-system semantic model.
+     */
+    struct BuildTarget {
+        std::string id;
+        std::string name;
+        std::string type;
+        fs::path source_directory;
+        fs::path build_directory;
+        fs::path name_on_disk;
+        std::vector<fs::path> artifacts;
+        std::string link_language;
+        bool lto_enabled = false;
+        std::vector<std::string> dependencies;
+    };
+
+    /**
+     * Complete target ownership graph for one build configuration.
+     */
+    struct BuildTargetGraph {
+        std::string id;
+        std::string producer_version;
+        std::string configuration;
+        fs::path source_root;
+        fs::path build_root;
+        bool complete = false;
+        std::vector<BuildTarget> targets;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -679,6 +709,7 @@ namespace bha {
         std::vector<MetricCapability> metric_capabilities;
         std::optional<BuildSession> build_session;
         std::optional<LinkerTrace> linker_trace;
+        std::optional<BuildTargetGraph> target_graph;
 
         std::vector<CompilationUnit> units;
 
