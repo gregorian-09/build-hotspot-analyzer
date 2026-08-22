@@ -47,6 +47,7 @@ namespace bha::analyzers
         const AnalysisOptions& options
     ) {
         AnalysisResult combined_result;
+        combined_result.metric_capabilities = trace.metric_capabilities;
         const auto start_time = std::chrono::steady_clock::now();
         const auto total_deadline = options.max_total_time != Duration::zero()
             ? std::optional<std::chrono::steady_clock::time_point>(start_time + options.max_total_time)

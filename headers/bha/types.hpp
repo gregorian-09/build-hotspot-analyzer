@@ -114,6 +114,92 @@ namespace bha {
     };
 
     /**
+     * Evidence status for an analytics metric.
+     *
+     * Metrics without producer evidence remain explicitly unavailable. The
+     * status is intentionally separate from suggestion confidence: confidence
+     * cannot turn an unavailable metric into evidence.
+     */
+    enum class EvidenceKind : std::uint8_t {
+        Observed,
+        Derived,
+        Unavailable
+    };
+
+    /**
+     * Time domain for a metric that carries timing information.
+     */
+    enum class TimingDomain : std::uint8_t {
+        None,
+        WallClock,
+        Cpu
+    };
+
+    /**
+     * Aggregation semantics for a timing metric.
+     */
+    enum class TimingAggregation : std::uint8_t {
+        None,
+        Exclusive,
+        Inclusive,
+        WallClockResponsibility
+    };
+
+    inline const char* to_string(const EvidenceKind kind) noexcept {
+        switch (kind) {
+            case EvidenceKind::Observed:    return "observed";
+            case EvidenceKind::Derived:     return "derived";
+            case EvidenceKind::Unavailable: return "unavailable";
+        }
+        return "unavailable";
+    }
+
+    inline const char* to_string(const TimingDomain domain) noexcept {
+        switch (domain) {
+            case TimingDomain::None:      return "none";
+            case TimingDomain::WallClock: return "wall-clock";
+            case TimingDomain::Cpu:       return "cpu";
+        }
+        return "none";
+    }
+
+    inline const char* to_string(const TimingAggregation aggregation) noexcept {
+        switch (aggregation) {
+            case TimingAggregation::None:                  return "none";
+            case TimingAggregation::Exclusive:             return "exclusive";
+            case TimingAggregation::Inclusive:             return "inclusive";
+            case TimingAggregation::WallClockResponsibility: return "wall-clock-responsibility";
+        }
+        return "none";
+    }
+
+    /**
+     * Provenance and timing semantics for one metric.
+     */
+    struct MetricProvenance {
+        EvidenceKind evidence = EvidenceKind::Unavailable;
+        std::string producer;
+        std::string producer_version;
+        std::string capture_mode;
+        std::string scope;
+        TimingDomain timing_domain = TimingDomain::None;
+        TimingAggregation timing_aggregation = TimingAggregation::None;
+        std::string limitation;
+
+        [[nodiscard]] bool has_evidence() const noexcept {
+            return evidence != EvidenceKind::Unavailable;
+        }
+    };
+
+    /**
+     * Capability state for a named analytics metric.
+     */
+    struct MetricCapability {
+        std::string metric;
+        MetricProvenance provenance;
+    };
+
+    /**
      * Coarse compiler families used for support-matrix decisions.
      */
     enum class CompilerFamily {
@@ -492,6 +578,7 @@ namespace bha {
         std::string platform;
         TemplateEvidence template_evidence = TemplateEvidence::None;
         bool template_semantic_validated = false;
+        std::vector<MetricCapability> metric_capabilities;
 
         std::vector<CompilationUnit> units;
 

@@ -90,6 +90,17 @@ namespace bha::exporters::test
         result.cache_distribution.heavy_translation_units = 8;
         result.cache_distribution.homogeneous_command_units = 22;
 
+        MetricCapability capability;
+        capability.metric = "compile.translation_unit.wall_time";
+        capability.provenance.evidence = EvidenceKind::Observed;
+        capability.provenance.producer = "clang";
+        capability.provenance.producer_version = "18.1.3";
+        capability.provenance.capture_mode = "-ftime-trace";
+        capability.provenance.scope = "translation-unit";
+        capability.provenance.timing_domain = TimingDomain::WallClock;
+        capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+        result.metric_capabilities.push_back(capability);
+
         result.analysis_time = std::chrono::system_clock::now();
         result.analysis_duration = std::chrono::milliseconds(500);
 
@@ -239,6 +250,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"summary\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"cache_distribution\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"cache_hit_opportunity_percent\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"metric_capabilities\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"compile.translation_unit.wall_time\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

@@ -258,6 +258,8 @@ namespace bha::analyzers {
         SymbolAnalysisResult symbols;
         /// Cache/distribution suitability metrics.
         CacheDistributionAnalysisResult cache_distribution;
+        /// Evidence and capability state for metrics in this result.
+        std::vector<MetricCapability> metric_capabilities;
 
         /// Timestamp when analysis completed.
         Timestamp analysis_time;

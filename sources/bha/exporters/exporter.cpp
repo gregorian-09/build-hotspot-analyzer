@@ -395,6 +395,23 @@ namespace bha::exporters
         summary["cache_risk_compilations"] = analysis.cache_distribution.cache_risk_compilations;
         summary["distributed_suitability_score"] = analysis.cache_distribution.distributed_suitability_score;
 
+        json capabilities = json::array();
+        for (const auto& capability : analysis.metric_capabilities) {
+            const auto& provenance = capability.provenance;
+            capabilities.push_back({
+                {"metric", capability.metric},
+                {"evidence", to_string(provenance.evidence)},
+                {"producer", provenance.producer},
+                {"producer_version", provenance.producer_version},
+                {"capture_mode", provenance.capture_mode},
+                {"scope", provenance.scope},
+                {"timing_domain", to_string(provenance.timing_domain)},
+                {"timing_aggregation", to_string(provenance.timing_aggregation)},
+                {"limitation", provenance.limitation}
+            });
+        }
+        summary["metric_capabilities"] = std::move(capabilities);
+
         if (analysis.performance.total_memory.has_data()) {
             json memory_summary;
             memory_summary["max_stack_bytes"] = analysis.performance.peak_memory.max_stack_bytes;

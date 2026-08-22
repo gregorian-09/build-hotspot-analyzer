@@ -71,6 +71,25 @@ namespace bha
         EXPECT_STREQ(to_string(SupportTier::Deferred), "deferred");
     }
 
+    TEST(MetricEvidenceTest, UsesExplicitEvidenceAndTimingSemantics) {
+        MetricProvenance provenance;
+        EXPECT_EQ(provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(provenance.has_evidence());
+
+        provenance.evidence = EvidenceKind::Observed;
+        provenance.producer = "clang";
+        provenance.producer_version = "18.1.3";
+        provenance.capture_mode = "-ftime-trace";
+        provenance.scope = "translation-unit";
+        provenance.timing_domain = TimingDomain::WallClock;
+        provenance.timing_aggregation = TimingAggregation::Exclusive;
+
+        EXPECT_TRUE(provenance.has_evidence());
+        EXPECT_STREQ(to_string(provenance.evidence), "observed");
+        EXPECT_STREQ(to_string(provenance.timing_domain), "wall-clock");
+        EXPECT_STREQ(to_string(provenance.timing_aggregation), "exclusive");
+    }
+
     TEST(CompilerFamilyTest, ClassifiesCoreCompilerGroups) {
         EXPECT_EQ(compiler_family(CompilerType::Clang), CompilerFamily::Clang);
         EXPECT_EQ(compiler_family(CompilerType::AppleClang), CompilerFamily::Clang);
@@ -175,6 +194,7 @@ namespace bha
         EXPECT_EQ(trace.compiler, CompilerType::Unknown);
         EXPECT_TRUE(trace.compiler_version.empty());
         EXPECT_EQ(trace.build_system, BuildSystemType::Unknown);
+        EXPECT_TRUE(trace.metric_capabilities.empty());
     }
 
     TEST(SuggestionTest, DefaultValues) {

@@ -51,6 +51,90 @@ namespace bha::storage
             );
         }
 
+        EvidenceKind evidence_kind_from_string(const std::string& value) {
+            if (value == "observed") {
+                return EvidenceKind::Observed;
+            }
+            if (value == "derived") {
+                return EvidenceKind::Derived;
+            }
+            return EvidenceKind::Unavailable;
+        }
+
+        TimingDomain timing_domain_from_string(const std::string& value) {
+            if (value == "wall-clock") {
+                return TimingDomain::WallClock;
+            }
+            if (value == "cpu") {
+                return TimingDomain::Cpu;
+            }
+            return TimingDomain::None;
+        }
+
+        TimingAggregation timing_aggregation_from_string(const std::string& value) {
+            if (value == "exclusive") {
+                return TimingAggregation::Exclusive;
+            }
+            if (value == "inclusive") {
+                return TimingAggregation::Inclusive;
+            }
+            if (value == "wall-clock-responsibility") {
+                return TimingAggregation::WallClockResponsibility;
+            }
+            return TimingAggregation::None;
+        }
+
+        nlohmann::json serialize_metric_capabilities(
+            const std::vector<MetricCapability>& capabilities
+        ) {
+            nlohmann::json result = nlohmann::json::array();
+            for (const auto& capability : capabilities) {
+                const auto& provenance = capability.provenance;
+                result.push_back({
+                    {"metric", capability.metric},
+                    {"evidence", to_string(provenance.evidence)},
+                    {"producer", provenance.producer},
+                    {"producer_version", provenance.producer_version},
+                    {"capture_mode", provenance.capture_mode},
+                    {"scope", provenance.scope},
+                    {"timing_domain", to_string(provenance.timing_domain)},
+                    {"timing_aggregation", to_string(provenance.timing_aggregation)},
+                    {"limitation", provenance.limitation}
+                });
+            }
+            return result;
+        }
+
+        std::vector<MetricCapability> deserialize_metric_capabilities(
+            const nlohmann::json& value
+        ) {
+            std::vector<MetricCapability> capabilities;
+            if (!value.is_array()) {
+                return capabilities;
+            }
+
+            for (const auto& item : value) {
+                MetricCapability capability;
+                capability.metric = item.value("metric", "");
+                capability.provenance.evidence = evidence_kind_from_string(
+                    item.value("evidence", "unavailable")
+                );
+                capability.provenance.producer = item.value("producer", "");
+                capability.provenance.producer_version = item.value("producer_version", "");
+                capability.provenance.capture_mode = item.value("capture_mode", "");
+                capability.provenance.scope = item.value("scope", "");
+                capability.provenance.timing_domain = timing_domain_from_string(
+                    item.value("timing_domain", "none")
+                );
+                capability.provenance.timing_aggregation = timing_aggregation_from_string(
+                    item.value("timing_aggregation", "none")
+                );
+                capability.provenance.limitation = item.value("limitation", "");
+                capabilities.push_back(std::move(capability));
+            }
+            return capabilities;
+        }
+
         /**
          * Serializes a file analysis result to JSON.
          */
@@ -410,6 +494,7 @@ namespace bha::storage
 
         j["templates"] = serialize_templates(analysis.templates);
         j["cache_distribution"] = serialize_cache_distribution(analysis.cache_distribution);
+        j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
         for (const auto& sugg : suggestions) {
@@ -488,6 +573,12 @@ namespace bha::storage
 
             if (j.contains("cache_distribution")) {
                 snapshot.analysis.cache_distribution = deserialize_cache_distribution(j["cache_distribution"]);
+            }
+
+            if (j.contains("metric_capabilities")) {
+                snapshot.analysis.metric_capabilities = deserialize_metric_capabilities(
+                    j["metric_capabilities"]
+                );
             }
 
             if (j.contains("suggestions")) {

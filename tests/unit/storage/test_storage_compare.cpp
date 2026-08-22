@@ -123,6 +123,17 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.cache_distribution.heavy_translation_units = 4;
     analysis.cache_distribution.homogeneous_command_units = 7;
 
+    MetricCapability capability;
+    capability.metric = "compile.translation_unit.wall_time";
+    capability.provenance.evidence = EvidenceKind::Observed;
+    capability.provenance.producer = "clang";
+    capability.provenance.producer_version = "18.1.3";
+    capability.provenance.capture_mode = "-ftime-trace";
+    capability.provenance.scope = "translation-unit";
+    capability.provenance.timing_domain = TimingDomain::WallClock;
+    capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+    analysis.metric_capabilities.push_back(capability);
+
     const auto save_result = store.save("cache-metrics", analysis);
     ASSERT_TRUE(save_result.is_ok());
 
@@ -144,6 +155,14 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_DOUBLE_EQ(cache.distributed_suitability_score, 61.5);
     EXPECT_EQ(cache.heavy_translation_units, 4u);
     EXPECT_EQ(cache.homogeneous_command_units, 7u);
+
+    ASSERT_EQ(load_result.value().analysis.metric_capabilities.size(), 1u);
+    const auto& loaded_capability = load_result.value().analysis.metric_capabilities.front();
+    EXPECT_EQ(loaded_capability.metric, "compile.translation_unit.wall_time");
+    EXPECT_EQ(loaded_capability.provenance.evidence, EvidenceKind::Observed);
+    EXPECT_EQ(loaded_capability.provenance.producer, "clang");
+    EXPECT_EQ(loaded_capability.provenance.timing_domain, TimingDomain::WallClock);
+    EXPECT_EQ(loaded_capability.provenance.timing_aggregation, TimingAggregation::Exclusive);
 
     std::error_code ec;
     fs::remove_all(root, ec);
