@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/filter_policy.cc:9:1:leveldb::FilterPolicy::~FilterPolicy()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/leveldb/util/filter_policy.cc:9:1:virtual leveldb::FilterPolicy::~FilterPolicy()	8	static

@@ -1,4 +1,0 @@
-../../../../../repos/curl/src/tool_parsecfg.c:81:parseconfig	232	static
-../../../../../repos/curl/src/tool_parsecfg.c:318:my_get_line	72	static
-../../../../../repos/curl/src/tool_parsecfg.c:44:unslashquote	40	static
-../../../../../repos/curl/src/tool_parsecfg.c:274:get_line	216	static

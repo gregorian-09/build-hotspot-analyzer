@@ -1,3 +1,0 @@
-../../../../../repos/curl/src/tool_ipfs.c:103:ipfs_url_rewrite	184	static
-../../../../../repos/curl/src/tool_ipfs.c:39:ipfs_gateway	136	static
-../../../../../repos/curl/src/tool_ipfs.c:33:has_trailing_slash	40	static

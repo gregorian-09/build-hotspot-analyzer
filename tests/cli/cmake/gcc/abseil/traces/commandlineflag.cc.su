@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/internal/commandlineflag.cc:22:1:absl::flags_internal::FlagStateInterface::~FlagStateInterface()	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/flags/internal/commandlineflag.cc:22:1:virtual absl::flags_internal::FlagStateInterface::~FlagStateInterface()	8	static

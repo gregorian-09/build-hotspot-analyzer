@@ -1,8 +1,0 @@
-../../../../../repos/curl/lib/curlx/timeval.c:53:curlx_pnow	56	static
-../../../../../repos/curl/lib/curlx/timeval.c:173:curlx_now	24	static
-../../../../../repos/curl/lib/curlx/timeval.c:186:curlx_ptimediff_ms	8	static
-../../../../../repos/curl/lib/curlx/timeval.c:198:curlx_timediff_ms	40	static
-../../../../../repos/curl/lib/curlx/timeval.c:207:curlx_timediff_ceil_ms	8	static
-../../../../../repos/curl/lib/curlx/timeval.c:222:curlx_ptimediff_us	8	static
-../../../../../repos/curl/lib/curlx/timeval.c:233:curlx_timediff_us	40	static
-../../../../../repos/curl/lib/curlx/timeval.c:251:curlx_gmtime	40	static

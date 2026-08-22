@@ -1,3 +1,0 @@
-../../../../../repos/curl/src/tool_cb_rea.c:80:tool_read_cb	120	static
-../../../../../repos/curl/src/tool_cb_rea.c:44:waitfd	40	static
-../../../../../repos/curl/src/tool_cb_rea.c:166:tool_readbusy_cb	72	static

@@ -257,7 +257,7 @@ BHA includes repeatable validation infrastructure for well-known open-source rep
 - LSP apply benchmark runner: `tests/run_repo_apply_benchmark.py`
 - per-project LSP workflow runner: `lsp/tests/lsp_test_client.py`
 
-Validation artifacts:
+Validation artifacts are generated at runtime and intentionally ignored by Git:
 - `tests/cli/benchmarks/<timestamp>/results.json`
 - `tests/cli/benchmarks/<timestamp>/summary.json`
 - `tests/cli/benchmarks/<timestamp>/summary.md`

@@ -1,4 +1,0 @@
-../../../../../repos/curl/src/tool_cb_prg.c:128:tool_progress_cb	600	static
-../../../../../repos/curl/src/tool_cb_prg.c:117:update_width	24	static
-../../../../../repos/curl/src/tool_cb_prg.c:67:fly	456	static
-../../../../../repos/curl/src/tool_cb_prg.c:231:progressbarinit	24	static

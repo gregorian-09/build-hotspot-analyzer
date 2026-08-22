@@ -1,2 +1,0 @@
-repos/rocksdb/util/data_structure.cc:12:_ZN7rocksdb6detail36CountTrailingZeroBitsForSmallEnumSetEm	0	static
-repos/rocksdb/util/data_structure.cc:16:_ZN7rocksdb6detail27BitsSetToOneForSmallEnumSetEm	0	static

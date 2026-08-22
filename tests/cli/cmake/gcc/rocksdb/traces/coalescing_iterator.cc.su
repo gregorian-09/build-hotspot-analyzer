@@ -1,1 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/db/coalescing_iterator.cc:12:6:void rocksdb::CoalescingIterator::Coalesce(const rocksdb::autovector<rocksdb::MultiCfIteratorInfo>&)	480	static

@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/data_structure.cc:12:5:int rocksdb::detail::CountTrailingZeroBitsForSmallEnumSet(uint64_t)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/util/data_structure.cc:16:5:int rocksdb::detail::BitsSetToOneForSmallEnumSet(uint64_t)	8	static

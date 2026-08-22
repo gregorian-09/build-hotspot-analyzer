@@ -1,2 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/perf_level.cc:15:6:void rocksdb::SetPerfLevel(PerfLevel)	8	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/rocksdb/monitoring/perf_level.cc:21:11:rocksdb::PerfLevel rocksdb::GetPerfLevel()	8	static

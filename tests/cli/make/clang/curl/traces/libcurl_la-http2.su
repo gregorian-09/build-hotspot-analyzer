@@ -1,2 +1,0 @@
-../../../../../repos/curl/lib/http2.c:3001:curl_pushheader_bynum	8	static
-../../../../../repos/curl/lib/http2.c:3008:curl_pushheader_byname	8	static

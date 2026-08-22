@@ -1,3 +1,0 @@
-repos/abseil/absl/base/log_severity.cc:24:_ZN4absllsERSoNS_11LogSeverityE	24	static
-repos/abseil/absl/base/log_severity.cc:29:_ZN4absllsERSoNS_18LogSeverityAtLeastE	24	static
-repos/abseil/absl/base/log_severity.cc:42:_ZN4absllsERSoNS_17LogSeverityAtMostE	24	static

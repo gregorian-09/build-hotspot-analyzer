@@ -19,7 +19,7 @@ Primary scripts:
 - `lsp/tests/lsp_test_client.py`
 - `tests/repo_apply_benchmark_root_causes.md` (issue/fix log)
 
-Main benchmark output root:
+Main benchmark output root (runtime-only, ignored by Git):
 - `tests/cli/benchmarks/`
 
 Per-run artifacts:
@@ -88,40 +88,16 @@ In benchmark outputs:
 - positive delta means **faster after apply**
 - negative delta means **slower after apply**
 
-## 6. Representative Recorded Runs (From Artifacts)
+## 6. Output Retention
 
-The entries below come from committed benchmark artifacts in `tests/cli/benchmarks/`.
+Trace files, logs, suggestion payloads, and benchmark summaries are generated
+under `tests/cli/` and intentionally excluded from version control. They depend
+on the local compiler, dependency revisions, filesystem paths, and build
+environment, so committed snapshots are not portable regression fixtures.
 
-### Full matrix run snapshot
-
-Run: `tests/cli/benchmarks/20260312-090323/summary.md`
-
-- Records: 28
-- Successful: 8
-- Mixed project/build-system coverage across CMake, Make, Meson
-- Includes abseil/glfw/mimalloc/zstd success cases and no-suggestion cases for others
-
-### OpenCV iterative run (regression then improvement)
-
-Runs:
-- `tests/cli/benchmarks/20260312-104527/summary.md`
-- `tests/cli/benchmarks/20260312-110748/summary.md`
-
-Observed:
-- earlier run: `-5.61s` delta (`-0.793%`) (regression)
-- later run: `+2.97s` delta (`+0.417%`) (improvement)
-
-Related investigation log:
-- `tests/repo_apply_benchmark_root_causes.md`
-
-### GLFW run
-
-Run: `tests/cli/benchmarks/20260313-171832/summary.md`
-
-Observed:
-- baseline: `22.40s`
-- post-apply: `4.04s`
-- delta: `+18.36s` (`+81.966%`)
+For a reviewable result, retain the generated summary and raw artifacts in the
+CI job or external benchmark storage and record the command, compiler, commit,
+and project matrix used for the run.
 
 ## 7. Root-Cause Driven Hardening
 
@@ -163,4 +139,3 @@ These validations verify that:
 - auto-apply decisions survive real build graph and build-system complexity
 - rollback and trust-loop behavior remains stable under failures
 - CI outputs (summary + diagnostics artifacts) are actionable, not opaque
-

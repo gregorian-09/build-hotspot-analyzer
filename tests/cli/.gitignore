@@ -17,4 +17,7 @@ make/*/*/output/
 meson/*/*/build/
 meson/*/*/repo/
 meson/*/*/output/
+cmake/*/*/traces/
+make/*/*/traces/
+meson/*/*/traces/
 benchmarks/

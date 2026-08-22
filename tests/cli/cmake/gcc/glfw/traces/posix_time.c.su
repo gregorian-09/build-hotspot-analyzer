@@ -1,3 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/posix_time.c:40:6:_glfwPlatformInitTimer	48	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/posix_time.c:52:10:_glfwPlatformGetTimerValue	48	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/glfw/src/posix_time.c:59:10:_glfwPlatformGetTimerFrequency	8	static

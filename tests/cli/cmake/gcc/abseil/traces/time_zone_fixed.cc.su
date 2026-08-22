@@ -1,3 +1,0 @@
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/time/internal/cctz/src/time_zone_fixed.cc:55:6:bool absl::time_internal::cctz::FixedOffsetFromName(const std::string&, seconds*)	80	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/time/internal/cctz/src/time_zone_fixed.cc:84:13:std::string absl::time_internal::cctz::FixedOffsetToName(const seconds&)	96	static
-/mnt/c/Users/grego/CLionProjects/BuildtimeHotspotAnalyzer/tests/temp/repos/abseil/absl/time/internal/cctz/src/time_zone_fixed.cc:120:13:std::string absl::time_internal::cctz::FixedOffsetToAbbr(const seconds&)	96	static

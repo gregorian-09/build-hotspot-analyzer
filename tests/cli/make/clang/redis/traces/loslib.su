@@ -1,2 +1,0 @@
-loslib.c:245:luaopen_os	8	static
-loslib.c:74:os_clock	8	static
