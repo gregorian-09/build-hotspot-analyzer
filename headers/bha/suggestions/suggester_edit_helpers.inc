@@ -149,9 +149,12 @@
 
         std::string line;
         std::size_t line_num = 0;
-        const std::regex pragma_regex(R"(^\s*#\s*pragma\s+once\b)");
         while (std::getline(in, line)) {
-            if (std::regex_search(line, pragma_regex)) {
+            const auto directive = parse_preprocessor_directive(line);
+            if (directive.has_value() && directive->name == "pragma" &&
+                directive->argument.starts_with("once") &&
+                (directive->argument.size() == 4 ||
+                 !is_preprocessor_identifier_char(directive->argument[4]))) {
                 return line_num;
             }
             ++line_num;
@@ -165,12 +168,6 @@
             return std::nullopt;
         }
 
-        const std::regex include_regex(R"(^#\s*include\s*([<"])([^">]+)[">])", std::regex::ECMAScript);
-        const std::regex pragma_regex(R"(^#\s*pragma\s+once\b)", std::regex::ECMAScript);
-        const std::regex guard_ifndef_regex(R"(^#\s*ifndef\b)", std::regex::ECMAScript);
-        const std::regex guard_if_defined_regex(R"(^#\s*if\s*!?\s*defined\s*\()", std::regex::ECMAScript);
-        const std::regex define_regex(R"(^#\s*define\b)", std::regex::ECMAScript);
-
         std::string line;
         std::size_t line_num = 0;
         bool in_block_comment = false;
@@ -179,6 +176,26 @@
         std::optional<std::size_t> pragma_once_line;
         std::optional<std::size_t> last_include_line;
 
+        const auto is_pragma_once = [](const std::optional<PreprocessorDirective>& directive) {
+            return directive.has_value() && directive->name == "pragma" &&
+                directive->argument.starts_with("once") &&
+                (directive->argument.size() == 4 ||
+                 !is_preprocessor_identifier_char(directive->argument[4]));
+        };
+        const auto is_if_defined_guard = [](std::string_view argument) {
+            argument = trim_preprocessor_whitespace(argument);
+            if (!argument.empty() && argument.front() == '!') {
+                argument.remove_prefix(1);
+                argument = trim_preprocessor_whitespace(argument);
+            }
+            if (!argument.starts_with("defined")) {
+                return false;
+            }
+            argument.remove_prefix(7);
+            argument = trim_preprocessor_whitespace(argument);
+            return !argument.empty() && argument.front() == '(';
+        };
+
         while (std::getline(in, line)) {
             std::string_view trimmed = consume_leading_block_comments(line, in_block_comment);
             if (trimmed.empty() || trimmed.starts_with("//")) {
@@ -186,15 +203,17 @@
                 continue;
             }
 
-            if (std::regex_search(trimmed.begin(), trimmed.end(), pragma_regex) && !in_include_block &&
-                !last_include_line.has_value()) {
+            const auto directive = parse_preprocessor_directive(trimmed);
+            if (is_pragma_once(directive) && !in_include_block && !last_include_line.has_value()) {
                 pragma_once_line = line_num;
                 ++line_num;
                 continue;
             }
 
-            if (std::regex_search(trimmed.begin(), trimmed.end(), guard_ifndef_regex) ||
-                std::regex_search(trimmed.begin(), trimmed.end(), guard_if_defined_regex)) {
+            const bool guard_start = directive.has_value() &&
+                (directive->name == "ifndef" ||
+                 (directive->name == "if" && is_if_defined_guard(directive->argument)));
+            if (guard_start) {
                 if (!in_include_block && !last_include_line.has_value()) {
                     expecting_guard_define = true;
                     ++line_num;
@@ -203,13 +222,13 @@
                 break;
             }
 
-            if (expecting_guard_define && std::regex_search(trimmed.begin(), trimmed.end(), define_regex)) {
+            if (expecting_guard_define && directive.has_value() && directive->name == "define") {
                 expecting_guard_define = false;
                 ++line_num;
                 continue;
             }
 
-            if (std::regex_search(trimmed.begin(), trimmed.end(), include_regex)) {
+            if (parse_include_directive_line(trimmed).has_value()) {
                 in_include_block = true;
                 last_include_line = line_num;
                 ++line_num;
@@ -238,9 +257,6 @@
             return std::nullopt;
         }
 
-        const std::regex ifndef_regex(R"(^\s*#\s*ifndef\s+([A-Za-z_][A-Za-z0-9_]*)\s*$)");
-        const std::regex define_regex(R"(^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)\b)");
-
         std::string line;
         std::size_t line_num = 0;
         std::string guard_macro;
@@ -249,17 +265,25 @@
 
         while (std::getline(in, line)) {
             const std::string_view trimmed = consume_leading_block_comments(line, in_block_comment);
-            std::match_results<std::string_view::const_iterator> match;
+            const auto directive = parse_preprocessor_directive(trimmed);
 
             if (!found_ifndef) {
                 if (trimmed.empty() || trimmed.starts_with("//")) {
                     ++line_num;
                     continue;
                 }
-                if (std::regex_match(trimmed.begin(), trimmed.end(), match, ifndef_regex)) {
-                    guard_macro = match[1].str();
+                if (directive.has_value() && directive->name == "ifndef") {
+                    const auto macro = parse_single_preprocessor_identifier(directive->argument);
+                    if (!macro.has_value()) {
+                        break;
+                    }
+                    guard_macro = std::string(*macro);
                     found_ifndef = true;
-                } else if (!trimmed.empty() && !trimmed.starts_with("#pragma once")) {
+                } else if (!(
+                        directive.has_value() && directive->name == "pragma" &&
+                        directive->argument.starts_with("once") &&
+                        (directive->argument.size() == 4 ||
+                         !is_preprocessor_identifier_char(directive->argument[4])))) {
                     break;
                 }
                 ++line_num;
@@ -270,8 +294,9 @@
                 ++line_num;
                 continue;
             }
-            if (std::regex_match(trimmed.begin(), trimmed.end(), match, define_regex)) {
-                if (match[1].str() == guard_macro) {
+            if (directive.has_value() && directive->name == "define") {
+                const auto macro = parse_single_preprocessor_identifier(directive->argument);
+                if (macro.has_value() && *macro == guard_macro) {
                     return line_num;
                 }
                 break;

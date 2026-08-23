@@ -16,7 +16,6 @@
 #include <optional>
 #include <queue>
 #include <ranges>
-#include <regex>
 #include <sstream>
 #include <span>
 #include <string>
@@ -391,9 +390,8 @@ namespace bha::suggestions
                 if (text.empty()) {
                     return;
                 }
-                static const std::regex include_regex(R"(#\s*include\s*[<"]([^">]+)[">])");
-                for (std::sregex_iterator it(text.begin(), text.end(), include_regex), end; it != end; ++it) {
-                    add_header(fs::path((*it)[1].str()));
+                for (const auto& include : utils::parse_include_directives_from_text(text)) {
+                    add_header(fs::path(include.header_name));
                 }
             };
             parse_headers_from_text(suggestion.before_code.code);
