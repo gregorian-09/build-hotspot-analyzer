@@ -63,6 +63,8 @@ For Clang `-ftime-trace` input, BHA recognizes only exact producer event names
 for template instantiation timing. Prefixes and unrelated events are not
 classified as templates; in particular, code-generation events are not template
 evidence. Unknown time-trace event names remain unclassified.
+Parser routing requires valid JSON with a top-level `traceEvents` array; a
+substring match is not sufficient to identify a Clang trace.
 Malformed event objects, wrong field types, negative or non-finite complete-event
 timings, and integer overflow are rejected rather than partially analyzed.
 

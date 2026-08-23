@@ -44,6 +44,11 @@ namespace bha::parsers
         EXPECT_FALSE(parser_->can_parse_content(invalid_content));
     }
 
+    TEST_F(ClangParserTest, CanParseContent_RejectsNonArrayTraceEvents) {
+        constexpr std::string_view invalid_content = R"({"traceEvents": "not an array"})";
+        EXPECT_FALSE(parser_->can_parse_content(invalid_content));
+    }
+
     TEST_F(ClangParserTest, ParseContent_EmptyTrace) {
         constexpr std::string_view content = R"({"traceEvents": []})";
         auto result = parser_->parse_content(content, "/test/source.cpp");

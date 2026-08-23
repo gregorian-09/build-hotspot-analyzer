@@ -604,7 +604,14 @@ namespace bha::parsers {
     }
 
     bool ClangTraceParser::can_parse_content(std::string_view content) const {
-        return content.find(CLANG_TRACE_MARKER) != std::string_view::npos;
+        try {
+            const auto trace_json = json::parse(content);
+            return trace_json.is_object() &&
+                trace_json.contains(CLANG_TRACE_MARKER) &&
+                trace_json[CLANG_TRACE_MARKER].is_array();
+        } catch (const json::parse_error&) {
+            return false;
+        }
     }
 
     Result<CompilationUnit, Error> ClangTraceParser::parse_file(
