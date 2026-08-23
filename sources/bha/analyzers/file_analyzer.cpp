@@ -58,12 +58,7 @@ namespace bha::analyzers
             return Result<AnalysisResult, Error>::success(std::move(result));
         }
 
-        Duration total_time = trace.total_time;
-        if (total_time == Duration::zero()) {
-            for (const auto& unit : trace.units) {
-                total_time += unit.metrics.total_time;
-            }
-        }
+        const Duration total_time = trace.total_time;
 
         result.files.reserve(trace.units.size());
         std::vector<Duration> all_times;

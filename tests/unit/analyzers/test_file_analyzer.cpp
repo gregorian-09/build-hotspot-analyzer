@@ -116,4 +116,18 @@ namespace bha::analyzers
         EXPECT_EQ(result.value().performance.median_file_time, std::chrono::seconds(3));
         EXPECT_EQ(result.value().performance.sequential_time, std::chrono::seconds(10));
     }
+
+    TEST_F(FileAnalyzerTest, DoesNotInferPercentagesWithoutBuildDuration) {
+        auto trace = create_test_trace();
+        trace.total_time = Duration::zero();
+        constexpr AnalysisOptions options;
+
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().files.size(), 3u);
+        for (const auto& file : result.value().files) {
+            EXPECT_DOUBLE_EQ(file.time_percent, 0.0);
+        }
+    }
 }
