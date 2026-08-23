@@ -77,15 +77,10 @@ namespace bha::analyzers {
             std::optional<Duration> self_parse_time;
             /// Number of include events observed for this header.
             std::size_t inclusion_count = 0;
-            /// Number of unique source files that include this header.
+            /// Number of unique translation units with an observed Source event for this header.
             std::size_t including_files = 0;
-            /// Reverse include edges (`who includes this header`).
+            /// Observed translation units containing a Source event for this header.
             std::vector<fs::path> included_by;
-            /// Composite impact score used for optimization prioritization.
-            double impact_score = 0.0;
-
-            /// True when the header is outside project-owned source roots.
-            bool is_external = false;
         };
 
         /// All analyzed headers.
@@ -102,8 +97,6 @@ namespace bha::analyzers {
         /// Provenance and availability for frontend self-time metrics.
         std::vector<MetricCapability> metric_capabilities;
 
-        /// Detected circular include relations.
-        std::vector<std::pair<fs::path, fs::path>> circular_dependencies;
     };
 
     /**

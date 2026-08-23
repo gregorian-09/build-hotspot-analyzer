@@ -610,7 +610,6 @@ namespace bha::exporters
             deps["total_includes"] = analysis.dependencies.total_includes;
             deps["unique_headers"] = analysis.dependencies.unique_headers;
             deps["max_depth"] = analysis.dependencies.max_include_depth;
-            deps["circular_dependencies_count"] = analysis.dependencies.circular_dependencies.size();
             deps["metric_capabilities"] = json::array();
             for (const auto& capability : analysis.dependencies.metric_capabilities) {
                 deps["metric_capabilities"].push_back(serialize_metric_capability(capability));
@@ -627,9 +626,7 @@ namespace bha::exporters
                 if (header.self_parse_time.has_value()) {
                     h["self_parse_time_ms"] = duration_to_ms(*header.self_parse_time);
                 }
-                h["impact_score"] = header.impact_score;
                 h["included_by"] = header.included_by;
-                h["is_external"] = header.is_external;
                 headers_array.push_back(h);
             }
             deps["headers"] = headers_array;
@@ -1277,18 +1274,12 @@ namespace bha::exporters
         // ==================================================================
         // 5. Build BODY SECTIONS with placeholders filled
         // ==================================================================
-        std::string circular_deps_color = analysis.dependencies.circular_dependencies.empty()
-            ? "var(--success-color)"
-            : "var(--danger-color)";
-
         const std::string body_sections = replace_placeholders(REPORT_BODY_SECTIONS_HTML, {
             {"{{FILE_TABLE_ROWS}}", file_rows.str()},
             {"{{SUGGESTION_CARDS}}", suggestion_cards.str()},
             {"{{TOTAL_INCLUDES}}", std::to_string(analysis.dependencies.total_includes)},
             {"{{UNIQUE_HEADERS}}", std::to_string(analysis.dependencies.unique_headers)},
-            {"{{MAX_INCLUDE_DEPTH}}", std::to_string(analysis.dependencies.max_include_depth)},
-            {"{{CIRCULAR_DEPS_COLOR}}", circular_deps_color},
-            {"{{CIRCULAR_DEPS_COUNT}}", std::to_string(analysis.dependencies.circular_dependencies.size())}
+            {"{{MAX_INCLUDE_DEPTH}}", std::to_string(analysis.dependencies.max_include_depth)}
         });
 
         // ==================================================================
@@ -1566,7 +1557,7 @@ namespace bha::exporters
             stream << "- **Total Includes:** " << analysis.dependencies.total_includes << "\n";
             stream << "- **Unique Headers:** " << analysis.dependencies.unique_headers << "\n";
             stream << "- **Max Include Depth:** " << analysis.dependencies.max_include_depth << "\n";
-            stream << "- **Circular Dependencies:** " << analysis.dependencies.circular_dependencies.size() << "\n\n";
+            stream << "- **Observed Header Consumers:** producer trace fanout is available per header\n\n";
         }
 
         if (has_cache_data(analysis.cache_distribution)) {

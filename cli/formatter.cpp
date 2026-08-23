@@ -311,16 +311,6 @@ namespace bha::cli
         out_ << "Max Include Depth:    " << deps.max_include_depth << "\n";
         out_ << "Total Include Time:   " << format_duration(deps.total_include_time) << "\n";
 
-        if (!deps.circular_dependencies.empty()) {
-            out_ << "\n";
-            if (colors::enabled()) {
-                out_ << colors::YELLOW << "Warning: " << colors::RESET;
-            } else {
-                out_ << "Warning: ";
-            }
-            out_ << deps.circular_dependencies.size() << " circular dependencies detected\n";
-        }
-
         out_ << "\n";
 
         const auto& tmpl = result.templates;
@@ -409,12 +399,17 @@ namespace bha::cli
             {"Header", 40, false, std::nullopt},
             {"Parse Time", 12, true, std::nullopt},
             {"Inclusions", 10, true, std::nullopt},
-            {"Impact", 8, true, std::nullopt}
+            {"Consumers", 10, true, std::nullopt}
         });
 
         auto sorted = deps.headers;
         std::ranges::sort(sorted,
-                          [](const auto& a, const auto& b) { return a.impact_score > b.impact_score; });
+                          [](const auto& a, const auto& b) {
+                              if (a.total_parse_time != b.total_parse_time) {
+                                  return a.total_parse_time > b.total_parse_time;
+                              }
+                              return a.path.generic_string() < b.path.generic_string();
+                          });
 
         const std::size_t count = std::min(limit == 0 ? sorted.size() : limit, sorted.size());
         for (std::size_t i = 0; i < count; ++i) {
@@ -424,7 +419,7 @@ namespace bha::cli
                 format_path(header.path, 40),
                 format_duration(header.total_parse_time),
                 std::to_string(header.inclusion_count),
-                format_percent(header.impact_score)
+                std::to_string(header.including_files)
             });
         }
 

@@ -188,7 +188,6 @@ namespace bha::storage
                 }
                 hj["inclusion_count"] = h.inclusion_count;
                 hj["including_files"] = h.including_files;
-                hj["impact_score"] = h.impact_score;
                 headers.push_back(hj);
             }
             j["headers"] = headers;
@@ -217,7 +216,6 @@ namespace bha::storage
                     }
                     h.inclusion_count = hj.value("inclusion_count", std::size_t{0});
                     h.including_files = hj.value("including_files", std::size_t{0});
-                    h.impact_score = hj.value("impact_score", 0.0);
                     deps.headers.push_back(h);
                 }
             }

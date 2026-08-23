@@ -9,7 +9,6 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <fstream>
-#include <regex>
 
 namespace bha::analyzers
 {
@@ -110,11 +109,12 @@ namespace bha::analyzers
         ASSERT_EQ(deps.headers.size(), 1u);
         ASSERT_TRUE(deps.headers.front().self_parse_time.has_value());
         EXPECT_EQ(*deps.headers.front().self_parse_time, std::chrono::milliseconds(80));
-        ASSERT_EQ(deps.metric_capabilities.size(), 1u);
-        EXPECT_EQ(deps.metric_capabilities.front().metric, "frontend.source_self_time");
+        ASSERT_EQ(deps.metric_capabilities.size(), 2u);
+        EXPECT_EQ(deps.metric_capabilities[0].metric, "frontend.header.consumer_fanout");
+        EXPECT_EQ(deps.metric_capabilities[1].metric, "frontend.source_self_time");
     }
 
-    TEST_F(DependencyAnalyzerTest, HeadersSortedByImpact) {
+    TEST_F(DependencyAnalyzerTest, HeadersSortedByObservedParseTime) {
         const auto trace = create_test_trace();
         constexpr AnalysisOptions options;
 
@@ -123,229 +123,10 @@ namespace bha::analyzers
         ASSERT_TRUE(result.is_ok());
         const auto& headers = result.value().dependencies.headers;
 
+        ASSERT_GE(headers.size(), 2u);
         for (std::size_t i = 1; i < headers.size(); ++i) {
-            EXPECT_GE(headers[i - 1].impact_score, headers[i].impact_score);
+            EXPECT_GE(headers[i - 1].total_parse_time, headers[i].total_parse_time);
         }
-    }
-
-    TEST_F(DependencyAnalyzerTest, ExternalHeadersDetected) {
-        BuildTrace trace;
-        trace.id = "test-trace-external";
-
-        CompilationUnit unit;
-        unit.source_file = "/src/main.cpp";
-        unit.includes = {
-            {"/usr/include/vector", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
-            {"/opt/include/lib.h", std::chrono::milliseconds(30), 1, {}, {}, std::nullopt},
-            {"third_party/json.hpp", std::chrono::milliseconds(100), 1, {}, {}, std::nullopt},
-            {"src/internal.h", std::chrono::milliseconds(20), 1, {}, {}, std::nullopt},
-        };
-
-        trace.units = {unit};
-        constexpr AnalysisOptions options;
-
-        auto result = analyzer_->analyze(trace, options);
-
-        ASSERT_TRUE(result.is_ok());
-        const auto& headers = result.value().dependencies.headers;
-
-        const auto external_count = std::count_if(headers.begin(), headers.end(),
-                                            [](const auto& h) { return h.is_external; });
-
-        EXPECT_GE(external_count, 2);
-    }
-
-    TEST_F(DependencyAnalyzerTest, CircularDependencyDetection) {
-        BuildTrace trace;
-        trace.id = "test-circular";
-
-        CompilationUnit unit1;
-        unit1.source_file = "/src/a.cpp";
-        unit1.includes = {
-            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
-            {"/include/b.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
-        };
-
-        CompilationUnit unit2;
-        unit2.source_file = "/include/b.h";
-        unit2.includes = {
-            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
-        };
-
-        trace.units = {unit1, unit2};
-        constexpr AnalysisOptions options;
-
-        const auto result = analyzer_->analyze(trace, options);
-
-        ASSERT_TRUE(result.is_ok());
-    }
-
-    TEST_F(DependencyAnalyzerTest, DetectsCircularDependenciesFromHeaders) {
-        const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
-        const fs::path temp_dir = fs::temp_directory_path() / ("bha-deps-cycle-" + std::to_string(stamp));
-        ASSERT_TRUE(fs::create_directories(temp_dir));
-
-        const fs::path a_header = temp_dir / "a.h";
-        const fs::path b_header = temp_dir / "b.h";
-        const fs::path source = temp_dir / "main.cpp";
-
-        {
-            std::ofstream out(a_header);
-            ASSERT_TRUE(out.good());
-            out << "#pragma once\n";
-            out << "struct B;\n";
-            out << "#include \"b.h\"\n";
-            out << "struct A { B* ptr; };\n";
-        }
-        {
-            std::ofstream out(b_header);
-            ASSERT_TRUE(out.good());
-            out << "#pragma once\n";
-            out << "struct A;\n";
-            out << "#include \"a.h\"\n";
-            out << "struct B { A* ptr; };\n";
-        }
-        {
-            std::ofstream out(source);
-            ASSERT_TRUE(out.good());
-            out << "#include \"a.h\"\n";
-            out << "int main() { return 0; }\n";
-        }
-
-        BuildTrace trace;
-        trace.id = "test-header-cycle";
-
-        CompilationUnit unit;
-        unit.source_file = source;
-        unit.includes = {
-            {a_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt},
-            {b_header, std::chrono::milliseconds(10), 2, {}, {}, std::nullopt},
-        };
-        trace.units = {unit};
-
-        constexpr AnalysisOptions options;
-        const auto result = analyzer_->analyze(trace, options);
-
-        ASSERT_TRUE(result.is_ok());
-        const auto& cycles = result.value().dependencies.circular_dependencies;
-        EXPECT_FALSE(cycles.empty());
-
-        const bool has_expected_pair = std::any_of(cycles.begin(), cycles.end(), [&](const auto& edge) {
-            const fs::path from = edge.first.lexically_normal();
-            const fs::path to = edge.second.lexically_normal();
-            return (from == a_header.lexically_normal() && to == b_header.lexically_normal()) ||
-                   (from == b_header.lexically_normal() && to == a_header.lexically_normal());
-        });
-        EXPECT_TRUE(has_expected_pair);
-
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
-    }
-
-    TEST_F(DependencyAnalyzerTest, SelfIncludingHeaderDetected) {
-        const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
-        const fs::path temp_dir = fs::temp_directory_path() / ("bha-self-cycle-" + std::to_string(stamp));
-        ASSERT_TRUE(fs::create_directories(temp_dir));
-
-        const fs::path self_header = temp_dir / "self.h";
-        {
-            std::ofstream out(self_header);
-            ASSERT_TRUE(out.good());
-            out << "#pragma once\n";
-            out << "#include \"self.h\"\n";
-            out << "struct SelfRef { int x; };\n";
-        }
-
-        BuildTrace trace;
-        trace.id = "test-self-cycle";
-        CompilationUnit unit;
-        unit.source_file = temp_dir / "main.cpp";
-        unit.includes = {{self_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt}};
-        trace.units = {unit};
-
-        constexpr AnalysisOptions options;
-        const auto result = analyzer_->analyze(trace, options);
-        ASSERT_TRUE(result.is_ok());
-        const auto& cycles = result.value().dependencies.circular_dependencies;
-        EXPECT_FALSE(cycles.empty());
-
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
-    }
-
-    TEST_F(DependencyAnalyzerTest, DiamondDependencyNoCycle) {
-        const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
-        const fs::path temp_dir = fs::temp_directory_path() / ("bha-diamond-" + std::to_string(stamp));
-        ASSERT_TRUE(fs::create_directories(temp_dir));
-
-        const fs::path d_header = temp_dir / "d.h";
-        const fs::path b_header = temp_dir / "b.h";
-        const fs::path c_header = temp_dir / "c.h";
-        const fs::path a_header = temp_dir / "a.h";
-
-        {
-            std::ofstream out(d_header);
-            out << "#pragma once\nstruct D { int d; };\n";
-        }
-        {
-            std::ofstream out(b_header);
-            out << "#pragma once\n#include \"d.h\"\nstruct B { D d; };\n";
-        }
-        {
-            std::ofstream out(c_header);
-            out << "#pragma once\n#include \"d.h\"\nstruct C { D d; };\n";
-        }
-        {
-            std::ofstream out(a_header);
-            out << "#pragma once\n#include \"b.h\"\n#include \"c.h\"\nstruct A { B b; C c; };\n";
-        }
-
-        BuildTrace trace;
-        trace.id = "test-diamond";
-        CompilationUnit unit;
-        unit.source_file = temp_dir / "main.cpp";
-        unit.includes = {
-            {a_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt},
-            {b_header, std::chrono::milliseconds(5), 2, {}, {}, std::nullopt},
-            {c_header, std::chrono::milliseconds(5), 2, {}, {}, std::nullopt},
-            {d_header, std::chrono::milliseconds(3), 3, {}, {}, std::nullopt},
-        };
-        trace.units = {unit};
-
-        constexpr AnalysisOptions options;
-        const auto result = analyzer_->analyze(trace, options);
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().dependencies.circular_dependencies.empty());
-
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
-    }
-
-    TEST_F(DependencyAnalyzerTest, LeafHeaderNoCycle) {
-        const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
-        const fs::path temp_dir = fs::temp_directory_path() / ("bha-leaf-" + std::to_string(stamp));
-        ASSERT_TRUE(fs::create_directories(temp_dir));
-
-        const fs::path leaf = temp_dir / "leaf.h";
-        {
-            std::ofstream out(leaf);
-            out << "#pragma once\nstruct Leaf { int x; };\n";
-        }
-
-        BuildTrace trace;
-        trace.id = "test-leaf";
-        CompilationUnit unit;
-        unit.source_file = temp_dir / "main.cpp";
-        unit.includes = {{leaf, std::chrono::milliseconds(5), 1, {}, {}, std::nullopt}};
-        trace.units = {unit};
-
-        constexpr AnalysisOptions options;
-        const auto result = analyzer_->analyze(trace, options);
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().dependencies.circular_dependencies.empty());
-
-        std::error_code ec;
-        fs::remove_all(temp_dir, ec);
     }
 
     // ======================================================================

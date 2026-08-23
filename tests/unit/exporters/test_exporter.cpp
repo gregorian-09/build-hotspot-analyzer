@@ -61,8 +61,20 @@ namespace bha::exporters::test
         header1.self_parse_time = std::chrono::milliseconds(320);
         header1.inclusion_count = 25;
         header1.including_files = 10;
-        header1.impact_score = 0.85;
         result.dependencies.headers.push_back(header1);
+        result.dependencies.metric_capabilities.push_back({
+            "frontend.header.consumer_fanout",
+            MetricProvenance{
+                EvidenceKind::Derived,
+                "DependencyAnalyzer",
+                "",
+                "-ftime-trace Source events",
+                "build",
+                TimingDomain::None,
+                TimingAggregation::None,
+                "Fanout counts translation units with an observed Source event"
+            }
+        });
 
         result.templates.total_template_time = std::chrono::milliseconds(3000);
         result.templates.template_time_percent = 15.0;
@@ -349,6 +361,7 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"targets\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.target.command_ownership\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"self_parse_time_ms\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"frontend.header.consumer_fanout\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"module.dependency_graph\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"provided_modules\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"pch_headers\"") != std::string::npos);
