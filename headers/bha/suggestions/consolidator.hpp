@@ -22,17 +22,11 @@
 namespace bha::suggestions
 {
     /**
-     * @brief Tunables controlling suggestion consolidation behavior.
+     * @brief Controls whether evidence-backed suggestions are consolidated.
      */
     struct ConsolidationOptions {
         /// Enables/disables consolidation stage.
         bool enable_consolidation = true;
-        /// Soft cap for items represented in one merged suggestion body.
-        std::size_t max_items_per_suggestion = 50;
-        /// Whether external/system headers are retained in merged output.
-        bool include_external_headers = false;
-        /// Age threshold used for stability heuristics in consolidation.
-        Duration stability_threshold = std::chrono::hours(24 * 30 * 6);
     };
 
     /**
@@ -57,13 +51,6 @@ namespace bha::suggestions
         ) const;
 
     private:
-        /**
-         * Consolidates PCH suggestions into a single recommendation.
-         */
-        [[nodiscard]] static std::optional<Suggestion> consolidate_pch(
-            const std::vector<Suggestion>& suggestions
-        );
-
         /**
          * Consolidates header split suggestions.
          */

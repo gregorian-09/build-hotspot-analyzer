@@ -51,32 +51,24 @@ namespace bha::suggestions
         EXPECT_TRUE(result.empty());
     }
 
-    TEST_F(ConsolidatorTest, ConsolidatesPCHSuggestions) {
+    TEST_F(ConsolidatorTest, PreservesPCHAdvisoriesWithoutSynthesizedEdits) {
         std::vector<Suggestion> suggestions;
-        suggestions.push_back(create_pch_suggestion("header1.h"));
-        suggestions.push_back(create_pch_suggestion("header2.h"));
-        suggestions.push_back(create_pch_suggestion("header3.h"));
+        auto first = create_pch_suggestion("header1.h");
+        first.application_mode = SuggestionApplicationMode::Advisory;
+        auto second = create_pch_suggestion("header2.h");
+        second.application_mode = SuggestionApplicationMode::Advisory;
+        suggestions.push_back(std::move(first));
+        suggestions.push_back(std::move(second));
 
         const auto result = consolidator_->consolidate(suggestions);
 
-        ASSERT_EQ(result.size(), 1u);
-        EXPECT_EQ(result[0].type, SuggestionType::PCHOptimization);
-        EXPECT_FALSE(result[0].description.empty());
-    }
-
-    TEST_F(ConsolidatorTest, SeparatesStableFromVolatile) {
-        std::vector<Suggestion> suggestions;
-        suggestions.push_back(create_pch_suggestion("stable_header.h", true));
-        suggestions.push_back(create_pch_suggestion("volatile_header.h", false));
-
-        const auto result = consolidator_->consolidate(suggestions);
-
-        ASSERT_EQ(result.size(), 1u);
-
-        const auto& desc = result[0].description;
-        EXPECT_TRUE(desc.find("stable") != std::string::npos ||
-                    desc.find("external") != std::string::npos ||
-                    desc.find("Add to precompiled header") != std::string::npos);
+        ASSERT_EQ(result.size(), 2u);
+        EXPECT_EQ(result[0].target_file.path, "header1.h");
+        EXPECT_EQ(result[1].target_file.path, "header2.h");
+        EXPECT_TRUE(result[0].edits.empty());
+        EXPECT_TRUE(result[1].edits.empty());
+        EXPECT_EQ(result[0].application_mode, SuggestionApplicationMode::Advisory);
+        EXPECT_EQ(result[1].application_mode, SuggestionApplicationMode::Advisory);
     }
 
     TEST_F(ConsolidatorTest, PreservesDifferentSuggestionTypes) {
@@ -101,29 +93,6 @@ namespace bha::suggestions
 
         EXPECT_GE(result.size(), 1u);
         EXPECT_LE(result.size(), 3u);
-    }
-
-    TEST_F(ConsolidatorTest, MergesImpactMetrics) {
-        std::vector<Suggestion> suggestions;
-
-        Suggestion s1 = create_pch_suggestion("h1.h");
-        s1.impact.files_benefiting = {fs::path("a.cpp"), fs::path("b.cpp")};
-        s1.impact.total_files_affected = 10;
-        s1.impact.cumulative_savings = std::chrono::milliseconds(200);
-        suggestions.push_back(s1);
-
-        Suggestion s2 = create_pch_suggestion("h2.h");
-        s2.impact.files_benefiting = {fs::path("b.cpp"), fs::path("c.cpp"), fs::path("d.cpp")};
-        s2.impact.total_files_affected = 15;
-        s2.impact.cumulative_savings = std::chrono::milliseconds(300);
-        suggestions.push_back(s2);
-
-        const auto result = consolidator_->consolidate(suggestions);
-
-        ASSERT_EQ(result.size(), 1u);
-        EXPECT_GE(result[0].impact.files_benefiting.size(), 3u);
-        EXPECT_GE(result[0].impact.total_files_affected, 10u);
-        EXPECT_GT(result[0].impact.cumulative_savings.count(), 0);
     }
 
     TEST_F(ConsolidatorTest, ConsolidationCanBeDisabled) {
@@ -166,30 +135,4 @@ namespace bha::suggestions
         EXPECT_EQ(result[1].target_file.path, "bar.cpp");
     }
 
-    TEST_F(ConsolidatorTest, ConsolidatedPchUsesProjectNativeStyleAndSkipsInternalHeaders) {
-        Suggestion external = create_pch_suggestion("<vector>");
-        Suggestion public_header = create_pch_suggestion("include/public.hpp");
-        Suggestion internal_header = create_pch_suggestion("db/internal.hpp");
-
-        const auto result = consolidator_->consolidate({external, public_header, internal_header});
-
-        ASSERT_EQ(result.size(), 1u);
-        EXPECT_EQ(result.front().type, SuggestionType::PCHOptimization);
-
-        const auto pch_edit = std::find_if(
-            result.front().edits.begin(),
-            result.front().edits.end(),
-            [](const TextEdit& edit) {
-                return edit.file == "pch.h";
-            }
-        );
-        ASSERT_NE(pch_edit, result.front().edits.end());
-        EXPECT_NE(pch_edit->new_text.find("#include <vector>"), std::string::npos);
-        EXPECT_NE(pch_edit->new_text.find("#include \"public.hpp\""), std::string::npos);
-        EXPECT_EQ(pch_edit->new_text.find("db/internal.hpp"), std::string::npos);
-        EXPECT_NE(
-            result.front().description.find("Excluded from shared pch.h"),
-            std::string::npos
-        );
-    }
 }

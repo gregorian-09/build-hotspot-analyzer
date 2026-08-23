@@ -87,7 +87,6 @@ namespace
         }
         std::cout << "  bha analyze build/*.json              Analyze Clang time-trace files\n";
         std::cout << "  bha suggest --detailed traces/        Get suggestions with code examples\n";
-        std::cout << "  bha suggest --pch-min-includes 5      Custom PCH detection threshold\n";
         std::cout << "  bha export --format html -o report    Generate interactive HTML report\n";
         std::cout << "  bha snapshot baseline set v1.0        Set baseline snapshot\n";
         std::cout << "  bha compare --baseline current        Compare with current baseline\n";
@@ -100,7 +99,7 @@ namespace
         }
         std::cout << "  - Multi-compiler: GCC, Clang, MSVC, Intel ICC, NVIDIA NVCC\n";
         std::cout << "  - Actionable suggestions with before/after code examples\n";
-        std::cout << "  - Configurable heuristics (--pch-*, --template-*, --unity-*, etc.)\n";
+        std::cout << "  - Evidence-backed suggestions with explicit safety metadata\n";
         std::cout << "  - HTML reports with flame graphs, include trees, dependency graphs\n";
         std::cout << "  - Snapshot comparison to track build time improvements\n";
         std::cout << "  - CMake integration for automatic trace capture\n";

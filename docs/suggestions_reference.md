@@ -8,23 +8,26 @@ This document explains each suggester, expected inputs, and application behavior
 
 Purpose:
 - identify repeatedly parsed expensive headers
-- propose project-level `pch.h`
-- emit build-system edits to include PCH in relevant targets
+- report exact repeated inclusion and compatible compile-command evidence
+- leave build-system-specific PCH design and configuration to the project
 
 Inputs:
 - trace files
-- build-system files for auto-edit emission
+- compilation database covering the observed includers
 
 Typical outputs:
-- create/update `pch.h`
-- edit `CMakeLists.txt` / Make/Meson equivalent integration lines
+- advisory evidence for a candidate header
+- zero estimated savings until a configured build is measured again
 
 Application mode:
-- usually `direct-edits` when unambiguous target selection succeeds
+- `advisory`; no PCH source or build-system edit is emitted
 
 Guardrails:
-- auto-apply is syntax-gated against compile-command-backed translation units
-- when no compile-command evidence exists for a candidate, apply-all skips that suggestion instead of failing the full batch
+- every observed includer must have an exact compilation command
+- the includers must share one compiler, language mode, working directory, and
+  preprocessor environment after output-only arguments are removed
+- PCH configuration remains compiler/build-system-specific and requires a
+  fresh validation trace
 
 ### 2. `forward-decl` (Forward Declaration)
 
@@ -179,15 +182,9 @@ Recommended policy:
 4. For advisory/external-refactor suggestions, apply in scoped PRs with explicit review.
 5. Re-measure and compare against baseline snapshots.
 
-## Tuning Heuristics
+## Evidence Controls
 
-BHA exposes threshold flags for key suggesters:
-- PCH (`--pch-*`)
-- template (`--template-*`)
-- header split (`--header-*`)
-- forward declaration (`--fwd-decl-min-time`)
-- codegen (`--codegen-threshold`)
-
-Use:
-- strict thresholds for CI gating stability
-- relaxed `--explain` runs for exploratory discovery
+BHA does not use filename, age, fixed-percentage, or threshold heuristics as
+semantic evidence. `--explain` can expose suggestions normally filtered by
+confidence or safety policy, but it cannot bypass AST, compilation-database,
+producer-schema, or post-edit validation requirements.
