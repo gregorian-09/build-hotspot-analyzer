@@ -286,6 +286,10 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.build_session.host_telemetry.cpu_load_samples = 6;
     analysis.build_session.host_telemetry.peak_before_cpu_load_average = 2.5;
     analysis.build_session.host_telemetry.peak_after_cpu_load_average = 3.5;
+    analysis.build_session.host_system = BuildHostSystemInfo{};
+    analysis.build_session.host_system->os_name = "Linux";
+    analysis.build_session.host_system->logical_cpu_count = 16;
+    analysis.build_session.host_system->total_physical_memory_mib = 32768;
 
     MetricCapability session_capability;
     session_capability.metric = "build.command.wall_time";
@@ -461,6 +465,10 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_DOUBLE_EQ(*session.host_telemetry.peak_before_cpu_load_average, 2.5);
     ASSERT_TRUE(session.host_telemetry.peak_after_cpu_load_average.has_value());
     EXPECT_DOUBLE_EQ(*session.host_telemetry.peak_after_cpu_load_average, 3.5);
+    ASSERT_TRUE(session.host_system.has_value());
+    EXPECT_EQ(*session.host_system->os_name, "Linux");
+    EXPECT_EQ(*session.host_system->logical_cpu_count, 16u);
+    EXPECT_EQ(*session.host_system->total_physical_memory_mib, 32768u);
     ASSERT_EQ(session.metric_capabilities.size(), 1u);
     EXPECT_EQ(session.metric_capabilities.front().metric, "build.command.wall_time");
     EXPECT_EQ(session.metric_capabilities.front().provenance.capture_mode, "api-v1-index");

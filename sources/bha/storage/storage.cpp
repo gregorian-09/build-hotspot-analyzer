@@ -150,6 +150,85 @@ namespace bha::storage
             return capabilities;
         }
 
+        nlohmann::json serialize_build_host_system(const BuildHostSystemInfo& host) {
+            nlohmann::json result = {
+                {"os_name", nullptr},
+                {"os_platform", nullptr},
+                {"os_release", nullptr},
+                {"os_version", nullptr},
+                {"is_64_bits", nullptr},
+                {"logical_cpu_count", nullptr},
+                {"physical_cpu_count", nullptr},
+                {"total_physical_memory_mib", nullptr},
+                {"total_virtual_memory_mib", nullptr},
+                {"processor_name", nullptr},
+                {"vendor_string", nullptr}
+            };
+            if (host.os_name.has_value()) result["os_name"] = *host.os_name;
+            if (host.os_platform.has_value()) result["os_platform"] = *host.os_platform;
+            if (host.os_release.has_value()) result["os_release"] = *host.os_release;
+            if (host.os_version.has_value()) result["os_version"] = *host.os_version;
+            if (host.is_64_bits.has_value()) result["is_64_bits"] = *host.is_64_bits;
+            if (host.logical_cpu_count.has_value()) result["logical_cpu_count"] = *host.logical_cpu_count;
+            if (host.physical_cpu_count.has_value()) result["physical_cpu_count"] = *host.physical_cpu_count;
+            if (host.total_physical_memory_mib.has_value()) {
+                result["total_physical_memory_mib"] = *host.total_physical_memory_mib;
+            }
+            if (host.total_virtual_memory_mib.has_value()) {
+                result["total_virtual_memory_mib"] = *host.total_virtual_memory_mib;
+            }
+            if (host.processor_name.has_value()) result["processor_name"] = *host.processor_name;
+            if (host.vendor_string.has_value()) result["vendor_string"] = *host.vendor_string;
+            return result;
+        }
+
+        BuildHostSystemInfo deserialize_build_host_system(const nlohmann::json& value) {
+            BuildHostSystemInfo host;
+            if (!value.is_object()) {
+                return host;
+            }
+            if (value.contains("os_name") && !value["os_name"].is_null()) {
+                host.os_name = value["os_name"].get<std::string>();
+            }
+            if (value.contains("os_platform") && !value["os_platform"].is_null()) {
+                host.os_platform = value["os_platform"].get<std::string>();
+            }
+            if (value.contains("os_release") && !value["os_release"].is_null()) {
+                host.os_release = value["os_release"].get<std::string>();
+            }
+            if (value.contains("os_version") && !value["os_version"].is_null()) {
+                host.os_version = value["os_version"].get<std::string>();
+            }
+            if (value.contains("is_64_bits") && !value["is_64_bits"].is_null()) {
+                host.is_64_bits = value["is_64_bits"].get<bool>();
+            }
+            if (value.contains("logical_cpu_count") && !value["logical_cpu_count"].is_null()) {
+                host.logical_cpu_count = value["logical_cpu_count"].get<std::uint64_t>();
+            }
+            if (value.contains("physical_cpu_count") && !value["physical_cpu_count"].is_null()) {
+                host.physical_cpu_count = value["physical_cpu_count"].get<std::uint64_t>();
+            }
+            if (value.contains("total_physical_memory_mib") &&
+                !value["total_physical_memory_mib"].is_null()) {
+                host.total_physical_memory_mib = value[
+                    "total_physical_memory_mib"
+                ].get<std::uint64_t>();
+            }
+            if (value.contains("total_virtual_memory_mib") &&
+                !value["total_virtual_memory_mib"].is_null()) {
+                host.total_virtual_memory_mib = value[
+                    "total_virtual_memory_mib"
+                ].get<std::uint64_t>();
+            }
+            if (value.contains("processor_name") && !value["processor_name"].is_null()) {
+                host.processor_name = value["processor_name"].get<std::string>();
+            }
+            if (value.contains("vendor_string") && !value["vendor_string"].is_null()) {
+                host.vendor_string = value["vendor_string"].get<std::string>();
+            }
+            return host;
+        }
+
         /**
          * Serializes a file analysis result to JSON.
          */
@@ -399,6 +478,7 @@ namespace bha::storage
                         session.host_telemetry.metric_capabilities
                     )}
                 }},
+                {"host_system", nullptr},
                 {"metric_capabilities", serialize_metric_capabilities(session.metric_capabilities)}
             };
             for (const auto& step : session.step_metrics) {
@@ -423,6 +503,9 @@ namespace bha::storage
             if (session.host_telemetry.peak_after_cpu_load_average.has_value()) {
                 result["host_telemetry"]["peak_after_cpu_load_average"] =
                     *session.host_telemetry.peak_after_cpu_load_average;
+            }
+            if (session.host_system.has_value()) {
+                result["host_system"] = serialize_build_host_system(*session.host_system);
             }
             return result;
         }
@@ -494,6 +577,9 @@ namespace bha::storage
                     session.host_telemetry.metric_capabilities =
                         deserialize_metric_capabilities(host["metric_capabilities"]);
                 }
+            }
+            if (j.contains("host_system") && !j["host_system"].is_null()) {
+                session.host_system = deserialize_build_host_system(j["host_system"]);
             }
             if (j.contains("metric_capabilities")) {
                 session.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);

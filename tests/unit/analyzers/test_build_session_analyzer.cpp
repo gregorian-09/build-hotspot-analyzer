@@ -114,6 +114,10 @@ namespace bha::analyzers::test {
     TEST(BuildSessionAnalyzerTest, ReportsProducerDefinedRoleMetrics) {
         BuildTrace trace;
         trace.build_session = BuildSession{};
+        trace.build_session->host_system = BuildHostSystemInfo{};
+        trace.build_session->host_system->os_name = "Linux";
+        trace.build_session->host_system->logical_cpu_count = 16;
+        trace.build_session->host_system->total_physical_memory_mib = 32768;
 
         auto configure = command("configure", 0, 2);
         configure.role = BuildStepRole::Configure;
@@ -171,6 +175,17 @@ namespace bha::analyzers::test {
         EXPECT_DOUBLE_EQ(*host.peak_before_cpu_load_average, 3.0);
         ASSERT_TRUE(host.peak_after_cpu_load_average.has_value());
         EXPECT_DOUBLE_EQ(*host.peak_after_cpu_load_average, 4.0);
+        ASSERT_TRUE(result.value().build_session.host_system.has_value());
+        EXPECT_EQ(*result.value().build_session.host_system->os_name, "Linux");
+        EXPECT_EQ(*result.value().build_session.host_system->logical_cpu_count, 16u);
+        const auto host_capability = std::ranges::find_if(
+            result.value().build_session.metric_capabilities,
+            [](const MetricCapability& capability) {
+                return capability.metric == "build.host.system";
+            }
+        );
+        ASSERT_NE(host_capability, result.value().build_session.metric_capabilities.end());
+        EXPECT_EQ(host_capability->provenance.evidence, EvidenceKind::Observed);
 
         const auto custom_result = std::ranges::find_if(
             result.value().build_session.metric_capabilities,

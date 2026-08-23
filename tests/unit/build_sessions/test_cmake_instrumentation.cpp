@@ -94,6 +94,30 @@ namespace bha::build_sessions::test {
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST(CMakeInstrumentationParserTest, RejectsInvalidStaticSystemInformationValue) {
+        const auto unique = std::to_string(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()
+            ).count()
+        );
+        const fs::path root = fs::temp_directory_path() / ("bha-cmake-static-invalid-" + unique);
+        const fs::path index = root / "index.json";
+        ASSERT_TRUE(fs::create_directories(root));
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "staticSystemInformation": {"numberOfLogicalCPU": "16"},
+  "snippets": []
+})json";
+        ASSERT_TRUE(utils::write_file(index, content).is_ok());
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_index_file(index);
+
+        EXPECT_TRUE(result.is_err());
+        std::error_code ec;
+        fs::remove_all(root, ec);
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsMissingTiming) {
         constexpr std::string_view content = R"json({
   "version": {"major": 1, "minor": 1},
@@ -157,12 +181,25 @@ namespace bha::build_sessions::test {
   "timeStart": 1737053448177,
   "duration": 31,
   "source": "src/main.cpp"
-})json";
+        })json";
         ASSERT_TRUE(utils::write_file(data / "compile.json", snippet).is_ok());
         const auto index_content = std::string(R"json({
   "version": {"major": 1, "minor": 1},
   "dataDir": ")json") + data.string() + R"json(",
   "hook": "postCMakeBuild",
+  "staticSystemInformation": {
+    "OSName": "Linux",
+    "OSPlatform": "x86_64",
+    "OSRelease": "Ubuntu",
+    "OSVersion": "6.8",
+    "is64Bits": true,
+    "numberOfLogicalCPU": 16,
+    "numberOfPhysicalCPU": 8,
+    "totalPhysicalMemory": 32768,
+    "totalVirtualMemory": 65536,
+    "processorName": "Test CPU",
+    "vendorString": "Test Vendor"
+  },
   "snippets": ["compile.json"]
 })json";
         ASSERT_TRUE(utils::write_file(index, index_content).is_ok());
@@ -173,6 +210,11 @@ namespace bha::build_sessions::test {
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(result.value().id, index.generic_string());
         EXPECT_EQ(result.value().instrumentation_hook, "postCMakeBuild");
+        ASSERT_TRUE(result.value().host_system.has_value());
+        EXPECT_EQ(*result.value().host_system->os_name, "Linux");
+        EXPECT_EQ(*result.value().host_system->logical_cpu_count, 16u);
+        EXPECT_EQ(*result.value().host_system->total_physical_memory_mib, 32768u);
+        EXPECT_EQ(*result.value().host_system->is_64_bits, true);
         ASSERT_EQ(result.value().commands.size(), 1u);
         EXPECT_EQ(result.value().commands.front().source, fs::path("src/main.cpp"));
         ASSERT_EQ(result.value().metric_capabilities.size(), 1u);

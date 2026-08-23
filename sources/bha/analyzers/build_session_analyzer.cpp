@@ -134,6 +134,32 @@ namespace bha::analyzers {
         auto& analysis = result.build_session;
         analysis.total_commands = session.commands.size();
         analysis.metric_capabilities = session.metric_capabilities;
+        analysis.host_system = session.host_system;
+
+        const bool has_host_system_value = session.host_system.has_value() && (
+            session.host_system->os_name.has_value() ||
+            session.host_system->os_platform.has_value() ||
+            session.host_system->os_release.has_value() ||
+            session.host_system->os_version.has_value() ||
+            session.host_system->is_64_bits.has_value() ||
+            session.host_system->logical_cpu_count.has_value() ||
+            session.host_system->physical_cpu_count.has_value() ||
+            session.host_system->total_physical_memory_mib.has_value() ||
+            session.host_system->total_virtual_memory_mib.has_value() ||
+            session.host_system->processor_name.has_value() ||
+            session.host_system->vendor_string.has_value()
+        );
+        auto host_system_capability = capability(
+            "build.host.system",
+            has_host_system_value ? EvidenceKind::Observed : EvidenceKind::Unavailable,
+            "cmake-instrumentation",
+            "build-session",
+            has_host_system_value
+                ? ""
+                : "CMake staticSystemInformation was not captured or contained no modeled fields"
+        );
+        host_system_capability.provenance.capture_mode = "api-v1-index";
+        analysis.metric_capabilities.push_back(std::move(host_system_capability));
 
         for (const auto& command : session.commands) {
             auto step = std::ranges::find(

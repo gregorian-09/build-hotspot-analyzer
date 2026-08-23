@@ -128,6 +128,140 @@ namespace bha::build_sessions {
             return Result<std::optional<double>, Error>::success(value);
         }
 
+        Result<std::optional<std::string>, Error> optional_static_string(
+            const json& object,
+            const char* name,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name) || object[name].is_null()) {
+                return Result<std::optional<std::string>, Error>::success(std::nullopt);
+            }
+            if (!object[name].is_string() || object[name].get<std::string>().empty()) {
+                return Result<std::optional<std::string>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake static system information has an invalid string field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<std::string>, Error>::success(
+                object[name].get<std::string>()
+            );
+        }
+
+        Result<std::optional<bool>, Error> optional_static_bool(
+            const json& object,
+            const char* name,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name) || object[name].is_null()) {
+                return Result<std::optional<bool>, Error>::success(std::nullopt);
+            }
+            if (!object[name].is_boolean()) {
+                return Result<std::optional<bool>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake static system information has an invalid boolean field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<bool>, Error>::success(object[name].get<bool>());
+        }
+
+        Result<std::optional<std::uint64_t>, Error> optional_static_integer(
+            const json& object,
+            const char* name,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name) || object[name].is_null()) {
+                return Result<std::optional<std::uint64_t>, Error>::success(std::nullopt);
+            }
+            if (!object[name].is_number()) {
+                return Result<std::optional<std::uint64_t>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake static system information has an invalid integer field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+
+            const long double value = object[name].get<long double>();
+            if (!std::isfinite(value) || value <= 0.0L || std::floor(value) != value ||
+                value > static_cast<long double>(std::numeric_limits<std::uint64_t>::max())) {
+                return Result<std::optional<std::uint64_t>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake static system information has an invalid integer field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<std::uint64_t>, Error>::success(
+                static_cast<std::uint64_t>(value)
+            );
+        }
+
+        Result<BuildHostSystemInfo, Error> parse_static_host_info(
+            const json& object,
+            const fs::path& source_hint
+        ) {
+            BuildHostSystemInfo result;
+            const auto read_string = [&](
+                const char* name,
+                std::optional<std::string>& destination
+            ) -> Result<void, Error> {
+                const auto value = optional_static_string(object, name, source_hint);
+                if (value.is_err()) {
+                    return Result<void, Error>::failure(value.error());
+                }
+                destination = value.value();
+                return Result<void, Error>::success();
+            };
+            const auto read_integer = [&](
+                const char* name,
+                std::optional<std::uint64_t>& destination
+            ) -> Result<void, Error> {
+                const auto value = optional_static_integer(object, name, source_hint);
+                if (value.is_err()) {
+                    return Result<void, Error>::failure(value.error());
+                }
+                destination = value.value();
+                return Result<void, Error>::success();
+            };
+
+            for (const auto& field : {
+                std::pair{"OSName", &result.os_name},
+                std::pair{"OSPlatform", &result.os_platform},
+                std::pair{"OSRelease", &result.os_release},
+                std::pair{"OSVersion", &result.os_version},
+                std::pair{"processorName", &result.processor_name},
+                std::pair{"vendorString", &result.vendor_string}
+            }) {
+                const auto status = read_string(field.first, *field.second);
+                if (status.is_err()) {
+                    return Result<BuildHostSystemInfo, Error>::failure(status.error());
+                }
+            }
+
+            const auto is_64_bits = optional_static_bool(object, "is64Bits", source_hint);
+            if (is_64_bits.is_err()) {
+                return Result<BuildHostSystemInfo, Error>::failure(is_64_bits.error());
+            }
+            result.is_64_bits = is_64_bits.value();
+
+            for (const auto& field : {
+                std::pair{"numberOfLogicalCPU", &result.logical_cpu_count},
+                std::pair{"numberOfPhysicalCPU", &result.physical_cpu_count},
+                std::pair{"totalPhysicalMemory", &result.total_physical_memory_mib},
+                std::pair{"totalVirtualMemory", &result.total_virtual_memory_mib}
+            }) {
+                const auto status = read_integer(field.first, *field.second);
+                if (status.is_err()) {
+                    return Result<BuildHostSystemInfo, Error>::failure(status.error());
+                }
+            }
+            return Result<BuildHostSystemInfo, Error>::success(std::move(result));
+        }
+
         bool has_supported_data_version(const json& object) {
             if (!object.contains("version") || !object["version"].is_object()) {
                 return false;
@@ -351,6 +485,24 @@ namespace bha::build_sessions {
             session.build_system = BuildSystemType::CMake;
             if (index.contains("hook") && index["hook"].is_string()) {
                 session.instrumentation_hook = index["hook"].get<std::string>();
+            }
+            if (index.contains("staticSystemInformation")) {
+                if (!index["staticSystemInformation"].is_object()) {
+                    return Result<BuildSession, Error>::failure(
+                        Error::parse_error(
+                            "CMake instrumentation static system information is not an object",
+                            path.string()
+                        )
+                    );
+                }
+                const auto host = parse_static_host_info(
+                    index["staticSystemInformation"],
+                    path
+                );
+                if (host.is_err()) {
+                    return Result<BuildSession, Error>::failure(host.error());
+                }
+                session.host_system = host.value();
             }
 
             for (const auto& snippet : index["snippets"]) {

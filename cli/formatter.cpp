@@ -342,6 +342,29 @@ namespace bha::cli
             }
         }
 
+        if (result.build_session.host_system.has_value()) {
+            const auto& system = *result.build_session.host_system;
+            out_ << "\nHost System (CMake Producer)\n";
+            if (system.os_name.has_value()) {
+                out_ << "  OS:                 " << *system.os_name << "\n";
+            }
+            if (system.os_platform.has_value()) {
+                out_ << "  Platform:           " << *system.os_platform << "\n";
+            }
+            if (system.os_version.has_value()) {
+                out_ << "  OS Version:         " << *system.os_version << "\n";
+            }
+            if (system.logical_cpu_count.has_value()) {
+                out_ << "  Logical CPUs:       " << *system.logical_cpu_count << "\n";
+            }
+            if (system.physical_cpu_count.has_value()) {
+                out_ << "  Physical CPUs:      " << *system.physical_cpu_count << "\n";
+            }
+            if (system.total_physical_memory_mib.has_value()) {
+                out_ << "  Physical Memory:    " << *system.total_physical_memory_mib << " MiB\n";
+            }
+        }
+
         out_ << "\n";
 
         const auto& deps = result.dependencies;
@@ -714,7 +737,8 @@ namespace bha::cli
                         {"peak_memory_used_kib", nullptr},
                         {"cpu_load_samples", session.host_telemetry.cpu_load_samples},
                         {"peak_before_cpu_load_average", nullptr},
-                        {"peak_after_cpu_load_average", nullptr}
+                        {"peak_after_cpu_load_average", nullptr},
+                        {"host_system", nullptr}
                     }}
                 };
                 for (const auto& step : session.step_metrics) {
@@ -740,6 +764,34 @@ namespace bha::cli
                     j["host_telemetry"]["peak_after_cpu_load_average"] =
                         *session.host_telemetry.peak_after_cpu_load_average;
                 }
+                if (session.host_system.has_value()) {
+                    const auto& host = *session.host_system;
+                    j["host_system"] = {
+                        {"os_name", host.os_name.has_value() ? json(*host.os_name) : json(nullptr)},
+                        {"os_platform", host.os_platform.has_value() ? json(*host.os_platform) : json(nullptr)},
+                        {"os_release", host.os_release.has_value() ? json(*host.os_release) : json(nullptr)},
+                        {"os_version", host.os_version.has_value() ? json(*host.os_version) : json(nullptr)},
+                        {"is_64_bits", host.is_64_bits.has_value() ? json(*host.is_64_bits) : json(nullptr)},
+                        {"logical_cpu_count", host.logical_cpu_count.has_value()
+                            ? json(*host.logical_cpu_count)
+                            : json(nullptr)},
+                        {"physical_cpu_count", host.physical_cpu_count.has_value()
+                            ? json(*host.physical_cpu_count)
+                            : json(nullptr)},
+                        {"total_physical_memory_mib", host.total_physical_memory_mib.has_value()
+                            ? json(*host.total_physical_memory_mib)
+                            : json(nullptr)},
+                        {"total_virtual_memory_mib", host.total_virtual_memory_mib.has_value()
+                            ? json(*host.total_virtual_memory_mib)
+                            : json(nullptr)},
+                        {"processor_name", host.processor_name.has_value()
+                            ? json(*host.processor_name)
+                            : json(nullptr)},
+                        {"vendor_string", host.vendor_string.has_value()
+                            ? json(*host.vendor_string)
+                            : json(nullptr)}
+                    };
+                }
                 return j;
             }
         }
@@ -754,7 +806,8 @@ namespace bha::cli
             j["cache_distribution"] = json_detail::cache_to_json(result.cache_distribution);
             j["process_resources"] = json_detail::process_resources_to_json(result.process_resources);
             if (result.build_session.total_commands > 0 ||
-                !result.build_session.step_metrics.empty()) {
+                !result.build_session.step_metrics.empty() ||
+                result.build_session.host_system.has_value()) {
                 j["build_session"] = json_detail::build_session_to_json(result.build_session);
             }
             return j.dump(pretty ? 2 : -1);

@@ -633,6 +633,25 @@ namespace bha {
     };
 
     /**
+     * Static host context emitted by CMake Instrumentation API v1.
+     *
+     * Hostname and other identifying fields are intentionally not retained.
+     */
+    struct BuildHostSystemInfo {
+        std::optional<std::string> os_name;
+        std::optional<std::string> os_platform;
+        std::optional<std::string> os_release;
+        std::optional<std::string> os_version;
+        std::optional<bool> is_64_bits;
+        std::optional<std::uint64_t> logical_cpu_count;
+        std::optional<std::uint64_t> physical_cpu_count;
+        std::optional<std::uint64_t> total_physical_memory_mib;
+        std::optional<std::uint64_t> total_virtual_memory_mib;
+        std::optional<std::string> processor_name;
+        std::optional<std::string> vendor_string;
+    };
+
+    /**
      * Build-system event session independent of compiler-specific trace files.
      */
     struct BuildSession {
@@ -644,6 +663,7 @@ namespace bha {
         std::string instrumentation_hook;
         bool dependency_graph_complete = false;
         std::vector<BuildCommandEvent> commands;
+        std::optional<BuildHostSystemInfo> host_system;
         std::vector<MetricCapability> metric_capabilities;
     };
 

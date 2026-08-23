@@ -69,6 +69,12 @@ also reports the observed sample count, peak host memory used in KiB, and peak
 CPU load immediately before and after commands. These are derived maxima over
 the supplied producer samples; absent or null values are reported as
 unavailable.
+If the CMake Instrumentation API v1 index contains `staticSystemInformation`,
+BHA also reports the producer-provided OS identity, platform, release/version,
+architecture flag, logical/physical CPU counts, and total physical/virtual
+memory in MiB. Processor and vendor strings are retained when present. Hostname
+and other identifying fields are intentionally omitted, and absent producer
+fields remain unavailable rather than being filled by local probing.
 
 ---
 

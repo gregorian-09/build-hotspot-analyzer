@@ -451,7 +451,8 @@ namespace bha::exporters
             summary["cache"] = serialize_cache_distribution(analysis.cache_distribution);
         }
 
-        if (analysis.build_session.total_commands > 0) {
+        if (analysis.build_session.total_commands > 0 ||
+            analysis.build_session.host_system.has_value()) {
             summary["build_session"] = {
                 {"timed_commands", analysis.build_session.timed_commands},
                 {"total_commands", analysis.build_session.total_commands},
@@ -470,6 +471,7 @@ namespace bha::exporters
                     {"peak_after_cpu_load_average", nullptr},
                     {"metric_capabilities", json::array()}
                 }},
+                {"host_system", nullptr},
                 {"metric_capabilities", json::array()}
             };
             for (const auto& step : analysis.build_session.step_metrics) {
@@ -499,6 +501,36 @@ namespace bha::exporters
                 summary["build_session"]["host_telemetry"]["metric_capabilities"].push_back(
                     serialize_metric_capability(capability)
                 );
+            }
+            if (analysis.build_session.host_system.has_value()) {
+                const auto& host = *analysis.build_session.host_system;
+                summary["build_session"]["host_system"] = {
+                    {"os_name", host.os_name.has_value() ? json(*host.os_name) : json(nullptr)},
+                    {"os_platform", host.os_platform.has_value() ? json(*host.os_platform) : json(nullptr)},
+                    {"os_release", host.os_release.has_value() ? json(*host.os_release) : json(nullptr)},
+                    {"os_version", host.os_version.has_value() ? json(*host.os_version) : json(nullptr)},
+                    {"is_64_bits", host.is_64_bits.has_value()
+                        ? json(*host.is_64_bits)
+                        : json(nullptr)},
+                    {"logical_cpu_count", host.logical_cpu_count.has_value()
+                        ? json(*host.logical_cpu_count)
+                        : json(nullptr)},
+                    {"physical_cpu_count", host.physical_cpu_count.has_value()
+                        ? json(*host.physical_cpu_count)
+                        : json(nullptr)},
+                    {"total_physical_memory_mib", host.total_physical_memory_mib.has_value()
+                        ? json(*host.total_physical_memory_mib)
+                        : json(nullptr)},
+                    {"total_virtual_memory_mib", host.total_virtual_memory_mib.has_value()
+                        ? json(*host.total_virtual_memory_mib)
+                        : json(nullptr)},
+                    {"processor_name", host.processor_name.has_value()
+                        ? json(*host.processor_name)
+                        : json(nullptr)},
+                    {"vendor_string", host.vendor_string.has_value()
+                        ? json(*host.vendor_string)
+                        : json(nullptr)}
+                };
             }
             for (const auto& capability : analysis.build_session.metric_capabilities) {
                 summary["build_session"]["metric_capabilities"].push_back(

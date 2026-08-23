@@ -265,6 +265,8 @@ namespace bha::analyzers {
         std::vector<BuildStepAnalysis> step_metrics;
         /// Dynamic host telemetry collected around producer command events.
         BuildHostTelemetryAnalysis host_telemetry;
+        /// Privacy-filtered static host context from the build-system producer.
+        std::optional<BuildHostSystemInfo> host_system;
         /// Provenance and availability for session-level metrics.
         std::vector<MetricCapability> metric_capabilities;
     };
