@@ -70,12 +70,12 @@ namespace bha::analyzers
         all_times.reserve(trace.units.size());
 
         for (const auto& unit : trace.units) {
+            all_times.push_back(unit.metrics.total_time);
             if (unit.metrics.total_time < options.min_duration_threshold) {
                 continue;
             }
 
             auto file_result = analyze_compilation_unit(unit, total_time);
-            all_times.push_back(unit.metrics.total_time);
             result.files.push_back(std::move(file_result));
         }
 

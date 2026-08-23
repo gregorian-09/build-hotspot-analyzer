@@ -109,5 +109,11 @@ namespace bha::analyzers
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(result.value().files.size(), 1u);
+        EXPECT_EQ(
+            result.value().performance.avg_file_time,
+            std::chrono::nanoseconds(3333333333LL)
+        );
+        EXPECT_EQ(result.value().performance.median_file_time, std::chrono::seconds(3));
+        EXPECT_EQ(result.value().performance.sequential_time, std::chrono::seconds(10));
     }
 }

@@ -1136,6 +1136,7 @@ namespace bha {
      */
     struct AnalysisOptions {
         std::size_t max_threads = 0;  ///< 0 means auto-detect
+        /// Filters detailed slow-file output; it does not change build aggregates.
         Duration min_duration_threshold = std::chrono::milliseconds(10);
         bool analyze_templates = true;
         bool analyze_includes = true;
