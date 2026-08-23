@@ -270,7 +270,10 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
             std::chrono::milliseconds(700),
             2,
             1,
-            1
+            1,
+            0,
+            std::nullopt,
+            std::nullopt
         },
         analyzers::BuildStepAnalysis{
             BuildStepRole::Test,
@@ -279,9 +282,15 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
             std::chrono::milliseconds(300),
             1,
             1,
-            0
+            0,
+            0,
+            std::nullopt,
+            std::nullopt
         }
     };
+    analysis.build_session.step_metrics.front().output_observations = 1;
+    analysis.build_session.step_metrics.front().stdout_bytes = 12;
+    analysis.build_session.step_metrics.front().stderr_bytes = 3;
     analysis.build_session.host_telemetry.memory_samples = 4;
     analysis.build_session.host_telemetry.peak_memory_used_kib = 4096;
     analysis.build_session.host_telemetry.cpu_load_samples = 6;
@@ -457,6 +466,11 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(session.step_metrics.front().role, BuildStepRole::Custom);
     EXPECT_EQ(session.step_metrics.front().wall_clock_time, std::chrono::milliseconds(700));
     EXPECT_EQ(session.step_metrics.front().failed_commands, 1u);
+    EXPECT_EQ(session.step_metrics.front().output_observations, 1u);
+    ASSERT_TRUE(session.step_metrics.front().stdout_bytes.has_value());
+    EXPECT_EQ(*session.step_metrics.front().stdout_bytes, 12u);
+    ASSERT_TRUE(session.step_metrics.front().stderr_bytes.has_value());
+    EXPECT_EQ(*session.step_metrics.front().stderr_bytes, 3u);
     EXPECT_EQ(session.step_metrics.back().role, BuildStepRole::Test);
     EXPECT_EQ(session.step_metrics.back().successful_commands, 1u);
     EXPECT_EQ(session.host_telemetry.memory_samples, 4u);

@@ -313,6 +313,22 @@ namespace bha::cli
                       << ", results=" << format_count(step.result_observations)
                       << ", succeeded=" << format_count(step.successful_commands)
                       << ", failed=" << format_count(step.failed_commands) << "\n";
+                if (step.output_observations > 0) {
+                    out_ << "    output samples=" << format_count(step.output_observations)
+                         << ", stdout bytes=";
+                    if (step.stdout_bytes.has_value()) {
+                        out_ << *step.stdout_bytes;
+                    } else {
+                        out_ << "unavailable";
+                    }
+                    out_ << ", stderr bytes=";
+                    if (step.stderr_bytes.has_value()) {
+                        out_ << *step.stderr_bytes;
+                    } else {
+                        out_ << "unavailable";
+                    }
+                    out_ << "\n";
+                }
             }
         }
 
@@ -750,7 +766,14 @@ namespace bha::cli
                         {"wall_clock_time_ns", step.wall_clock_time.count()},
                         {"result_observations", step.result_observations},
                         {"successful_commands", step.successful_commands},
-                        {"failed_commands", step.failed_commands}
+                        {"failed_commands", step.failed_commands},
+                        {"output_observations", step.output_observations},
+                        {"stdout_bytes", step.stdout_bytes.has_value()
+                            ? json(*step.stdout_bytes)
+                            : json(nullptr)},
+                        {"stderr_bytes", step.stderr_bytes.has_value()
+                            ? json(*step.stderr_bytes)
+                            : json(nullptr)}
                     });
                 }
                 if (session.host_telemetry.peak_memory_used_kib.has_value()) {

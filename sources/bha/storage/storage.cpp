@@ -490,8 +490,17 @@ namespace bha::storage
                     {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
                     {"result_observations", step.result_observations},
                     {"successful_commands", step.successful_commands},
-                    {"failed_commands", step.failed_commands}
+                    {"failed_commands", step.failed_commands},
+                    {"output_observations", step.output_observations},
+                    {"stdout_bytes", nullptr},
+                    {"stderr_bytes", nullptr}
                 });
+                if (step.stdout_bytes.has_value()) {
+                    result["step_metrics"].back()["stdout_bytes"] = *step.stdout_bytes;
+                }
+                if (step.stderr_bytes.has_value()) {
+                    result["step_metrics"].back()["stderr_bytes"] = *step.stderr_bytes;
+                }
             }
             if (session.host_telemetry.peak_memory_used_kib.has_value()) {
                 result["host_telemetry"]["peak_memory_used_kib"] =
@@ -547,6 +556,16 @@ namespace bha::storage
                         std::size_t{0}
                     );
                     step.failed_commands = item.value("failed_commands", std::size_t{0});
+                    step.output_observations = item.value(
+                        "output_observations",
+                        std::size_t{0}
+                    );
+                    if (item.contains("stdout_bytes") && !item["stdout_bytes"].is_null()) {
+                        step.stdout_bytes = item["stdout_bytes"].get<std::uint64_t>();
+                    }
+                    if (item.contains("stderr_bytes") && !item["stderr_bytes"].is_null()) {
+                        step.stderr_bytes = item["stderr_bytes"].get<std::uint64_t>();
+                    }
                     session.step_metrics.push_back(std::move(step));
                 }
             }

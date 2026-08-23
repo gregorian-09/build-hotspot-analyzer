@@ -133,6 +133,8 @@ namespace bha::analyzers::test {
         custom.before_host_memory_used_kib = 4096;
         custom.after_host_memory_used_kib = 3072;
         custom.before_cpu_load_average = 3.0;
+        custom.standard_output = "abc";
+        custom.standard_error = "warning";
 
         auto test = command("test", 5, 4);
         test.role = BuildStepRole::Test;
@@ -163,6 +165,11 @@ namespace bha::analyzers::test {
 
         EXPECT_EQ(steps[1].wall_clock_time, std::chrono::seconds(3));
         EXPECT_EQ(steps[1].failed_commands, 1u);
+        EXPECT_EQ(steps[1].output_observations, 1u);
+        ASSERT_TRUE(steps[1].stdout_bytes.has_value());
+        EXPECT_EQ(*steps[1].stdout_bytes, 3u);
+        ASSERT_TRUE(steps[1].stderr_bytes.has_value());
+        EXPECT_EQ(*steps[1].stderr_bytes, 7u);
         EXPECT_EQ(steps[2].successful_commands, 1u);
         EXPECT_EQ(steps[3].result_observations, 0u);
 
@@ -196,6 +203,16 @@ namespace bha::analyzers::test {
         );
         ASSERT_NE(custom_result, result.value().build_session.metric_capabilities.end());
         EXPECT_EQ(custom_result->provenance.evidence, EvidenceKind::Observed);
+
+        const auto output_bytes = std::ranges::find_if(
+            result.value().build_session.metric_capabilities,
+            [](const MetricCapability& capability) {
+                return capability.metric == "build.step.output_bytes" &&
+                    capability.provenance.scope == "role:custom";
+            }
+        );
+        ASSERT_NE(output_bytes, result.value().build_session.metric_capabilities.end());
+        EXPECT_EQ(output_bytes->provenance.evidence, EvidenceKind::Derived);
 
         const auto install_result = std::ranges::find_if(
             result.value().build_session.metric_capabilities,

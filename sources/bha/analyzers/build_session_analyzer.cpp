@@ -141,6 +141,24 @@ namespace bha::analyzers {
             }
         }
 
+        const auto add_output_bytes = [](
+            std::optional<std::uint64_t>& total,
+            const std::optional<std::string>& output
+        ) {
+            if (!output.has_value()) {
+                return;
+            }
+            const auto size = static_cast<std::uint64_t>(output->size());
+            if (!total.has_value()) {
+                total = 0;
+            }
+            if (size > std::numeric_limits<std::uint64_t>::max() - *total) {
+                total.reset();
+                return;
+            }
+            *total += size;
+        };
+
         const bool has_host_system_value = session.host_system.has_value() && (
             session.host_system->os_name.has_value() ||
             session.host_system->os_platform.has_value() ||
@@ -205,6 +223,11 @@ namespace bha::analyzers {
                     ++step->failed_commands;
                 }
             }
+            if (command.standard_output.has_value() || command.standard_error.has_value()) {
+                ++step->output_observations;
+            }
+            add_output_bytes(step->stdout_bytes, command.standard_output);
+            add_output_bytes(step->stderr_bytes, command.standard_error);
         }
 
         auto& host = analysis.host_telemetry;
@@ -318,6 +341,23 @@ namespace bha::analyzers {
             );
             result_status.provenance.capture_mode = "producer-command-events";
             analysis.metric_capabilities.push_back(std::move(result_status));
+
+            auto output_bytes = capability(
+                "build.step.output_bytes",
+                step.output_observations > 0 &&
+                        (step.stdout_bytes.has_value() || step.stderr_bytes.has_value())
+                    ? EvidenceKind::Derived
+                    : EvidenceKind::Unavailable,
+                "BuildSessionAnalyzer",
+                scope,
+                step.output_observations > 0
+                    ? "Only streams present in producer snippets are summed"
+                    : "CMake captureOutput was not captured for this role"
+            );
+            output_bytes.provenance.capture_mode = "captureOutput";
+            output_bytes.provenance.timing_domain = TimingDomain::None;
+            output_bytes.provenance.timing_aggregation = TimingAggregation::None;
+            analysis.metric_capabilities.push_back(std::move(output_bytes));
         }
 
         std::vector<TimedEvent> timed_events;

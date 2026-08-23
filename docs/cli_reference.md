@@ -83,6 +83,10 @@ build tree or match trace files by filename.
 The explicit `--cmake-index FILE` attachment is also supported by `suggest`,
 `export`, and `build --analyze`; it can be used without positional trace files
 when the index contains producer-referenced compile traces.
+When CMake data version 1.1 capture-output fields are present, supported command
+roles also report exact captured-output observations and producer-byte totals for
+stdout and stderr. Raw output text is not copied into aggregate reports or
+snapshots; absent streams remain unavailable and no output text is classified.
 
 ---
 

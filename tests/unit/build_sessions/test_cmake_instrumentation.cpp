@@ -81,6 +81,60 @@ namespace bha::build_sessions::test {
         EXPECT_FALSE(event.after_cpu_load_average.has_value());
     }
 
+    TEST(CMakeInstrumentationParserTest, ParsesCapturedCommandOutput) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "custom",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "stdout": "hello\n",
+  "stderr": "warning\n"
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "custom.json");
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_TRUE(result.value().standard_output.has_value());
+        EXPECT_EQ(*result.value().standard_output, "hello\n");
+        ASSERT_TRUE(result.value().standard_error.has_value());
+        EXPECT_EQ(*result.value().standard_error, "warning\n");
+    }
+
+    TEST(CMakeInstrumentationParserTest, RejectsCapturedOutputOnUnsupportedRole) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "configure",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "stdout": "configure output"
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "configure.json");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST(CMakeInstrumentationParserTest, RejectsNonEmptyTestStderr) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "test",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "stdout": "merged output",
+  "stderr": "separate stderr"
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "test.json");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsInvalidDynamicMemoryValue) {
         constexpr std::string_view content = R"json({
   "version": {"major": 1, "minor": 1},

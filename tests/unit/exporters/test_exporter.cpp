@@ -122,8 +122,13 @@ namespace bha::exporters::test
             std::chrono::milliseconds(250),
             1,
             1,
-            0
+            0,
+            0,
+            std::nullopt,
+            std::nullopt
         });
+        result.build_session.step_metrics.front().output_observations = 1;
+        result.build_session.step_metrics.front().stdout_bytes = 5;
         result.build_session.host_telemetry.memory_samples = 2;
         result.build_session.host_telemetry.peak_memory_used_kib = 2048;
         result.build_session.host_telemetry.cpu_load_samples = 2;
@@ -398,6 +403,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"host_system\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"logical_cpu_count\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"compile_trace_references\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"output_observations\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"stdout_bytes\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);

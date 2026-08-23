@@ -221,6 +221,12 @@ namespace bha::analyzers {
         std::size_t successful_commands = 0;
         /// Number of observed commands whose exit result was non-zero.
         std::size_t failed_commands = 0;
+        /// Number of commands with at least one captured output stream.
+        std::size_t output_observations = 0;
+        /// Sum of captured stdout bytes when the producer supplied stdout.
+        std::optional<std::uint64_t> stdout_bytes;
+        /// Sum of captured stderr bytes when the producer supplied stderr.
+        std::optional<std::uint64_t> stderr_bytes;
     };
 
     /**

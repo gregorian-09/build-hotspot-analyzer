@@ -30,6 +30,46 @@ namespace bha::build_sessions {
             return BuildStepRole::Unknown;
         }
 
+        bool role_supports_captured_output(const BuildStepRole role) {
+            return role == BuildStepRole::Compile ||
+                role == BuildStepRole::Link ||
+                role == BuildStepRole::Custom ||
+                role == BuildStepRole::Test ||
+                role == BuildStepRole::Install;
+        }
+
+        Result<std::optional<std::string>, Error> optional_command_output(
+            const json& object,
+            const char* name,
+            const BuildStepRole role,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name)) {
+                return Result<std::optional<std::string>, Error>::success(std::nullopt);
+            }
+            if (object["version"]["minor"].get<int>() < 1 ||
+                !role_supports_captured_output(role)) {
+                return Result<std::optional<std::string>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake instrumentation ") + name +
+                            " is only valid for version 1.1 compile, link, custom, test, or install snippets",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (!object[name].is_string()) {
+                return Result<std::optional<std::string>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake instrumentation ") + name + " must be a string",
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<std::string>, Error>::success(
+                object[name].get<std::string>()
+            );
+        }
+
         Timestamp timestamp_from_milliseconds(const double milliseconds) {
             return Timestamp(std::chrono::duration_cast<Timestamp::duration>(
                 std::chrono::duration<double, std::milli>(milliseconds)
@@ -329,6 +369,36 @@ namespace bha::build_sessions {
             event.target = object.value("target", "");
             event.language = object.value("language", "");
             event.source = object.value("source", "");
+
+            const auto standard_output = optional_command_output(
+                object,
+                "stdout",
+                event.role,
+                source_hint
+            );
+            if (standard_output.is_err()) {
+                return Result<BuildCommandEvent, Error>::failure(standard_output.error());
+            }
+            const auto standard_error = optional_command_output(
+                object,
+                "stderr",
+                event.role,
+                source_hint
+            );
+            if (standard_error.is_err()) {
+                return Result<BuildCommandEvent, Error>::failure(standard_error.error());
+            }
+            if (event.role == BuildStepRole::Test && standard_error.value().has_value() &&
+                !standard_error.value()->empty()) {
+                return Result<BuildCommandEvent, Error>::failure(
+                    Error::parse_error(
+                        "CMake instrumentation test stderr must be merged into stdout",
+                        source_hint.string()
+                    )
+                );
+            }
+            event.standard_output = standard_output.value();
+            event.standard_error = standard_error.value();
 
             if (object.contains("traceFile")) {
                 if (object["version"]["minor"].get<int>() < 1 ||

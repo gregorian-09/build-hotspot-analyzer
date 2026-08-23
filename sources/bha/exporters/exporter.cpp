@@ -483,8 +483,19 @@ namespace bha::exporters
                     {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
                     {"result_observations", step.result_observations},
                     {"successful_commands", step.successful_commands},
-                    {"failed_commands", step.failed_commands}
+                    {"failed_commands", step.failed_commands},
+                    {"output_observations", step.output_observations},
+                    {"stdout_bytes", nullptr},
+                    {"stderr_bytes", nullptr}
                 });
+                if (step.stdout_bytes.has_value()) {
+                    summary["build_session"]["step_metrics"].back()["stdout_bytes"] =
+                        *step.stdout_bytes;
+                }
+                if (step.stderr_bytes.has_value()) {
+                    summary["build_session"]["step_metrics"].back()["stderr_bytes"] =
+                        *step.stderr_bytes;
+                }
             }
             if (analysis.build_session.host_telemetry.peak_memory_used_kib.has_value()) {
                 summary["build_session"]["host_telemetry"]["peak_memory_used_kib"] =

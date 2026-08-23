@@ -625,6 +625,10 @@ namespace bha {
         std::optional<Timestamp> start_time;
         Duration duration = Duration::zero();
         std::optional<int> result;
+        /// Transient producer-captured standard output for this command.
+        std::optional<std::string> standard_output;
+        /// Transient producer-captured standard error for this command.
+        std::optional<std::string> standard_error;
         std::vector<std::string> dependency_ids;
         MetricProvenance timing_provenance;
 
