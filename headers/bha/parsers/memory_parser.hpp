@@ -23,9 +23,13 @@ namespace bha::parsers
     /**
      * Parses a GCC/Clang stack usage (.su) file.
      *
-     * Stack usage files are generated with -fstack-usage and contain per-function
-     * stack consumption data. This is the only reliable memory metric available
-     * from standard compiler output.
+     * Stack usage files are generated with -fstack-usage. Each non-empty record
+     * must contain the producer's three tab-separated fields: function name,
+     * byte count, and qualifier. Unbounded dynamic records are retained as
+     * parsed evidence but are excluded from the bounded maximum.
+     *
+     * Malformed records fail the parse; valid rows are never inferred from
+     * arbitrary whitespace or partially accepted text.
      *
      * @param su_file Path to the `.su` artifact emitted by the compiler.
      * @return Aggregated memory metrics extracted from stack-usage entries.

@@ -60,6 +60,34 @@ TEST(MemoryParserTest, ParseStackUsageFileEmpty) {
     fs::remove(temp_file);
 }
 
+TEST(MemoryParserTest, RejectsMalformedRecordInsteadOfSkippingIt) {
+    const fs::path temp_file = fs::temp_directory_path() / "test_malformed.su";
+    std::ofstream file(temp_file);
+    file << "valid.cpp:1:1:valid\t256\tstatic\n";
+    file << "invalid.cpp:2:1:invalid 512 static\n";
+    file.close();
+
+    const auto result = bha::parsers::parse_stack_usage_file(temp_file);
+    EXPECT_TRUE(result.is_err());
+
+    fs::remove(temp_file);
+}
+
+TEST(MemoryParserTest, RejectsInvalidBytesAndQualifiers) {
+    const fs::path temp_file = fs::temp_directory_path() / "test_invalid_fields.su";
+    std::ofstream file(temp_file);
+    file << "test.cpp:1:1:function\tnot-a-number\tstatic\n";
+    file.close();
+    EXPECT_TRUE(bha::parsers::parse_stack_usage_file(temp_file).is_err());
+
+    file.open(temp_file);
+    file << "test.cpp:1:1:function\t128\tunknown\n";
+    file.close();
+    EXPECT_TRUE(bha::parsers::parse_stack_usage_file(temp_file).is_err());
+
+    fs::remove(temp_file);
+}
+
 TEST(MemoryParserTest, MemoryMetricsHasData) {
     bha::MemoryMetrics metrics;
     EXPECT_FALSE(metrics.has_data());
