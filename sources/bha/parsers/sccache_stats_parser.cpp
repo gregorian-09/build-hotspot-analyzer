@@ -6,6 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
 #include <limits>
 #include <utility>
 
@@ -192,6 +193,29 @@ namespace bha::parsers {
             return Result<CacheStatistics, Error>::failure(content.error());
         }
         return parse_content(content.value(), path);
+    }
+
+    Result<void, Error> SccacheStatsParser::attach_to_trace(
+        BuildTrace& trace,
+        const fs::path& path
+    ) const {
+        auto result = parse_file(path);
+        if (result.is_err()) {
+            return Result<void, Error>::failure(result.error());
+        }
+
+        trace.cache_statistics = std::move(result.value());
+        for (const auto& capability : trace.cache_statistics->metric_capabilities) {
+            const auto existing = std::ranges::find(
+                trace.metric_capabilities,
+                capability.metric,
+                &MetricCapability::metric
+            );
+            if (existing == trace.metric_capabilities.end()) {
+                trace.metric_capabilities.push_back(capability);
+            }
+        }
+        return Result<void, Error>::success();
     }
 
 }  // namespace bha::parsers

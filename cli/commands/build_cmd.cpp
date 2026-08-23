@@ -2,6 +2,7 @@
 #include "bha/cli/formatter.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/parsers/parser.hpp"
+#include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
@@ -46,6 +47,7 @@ namespace bha::cli
                 {"compiler", 0, "Compiler to use", false, true, "", "COMPILER"},
                 {"cmake-args", 0, "Additional CMake arguments (semicolon-separated)", false, true, "", "ARGS"},
                 {"configure-args", 0, "Additional configure/make arguments (semicolon-separated)", false, true, "", "ARGS"},
+                {"cache-stats", 0, "Structured sccache JSON statistics file for --analyze", false, true, "", "FILE"},
             };
         }
 
@@ -188,6 +190,16 @@ namespace bha::cli
                 if (build_trace.units.empty()) {
                     print_warning("No valid trace files parsed");
                     return 0;
+                }
+
+                if (const auto cache_stats_path = args.get("cache-stats")) {
+                    parsers::SccacheStatsParser parser;
+                    if (const auto cache_result = parser.attach_to_trace(build_trace, *cache_stats_path);
+                        cache_result.is_err()) {
+                        print_error("Failed to parse cache statistics: " + cache_result.error().message());
+                        return 1;
+                    }
+                    print_verbose("Attached cache statistics: " + *cache_stats_path);
                 }
 
                 if (!result.memory_files.empty()) {

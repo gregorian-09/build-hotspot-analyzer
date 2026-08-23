@@ -9,6 +9,7 @@
 
 #include "bha/bha.hpp"
 #include "bha/parsers/parser.hpp"
+#include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
@@ -142,6 +143,7 @@ namespace bha::cli
                 {"max-analyzer-time", 0, "Max time per analyzer in ms (default: 0, no limit)", false, true, "0", "MS"},
                 {"max-files", 0, "Max files to report (default: 10)", false, true, "10", "N"},
                 {"min-file-time", 0, "Min file time threshold in ms (default: 10)", false, true, "10", "MS"},
+                {"cache-stats", 0, "Structured sccache JSON statistics file", false, true, "", "FILE"},
             };
         }
 
@@ -285,6 +287,15 @@ namespace bha::cli
             if (build_trace.units.empty()) {
                 print_error("No valid trace files parsed");
                 return 1;
+            }
+
+            if (const auto cache_stats_path = args.get("cache-stats")) {
+                parsers::SccacheStatsParser parser;
+                if (const auto result = parser.attach_to_trace(build_trace, *cache_stats_path); result.is_err()) {
+                    print_error("Failed to parse cache statistics: " + result.error().message());
+                    return 1;
+                }
+                print_verbose("Attached cache statistics: " + *cache_stats_path);
             }
 
             print_verbose("Running analysis...");

@@ -26,6 +26,11 @@ namespace bha::parsers {
         [[nodiscard]] Result<CacheStatistics, Error> parse_file(
             const fs::path& path
         ) const;
+
+        [[nodiscard]] Result<void, Error> attach_to_trace(
+            BuildTrace& trace,
+            const fs::path& path
+        ) const;
     };
 
 }  // namespace bha::parsers

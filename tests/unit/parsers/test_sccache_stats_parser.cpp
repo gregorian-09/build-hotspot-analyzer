@@ -2,6 +2,10 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+
 namespace bha::parsers {
 
     TEST(SccacheStatsParserTest, ParsesProducerCountersAndLanguageOutcomes) {
@@ -95,6 +99,50 @@ namespace bha::parsers {
         const auto result = parser.parse_content("Cache hits: 10\nCache misses: 2\n");
 
         EXPECT_TRUE(result.is_err());
+    }
+
+    TEST(SccacheStatsParserTest, AttachesValidatedStatisticsToBuildTrace) {
+        constexpr std::string_view content = R"json({
+            "version": "0.14.0",
+            "stats": {
+                "compile_requests": 1,
+                "requests_executed": 1,
+                "requests_not_compile": 0,
+                "requests_unsupported_compiler": 0,
+                "requests_not_cacheable": 0,
+                "compilations": 1,
+                "cache_hits": {"counts": {"C/C++": 1}},
+                "cache_misses": {"counts": {"C/C++": 0}},
+                "cache_errors": {"counts": {"C/C++": 0}},
+                "cache_timeouts": 0,
+                "cache_read_errors": 0,
+                "non_cacheable_compilations": 0,
+                "forced_recaches": 0,
+                "cache_write_errors": 0,
+                "cache_writes": 1,
+                "compile_fails": 0
+            }
+        })json";
+
+        const SccacheStatsParser parser;
+        const auto path = std::filesystem::temp_directory_path() /
+            ("bha-sccache-stats-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            ) + ".json");
+        {
+            std::ofstream output(path);
+            ASSERT_TRUE(output.is_open());
+            output << content;
+        }
+
+        BuildTrace trace;
+        const auto attached = parser.attach_to_trace(trace, path);
+        std::error_code cleanup_error;
+        std::filesystem::remove(path, cleanup_error);
+
+        ASSERT_TRUE(attached.is_ok());
+        EXPECT_EQ(trace.cache_statistics->cache_hits, 1u);
+        EXPECT_EQ(trace.metric_capabilities.front().metric, "cache.outcomes");
     }
 
 }  // namespace bha::parsers

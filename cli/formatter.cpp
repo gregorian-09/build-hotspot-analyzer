@@ -329,19 +329,23 @@ namespace bha::cli
         out_ << "Total Instantiations: " << format_count(tmpl.total_instantiations) << "\n";
 
         const auto& cache = result.cache_distribution;
-        if (cache.total_compilations > 0) {
+        if (cache.compile_requests > 0 ||
+            cache.executed_compilations > 0 ||
+            cache.compilations > 0 ||
+            cache.cache_hits > 0 ||
+            cache.cache_misses > 0 ||
+            !cache.metric_capabilities.empty()) {
             out_ << "\n";
-            out_ << "Cache Opportunity:    " << format_percent(cache.cache_hit_opportunity_percent) << "\n";
-            out_ << "Cache Risky Units:    " << format_count(cache.cache_risk_compilations) << "\n";
-            out_ << "Distributed Fit:      " << format_percent(cache.distributed_suitability_score) << "\n";
-            out_ << "Tooling Detected:     "
-                 << (cache.sccache_detected ? "sccache " : "")
-                 << (cache.fastbuild_detected ? "fastbuild " : "")
-                 << (cache.cache_wrapper_detected ? "cache-wrapper" : "");
-            if (!cache.sccache_detected && !cache.fastbuild_detected && !cache.cache_wrapper_detected) {
-                out_ << "none";
+            out_ << "Cache Requests:       " << format_count(cache.compile_requests) << "\n";
+            out_ << "Executed Compiles:    " << format_count(cache.executed_compilations) << "\n";
+            out_ << "Cache Hits:           " << format_count(cache.cache_hits) << "\n";
+            out_ << "Cache Misses:         " << format_count(cache.cache_misses) << "\n";
+            out_ << "Cache Errors:         " << format_count(cache.cache_errors) << "\n";
+            if (cache.hit_rate_percent.has_value()) {
+                out_ << "Cache Hit Rate:       " << format_percent(*cache.hit_rate_percent) << "\n";
+            } else {
+                out_ << "Cache Hit Rate:       unavailable\n";
             }
-            out_ << "\n";
         }
 
         out_ << "\n";
@@ -586,21 +590,41 @@ namespace bha::cli
             }
 
             inline json cache_to_json(const analyzers::CacheDistributionAnalysisResult& cache) {
-                json j;
-                j["total_compilations"] = cache.total_compilations;
-                j["cache_friendly_compilations"] = cache.cache_friendly_compilations;
-                j["cache_risk_compilations"] = cache.cache_risk_compilations;
-                j["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
-                j["sccache_detected"] = cache.sccache_detected;
-                j["fastbuild_detected"] = cache.fastbuild_detected;
-                j["cache_wrapper_detected"] = cache.cache_wrapper_detected;
-                j["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
-                j["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
-                j["pch_generation_risk_count"] = cache.pch_generation_risk_count;
-                j["volatile_path_risk_count"] = cache.volatile_path_risk_count;
-                j["heavy_translation_units"] = cache.heavy_translation_units;
-                j["homogeneous_command_units"] = cache.homogeneous_command_units;
-                j["distributed_suitability_score"] = cache.distributed_suitability_score;
+                json j = {
+                    {"compile_requests", cache.compile_requests},
+                    {"executed_compilations", cache.executed_compilations},
+                    {"non_compilation_requests", cache.non_compilation_requests},
+                    {"unsupported_compiler_requests", cache.unsupported_compiler_requests},
+                    {"non_cacheable_requests", cache.non_cacheable_requests},
+                    {"compilations", cache.compilations},
+                    {"cache_hits", cache.cache_hits},
+                    {"cache_misses", cache.cache_misses},
+                    {"cache_errors", cache.cache_errors},
+                    {"cache_timeouts", cache.cache_timeouts},
+                    {"cache_read_errors", cache.cache_read_errors},
+                    {"non_cacheable_compilations", cache.non_cacheable_compilations},
+                    {"forced_recaches", cache.forced_recaches},
+                    {"cache_write_errors", cache.cache_write_errors},
+                    {"cache_writes", cache.cache_writes},
+                    {"compilation_failures", cache.compilation_failures},
+                    {"hit_rate_percent", nullptr},
+                    {"metric_capabilities", json::array()}
+                };
+                if (cache.hit_rate_percent.has_value()) {
+                    j["hit_rate_percent"] = *cache.hit_rate_percent;
+                }
+                for (const auto& capability : cache.metric_capabilities) {
+                    const auto& provenance = capability.provenance;
+                    j["metric_capabilities"].push_back({
+                        {"metric", capability.metric},
+                        {"evidence", to_string(provenance.evidence)},
+                        {"producer", provenance.producer},
+                        {"producer_version", provenance.producer_version},
+                        {"capture_mode", provenance.capture_mode},
+                        {"scope", provenance.scope},
+                        {"limitation", provenance.limitation}
+                    });
+                }
                 return j;
             }
         }
