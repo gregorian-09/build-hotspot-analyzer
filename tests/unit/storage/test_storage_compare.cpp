@@ -224,6 +224,24 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
         }
     });
 
+    analysis.process_resources.observations = 2;
+    analysis.process_resources.total_process_time = std::chrono::milliseconds(101);
+    analysis.process_resources.total_user_time = std::chrono::milliseconds(92);
+    analysis.process_resources.peak_memory_kib = 87536;
+    analysis.process_resources.metric_capabilities.push_back({
+        "process.resource_counters",
+        MetricProvenance{
+            EvidenceKind::Observed,
+            "clang",
+            "",
+            "-fproc-stat-report=FILE",
+            "build",
+            TimingDomain::WallClock,
+            TimingAggregation::Exclusive,
+            "Rows identify tool invocations and output paths"
+        }
+    });
+
     MetricCapability capability;
     capability.metric = "compile.translation_unit.wall_time";
     capability.provenance.evidence = EvidenceKind::Observed;
@@ -243,6 +261,7 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     const auto& cache = load_result.value().analysis.cache_distribution;
     const auto& dependencies = load_result.value().analysis.dependencies;
     const auto& modules = load_result.value().analysis.modules;
+    const auto& process_resources = load_result.value().analysis.process_resources;
 
     ASSERT_EQ(dependencies.headers.size(), 1u);
     ASSERT_TRUE(dependencies.headers.front().self_parse_time.has_value());
@@ -259,6 +278,13 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(modules.dependencies.front(), expected_module_edge);
     ASSERT_EQ(modules.metric_capabilities.size(), 1u);
     EXPECT_EQ(modules.metric_capabilities.front().metric, "module.dependency_graph");
+
+    EXPECT_EQ(process_resources.observations, 2u);
+    EXPECT_EQ(process_resources.total_process_time, std::chrono::milliseconds(101));
+    EXPECT_EQ(process_resources.total_user_time, std::chrono::milliseconds(92));
+    EXPECT_EQ(process_resources.peak_memory_kib, 87536u);
+    ASSERT_EQ(process_resources.metric_capabilities.size(), 1u);
+    EXPECT_EQ(process_resources.metric_capabilities.front().metric, "process.resource_counters");
 
     EXPECT_EQ(cache.compile_requests, 12u);
     EXPECT_EQ(cache.executed_compilations, 10u);

@@ -191,6 +191,24 @@ namespace bha::exporters::test
             }
         });
 
+        result.process_resources.observations = 2;
+        result.process_resources.total_process_time = std::chrono::milliseconds(101);
+        result.process_resources.total_user_time = std::chrono::milliseconds(92);
+        result.process_resources.peak_memory_kib = 87536;
+        result.process_resources.metric_capabilities.push_back({
+            "process.resource_counters",
+            MetricProvenance{
+                EvidenceKind::Observed,
+                "clang",
+                "",
+                "-fproc-stat-report=FILE",
+                "build",
+                TimingDomain::WallClock,
+                TimingAggregation::Exclusive,
+                "Rows identify tool invocations and output paths"
+            }
+        });
+
         MetricCapability capability;
         capability.metric = "compile.translation_unit.wall_time";
         capability.provenance.evidence = EvidenceKind::Observed;
@@ -366,6 +384,9 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"provided_modules\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"pch_headers\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("/src/pch.h") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"process_resources\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"peak_memory_kib\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"process.resource_counters\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

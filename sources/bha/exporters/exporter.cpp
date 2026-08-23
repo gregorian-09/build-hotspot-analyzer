@@ -553,6 +553,26 @@ namespace bha::exporters
             }
         }
 
+        if (analysis.process_resources.observations > 0 ||
+            !analysis.process_resources.metric_capabilities.empty()) {
+            summary["process_resources"] = {
+                {"observations", analysis.process_resources.observations},
+                {"total_process_time_ms", duration_to_ms(
+                    analysis.process_resources.total_process_time
+                )},
+                {"total_user_time_ms", duration_to_ms(
+                    analysis.process_resources.total_user_time
+                )},
+                {"peak_memory_kib", analysis.process_resources.peak_memory_kib},
+                {"metric_capabilities", json::array()}
+            };
+            for (const auto& capability : analysis.process_resources.metric_capabilities) {
+                summary["process_resources"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
+            }
+        }
+
         json capabilities = json::array();
         for (const auto& capability : analysis.metric_capabilities) {
             capabilities.push_back(serialize_metric_capability(capability));

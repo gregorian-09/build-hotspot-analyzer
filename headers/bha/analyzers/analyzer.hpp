@@ -308,6 +308,22 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact process resource counters from a compiler sidecar.
+     */
+    struct ProcessResourceAnalysisResult {
+        /// Number of producer process rows observed.
+        std::size_t observations = 0;
+        /// Sum of producer-reported process wall times.
+        Duration total_process_time = Duration::zero();
+        /// Sum of producer-reported user CPU times.
+        Duration total_user_time = Duration::zero();
+        /// Maximum producer-reported peak resident memory in KiB.
+        std::uint64_t peak_memory_kib = 0;
+        /// Provenance and availability for process resource metrics.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Producer-observed compiler-cache outcome summary.
      */
     struct CacheDistributionAnalysisResult {
@@ -356,6 +372,8 @@ namespace bha::analyzers {
         BuildTargetAnalysisResult targets;
         /// Module dependency metrics from an explicit P1689 scan.
         ModuleAnalysisResult modules;
+        /// Process resource counters from an explicit compiler sidecar.
+        ProcessResourceAnalysisResult process_resources;
         /// Evidence and capability state for metrics in this result.
         std::vector<MetricCapability> metric_capabilities;
 

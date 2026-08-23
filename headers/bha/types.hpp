@@ -721,6 +721,30 @@ namespace bha {
     };
 
     /**
+     * One process resource row emitted by Clang's -fproc-stat-report.
+     *
+     * The producer reports time in microseconds and peak memory in KiB. The
+     * normalized duration fields preserve those exact producer measurements.
+     */
+    struct ProcessResourceObservation {
+        fs::path tool;
+        fs::path output;
+        Duration total_time = Duration::zero();
+        Duration user_time = Duration::zero();
+        std::uint64_t peak_memory_kib = 0;
+    };
+
+    /**
+     * Process resource rows collected from a compiler resource sidecar.
+     */
+    struct ProcessResourceReport {
+        std::string producer = "clang";
+        std::string producer_version;
+        std::vector<ProcessResourceObservation> observations;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * One module declaration or import from a P1689 dependency rule.
      */
     struct ModuleDependencyReference {
@@ -771,6 +795,7 @@ namespace bha {
         std::optional<BuildTargetGraph> target_graph;
         std::optional<CacheStatistics> cache_statistics;
         std::optional<ModuleDependencyGraph> module_dependency_graph;
+        std::optional<ProcessResourceReport> process_resource_report;
 
         std::vector<CompilationUnit> units;
 

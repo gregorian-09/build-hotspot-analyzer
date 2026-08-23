@@ -229,6 +229,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/lld_trace_parser.cpp
         sources/bha/parsers/sccache_stats_parser.cpp
         sources/bha/parsers/p1689_module_parser.cpp
+        sources/bha/parsers/process_resource_parser.cpp
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/project_index.cpp
@@ -266,6 +267,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/cache_analyzer.cpp
         sources/bha/analyzers/linker_analyzer.cpp
         sources/bha/analyzers/module_analyzer.cpp
+        sources/bha/analyzers/process_resource_analyzer.cpp
         sources/bha/analyzers/performance_analyzer.cpp
         sources/bha/analyzers/symbol_analyzer.cpp
         sources/bha/analyzers/template_analyzer.cpp

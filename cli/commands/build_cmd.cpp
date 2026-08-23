@@ -4,6 +4,7 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/parsers/p1689_module_parser.hpp"
+#include "bha/parsers/process_resource_parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
@@ -50,6 +51,7 @@ namespace bha::cli
                 {"configure-args", 0, "Additional configure/make arguments (semicolon-separated)", false, true, "", "ARGS"},
                 {"cache-stats", 0, "Structured sccache JSON statistics file for --analyze", false, true, "", "FILE"},
                 {"module-deps", 0, "Clang P1689 module dependency JSON file for --analyze", false, true, "", "FILE"},
+                {"resource-stats", 0, "Clang -fproc-stat-report CSV file for --analyze", false, true, "", "FILE"},
             };
         }
 
@@ -212,6 +214,21 @@ namespace bha::cli
                         return 1;
                     }
                     print_verbose("Attached module dependencies: " + *module_deps_path);
+                }
+
+                if (const auto resource_stats_path = args.get("resource-stats")) {
+                    parsers::ProcessResourceParser resource_parser;
+                    if (const auto resource_result = resource_parser.attach_to_trace(
+                            build_trace,
+                            *resource_stats_path
+                        ); resource_result.is_err()) {
+                        print_error(
+                            "Failed to parse process resource statistics: " +
+                            resource_result.error().message()
+                        );
+                        return 1;
+                    }
+                    print_verbose("Attached process resource statistics: " + *resource_stats_path);
                 }
 
                 if (!result.memory_files.empty()) {

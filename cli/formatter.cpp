@@ -338,6 +338,15 @@ namespace bha::cli
             }
         }
 
+        const auto& resources = result.process_resources;
+        if (resources.observations > 0 || !resources.metric_capabilities.empty()) {
+            out_ << "\n";
+            out_ << "Process Observations: " << format_count(resources.observations) << "\n";
+            out_ << "Process Total Time:   " << format_duration(resources.total_process_time) << "\n";
+            out_ << "Process User Time:    " << format_duration(resources.total_user_time) << "\n";
+            out_ << "Peak Process Memory:  " << resources.peak_memory_kib << " KiB\n";
+        }
+
         out_ << "\n";
     }
 
@@ -622,6 +631,31 @@ namespace bha::cli
                 }
                 return j;
             }
+
+            inline json process_resources_to_json(
+                const analyzers::ProcessResourceAnalysisResult& resources
+            ) {
+                json j = {
+                    {"observations", resources.observations},
+                    {"total_process_time_ns", resources.total_process_time.count()},
+                    {"total_user_time_ns", resources.total_user_time.count()},
+                    {"peak_memory_kib", resources.peak_memory_kib},
+                    {"metric_capabilities", json::array()}
+                };
+                for (const auto& capability : resources.metric_capabilities) {
+                    const auto& provenance = capability.provenance;
+                    j["metric_capabilities"].push_back({
+                        {"metric", capability.metric},
+                        {"evidence", to_string(provenance.evidence)},
+                        {"producer", provenance.producer},
+                        {"producer_version", provenance.producer_version},
+                        {"capture_mode", provenance.capture_mode},
+                        {"scope", provenance.scope},
+                        {"limitation", provenance.limitation}
+                    });
+                }
+                return j;
+            }
         }
 
         std::string to_json(const analyzers::AnalysisResult& result, const bool pretty) {
@@ -632,6 +666,7 @@ namespace bha::cli
             j["dependencies"] = json_detail::deps_to_json(result.dependencies);
             j["templates"] = json_detail::tmpl_to_json(result.templates);
             j["cache_distribution"] = json_detail::cache_to_json(result.cache_distribution);
+            j["process_resources"] = json_detail::process_resources_to_json(result.process_resources);
             return j.dump(pretty ? 2 : -1);
         }
 

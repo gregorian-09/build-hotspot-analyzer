@@ -567,6 +567,38 @@ namespace bha::storage
             return modules;
         }
 
+        nlohmann::json serialize_process_resources(
+            const analyzers::ProcessResourceAnalysisResult& resources
+        ) {
+            return {
+                {"observations", resources.observations},
+                {"total_process_time_ms", duration_to_ms(resources.total_process_time)},
+                {"total_user_time_ms", duration_to_ms(resources.total_user_time)},
+                {"peak_memory_kib", resources.peak_memory_kib},
+                {"metric_capabilities", serialize_metric_capabilities(resources.metric_capabilities)}
+            };
+        }
+
+        analyzers::ProcessResourceAnalysisResult deserialize_process_resources(
+            const nlohmann::json& j
+        ) {
+            analyzers::ProcessResourceAnalysisResult resources;
+            resources.observations = j.value("observations", std::size_t{0});
+            resources.total_process_time = ms_to_duration(
+                j.value("total_process_time_ms", 0.0)
+            );
+            resources.total_user_time = ms_to_duration(
+                j.value("total_user_time_ms", 0.0)
+            );
+            resources.peak_memory_kib = j.value("peak_memory_kib", std::uint64_t{0});
+            if (j.contains("metric_capabilities")) {
+                resources.metric_capabilities = deserialize_metric_capabilities(
+                    j["metric_capabilities"]
+                );
+            }
+            return resources;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -728,6 +760,7 @@ namespace bha::storage
         j["linker"] = serialize_linker(analysis.linker);
         j["targets"] = serialize_build_targets(analysis.targets);
         j["modules"] = serialize_modules(analysis.modules);
+        j["process_resources"] = serialize_process_resources(analysis.process_resources);
         j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
@@ -823,6 +856,12 @@ namespace bha::storage
 
             if (j.contains("modules")) {
                 snapshot.analysis.modules = deserialize_modules(j["modules"]);
+            }
+
+            if (j.contains("process_resources")) {
+                snapshot.analysis.process_resources = deserialize_process_resources(
+                    j["process_resources"]
+                );
             }
 
             if (j.contains("metric_capabilities")) {

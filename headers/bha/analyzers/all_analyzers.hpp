@@ -20,6 +20,7 @@
 #include "bha/analyzers/cache_analyzer.hpp"
 #include "bha/analyzers/linker_analyzer.hpp"
 #include "bha/analyzers/module_analyzer.hpp"
+#include "bha/analyzers/process_resource_analyzer.hpp"
 
 namespace bha::analyzers {
 
@@ -37,6 +38,7 @@ namespace bha::analyzers {
         register_cache_analyzer();
         register_linker_analyzer();
         register_module_analyzer();
+        register_process_resource_analyzer();
     }
 
 }  // namespace bha::analyzers

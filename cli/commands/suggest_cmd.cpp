@@ -11,6 +11,7 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/parsers/p1689_module_parser.hpp"
+#include "bha/parsers/process_resource_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
@@ -146,6 +147,7 @@ namespace bha::cli
                 {"min-file-time", 0, "Min file time threshold in ms (default: 10)", false, true, "10", "MS"},
                 {"cache-stats", 0, "Structured sccache JSON statistics file", false, true, "", "FILE"},
                 {"module-deps", 0, "Clang P1689 module dependency JSON file", false, true, "", "FILE"},
+                {"resource-stats", 0, "Clang -fproc-stat-report CSV file", false, true, "", "FILE"},
             };
         }
 
@@ -307,6 +309,15 @@ namespace bha::cli
                     return 1;
                 }
                 print_verbose("Attached module dependencies: " + *module_deps_path);
+            }
+
+            if (const auto resource_stats_path = args.get("resource-stats")) {
+                parsers::ProcessResourceParser parser;
+                if (const auto result = parser.attach_to_trace(build_trace, *resource_stats_path); result.is_err()) {
+                    print_error("Failed to parse process resource statistics: " + result.error().message());
+                    return 1;
+                }
+                print_verbose("Attached process resource statistics: " + *resource_stats_path);
             }
 
             print_verbose("Running analysis...");
