@@ -68,4 +68,37 @@ time(c2.dll)=0.800s
         EXPECT_EQ(unit.metrics.breakdown.unclassified, std::chrono::seconds(2));
         EXPECT_EQ(unit.template_evidence, TemplateEvidence::None);
     }
+
+    TEST_F(MSVCParserTest, AggregatesRepeatedBackendRows) {
+        const std::string content = R"(
+time(C:\project\src\main.cpp)=3.000s
+time(C:\path\to\c1xx.dll)=1.200s
+time(C:\path\to\c2.dll)=0.800s
+time(C:\path\to\c2.dll)=1.000s
+)";
+
+        auto result = parser_->parse_content(content, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+        EXPECT_EQ(unit.metrics.frontend_time, std::chrono::duration_cast<Duration>(
+            std::chrono::duration<double>(1.2)));
+        EXPECT_EQ(unit.metrics.backend_time, std::chrono::duration_cast<Duration>(
+            std::chrono::duration<double>(1.8)));
+        EXPECT_EQ(unit.metrics.total_time, std::chrono::seconds(3));
+    }
+
+    TEST_F(MSVCParserTest, RejectsMalformedDuration) {
+        constexpr std::string_view content =
+            "time(c1xx.dll)=not-a-duration\n"
+            "time(c2.dll)=0.8s\n";
+        auto result = parser_->parse_content(content, {});
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST_F(MSVCParserTest, RejectsLexicalComponentSubstring) {
+        constexpr std::string_view content =
+            "time(C:\\path\\not-c1xx.dll.backup)=1.0s\n";
+        EXPECT_FALSE(parser_->can_parse_content(content));
+    }
 }
