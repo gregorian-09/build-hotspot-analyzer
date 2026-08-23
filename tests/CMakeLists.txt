@@ -8,7 +8,6 @@ add_executable(bha_tests
         unit/parsers/test_lld_trace_parser.cpp
         unit/parsers/test_sccache_stats_parser.cpp
         unit/parsers/test_p1689_module_parser.cpp
-        unit/parsers/test_nvcc_parser.cpp
         unit/parsers/test_memory_parser.cpp
         unit/parsers/test_process_resource_parser.cpp
         unit/build_systems/test_adapter.cpp

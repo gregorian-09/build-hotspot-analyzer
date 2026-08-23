@@ -76,12 +76,17 @@ Supported parser families:
 - GCC timing text/report forms
 - MSVC timing output
 - Intel classic/oneAPI variants
-- NVCC timing output
 
 Parser responsibilities:
 - detect parse capability by path/content
 - normalize format-specific fields into common types
 - preserve command line context for downstream analysis/suggestions
+
+NVCC `--time` output is intentionally not ingested. NVIDIA documents it as a
+CSV table but does not define a stable column schema in the compiler-driver
+contract. BHA therefore rejects it rather than inferring phase roles from
+vendor-internal tool names. A parser can be added after a captured artifact
+establishes an exact schema.
 
 ## 5. Analyzer Layer
 

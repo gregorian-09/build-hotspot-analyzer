@@ -222,7 +222,6 @@ set_target_properties(bha_lib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_sources(bha_lib PRIVATE
         sources/bha/parsers/gcc_parser.cpp
         sources/bha/parsers/clang_parser.cpp
-        sources/bha/parsers/nvcc_parser.cpp
         sources/bha/parsers/parser_registry.cpp
         sources/bha/parsers/msvc_parser.cpp
         sources/bha/parsers/intel_parser.cpp

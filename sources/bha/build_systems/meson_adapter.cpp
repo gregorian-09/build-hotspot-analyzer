@@ -61,7 +61,7 @@ namespace bha::build_systems {
                     capture_launcher = script.string() + " ";
                 } else {
                     std::cerr << "Warning: bha-capture script not found. "
-                              << "GCC/Intel/NVCC tracing requires this script.\n"
+                              << "GCC/Intel tracing requires this script.\n"
                               << "Set BHA_SCRIPT_DIR to the directory containing bha-capture.sh\n";
                 }
             }

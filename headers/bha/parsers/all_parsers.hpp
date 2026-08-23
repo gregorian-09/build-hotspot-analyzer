@@ -17,7 +17,6 @@
 #include "bha/parsers/gcc_parser.hpp"
 #include "bha/parsers/msvc_parser.hpp"
 #include "bha/parsers/intel_parser.hpp"
-#include "bha/parsers/nvcc_parser.hpp"
 
 namespace bha::parsers {
 
@@ -35,7 +34,6 @@ namespace bha::parsers {
         register_gcc_parser();
         register_msvc_parser();
         register_intel_parsers();
-        register_nvcc_parser();
     }
 
 }  // namespace bha::parsers

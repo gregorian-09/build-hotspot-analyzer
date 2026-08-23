@@ -9,7 +9,9 @@ Trace ingestion supports outputs from:
 - GCC
 - MSVC
 - Intel classic/oneAPI
-- NVCC
+
+NVCC `--time` reports are not currently ingested. BHA rejects the undocumented
+vendor CSV schema instead of producing heuristic metrics.
 
 ## Prerequisites
 

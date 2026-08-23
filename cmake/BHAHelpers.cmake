@@ -8,7 +8,7 @@
 #
 # How it works:
 #   - Clang/ICX: Uses -ftime-trace, outputs JSON automatically
-#   - GCC/MSVC/Intel/NVCC: Uses compiler launcher to capture timing output
+#   - GCC/MSVC/Intel: Uses compiler launcher to capture timing output
 #
 # After building, traces are stored in:
 #   - Clang/ICX: <build>/*.json (next to object files)
@@ -30,8 +30,13 @@ get_filename_component(BHA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
 
 # Detect compiler type and appropriate timing flags
 function(bha_detect_compiler OUT_COMPILER OUT_FLAGS)
-    # Check for Intel compiler first (can also match "Clang" for ICX)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    # NVCC --time is a vendor CSV artifact whose column schema is not
+    # stable/documented enough for BHA to ingest without false metrics.
+    if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
+        set(${OUT_COMPILER} "nvcc" PARENT_SCOPE)
+        set(${OUT_FLAGS} "" PARENT_SCOPE)
+    # Check for Intel compiler next (can also match "Clang" for ICX)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
         if(CMAKE_CXX_COMPILER MATCHES "icx")
             # Intel oneAPI (ICX) - Clang-based, uses -ftime-trace
             set(${OUT_COMPILER} "icx" PARENT_SCOPE)
@@ -50,9 +55,6 @@ function(bha_detect_compiler OUT_COMPILER OUT_FLAGS)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         set(${OUT_COMPILER} "msvc" PARENT_SCOPE)
         set(${OUT_FLAGS} "/Bt+" PARENT_SCOPE)
-    elseif(CMAKE_CUDA_COMPILER)
-        set(${OUT_COMPILER} "nvcc" PARENT_SCOPE)
-        set(${OUT_FLAGS} "--time" PARENT_SCOPE)
     else()
         set(${OUT_COMPILER} "unknown" PARENT_SCOPE)
         set(${OUT_FLAGS} "" PARENT_SCOPE)
@@ -80,12 +82,11 @@ function(bha_setup_tracing_directory)
     set(BHA_COMPILER "${BHA_COMPILER}" CACHE STRING "Detected compiler for BHA tracing")
     set(BHA_TRACE_FLAGS "${BHA_FLAGS}" CACHE STRING "Compiler flags for BHA tracing")
 
-    # For compilers that output to console (GCC, MSVC, Intel Classic, NVCC),
+    # For compilers that output to console (GCC, MSVC, Intel Classic),
     # set up the compiler launcher for automatic per-file capture
     if(BHA_COMPILER STREQUAL "gcc" OR
             BHA_COMPILER STREQUAL "msvc" OR
-            BHA_COMPILER STREQUAL "intel" OR
-            BHA_COMPILER STREQUAL "nvcc")
+            BHA_COMPILER STREQUAL "intel")
 
         # Set environment variable for trace directory
         set(ENV{BHA_TRACE_DIR} "${BHA_TRACE_DIR}")
@@ -263,9 +264,7 @@ function(bha_status)
         message(STATUS "After building, run:")
         message(STATUS "  bha analyze ${BHA_TRACE_DIR}")
     elseif(BHA_COMPILER STREQUAL "nvcc")
-        message(STATUS "NVCC detected: Traces auto-captured via compiler launcher")
-        message(STATUS "After building, run:")
-        message(STATUS "  bha analyze ${BHA_TRACE_DIR}")
+        message(WARNING "NVCC detected: BHA timing capture is disabled until an exact NVCC trace schema is available")
     endif()
     message(STATUS "============================================")
     message(STATUS "")

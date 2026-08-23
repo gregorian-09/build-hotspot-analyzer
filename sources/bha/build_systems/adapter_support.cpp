@@ -310,8 +310,7 @@ namespace bha::build_systems::detail {
         bool needs_capture_script(const CompilerType type) {
             return type == CompilerType::GCC ||
                    type == CompilerType::IntelClassic ||
-                       type == CompilerType::MSVC ||
-                   type == CompilerType::NVCC;
+                   type == CompilerType::MSVC;
         }
 
         fs::path get_executable_path() {

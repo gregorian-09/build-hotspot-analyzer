@@ -46,7 +46,7 @@ namespace bha::build_systems::detail {
                         flags.tracing_flags = "-ftime-trace";
                         break;
                     case CompilerType::NVCC:
-                        flags.tracing_flags = "--time";
+                        // NVCC --time has no stable, documented ingestion schema.
                         break;
                     default:
                         break;
