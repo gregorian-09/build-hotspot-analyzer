@@ -6,6 +6,7 @@ add_executable(bha_tests
         unit/parsers/test_msvc_parser.cpp
         unit/parsers/test_intel_parser.cpp
         unit/parsers/test_lld_trace_parser.cpp
+        unit/parsers/test_sccache_stats_parser.cpp
         unit/parsers/test_nvcc_parser.cpp
         unit/parsers/test_memory_parser.cpp
         unit/build_systems/test_adapter.cpp
@@ -32,6 +33,7 @@ add_executable(bha_tests
         unit/analyzers/test_file_analyzer.cpp
         unit/analyzers/test_build_session_analyzer.cpp
         unit/analyzers/test_build_target_analyzer.cpp
+        unit/analyzers/test_cache_analyzer.cpp
         unit/analyzers/test_linker_analyzer.cpp
         unit/analyzers/test_performance_analyzer.cpp
         unit/analyzers/test_symbol_analyzer.cpp

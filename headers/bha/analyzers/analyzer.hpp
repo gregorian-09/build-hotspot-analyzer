@@ -283,40 +283,28 @@ namespace bha::analyzers {
     };
 
     /**
-     * @brief Cacheability/distributed-build suitability summary.
+     * @brief Producer-observed compiler-cache outcome summary.
      */
     struct CacheDistributionAnalysisResult {
-        /// Total compilation commands analyzed.
-        std::size_t total_compilations = 0;
-        /// Commands considered cache-friendly.
-        std::size_t cache_friendly_compilations = 0;
-        /// Commands flagged as cache-risky.
-        std::size_t cache_risk_compilations = 0;
-        /// Estimated cache hit opportunity percentage.
-        double cache_hit_opportunity_percent = 0.0;
-
-        /// Whether sccache wrapper usage was detected.
-        bool sccache_detected = false;
-        /// Whether FASTBuild markers were detected.
-        bool fastbuild_detected = false;
-        /// Whether any cache wrapper pattern was detected.
-        bool cache_wrapper_detected = false;
-
-        /// Number of commands using dynamic-macro patterns harming cache hits.
-        std::size_t dynamic_macro_risk_count = 0;
-        /// Number of commands using profile/coverage flags reducing cacheability.
-        std::size_t profile_or_coverage_risk_count = 0;
-        /// Number of commands tied to PCH generation constraints.
-        std::size_t pch_generation_risk_count = 0;
-        /// Number of commands with volatile absolute-path characteristics.
-        std::size_t volatile_path_risk_count = 0;
-
-        /// Composite score for distributed build suitability.
-        double distributed_suitability_score = 0.0;
-        /// Number of heavy TUs likely to dominate distributed scheduling.
-        std::size_t heavy_translation_units = 0;
-        /// Number of commands with homogeneous argument shape.
-        std::size_t homogeneous_command_units = 0;
+        std::uint64_t compile_requests = 0;
+        std::uint64_t executed_compilations = 0;
+        std::uint64_t non_compilation_requests = 0;
+        std::uint64_t unsupported_compiler_requests = 0;
+        std::uint64_t non_cacheable_requests = 0;
+        std::uint64_t compilations = 0;
+        std::uint64_t cache_hits = 0;
+        std::uint64_t cache_misses = 0;
+        std::uint64_t cache_errors = 0;
+        std::uint64_t cache_timeouts = 0;
+        std::uint64_t cache_read_errors = 0;
+        std::uint64_t non_cacheable_compilations = 0;
+        std::uint64_t forced_recaches = 0;
+        std::uint64_t cache_write_errors = 0;
+        std::uint64_t cache_writes = 0;
+        std::uint64_t compilation_failures = 0;
+        std::optional<double> hit_rate_percent;
+        /// Provenance and availability for producer cache counters.
+        std::vector<MetricCapability> metric_capabilities;
     };
 
     /**
@@ -333,7 +321,7 @@ namespace bha::analyzers {
         TemplateAnalysisResult templates;
         /// Symbol graph metrics.
         SymbolAnalysisResult symbols;
-        /// Cache/distribution suitability metrics.
+        /// Producer-observed compiler-cache outcome metrics.
         CacheDistributionAnalysisResult cache_distribution;
         /// Build-system scheduler and command-event metrics.
         BuildSessionAnalysisResult build_session;

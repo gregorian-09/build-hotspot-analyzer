@@ -301,39 +301,54 @@ namespace bha::storage
 
         nlohmann::json serialize_cache_distribution(const analyzers::CacheDistributionAnalysisResult& cache) {
             nlohmann::json j;
-            j["total_compilations"] = cache.total_compilations;
-            j["cache_friendly_compilations"] = cache.cache_friendly_compilations;
-            j["cache_risk_compilations"] = cache.cache_risk_compilations;
-            j["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
-            j["sccache_detected"] = cache.sccache_detected;
-            j["fastbuild_detected"] = cache.fastbuild_detected;
-            j["cache_wrapper_detected"] = cache.cache_wrapper_detected;
-            j["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
-            j["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
-            j["pch_generation_risk_count"] = cache.pch_generation_risk_count;
-            j["volatile_path_risk_count"] = cache.volatile_path_risk_count;
-            j["distributed_suitability_score"] = cache.distributed_suitability_score;
-            j["heavy_translation_units"] = cache.heavy_translation_units;
-            j["homogeneous_command_units"] = cache.homogeneous_command_units;
+            j["compile_requests"] = cache.compile_requests;
+            j["executed_compilations"] = cache.executed_compilations;
+            j["non_compilation_requests"] = cache.non_compilation_requests;
+            j["unsupported_compiler_requests"] = cache.unsupported_compiler_requests;
+            j["non_cacheable_requests"] = cache.non_cacheable_requests;
+            j["compilations"] = cache.compilations;
+            j["cache_hits"] = cache.cache_hits;
+            j["cache_misses"] = cache.cache_misses;
+            j["cache_errors"] = cache.cache_errors;
+            j["cache_timeouts"] = cache.cache_timeouts;
+            j["cache_read_errors"] = cache.cache_read_errors;
+            j["non_cacheable_compilations"] = cache.non_cacheable_compilations;
+            j["forced_recaches"] = cache.forced_recaches;
+            j["cache_write_errors"] = cache.cache_write_errors;
+            j["cache_writes"] = cache.cache_writes;
+            j["compilation_failures"] = cache.compilation_failures;
+            j["hit_rate_percent"] = nullptr;
+            if (cache.hit_rate_percent.has_value()) {
+                j["hit_rate_percent"] = *cache.hit_rate_percent;
+            }
+            j["metric_capabilities"] = serialize_metric_capabilities(cache.metric_capabilities);
             return j;
         }
 
         analyzers::CacheDistributionAnalysisResult deserialize_cache_distribution(const nlohmann::json& j) {
             analyzers::CacheDistributionAnalysisResult cache;
-            cache.total_compilations = j.value("total_compilations", std::size_t{0});
-            cache.cache_friendly_compilations = j.value("cache_friendly_compilations", std::size_t{0});
-            cache.cache_risk_compilations = j.value("cache_risk_compilations", std::size_t{0});
-            cache.cache_hit_opportunity_percent = j.value("cache_hit_opportunity_percent", 0.0);
-            cache.sccache_detected = j.value("sccache_detected", false);
-            cache.fastbuild_detected = j.value("fastbuild_detected", false);
-            cache.cache_wrapper_detected = j.value("cache_wrapper_detected", false);
-            cache.dynamic_macro_risk_count = j.value("dynamic_macro_risk_count", std::size_t{0});
-            cache.profile_or_coverage_risk_count = j.value("profile_or_coverage_risk_count", std::size_t{0});
-            cache.pch_generation_risk_count = j.value("pch_generation_risk_count", std::size_t{0});
-            cache.volatile_path_risk_count = j.value("volatile_path_risk_count", std::size_t{0});
-            cache.distributed_suitability_score = j.value("distributed_suitability_score", 0.0);
-            cache.heavy_translation_units = j.value("heavy_translation_units", std::size_t{0});
-            cache.homogeneous_command_units = j.value("homogeneous_command_units", std::size_t{0});
+            cache.compile_requests = j.value("compile_requests", std::uint64_t{0});
+            cache.executed_compilations = j.value("executed_compilations", std::uint64_t{0});
+            cache.non_compilation_requests = j.value("non_compilation_requests", std::uint64_t{0});
+            cache.unsupported_compiler_requests = j.value("unsupported_compiler_requests", std::uint64_t{0});
+            cache.non_cacheable_requests = j.value("non_cacheable_requests", std::uint64_t{0});
+            cache.compilations = j.value("compilations", std::uint64_t{0});
+            cache.cache_hits = j.value("cache_hits", std::uint64_t{0});
+            cache.cache_misses = j.value("cache_misses", std::uint64_t{0});
+            cache.cache_errors = j.value("cache_errors", std::uint64_t{0});
+            cache.cache_timeouts = j.value("cache_timeouts", std::uint64_t{0});
+            cache.cache_read_errors = j.value("cache_read_errors", std::uint64_t{0});
+            cache.non_cacheable_compilations = j.value("non_cacheable_compilations", std::uint64_t{0});
+            cache.forced_recaches = j.value("forced_recaches", std::uint64_t{0});
+            cache.cache_write_errors = j.value("cache_write_errors", std::uint64_t{0});
+            cache.cache_writes = j.value("cache_writes", std::uint64_t{0});
+            cache.compilation_failures = j.value("compilation_failures", std::uint64_t{0});
+            if (j.contains("hit_rate_percent") && !j["hit_rate_percent"].is_null()) {
+                cache.hit_rate_percent = j["hit_rate_percent"].get<double>();
+            }
+            if (j.contains("metric_capabilities")) {
+                cache.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
             return cache;
         }
 

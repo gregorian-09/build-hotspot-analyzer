@@ -187,7 +187,22 @@ namespace bha::analyzers
                 combined_result.symbols = std::move(partial.symbols);
             }
 
-            if (partial.cache_distribution.total_compilations > 0) {
+            if (partial.cache_distribution.compile_requests > 0 ||
+                partial.cache_distribution.executed_compilations > 0 ||
+                partial.cache_distribution.compilations > 0 ||
+                partial.cache_distribution.cache_hits > 0 ||
+                partial.cache_distribution.cache_misses > 0 ||
+                !partial.cache_distribution.metric_capabilities.empty()) {
+                for (const auto& capability : partial.cache_distribution.metric_capabilities) {
+                    const auto existing = std::ranges::find(
+                        combined_result.metric_capabilities,
+                        capability.metric,
+                        &MetricCapability::metric
+                    );
+                    if (existing == combined_result.metric_capabilities.end()) {
+                        combined_result.metric_capabilities.push_back(capability);
+                    }
+                }
                 combined_result.cache_distribution = partial.cache_distribution;
             }
 

@@ -264,7 +264,7 @@ namespace bha::analyzers {
         EXPECT_EQ(result.value().performance.critical_path[0].filename(), "slowest.cpp");
     }
 
-    TEST_F(PerformanceAnalyzerTest, ComputesCacheAndDistributionMetrics) {
+    TEST_F(PerformanceAnalyzerTest, DoesNotInferCacheOutcomesFromCommandLines) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(3);
 
@@ -294,43 +294,9 @@ namespace bha::analyzers {
 
         ASSERT_TRUE(result.is_ok());
         const auto& cache = result.value().cache_distribution;
-        EXPECT_EQ(cache.total_compilations, 3u);
-        EXPECT_EQ(cache.cache_friendly_compilations, 1u);
-        EXPECT_EQ(cache.cache_risk_compilations, 2u);
-        EXPECT_NEAR(cache.cache_hit_opportunity_percent, 33.3, 0.2);
-        EXPECT_TRUE(cache.sccache_detected);
-        EXPECT_TRUE(cache.fastbuild_detected);
-        EXPECT_TRUE(cache.cache_wrapper_detected);
-        EXPECT_EQ(cache.dynamic_macro_risk_count, 1u);
-        EXPECT_EQ(cache.profile_or_coverage_risk_count, 1u);
-        EXPECT_EQ(cache.pch_generation_risk_count, 0u);
-        EXPECT_GE(cache.distributed_suitability_score, 0.0);
-        EXPECT_LE(cache.distributed_suitability_score, 100.0);
-        EXPECT_EQ(cache.heavy_translation_units, 2u);
-        EXPECT_GE(cache.homogeneous_command_units, 1u);
-    }
-
-    TEST_F(PerformanceAnalyzerTest, DetectsHomogeneousCompileCommands) {
-        BuildTrace trace;
-        trace.total_time = std::chrono::seconds(1);
-
-        for (int i = 0; i < 4; ++i) {
-            CompilationUnit unit;
-            unit.source_file = "file" + std::to_string(i) + ".cpp";
-            unit.metrics.total_time = std::chrono::milliseconds(100 + i);
-            unit.metrics.frontend_time = std::chrono::milliseconds(70 + i);
-            unit.command_line = {
-                "clang++", "-Iinclude", "-O2", "-c",
-                unit.source_file.string(),
-                "-o", "build/file" + std::to_string(i) + ".o"
-            };
-            trace.units.push_back(unit);
-        }
-
-        constexpr AnalysisOptions options;
-        const auto result = analyzer_->analyze(trace, options);
-
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_EQ(result.value().cache_distribution.homogeneous_command_units, 4u);
+        EXPECT_EQ(cache.compile_requests, 0u);
+        EXPECT_EQ(cache.cache_hits, 0u);
+        EXPECT_EQ(cache.cache_misses, 0u);
+        EXPECT_TRUE(cache.metric_capabilities.empty());
     }
 }

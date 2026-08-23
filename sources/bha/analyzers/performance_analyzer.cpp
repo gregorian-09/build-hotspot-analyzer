@@ -5,130 +5,15 @@
 #include "bha/analyzers/performance_analyzer.hpp"
 
 #include "bha/graph/graph.hpp"
-#include "bha/utils/string_utils.hpp"
-
 #include <algorithm>
-#include <array>
-#include <cctype>
 #include <cmath>
 #include <numeric>
 #include <ranges>
-#include <sstream>
-#include <unordered_map>
 #include <unordered_set>
 
 namespace bha::analyzers
 {
     namespace {
-
-        bool is_source_path_arg(const std::string& arg) {
-            const fs::path path(arg);
-            const std::string ext = utils::to_lower(path.extension().string());
-            return ext == ".c" || ext == ".cc" || ext == ".cpp" || ext == ".cxx" || ext == ".m" || ext == ".mm";
-        }
-
-        bool is_object_path_arg(const std::string& arg) {
-            const fs::path path(arg);
-            const std::string ext = utils::to_lower(path.extension().string());
-            return ext == ".o" || ext == ".obj" || ext == ".pch" || ext == ".gch";
-        }
-
-        std::string build_command_signature(const std::vector<std::string>& command_line) {
-            std::ostringstream signature;
-            bool skip_next = false;
-            for (const auto& raw_arg : command_line) {
-                if (skip_next) {
-                    skip_next = false;
-                    continue;
-                }
-
-                const std::string& arg = raw_arg;
-                const std::string lower = utils::to_lower(arg);
-
-                if (lower == "-o" || lower == "-mf" || lower == "-mt" || lower == "-mq") {
-                    skip_next = true;
-                    continue;
-                }
-                if (lower.starts_with("-o") || lower.starts_with("/fo") || lower.starts_with("-mf") ||
-                    lower.starts_with("-mt") || lower.starts_with("-mq")) {
-                    continue;
-                }
-                if (is_source_path_arg(arg) || is_object_path_arg(arg)) {
-                    continue;
-                }
-
-                signature << lower << '\n';
-            }
-            return signature.str();
-        }
-
-        struct CommandRiskFlags {
-            bool dynamic_macro = false;
-            bool profile_or_coverage = false;
-            bool pch_generation = false;
-            bool volatile_path = false;
-            bool cache_wrapper = false;
-            bool sccache = false;
-            bool fastbuild = false;
-        };
-
-        CommandRiskFlags inspect_command_line(const std::vector<std::string>& command_line) {
-            CommandRiskFlags flags;
-            if (!command_line.empty()) {
-                const std::string first = utils::to_lower(command_line.front());
-                if (first.find("sccache") != std::string::npos ||
-                    first.find("ccache") != std::string::npos ||
-                    first.find("clcache") != std::string::npos) {
-                    flags.cache_wrapper = true;
-                }
-            }
-
-            for (std::size_t i = 0; i < command_line.size(); ++i) {
-                const auto& raw_arg = command_line[i];
-                const std::string lower = utils::to_lower(raw_arg);
-                if (lower.find("sccache") != std::string::npos) {
-                    flags.sccache = true;
-                    flags.cache_wrapper = true;
-                }
-                if (lower.find("fastbuild") != std::string::npos || lower.find("fbuild") != std::string::npos) {
-                    flags.fastbuild = true;
-                }
-
-                if (lower.find("__date__") != std::string::npos ||
-                    lower.find("__time__") != std::string::npos ||
-                    lower.find("__timestamp__") != std::string::npos) {
-                    flags.dynamic_macro = true;
-                }
-
-                if (lower == "--coverage" ||
-                    lower.starts_with("-fprofile-") ||
-                    lower.starts_with("-fcoverage-") ||
-                    lower.starts_with("/profile")) {
-                    flags.profile_or_coverage = true;
-                }
-
-                if (lower.find("cmake_pch") != std::string::npos ||
-                    lower.starts_with("/yc") ||
-                    (lower.starts_with("-x") && lower.find("c++-header") != std::string::npos)) {
-                    flags.pch_generation = true;
-                }
-                if (lower == "-x" && i + 1 < command_line.size()) {
-                    const std::string next = utils::to_lower(command_line[i + 1]);
-                    if (next.find("c++-header") != std::string::npos) {
-                        flags.pch_generation = true;
-                    }
-                }
-
-                if (lower.find("/tmp/") != std::string::npos ||
-                    lower.find("/temp/") != std::string::npos ||
-                    lower.find("\\temp\\") != std::string::npos ||
-                    lower.find("\\tmp\\") != std::string::npos) {
-                    flags.volatile_path = true;
-                }
-            }
-
-            return flags;
-        }
 
         Duration calculate_percentile(std::vector<Duration>& times, const double percentile) {
             if (times.empty()) {
@@ -157,12 +42,9 @@ namespace bha::analyzers
             graph::DirectedGraph g;
 
             // Map from file path to its compile time
-            std::unordered_map<std::string, Duration> file_times;
-
             // First pass: add all source files as nodes with their compile times
             for (const auto& unit : trace.units) {
                 const std::string source = unit.source_file.string();
-                file_times[source] = unit.metrics.total_time;
                 g.add_node(source, unit.metrics.total_time);
             }
 
@@ -176,7 +58,6 @@ namespace bha::analyzers
                     // Add header node if not already added
                     if (!g.has_node(header)) {
                         g.add_node(header, inc.parse_time);
-                        file_times[header] = inc.parse_time;
                     }
 
                     // Edge from header to source (header must be parsed before source)
@@ -288,52 +169,12 @@ namespace bha::analyzers
 
         std::vector<Duration> compile_times;
         compile_times.reserve(trace.units.size());
-        std::unordered_map<std::string, std::size_t> command_signatures;
-        double total_frontend_ratio = 0.0;
-
         Duration sequential_total = Duration::zero();
-        auto& cache = result.cache_distribution;
-        cache.total_compilations = trace.units.size();
 
         for (const auto& unit : trace.units) {
             const Duration compile_time = unit.metrics.total_time;
             compile_times.push_back(compile_time);
             sequential_total += compile_time;
-
-            if (compile_time.count() > 0) {
-                total_frontend_ratio += static_cast<double>(unit.metrics.frontend_time.count()) /
-                    static_cast<double>(compile_time.count());
-            }
-
-            const auto command_risks = inspect_command_line(unit.command_line);
-            cache.sccache_detected = cache.sccache_detected || command_risks.sccache;
-            cache.fastbuild_detected = cache.fastbuild_detected || command_risks.fastbuild;
-            cache.cache_wrapper_detected = cache.cache_wrapper_detected || command_risks.cache_wrapper;
-
-            if (command_risks.dynamic_macro) {
-                ++cache.dynamic_macro_risk_count;
-            }
-            if (command_risks.profile_or_coverage) {
-                ++cache.profile_or_coverage_risk_count;
-            }
-            if (command_risks.pch_generation) {
-                ++cache.pch_generation_risk_count;
-            }
-            if (command_risks.volatile_path) {
-                ++cache.volatile_path_risk_count;
-            }
-
-            const bool cache_risky = command_risks.dynamic_macro ||
-                command_risks.profile_or_coverage ||
-                command_risks.pch_generation ||
-                command_risks.volatile_path;
-            if (cache_risky) {
-                ++cache.cache_risk_compilations;
-            } else {
-                ++cache.cache_friendly_compilations;
-            }
-
-            ++command_signatures[build_command_signature(unit.command_line)];
 
             FileAnalysisResult file_result;
             file_result.file = unit.source_file;
@@ -390,18 +231,6 @@ namespace bha::analyzers
             result.performance.p99_file_time = calculate_percentile(compile_times, 99.0);
         }
 
-        if (cache.total_compilations > 0) {
-            cache.cache_hit_opportunity_percent =
-                100.0 * static_cast<double>(cache.cache_friendly_compilations) /
-                static_cast<double>(cache.total_compilations);
-        }
-
-        std::size_t largest_signature_group = 0;
-        for (const auto& count : command_signatures | std::views::values) {
-            largest_signature_group = std::max(largest_signature_group, count);
-        }
-        cache.homogeneous_command_units = largest_signature_group;
-
         std::size_t files_with_memory = 0;
         for (const auto& file : result.files) {
             if (file.memory.has_data()) {
@@ -439,43 +268,6 @@ namespace bha::analyzers
         }
 
         result.performance.slowest_file_count = slowest_count;
-
-        const Duration heavy_threshold = std::max(
-            result.performance.p90_file_time,
-            std::chrono::duration_cast<Duration>(std::chrono::milliseconds(500))
-        );
-        for (const auto& file : result.files) {
-            if (file.compile_time >= heavy_threshold) {
-                ++cache.heavy_translation_units;
-            }
-        }
-
-        const double fanout_factor = std::min(1.0, static_cast<double>(cache.total_compilations) / 40.0);
-        const double heavy_factor = std::min(1.0, static_cast<double>(cache.heavy_translation_units) / 10.0);
-        const double homogeneity_factor = cache.total_compilations > 0
-            ? static_cast<double>(largest_signature_group) / static_cast<double>(cache.total_compilations)
-            : 0.0;
-        const double avg_file_ms = static_cast<double>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                result.performance.avg_file_time
-            ).count()
-        );
-        const double payload_factor = std::min(1.0, avg_file_ms / 1500.0);
-        const double frontend_ratio = cache.total_compilations > 0
-            ? total_frontend_ratio / static_cast<double>(cache.total_compilations)
-            : 0.0;
-        const double frontend_penalty = std::clamp((frontend_ratio - 0.75) * 0.4, 0.0, 0.25);
-
-        const double raw_distributed_score =
-            100.0 * (0.30 * fanout_factor +
-                     0.25 * heavy_factor +
-                     0.25 * homogeneity_factor +
-                     0.20 * payload_factor);
-        cache.distributed_suitability_score = std::clamp(
-            raw_distributed_score * (1.0 - frontend_penalty),
-            0.0,
-            100.0
-        );
 
         if (trace.total_time.count() > 0) {
             for (auto& file : result.files) {

@@ -65,6 +65,47 @@ namespace bha::exporters
             };
         }
 
+        nlohmann::json serialize_cache_distribution(
+            const analyzers::CacheDistributionAnalysisResult& cache
+        ) {
+            nlohmann::json result = {
+                {"compile_requests", cache.compile_requests},
+                {"executed_compilations", cache.executed_compilations},
+                {"non_compilation_requests", cache.non_compilation_requests},
+                {"unsupported_compiler_requests", cache.unsupported_compiler_requests},
+                {"non_cacheable_requests", cache.non_cacheable_requests},
+                {"compilations", cache.compilations},
+                {"cache_hits", cache.cache_hits},
+                {"cache_misses", cache.cache_misses},
+                {"cache_errors", cache.cache_errors},
+                {"cache_timeouts", cache.cache_timeouts},
+                {"cache_read_errors", cache.cache_read_errors},
+                {"non_cacheable_compilations", cache.non_cacheable_compilations},
+                {"forced_recaches", cache.forced_recaches},
+                {"cache_write_errors", cache.cache_write_errors},
+                {"cache_writes", cache.cache_writes},
+                {"compilation_failures", cache.compilation_failures},
+                {"hit_rate_percent", nullptr},
+                {"metric_capabilities", nlohmann::json::array()}
+            };
+            if (cache.hit_rate_percent.has_value()) {
+                result["hit_rate_percent"] = *cache.hit_rate_percent;
+            }
+            for (const auto& capability : cache.metric_capabilities) {
+                result["metric_capabilities"].push_back(serialize_metric_capability(capability));
+            }
+            return result;
+        }
+
+        bool has_cache_data(const analyzers::CacheDistributionAnalysisResult& cache) {
+            return cache.compile_requests > 0 ||
+                cache.executed_compilations > 0 ||
+                cache.compilations > 0 ||
+                cache.cache_hits > 0 ||
+                cache.cache_misses > 0 ||
+                !cache.metric_capabilities.empty();
+        }
+
         /**
          * Normalizes path separators to forward slashes for consistent graph IDs.
          * Uses generic_string() for fs::path which is cross-platform portable.
@@ -406,9 +447,9 @@ namespace bha::exporters
         summary["total_files"] = analysis.files.size();
         summary["total_compile_time_ms"] = duration_to_ms(analysis.performance.total_build_time);
         summary["analysis_duration_ms"] = duration_to_ms(analysis.analysis_duration);
-        summary["cache_hit_opportunity_percent"] = analysis.cache_distribution.cache_hit_opportunity_percent;
-        summary["cache_risk_compilations"] = analysis.cache_distribution.cache_risk_compilations;
-        summary["distributed_suitability_score"] = analysis.cache_distribution.distributed_suitability_score;
+        if (has_cache_data(analysis.cache_distribution)) {
+            summary["cache"] = serialize_cache_distribution(analysis.cache_distribution);
+        }
 
         if (analysis.build_session.total_commands > 0) {
             summary["build_session"] = {
@@ -620,23 +661,8 @@ namespace bha::exporters
         }
 
         const auto& cache = analysis.cache_distribution;
-        if (cache.total_compilations > 0) {
-            json cache_json;
-            cache_json["total_compilations"] = cache.total_compilations;
-            cache_json["cache_friendly_compilations"] = cache.cache_friendly_compilations;
-            cache_json["cache_risk_compilations"] = cache.cache_risk_compilations;
-            cache_json["cache_hit_opportunity_percent"] = cache.cache_hit_opportunity_percent;
-            cache_json["sccache_detected"] = cache.sccache_detected;
-            cache_json["fastbuild_detected"] = cache.fastbuild_detected;
-            cache_json["cache_wrapper_detected"] = cache.cache_wrapper_detected;
-            cache_json["dynamic_macro_risk_count"] = cache.dynamic_macro_risk_count;
-            cache_json["profile_or_coverage_risk_count"] = cache.profile_or_coverage_risk_count;
-            cache_json["pch_generation_risk_count"] = cache.pch_generation_risk_count;
-            cache_json["volatile_path_risk_count"] = cache.volatile_path_risk_count;
-            cache_json["heavy_translation_units"] = cache.heavy_translation_units;
-            cache_json["homogeneous_command_units"] = cache.homogeneous_command_units;
-            cache_json["distributed_suitability_score"] = cache.distributed_suitability_score;
-            output["cache_distribution"] = cache_json;
+        if (has_cache_data(cache)) {
+            output["cache_distribution"] = serialize_cache_distribution(cache);
         }
 
         if (options.include_symbols && !analysis.symbols.symbols.empty()) {
@@ -747,14 +773,18 @@ namespace bha::exporters
         summary_stats.str("");
         summary_stats.clear();
         summary_stats << std::fixed << std::setprecision(1);
-        summary_stats << analysis.cache_distribution.cache_hit_opportunity_percent;
-        std::string cache_hit_opportunity_str = summary_stats.str();
+        const std::string cache_hit_rate_str = analysis.cache_distribution.hit_rate_percent.has_value()
+            ? [&]() {
+                summary_stats << *analysis.cache_distribution.hit_rate_percent;
+                return summary_stats.str();
+            }()
+            : "n/a";
 
         summary_stats.str("");
         summary_stats.clear();
         summary_stats << std::fixed << std::setprecision(1);
-        summary_stats << analysis.cache_distribution.distributed_suitability_score;
-        std::string distributed_suitability_str = summary_stats.str();
+        summary_stats << analysis.cache_distribution.cache_errors;
+        const std::string cache_error_count_str = summary_stats.str();
 
         const std::string body_start = replace_placeholders(REPORT_BODY_START_HTML, {
             {"{{THEME_CLASS}}", theme_class},
@@ -763,9 +793,8 @@ namespace bha::exporters
             {"{{TOTAL_FILES}}", std::to_string(analysis.files.size())},
             {"{{TOTAL_BUILD_TIME}}", total_build_time_str},
             {"{{AVG_FILE_TIME}}", avg_file_time_str},
-            {"{{CACHE_HIT_OPPORTUNITY}}", cache_hit_opportunity_str},
-            {"{{CACHE_RISK_UNITS}}", std::to_string(analysis.cache_distribution.cache_risk_compilations)},
-            {"{{DISTRIBUTED_SUITABILITY}}", distributed_suitability_str}
+            {"{{CACHE_HIT_RATE}}", cache_hit_rate_str},
+            {"{{CACHE_ERROR_COUNT}}", cache_error_count_str}
         });
 
         // ==================================================================
@@ -1379,9 +1408,15 @@ namespace bha::exporters
                << duration_to_ms(analysis.performance.total_build_time) / 1000.0 << " s |\n";
         stream << "| Avg File Time | " << duration_to_ms(analysis.performance.avg_file_time) << " ms |\n";
         stream << "| Parallelism Efficiency | " << std::setprecision(1) << (analysis.performance.parallelism_efficiency * 100.0) << "% |\n";
-        stream << "| Cache Hit Opportunity | " << std::setprecision(1) << analysis.cache_distribution.cache_hit_opportunity_percent << "% |\n";
-        stream << "| Cache Risk Compilations | " << analysis.cache_distribution.cache_risk_compilations << " |\n";
-        stream << "| Distributed Suitability | " << std::setprecision(1) << analysis.cache_distribution.distributed_suitability_score << "% |\n";
+        if (analysis.cache_distribution.hit_rate_percent.has_value()) {
+            stream << "| Cache Hit Rate | " << std::setprecision(1)
+                   << *analysis.cache_distribution.hit_rate_percent << "% |\n";
+        } else {
+            stream << "| Cache Hit Rate | unavailable |\n";
+        }
+        stream << "| Cache Hits | " << analysis.cache_distribution.cache_hits << " |\n";
+        stream << "| Cache Misses | " << analysis.cache_distribution.cache_misses << " |\n";
+        stream << "| Cache Errors | " << analysis.cache_distribution.cache_errors << " |\n";
         stream << "| Suggestions | " << suggestions.size() << " |\n\n";
 
         if (options.include_file_details) {
@@ -1499,17 +1534,15 @@ namespace bha::exporters
             stream << "- **Circular Dependencies:** " << analysis.dependencies.circular_dependencies.size() << "\n\n";
         }
 
-        if (analysis.cache_distribution.total_compilations > 0) {
-            stream << "## Cache & Distribution Awareness\n\n";
-            stream << "- **sccache detected:** " << (analysis.cache_distribution.sccache_detected ? "yes" : "no") << "\n";
-            stream << "- **FASTBuild detected:** " << (analysis.cache_distribution.fastbuild_detected ? "yes" : "no") << "\n";
-            stream << "- **Cache wrapper detected:** " << (analysis.cache_distribution.cache_wrapper_detected ? "yes" : "no") << "\n";
-            stream << "- **Dynamic macro risk units:** " << analysis.cache_distribution.dynamic_macro_risk_count << "\n";
-            stream << "- **Coverage/profile risk units:** " << analysis.cache_distribution.profile_or_coverage_risk_count << "\n";
-            stream << "- **PCH generation risk units:** " << analysis.cache_distribution.pch_generation_risk_count << "\n";
-            stream << "- **Volatile path risk units:** " << analysis.cache_distribution.volatile_path_risk_count << "\n";
-            stream << "- **Heavy translation units:** " << analysis.cache_distribution.heavy_translation_units << "\n";
-            stream << "- **Largest homogeneous command group:** " << analysis.cache_distribution.homogeneous_command_units << "\n\n";
+        if (has_cache_data(analysis.cache_distribution)) {
+            stream << "## Cache Outcomes\n\n";
+            stream << "- **Compile requests:** " << analysis.cache_distribution.compile_requests << "\n";
+            stream << "- **Executed compilations:** " << analysis.cache_distribution.executed_compilations << "\n";
+            stream << "- **Cache hits:** " << analysis.cache_distribution.cache_hits << "\n";
+            stream << "- **Cache misses:** " << analysis.cache_distribution.cache_misses << "\n";
+            stream << "- **Cache errors:** " << analysis.cache_distribution.cache_errors << "\n";
+            stream << "- **Cache timeouts:** " << analysis.cache_distribution.cache_timeouts << "\n";
+            stream << "- **Non-cacheable compilations:** " << analysis.cache_distribution.non_cacheable_compilations << "\n\n";
         }
 
         return Result<void, Error>::success();

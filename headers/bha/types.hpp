@@ -692,6 +692,31 @@ namespace bha {
     };
 
     /**
+     * Exact cache counters emitted by a cache producer.
+     */
+    struct CacheStatistics {
+        std::string producer;
+        std::string producer_version;
+        std::uint64_t compile_requests = 0;
+        std::uint64_t executed_requests = 0;
+        std::uint64_t non_compilation_requests = 0;
+        std::uint64_t unsupported_compiler_requests = 0;
+        std::uint64_t non_cacheable_requests = 0;
+        std::uint64_t compilations = 0;
+        std::uint64_t cache_hits = 0;
+        std::uint64_t cache_misses = 0;
+        std::uint64_t cache_errors = 0;
+        std::uint64_t cache_timeouts = 0;
+        std::uint64_t cache_read_errors = 0;
+        std::uint64_t non_cacheable_compilations = 0;
+        std::uint64_t forced_recaches = 0;
+        std::uint64_t cache_write_errors = 0;
+        std::uint64_t cache_writes = 0;
+        std::uint64_t compilation_failures = 0;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -710,6 +735,7 @@ namespace bha {
         std::optional<BuildSession> build_session;
         std::optional<LinkerTrace> linker_trace;
         std::optional<BuildTargetGraph> target_graph;
+        std::optional<CacheStatistics> cache_statistics;
 
         std::vector<CompilationUnit> units;
 

@@ -227,6 +227,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/msvc_parser.cpp
         sources/bha/parsers/intel_parser.cpp
         sources/bha/parsers/lld_trace_parser.cpp
+        sources/bha/parsers/sccache_stats_parser.cpp
         sources/bha/parsers/memory_parser.cpp
         sources/bha/graph/graph.cpp
         sources/bha/project_index.cpp
@@ -261,6 +262,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/file_analyzer.cpp
         sources/bha/analyzers/build_session_analyzer.cpp
         sources/bha/analyzers/build_target_analyzer.cpp
+        sources/bha/analyzers/cache_analyzer.cpp
         sources/bha/analyzers/linker_analyzer.cpp
         sources/bha/analyzers/performance_analyzer.cpp
         sources/bha/analyzers/symbol_analyzer.cpp
