@@ -81,6 +81,22 @@ namespace bha::storage
             Duration max_delta = Duration::zero();
         };
 
+        /**
+         * Empirical distribution of total build times from explicit repeated
+         * observations. No threshold or confidence claim is attached to these
+         * descriptive statistics.
+         */
+        struct RepeatedRunDistribution {
+            std::size_t run_count = 0;
+            Duration min_build_time = Duration::zero();
+            Duration mean_build_time = Duration::zero();
+            Duration median_build_time = Duration::zero();
+            Duration p90_build_time = Duration::zero();
+            Duration p99_build_time = Duration::zero();
+            Duration max_build_time = Duration::zero();
+            std::optional<Duration> sample_standard_deviation;
+        };
+
         // Overall changes
         Duration build_time_delta;           // Positive = slower, negative = faster
         double build_time_percent_change;    // Percentage change
@@ -219,6 +235,15 @@ namespace bha::storage
         ) const;
 
         /**
+         * Summarizes total build times from explicitly named snapshots.
+         * Duplicate names are rejected so one stored observation cannot be
+         * counted as multiple repeated measurements.
+         */
+        Result<ComparisonResult::RepeatedRunDistribution, Error> summarize_repeated_runs(
+            const std::vector<std::string>& snapshot_names
+        ) const;
+
+        /**
          * Gets the storage root directory.
          */
         const fs::path& root() const { return root_; }
@@ -237,6 +262,13 @@ namespace bha::storage
         const analyzers::AnalysisResult& old_result,
         const analyzers::AnalysisResult& new_result,
         double significance_threshold = 0.10  // 10% change is significant
+    );
+
+    /**
+     * Summarizes observed total build times from at least two repeated analyses.
+     */
+    Result<ComparisonResult::RepeatedRunDistribution, Error> summarize_repeated_analyses(
+        const std::vector<analyzers::AnalysisResult>& analyses
     );
 
 }

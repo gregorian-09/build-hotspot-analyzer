@@ -9,6 +9,8 @@
 #include "bha/bha.hpp"
 #include "bha/storage.hpp"
 
+#include <nlohmann/json.hpp>
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -141,6 +143,7 @@ namespace bha::cli
 
         [[nodiscard]] std::string usage() const override {
             return "Usage: bha compare <old-snapshot> <new-snapshot> [OPTIONS]\n"
+                   "       bha compare --repeat <snapshot> <snapshot> [...] [OPTIONS]\n"
                    "       bha compare --baseline <new-snapshot> [OPTIONS]\n"
                    "\n"
                    "Compare two snapshots to identify build time changes, regressions,\n"
@@ -149,6 +152,7 @@ namespace bha::cli
                    "Examples:\n"
                    "  bha compare v1.0 v2.0\n"
                    "  bha compare before-refactor after-refactor\n"
+                   "  bha compare --repeat clean-1 clean-2 clean-3 --json\n"
                    "  bha compare --baseline current-build\n"
                    "  bha compare v1.0 v2.0 --top 20\n"
                    "  bha compare --baseline current --gate-tu 5 --gate-header 8 --gate-template 10";
@@ -157,6 +161,7 @@ namespace bha::cli
         [[nodiscard]] std::vector<ArgDef> arguments() const override {
             return {
                 {"baseline", 'b', "Compare against baseline", false, false, "", ""},
+                {"repeat", 0, "Summarize explicitly named repeated-run snapshots", false, false, "", ""},
                 {"top", 't', "Number of top changes to show", false, true, "10", "N"},
                 {"threshold", 0, "Overall regression threshold (%)", false, true, "5", "PERCENT"},
                 {"gate-tu", 0, "Fail if Translation Unit category regresses beyond (%)", false, true, "", "PERCENT"},
@@ -167,7 +172,14 @@ namespace bha::cli
         }
 
         [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
-            if (args.get_flag("baseline")) {
+            if (args.get_flag("repeat")) {
+                if (args.get_flag("baseline")) {
+                    return "--repeat cannot be combined with --baseline";
+                }
+                if (args.positional().size() < 2) {
+                    return "Usage: bha compare --repeat <snapshot> <snapshot> [...]";
+                }
+            } else if (args.get_flag("baseline")) {
                 if (args.positional().empty()) {
                     return "Usage: bha compare --baseline <snapshot>";
                 }
@@ -211,6 +223,21 @@ namespace bha::cli
 
             fs::path storage_dir = args.get_or("storage", ".bha/snapshots");
             storage::SnapshotStore store(storage_dir);
+
+            if (args.get_flag("repeat")) {
+                const auto result = store.summarize_repeated_runs(args.positional());
+                if (result.is_err()) {
+                    print_error("Repeated-run summary failed: " + result.error().message());
+                    return 1;
+                }
+
+                if (is_json()) {
+                    print_repeated_runs_json(result.value(), args.positional());
+                } else {
+                    print_repeated_runs(result.value(), args.positional());
+                }
+                return 0;
+            }
 
             std::string old_name;
             std::string new_name;
@@ -267,6 +294,63 @@ namespace bha::cli
         }
 
     private:
+        static void print_repeated_runs(
+            const storage::ComparisonResult::RepeatedRunDistribution& result,
+            const std::vector<std::string>& snapshot_names
+        ) {
+            std::cout << bold("Observed Repeated-Run Distribution") << "\n";
+            std::cout << "  Snapshots: ";
+            for (std::size_t i = 0; i < snapshot_names.size(); ++i) {
+                if (i > 0) {
+                    std::cout << ", ";
+                }
+                std::cout << snapshot_names[i];
+            }
+            std::cout << "\n";
+            std::cout << "  Runs: " << result.run_count << "\n";
+            std::cout << "  Min / Mean / Median / P90 / P99 / Max: "
+                      << format_dur(result.min_build_time) << " / "
+                      << format_dur(result.mean_build_time) << " / "
+                      << format_dur(result.median_build_time) << " / "
+                      << format_dur(result.p90_build_time) << " / "
+                      << format_dur(result.p99_build_time) << " / "
+                      << format_dur(result.max_build_time) << "\n";
+            if (result.sample_standard_deviation.has_value()) {
+                std::cout << "  Sample Std Dev: " << format_dur(*result.sample_standard_deviation) << "\n";
+            } else {
+                std::cout << "  Sample Std Dev: unavailable (one observation)\n";
+            }
+            std::cout << "  Statistics are descriptive and use only the named observed snapshots.\n";
+        }
+
+        static void print_repeated_runs_json(
+            const storage::ComparisonResult::RepeatedRunDistribution& result,
+            const std::vector<std::string>& snapshot_names
+        ) {
+            nlohmann::json distribution = {
+                {"run_count", result.run_count},
+                {"min_build_time_ns", result.min_build_time.count()},
+                {"mean_build_time_ns", result.mean_build_time.count()},
+                {"median_build_time_ns", result.median_build_time.count()},
+                {"p90_build_time_ns", result.p90_build_time.count()},
+                {"p99_build_time_ns", result.p99_build_time.count()},
+                {"max_build_time_ns", result.max_build_time.count()}
+            };
+            if (result.sample_standard_deviation.has_value()) {
+                distribution["sample_standard_deviation_ns"] =
+                    result.sample_standard_deviation->count();
+            } else {
+                distribution["sample_standard_deviation_ns"] = nullptr;
+            }
+
+            nlohmann::json output = {
+                {"snapshots", snapshot_names},
+                {"repeated_runs", std::move(distribution)},
+                {"statistics", "descriptive observations; no confidence or significance claim"}
+            };
+            std::cout << output.dump(2) << "\n";
+        }
+
         static void print_comparison(
             const storage::ComparisonResult& result,
             const std::string& old_name,

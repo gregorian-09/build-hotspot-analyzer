@@ -9,10 +9,13 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 #include <sstream>
+#include <unordered_set>
 
 namespace bha::storage
 {
@@ -1048,6 +1051,40 @@ namespace bha::storage
         );
     }
 
+    Result<ComparisonResult::RepeatedRunDistribution, Error> SnapshotStore::summarize_repeated_runs(
+        const std::vector<std::string>& snapshot_names
+    ) const {
+        if (snapshot_names.size() < 2) {
+            return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                Error(ErrorCode::InvalidArgument, "At least two snapshots are required")
+            );
+        }
+
+        std::unordered_set<std::string> seen;
+        seen.reserve(snapshot_names.size());
+        for (const auto& name : snapshot_names) {
+            if (!seen.insert(name).second) {
+                return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                    Error(ErrorCode::InvalidArgument, "Repeated-run snapshots must have unique names: " + name)
+                );
+            }
+        }
+
+        std::vector<analyzers::AnalysisResult> analyses;
+        analyses.reserve(snapshot_names.size());
+        for (const auto& name : snapshot_names) {
+            auto snapshot_result = load(name);
+            if (snapshot_result.is_err()) {
+                return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                    snapshot_result.error()
+                );
+            }
+            analyses.push_back(std::move(snapshot_result.value().analysis));
+        }
+
+        return summarize_repeated_analyses(analyses);
+    }
+
     // =============================================================================
     // Comparison Functions
     // =============================================================================
@@ -1250,5 +1287,82 @@ namespace bha::storage
         }
 
         return result;
+    }
+
+    Result<ComparisonResult::RepeatedRunDistribution, Error> summarize_repeated_analyses(
+        const std::vector<analyzers::AnalysisResult>& analyses
+    ) {
+        if (analyses.size() < 2) {
+            return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                Error(ErrorCode::InvalidArgument, "At least two analyses are required")
+            );
+        }
+
+        std::vector<Duration> samples;
+        samples.reserve(analyses.size());
+        for (const auto& analysis : analyses) {
+            if (analysis.performance.total_build_time.count() < 0) {
+                return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                    Error(ErrorCode::InvalidArgument, "Repeated-run build times cannot be negative")
+                );
+            }
+            samples.push_back(analysis.performance.total_build_time);
+        }
+
+        std::ranges::sort(samples);
+        const auto nearest_rank = [&samples](const std::size_t numerator, const std::size_t denominator) {
+            const std::size_t rank =
+                (samples.size() * numerator + denominator - 1) / denominator;
+            return samples[std::min(rank - 1, samples.size() - 1)];
+        };
+
+        long double sum = 0.0L;
+        for (const auto sample : samples) {
+            sum += static_cast<long double>(sample.count());
+        }
+
+        const auto to_duration = [](const long double value) -> std::optional<Duration> {
+            if (!std::isfinite(value) ||
+                value < static_cast<long double>(std::numeric_limits<Duration::rep>::min()) ||
+                value > static_cast<long double>(std::numeric_limits<Duration::rep>::max())) {
+                return std::nullopt;
+            }
+            return Duration(static_cast<Duration::rep>(std::llround(value)));
+        };
+
+        const auto mean = to_duration(sum / static_cast<long double>(samples.size()));
+        if (!mean.has_value()) {
+            return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                Error(ErrorCode::InvalidArgument, "Repeated-run mean is outside the duration range")
+            );
+        }
+
+        ComparisonResult::RepeatedRunDistribution result;
+        result.run_count = samples.size();
+        result.min_build_time = samples.front();
+        result.mean_build_time = *mean;
+        result.median_build_time = nearest_rank(1, 2);
+        result.p90_build_time = nearest_rank(9, 10);
+        result.p99_build_time = nearest_rank(99, 100);
+        result.max_build_time = samples.back();
+
+        if (samples.size() > 1) {
+            long double squared_deviations = 0.0L;
+            const long double mean_value = sum / static_cast<long double>(samples.size());
+            for (const auto sample : samples) {
+                const long double deviation = static_cast<long double>(sample.count()) - mean_value;
+                squared_deviations += deviation * deviation;
+            }
+            result.sample_standard_deviation = to_duration(
+                std::sqrt(squared_deviations / static_cast<long double>(samples.size() - 1))
+            );
+            if (!result.sample_standard_deviation.has_value()) {
+                return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
+                    Error(ErrorCode::InvalidArgument, "Repeated-run standard deviation is outside the duration range")
+                );
+            }
+        }
+
+        return Result<ComparisonResult::RepeatedRunDistribution, Error>::success(std::move(result));
     }
 }

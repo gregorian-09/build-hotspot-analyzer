@@ -131,6 +131,76 @@ TEST(StorageCompareTest, ReportsObservedTranslationUnitRegressionDistribution) {
     EXPECT_TRUE(comparison.regressions.empty());
 }
 
+TEST(StorageCompareTest, SummarizesRepeatedObservedBuildTimes) {
+    const std::vector<analyzers::AnalysisResult> analyses = {
+        make_analysis({}, std::chrono::milliseconds(100), Duration::zero(), Duration::zero()),
+        make_analysis({}, std::chrono::milliseconds(110), Duration::zero(), Duration::zero()),
+        make_analysis({}, std::chrono::milliseconds(120), Duration::zero(), Duration::zero())
+    };
+
+    const auto result = summarize_repeated_analyses(analyses);
+
+    ASSERT_TRUE(result.is_ok());
+    const auto& distribution = result.value();
+    EXPECT_EQ(distribution.run_count, 3u);
+    EXPECT_EQ(distribution.min_build_time, std::chrono::milliseconds(100));
+    EXPECT_EQ(distribution.mean_build_time, std::chrono::milliseconds(110));
+    EXPECT_EQ(distribution.median_build_time, std::chrono::milliseconds(110));
+    EXPECT_EQ(distribution.p90_build_time, std::chrono::milliseconds(120));
+    EXPECT_EQ(distribution.p99_build_time, std::chrono::milliseconds(120));
+    EXPECT_EQ(distribution.max_build_time, std::chrono::milliseconds(120));
+    ASSERT_TRUE(distribution.sample_standard_deviation.has_value());
+    EXPECT_EQ(*distribution.sample_standard_deviation, std::chrono::milliseconds(10));
+}
+
+TEST(StorageCompareTest, RejectsEmptyRepeatedRunSet) {
+    const auto result = summarize_repeated_analyses({});
+
+    ASSERT_TRUE(result.is_err());
+    EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+}
+
+TEST(StorageCompareTest, RejectsNegativeRepeatedBuildTime) {
+    const std::vector<analyzers::AnalysisResult> analyses = {
+        make_analysis({}, std::chrono::milliseconds(-1), Duration::zero(), Duration::zero()),
+        make_analysis({}, std::chrono::milliseconds(1), Duration::zero(), Duration::zero())
+    };
+
+    const auto result = summarize_repeated_analyses(analyses);
+
+    ASSERT_TRUE(result.is_err());
+    EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+}
+
+TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
+    namespace fs = std::filesystem;
+
+    const auto unique = std::to_string(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()
+        ).count()
+    );
+    const fs::path root = fs::temp_directory_path() / ("bha-repeat-snapshot-" + unique);
+
+    SnapshotStore store(root);
+    auto first = make_analysis({}, std::chrono::milliseconds(100), Duration::zero(), Duration::zero());
+    auto second = make_analysis({}, std::chrono::milliseconds(120), Duration::zero(), Duration::zero());
+    ASSERT_TRUE(store.save("run-1", first).is_ok());
+    ASSERT_TRUE(store.save("run-2", second).is_ok());
+
+    const auto summary = store.summarize_repeated_runs({"run-1", "run-2"});
+    ASSERT_TRUE(summary.is_ok());
+    EXPECT_EQ(summary.value().run_count, 2u);
+    EXPECT_EQ(summary.value().mean_build_time, std::chrono::milliseconds(110));
+
+    const auto duplicate = store.summarize_repeated_runs({"run-1", "run-1"});
+    ASSERT_TRUE(duplicate.is_err());
+    EXPECT_EQ(duplicate.error().code(), ErrorCode::InvalidArgument);
+
+    std::error_code ec;
+    fs::remove_all(root, ec);
+}
+
 TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     namespace fs = std::filesystem;
 

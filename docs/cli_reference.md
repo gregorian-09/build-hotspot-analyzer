@@ -264,8 +264,16 @@ Compare snapshots and enforce regression gates.
 
 ```bash
 bha compare <old-snapshot> <new-snapshot> [OPTIONS]
+bha compare --repeat <snapshot> <snapshot> [...] [OPTIONS]
 bha compare --baseline <new-snapshot> [OPTIONS]
 ```
+
+Use `--repeat` to summarize total build-time observations from two or more
+explicitly named snapshots. The output reports the observed minimum, rounded
+mean, nearest-rank median/P90/P99, maximum, and sample standard deviation when
+there is more than one observation. It is descriptive only: it does not infer
+confidence, significance, or causality, and duplicate snapshot names are
+rejected.
 
 Important options:
 - `-b`, `--baseline`
@@ -284,6 +292,7 @@ Examples:
 
 ```bash
 bha compare v1 v2 --threshold 5
+bha compare --repeat clean-1 clean-2 clean-3 --json
 bha compare --baseline current --gate-tu 5 --gate-header 8 --gate-template 10
 ```
 
