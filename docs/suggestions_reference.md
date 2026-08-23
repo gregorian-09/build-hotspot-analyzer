@@ -162,7 +162,7 @@ Key fields:
 - `type`, `priority`, `confidence`
 - `estimated_savings` and `%`
 - `implementation_steps`, `caveats`, `verification`
-- `hotspot_origins` for explainability (include chain/template origin)
+- `hotspot_origins` for producer/AST-backed explainability when exact evidence is available
 - application metadata:
   - `application_mode`
   - `is_safe`

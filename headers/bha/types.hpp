@@ -1023,7 +1023,7 @@ namespace bha {
      * Evidence describing why a suggestion is expensive.
      */
     struct HotspotOrigin {
-        std::string kind;  // include_chain | template_origin
+        std::string kind;  // producer/AST-backed origin kind, for example template_origin
         fs::path source;
         fs::path target;
         Duration estimated_cost = Duration::zero();

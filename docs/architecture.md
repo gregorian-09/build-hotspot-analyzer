@@ -136,7 +136,9 @@ Design details:
 - each suggester reads normalized analysis, build trace, and explicit project
   evidence such as the compilation database
 - confidence and safety signals are attached at generation time
-- explainability is attached through `hotspot_origins` (include chains/template origin)
+- explainability is attached through `hotspot_origins` only when the producer has exact
+  trace or AST evidence; the suggestion registry does not reconstruct include chains from
+  source text or infer template origins from suggestion wording
 - consolidation pipeline can merge/normalize overlapping recommendations
 
 ## 7. Build Adapter Layer

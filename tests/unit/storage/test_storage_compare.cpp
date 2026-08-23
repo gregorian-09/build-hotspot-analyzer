@@ -410,18 +410,18 @@ TEST(StorageSnapshotTest, PersistsSuggestionHotspotOrigins) {
 
     Suggestion suggestion;
     suggestion.id = "hotspot-origin";
-    suggestion.type = SuggestionType::ForwardDeclaration;
-    suggestion.title = "Use forward declaration";
+    suggestion.type = SuggestionType::ExplicitTemplate;
+    suggestion.title = "Use an explicit template declaration";
     suggestion.confidence = 0.9;
     suggestion.is_safe = true;
 
     HotspotOrigin origin;
-    origin.kind = "include_chain";
-    origin.source = "src/main.cpp";
-    origin.target = "include/widget.hpp";
+    origin.kind = "template_origin";
+    origin.source = "include/widget.hpp";
+    origin.target = "Widget<int>";
     origin.estimated_cost = std::chrono::milliseconds(12);
-    origin.chain = {"src/main.cpp", "include/a.hpp", "include/widget.hpp"};
-    origin.note = "Exact include chain reconstructed from source/header directives.";
+    origin.chain = {"template: Widget<int>", "used in: src/main.cpp"};
+    origin.note = "Observed per-specialization timing matched to a validated Clang AST record.";
     suggestion.hotspot_origins.push_back(origin);
 
     const auto save_result = store.save("origin-metrics", analysis, {suggestion});
@@ -432,9 +432,9 @@ TEST(StorageSnapshotTest, PersistsSuggestionHotspotOrigins) {
     ASSERT_EQ(load_result.value().suggestions.size(), 1u);
     ASSERT_EQ(load_result.value().suggestions.front().hotspot_origins.size(), 1u);
     const auto& loaded_origin = load_result.value().suggestions.front().hotspot_origins.front();
-    EXPECT_EQ(loaded_origin.kind, "include_chain");
-    EXPECT_EQ(loaded_origin.chain.size(), 3u);
-    EXPECT_EQ(loaded_origin.note, "Exact include chain reconstructed from source/header directives.");
+    EXPECT_EQ(loaded_origin.kind, "template_origin");
+    EXPECT_EQ(loaded_origin.chain.size(), 2u);
+    EXPECT_EQ(loaded_origin.note, "Observed per-specialization timing matched to a validated Clang AST record.");
 
     std::error_code ec;
     fs::remove_all(root, ec);

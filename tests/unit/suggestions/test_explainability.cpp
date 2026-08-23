@@ -100,7 +100,7 @@ fs::path create_temp_project_root() {
 
 }  // namespace
 
-TEST(SuggesterExplainabilityTest, AddsTemplateOriginEvidence) {
+TEST(SuggesterExplainabilityTest, DoesNotInferTemplateOriginFromSuggestionText) {
     ensure_stub_suggesters_registered();
 
     BuildTrace trace;
@@ -129,13 +129,10 @@ TEST(SuggesterExplainabilityTest, AddsTemplateOriginEvidence) {
     ASSERT_FALSE(result.value().empty());
 
     const auto& suggestion = result.value().front();
-    ASSERT_FALSE(suggestion.hotspot_origins.empty());
-    EXPECT_EQ(suggestion.hotspot_origins.front().kind, "template_origin");
-    EXPECT_FALSE(suggestion.hotspot_origins.front().chain.empty());
-    EXPECT_NE(suggestion.hotspot_origins.front().chain.front().find("template:"), std::string::npos);
+    EXPECT_TRUE(suggestion.hotspot_origins.empty());
 }
 
-TEST(SuggesterExplainabilityTest, AddsExactIncludeChainEvidence) {
+TEST(SuggesterExplainabilityTest, DoesNotInferIncludeChainFromSourceText) {
     ensure_stub_suggesters_registered();
 
     const fs::path root = create_temp_project_root();
@@ -191,16 +188,7 @@ TEST(SuggesterExplainabilityTest, AddsExactIncludeChainEvidence) {
     ASSERT_FALSE(result.value().empty());
 
     const auto& suggestion = result.value().front();
-    auto include_it = std::find_if(
-        suggestion.hotspot_origins.begin(),
-        suggestion.hotspot_origins.end(),
-        [](const HotspotOrigin& origin) { return origin.kind == "include_chain"; }
-    );
-    ASSERT_NE(include_it, suggestion.hotspot_origins.end());
-    ASSERT_GE(include_it->chain.size(), 3u);
-    EXPECT_NE(include_it->chain[0].find("a.cpp"), std::string::npos);
-    EXPECT_NE(include_it->chain[1].find("b.hpp"), std::string::npos);
-    EXPECT_NE(include_it->chain[2].find("c.hpp"), std::string::npos);
+    EXPECT_TRUE(suggestion.hotspot_origins.empty());
 
     std::error_code ec;
     fs::remove_all(root, ec);

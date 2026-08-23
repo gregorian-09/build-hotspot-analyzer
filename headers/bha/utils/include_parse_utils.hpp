@@ -62,28 +62,6 @@ namespace bha::utils {
         };
     }
 
-    [[nodiscard]] inline std::vector<ParsedIncludeDirective> parse_include_directives_from_text(
-        const std::string_view content
-    ) {
-        std::vector<ParsedIncludeDirective> directives;
-        std::size_t line_start = 0;
-        while (line_start <= content.size()) {
-            const auto line_end = content.find('\n', line_start);
-            const auto line = content.substr(
-                line_start,
-                line_end == std::string_view::npos ? std::string_view::npos : line_end - line_start
-            );
-            if (auto directive = parse_include_directive_line(line)) {
-                directives.push_back(std::move(*directive));
-            }
-            if (line_end == std::string_view::npos) {
-                break;
-            }
-            line_start = line_end + 1;
-        }
-        return directives;
-    }
-
     [[nodiscard]] inline std::vector<ParsedIncludeDirective> parse_include_directives_from_file(
         const std::filesystem::path& file_path
     ) {

@@ -227,20 +227,4 @@ namespace bha::analyzers
         fs::remove_all(temp_dir, ec);
     }
 
-    TEST(IncludeParseUtilsTest, ParsesTextWithTheSameBoundariesAsFiles) {
-        const auto directives = bha::utils::parse_include_directives_from_text(
-            "#include <vector>\r\n"
-            "  # include \"local.h\" // trailing comment\n"
-            "#includeX <not-an-include.h>\n"
-            "// #include \"commented.h\"\n"
-            "#include <broken.h\n"
-        );
-
-        ASSERT_EQ(directives.size(), 2u);
-        EXPECT_TRUE(directives[0].is_system);
-        EXPECT_EQ(directives[0].header_name, "vector");
-        EXPECT_FALSE(directives[1].is_system);
-        EXPECT_EQ(directives[1].header_name, "local.h");
-    }
-
 }

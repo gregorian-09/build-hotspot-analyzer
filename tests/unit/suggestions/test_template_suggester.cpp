@@ -212,6 +212,12 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.edits.front().file, header);
         EXPECT_EQ(suggestion.edits.front().new_text, "extern template class Box<int>;\n");
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
+        ASSERT_EQ(suggestion.hotspot_origins.size(), 1u);
+        EXPECT_EQ(suggestion.hotspot_origins.front().kind, "template_origin");
+        EXPECT_EQ(suggestion.hotspot_origins.front().source, header);
+        EXPECT_EQ(suggestion.hotspot_origins.front().target, "Box<int>");
+        EXPECT_EQ(suggestion.hotspot_origins.front().estimated_cost, std::chrono::milliseconds(500));
+        EXPECT_EQ(suggestion.hotspot_origins.front().chain.front(), "template: Box<int>");
         EXPECT_EQ(result.value().items_analyzed, 1u);
         EXPECT_EQ(result.value().items_skipped, 0u);
 

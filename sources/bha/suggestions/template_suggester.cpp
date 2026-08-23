@@ -198,6 +198,27 @@ namespace bha::suggestions {
                 "Savings are intentionally unestimated until a post-edit trace is available",
                 "The edit is limited to a unique explicit instantiation owner and a supported declaration form"
             };
+            HotspotOrigin origin;
+            origin.kind = "template_origin";
+            origin.source = record->declaration_file;
+            origin.target = record->specialization;
+            origin.estimated_cost = candidate.total_time;
+            origin.note =
+                "Observed per-specialization trace timing matched to the exact validated Clang AST record.";
+            origin.chain.push_back("template: " + record->specialization);
+            for (const auto& location : candidate.locations) {
+                if (!location.file.empty() && location.line > 0) {
+                    origin.chain.push_back(
+                        location.file.string() + ":" + std::to_string(location.line)
+                    );
+                }
+            }
+            if (origin.chain.size() == 1) {
+                for (const auto& file : record->use_files) {
+                    origin.chain.push_back("used in: " + file.generic_string());
+                }
+            }
+            suggestion.hotspot_origins.push_back(std::move(origin));
             suggestion.verification = "Clang syntax validation and full rebuild validation are required";
             result.suggestions.push_back(std::move(suggestion));
             ++result.items_analyzed;
