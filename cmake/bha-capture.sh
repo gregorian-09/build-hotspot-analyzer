@@ -105,29 +105,25 @@ trap 'rm -f "$TEMP_STDERR"' EXIT
 "$ACTUAL_COMPILER" "${COMPILER_ARGS[@]}" 2>"$TEMP_STDERR"
 EXIT_CODE=$?
 
-# Check if stderr contains timing information
 if [ -s "$TEMP_STDERR" ]; then
-    if grep -qE "Execution times|TOTAL|time in|Time variable" "$TEMP_STDERR"; then
-        # Create trace file with metadata and timing data
-        {
-            echo "# BHA Trace"
-            echo "# Source: $SOURCE_FILE"
-            echo "# Output: $OUTPUT_FILE"
-            echo "# Compiler: $ACTUAL_COMPILER"
-            echo "# Command: $ACTUAL_COMPILER ${COMPILER_ARGS[*]}"
-            echo "# Timestamp: $(date -Iseconds 2>/dev/null || date)"
-            echo "# Exit code: $EXIT_CODE"
-            echo "# ---"
-            echo ""
-            cat "$TEMP_STDERR"
-        } > "$TRACE_FILE"
+    # Preserve raw producer output. The parser, not the launcher, decides
+    # whether the artifact is a supported timing report.
+    {
+        echo "# BHA Trace"
+        echo "# Source: $SOURCE_FILE"
+        echo "# Output: $OUTPUT_FILE"
+        echo "# Compiler: $ACTUAL_COMPILER"
+        echo "# Command: $ACTUAL_COMPILER ${COMPILER_ARGS[*]}"
+        echo "# Timestamp: $(date -Iseconds 2>/dev/null || date)"
+        echo "# Exit code: $EXIT_CODE"
+        echo "# ---"
+        echo ""
+        cat "$TEMP_STDERR"
+    } > "$TRACE_FILE"
 
-        if [ "$BHA_VERBOSE" = "1" ]; then
-            TRACE_SIZE=$(du -h "$TRACE_FILE" 2>/dev/null | cut -f1)
-            debug_log "Trace saved: $TRACE_SIZE"
-        fi
-    else
-        debug_log "No timing data found in stderr"
+    if [ "$BHA_VERBOSE" = "1" ]; then
+        TRACE_SIZE=$(du -h "$TRACE_FILE" 2>/dev/null | cut -f1)
+        debug_log "Trace saved: $TRACE_SIZE"
     fi
 
     # Always output stderr to preserve error messages

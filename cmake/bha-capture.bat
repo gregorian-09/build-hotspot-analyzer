@@ -98,34 +98,25 @@ if exist "%TEMP_STDERR%" (
     for %%A in ("%TEMP_STDERR%") do set TEMP_SIZE=%%~zA
 
     if !TEMP_SIZE! GTR 0 (
-        REM Check if stderr contains timing information
-        REM MSVC timing markers: "time(", "c1xx.dll", "c2.dll"
-        REM GCC/Clang markers: "Execution times", "TOTAL", "time in", "Time variable"
+        REM Preserve raw producer output. The parser, not the launcher, decides
+        REM whether the artifact is a supported timing report.
+        (
+            echo # BHA Trace
+            echo # Source: %SOURCE_FILE%
+            echo # Output: %OUTPUT_FILE%
+            echo # Command: %*
+            echo # Timestamp: %date% %time%
+            echo # Exit code: !EXIT_CODE!
+            echo # ---
+            echo.
+            type "%TEMP_STDERR%"
+        ) > "%TRACE_FILE%"
 
-        findstr /C:"time(" /C:"c1xx.dll" /C:"c2.dll" /C:"Execution times" /C:"TOTAL" /C:"time in" /C:"Time variable" "%TEMP_STDERR%" >nul 2>&1
-
-        if !ERRORLEVEL! EQU 0 (
-            REM Timing data found, create trace file
-            (
-                echo # BHA Trace
-                echo # Source: %SOURCE_FILE%
-                echo # Output: %OUTPUT_FILE%
-                echo # Command: %*
-                echo # Timestamp: %date% %time%
-                echo # Exit code: !EXIT_CODE!
-                echo # ---
-                echo.
-                type "%TEMP_STDERR%"
-            ) > "%TRACE_FILE%"
-
-            if "%BHA_VERBOSE%"=="1" (
-                for %%F in ("%TRACE_FILE%") do (
-                    set TRACE_SIZE=%%~zF
-                    echo [bha-capture] Trace saved: !TRACE_SIZE! bytes 1>&2
-                )
+        if "%BHA_VERBOSE%"=="1" (
+            for %%F in ("%TRACE_FILE%") do (
+                set TRACE_SIZE=%%~zF
+                echo [bha-capture] Trace saved: !TRACE_SIZE! bytes 1>&2
             )
-        ) else (
-            if "%BHA_VERBOSE%"=="1" echo [bha-capture] No timing data found in stderr 1>&2
         )
 
         REM Always output stderr to preserve error messages
