@@ -67,4 +67,39 @@ phase last asm                        :   0.10 (  5%)   0.02 (  1%)   0.12 (  6%
         EXPECT_GT(unit.metrics.breakdown.unclassified.count(), 0);
         EXPECT_EQ(unit.template_evidence, TemplateEvidence::AggregateTiming);
     }
+
+    TEST_F(GCCParserTest, ParsesWallOnlyReportAndUsesProducerTotal) {
+        const std::string content = R"(
+Time variable                              wall           GGC
+ phase parsing                         :   0.60 ( 30%)   12 kB (  0%)
+ phase opt and generate                :   0.48 ( 24%)   34 kB (  0%)
+ TOTAL                                  :   1.08           46 kB
+)";
+
+        auto result = parser_->parse_content(content, "/src/test.cpp");
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+        EXPECT_EQ(unit.metrics.total_time, std::chrono::duration_cast<Duration>(
+            std::chrono::duration<double>(1.08)));
+        EXPECT_GT(unit.metrics.frontend_time.count(), 0);
+        EXPECT_GT(unit.metrics.backend_time.count(), 0);
+    }
+
+    TEST_F(GCCParserTest, RejectsMalformedTimingRows) {
+        const std::string content = R"(
+Time variable                                   usr           sys          wall
+phase parsing                         :   0.12 (  8%)   malformed   0.13 (  8%)
+)";
+
+        auto result = parser_->parse_content(content, "/src/test.cpp");
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST_F(GCCParserTest, RejectsHeaderOnlyReport) {
+        constexpr std::string_view content =
+            "Time variable                                   usr           sys          wall\n";
+        auto result = parser_->parse_content(content, "/src/test.cpp");
+        EXPECT_TRUE(result.is_err());
+    }
 }

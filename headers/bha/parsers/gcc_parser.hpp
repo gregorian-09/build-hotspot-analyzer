@@ -27,7 +27,10 @@ namespace bha::parsers {
      * - Template instantiation summaries
      * - Memory usage statistics
      *
-     * Example output format:
+     * GCC report layouts covered here are the legacy `usr sys wall` form and
+     * the wall-only form emitted by newer GCC releases. Both are accepted only
+     * when the exact producer header and timing-row grammar are present.
+     * Example legacy output format:
      *   Time variable                                   usr           sys          wall
      *   phase parsing                         :   0.12 (  8%)   0.01 (  5%)   0.13 (  8%)
      *   phase lang. deferred                  :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%)
