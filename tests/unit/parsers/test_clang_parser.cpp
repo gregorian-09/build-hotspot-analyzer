@@ -309,6 +309,54 @@ namespace bha::parsers
         EXPECT_EQ(result.error().code(), ErrorCode::ParseError);
     }
 
+    TEST_F(ClangParserTest, ParseContent_RejectsMalformedCompleteEvent) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"Source","ph":"X","ts":0,"dur":"invalid"}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST_F(ClangParserTest, ParseContent_RejectsNegativeDuration) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"Source","ph":"X","ts":0,"dur":-1}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST_F(ClangParserTest, ParseContent_RejectsMalformedEventArguments) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"Source","ph":"X","ts":0,"dur":1,"args":{"detail":42}}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
+    TEST_F(ClangParserTest, ParseContent_RejectsIntegerOverflow) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"Source","ph":"X","ts":0,"dur":1,"pid":18446744073709551615,"tid":1}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST_F(ClangParserTest, ParseFile_NotFound) {
         auto result = parser_->parse_file("/nonexistent/file.json");
 

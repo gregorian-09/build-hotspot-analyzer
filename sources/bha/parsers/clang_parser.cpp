@@ -9,6 +9,8 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <optional>
 #include <queue>
 #include <sstream>
@@ -47,46 +49,199 @@ namespace bha::parsers {
             bool all_self_times_available = false;
         };
 
-        TraceEvent parse_event(const json& event_json) {
+        Result<TraceEvent, Error> parse_event(
+            const json& event_json,
+            const fs::path& source_hint
+        ) {
+            if (!event_json.is_object()) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace event must be an object",
+                        source_hint.string()
+                    )
+                );
+            }
+
             TraceEvent event;
 
-            if (event_json.contains("name")) {
-                event.name = event_json["name"].get<std::string>();
+            if (!event_json.contains("name") || !event_json["name"].is_string()) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace event is missing a string name",
+                        source_hint.string()
+                    )
+                );
             }
+            event.name = event_json["name"].get<std::string>();
+
+            if (!event_json.contains("ph") || !event_json["ph"].is_string()) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace event is missing a string phase",
+                        source_hint.string()
+                    )
+                );
+            }
+            event.phase = event_json["ph"].get<std::string>();
+
+            const auto parse_nonnegative_number = [&](
+                const char* field_name,
+                double& target,
+                const bool required
+            ) -> Result<bool, Error> {
+                if (!event_json.contains(field_name)) {
+                    if (required) {
+                        return Result<bool, Error>::failure(
+                            Error::parse_error(
+                                std::string("Clang time trace complete event is missing ") + field_name,
+                                source_hint.string()
+                            )
+                        );
+                    }
+                    return Result<bool, Error>::success(false);
+                }
+                if (!event_json[field_name].is_number()) {
+                    return Result<bool, Error>::failure(
+                        Error::parse_error(
+                            std::string("Clang time trace field must be numeric: ") + field_name,
+                            source_hint.string()
+                        )
+                    );
+                }
+                const double value = event_json[field_name].get<double>();
+                if (!std::isfinite(value) || value < 0.0) {
+                    return Result<bool, Error>::failure(
+                        Error::parse_error(
+                            std::string("Clang time trace field must be finite and non-negative: ") + field_name,
+                            source_hint.string()
+                        )
+                    );
+                }
+                if (std::string_view(field_name) == "dur" &&
+                    value > static_cast<double>(Duration::max().count()) / 1000.0) {
+                    return Result<bool, Error>::failure(
+                        Error::parse_error(
+                            "Clang time trace duration exceeds the supported range",
+                            source_hint.string()
+                        )
+                    );
+                }
+                target = value;
+                return Result<bool, Error>::success(true);
+            };
+
+            const bool complete_event = event.phase == "X";
+            const auto timestamp = parse_nonnegative_number(
+                "ts",
+                event.timestamp,
+                complete_event
+            );
+            if (timestamp.is_err()) {
+                return Result<TraceEvent, Error>::failure(timestamp.error());
+            }
+            const auto duration = parse_nonnegative_number(
+                "dur",
+                event.duration,
+                complete_event
+            );
+            if (duration.is_err()) {
+                return Result<TraceEvent, Error>::failure(duration.error());
+            }
+
             if (event_json.contains("cat")) {
+                if (!event_json["cat"].is_string()) {
+                    return Result<TraceEvent, Error>::failure(
+                        Error::parse_error(
+                            "Clang time trace category must be a string",
+                            source_hint.string()
+                        )
+                    );
+                }
                 event.category = event_json["cat"].get<std::string>();
-            }
-            if (event_json.contains("ph")) {
-                event.phase = event_json["ph"].get<std::string>();
-            }
-            if (event_json.contains("ts")) {
-                event.timestamp = event_json["ts"].get<double>();
-            }
-            if (event_json.contains("dur")) {
-                event.duration = event_json["dur"].get<double>();
             }
 
             if (event_json.contains("args")) {
                 const auto& args = event_json["args"];
+                if (!args.is_object()) {
+                    return Result<TraceEvent, Error>::failure(
+                        Error::parse_error(
+                            "Clang time trace args must be an object",
+                            source_hint.string()
+                        )
+                    );
+                }
+                const auto integer_fits_int64 = [](const json& value) {
+                    return value.is_number_integer() &&
+                        (!value.is_number_unsigned() ||
+                         value.get<std::uint64_t>() <=
+                             static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()));
+                };
                 if (args.contains("detail")) {
+                    if (!args["detail"].is_string()) {
+                        return Result<TraceEvent, Error>::failure(
+                            Error::parse_error(
+                                "Clang time trace detail must be a string",
+                                source_hint.string()
+                            )
+                        );
+                    }
                     event.detail = args["detail"].get<std::string>();
                 }
                 if (args.contains("file")) {
+                    if (!args["file"].is_string()) {
+                        return Result<TraceEvent, Error>::failure(
+                            Error::parse_error(
+                                "Clang time trace file must be a string",
+                                source_hint.string()
+                            )
+                        );
+                    }
                     event.file = args["file"].get<std::string>();
                 }
                 if (args.contains("line")) {
+                    if (!integer_fits_int64(args["line"]) ||
+                        args["line"].get<std::int64_t>() < 0 ||
+                        args["line"].get<std::int64_t>() > std::numeric_limits<int>::max()) {
+                        return Result<TraceEvent, Error>::failure(
+                            Error::parse_error(
+                                "Clang time trace line must be a non-negative integer",
+                                source_hint.string()
+                            )
+                        );
+                    }
                     event.line = args["line"].get<int>();
                 }
             }
 
-            if (event_json.contains("pid") && event_json.contains("tid") &&
-                event_json["pid"].is_number_integer() && event_json["tid"].is_number_integer()) {
+            const auto integer_fits_int64 = [](const json& value) {
+                return value.is_number_integer() &&
+                    (!value.is_number_unsigned() ||
+                     value.get<std::uint64_t>() <=
+                         static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()));
+            };
+            if (event_json.contains("pid") && !integer_fits_int64(event_json["pid"])) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace pid must be an integer",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (event_json.contains("tid") && !integer_fits_int64(event_json["tid"])) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace tid must be an integer",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (event_json.contains("pid") && event_json.contains("tid")) {
                 event.process_id = event_json["pid"].get<std::int64_t>();
                 event.thread_id = event_json["tid"].get<std::int64_t>();
                 event.has_thread_identity = true;
             }
 
-            return event;
+            return Result<TraceEvent, Error>::success(std::move(event));
         }
 
         bool is_source_file(const std::string& path) {
@@ -498,10 +653,11 @@ namespace bha::parsers {
         events.reserve(trace_json["traceEvents"].size());
 
         for (const auto& event_json : trace_json["traceEvents"]) {
-            if (!event_json.is_object()) {
-                continue;
+            const auto event = parse_event(event_json, source_hint);
+            if (event.is_err()) {
+                return Result<CompilationUnit, Error>::failure(event.error());
             }
-            events.push_back(parse_event(event_json));
+            events.push_back(std::move(event).value());
         }
 
         CompilationUnit unit;

@@ -63,6 +63,8 @@ For Clang `-ftime-trace` input, BHA recognizes only exact producer event names
 for template instantiation timing. Prefixes and unrelated events are not
 classified as templates; in particular, code-generation events are not template
 evidence. Unknown time-trace event names remain unclassified.
+Malformed event objects, wrong field types, negative or non-finite complete-event
+timings, and integer overflow are rejected rather than partially analyzed.
 
 When a CMake Instrumentation API v1 index is attached, the analysis includes
 `build_session.step_metrics`. Each row is grouped by the producer's explicit
