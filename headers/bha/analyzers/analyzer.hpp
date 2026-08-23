@@ -273,6 +273,7 @@ namespace bha::analyzers {
             Duration link_wall_clock_time = Duration::zero();
             std::size_t output_size_observations = 0;
             std::uintmax_t output_bytes = 0;
+            std::vector<fs::path> precompile_headers;
         };
 
         /// Target entries in the selected producer configuration.
@@ -283,6 +284,10 @@ namespace bha::analyzers {
         std::size_t matched_commands = 0;
         /// Events that could not be joined without inference.
         std::size_t unmatched_commands = 0;
+        /// Number of targets with producer-declared precompiled headers.
+        std::size_t pch_targets = 0;
+        /// Number of producer-declared precompiled header entries.
+        std::size_t pch_headers = 0;
         /// Provenance and availability for target-scoped metrics.
         std::vector<MetricCapability> metric_capabilities;
     };

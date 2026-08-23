@@ -36,7 +36,8 @@ namespace bha::build_sessions::test {
     "artifacts": [{"path": "app"}]
   },
   "link": {"language": "CXX", "lto": true},
-  "dependencies": [{"id": "lib::@456"}]
+  "dependencies": [{"id": "lib::@456"}],
+  "precompileHeaders": [{"header": "/src/pch.h", "backtrace": 0}]
 })json";
             const auto codemodel = multiple_configurations
                 ? std::string(R"json({
@@ -91,6 +92,8 @@ namespace bha::build_sessions::test {
         EXPECT_TRUE(target.lto_enabled);
         ASSERT_EQ(target.dependencies.size(), 1u);
         EXPECT_EQ(target.dependencies.front(), "lib::@456");
+        ASSERT_EQ(target.precompile_headers.size(), 1u);
+        EXPECT_EQ(target.precompile_headers.front(), fs::path("/src/pch.h"));
         ASSERT_EQ(graph.metric_capabilities.size(), 1u);
         EXPECT_EQ(graph.metric_capabilities.front().provenance.evidence, EvidenceKind::Observed);
 

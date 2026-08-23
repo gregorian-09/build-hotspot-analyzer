@@ -49,8 +49,8 @@ namespace bha::analyzers::test {
         trace.target_graph = BuildTargetGraph{};
         trace.target_graph->complete = true;
         trace.target_graph->targets = {
-            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {"lib-id"}},
-            BuildTarget{"lib-id", "lib", "STATIC_LIBRARY", {}, {}, {}, {}, "CXX", false, {}}
+            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {"lib-id"}, {"/src/pch.h"}},
+            BuildTarget{"lib-id", "lib", "STATIC_LIBRARY", {}, {}, {}, {}, "CXX", false, {}, {}}
         };
         trace.build_session = BuildSession{};
         trace.build_session->commands = {
@@ -75,11 +75,17 @@ namespace bha::analyzers::test {
         EXPECT_EQ(analysis.targets[0].link_wall_clock_time, std::chrono::seconds(3));
         EXPECT_EQ(analysis.targets[0].output_bytes, 2048u);
         EXPECT_EQ(analysis.targets[0].dependencies, std::vector<std::string>{"lib-id"});
+        ASSERT_EQ(analysis.pch_targets, 1u);
+        ASSERT_EQ(analysis.pch_headers, 1u);
+        EXPECT_EQ(analysis.targets[0].precompile_headers, std::vector<fs::path>{"/src/pch.h"});
 
         const auto* ownership = find_capability(analysis, "build.target.command_ownership");
         ASSERT_NE(ownership, nullptr);
         EXPECT_EQ(ownership->provenance.evidence, EvidenceKind::Derived);
         EXPECT_FALSE(ownership->provenance.limitation.empty());
+        const auto* pch = find_capability(analysis, "build.target.pch_declarations");
+        ASSERT_NE(pch, nullptr);
+        EXPECT_EQ(pch->provenance.evidence, EvidenceKind::Derived);
     }
 
     TEST(BuildTargetAnalyzerTest, FailsClosedWithoutProducerTargetFields) {
@@ -87,7 +93,7 @@ namespace bha::analyzers::test {
         trace.target_graph = BuildTargetGraph{};
         trace.target_graph->complete = true;
         trace.target_graph->targets = {
-            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}}
+            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}, {}}
         };
         trace.build_session = BuildSession{};
         auto event = command(BuildStepRole::Compile, "app", 0, 1);
@@ -111,8 +117,8 @@ namespace bha::analyzers::test {
         trace.target_graph = BuildTargetGraph{};
         trace.target_graph->complete = true;
         trace.target_graph->targets = {
-            BuildTarget{"app-id-1", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}},
-            BuildTarget{"app-id-2", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}}
+            BuildTarget{"app-id-1", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}, {}},
+            BuildTarget{"app-id-2", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}, {}}
         };
         trace.build_session = BuildSession{};
         trace.build_session->commands = {command(BuildStepRole::Compile, "app", 0, 1)};

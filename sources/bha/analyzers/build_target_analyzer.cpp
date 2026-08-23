@@ -91,6 +91,11 @@ namespace bha::analyzers {
             info.name = target.name;
             info.type = target.type;
             info.dependencies = target.dependencies;
+            info.precompile_headers = target.precompile_headers;
+            if (!info.precompile_headers.empty()) {
+                ++analysis.pch_targets;
+                analysis.pch_headers += info.precompile_headers.size();
+            }
             target_indexes[info.name].push_back(analysis.targets.size());
             analysis.targets.push_back(std::move(info));
         }
@@ -141,6 +146,19 @@ namespace bha::analyzers {
                 analysis.target_commands == 0
                     ? "No compile or link event included the producer target field"
                     : ownership_limitation
+            )
+        );
+
+        add_capability(
+            analysis,
+            capability(
+                "build.target.pch_declarations",
+                analysis.pch_headers > 0
+                    ? EvidenceKind::Derived
+                    : EvidenceKind::Unavailable,
+                analysis.pch_headers > 0
+                    ? std::string{}
+                    : "The selected CMake codemodel declares no precompiled headers"
             )
         );
 

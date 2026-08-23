@@ -193,7 +193,10 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     target.compile_wall_clock_time = std::chrono::milliseconds(1200);
     target.output_size_observations = 1;
     target.output_bytes = 2048;
+    target.precompile_headers = {"/src/pch.h"};
     analysis.targets.targets.push_back(target);
+    analysis.targets.pch_targets = 1;
+    analysis.targets.pch_headers = 1;
     MetricCapability target_capability;
     target_capability.metric = "build.target.command_ownership";
     target_capability.provenance.evidence = EvidenceKind::Derived;
@@ -309,6 +312,10 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(targets.targets.front().dependencies, std::vector<std::string>{"lib-id"});
     EXPECT_EQ(targets.targets.front().compile_wall_clock_time, std::chrono::milliseconds(1200));
     EXPECT_EQ(targets.targets.front().output_bytes, 2048u);
+    EXPECT_EQ(targets.pch_targets, 1u);
+    EXPECT_EQ(targets.pch_headers, 1u);
+    ASSERT_EQ(targets.targets.front().precompile_headers.size(), 1u);
+    EXPECT_EQ(targets.targets.front().precompile_headers.front(), fs::path("/src/pch.h"));
     ASSERT_EQ(linker.metric_capabilities.size(), 1u);
     EXPECT_EQ(linker.metric_capabilities.front().metric, "lto.wall_time");
     EXPECT_EQ(linker.metric_capabilities.front().provenance.evidence, EvidenceKind::Observed);

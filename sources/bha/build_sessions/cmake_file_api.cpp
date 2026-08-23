@@ -207,6 +207,36 @@ namespace bha::build_sessions {
                 }
             }
 
+            if (target.contains("precompileHeaders")) {
+                if (!target["precompileHeaders"].is_array()) {
+                    return Result<BuildTarget, Error>::failure(
+                        Error::parse_error(
+                            "CMake target precompileHeaders is not an array",
+                            codemodel_path.string()
+                        )
+                    );
+                }
+                for (const auto& precompile_header : target["precompileHeaders"]) {
+                    if (!precompile_header.is_object()) {
+                        return Result<BuildTarget, Error>::failure(
+                            Error::parse_error(
+                                "CMake target precompileHeaders entry is not an object",
+                                codemodel_path.string()
+                            )
+                        );
+                    }
+                    const auto header = required_string(
+                        precompile_header,
+                        "header",
+                        codemodel_path
+                    );
+                    if (header.is_err()) {
+                        return Result<BuildTarget, Error>::failure(header.error());
+                    }
+                    result.precompile_headers.emplace_back(header.value());
+                }
+            }
+
             return Result<BuildTarget, Error>::success(std::move(result));
         }
 

@@ -516,9 +516,12 @@ namespace bha::exporters
                     {"timed_link_commands", target.timed_link_commands},
                     {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
                     {"output_size_observations", target.output_size_observations},
-                    {"output_bytes", target.output_bytes}
+                    {"output_bytes", target.output_bytes},
+                    {"precompile_headers", target.precompile_headers}
                 });
             }
+            summary["targets"]["pch_targets"] = analysis.targets.pch_targets;
+            summary["targets"]["pch_headers"] = analysis.targets.pch_headers;
             for (const auto& capability : analysis.targets.metric_capabilities) {
                 summary["targets"]["metric_capabilities"].push_back(
                     serialize_metric_capability(capability)

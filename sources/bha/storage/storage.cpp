@@ -451,6 +451,8 @@ namespace bha::storage
                 {"target_commands", targets.target_commands},
                 {"matched_commands", targets.matched_commands},
                 {"unmatched_commands", targets.unmatched_commands},
+                {"pch_targets", targets.pch_targets},
+                {"pch_headers", targets.pch_headers},
                 {"targets", nlohmann::json::array()},
                 {"metric_capabilities", serialize_metric_capabilities(targets.metric_capabilities)}
             };
@@ -467,7 +469,8 @@ namespace bha::storage
                     {"timed_link_commands", target.timed_link_commands},
                     {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
                     {"output_size_observations", target.output_size_observations},
-                    {"output_bytes", target.output_bytes}
+                    {"output_bytes", target.output_bytes},
+                    {"precompile_headers", target.precompile_headers}
                 });
             }
             return result;
@@ -480,6 +483,8 @@ namespace bha::storage
             targets.target_commands = j.value("target_commands", std::size_t{0});
             targets.matched_commands = j.value("matched_commands", std::size_t{0});
             targets.unmatched_commands = j.value("unmatched_commands", std::size_t{0});
+            targets.pch_targets = j.value("pch_targets", std::size_t{0});
+            targets.pch_headers = j.value("pch_headers", std::size_t{0});
             if (j.contains("targets")) {
                 for (const auto& target_json : j["targets"]) {
                     analyzers::BuildTargetAnalysisResult::TargetInfo target;
@@ -510,6 +515,9 @@ namespace bha::storage
                         std::size_t{0}
                     );
                     target.output_bytes = target_json.value("output_bytes", std::uintmax_t{0});
+                    if (target_json.contains("precompile_headers")) {
+                        target.precompile_headers = target_json["precompile_headers"].get<std::vector<fs::path>>();
+                    }
                     targets.targets.push_back(std::move(target));
                 }
             }

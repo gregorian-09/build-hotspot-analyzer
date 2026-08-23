@@ -142,7 +142,10 @@ namespace bha::exporters::test
         target.compile_wall_clock_time = std::chrono::milliseconds(700);
         target.output_size_observations = 1;
         target.output_bytes = 2048;
+        target.precompile_headers = {"/src/pch.h"};
         result.targets.targets.push_back(target);
+        result.targets.pch_targets = 1;
+        result.targets.pch_headers = 1;
         result.targets.metric_capabilities.push_back({
             "build.target.command_ownership",
             MetricProvenance{
@@ -348,6 +351,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"self_parse_time_ms\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"module.dependency_graph\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"provided_modules\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"pch_headers\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("/src/pch.h") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

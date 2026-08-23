@@ -678,6 +678,7 @@ namespace bha {
         std::string link_language;
         bool lto_enabled = false;
         std::vector<std::string> dependencies;
+        std::vector<fs::path> precompile_headers;
     };
 
     /**
