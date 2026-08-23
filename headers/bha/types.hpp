@@ -720,6 +720,36 @@ namespace bha {
     };
 
     /**
+     * One module declaration or import from a P1689 dependency rule.
+     */
+    struct ModuleDependencyReference {
+        std::string logical_name;
+        std::optional<fs::path> source_path;
+        std::optional<bool> is_interface;
+    };
+
+    /**
+     * One producer-defined P1689 module dependency rule.
+     */
+    struct ModuleDependencyRule {
+        fs::path primary_output;
+        std::vector<ModuleDependencyReference> provides;
+        std::vector<ModuleDependencyReference> requirements;
+    };
+
+    /**
+     * Exact module dependency data emitted by clang-scan-deps.
+     */
+    struct ModuleDependencyGraph {
+        std::string producer = "clang-scan-deps";
+        std::string producer_version;
+        int format_version = 0;
+        int revision = 0;
+        std::vector<ModuleDependencyRule> rules;
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * Complete build trace data from a single build.
      */
     struct BuildTrace {
@@ -739,6 +769,7 @@ namespace bha {
         std::optional<LinkerTrace> linker_trace;
         std::optional<BuildTargetGraph> target_graph;
         std::optional<CacheStatistics> cache_statistics;
+        std::optional<ModuleDependencyGraph> module_dependency_graph;
 
         std::vector<CompilationUnit> units;
 

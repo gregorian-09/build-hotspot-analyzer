@@ -10,6 +10,7 @@
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
+#include "bha/parsers/p1689_module_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/exporters/exporter.hpp"
 
@@ -60,6 +61,7 @@ namespace bha::cli
                 {"min-time", 0, "Minimum time threshold (ms)", false, true, "10", "MS"},
                 {"parallel", 'j', "Number of parallel threads", false, true, "0", "N"},
                 {"cache-stats", 0, "Structured sccache JSON statistics file", false, true, "", "FILE"},
+                {"module-deps", 0, "Clang P1689 module dependency JSON file", false, true, "", "FILE"},
             };
         }
 
@@ -219,6 +221,15 @@ namespace bha::cli
                     return 1;
                 }
                 print_verbose("Attached cache statistics: " + *cache_stats_path);
+            }
+
+            if (const auto module_deps_path = args.get("module-deps")) {
+                parsers::P1689ModuleParser parser;
+                if (const auto result = parser.attach_to_trace(build_trace, *module_deps_path); result.is_err()) {
+                    print_error("Failed to parse module dependencies: " + result.error().message());
+                    return 1;
+                }
+                print_verbose("Attached module dependencies: " + *module_deps_path);
             }
 
             AnalysisOptions analysis_opts;

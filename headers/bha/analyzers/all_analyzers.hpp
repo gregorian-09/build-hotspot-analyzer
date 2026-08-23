@@ -19,6 +19,7 @@
 #include "bha/analyzers/build_target_analyzer.hpp"
 #include "bha/analyzers/cache_analyzer.hpp"
 #include "bha/analyzers/linker_analyzer.hpp"
+#include "bha/analyzers/module_analyzer.hpp"
 
 namespace bha::analyzers {
 
@@ -35,6 +36,7 @@ namespace bha::analyzers {
         register_build_target_analyzer();
         register_cache_analyzer();
         register_linker_analyzer();
+        register_module_analyzer();
     }
 
 }  // namespace bha::analyzers

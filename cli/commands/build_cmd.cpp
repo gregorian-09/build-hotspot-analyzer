@@ -3,6 +3,7 @@
 #include "bha/build_systems/adapter.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
+#include "bha/parsers/p1689_module_parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
@@ -48,6 +49,7 @@ namespace bha::cli
                 {"cmake-args", 0, "Additional CMake arguments (semicolon-separated)", false, true, "", "ARGS"},
                 {"configure-args", 0, "Additional configure/make arguments (semicolon-separated)", false, true, "", "ARGS"},
                 {"cache-stats", 0, "Structured sccache JSON statistics file for --analyze", false, true, "", "FILE"},
+                {"module-deps", 0, "Clang P1689 module dependency JSON file for --analyze", false, true, "", "FILE"},
             };
         }
 
@@ -200,6 +202,16 @@ namespace bha::cli
                         return 1;
                     }
                     print_verbose("Attached cache statistics: " + *cache_stats_path);
+                }
+
+                if (const auto module_deps_path = args.get("module-deps")) {
+                    parsers::P1689ModuleParser parser;
+                    if (const auto module_result = parser.attach_to_trace(build_trace, *module_deps_path);
+                        module_result.is_err()) {
+                        print_error("Failed to parse module dependencies: " + module_result.error().message());
+                        return 1;
+                    }
+                    print_verbose("Attached module dependencies: " + *module_deps_path);
                 }
 
                 if (!result.memory_files.empty()) {

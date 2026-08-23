@@ -288,6 +288,28 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact module dependency analytics from P1689 rules.
+     */
+    struct ModuleAnalysisResult {
+        /// Number of producer rules, normally one per scanned primary output.
+        std::size_t rules = 0;
+        /// Number of unique logical module names provided by rules.
+        std::size_t provided_modules = 0;
+        /// Number of import requirements in the producer data.
+        std::size_t required_modules = 0;
+        /// Requirements resolved to one provided logical name.
+        std::size_t resolved_dependencies = 0;
+        /// Requirements with no matching provided logical name.
+        std::size_t unresolved_dependencies = 0;
+        /// Requirements whose owning rule does not provide a logical name.
+        std::size_t unowned_dependencies = 0;
+        /// Exact logical-name dependency edges when both endpoints are known.
+        std::vector<std::pair<std::string, std::string>> dependencies;
+        /// Provenance and availability for module dependency metrics.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Producer-observed compiler-cache outcome summary.
      */
     struct CacheDistributionAnalysisResult {
@@ -334,6 +356,8 @@ namespace bha::analyzers {
         LinkerAnalysisResult linker;
         /// Target ownership and target-scoped build metrics.
         BuildTargetAnalysisResult targets;
+        /// Module dependency metrics from an explicit P1689 scan.
+        ModuleAnalysisResult modules;
         /// Evidence and capability state for metrics in this result.
         std::vector<MetricCapability> metric_capabilities;
 

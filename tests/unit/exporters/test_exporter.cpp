@@ -157,6 +157,25 @@ namespace bha::exporters::test
             }
         });
 
+        result.modules.rules = 2;
+        result.modules.provided_modules = 2;
+        result.modules.required_modules = 1;
+        result.modules.resolved_dependencies = 1;
+        result.modules.dependencies.emplace_back("M", "User");
+        result.modules.metric_capabilities.push_back({
+            "module.dependency_graph",
+            MetricProvenance{
+                EvidenceKind::Derived,
+                "ModuleAnalyzer",
+                "",
+                "-format=p1689",
+                "build",
+                TimingDomain::None,
+                TimingAggregation::None,
+                ""
+            }
+        });
+
         MetricCapability capability;
         capability.metric = "compile.translation_unit.wall_time";
         capability.provenance.evidence = EvidenceKind::Observed;
@@ -327,6 +346,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"targets\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.target.command_ownership\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"self_parse_time_ms\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"module.dependency_graph\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"provided_modules\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

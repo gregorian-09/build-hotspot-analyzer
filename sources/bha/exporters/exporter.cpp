@@ -526,6 +526,30 @@ namespace bha::exporters
             }
         }
 
+        if (analysis.modules.rules > 0 || !analysis.modules.metric_capabilities.empty()) {
+            summary["modules"] = {
+                {"rules", analysis.modules.rules},
+                {"provided_modules", analysis.modules.provided_modules},
+                {"required_modules", analysis.modules.required_modules},
+                {"resolved_dependencies", analysis.modules.resolved_dependencies},
+                {"unresolved_dependencies", analysis.modules.unresolved_dependencies},
+                {"unowned_dependencies", analysis.modules.unowned_dependencies},
+                {"dependencies", json::array()},
+                {"metric_capabilities", json::array()}
+            };
+            for (const auto& [required, owner] : analysis.modules.dependencies) {
+                summary["modules"]["dependencies"].push_back({
+                    {"required", required},
+                    {"owner", owner}
+                });
+            }
+            for (const auto& capability : analysis.modules.metric_capabilities) {
+                summary["modules"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
+            }
+        }
+
         json capabilities = json::array();
         for (const auto& capability : analysis.metric_capabilities) {
             capabilities.push_back(serialize_metric_capability(capability));

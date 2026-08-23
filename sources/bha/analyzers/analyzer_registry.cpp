@@ -270,6 +270,20 @@ namespace bha::analyzers
                 }
                 combined_result.targets = std::move(partial.targets);
             }
+
+            if (partial.modules.rules > 0 || !partial.modules.metric_capabilities.empty()) {
+                for (const auto& capability : partial.modules.metric_capabilities) {
+                    const auto existing = std::ranges::find(
+                        combined_result.metric_capabilities,
+                        capability.metric,
+                        &MetricCapability::metric
+                    );
+                    if (existing == combined_result.metric_capabilities.end()) {
+                        combined_result.metric_capabilities.push_back(capability);
+                    }
+                }
+                combined_result.modules = std::move(partial.modules);
+            }
         }
 
         combined_result.files.reserve(file_map.size());

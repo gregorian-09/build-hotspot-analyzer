@@ -519,6 +519,48 @@ namespace bha::storage
             return targets;
         }
 
+        nlohmann::json serialize_modules(const analyzers::ModuleAnalysisResult& modules) {
+            nlohmann::json result = {
+                {"rules", modules.rules},
+                {"provided_modules", modules.provided_modules},
+                {"required_modules", modules.required_modules},
+                {"resolved_dependencies", modules.resolved_dependencies},
+                {"unresolved_dependencies", modules.unresolved_dependencies},
+                {"unowned_dependencies", modules.unowned_dependencies},
+                {"dependencies", nlohmann::json::array()},
+                {"metric_capabilities", serialize_metric_capabilities(modules.metric_capabilities)}
+            };
+            for (const auto& [required, owner] : modules.dependencies) {
+                result["dependencies"].push_back({
+                    {"required", required},
+                    {"owner", owner}
+                });
+            }
+            return result;
+        }
+
+        analyzers::ModuleAnalysisResult deserialize_modules(const nlohmann::json& j) {
+            analyzers::ModuleAnalysisResult modules;
+            modules.rules = j.value("rules", std::size_t{0});
+            modules.provided_modules = j.value("provided_modules", std::size_t{0});
+            modules.required_modules = j.value("required_modules", std::size_t{0});
+            modules.resolved_dependencies = j.value("resolved_dependencies", std::size_t{0});
+            modules.unresolved_dependencies = j.value("unresolved_dependencies", std::size_t{0});
+            modules.unowned_dependencies = j.value("unowned_dependencies", std::size_t{0});
+            if (j.contains("dependencies") && j["dependencies"].is_array()) {
+                for (const auto& dependency : j["dependencies"]) {
+                    modules.dependencies.emplace_back(
+                        dependency.value("required", ""),
+                        dependency.value("owner", "")
+                    );
+                }
+            }
+            if (j.contains("metric_capabilities")) {
+                modules.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
+            return modules;
+        }
+
         /**
          * Serializes a suggestion to JSON.
          */
@@ -679,6 +721,7 @@ namespace bha::storage
         j["build_session"] = serialize_build_session(analysis.build_session);
         j["linker"] = serialize_linker(analysis.linker);
         j["targets"] = serialize_build_targets(analysis.targets);
+        j["modules"] = serialize_modules(analysis.modules);
         j["metric_capabilities"] = serialize_metric_capabilities(analysis.metric_capabilities);
 
         nlohmann::json sugg_array = nlohmann::json::array();
@@ -770,6 +813,10 @@ namespace bha::storage
 
             if (j.contains("targets")) {
                 snapshot.analysis.targets = deserialize_build_targets(j["targets"]);
+            }
+
+            if (j.contains("modules")) {
+                snapshot.analysis.modules = deserialize_modules(j["modules"]);
             }
 
             if (j.contains("metric_capabilities")) {

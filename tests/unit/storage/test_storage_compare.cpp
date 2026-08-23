@@ -202,6 +202,25 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     target_capability.provenance.scope = "target";
     analysis.targets.metric_capabilities.push_back(target_capability);
 
+    analysis.modules.rules = 2;
+    analysis.modules.provided_modules = 2;
+    analysis.modules.required_modules = 1;
+    analysis.modules.resolved_dependencies = 1;
+    analysis.modules.dependencies.emplace_back("M", "User");
+    analysis.modules.metric_capabilities.push_back({
+        "module.dependency_graph",
+        MetricProvenance{
+            EvidenceKind::Derived,
+            "ModuleAnalyzer",
+            "",
+            "-format=p1689",
+            "build",
+            TimingDomain::None,
+            TimingAggregation::None,
+            ""
+        }
+    });
+
     MetricCapability capability;
     capability.metric = "compile.translation_unit.wall_time";
     capability.provenance.evidence = EvidenceKind::Observed;
@@ -220,12 +239,23 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     ASSERT_TRUE(load_result.is_ok());
     const auto& cache = load_result.value().analysis.cache_distribution;
     const auto& dependencies = load_result.value().analysis.dependencies;
+    const auto& modules = load_result.value().analysis.modules;
 
     ASSERT_EQ(dependencies.headers.size(), 1u);
     ASSERT_TRUE(dependencies.headers.front().self_parse_time.has_value());
     EXPECT_EQ(*dependencies.headers.front().self_parse_time, std::chrono::milliseconds(320));
     ASSERT_EQ(dependencies.metric_capabilities.size(), 1u);
     EXPECT_EQ(dependencies.metric_capabilities.front().metric, "frontend.source_self_time");
+
+    EXPECT_EQ(modules.rules, 2u);
+    EXPECT_EQ(modules.provided_modules, 2u);
+    EXPECT_EQ(modules.required_modules, 1u);
+    EXPECT_EQ(modules.resolved_dependencies, 1u);
+    ASSERT_EQ(modules.dependencies.size(), 1u);
+    const std::pair<std::string, std::string> expected_module_edge{"M", "User"};
+    EXPECT_EQ(modules.dependencies.front(), expected_module_edge);
+    ASSERT_EQ(modules.metric_capabilities.size(), 1u);
+    EXPECT_EQ(modules.metric_capabilities.front().metric, "module.dependency_graph");
 
     EXPECT_EQ(cache.compile_requests, 12u);
     EXPECT_EQ(cache.executed_compilations, 10u);
