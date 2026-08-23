@@ -2,6 +2,7 @@
 
 #include "bha/build_sessions/cmake_instrumentation.hpp"
 
+#include "bha/parsers/clang_parser.hpp"
 #include "bha/utils/file_utils.hpp"
 
 #include <nlohmann/json.hpp>
@@ -9,6 +10,7 @@
 #include <cmath>
 #include <chrono>
 #include <limits>
+#include <set>
 #include <utility>
 
 namespace bha::build_sessions {
@@ -595,6 +597,86 @@ namespace bha::build_sessions {
                 )
             );
         }
+    }
+
+    Result<void, Error> CMakeInstrumentationParser::attach_to_trace(
+        BuildTrace& trace,
+        const fs::path& path
+    ) const {
+        const auto session_result = parse_index_file(path);
+        if (session_result.is_err()) {
+            return Result<void, Error>::failure(session_result.error());
+        }
+
+        const auto& session = session_result.value();
+        if (trace.build_session.has_value()) {
+            return Result<void, Error>::failure(
+                Error::invalid_argument(
+                    "A CMake instrumentation session is already attached",
+                    path.string()
+                )
+            );
+        }
+        if (trace.build_system != BuildSystemType::Unknown &&
+            trace.build_system != BuildSystemType::CMake) {
+            return Result<void, Error>::failure(
+                Error::invalid_argument(
+                    "CMake instrumentation cannot be attached to a different build system",
+                    path.string()
+                )
+            );
+        }
+        if (trace.compiler != CompilerType::Unknown && trace.compiler != CompilerType::Clang) {
+            return Result<void, Error>::failure(
+                Error::invalid_argument(
+                    "CMake compileTrace references are Clang traces, but another compiler is already attached",
+                    path.string()
+                )
+            );
+        }
+
+        parsers::ClangTraceParser clang_parser;
+        std::set<fs::path> referenced_files;
+        std::vector<CompilationUnit> referenced_units;
+        for (const auto& command : session.commands) {
+            if (!command.trace_file.has_value()) {
+                continue;
+            }
+            const auto& trace_file = *command.trace_file;
+            if (!referenced_files.insert(trace_file).second) {
+                return Result<void, Error>::failure(
+                    Error::parse_error(
+                        "CMake instrumentation references the same compile trace more than once",
+                        trace_file.string()
+                    )
+                );
+            }
+
+            const auto unit_result = clang_parser.parse_file(trace_file);
+            if (unit_result.is_err()) {
+                return Result<void, Error>::failure(
+                    Error::parse_error(
+                        "Failed to parse CMake-referenced Clang trace: " + unit_result.error().message(),
+                        trace_file.string()
+                    )
+                );
+            }
+            referenced_units.push_back(unit_result.value());
+        }
+
+        trace.build_session = session;
+        trace.build_system = BuildSystemType::CMake;
+        trace.compiler = CompilerType::Clang;
+        trace.id = path.generic_string();
+        for (auto& unit : referenced_units) {
+            trace.total_time += unit.metrics.total_time;
+            if (static_cast<std::uint8_t>(unit.template_evidence) >
+                static_cast<std::uint8_t>(trace.template_evidence)) {
+                trace.template_evidence = unit.template_evidence;
+            }
+            trace.units.push_back(std::move(unit));
+        }
+        return Result<void, Error>::success();
     }
 
     Result<BuildSession, Error> CMakeInstrumentationParser::parse_directory(

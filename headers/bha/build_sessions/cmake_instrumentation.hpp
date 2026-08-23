@@ -34,6 +34,17 @@ namespace bha::build_sessions {
         ) const;
 
         /**
+         * Attaches one producer-defined index and its referenced Clang traces.
+         *
+         * References are consumed exactly as emitted by CMake; no build-tree
+         * scan or filename-based trace matching is performed.
+         */
+        [[nodiscard]] Result<void, Error> attach_to_trace(
+            BuildTrace& trace,
+            const fs::path& path
+        ) const;
+
+        /**
          * Parses valid snippet JSON files directly in one directory. For a
          * producer-defined session boundary, use parse_index_file().
          */

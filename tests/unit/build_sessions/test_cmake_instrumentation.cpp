@@ -249,4 +249,99 @@ namespace bha::build_sessions::test {
         fs::remove_all(root, ec);
     }
 
+    TEST(CMakeInstrumentationParserTest, AttachesReferencedClangTracesAtomically) {
+        const auto unique = std::to_string(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()
+            ).count()
+        );
+        const fs::path root = fs::temp_directory_path() / ("bha-cmake-attach-" + unique);
+        const fs::path data = root / "data";
+        const fs::path trace_file = data / "compile-trace" / "main.json";
+        const fs::path snippet_file = data / "compile.json";
+        const fs::path index = root / "index.json";
+        ASSERT_TRUE(fs::create_directories(trace_file.parent_path()));
+
+        constexpr std::string_view clang_trace = R"json({
+  "traceEvents": [
+    {"name": "ExecuteCompiler", "ph": "X", "ts": 0, "dur": 250,
+     "args": {"detail": "/src/main.cpp"}},
+    {"name": "Total Frontend", "ph": "X", "ts": 0, "dur": 150},
+    {"name": "Total Backend", "ph": "X", "ts": 150, "dur": 100}
+  ]
+})json";
+        constexpr std::string_view snippet = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "compile",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "traceFile": "compile-trace/main.json",
+  "source": "src/main.cpp"
+})json";
+        const auto index_content = std::string(R"json({
+  "version": {"major": 1, "minor": 1},
+  "dataDir": ")json") + data.string() + R"json(",
+  "snippets": ["compile.json"]
+})json";
+        ASSERT_TRUE(utils::write_file(trace_file, clang_trace).is_ok());
+        ASSERT_TRUE(utils::write_file(snippet_file, snippet).is_ok());
+        ASSERT_TRUE(utils::write_file(index, index_content).is_ok());
+
+        BuildTrace trace;
+        CMakeInstrumentationParser parser;
+        const auto result = parser.attach_to_trace(trace, index);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_TRUE(trace.build_session.has_value());
+        EXPECT_EQ(trace.build_system, BuildSystemType::CMake);
+        EXPECT_EQ(trace.compiler, CompilerType::Clang);
+        ASSERT_EQ(trace.units.size(), 1u);
+        EXPECT_EQ(trace.units.front().source_file, fs::path("/src/main.cpp"));
+        EXPECT_EQ(trace.units.front().metrics.total_time, std::chrono::microseconds(250));
+
+        std::error_code ec;
+        fs::remove_all(root, ec);
+    }
+
+    TEST(CMakeInstrumentationParserTest, RejectsMissingReferencedClangTraceWithoutMutation) {
+        const auto unique = std::to_string(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()
+            ).count()
+        );
+        const fs::path root = fs::temp_directory_path() / ("bha-cmake-attach-missing-" + unique);
+        const fs::path data = root / "data";
+        const fs::path snippet_file = data / "compile.json";
+        const fs::path index = root / "index.json";
+        ASSERT_TRUE(fs::create_directories(data));
+        constexpr std::string_view snippet = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "compile",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "traceFile": "compile-trace/missing.json"
+})json";
+        const auto index_content = std::string(R"json({
+  "version": {"major": 1, "minor": 1},
+  "dataDir": ")json") + data.string() + R"json(",
+  "snippets": ["compile.json"]
+})json";
+        ASSERT_TRUE(utils::write_file(snippet_file, snippet).is_ok());
+        ASSERT_TRUE(utils::write_file(index, index_content).is_ok());
+
+        BuildTrace trace;
+        trace.id = "unchanged";
+        CMakeInstrumentationParser parser;
+        const auto result = parser.attach_to_trace(trace, index);
+
+        EXPECT_TRUE(result.is_err());
+        EXPECT_FALSE(trace.build_session.has_value());
+        EXPECT_EQ(trace.id, "unchanged");
+
+        std::error_code ec;
+        fs::remove_all(root, ec);
+    }
+
 }  // namespace bha::build_sessions::test
