@@ -807,7 +807,9 @@ namespace bha::exporters
             for (const auto& sym : analysis.symbols.symbols) {
                 json s;
                 s["name"] = sym.name;
-                s["type"] = sym.type;
+                if (!sym.type.empty()) {
+                    s["type"] = sym.type;
+                }
                 s["defined_in"] = sym.defined_in.string();
                 s["usage_count"] = sym.usage_count;
                 sym_array.push_back(s);

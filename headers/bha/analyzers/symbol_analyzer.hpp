@@ -9,11 +9,10 @@
  * @file symbol_analyzer.hpp
  * @brief Symbol definition and usage analysis.
  *
- * Analyzes symbol definitions across the codebase, tracking where
- * symbols are defined and used to identify:
- * - Unused symbols (defined but never referenced elsewhere)
- * - Frequently used symbols that should be optimized
- * - Symbol visibility issues
+ * Analyzes producer-provided symbol definitions and exact symbol-use records.
+ * It does not classify names, infer linkage, or treat header inclusion as a
+ * symbol reference. Those conclusions require semantic AST or object-file
+ * evidence that is not present in the normalized trace model.
  */
 
 #include "bha/analyzers/analyzer.hpp"
@@ -23,11 +22,11 @@ namespace bha::analyzers {
     /**
      * Analyzes symbol definitions and usage patterns.
      *
-     * Identifies:
-     * - Symbol definitions and their locations
-     * - Symbol usage patterns across files
-     * - Potentially unused symbols
-     * - Inline function candidates
+     * Reports:
+     * - Exact producer-provided symbol names and definition locations
+     * - Exact symbol uses attached to include records
+     * - Observed template event counts
+     * - Producer-defined symbols with no observed uses
      */
     class SymbolAnalyzer : public IAnalyzer {
     public:

@@ -113,7 +113,7 @@ flowchart TD
     A[BuildTrace] --> B[FileAnalyzer]
     A --> C[DependencyAnalyzer]
     A --> D[TemplateAnalyzer]
-    A --> E[SymbolAnalyzer]
+    A --> E[SymbolAnalyzer: exact producer symbol records]
     A --> G[PerformanceAnalyzer]
     B --> H[Merge]
     C --> H

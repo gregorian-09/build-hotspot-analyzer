@@ -57,7 +57,7 @@ namespace bha::analyzers {
         EXPECT_EQ(result.value().symbols.total_symbols, 4u);
     }
 
-    TEST_F(SymbolAnalyzerTest, ClassifiesSymbolTypes) {
+    TEST_F(SymbolAnalyzerTest, DoesNotInferSymbolTypes) {
         BuildTrace trace;
 
         CompilationUnit unit;
@@ -79,7 +79,7 @@ namespace bha::analyzers {
         EXPECT_EQ(symbols.size(), 4u);
 
         for (const auto& sym : symbols) {
-            EXPECT_FALSE(sym.type.empty());
+            EXPECT_TRUE(sym.type.empty());
         }
     }
 
@@ -206,6 +206,7 @@ namespace bha::analyzers {
         IncludeInfo inc;
         inc.header = "/project/src/foo.h";
         inc.parse_time = std::chrono::milliseconds(5);
+        inc.symbols_used = {"FooClass", "foo_helper"};
         user_unit.includes.push_back(inc);
         trace.units.push_back(user_unit);
 
@@ -228,6 +229,31 @@ namespace bha::analyzers {
         }
     }
 
+    TEST_F(SymbolAnalyzerTest, HeaderInclusionWithoutExplicitUseDoesNotAddUsage) {
+        BuildTrace trace;
+
+        CompilationUnit header_unit;
+        header_unit.source_file = "/project/src/foo.h";
+        header_unit.symbols_defined = {"FooClass"};
+        trace.units.push_back(header_unit);
+
+        CompilationUnit user_unit;
+        user_unit.source_file = "/project/src/main.cpp";
+        IncludeInfo include;
+        include.header = "/project/src/foo.h";
+        user_unit.includes.push_back(include);
+        trace.units.push_back(user_unit);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().symbols.symbols.size(), 1u);
+        EXPECT_EQ(result.value().symbols.symbols.front().name, "FooClass");
+        EXPECT_EQ(result.value().symbols.symbols.front().usage_count, 0u);
+        EXPECT_TRUE(result.value().symbols.symbols.front().used_in.empty());
+    }
+
     TEST_F(SymbolAnalyzerTest, MultipleFilesIncludeSameHeader) {
         BuildTrace trace;
 
@@ -242,6 +268,7 @@ namespace bha::analyzers {
             IncludeInfo inc;
             inc.header = "/project/include/api.h";
             inc.parse_time = std::chrono::milliseconds(1);
+            inc.symbols_used = {"api_function", "ApiClass"};
             unit.includes.push_back(inc);
             trace.units.push_back(unit);
         }
@@ -293,9 +320,11 @@ namespace bha::analyzers {
         user.source_file = "/project/src/user.cpp";
         IncludeInfo inc1;
         inc1.header = "/project/src/header.h";
+        inc1.symbols_used = {"SharedSymbol"};
         user.includes.push_back(inc1);
         IncludeInfo inc2;
         inc2.header = "/project/src/header.h";
+        inc2.symbols_used = {"SharedSymbol"};
         user.includes.push_back(inc2);
         trace.units.push_back(user);
 
@@ -326,6 +355,7 @@ namespace bha::analyzers {
             unit.source_file = "/project/src/user_" + std::to_string(u) + ".cpp";
             IncludeInfo inc;
             inc.header = "/project/src/big_header.h";
+            inc.symbols_used = header.symbols_defined;
             unit.includes.push_back(inc);
             trace.units.push_back(unit);
         }
@@ -369,6 +399,7 @@ namespace bha::analyzers {
         user.source_file = "/project/src/main.cpp";
         IncludeInfo inc;
         inc.header = "/project/src/header.h";
+        inc.symbols_used = {"NormalizedSym"};
         user.includes.push_back(inc);
         trace.units.push_back(user);
 

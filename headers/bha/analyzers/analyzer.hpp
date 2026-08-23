@@ -145,7 +145,8 @@ namespace bha::analyzers {
         struct SymbolInfo {
             /// Symbol name (possibly qualified).
             std::string name;
-            /// Symbol category/classification (function, class, variable, ...).
+            /// Producer-provided symbol category, when available. Empty means
+            /// the trace did not provide semantic category evidence.
             std::string type;
             /// Definition site.
             fs::path defined_in;
@@ -159,7 +160,7 @@ namespace bha::analyzers {
         std::vector<SymbolInfo> symbols;
         /// Total symbol count.
         std::size_t total_symbols = 0;
-        /// Count of symbols with zero observed usages.
+        /// Count of producer-defined symbols with zero observed usages.
         std::size_t unused_symbols = 0;
     };
 
@@ -173,7 +174,7 @@ namespace bha::analyzers {
         Duration sequential_time = Duration::zero();
         /// Effective overlap duration from parallel execution.
         Duration parallel_time = Duration::zero();
-        /// Parallelism efficiency in [0, 1] under current heuristic.
+        /// Ratio of observed serial command time to observed wall-clock span.
         double parallelism_efficiency = 0.0;
 
         /// Number of compiled translation units.
@@ -199,7 +200,7 @@ namespace bha::analyzers {
 
         /// Slowest translation units, sorted descending by compile time.
         std::vector<FileAnalysisResult> slowest_files;
-        /// Approximate critical path through the build graph.
+        /// Exact critical path when producer dependency edges are complete.
         std::vector<fs::path> critical_path;
     };
 
