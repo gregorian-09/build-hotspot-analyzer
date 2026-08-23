@@ -303,6 +303,19 @@ namespace bha::cli
         out_ << "P90 File Time:        " << format_duration(perf.p90_file_time) << "\n";
         out_ << "P99 File Time:        " << format_duration(perf.p99_file_time) << "\n";
 
+        if (!result.build_session.step_metrics.empty()) {
+            out_ << "\nBuild Steps (Producer Roles)\n";
+            for (const auto& step : result.build_session.step_metrics) {
+                out_ << "  " << to_string(step.role)
+                      << ": commands=" << format_count(step.total_commands)
+                      << ", timed=" << format_count(step.timed_commands)
+                      << ", time=" << format_duration(step.wall_clock_time)
+                      << ", results=" << format_count(step.result_observations)
+                      << ", succeeded=" << format_count(step.successful_commands)
+                      << ", failed=" << format_count(step.failed_commands) << "\n";
+            }
+        }
+
         out_ << "\n";
 
         const auto& deps = result.dependencies;
@@ -656,6 +669,34 @@ namespace bha::cli
                 }
                 return j;
             }
+
+            inline json build_session_to_json(
+                const analyzers::BuildSessionAnalysisResult& session
+            ) {
+                json j = {
+                    {"timed_commands", session.timed_commands},
+                    {"total_commands", session.total_commands},
+                    {"wall_clock_time_ns", session.wall_clock_time.count()},
+                    {"serial_time_ns", session.serial_time.count()},
+                    {"peak_parallelism", session.peak_parallelism},
+                    {"average_parallelism", session.average_parallelism},
+                    {"critical_path_time_ns", session.critical_path_time.count()},
+                    {"critical_path", session.critical_path},
+                    {"step_metrics", json::array()}
+                };
+                for (const auto& step : session.step_metrics) {
+                    j["step_metrics"].push_back({
+                        {"role", to_string(step.role)},
+                        {"total_commands", step.total_commands},
+                        {"timed_commands", step.timed_commands},
+                        {"wall_clock_time_ns", step.wall_clock_time.count()},
+                        {"result_observations", step.result_observations},
+                        {"successful_commands", step.successful_commands},
+                        {"failed_commands", step.failed_commands}
+                    });
+                }
+                return j;
+            }
         }
 
         std::string to_json(const analyzers::AnalysisResult& result, const bool pretty) {
@@ -667,6 +708,10 @@ namespace bha::cli
             j["templates"] = json_detail::tmpl_to_json(result.templates);
             j["cache_distribution"] = json_detail::cache_to_json(result.cache_distribution);
             j["process_resources"] = json_detail::process_resources_to_json(result.process_resources);
+            if (result.build_session.total_commands > 0 ||
+                !result.build_session.step_metrics.empty()) {
+                j["build_session"] = json_detail::build_session_to_json(result.build_session);
+            }
             return j.dump(pretty ? 2 : -1);
         }
 

@@ -461,8 +461,20 @@ namespace bha::exporters
                 {"average_parallelism", analysis.build_session.average_parallelism},
                 {"critical_path_time_ms", duration_to_ms(analysis.build_session.critical_path_time)},
                 {"critical_path", analysis.build_session.critical_path},
+                {"step_metrics", json::array()},
                 {"metric_capabilities", json::array()}
             };
+            for (const auto& step : analysis.build_session.step_metrics) {
+                summary["build_session"]["step_metrics"].push_back({
+                    {"role", to_string(step.role)},
+                    {"total_commands", step.total_commands},
+                    {"timed_commands", step.timed_commands},
+                    {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
+                    {"result_observations", step.result_observations},
+                    {"successful_commands", step.successful_commands},
+                    {"failed_commands", step.failed_commands}
+                });
+            }
             for (const auto& capability : analysis.build_session.metric_capabilities) {
                 summary["build_session"]["metric_capabilities"].push_back(
                     serialize_metric_capability(capability)

@@ -261,6 +261,26 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.build_session.average_parallelism = 1.8;
     analysis.build_session.critical_path_time = std::chrono::milliseconds(4200);
     analysis.build_session.critical_path = {"compile-a", "link"};
+    analysis.build_session.step_metrics = {
+        analyzers::BuildStepAnalysis{
+            BuildStepRole::Custom,
+            2,
+            2,
+            std::chrono::milliseconds(700),
+            2,
+            1,
+            1
+        },
+        analyzers::BuildStepAnalysis{
+            BuildStepRole::Test,
+            1,
+            1,
+            std::chrono::milliseconds(300),
+            1,
+            1,
+            0
+        }
+    };
 
     MetricCapability session_capability;
     session_capability.metric = "build.command.wall_time";
@@ -422,6 +442,12 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(session.critical_path_time, std::chrono::milliseconds(4200));
     ASSERT_EQ(session.critical_path.size(), 2u);
     EXPECT_EQ(session.critical_path.front(), "compile-a");
+    ASSERT_EQ(session.step_metrics.size(), 2u);
+    EXPECT_EQ(session.step_metrics.front().role, BuildStepRole::Custom);
+    EXPECT_EQ(session.step_metrics.front().wall_clock_time, std::chrono::milliseconds(700));
+    EXPECT_EQ(session.step_metrics.front().failed_commands, 1u);
+    EXPECT_EQ(session.step_metrics.back().role, BuildStepRole::Test);
+    EXPECT_EQ(session.step_metrics.back().successful_commands, 1u);
     ASSERT_EQ(session.metric_capabilities.size(), 1u);
     EXPECT_EQ(session.metric_capabilities.front().metric, "build.command.wall_time");
     EXPECT_EQ(session.metric_capabilities.front().provenance.capture_mode, "api-v1-index");

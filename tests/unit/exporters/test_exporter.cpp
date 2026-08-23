@@ -114,6 +114,15 @@ namespace bha::exporters::test
         result.build_session.average_parallelism = 1.5;
         result.build_session.critical_path_time = std::chrono::seconds(2);
         result.build_session.critical_path = {"compile-a", "link"};
+        result.build_session.step_metrics.push_back({
+            BuildStepRole::Custom,
+            1,
+            1,
+            std::chrono::milliseconds(250),
+            1,
+            1,
+            0
+        });
 
         MetricCapability session_capability;
         session_capability.metric = "build.scheduler.parallelism";
@@ -373,6 +382,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"metric_capabilities\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"compile.translation_unit.wall_time\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build_session\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"step_metrics\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("custom") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);

@@ -58,6 +58,13 @@ bha analyze traces --top 25
 bha analyze traces --format json -o analysis.json
 ```
 
+When a CMake Instrumentation API v1 index is attached, the analysis includes
+`build_session.step_metrics`. Each row is grouped by the producer's explicit
+command role (`configure`, `generate`, `build`, `compile`, `link`, `custom`,
+`test`, or `install`) and reports command count, timed command count, exact
+timed duration sum, and observed exit-result counts. Missing producer fields
+remain unavailable; BHA does not infer roles from command text or filenames.
+
 ---
 
 ## `suggest`

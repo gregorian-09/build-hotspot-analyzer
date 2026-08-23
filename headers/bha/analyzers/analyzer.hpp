@@ -204,6 +204,26 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact per-role build-session metrics.
+     */
+    struct BuildStepAnalysis {
+        /// Producer-defined command role represented by this row.
+        BuildStepRole role = BuildStepRole::Unknown;
+        /// Number of captured commands with this role.
+        std::size_t total_commands = 0;
+        /// Number of commands with exact producer timing.
+        std::size_t timed_commands = 0;
+        /// Sum of exact durations for timed commands in this role.
+        Duration wall_clock_time = Duration::zero();
+        /// Number of commands with a producer-provided exit result.
+        std::size_t result_observations = 0;
+        /// Number of observed commands whose exit result was zero.
+        std::size_t successful_commands = 0;
+        /// Number of observed commands whose exit result was non-zero.
+        std::size_t failed_commands = 0;
+    };
+
+    /**
      * @brief Exact build-session scheduler metrics.
      */
     struct BuildSessionAnalysisResult {
@@ -223,6 +243,8 @@ namespace bha::analyzers {
         Duration critical_path_time = Duration::zero();
         /// Command IDs on the exact critical path.
         std::vector<std::string> critical_path;
+        /// Per-role observations from the producer-defined command events.
+        std::vector<BuildStepAnalysis> step_metrics;
         /// Provenance and availability for session-level metrics.
         std::vector<MetricCapability> metric_capabilities;
     };

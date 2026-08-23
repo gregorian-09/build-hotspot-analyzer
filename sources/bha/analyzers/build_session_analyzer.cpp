@@ -3,7 +3,9 @@
 #include "bha/analyzers/build_session_analyzer.hpp"
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
@@ -132,6 +134,74 @@ namespace bha::analyzers {
         auto& analysis = result.build_session;
         analysis.total_commands = session.commands.size();
         analysis.metric_capabilities = session.metric_capabilities;
+
+        for (const auto& command : session.commands) {
+            auto step = std::ranges::find(
+                analysis.step_metrics,
+                command.role,
+                &BuildStepAnalysis::role
+            );
+            if (step == analysis.step_metrics.end()) {
+                analysis.step_metrics.push_back({});
+                step = std::prev(analysis.step_metrics.end());
+                step->role = command.role;
+            }
+
+            ++step->total_commands;
+            if (command.has_exact_timing()) {
+                ++step->timed_commands;
+                step->wall_clock_time += command.duration;
+            }
+            if (command.result.has_value()) {
+                ++step->result_observations;
+                if (*command.result == 0) {
+                    ++step->successful_commands;
+                } else {
+                    ++step->failed_commands;
+                }
+            }
+        }
+
+        std::ranges::sort(
+            analysis.step_metrics,
+            [](const BuildStepAnalysis& left, const BuildStepAnalysis& right) {
+                return static_cast<std::underlying_type_t<BuildStepRole>>(left.role) <
+                    static_cast<std::underlying_type_t<BuildStepRole>>(right.role);
+            }
+        );
+
+        for (const auto& step : analysis.step_metrics) {
+            const std::string scope = std::string("role:") + to_string(step.role);
+            auto wall_time = capability(
+                "build.step.wall_time",
+                step.timed_commands == step.total_commands
+                    ? EvidenceKind::Derived
+                    : EvidenceKind::Unavailable,
+                "BuildSessionAnalyzer",
+                scope,
+                step.timed_commands == step.total_commands
+                    ? ""
+                    : "At least one command in this role has no exact producer timing"
+            );
+            wall_time.provenance.capture_mode = "producer-command-events";
+            wall_time.provenance.timing_domain = TimingDomain::WallClock;
+            wall_time.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            analysis.metric_capabilities.push_back(std::move(wall_time));
+
+            auto result_status = capability(
+                "build.step.result",
+                step.result_observations == step.total_commands
+                    ? EvidenceKind::Observed
+                    : EvidenceKind::Unavailable,
+                "BuildSessionAnalyzer",
+                scope,
+                step.result_observations == step.total_commands
+                    ? ""
+                    : "The producer did not provide an exit result for every command in this role"
+            );
+            result_status.provenance.capture_mode = "producer-command-events";
+            analysis.metric_capabilities.push_back(std::move(result_status));
+        }
 
         std::vector<TimedEvent> timed_events;
         timed_events.reserve(session.commands.size());

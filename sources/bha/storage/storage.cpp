@@ -87,6 +87,18 @@ namespace bha::storage
             return TimingAggregation::None;
         }
 
+        BuildStepRole build_step_role_from_string(const std::string& value) {
+            if (value == "configure") return BuildStepRole::Configure;
+            if (value == "generate") return BuildStepRole::Generate;
+            if (value == "build") return BuildStepRole::Build;
+            if (value == "compile") return BuildStepRole::Compile;
+            if (value == "link") return BuildStepRole::Link;
+            if (value == "custom") return BuildStepRole::Custom;
+            if (value == "test") return BuildStepRole::Test;
+            if (value == "install") return BuildStepRole::Install;
+            return BuildStepRole::Unknown;
+        }
+
         nlohmann::json serialize_metric_capabilities(
             const std::vector<MetricCapability>& capabilities
         ) {
@@ -367,7 +379,7 @@ namespace bha::storage
         nlohmann::json serialize_build_session(
             const analyzers::BuildSessionAnalysisResult& session
         ) {
-            return {
+            nlohmann::json result = {
                 {"timed_commands", session.timed_commands},
                 {"total_commands", session.total_commands},
                 {"wall_clock_time_ms", duration_to_ms(session.wall_clock_time)},
@@ -376,8 +388,21 @@ namespace bha::storage
                 {"average_parallelism", session.average_parallelism},
                 {"critical_path_time_ms", duration_to_ms(session.critical_path_time)},
                 {"critical_path", session.critical_path},
+                {"step_metrics", nlohmann::json::array()},
                 {"metric_capabilities", serialize_metric_capabilities(session.metric_capabilities)}
             };
+            for (const auto& step : session.step_metrics) {
+                result["step_metrics"].push_back({
+                    {"role", to_string(step.role)},
+                    {"total_commands", step.total_commands},
+                    {"timed_commands", step.timed_commands},
+                    {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
+                    {"result_observations", step.result_observations},
+                    {"successful_commands", step.successful_commands},
+                    {"failed_commands", step.failed_commands}
+                });
+            }
+            return result;
         }
 
         analyzers::BuildSessionAnalysisResult deserialize_build_session(
@@ -393,6 +418,27 @@ namespace bha::storage
             session.critical_path_time = ms_to_duration(j.value("critical_path_time_ms", 0.0));
             if (j.contains("critical_path")) {
                 session.critical_path = j["critical_path"].get<std::vector<std::string>>();
+            }
+            if (j.contains("step_metrics") && j["step_metrics"].is_array()) {
+                for (const auto& item : j["step_metrics"]) {
+                    analyzers::BuildStepAnalysis step;
+                    step.role = build_step_role_from_string(item.value("role", "unknown"));
+                    step.total_commands = item.value("total_commands", std::size_t{0});
+                    step.timed_commands = item.value("timed_commands", std::size_t{0});
+                    step.wall_clock_time = ms_to_duration(
+                        item.value("wall_clock_time_ms", 0.0)
+                    );
+                    step.result_observations = item.value(
+                        "result_observations",
+                        std::size_t{0}
+                    );
+                    step.successful_commands = item.value(
+                        "successful_commands",
+                        std::size_t{0}
+                    );
+                    step.failed_commands = item.value("failed_commands", std::size_t{0});
+                    session.step_metrics.push_back(std::move(step));
+                }
             }
             if (j.contains("metric_capabilities")) {
                 session.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
