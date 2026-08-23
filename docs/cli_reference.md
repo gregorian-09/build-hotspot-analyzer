@@ -49,6 +49,7 @@ Important options:
 - `--include-includes`
 - `--min-time`
 - `-j`, `--parallel`
+- `--cmake-index FILE`
 
 Examples:
 
@@ -79,6 +80,9 @@ With CMake data version 1.1, compile snippets may also provide an exact
 `traceFile` reference to a copied Clang `-ftime-trace` JSON artifact. The build
 session reports the number of such producer references; BHA does not scan the
 build tree or match trace files by filename.
+The explicit `--cmake-index FILE` attachment is also supported by `suggest`,
+`export`, and `build --analyze`; it can be used without positional trace files
+when the index contains producer-referenced compile traces.
 
 ---
 

@@ -1,6 +1,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/formatter.hpp"
 #include "bha/build_systems/adapter.hpp"
+#include "bha/build_sessions/cmake_instrumentation.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/parsers/p1689_module_parser.hpp"
@@ -52,6 +53,7 @@ namespace bha::cli
                 {"cache-stats", 0, "Structured sccache JSON statistics file for --analyze", false, true, "", "FILE"},
                 {"module-deps", 0, "Clang P1689 module dependency JSON file for --analyze", false, true, "", "FILE"},
                 {"resource-stats", 0, "Clang -fproc-stat-report CSV file for --analyze", false, true, "", "FILE"},
+                {"cmake-index", 0, "CMake Instrumentation API v1 index file for --analyze", false, true, "", "FILE"},
             };
         }
 
@@ -176,7 +178,8 @@ namespace bha::cli
                 }
             }
 
-            if (args.get_flag("analyze") && !result.trace_files.empty()) {
+            if (args.get_flag("analyze") &&
+                (!result.trace_files.empty() || args.get("cmake-index").has_value())) {
                 std::cout << "\nRunning analysis...\n";
 
                 BuildTrace build_trace;
@@ -191,7 +194,20 @@ namespace bha::cli
                     }
                 }
 
-                if (build_trace.units.empty()) {
+                if (const auto cmake_index_path = args.get("cmake-index")) {
+                    build_sessions::CMakeInstrumentationParser parser;
+                    if (const auto attach_result = parser.attach_to_trace(build_trace, *cmake_index_path);
+                        attach_result.is_err()) {
+                        print_error(
+                            "Failed to attach CMake instrumentation index: " +
+                            attach_result.error().message()
+                        );
+                        return 1;
+                    }
+                    print_verbose("Attached CMake instrumentation index: " + *cmake_index_path);
+                }
+
+                if (build_trace.units.empty() && !build_trace.build_session.has_value()) {
                     print_warning("No valid trace files parsed");
                     return 0;
                 }

@@ -8,6 +8,7 @@
 #include "bha/utils/suggestion_path_utils.hpp"
 
 #include "bha/bha.hpp"
+#include "bha/build_sessions/cmake_instrumentation.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
@@ -69,11 +70,12 @@ namespace bha::cli
                 {"cache-stats", 0, "Structured sccache JSON statistics file", false, true, "", "FILE"},
                 {"module-deps", 0, "Clang P1689 module dependency JSON file", false, true, "", "FILE"},
                 {"resource-stats", 0, "Clang -fproc-stat-report CSV file", false, true, "", "FILE"},
+                {"cmake-index", 0, "CMake Instrumentation API v1 index file", false, true, "", "FILE"},
             };
         }
 
         [[nodiscard]] std::string validate(const ParsedArgs& args) const override {
-            if (args.positional().empty()) {
+            if (args.positional().empty() && !args.get("cmake-index").has_value()) {
                 return "No trace files specified";
             }
 
@@ -149,7 +151,7 @@ namespace bha::cli
                 }
             }
 
-            if (trace_files.empty()) {
+            if (trace_files.empty() && !args.get("cmake-index").has_value()) {
                 print_error("No trace files found");
                 return 1;
             }
@@ -172,6 +174,16 @@ namespace bha::cli
                     }
                     progress.tick();
                 }
+            }
+
+            if (const auto cmake_index_path = args.get("cmake-index")) {
+                build_sessions::CMakeInstrumentationParser parser;
+                if (const auto result = parser.attach_to_trace(build_trace, *cmake_index_path);
+                    result.is_err()) {
+                    print_error("Failed to attach CMake instrumentation index: " + result.error().message());
+                    return 1;
+                }
+                print_verbose("Attached CMake instrumentation index: " + *cmake_index_path);
             }
 
             if (!memory_files.empty()) {
@@ -211,7 +223,7 @@ namespace bha::cli
                               std::to_string(build_trace.units.size()) + " files with memory data");
             }
 
-            if (build_trace.units.empty()) {
+            if (build_trace.units.empty() && !build_trace.build_session.has_value()) {
                 print_error("No valid trace files parsed");
                 return 1;
             }

@@ -229,7 +229,10 @@ namespace bha::analyzers
                 combined_result.cache_distribution = partial.cache_distribution;
             }
 
-            if (partial.build_session.total_commands > 0) {
+            if (partial.build_session.total_commands > 0 ||
+                partial.build_session.host_system.has_value() ||
+                partial.build_session.compile_trace_references > 0 ||
+                !partial.build_session.metric_capabilities.empty()) {
                 for (const auto& capability : partial.build_session.metric_capabilities) {
                     const auto existing = std::ranges::find(
                         combined_result.metric_capabilities,
