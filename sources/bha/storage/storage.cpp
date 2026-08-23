@@ -1072,6 +1072,32 @@ namespace bha::storage
             return total;
         };
 
+        auto set_regression_distribution = [](
+            ComparisonResult::RegressionDistribution& distribution,
+            std::vector<Duration> deltas
+        ) {
+            if (deltas.empty()) {
+                return;
+            }
+
+            std::ranges::sort(deltas);
+            distribution.regressed_files = deltas.size();
+            distribution.min_delta = deltas.front();
+            distribution.max_delta = deltas.back();
+            for (const auto delta : deltas) {
+                distribution.total_delta += delta;
+            }
+
+            const auto nearest_rank = [&deltas](const std::size_t numerator, const std::size_t denominator) {
+                const std::size_t rank =
+                    (deltas.size() * numerator + denominator - 1) / denominator;
+                return deltas[std::min(rank - 1, deltas.size() - 1)];
+            };
+            distribution.median_delta = nearest_rank(1, 2);
+            distribution.p90_delta = nearest_rank(9, 10);
+            distribution.p99_delta = nearest_rank(99, 100);
+        };
+
         ComparisonResult result;
         result.significance_threshold_percent = significance_threshold * 100.0;
 
@@ -1113,6 +1139,9 @@ namespace bha::storage
             new_files[file.file.string()] = &file;
         }
 
+        std::vector<Duration> positive_deltas;
+        positive_deltas.reserve(old_files.size());
+
         // Find regressions, improvements, new files, removed files
         for (const auto& [path, old_file] : old_files) {
             if (auto it = new_files.find(path); it == new_files.end()) {
@@ -1121,6 +1150,10 @@ namespace bha::storage
                 const auto* new_file = it->second;
                 auto delta = new_file->compile_time - old_file->compile_time;
                 const double percent = percent_change(old_file->compile_time, delta);
+                ++result.translation_unit_regressions.matched_files;
+                if (delta.count() > 0) {
+                    positive_deltas.push_back(delta);
+                }
 
                 if (std::abs(percent) > significance_threshold * 100.0) {
                     ComparisonResult::FileChange change;
@@ -1138,6 +1171,8 @@ namespace bha::storage
                 }
             }
         }
+
+        set_regression_distribution(result.translation_unit_regressions, std::move(positive_deltas));
 
         for (const auto& path : new_files | std::views::keys) {
             if (!old_files.contains(path)) {

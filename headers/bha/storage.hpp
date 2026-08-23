@@ -64,6 +64,23 @@ namespace bha::storage
             double percent_change = 0.0;
         };
 
+        /**
+         * Empirical distribution of positive deltas across matched files.
+         *
+         * The values are computed from every matched translation unit, before
+         * the user-configured significance threshold filters the detail list.
+         */
+        struct RegressionDistribution {
+            std::size_t matched_files = 0;
+            std::size_t regressed_files = 0;
+            Duration total_delta = Duration::zero();
+            Duration min_delta = Duration::zero();
+            Duration median_delta = Duration::zero();
+            Duration p90_delta = Duration::zero();
+            Duration p99_delta = Duration::zero();
+            Duration max_delta = Duration::zero();
+        };
+
         // Overall changes
         Duration build_time_delta;           // Positive = slower, negative = faster
         double build_time_percent_change;    // Percentage change
@@ -73,6 +90,7 @@ namespace bha::storage
         CategoryDelta translation_unit;
         CategoryDelta headers;
         CategoryDelta templates;
+        RegressionDistribution translation_unit_regressions;
 
         // Performance regressions (files that got slower)
         struct FileChange {

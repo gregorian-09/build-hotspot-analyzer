@@ -293,3 +293,11 @@ Examples:
 bha compare v1 v2 --threshold 5
 bha compare --baseline current --gate-tu 5 --gate-header 8 --gate-template 10
 ```
+
+The comparison also reports `translation_unit_regressions`, an empirical
+distribution computed from every path present in both snapshots. It contains
+the matched-file count, the count of positive compile-time deltas, their total,
+and nearest-rank minimum, median, P90, P99, and maximum values. These values
+are reported before `--threshold` filters the detailed regression list; they do
+not change regression or gate decisions. JSON output exposes the durations as
+`*_delta_ms` fields.

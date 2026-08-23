@@ -316,6 +316,22 @@ namespace bha::cli
             }
             std::cout << "\n";
 
+            const auto& distribution = result.translation_unit_regressions;
+            if (distribution.matched_files > 0) {
+                std::cout << "\n" << bold("Observed TU Regression Distribution") << "\n";
+                std::cout << "  Matched Files: " << distribution.matched_files << "\n";
+                std::cout << "  Positive Deltas: " << distribution.regressed_files << "\n";
+                std::cout << "  Total Delta: " << format_dur(distribution.total_delta) << "\n";
+                if (distribution.regressed_files > 0) {
+                    std::cout << "  Min / Median / P90 / P99 / Max: "
+                              << format_dur(distribution.min_delta) << " / "
+                              << format_dur(distribution.median_delta) << " / "
+                              << format_dur(distribution.p90_delta) << " / "
+                              << format_dur(distribution.p99_delta) << " / "
+                              << format_dur(distribution.max_delta) << "\n";
+                }
+            }
+
             // Status
             std::cout << "\n";
             if (overall_regression_failed) {
@@ -506,6 +522,23 @@ namespace bha::cli
             std::cout << "  \"improvements_count\": " << result.improvements.size() << ",\n";
             std::cout << "  \"new_files_count\": " << result.new_files.size() << ",\n";
             std::cout << "  \"removed_files_count\": " << result.removed_files.size() << ",\n";
+            const auto& distribution = result.translation_unit_regressions;
+            std::cout << "  \"translation_unit_regressions\": {\n";
+            std::cout << "    \"matched_files\": " << distribution.matched_files << ",\n";
+            std::cout << "    \"regressed_files\": " << distribution.regressed_files << ",\n";
+            std::cout << "    \"total_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.total_delta).count() << ",\n";
+            std::cout << "    \"min_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.min_delta).count() << ",\n";
+            std::cout << "    \"median_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.median_delta).count() << ",\n";
+            std::cout << "    \"p90_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.p90_delta).count() << ",\n";
+            std::cout << "    \"p99_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.p99_delta).count() << ",\n";
+            std::cout << "    \"max_delta_ms\": "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(distribution.max_delta).count() << "\n";
+            std::cout << "  },\n";
 
             std::cout << "  \"categories\": {\n";
             std::cout << "    \"translation_unit\": {\n";
