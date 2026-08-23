@@ -1481,7 +1481,6 @@ namespace bha::lsp
             analyze_options.enable_consolidation = !args["disableConsolidation"].get<bool>();
         }
         if (args.contains("explain") && args["explain"].is_boolean() && args["explain"].get<bool>()) {
-            analyze_options.relax_heuristics = true;
             analyze_options.include_unsafe = true;
             analyze_options.min_confidence = 0.0;
             analyze_options.enable_consolidation = false;

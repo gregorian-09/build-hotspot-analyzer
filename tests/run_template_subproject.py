@@ -169,10 +169,6 @@ def main() -> int:
         "--disable-consolidation",
         "--limit",
         "100",
-        "--template-min-count",
-        "2",
-        "--template-min-time",
-        "1",
         "--include-unsafe",
     ]
     suggest = run_cmd(suggest_cmd, project_root, args.timeout)

@@ -31,8 +31,6 @@
 #include <string_view>
 #include <cstdint>
 
-#include "heuristics/config.hpp"
-
 namespace bha {
 
     namespace fs = std::filesystem;
@@ -1130,7 +1128,6 @@ namespace bha {
         std::function<void(std::string_view, std::string_view, std::string_view)> on_suggester_diagnostic;
         std::optional<fs::path> compile_commands_path;
         std::vector<SuggestionType> enabled_types;
-        heuristics::HeuristicsConfig heuristics = heuristics::HeuristicsConfig::defaults();
     };
 
 }  // namespace bha

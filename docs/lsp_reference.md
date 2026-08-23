@@ -100,7 +100,8 @@ Input (`arguments[0]`):
 - `includeUnsafe` (bool)
 - `minConfidence` (number)
 - `disableConsolidation` (bool)
-- `explain` (bool; relaxes thresholds)
+- `explain` (bool; includes suggestions normally filtered by output policy,
+  without bypassing semantic or producer-evidence validation)
 
 Output:
 - `analysisId`

@@ -262,8 +262,6 @@
         suggester_opts.include_unsafe = config_.include_unsafe_suggestions;
         suggester_opts.enable_consolidation = true;
         suggester_opts.compile_commands_path = compile_commands_path;
-        suggester_opts.heuristics.forward_decl.max_candidate_headers = 25;
-        suggester_opts.heuristics.templates.max_candidate_instantiations = 25;
         suggester_opts.on_suggester_completed =
             [&report](const std::string_view name, const Duration elapsed, const std::size_t count) {
                 report(
@@ -283,20 +281,6 @@
         }
         if (analyze_options.enable_consolidation.has_value()) {
             suggester_opts.enable_consolidation = *analyze_options.enable_consolidation;
-        }
-        if (analyze_options.relax_heuristics) {
-            auto& pch = suggester_opts.heuristics.pch;
-            auto& templates = suggester_opts.heuristics.templates;
-            auto& headers = suggester_opts.heuristics.headers;
-            auto& forward_decl = suggester_opts.heuristics.forward_decl;
-            auto& codegen = suggester_opts.heuristics.codegen;            pch.min_include_count = 1;
-            pch.min_aggregate_time = std::chrono::milliseconds(1);
-            templates.min_instantiation_count = 1;
-            templates.min_total_time = std::chrono::milliseconds(1);
-            headers.min_parse_time = std::chrono::milliseconds(1);
-            headers.min_includers_for_split = 1;
-            forward_decl.min_parse_time = std::chrono::milliseconds(1);
-            codegen.long_codegen_threshold = std::chrono::milliseconds(1);
         }
         // Generate suggestions using all registered suggesters
         auto suggestions_result = suggestions::generate_all_suggestions(

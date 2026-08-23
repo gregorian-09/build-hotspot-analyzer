@@ -101,8 +101,6 @@ namespace bha::lsp
         std::optional<double> min_confidence;
         /// Enable post-generation consolidation of overlapping suggestions.
         std::optional<bool> enable_consolidation;
-        /// Loosen strict safety heuristics for exploratory workflows.
-        bool relax_heuristics = false;
     };
 
     /**
