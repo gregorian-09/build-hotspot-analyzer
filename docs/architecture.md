@@ -75,7 +75,7 @@ Supported parser families:
 - Clang time-trace JSON
 - GCC timing text/report forms
 - MSVC timing output
-- Intel classic/oneAPI variants
+- Intel oneAPI Clang-compatible time-trace JSON
 
 Parser responsibilities:
 - detect parse capability by path/content
@@ -87,6 +87,12 @@ CSV table but does not define a stable column schema in the compiler-driver
 contract. BHA therefore rejects it rather than inferring phase roles from
 vendor-internal tool names. A parser can be added after a captured artifact
 establishes an exact schema.
+
+Intel Classic `-qopt-report` output is also not ingested as compile timing.
+Intel documents that artifact as an optimization transformation report whose
+details can change; BHA does not convert optimization remarks or arbitrary
+seconds text into elapsed build metrics. Intel oneAPI ICX remains supported
+through its Clang-compatible time-trace JSON path.
 
 ## 5. Analyzer Layer
 

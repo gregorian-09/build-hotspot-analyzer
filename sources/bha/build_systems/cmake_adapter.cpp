@@ -65,7 +65,7 @@ namespace bha::build_systems {
                     cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << script.string() << "\"";
                 } else {
                     std::cerr << "Warning: bha-capture script not found. "
-                              << "GCC/Intel tracing requires this script.\n"
+                              << "GCC tracing requires this script.\n"
                               << "Set BHA_SCRIPT_DIR to the directory containing bha-capture.sh\n";
                 }
             }

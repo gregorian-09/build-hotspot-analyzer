@@ -8,10 +8,14 @@ Trace ingestion supports outputs from:
 - Clang
 - GCC
 - MSVC
-- Intel classic/oneAPI
+- Intel oneAPI (ICX/ICPX)
 
 NVCC `--time` reports are not currently ingested. BHA rejects the undocumented
 vendor CSV schema instead of producing heuristic metrics.
+
+Intel Classic `-qopt-report` reports are not currently ingested as timing
+data; they contain optimization remarks rather than a stable elapsed-time
+schema.
 
 ## Prerequisites
 

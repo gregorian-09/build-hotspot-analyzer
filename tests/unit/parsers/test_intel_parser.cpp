@@ -7,61 +7,6 @@
 #include <gtest/gtest.h>
 
 namespace bha::parsers {
-    class IntelClassicParserTest : public ::testing::Test {
-    protected:
-        void SetUp() override {
-            parser_ = std::make_unique<IntelClassicParser>();
-        }
-
-        std::unique_ptr<IntelClassicParser> parser_;
-    };
-
-    TEST_F(IntelClassicParserTest, Name) {
-        EXPECT_EQ(parser_->name(), "Intel ICC");
-    }
-
-    TEST_F(IntelClassicParserTest, CompilerType) {
-        EXPECT_EQ(parser_->compiler_type(), CompilerType::IntelClassic);
-    }
-
-    TEST_F(IntelClassicParserTest, SupportedExtensions) {
-        const auto extensions = parser_->supported_extensions();
-        EXPECT_GE(extensions.size(), 1u);
-    }
-
-    TEST_F(IntelClassicParserTest, CanParseContent_Valid) {
-        const std::string content = R"(
-Intel(R) C++ Compiler for applications
-LOOP BEGIN at main.cpp(10,5)
-remark: vectorized loop
-LOOP END
-)";
-        EXPECT_TRUE(parser_->can_parse_content(content));
-    }
-
-    TEST_F(IntelClassicParserTest, CanParseContent_LoopOnlyReportWithoutIccToken) {
-        const std::string content = R"(
-LOOP BEGIN at C:\project\src\main.cpp(42,7)
-remark: loop was vectorized
-LOOP END
-)";
-        EXPECT_TRUE(parser_->can_parse_content(content));
-    }
-
-    TEST_F(IntelClassicParserTest, ParseContent_ExtractsSourceFromParenLoopLocation) {
-        const std::string content = R"(
-LOOP BEGIN at C:\project\src\main.cpp(42,7)
-0.50 seconds
-LOOP END
-)";
-        auto result = parser_->parse_content(content, {});
-        ASSERT_TRUE(result.is_ok());
-        EXPECT_EQ(result.value().source_file, fs::path("C:\\project\\src\\main.cpp"));
-        EXPECT_GT(result.value().metrics.total_time.count(), 0);
-        EXPECT_EQ(result.value().metrics.breakdown.optimization, Duration::zero());
-        EXPECT_EQ(result.value().metrics.breakdown.unclassified, result.value().metrics.total_time);
-    }
-
     class IntelOneAPIParserTest : public ::testing::Test {
     protected:
         void SetUp() override {
@@ -92,5 +37,11 @@ LOOP END
   ]
 })json";
         EXPECT_TRUE(parser_->can_parse_content(content));
+    }
+
+    TEST_F(IntelOneAPIParserTest, RejectsNonTraceOptimizationText) {
+        constexpr std::string_view content =
+            "Intel(R) C++ Compiler\nLOOP BEGIN at main.cpp(10,5)\n0.50 seconds\n";
+        EXPECT_FALSE(parser_->can_parse_content(content));
     }
 } 

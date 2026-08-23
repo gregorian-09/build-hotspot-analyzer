@@ -5,126 +5,8 @@
 #include "bha/parsers/intel_parser.hpp"
 #include "bha/parsers/clang_parser.hpp"
 #include "bha/utils/file_utils.hpp"
-#include "bha/utils/string_utils.hpp"
-
-#include <nlohmann/json.hpp>
-#include <regex>
-#include <charconv>
 
 namespace bha::parsers {
-
-    using json = nlohmann::json;
-
-    namespace {
-
-        constexpr std::string_view ICC_MARKER = "Intel(R) C++ Compiler";
-        constexpr std::string_view ICC_OPT_REPORT = "LOOP BEGIN";
-        constexpr std::string_view ICX_MARKER = "icx";
-
-        Duration parse_icc_time(const std::string_view time_str) {
-            double seconds = 0.0;
-            auto trimmed = utils::trim(time_str);
-
-            if (utils::ends_with(trimmed, "s")) {
-                trimmed = trimmed.substr(0, trimmed.size() - 1);
-            }
-
-            std::from_chars(trimmed.data(), trimmed.data() + trimmed.size(), seconds);
-            return std::chrono::duration_cast<Duration>(
-                std::chrono::duration<double>(seconds)
-            );
-        }
-
-    }  // namespace
-
-    // =============================================================================
-    // Intel Classic Compiler (ICC)
-    // =============================================================================
-
-    bool IntelClassicParser::can_parse(const fs::path& path) const {
-        if (const auto ext = path.extension().string(); ext != ".optrpt" && ext != ".txt" && ext != ".log") {
-            return false;
-        }
-
-        auto result = utils::read_file(path);
-        if (result.is_err()) {
-            return false;
-        }
-
-        return can_parse_content(result.value());
-    }
-
-    bool IntelClassicParser::can_parse_content(std::string_view content) const {
-        const auto lower_content = utils::to_lower(content);
-        return utils::contains(lower_content, utils::to_lower(ICC_MARKER)) ||
-               utils::contains(lower_content, utils::to_lower(ICC_OPT_REPORT));
-    }
-
-    Result<CompilationUnit, Error> IntelClassicParser::parse_file(
-        const fs::path& path
-    ) const {
-        auto content_result = utils::read_file(path);
-        if (content_result.is_err()) {
-            return Result<CompilationUnit, Error>::failure(content_result.error());
-        }
-
-        auto source_file = path;
-        if (path.extension() == ".optrpt") {
-            source_file.replace_extension(".cpp");
-        }
-
-        return parse_content(content_result.value(), source_file);
-    }
-
-    Result<CompilationUnit, Error> IntelClassicParser::parse_content(
-        const std::string_view content,
-        const fs::path& source_hint
-    ) const {
-        CompilationUnit unit;
-        unit.source_file = source_hint;
-        unit.metrics.path = source_hint;
-
-        const auto lines = utils::split(content, '\n');
-
-        const std::regex time_regex(R"((\d+\.?\d*)\s*(?:s|sec|secs|seconds?))", std::regex_constants::icase);
-        const std::regex loop_paren_regex(
-            R"(LOOP BEGIN at\s+(.+)\((\d+)(?:,\d+)?\))",
-            std::regex_constants::icase
-        );
-        const std::regex loop_colon_regex(
-            R"(LOOP BEGIN at\s+(.+):(\d+))",
-            std::regex_constants::icase
-        );
-
-        Duration total_time = Duration::zero();
-
-        for (const auto& line : lines) {
-            const std::string line_str(line);
-
-            if (unit.source_file.empty()) {
-                std::smatch loop_match;
-                if ((std::regex_search(line_str, loop_match, loop_paren_regex) ||
-                     std::regex_search(line_str, loop_match, loop_colon_regex)) &&
-                    loop_match.size() > 1) {
-                    unit.source_file = utils::trim(loop_match[1].str());
-                    unit.metrics.path = unit.source_file;
-                }
-            }
-
-            if (std::smatch time_match; std::regex_search(line_str, time_match, time_regex)) {
-                total_time += parse_icc_time(time_match[1].str());
-            }
-        }
-
-        unit.metrics.total_time = total_time;
-        unit.metrics.breakdown.unclassified = total_time;
-
-        return Result<CompilationUnit, Error>::success(std::move(unit));
-    }
-
-    // =============================================================================
-    // Intel oneAPI Compiler (ICX) - Clang-based
-    // =============================================================================
 
     bool IntelOneAPIParser::can_parse(const fs::path& path) const {
         if (path.extension() != ".json") {
@@ -140,17 +22,8 @@ namespace bha::parsers {
     }
 
     bool IntelOneAPIParser::can_parse_content(const std::string_view content) const {
-        if (!utils::contains(content, "traceEvents")) {
-            return false;
-        }
-
-        const auto lower_content = utils::to_lower(content);
-        return utils::contains(lower_content, utils::to_lower(ICX_MARKER)) ||
-               utils::contains(lower_content, "intel") ||
-               utils::contains(lower_content, "oneapi") ||
-               utils::contains(lower_content, "total frontend") ||
-               utils::contains(lower_content, "total backend") ||
-               utils::contains(lower_content, "executecompiler");
+        const ClangTraceParser clang_parser;
+        return clang_parser.can_parse_content(content);
     }
 
     Result<CompilationUnit, Error> IntelOneAPIParser::parse_file(
@@ -176,9 +49,6 @@ namespace bha::parsers {
     }
 
     void register_intel_parsers() {
-        ParserRegistry::instance().register_parser(
-            std::make_unique<IntelClassicParser>()
-        );
         ParserRegistry::instance().register_parser(
             std::make_unique<IntelOneAPIParser>()
         );

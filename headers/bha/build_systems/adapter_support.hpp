@@ -40,7 +40,8 @@ namespace bha::build_systems::detail {
                         flags.tracing_flags = "/Bt+ /d1reportTime";
                         break;
                     case CompilerType::IntelClassic:
-                        flags.tracing_flags = "-qopt-report=5";
+                        // Intel Classic optimization reports do not expose a
+                        // stable compile-time measurement contract.
                         break;
                     case CompilerType::IntelOneAPI:
                         flags.tracing_flags = "-ftime-trace";

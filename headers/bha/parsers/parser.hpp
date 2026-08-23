@@ -17,7 +17,9 @@
  * - Clang: -ftime-trace JSON output
  * - GCC:   -ftime-report
  * - MSVC:   /Bt+ /d1reportTime
- * - Intel: (future) Various timing options
+ * - Intel oneAPI: Clang-compatible -ftime-trace JSON
+ * - Intel Classic: no timing parser; qopt-report is an optimization report,
+ *                  not a stable compile-time measurement format
  */
 
 #include "bha/result.hpp"

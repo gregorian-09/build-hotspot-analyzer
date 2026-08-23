@@ -8,7 +8,7 @@
 #
 # How it works:
 #   - Clang/ICX: Uses -ftime-trace, outputs JSON automatically
-#   - GCC/MSVC/Intel: Uses compiler launcher to capture timing output
+#   - GCC/MSVC: Uses compiler launcher to capture timing output
 #
 # After building, traces are stored in:
 #   - Clang/ICX: <build>/*.json (next to object files)
@@ -42,9 +42,10 @@ function(bha_detect_compiler OUT_COMPILER OUT_FLAGS)
             set(${OUT_COMPILER} "icx" PARENT_SCOPE)
             set(${OUT_FLAGS} "-ftime-trace" PARENT_SCOPE)
         else()
-            # Intel Classic (ICC)
+            # Intel Classic (ICC) optimization reports are not compile-time
+            # measurements with a stable ingestion contract.
             set(${OUT_COMPILER} "intel" PARENT_SCOPE)
-            set(${OUT_FLAGS} "-qopt-report=5" PARENT_SCOPE)
+            set(${OUT_FLAGS} "" PARENT_SCOPE)
         endif()
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set(${OUT_COMPILER} "clang" PARENT_SCOPE)
@@ -82,11 +83,10 @@ function(bha_setup_tracing_directory)
     set(BHA_COMPILER "${BHA_COMPILER}" CACHE STRING "Detected compiler for BHA tracing")
     set(BHA_TRACE_FLAGS "${BHA_FLAGS}" CACHE STRING "Compiler flags for BHA tracing")
 
-    # For compilers that output to console (GCC, MSVC, Intel Classic),
+    # For compilers that output to console (GCC, MSVC),
     # set up the compiler launcher for automatic per-file capture
     if(BHA_COMPILER STREQUAL "gcc" OR
-            BHA_COMPILER STREQUAL "msvc" OR
-            BHA_COMPILER STREQUAL "intel")
+            BHA_COMPILER STREQUAL "msvc")
 
         # Set environment variable for trace directory
         set(ENV{BHA_TRACE_DIR} "${BHA_TRACE_DIR}")
@@ -260,9 +260,7 @@ function(bha_status)
         message(STATUS "After building, run:")
         message(STATUS "  bha analyze ${BHA_TRACE_DIR}")
     elseif(BHA_COMPILER STREQUAL "intel")
-        message(STATUS "Intel ICC detected: Traces auto-captured via compiler launcher")
-        message(STATUS "After building, run:")
-        message(STATUS "  bha analyze ${BHA_TRACE_DIR}")
+        message(WARNING "Intel Classic detected: BHA timing capture is disabled because -qopt-report is not a compile-time measurement")
     elseif(BHA_COMPILER STREQUAL "nvcc")
         message(WARNING "NVCC detected: BHA timing capture is disabled until an exact NVCC trace schema is available")
     endif()

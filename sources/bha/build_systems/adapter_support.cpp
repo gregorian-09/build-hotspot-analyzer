@@ -309,7 +309,6 @@ namespace bha::build_systems::detail {
 
         bool needs_capture_script(const CompilerType type) {
             return type == CompilerType::GCC ||
-                   type == CompilerType::IntelClassic ||
                    type == CompilerType::MSVC;
         }
 
