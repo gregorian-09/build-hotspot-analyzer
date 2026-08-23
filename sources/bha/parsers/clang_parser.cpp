@@ -4,7 +4,6 @@
 
 #include "bha/parsers/clang_parser.hpp"
 #include "bha/utils/file_utils.hpp"
-#include "bha/utils/string_utils.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -192,9 +191,7 @@ namespace bha::parsers {
 
             for (const auto& event : events) {
                 if (event.name == "InstantiateClass" ||
-                    event.name == "InstantiateFunction" ||
-                    event.name == "CodeGen Function" ||
-                    utils::starts_with(event.name, "Instantiate")) {
+                    event.name == "InstantiateFunction") {
 
                     auto& tmpl = template_map[event.detail];
                     if (tmpl.name.empty()) {
@@ -413,7 +410,8 @@ namespace bha::parsers {
                     metrics.breakdown.parsing += dur;
                 }
                 else if (event.name == "Total PerformPendingInstantiations" ||
-                         utils::starts_with(event.name, "Total Instantiate")) {
+                         event.name == "Total InstantiateClass" ||
+                         event.name == "Total InstantiateFunction") {
                     metrics.breakdown.template_instantiation += dur;
                 }
                 else if (event.name == "Total CodeGen Function" ||

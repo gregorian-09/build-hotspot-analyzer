@@ -78,7 +78,9 @@ namespace bha::parsers
             "traceEvents": [
                 {"pid":1,"tid":0,"ph":"X","ts":0,"dur":100000,"name":"InstantiateClass","args":{"detail":"TemplateA"}},
                 {"pid":1,"tid":0,"ph":"X","ts":100,"dur":50000,"name":"InstantiateClass","args":{"detail":"TemplateA"}},
-                {"pid":1,"tid":0,"ph":"X","ts":200,"dur":80000,"name":"InstantiateFunction","args":{"detail":"FunctionB"}}
+                {"pid":1,"tid":0,"ph":"X","ts":200,"dur":80000,"name":"InstantiateFunction","args":{"detail":"FunctionB"}},
+                {"pid":1,"tid":0,"ph":"X","ts":300,"dur":40000,"name":"InstantiateUnrelated","args":{"detail":"NotATemplate"}},
+                {"pid":1,"tid":0,"ph":"X","ts":400,"dur":30000,"name":"CodeGen Function","args":{"detail":"GeneratedFunction"}}
             ]
         })json";
 
@@ -94,6 +96,16 @@ namespace bha::parsers
         ASSERT_NE(it, unit.templates.end());
         EXPECT_EQ(it->count, 2u);
         EXPECT_EQ(unit.template_evidence, TemplateEvidence::PerSpecializationTiming);
+        EXPECT_EQ(
+            std::ranges::find_if(
+                unit.templates,
+                [](const auto& template_info) {
+                    return template_info.full_signature == "NotATemplate" ||
+                        template_info.full_signature == "GeneratedFunction";
+                }
+            ),
+            unit.templates.end()
+        );
     }
 
     TEST_F(ClangParserTest, ParseContent_IncludeInfo) {

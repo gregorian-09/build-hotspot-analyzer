@@ -59,6 +59,11 @@ bha analyze traces --top 25
 bha analyze traces --format json -o analysis.json
 ```
 
+For Clang `-ftime-trace` input, BHA recognizes only exact producer event names
+for template instantiation timing. Prefixes and unrelated events are not
+classified as templates; in particular, code-generation events are not template
+evidence. Unknown time-trace event names remain unclassified.
+
 When a CMake Instrumentation API v1 index is attached, the analysis includes
 `build_session.step_metrics`. Each row is grouped by the producer's explicit
 command role (`configure`, `generate`, `build`, `compile`, `link`, `custom`,
