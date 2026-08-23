@@ -198,10 +198,8 @@ namespace bha::analyzers {
         /// Average memory footprint seen in the build.
         MemoryMetrics average_memory{};
 
-        /// Slowest translation units, sorted descending by compile time.
+        /// Slowest translation units, sorted descending by observed compile time.
         std::vector<FileAnalysisResult> slowest_files;
-        /// Exact critical path when producer dependency edges are complete.
-        std::vector<fs::path> critical_path;
     };
 
     /**

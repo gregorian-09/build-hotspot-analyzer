@@ -241,7 +241,7 @@ namespace bha::analyzers {
         EXPECT_DOUBLE_EQ(result.value().files[0].time_percent, 50.0);
     }
 
-    TEST_F(PerformanceAnalyzerTest, IdentifiesCriticalPath) {
+    TEST_F(PerformanceAnalyzerTest, ReportsSlowestFilesWithoutCriticalPathInference) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(10);
 
@@ -259,9 +259,23 @@ namespace bha::analyzers {
         auto result = analyzer_->analyze(trace, options);
 
         ASSERT_TRUE(result.is_ok());
-        ASSERT_FALSE(result.value().performance.critical_path.empty());
-        // Critical path should include the slowest file
-        EXPECT_EQ(result.value().performance.critical_path[0].filename(), "slowest.cpp");
+        EXPECT_TRUE(result.value().performance.slowest_files.front().file == "slowest.cpp");
+    }
+
+    TEST_F(PerformanceAnalyzerTest, LeavesParallelismUnavailableWithoutBuildDuration) {
+        BuildTrace trace;
+
+        CompilationUnit unit;
+        unit.source_file = "test.cpp";
+        unit.metrics.total_time = std::chrono::seconds(5);
+        trace.units.push_back(unit);
+
+        constexpr AnalysisOptions options;
+        auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().performance.parallel_time, Duration::zero());
+        EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.0);
     }
 
     TEST_F(PerformanceAnalyzerTest, DoesNotInferCacheOutcomesFromCommandLines) {

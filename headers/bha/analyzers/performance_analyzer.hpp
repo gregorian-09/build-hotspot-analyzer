@@ -10,9 +10,7 @@
  * @brief Overall build performance analysis.
  *
  * Analyzes build performance metrics including:
- * - Critical path identification
- * - Parallelization efficiency
- * - Build bottlenecks
+ * - Producer-backed parallelization efficiency
  * - Statistical distribution of compile times
  */
 
@@ -23,11 +21,13 @@ namespace bha::analyzers {
     /**
      * Analyzes overall build performance metrics.
      *
-     * Identifies:
-     * - The critical path (longest dependency chain)
-     * - Parallelization efficiency
+     * Reports:
+     * - Parallelization efficiency when the trace has an exact build duration
      * - Statistical distribution of compile times
      * - Slowest files contributing to build time
+     *
+     * Critical-path analysis belongs to BuildSessionAnalyzer because only the
+     * producer build session can supply command dependencies and timestamps.
      */
     class PerformanceAnalyzer : public IAnalyzer {
     public:
