@@ -135,6 +135,11 @@ namespace bha::analyzers {
         analysis.total_commands = session.commands.size();
         analysis.metric_capabilities = session.metric_capabilities;
         analysis.host_system = session.host_system;
+        for (const auto& command : session.commands) {
+            if (command.role == BuildStepRole::Compile && command.trace_file.has_value()) {
+                ++analysis.compile_trace_references;
+            }
+        }
 
         const bool has_host_system_value = session.host_system.has_value() && (
             session.host_system->os_name.has_value() ||
@@ -160,6 +165,20 @@ namespace bha::analyzers {
         );
         host_system_capability.provenance.capture_mode = "api-v1-index";
         analysis.metric_capabilities.push_back(std::move(host_system_capability));
+
+        auto compile_trace_capability = capability(
+            "build.compile_trace.reference",
+            analysis.compile_trace_references > 0
+                ? EvidenceKind::Observed
+                : EvidenceKind::Unavailable,
+            "cmake-instrumentation",
+            "compile",
+            analysis.compile_trace_references > 0
+                ? ""
+                : "No compile snippet provided a CMake v1.1 traceFile reference"
+        );
+        compile_trace_capability.provenance.capture_mode = "api-v1.1-snippet";
+        analysis.metric_capabilities.push_back(std::move(compile_trace_capability));
 
         for (const auto& command : session.commands) {
             auto step = std::ranges::find(

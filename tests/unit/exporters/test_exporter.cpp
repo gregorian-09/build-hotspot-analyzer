@@ -114,6 +114,7 @@ namespace bha::exporters::test
         result.build_session.average_parallelism = 1.5;
         result.build_session.critical_path_time = std::chrono::seconds(2);
         result.build_session.critical_path = {"compile-a", "link"};
+        result.build_session.compile_trace_references = 1;
         result.build_session.step_metrics.push_back({
             BuildStepRole::Custom,
             1,
@@ -396,6 +397,7 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"peak_memory_used_kib\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"host_system\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"logical_cpu_count\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"compile_trace_references\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);

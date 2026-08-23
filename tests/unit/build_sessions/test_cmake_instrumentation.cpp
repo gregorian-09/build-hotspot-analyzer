@@ -19,6 +19,7 @@ namespace bha::build_sessions::test {
   "language": "CXX",
   "outputs": ["CMakeFiles/library.dir/main.cpp.o"],
   "outputSizes": [2048],
+  "traceFile": "compile-trace/main.json",
   "source": "src/main.cpp",
   "config": "Debug",
   "timeStart": 1737053448177,
@@ -36,6 +37,8 @@ namespace bha::build_sessions::test {
         EXPECT_EQ(event.source, fs::path("src/main.cpp"));
         EXPECT_EQ(event.command, "clang++ -c src/main.cpp");
         EXPECT_EQ(event.working_directory, fs::path("/build"));
+        ASSERT_TRUE(event.trace_file.has_value());
+        EXPECT_EQ(*event.trace_file, fs::path("compile-trace/main.json"));
         ASSERT_EQ(event.outputs.size(), 1u);
         EXPECT_EQ(event.outputs.front(), fs::path("CMakeFiles/library.dir/main.cpp.o"));
         ASSERT_EQ(event.output_sizes.size(), 1u);
@@ -118,6 +121,22 @@ namespace bha::build_sessions::test {
         fs::remove_all(root, ec);
     }
 
+    TEST(CMakeInstrumentationParserTest, RejectsMalformedOutputArray) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "compile",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "outputs": ["object.o", 7]
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "compile.json");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsMissingTiming) {
         constexpr std::string_view content = R"json({
   "version": {"major": 1, "minor": 1},
@@ -180,6 +199,7 @@ namespace bha::build_sessions::test {
   "result": 0,
   "timeStart": 1737053448177,
   "duration": 31,
+  "traceFile": "compile-trace/main.json",
   "source": "src/main.cpp"
         })json";
         ASSERT_TRUE(utils::write_file(data / "compile.json", snippet).is_ok());
@@ -215,6 +235,11 @@ namespace bha::build_sessions::test {
         EXPECT_EQ(*result.value().host_system->logical_cpu_count, 16u);
         EXPECT_EQ(*result.value().host_system->total_physical_memory_mib, 32768u);
         EXPECT_EQ(*result.value().host_system->is_64_bits, true);
+        ASSERT_TRUE(result.value().commands.front().trace_file.has_value());
+        EXPECT_EQ(
+            *result.value().commands.front().trace_file,
+            data / "compile-trace/main.json"
+        );
         ASSERT_EQ(result.value().commands.size(), 1u);
         EXPECT_EQ(result.value().commands.front().source, fs::path("src/main.cpp"));
         ASSERT_EQ(result.value().metric_capabilities.size(), 1u);

@@ -261,6 +261,7 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     analysis.build_session.average_parallelism = 1.8;
     analysis.build_session.critical_path_time = std::chrono::milliseconds(4200);
     analysis.build_session.critical_path = {"compile-a", "link"};
+    analysis.build_session.compile_trace_references = 2;
     analysis.build_session.step_metrics = {
         analyzers::BuildStepAnalysis{
             BuildStepRole::Custom,
@@ -451,6 +452,7 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(session.critical_path_time, std::chrono::milliseconds(4200));
     ASSERT_EQ(session.critical_path.size(), 2u);
     EXPECT_EQ(session.critical_path.front(), "compile-a");
+    EXPECT_EQ(session.compile_trace_references, 2u);
     ASSERT_EQ(session.step_metrics.size(), 2u);
     EXPECT_EQ(session.step_metrics.front().role, BuildStepRole::Custom);
     EXPECT_EQ(session.step_metrics.front().wall_clock_time, std::chrono::milliseconds(700));

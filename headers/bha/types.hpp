@@ -608,6 +608,8 @@ namespace bha {
         std::string target;
         std::string language;
         fs::path source;
+        /// Producer reference to a copied Clang -ftime-trace JSON file.
+        std::optional<fs::path> trace_file;
         std::vector<fs::path> outputs;
         std::vector<std::uintmax_t> output_sizes;
         std::string test_name;

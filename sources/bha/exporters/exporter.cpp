@@ -462,6 +462,7 @@ namespace bha::exporters
                 {"average_parallelism", analysis.build_session.average_parallelism},
                 {"critical_path_time_ms", duration_to_ms(analysis.build_session.critical_path_time)},
                 {"critical_path", analysis.build_session.critical_path},
+                {"compile_trace_references", analysis.build_session.compile_trace_references},
                 {"step_metrics", json::array()},
                 {"host_telemetry", {
                     {"memory_samples", analysis.build_session.host_telemetry.memory_samples},

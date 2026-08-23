@@ -267,6 +267,8 @@ namespace bha::analyzers {
         BuildHostTelemetryAnalysis host_telemetry;
         /// Privacy-filtered static host context from the build-system producer.
         std::optional<BuildHostSystemInfo> host_system;
+        /// Number of compile commands with a producer-provided traceFile reference.
+        std::size_t compile_trace_references = 0;
         /// Provenance and availability for session-level metrics.
         std::vector<MetricCapability> metric_capabilities;
     };

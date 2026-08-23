@@ -208,4 +208,26 @@ namespace bha::analyzers::test {
         EXPECT_EQ(install_result->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildSessionAnalyzerTest, ReportsProducerCompileTraceReferences) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto compile = command("compile", 0, 1);
+        compile.trace_file = "compile-trace/main.json";
+        trace.build_session->commands = {compile};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().build_session.compile_trace_references, 1u);
+        const auto capability = std::ranges::find(
+            result.value().build_session.metric_capabilities,
+            "build.compile_trace.reference",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, result.value().build_session.metric_capabilities.end());
+        EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Observed);
+        EXPECT_EQ(capability->provenance.capture_mode, "api-v1.1-snippet");
+    }
+
 }  // namespace bha::analyzers::test

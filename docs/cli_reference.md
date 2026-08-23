@@ -75,6 +75,10 @@ architecture flag, logical/physical CPU counts, and total physical/virtual
 memory in MiB. Processor and vendor strings are retained when present. Hostname
 and other identifying fields are intentionally omitted, and absent producer
 fields remain unavailable rather than being filled by local probing.
+With CMake data version 1.1, compile snippets may also provide an exact
+`traceFile` reference to a copied Clang `-ftime-trace` JSON artifact. The build
+session reports the number of such producer references; BHA does not scan the
+build tree or match trace files by filename.
 
 ---
 

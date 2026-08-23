@@ -731,15 +731,16 @@ namespace bha::cli
                     {"average_parallelism", session.average_parallelism},
                     {"critical_path_time_ns", session.critical_path_time.count()},
                     {"critical_path", session.critical_path},
+                    {"compile_trace_references", session.compile_trace_references},
                     {"step_metrics", json::array()},
                     {"host_telemetry", {
                         {"memory_samples", session.host_telemetry.memory_samples},
                         {"peak_memory_used_kib", nullptr},
                         {"cpu_load_samples", session.host_telemetry.cpu_load_samples},
                         {"peak_before_cpu_load_average", nullptr},
-                        {"peak_after_cpu_load_average", nullptr},
-                        {"host_system", nullptr}
-                    }}
+                        {"peak_after_cpu_load_average", nullptr}
+                    }},
+                    {"host_system", nullptr}
                 };
                 for (const auto& step : session.step_metrics) {
                     j["step_metrics"].push_back({

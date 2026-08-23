@@ -327,6 +327,30 @@ namespace bha::build_sessions {
             event.target = object.value("target", "");
             event.language = object.value("language", "");
             event.source = object.value("source", "");
+
+            if (object.contains("traceFile")) {
+                if (object["version"]["minor"].get<int>() < 1 ||
+                    event.role != BuildStepRole::Compile) {
+                    return Result<BuildCommandEvent, Error>::failure(
+                        Error::parse_error(
+                            "CMake instrumentation traceFile is only valid for version 1.1 compile snippets",
+                            source_hint.string()
+                        )
+                    );
+                }
+                if (!object["traceFile"].is_null()) {
+                    if (!object["traceFile"].is_string() ||
+                        object["traceFile"].get<std::string>().empty()) {
+                        return Result<BuildCommandEvent, Error>::failure(
+                            Error::parse_error(
+                                "CMake instrumentation traceFile must be a non-empty string or null",
+                                source_hint.string()
+                            )
+                        );
+                    }
+                    event.trace_file = object["traceFile"].get<std::string>();
+                }
+            }
             event.start_time = timestamp_from_milliseconds(start_result.value());
             event.duration = duration_from_milliseconds(duration_result.value());
 
@@ -349,14 +373,36 @@ namespace bha::build_sessions {
                 );
             }
 
-            if (object.contains("outputs") && object["outputs"].is_array()) {
+            if (object.contains("outputs") && !object["outputs"].is_array()) {
+                return Result<BuildCommandEvent, Error>::failure(
+                    Error::parse_error(
+                        "CMake instrumentation outputs must be an array",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (object.contains("outputs")) {
                 for (const auto& output : object["outputs"]) {
-                    if (output.is_string()) {
-                        event.outputs.emplace_back(output.get<std::string>());
+                    if (!output.is_string()) {
+                        return Result<BuildCommandEvent, Error>::failure(
+                            Error::parse_error(
+                                "CMake instrumentation outputs must contain only strings",
+                                source_hint.string()
+                            )
+                        );
                     }
+                    event.outputs.emplace_back(output.get<std::string>());
                 }
             }
-            if (object.contains("outputSizes") && object["outputSizes"].is_array()) {
+            if (object.contains("outputSizes") && !object["outputSizes"].is_array()) {
+                return Result<BuildCommandEvent, Error>::failure(
+                    Error::parse_error(
+                        "CMake instrumentation outputSizes must be an array",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (object.contains("outputSizes")) {
                 for (const auto& output_size : object["outputSizes"]) {
                     if (!output_size.is_number_unsigned()) {
                         return Result<BuildCommandEvent, Error>::failure(
@@ -523,7 +569,12 @@ namespace bha::build_sessions {
                 if (event.is_err()) {
                     return Result<BuildSession, Error>::failure(event.error());
                 }
-                session.commands.push_back(event.value());
+                auto parsed_event = event.value();
+                if (parsed_event.trace_file.has_value() &&
+                    parsed_event.trace_file->is_relative()) {
+                    parsed_event.trace_file = data_directory / *parsed_event.trace_file;
+                }
+                session.commands.push_back(std::move(parsed_event));
             }
 
             MetricCapability timing;

@@ -467,6 +467,7 @@ namespace bha::storage
                 {"average_parallelism", session.average_parallelism},
                 {"critical_path_time_ms", duration_to_ms(session.critical_path_time)},
                 {"critical_path", session.critical_path},
+                {"compile_trace_references", session.compile_trace_references},
                 {"step_metrics", nlohmann::json::array()},
                 {"host_telemetry", {
                     {"memory_samples", session.host_telemetry.memory_samples},
@@ -521,6 +522,10 @@ namespace bha::storage
             session.peak_parallelism = j.value("peak_parallelism", std::size_t{0});
             session.average_parallelism = j.value("average_parallelism", 0.0);
             session.critical_path_time = ms_to_duration(j.value("critical_path_time_ms", 0.0));
+            session.compile_trace_references = j.value(
+                "compile_trace_references",
+                std::size_t{0}
+            );
             if (j.contains("critical_path")) {
                 session.critical_path = j["critical_path"].get<std::vector<std::string>>();
             }
