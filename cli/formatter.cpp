@@ -316,6 +316,32 @@ namespace bha::cli
             }
         }
 
+        const auto& host = result.build_session.host_telemetry;
+        if (host.memory_samples > 0 || host.cpu_load_samples > 0 ||
+            !host.metric_capabilities.empty()) {
+            out_ << "\nHost Telemetry (Producer Samples)\n";
+            out_ << "  Memory Samples:     " << format_count(host.memory_samples) << "\n";
+            out_ << "  Peak Memory Used:   ";
+            if (host.peak_memory_used_kib.has_value()) {
+                out_ << *host.peak_memory_used_kib << " KiB\n";
+            } else {
+                out_ << "unavailable\n";
+            }
+            out_ << "  CPU Load Samples:   " << format_count(host.cpu_load_samples) << "\n";
+            out_ << "  Peak CPU Load Before: ";
+            if (host.peak_before_cpu_load_average.has_value()) {
+                out_ << *host.peak_before_cpu_load_average << "\n";
+            } else {
+                out_ << "unavailable\n";
+            }
+            out_ << "  Peak CPU Load After:  ";
+            if (host.peak_after_cpu_load_average.has_value()) {
+                out_ << *host.peak_after_cpu_load_average << "\n";
+            } else {
+                out_ << "unavailable\n";
+            }
+        }
+
         out_ << "\n";
 
         const auto& deps = result.dependencies;
@@ -682,7 +708,14 @@ namespace bha::cli
                     {"average_parallelism", session.average_parallelism},
                     {"critical_path_time_ns", session.critical_path_time.count()},
                     {"critical_path", session.critical_path},
-                    {"step_metrics", json::array()}
+                    {"step_metrics", json::array()},
+                    {"host_telemetry", {
+                        {"memory_samples", session.host_telemetry.memory_samples},
+                        {"peak_memory_used_kib", nullptr},
+                        {"cpu_load_samples", session.host_telemetry.cpu_load_samples},
+                        {"peak_before_cpu_load_average", nullptr},
+                        {"peak_after_cpu_load_average", nullptr}
+                    }}
                 };
                 for (const auto& step : session.step_metrics) {
                     j["step_metrics"].push_back({
@@ -694,6 +727,18 @@ namespace bha::cli
                         {"successful_commands", step.successful_commands},
                         {"failed_commands", step.failed_commands}
                     });
+                }
+                if (session.host_telemetry.peak_memory_used_kib.has_value()) {
+                    j["host_telemetry"]["peak_memory_used_kib"] =
+                        *session.host_telemetry.peak_memory_used_kib;
+                }
+                if (session.host_telemetry.peak_before_cpu_load_average.has_value()) {
+                    j["host_telemetry"]["peak_before_cpu_load_average"] =
+                        *session.host_telemetry.peak_before_cpu_load_average;
+                }
+                if (session.host_telemetry.peak_after_cpu_load_average.has_value()) {
+                    j["host_telemetry"]["peak_after_cpu_load_average"] =
+                        *session.host_telemetry.peak_after_cpu_load_average;
                 }
                 return j;
             }

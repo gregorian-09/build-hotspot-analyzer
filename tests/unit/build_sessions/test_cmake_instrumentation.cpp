@@ -49,6 +49,51 @@ namespace bha::build_sessions::test {
         EXPECT_EQ(event.timing_provenance.timing_domain, TimingDomain::WallClock);
     }
 
+    TEST(CMakeInstrumentationParserTest, ParsesDynamicSystemInformation) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "custom",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "dynamicSystemInformation": {
+    "beforeHostMemoryUsed": 1024.0,
+    "afterHostMemoryUsed": 2048.0,
+    "beforeCPULoadAverage": 1.5,
+    "afterCPULoadAverage": null
+  }
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "custom.json");
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& event = result.value();
+        ASSERT_TRUE(event.before_host_memory_used_kib.has_value());
+        EXPECT_EQ(*event.before_host_memory_used_kib, 1024u);
+        ASSERT_TRUE(event.after_host_memory_used_kib.has_value());
+        EXPECT_EQ(*event.after_host_memory_used_kib, 2048u);
+        ASSERT_TRUE(event.before_cpu_load_average.has_value());
+        EXPECT_DOUBLE_EQ(*event.before_cpu_load_average, 1.5);
+        EXPECT_FALSE(event.after_cpu_load_average.has_value());
+    }
+
+    TEST(CMakeInstrumentationParserTest, RejectsInvalidDynamicMemoryValue) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "custom",
+  "result": 0,
+  "timeStart": 1737053448177,
+  "duration": 31,
+  "dynamicSystemInformation": {"beforeHostMemoryUsed": -1}
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "custom.json");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsMissingTiming) {
         constexpr std::string_view content = R"json({
   "version": {"major": 1, "minor": 1},

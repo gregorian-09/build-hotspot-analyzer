@@ -281,6 +281,11 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
             0
         }
     };
+    analysis.build_session.host_telemetry.memory_samples = 4;
+    analysis.build_session.host_telemetry.peak_memory_used_kib = 4096;
+    analysis.build_session.host_telemetry.cpu_load_samples = 6;
+    analysis.build_session.host_telemetry.peak_before_cpu_load_average = 2.5;
+    analysis.build_session.host_telemetry.peak_after_cpu_load_average = 3.5;
 
     MetricCapability session_capability;
     session_capability.metric = "build.command.wall_time";
@@ -448,6 +453,14 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     EXPECT_EQ(session.step_metrics.front().failed_commands, 1u);
     EXPECT_EQ(session.step_metrics.back().role, BuildStepRole::Test);
     EXPECT_EQ(session.step_metrics.back().successful_commands, 1u);
+    EXPECT_EQ(session.host_telemetry.memory_samples, 4u);
+    ASSERT_TRUE(session.host_telemetry.peak_memory_used_kib.has_value());
+    EXPECT_EQ(*session.host_telemetry.peak_memory_used_kib, 4096u);
+    EXPECT_EQ(session.host_telemetry.cpu_load_samples, 6u);
+    ASSERT_TRUE(session.host_telemetry.peak_before_cpu_load_average.has_value());
+    EXPECT_DOUBLE_EQ(*session.host_telemetry.peak_before_cpu_load_average, 2.5);
+    ASSERT_TRUE(session.host_telemetry.peak_after_cpu_load_average.has_value());
+    EXPECT_DOUBLE_EQ(*session.host_telemetry.peak_after_cpu_load_average, 3.5);
     ASSERT_EQ(session.metric_capabilities.size(), 1u);
     EXPECT_EQ(session.metric_capabilities.front().metric, "build.command.wall_time");
     EXPECT_EQ(session.metric_capabilities.front().provenance.capture_mode, "api-v1-index");

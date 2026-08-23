@@ -224,6 +224,24 @@ namespace bha::analyzers {
     };
 
     /**
+     * @brief Exact dynamic host telemetry emitted around build commands.
+     */
+    struct BuildHostTelemetryAnalysis {
+        /// Number of producer-reported host-memory values.
+        std::size_t memory_samples = 0;
+        /// Maximum observed host memory used, in KiB.
+        std::optional<std::uint64_t> peak_memory_used_kib;
+        /// Number of producer-reported CPU-load values.
+        std::size_t cpu_load_samples = 0;
+        /// Maximum observed CPU load immediately before a command.
+        std::optional<double> peak_before_cpu_load_average;
+        /// Maximum observed CPU load immediately after a command.
+        std::optional<double> peak_after_cpu_load_average;
+        /// Provenance and availability for host telemetry.
+        std::vector<MetricCapability> metric_capabilities;
+    };
+
+    /**
      * @brief Exact build-session scheduler metrics.
      */
     struct BuildSessionAnalysisResult {
@@ -245,6 +263,8 @@ namespace bha::analyzers {
         std::vector<std::string> critical_path;
         /// Per-role observations from the producer-defined command events.
         std::vector<BuildStepAnalysis> step_metrics;
+        /// Dynamic host telemetry collected around producer command events.
+        BuildHostTelemetryAnalysis host_telemetry;
         /// Provenance and availability for session-level metrics.
         std::vector<MetricCapability> metric_capabilities;
     };

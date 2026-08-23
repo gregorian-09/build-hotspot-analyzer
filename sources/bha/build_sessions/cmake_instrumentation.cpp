@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <chrono>
+#include <limits>
 #include <utility>
 
 namespace bha::build_sessions {
@@ -63,6 +64,68 @@ namespace bha::build_sessions {
                 );
             }
             return Result<double, Error>::success(value);
+        }
+
+        Result<std::optional<std::uint64_t>, Error> optional_memory_value(
+            const json& object,
+            const char* name,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name) || object[name].is_null()) {
+                return Result<std::optional<std::uint64_t>, Error>::success(std::nullopt);
+            }
+            if (!object[name].is_number()) {
+                return Result<std::optional<std::uint64_t>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake dynamic system information has an invalid memory field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+
+            const long double value = object[name].get<long double>();
+            if (!std::isfinite(value) || value < 0.0L ||
+                std::floor(value) != value ||
+                value > static_cast<long double>(std::numeric_limits<std::uint64_t>::max())) {
+                return Result<std::optional<std::uint64_t>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake dynamic system information has an invalid memory field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<std::uint64_t>, Error>::success(
+                static_cast<std::uint64_t>(value)
+            );
+        }
+
+        Result<std::optional<double>, Error> optional_load_value(
+            const json& object,
+            const char* name,
+            const fs::path& source_hint
+        ) {
+            if (!object.contains(name) || object[name].is_null()) {
+                return Result<std::optional<double>, Error>::success(std::nullopt);
+            }
+            if (!object[name].is_number()) {
+                return Result<std::optional<double>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake dynamic system information has an invalid CPU load field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+
+            const double value = object[name].get<double>();
+            if (!std::isfinite(value) || value < 0.0) {
+                return Result<std::optional<double>, Error>::failure(
+                    Error::parse_error(
+                        std::string("CMake dynamic system information has an invalid CPU load field: ") + name,
+                        source_hint.string()
+                    )
+                );
+            }
+            return Result<std::optional<double>, Error>::success(value);
         }
 
         bool has_supported_data_version(const json& object) {
@@ -174,6 +237,54 @@ namespace bha::build_sessions {
             }
             event.test_name = object.value("testName", "");
             event.configuration = object.value("config", "");
+
+            if (object.contains("dynamicSystemInformation")) {
+                if (!object["dynamicSystemInformation"].is_object()) {
+                    return Result<BuildCommandEvent, Error>::failure(
+                        Error::parse_error(
+                            "CMake instrumentation dynamic system information is not an object",
+                            source_hint.string()
+                        )
+                    );
+                }
+                const auto& dynamic = object["dynamicSystemInformation"];
+                const auto before_memory = optional_memory_value(
+                    dynamic,
+                    "beforeHostMemoryUsed",
+                    source_hint
+                );
+                if (before_memory.is_err()) {
+                    return Result<BuildCommandEvent, Error>::failure(before_memory.error());
+                }
+                const auto after_memory = optional_memory_value(
+                    dynamic,
+                    "afterHostMemoryUsed",
+                    source_hint
+                );
+                if (after_memory.is_err()) {
+                    return Result<BuildCommandEvent, Error>::failure(after_memory.error());
+                }
+                const auto before_cpu = optional_load_value(
+                    dynamic,
+                    "beforeCPULoadAverage",
+                    source_hint
+                );
+                if (before_cpu.is_err()) {
+                    return Result<BuildCommandEvent, Error>::failure(before_cpu.error());
+                }
+                const auto after_cpu = optional_load_value(
+                    dynamic,
+                    "afterCPULoadAverage",
+                    source_hint
+                );
+                if (after_cpu.is_err()) {
+                    return Result<BuildCommandEvent, Error>::failure(after_cpu.error());
+                }
+                event.before_host_memory_used_kib = before_memory.value();
+                event.after_host_memory_used_kib = after_memory.value();
+                event.before_cpu_load_average = before_cpu.value();
+                event.after_cpu_load_average = after_cpu.value();
+            }
 
             event.timing_provenance.evidence = EvidenceKind::Observed;
             event.timing_provenance.producer = "cmake-instrumentation";

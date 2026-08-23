@@ -64,6 +64,11 @@ command role (`configure`, `generate`, `build`, `compile`, `link`, `custom`,
 `test`, or `install`) and reports command count, timed command count, exact
 timed duration sum, and observed exit-result counts. Missing producer fields
 remain unavailable; BHA does not infer roles from command text or filenames.
+If the query requested CMake `dynamicSystemInformation`, the same section
+also reports the observed sample count, peak host memory used in KiB, and peak
+CPU load immediately before and after commands. These are derived maxima over
+the supplied producer samples; absent or null values are reported as
+unavailable.
 
 ---
 

@@ -118,14 +118,22 @@ namespace bha::analyzers::test {
         auto configure = command("configure", 0, 2);
         configure.role = BuildStepRole::Configure;
         configure.result = 0;
+        configure.before_host_memory_used_kib = 1024;
+        configure.after_host_memory_used_kib = 2048;
+        configure.before_cpu_load_average = 1.0;
+        configure.after_cpu_load_average = 2.0;
 
         auto custom = command("custom", 2, 3);
         custom.role = BuildStepRole::Custom;
         custom.result = 7;
+        custom.before_host_memory_used_kib = 4096;
+        custom.after_host_memory_used_kib = 3072;
+        custom.before_cpu_load_average = 3.0;
 
         auto test = command("test", 5, 4);
         test.role = BuildStepRole::Test;
         test.result = 0;
+        test.after_cpu_load_average = 4.0;
 
         auto install = command("install", 9, 1);
         install.role = BuildStepRole::Install;
@@ -153,6 +161,16 @@ namespace bha::analyzers::test {
         EXPECT_EQ(steps[1].failed_commands, 1u);
         EXPECT_EQ(steps[2].successful_commands, 1u);
         EXPECT_EQ(steps[3].result_observations, 0u);
+
+        const auto& host = result.value().build_session.host_telemetry;
+        EXPECT_EQ(host.memory_samples, 4u);
+        ASSERT_TRUE(host.peak_memory_used_kib.has_value());
+        EXPECT_EQ(*host.peak_memory_used_kib, 4096u);
+        EXPECT_EQ(host.cpu_load_samples, 4u);
+        ASSERT_TRUE(host.peak_before_cpu_load_average.has_value());
+        EXPECT_DOUBLE_EQ(*host.peak_before_cpu_load_average, 3.0);
+        ASSERT_TRUE(host.peak_after_cpu_load_average.has_value());
+        EXPECT_DOUBLE_EQ(*host.peak_after_cpu_load_average, 4.0);
 
         const auto custom_result = std::ranges::find_if(
             result.value().build_session.metric_capabilities,

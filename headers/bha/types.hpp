@@ -612,6 +612,14 @@ namespace bha {
         std::vector<std::uintmax_t> output_sizes;
         std::string test_name;
         std::string configuration;
+        /// Host memory used immediately before the command, in KiB.
+        std::optional<std::uint64_t> before_host_memory_used_kib;
+        /// Host memory used immediately after the command, in KiB.
+        std::optional<std::uint64_t> after_host_memory_used_kib;
+        /// Host CPU load average immediately before the command.
+        std::optional<double> before_cpu_load_average;
+        /// Host CPU load average immediately after the command.
+        std::optional<double> after_cpu_load_average;
         std::optional<Timestamp> start_time;
         Duration duration = Duration::zero();
         std::optional<int> result;

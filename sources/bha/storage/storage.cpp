@@ -389,6 +389,16 @@ namespace bha::storage
                 {"critical_path_time_ms", duration_to_ms(session.critical_path_time)},
                 {"critical_path", session.critical_path},
                 {"step_metrics", nlohmann::json::array()},
+                {"host_telemetry", {
+                    {"memory_samples", session.host_telemetry.memory_samples},
+                    {"peak_memory_used_kib", nullptr},
+                    {"cpu_load_samples", session.host_telemetry.cpu_load_samples},
+                    {"peak_before_cpu_load_average", nullptr},
+                    {"peak_after_cpu_load_average", nullptr},
+                    {"metric_capabilities", serialize_metric_capabilities(
+                        session.host_telemetry.metric_capabilities
+                    )}
+                }},
                 {"metric_capabilities", serialize_metric_capabilities(session.metric_capabilities)}
             };
             for (const auto& step : session.step_metrics) {
@@ -401,6 +411,18 @@ namespace bha::storage
                     {"successful_commands", step.successful_commands},
                     {"failed_commands", step.failed_commands}
                 });
+            }
+            if (session.host_telemetry.peak_memory_used_kib.has_value()) {
+                result["host_telemetry"]["peak_memory_used_kib"] =
+                    *session.host_telemetry.peak_memory_used_kib;
+            }
+            if (session.host_telemetry.peak_before_cpu_load_average.has_value()) {
+                result["host_telemetry"]["peak_before_cpu_load_average"] =
+                    *session.host_telemetry.peak_before_cpu_load_average;
+            }
+            if (session.host_telemetry.peak_after_cpu_load_average.has_value()) {
+                result["host_telemetry"]["peak_after_cpu_load_average"] =
+                    *session.host_telemetry.peak_after_cpu_load_average;
             }
             return result;
         }
@@ -438,6 +460,39 @@ namespace bha::storage
                     );
                     step.failed_commands = item.value("failed_commands", std::size_t{0});
                     session.step_metrics.push_back(std::move(step));
+                }
+            }
+            if (j.contains("host_telemetry") && j["host_telemetry"].is_object()) {
+                const auto& host = j["host_telemetry"];
+                session.host_telemetry.memory_samples = host.value(
+                    "memory_samples",
+                    std::size_t{0}
+                );
+                if (host.contains("peak_memory_used_kib") &&
+                    !host["peak_memory_used_kib"].is_null()) {
+                    session.host_telemetry.peak_memory_used_kib = host[
+                        "peak_memory_used_kib"
+                    ].get<std::uint64_t>();
+                }
+                session.host_telemetry.cpu_load_samples = host.value(
+                    "cpu_load_samples",
+                    std::size_t{0}
+                );
+                if (host.contains("peak_before_cpu_load_average") &&
+                    !host["peak_before_cpu_load_average"].is_null()) {
+                    session.host_telemetry.peak_before_cpu_load_average = host[
+                        "peak_before_cpu_load_average"
+                    ].get<double>();
+                }
+                if (host.contains("peak_after_cpu_load_average") &&
+                    !host["peak_after_cpu_load_average"].is_null()) {
+                    session.host_telemetry.peak_after_cpu_load_average = host[
+                        "peak_after_cpu_load_average"
+                    ].get<double>();
+                }
+                if (host.contains("metric_capabilities")) {
+                    session.host_telemetry.metric_capabilities =
+                        deserialize_metric_capabilities(host["metric_capabilities"]);
                 }
             }
             if (j.contains("metric_capabilities")) {

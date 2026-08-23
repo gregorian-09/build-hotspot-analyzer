@@ -162,6 +162,78 @@ namespace bha::analyzers {
             }
         }
 
+        auto& host = analysis.host_telemetry;
+        const auto observe_memory = [&host](
+            const std::optional<std::uint64_t> value
+        ) {
+            if (!value.has_value()) {
+                return;
+            }
+            ++host.memory_samples;
+            if (!host.peak_memory_used_kib.has_value() ||
+                *value > *host.peak_memory_used_kib) {
+                host.peak_memory_used_kib = value;
+            }
+        };
+        const auto observe_before_cpu = [&host](
+            const std::optional<double> value
+        ) {
+            if (!value.has_value()) {
+                return;
+            }
+            ++host.cpu_load_samples;
+            if (!host.peak_before_cpu_load_average.has_value() ||
+                *value > *host.peak_before_cpu_load_average) {
+                host.peak_before_cpu_load_average = value;
+            }
+        };
+        const auto observe_after_cpu = [&host](
+            const std::optional<double> value
+        ) {
+            if (!value.has_value()) {
+                return;
+            }
+            ++host.cpu_load_samples;
+            if (!host.peak_after_cpu_load_average.has_value() ||
+                *value > *host.peak_after_cpu_load_average) {
+                host.peak_after_cpu_load_average = value;
+            }
+        };
+        for (const auto& command : session.commands) {
+            observe_memory(command.before_host_memory_used_kib);
+            observe_memory(command.after_host_memory_used_kib);
+            observe_before_cpu(command.before_cpu_load_average);
+            observe_after_cpu(command.after_cpu_load_average);
+        }
+
+        auto memory_capability = capability(
+            "build.host.memory_used_peak",
+            host.peak_memory_used_kib.has_value()
+                ? EvidenceKind::Derived
+                : EvidenceKind::Unavailable,
+            "BuildSessionAnalyzer",
+            "build-session",
+            host.peak_memory_used_kib.has_value()
+                ? ""
+                : "CMake dynamicSystemInformation memory samples were not captured"
+        );
+        memory_capability.provenance.capture_mode = "dynamicSystemInformation";
+        host.metric_capabilities.push_back(std::move(memory_capability));
+
+        auto cpu_capability = capability(
+            "build.host.cpu_load_average_peak",
+            host.cpu_load_samples > 0
+                ? EvidenceKind::Derived
+                : EvidenceKind::Unavailable,
+            "BuildSessionAnalyzer",
+            "build-session",
+            host.cpu_load_samples > 0
+                ? ""
+                : "CMake dynamicSystemInformation CPU load samples were not captured"
+        );
+        cpu_capability.provenance.capture_mode = "dynamicSystemInformation";
+        host.metric_capabilities.push_back(std::move(cpu_capability));
+
         std::ranges::sort(
             analysis.step_metrics,
             [](const BuildStepAnalysis& left, const BuildStepAnalysis& right) {

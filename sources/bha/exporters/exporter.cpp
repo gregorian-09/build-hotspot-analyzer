@@ -462,6 +462,14 @@ namespace bha::exporters
                 {"critical_path_time_ms", duration_to_ms(analysis.build_session.critical_path_time)},
                 {"critical_path", analysis.build_session.critical_path},
                 {"step_metrics", json::array()},
+                {"host_telemetry", {
+                    {"memory_samples", analysis.build_session.host_telemetry.memory_samples},
+                    {"peak_memory_used_kib", nullptr},
+                    {"cpu_load_samples", analysis.build_session.host_telemetry.cpu_load_samples},
+                    {"peak_before_cpu_load_average", nullptr},
+                    {"peak_after_cpu_load_average", nullptr},
+                    {"metric_capabilities", json::array()}
+                }},
                 {"metric_capabilities", json::array()}
             };
             for (const auto& step : analysis.build_session.step_metrics) {
@@ -474,6 +482,23 @@ namespace bha::exporters
                     {"successful_commands", step.successful_commands},
                     {"failed_commands", step.failed_commands}
                 });
+            }
+            if (analysis.build_session.host_telemetry.peak_memory_used_kib.has_value()) {
+                summary["build_session"]["host_telemetry"]["peak_memory_used_kib"] =
+                    *analysis.build_session.host_telemetry.peak_memory_used_kib;
+            }
+            if (analysis.build_session.host_telemetry.peak_before_cpu_load_average.has_value()) {
+                summary["build_session"]["host_telemetry"]["peak_before_cpu_load_average"] =
+                    *analysis.build_session.host_telemetry.peak_before_cpu_load_average;
+            }
+            if (analysis.build_session.host_telemetry.peak_after_cpu_load_average.has_value()) {
+                summary["build_session"]["host_telemetry"]["peak_after_cpu_load_average"] =
+                    *analysis.build_session.host_telemetry.peak_after_cpu_load_average;
+            }
+            for (const auto& capability : analysis.build_session.host_telemetry.metric_capabilities) {
+                summary["build_session"]["host_telemetry"]["metric_capabilities"].push_back(
+                    serialize_metric_capability(capability)
+                );
             }
             for (const auto& capability : analysis.build_session.metric_capabilities) {
                 summary["build_session"]["metric_capabilities"].push_back(

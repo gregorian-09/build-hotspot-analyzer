@@ -123,6 +123,11 @@ namespace bha::exporters::test
             1,
             0
         });
+        result.build_session.host_telemetry.memory_samples = 2;
+        result.build_session.host_telemetry.peak_memory_used_kib = 2048;
+        result.build_session.host_telemetry.cpu_load_samples = 2;
+        result.build_session.host_telemetry.peak_before_cpu_load_average = 1.5;
+        result.build_session.host_telemetry.peak_after_cpu_load_average = 2.5;
 
         MetricCapability session_capability;
         session_capability.metric = "build.scheduler.parallelism";
@@ -384,6 +389,8 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"build_session\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"step_metrics\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("custom") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"host_telemetry\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"peak_memory_used_kib\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.scheduler.parallelism\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"linker\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);
