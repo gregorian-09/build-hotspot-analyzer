@@ -38,13 +38,7 @@ namespace bha::analyzers
 
         std::unordered_map<std::string, TemplateStats> template_map;
         Duration total_template_time = Duration::zero();
-        Duration total_build_time = trace.total_time;
-
-        if (total_build_time == Duration::zero()) {
-            for (const auto& unit : trace.units) {
-                total_build_time += unit.metrics.total_time;
-            }
-        }
+        const Duration total_build_time = trace.total_time;
 
         for (const auto& unit : trace.units) {
             for (const auto& tmpl : unit.templates) {

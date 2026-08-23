@@ -103,6 +103,20 @@ namespace bha::analyzers {
         }
     }
 
+    TEST_F(TemplateAnalyzerTest, DoesNotInferBuildPercentageWithoutBuildDuration) {
+        auto trace = create_test_trace();
+        trace.total_time = Duration::zero();
+        constexpr AnalysisOptions options;
+
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_DOUBLE_EQ(result.value().templates.template_time_percent, 0.0);
+        for (const auto& tmpl : result.value().templates.templates) {
+            EXPECT_GT(tmpl.time_percent, 0.0);
+        }
+    }
+
     TEST_F(TemplateAnalyzerTest, SkipsWhenDisabled) {
         const auto trace = create_test_trace();
         AnalysisOptions options;
