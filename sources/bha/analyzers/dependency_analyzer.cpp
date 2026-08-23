@@ -20,6 +20,8 @@ namespace bha::analyzers
         struct HeaderStats {
             fs::path path;
             Duration total_parse_time = Duration::zero();
+            Duration self_parse_time = Duration::zero();
+            bool self_time_available = true;
             std::size_t inclusion_count = 0;
             std::unordered_set<std::string> including_files;
         };
@@ -318,14 +320,21 @@ namespace bha::analyzers
             for (const auto& include : unit.includes) {
                 const std::string header_key = path_key(include.header);
 
-                auto& [path, total_parse_time, inclusion_count, including_files] = header_map[header_key];
-                if (path.empty()) {
-                    path = include.header;
+                auto& stats = header_map[header_key];
+                if (stats.path.empty()) {
+                    stats.path = include.header;
                 }
 
-                total_parse_time += include.parse_time;
-                inclusion_count += 1;
-                including_files.insert(source_key);
+                stats.total_parse_time += include.parse_time;
+                ++stats.inclusion_count;
+                stats.including_files.insert(source_key);
+                if (include.self_parse_time.has_value()) {
+                    if (stats.self_time_available) {
+                        stats.self_parse_time += *include.self_parse_time;
+                    }
+                } else {
+                    stats.self_time_available = false;
+                }
 
                 total_include_time += include.parse_time;
                 max_depth = std::max(max_depth, include.depth);
@@ -334,22 +343,30 @@ namespace bha::analyzers
 
         result.dependencies.headers.reserve(header_map.size());
 
-        for (auto& [path, total_parse_time, inclusion_count, including_files] : header_map | std::views::values) {
+        bool has_self_time = false;
+        bool all_self_time_available = true;
+        for (auto& stats : header_map | std::views::values) {
             DependencyAnalysisResult::HeaderInfo info;
-            info.path = path;
-            info.total_parse_time = total_parse_time;
-            info.inclusion_count = inclusion_count;
-            info.including_files = including_files.size();
+            info.path = stats.path;
+            info.total_parse_time = stats.total_parse_time;
+            info.inclusion_count = stats.inclusion_count;
+            info.including_files = stats.including_files.size();
+            if (stats.self_time_available) {
+                info.self_parse_time = stats.self_parse_time;
+                has_self_time = true;
+            } else {
+                all_self_time_available = false;
+            }
 
-            for (const auto& file : including_files) {
+            for (const auto& file : stats.including_files) {
                 info.included_by.emplace_back(file);
             }
 
-            const auto time_factor = static_cast<double>(total_parse_time.count());
-            const auto count_factor = static_cast<double>(inclusion_count);
+            const auto time_factor = static_cast<double>(stats.total_parse_time.count());
+            const auto count_factor = static_cast<double>(stats.inclusion_count);
             info.impact_score = time_factor * std::sqrt(count_factor);
 
-            info.is_external = is_external_header(path);
+            info.is_external = is_external_header(stats.path);
 
             result.dependencies.headers.push_back(std::move(info));
         }
@@ -366,6 +383,22 @@ namespace bha::analyzers
         result.dependencies.unique_headers = header_map.size();
         result.dependencies.max_include_depth = max_depth;
         result.dependencies.total_include_time = total_include_time;
+
+        if (has_self_time) {
+            MetricCapability capability;
+            capability.metric = "frontend.source_self_time";
+            capability.provenance.evidence = EvidenceKind::Derived;
+            capability.provenance.producer = "clang";
+            capability.provenance.capture_mode = "-ftime-trace";
+            capability.provenance.scope = "build";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            if (!all_self_time_available) {
+                capability.provenance.limitation =
+                    "Headers with incomplete Source interval identity retain unavailable self-time";
+            }
+            result.dependencies.metric_capabilities.push_back(std::move(capability));
+        }
 
         result.dependencies.circular_dependencies = detect_circular_header_dependencies(header_map);
 

@@ -197,7 +197,8 @@ namespace bha::lsp
             .parse_time = Duration::zero(),
             .depth = 0,
             .included_by = {},
-            .symbols_used = {}
+            .symbols_used = {},
+            .self_parse_time = std::nullopt
         });
         trace.units.push_back(std::move(unit));
 

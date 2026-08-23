@@ -584,6 +584,10 @@ namespace bha::exporters
             deps["unique_headers"] = analysis.dependencies.unique_headers;
             deps["max_depth"] = analysis.dependencies.max_include_depth;
             deps["circular_dependencies_count"] = analysis.dependencies.circular_dependencies.size();
+            deps["metric_capabilities"] = json::array();
+            for (const auto& capability : analysis.dependencies.metric_capabilities) {
+                deps["metric_capabilities"].push_back(serialize_metric_capability(capability));
+            }
 
             json headers_array = json::array();
             for (const auto& header : analysis.dependencies.headers) {
@@ -592,6 +596,10 @@ namespace bha::exporters
                 h["inclusion_count"] = header.inclusion_count;
                 h["including_files"] = header.including_files;
                 h["parse_time_ms"] = duration_to_ms(header.total_parse_time);
+                h["self_parse_time_ms"] = nullptr;
+                if (header.self_parse_time.has_value()) {
+                    h["self_parse_time_ms"] = duration_to_ms(*header.self_parse_time);
+                }
                 h["impact_score"] = header.impact_score;
                 h["included_by"] = header.included_by;
                 h["is_external"] = header.is_external;

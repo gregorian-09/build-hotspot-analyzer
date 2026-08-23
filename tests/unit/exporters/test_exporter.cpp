@@ -58,6 +58,7 @@ namespace bha::exporters::test
         analyzers::DependencyAnalysisResult::HeaderInfo header1;
         header1.path = "include/config.h";
         header1.total_parse_time = std::chrono::milliseconds(500);
+        header1.self_parse_time = std::chrono::milliseconds(320);
         header1.inclusion_count = 25;
         header1.including_files = 10;
         header1.impact_score = 0.85;
@@ -325,6 +326,7 @@ namespace bha::exporters::test
         EXPECT_TRUE(json_str.find("\"link.output_bytes\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"targets\"") != std::string::npos);
         EXPECT_TRUE(json_str.find("\"build.target.command_ownership\"") != std::string::npos);
+        EXPECT_TRUE(json_str.find("\"self_parse_time_ms\"") != std::string::npos);
     }
 
     TEST_F(JsonExporterTest, ExportWithOptions) {

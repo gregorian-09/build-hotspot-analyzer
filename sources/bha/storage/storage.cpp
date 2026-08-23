@@ -182,12 +182,17 @@ namespace bha::storage
                 nlohmann::json hj;
                 hj["path"] = h.path.string();
                 hj["total_parse_time_ms"] = duration_to_ms(h.total_parse_time);
+                hj["self_parse_time_ms"] = nullptr;
+                if (h.self_parse_time.has_value()) {
+                    hj["self_parse_time_ms"] = duration_to_ms(*h.self_parse_time);
+                }
                 hj["inclusion_count"] = h.inclusion_count;
                 hj["including_files"] = h.including_files;
                 hj["impact_score"] = h.impact_score;
                 headers.push_back(hj);
             }
             j["headers"] = headers;
+            j["metric_capabilities"] = serialize_metric_capabilities(deps.metric_capabilities);
 
             return j;
         }
@@ -207,11 +212,17 @@ namespace bha::storage
                     analyzers::DependencyAnalysisResult::HeaderInfo h;
                     h.path = hj.value("path", "");
                     h.total_parse_time = ms_to_duration(hj.value("total_parse_time_ms", 0.0));
+                    if (hj.contains("self_parse_time_ms") && !hj["self_parse_time_ms"].is_null()) {
+                        h.self_parse_time = ms_to_duration(hj["self_parse_time_ms"].get<double>());
+                    }
                     h.inclusion_count = hj.value("inclusion_count", std::size_t{0});
                     h.including_files = hj.value("including_files", std::size_t{0});
                     h.impact_score = hj.value("impact_score", 0.0);
                     deps.headers.push_back(h);
                 }
+            }
+            if (j.contains("metric_capabilities")) {
+                deps.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
             }
 
             return deps;

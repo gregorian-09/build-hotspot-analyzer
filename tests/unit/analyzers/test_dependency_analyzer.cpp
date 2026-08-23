@@ -26,15 +26,15 @@ namespace bha::analyzers
             CompilationUnit unit1;
             unit1.source_file = "/src/main.cpp";
             unit1.includes = {
-                {"/include/header.h", std::chrono::milliseconds(100), 1, {}, {}},
-                {"/include/utils.h", std::chrono::milliseconds(50), 1, {}, {}},
+                {"/include/header.h", std::chrono::milliseconds(100), 1, {}, {}, std::nullopt},
+                {"/include/utils.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
             };
 
             CompilationUnit unit2;
             unit2.source_file = "/src/other.cpp";
             unit2.includes = {
-                {"/include/header.h", std::chrono::milliseconds(100), 1, {}, {}},
-                {"/include/common.h", std::chrono::milliseconds(80), 2, {}, {}},
+                {"/include/header.h", std::chrono::milliseconds(100), 1, {}, {}, std::nullopt},
+                {"/include/common.h", std::chrono::milliseconds(80), 2, {}, {}, std::nullopt},
             };
 
             trace.units = {unit1, unit2};
@@ -90,6 +90,30 @@ namespace bha::analyzers
         EXPECT_EQ(it->including_files, 2u);
     }
 
+    TEST_F(DependencyAnalyzerTest, PreservesObservedHeaderSelfTime) {
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = "/src/main.cpp";
+        unit.includes = {
+            {"/include/header.h", std::chrono::milliseconds(100), 0, {}, {},
+             std::chrono::milliseconds(60)},
+            {"/include/header.h", std::chrono::milliseconds(40), 1, {}, {},
+             std::chrono::milliseconds(20)},
+        };
+        trace.units = {unit};
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& deps = result.value().dependencies;
+        ASSERT_EQ(deps.headers.size(), 1u);
+        ASSERT_TRUE(deps.headers.front().self_parse_time.has_value());
+        EXPECT_EQ(*deps.headers.front().self_parse_time, std::chrono::milliseconds(80));
+        ASSERT_EQ(deps.metric_capabilities.size(), 1u);
+        EXPECT_EQ(deps.metric_capabilities.front().metric, "frontend.source_self_time");
+    }
+
     TEST_F(DependencyAnalyzerTest, HeadersSortedByImpact) {
         const auto trace = create_test_trace();
         constexpr AnalysisOptions options;
@@ -111,10 +135,10 @@ namespace bha::analyzers
         CompilationUnit unit;
         unit.source_file = "/src/main.cpp";
         unit.includes = {
-            {"/usr/include/vector", std::chrono::milliseconds(50), 1, {}, {}},
-            {"/opt/include/lib.h", std::chrono::milliseconds(30), 1, {}, {}},
-            {"third_party/json.hpp", std::chrono::milliseconds(100), 1, {}, {}},
-            {"src/internal.h", std::chrono::milliseconds(20), 1, {}, {}},
+            {"/usr/include/vector", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
+            {"/opt/include/lib.h", std::chrono::milliseconds(30), 1, {}, {}, std::nullopt},
+            {"third_party/json.hpp", std::chrono::milliseconds(100), 1, {}, {}, std::nullopt},
+            {"src/internal.h", std::chrono::milliseconds(20), 1, {}, {}, std::nullopt},
         };
 
         trace.units = {unit};
@@ -138,14 +162,14 @@ namespace bha::analyzers
         CompilationUnit unit1;
         unit1.source_file = "/src/a.cpp";
         unit1.includes = {
-            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}},
-            {"/include/b.h", std::chrono::milliseconds(50), 1, {}, {}},
+            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
+            {"/include/b.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
         };
 
         CompilationUnit unit2;
         unit2.source_file = "/include/b.h";
         unit2.includes = {
-            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}},
+            {"/include/a.h", std::chrono::milliseconds(50), 1, {}, {}, std::nullopt},
         };
 
         trace.units = {unit1, unit2};
@@ -194,8 +218,8 @@ namespace bha::analyzers
         CompilationUnit unit;
         unit.source_file = source;
         unit.includes = {
-            {a_header, std::chrono::milliseconds(10), 1, {}, {}},
-            {b_header, std::chrono::milliseconds(10), 2, {}, {}},
+            {a_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt},
+            {b_header, std::chrono::milliseconds(10), 2, {}, {}, std::nullopt},
         };
         trace.units = {unit};
 
@@ -236,7 +260,7 @@ namespace bha::analyzers
         trace.id = "test-self-cycle";
         CompilationUnit unit;
         unit.source_file = temp_dir / "main.cpp";
-        unit.includes = {{self_header, std::chrono::milliseconds(10), 1, {}, {}}};
+        unit.includes = {{self_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt}};
         trace.units = {unit};
 
         constexpr AnalysisOptions options;
@@ -281,10 +305,10 @@ namespace bha::analyzers
         CompilationUnit unit;
         unit.source_file = temp_dir / "main.cpp";
         unit.includes = {
-            {a_header, std::chrono::milliseconds(10), 1, {}, {}},
-            {b_header, std::chrono::milliseconds(5), 2, {}, {}},
-            {c_header, std::chrono::milliseconds(5), 2, {}, {}},
-            {d_header, std::chrono::milliseconds(3), 3, {}, {}},
+            {a_header, std::chrono::milliseconds(10), 1, {}, {}, std::nullopt},
+            {b_header, std::chrono::milliseconds(5), 2, {}, {}, std::nullopt},
+            {c_header, std::chrono::milliseconds(5), 2, {}, {}, std::nullopt},
+            {d_header, std::chrono::milliseconds(3), 3, {}, {}, std::nullopt},
         };
         trace.units = {unit};
 
@@ -312,7 +336,7 @@ namespace bha::analyzers
         trace.id = "test-leaf";
         CompilationUnit unit;
         unit.source_file = temp_dir / "main.cpp";
-        unit.includes = {{leaf, std::chrono::milliseconds(5), 1, {}, {}}};
+        unit.includes = {{leaf, std::chrono::milliseconds(5), 1, {}, {}, std::nullopt}};
         trace.units = {unit};
 
         constexpr AnalysisOptions options;

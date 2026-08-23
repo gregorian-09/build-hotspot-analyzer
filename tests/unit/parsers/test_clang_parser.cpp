@@ -135,6 +135,62 @@ namespace bha::parsers
         }
     }
 
+    TEST_F(ClangParserTest, IncludeSelfTimeSubtractsNestedIntervals) {
+        const std::string content = R"json({
+            "traceEvents": [
+                {"pid":1,"tid":7,"ph":"X","ts":0,"dur":1000,"name":"Source","args":{"detail":"/include/root.h"}},
+                {"pid":1,"tid":7,"ph":"X","ts":100,"dur":400,"name":"Source","args":{"detail":"/include/nested.h"}},
+                {"pid":1,"tid":7,"ph":"X","ts":200,"dur":100,"name":"Source","args":{"detail":"/include/leaf.h"}}
+            ]
+        })json";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& includes = result.value().includes;
+        ASSERT_EQ(includes.size(), 3u);
+        const auto find_header = [&includes](const std::string_view name) {
+            return std::ranges::find_if(includes, [name](const auto& include) {
+                return include.header.filename() == name;
+            });
+        };
+
+        const auto root = find_header("root.h");
+        const auto nested = find_header("nested.h");
+        const auto leaf = find_header("leaf.h");
+        ASSERT_NE(root, includes.end());
+        ASSERT_NE(nested, includes.end());
+        ASSERT_NE(leaf, includes.end());
+        ASSERT_TRUE(root->self_parse_time.has_value());
+        ASSERT_TRUE(nested->self_parse_time.has_value());
+        ASSERT_TRUE(leaf->self_parse_time.has_value());
+        EXPECT_EQ(*root->self_parse_time, std::chrono::microseconds(600));
+        EXPECT_EQ(*nested->self_parse_time, std::chrono::microseconds(300));
+        EXPECT_EQ(*leaf->self_parse_time, std::chrono::microseconds(100));
+
+        ASSERT_EQ(result.value().metric_capabilities.size(), 1u);
+        EXPECT_EQ(result.value().metric_capabilities.front().metric, "frontend.source_self_time");
+        EXPECT_EQ(
+            result.value().metric_capabilities.front().provenance.timing_aggregation,
+            TimingAggregation::Exclusive
+        );
+    }
+
+    TEST_F(ClangParserTest, IncludeSelfTimeUnavailableWithoutThreadIdentity) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"ph":"X","ts":0,"dur":1000,"name":"Source","args":{"detail":"/include/root.h"}}
+            ]
+        })json";
+
+        auto result = parser_->parse_content(content, {});
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_EQ(result.value().includes.size(), 1u);
+        EXPECT_FALSE(result.value().includes.front().self_parse_time.has_value());
+        ASSERT_EQ(result.value().metric_capabilities.size(), 1u);
+        EXPECT_FALSE(result.value().metric_capabilities.front().provenance.limitation.empty());
+    }
+
     TEST_F(ClangParserTest, IncludeDepthSiblings) {
         const std::string content = R"({
             "traceEvents": [

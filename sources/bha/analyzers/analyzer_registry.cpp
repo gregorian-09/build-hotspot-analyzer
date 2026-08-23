@@ -49,6 +49,18 @@ namespace bha::analyzers
     ) {
         AnalysisResult combined_result;
         combined_result.metric_capabilities = trace.metric_capabilities;
+        for (const auto& unit : trace.units) {
+            for (const auto& capability : unit.metric_capabilities) {
+                const auto existing = std::ranges::find(
+                    combined_result.metric_capabilities,
+                    capability.metric,
+                    &MetricCapability::metric
+                );
+                if (existing == combined_result.metric_capabilities.end()) {
+                    combined_result.metric_capabilities.push_back(capability);
+                }
+            }
+        }
         const auto start_time = std::chrono::steady_clock::now();
         const auto total_deadline = options.max_total_time != Duration::zero()
             ? std::optional<std::chrono::steady_clock::time_point>(start_time + options.max_total_time)
@@ -176,6 +188,17 @@ namespace bha::analyzers
                     combined_result.dependencies = std::move(partial.dependencies);
                 } else {
                     combined_result.dependencies.headers = std::move(partial.dependencies.headers);
+                }
+            }
+
+            for (const auto& capability : partial.dependencies.metric_capabilities) {
+                const auto existing = std::ranges::find(
+                    combined_result.metric_capabilities,
+                    capability.metric,
+                    &MetricCapability::metric
+                );
+                if (existing == combined_result.metric_capabilities.end()) {
+                    combined_result.metric_capabilities.push_back(capability);
                 }
             }
 

@@ -108,6 +108,20 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     SnapshotStore store(root);
     analyzers::AnalysisResult analysis;
     analysis.performance.total_build_time = std::chrono::milliseconds(4200);
+    analyzers::DependencyAnalysisResult::HeaderInfo frontend_header;
+    frontend_header.path = "include/config.h";
+    frontend_header.total_parse_time = std::chrono::milliseconds(500);
+    frontend_header.self_parse_time = std::chrono::milliseconds(320);
+    analysis.dependencies.headers.push_back(frontend_header);
+    MetricCapability frontend_capability;
+    frontend_capability.metric = "frontend.source_self_time";
+    frontend_capability.provenance.evidence = EvidenceKind::Derived;
+    frontend_capability.provenance.producer = "clang";
+    frontend_capability.provenance.capture_mode = "-ftime-trace";
+    frontend_capability.provenance.scope = "build";
+    frontend_capability.provenance.timing_domain = TimingDomain::WallClock;
+    frontend_capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+    analysis.dependencies.metric_capabilities.push_back(frontend_capability);
     analysis.cache_distribution.compile_requests = 12;
     analysis.cache_distribution.executed_compilations = 10;
     analysis.cache_distribution.non_compilation_requests = 1;
@@ -205,6 +219,13 @@ TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     const auto load_result = store.load("cache-metrics");
     ASSERT_TRUE(load_result.is_ok());
     const auto& cache = load_result.value().analysis.cache_distribution;
+    const auto& dependencies = load_result.value().analysis.dependencies;
+
+    ASSERT_EQ(dependencies.headers.size(), 1u);
+    ASSERT_TRUE(dependencies.headers.front().self_parse_time.has_value());
+    EXPECT_EQ(*dependencies.headers.front().self_parse_time, std::chrono::milliseconds(320));
+    ASSERT_EQ(dependencies.metric_capabilities.size(), 1u);
+    EXPECT_EQ(dependencies.metric_capabilities.front().metric, "frontend.source_self_time");
 
     EXPECT_EQ(cache.compile_requests, 12u);
     EXPECT_EQ(cache.executed_compilations, 10u);

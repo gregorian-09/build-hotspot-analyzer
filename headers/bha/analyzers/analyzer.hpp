@@ -73,6 +73,8 @@ namespace bha::analyzers {
             fs::path path;
             /// Total parse time accumulated across all inclusions.
             Duration total_parse_time = Duration::zero();
+            /// Exclusive parse time when nested Source intervals are available.
+            std::optional<Duration> self_parse_time;
             /// Number of include events observed for this header.
             std::size_t inclusion_count = 0;
             /// Number of unique source files that include this header.
@@ -96,6 +98,9 @@ namespace bha::analyzers {
         std::size_t max_include_depth = 0;
         /// Cumulative time spent parsing included headers.
         Duration total_include_time = Duration::zero();
+
+        /// Provenance and availability for frontend self-time metrics.
+        std::vector<MetricCapability> metric_capabilities;
 
         /// Detected circular include relations.
         std::vector<std::pair<fs::path, fs::path>> circular_dependencies;

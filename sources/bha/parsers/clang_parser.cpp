@@ -13,6 +13,7 @@
 #include <optional>
 #include <queue>
 #include <sstream>
+#include <cstdint>
 
 namespace bha::parsers {
 
@@ -37,6 +38,14 @@ namespace bha::parsers {
             std::string detail;
             std::string file;
             int line = 0;
+            std::int64_t process_id = 0;
+            std::int64_t thread_id = 0;
+            bool has_thread_identity = false;
+        };
+
+        struct IncludeProcessingResult {
+            bool has_source_events = false;
+            bool all_self_times_available = false;
         };
 
         TraceEvent parse_event(const json& event_json) {
@@ -69,6 +78,13 @@ namespace bha::parsers {
                 if (args.contains("line")) {
                     event.line = args["line"].get<int>();
                 }
+            }
+
+            if (event_json.contains("pid") && event_json.contains("tid") &&
+                event_json["pid"].is_number_integer() && event_json["tid"].is_number_integer()) {
+                event.process_id = event_json["pid"].get<std::int64_t>();
+                event.thread_id = event_json["tid"].get<std::int64_t>();
+                event.has_thread_identity = true;
             }
 
             return event;
@@ -210,7 +226,8 @@ namespace bha::parsers {
 
         void process_include_events(
             const std::vector<TraceEvent>& events,
-            std::vector<IncludeInfo>& includes
+            std::vector<IncludeInfo>& includes,
+            IncludeProcessingResult& processing_result
         ) {
             struct SourceEventInfo {
                 std::string detail;
@@ -218,6 +235,11 @@ namespace bha::parsers {
                 double end_time;
                 double duration;
                 std::size_t depth;
+                std::int64_t process_id;
+                std::int64_t thread_id;
+                bool has_thread_identity;
+                std::optional<Duration> self_parse_time;
+                double child_duration = 0.0;
             };
 
             std::vector<SourceEventInfo> source_events;
@@ -230,8 +252,87 @@ namespace bha::parsers {
                     info.end_time = event.timestamp + event.duration;
                     info.duration = event.duration;
                     info.depth = 0;
+                    info.process_id = event.process_id;
+                    info.thread_id = event.thread_id;
+                    info.has_thread_identity = event.has_thread_identity;
                     source_events.push_back(info);
                 }
+            }
+
+            processing_result.has_source_events = !source_events.empty();
+            processing_result.all_self_times_available = processing_result.has_source_events;
+
+            // Source durations are inclusive. Subtract only validated,
+            // same-thread nested intervals so self-time never double-counts
+            // overlapping or cross-thread work.
+            std::ranges::sort(source_events, [](const auto& lhs, const auto& rhs) {
+                if (lhs.has_thread_identity != rhs.has_thread_identity) {
+                    return lhs.has_thread_identity > rhs.has_thread_identity;
+                }
+                if (lhs.has_thread_identity && lhs.process_id != rhs.process_id) {
+                    return lhs.process_id < rhs.process_id;
+                }
+                if (lhs.has_thread_identity && lhs.thread_id != rhs.thread_id) {
+                    return lhs.thread_id < rhs.thread_id;
+                }
+                if (lhs.start_time != rhs.start_time) {
+                    return lhs.start_time < rhs.start_time;
+                }
+                return lhs.end_time > rhs.end_time;
+            });
+
+            for (std::size_t group_start = 0; group_start < source_events.size();) {
+                const auto& first = source_events[group_start];
+                if (!first.has_thread_identity) {
+                    processing_result.all_self_times_available = false;
+                    ++group_start;
+                    continue;
+                }
+
+                std::size_t group_end = group_start + 1;
+                while (group_end < source_events.size() &&
+                       source_events[group_end].has_thread_identity &&
+                       source_events[group_end].process_id == first.process_id &&
+                       source_events[group_end].thread_id == first.thread_id) {
+                    ++group_end;
+                }
+
+                std::vector<std::size_t> stack;
+                bool valid_nesting = true;
+                for (std::size_t index = group_start; index < group_end; ++index) {
+                    auto& current = source_events[index];
+                    while (!stack.empty() &&
+                           source_events[stack.back()].end_time <= current.start_time) {
+                        stack.pop_back();
+                    }
+
+                    if (!stack.empty()) {
+                        auto& parent = source_events[stack.back()];
+                        if (current.start_time <= parent.start_time || current.end_time > parent.end_time) {
+                            valid_nesting = false;
+                            break;
+                        }
+                        parent.child_duration += current.duration;
+                    }
+                    stack.push_back(index);
+                }
+
+                if (!valid_nesting) {
+                    processing_result.all_self_times_available = false;
+                    group_start = group_end;
+                    continue;
+                }
+
+                for (std::size_t index = group_start; index < group_end; ++index) {
+                    const auto& current = source_events[index];
+                    const double self_duration = current.duration - current.child_duration;
+                    if (self_duration < 0.0) {
+                        processing_result.all_self_times_available = false;
+                        continue;
+                    }
+                    source_events[index].self_parse_time = microseconds_to_duration(self_duration);
+                }
+                group_start = group_end;
             }
 
             std::ranges::sort(source_events, [](const auto& a, const auto& b) {
@@ -251,18 +352,33 @@ namespace bha::parsers {
                 active_end_times.push(ev.end_time);
             }
 
-            std::unordered_map<std::string, IncludeInfo> include_map;
+            struct IncludeStats {
+                IncludeInfo info;
+                bool self_time_available = true;
+                Duration self_parse_time = Duration::zero();
+            };
+            std::unordered_map<std::string, IncludeStats> include_map;
 
             for (const auto& event : source_events) {
-                auto& info = include_map[event.detail];
-                info.header = event.detail;
-                info.parse_time += microseconds_to_duration(event.duration);
-                info.depth = std::max(info.depth, event.depth);
+                auto& stats = include_map[event.detail];
+                stats.info.header = event.detail;
+                stats.info.parse_time += microseconds_to_duration(event.duration);
+                stats.info.depth = std::max(stats.info.depth, event.depth);
+                if (event.self_parse_time.has_value()) {
+                    if (stats.self_time_available) {
+                        stats.self_parse_time += *event.self_parse_time;
+                    }
+                } else {
+                    stats.self_time_available = false;
+                }
             }
 
             includes.reserve(include_map.size());
-            for (auto& info : include_map | std::views::values) {
-                includes.push_back(std::move(info));
+            for (auto& stats : include_map | std::views::values) {
+                if (stats.self_time_available) {
+                    stats.info.self_parse_time = stats.self_parse_time;
+                }
+                includes.push_back(std::move(stats.info));
             }
 
             std::ranges::sort(includes,
@@ -407,7 +523,23 @@ namespace bha::parsers {
                 ? TemplateEvidence::PerSpecializationTimingWithLocations
                 : TemplateEvidence::PerSpecializationTiming;
         }
-        process_include_events(events, unit.includes);
+        IncludeProcessingResult include_processing;
+        process_include_events(events, unit.includes, include_processing);
+        if (include_processing.has_source_events) {
+            MetricCapability capability;
+            capability.metric = "frontend.source_self_time";
+            capability.provenance.evidence = EvidenceKind::Derived;
+            capability.provenance.producer = "clang";
+            capability.provenance.capture_mode = "-ftime-trace";
+            capability.provenance.scope = "translation-unit";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            if (!include_processing.all_self_times_available) {
+                capability.provenance.limitation =
+                    "Some Source intervals lacked thread identity or valid nesting; their self-time is unavailable";
+            }
+            unit.metric_capabilities.push_back(std::move(capability));
+        }
         calculate_metrics(events, unit.metrics);
 
         unit.metrics.direct_includes = unit.includes.size();

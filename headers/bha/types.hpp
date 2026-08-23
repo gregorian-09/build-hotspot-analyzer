@@ -580,6 +580,8 @@ namespace bha {
         std::size_t depth = 0;
         std::vector<fs::path> included_by;
         std::vector<std::string> symbols_used;
+        /// Exclusive source-interval time after subtracting nested Source events.
+        std::optional<Duration> self_parse_time;
     };
 
     /**
@@ -592,6 +594,7 @@ namespace bha {
         std::vector<IncludeInfo> includes;
         std::vector<TemplateInstantiation> templates;
         TemplateEvidence template_evidence = TemplateEvidence::None;
+        std::vector<MetricCapability> metric_capabilities;
         std::vector<std::string> symbols_defined;
         std::vector<std::string> command_line;
     };
