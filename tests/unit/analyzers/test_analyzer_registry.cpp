@@ -57,6 +57,27 @@ namespace bha::analyzers::test {
         EXPECT_TRUE(result.is_ok());
     }
 
+    TEST_F(AnalyzerRegistryTest, RejectsNegativeAnalysisDurationOptions) {
+        BuildTrace trace;
+        const auto expect_invalid = [&trace](const AnalysisOptions& options) {
+            const auto result = run_full_analysis(trace, options);
+            ASSERT_TRUE(result.is_err());
+            EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+        };
+
+        AnalysisOptions min_duration_options;
+        min_duration_options.min_duration_threshold = Duration(-1);
+        expect_invalid(min_duration_options);
+
+        AnalysisOptions total_budget_options;
+        total_budget_options.max_total_time = Duration(-1);
+        expect_invalid(total_budget_options);
+
+        AnalysisOptions analyzer_budget_options;
+        analyzer_budget_options.max_analyzer_time = Duration(-1);
+        expect_invalid(analyzer_budget_options);
+    }
+
     TEST_F(AnalyzerRegistryTest, RetainsRoleScopedCapabilities) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

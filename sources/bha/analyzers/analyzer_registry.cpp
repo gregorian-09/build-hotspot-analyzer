@@ -83,6 +83,14 @@ namespace bha::analyzers
         const BuildTrace& trace,
         const AnalysisOptions& options
     ) {
+        if (options.min_duration_threshold < Duration::zero() ||
+            options.max_total_time < Duration::zero() ||
+            options.max_analyzer_time < Duration::zero()) {
+            return Result<AnalysisResult, Error>::failure(
+                Error::invalid_argument("Analysis duration options cannot be negative")
+            );
+        }
+
         AnalysisResult combined_result;
         for (const auto& capability : trace.metric_capabilities) {
             add_capability(combined_result.metric_capabilities, capability);
