@@ -42,6 +42,12 @@ namespace bha::analyzers
 
         for (const auto& unit : trace.units) {
             for (const auto& tmpl : unit.templates) {
+                if (tmpl.full_signature.empty()) {
+                    // A friendly name is not a stable specialization identity.
+                    // Do not collapse unidentified producer rows into one entry.
+                    continue;
+                }
+
                 auto& [name, full_signature, total_time, instantiation_count, locations, files_using] =
                     template_map[tmpl.full_signature];
 

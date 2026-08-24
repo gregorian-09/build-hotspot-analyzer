@@ -117,6 +117,42 @@ namespace bha::analyzers {
         }
     }
 
+    TEST_F(TemplateAnalyzerTest, RejectsUnidentifiedTemplateRows) {
+        BuildTrace trace;
+        CompilationUnit unit;
+
+        TemplateInstantiation unidentified_function;
+        unidentified_function.name = "InstantiateFunction";
+        unidentified_function.time = std::chrono::milliseconds(900);
+        unidentified_function.count = 9;
+
+        TemplateInstantiation unidentified_class;
+        unidentified_class.name = "InstantiateClass";
+        unidentified_class.time = std::chrono::milliseconds(700);
+        unidentified_class.count = 7;
+
+        TemplateInstantiation identified;
+        identified.name = "InstantiateClass";
+        identified.full_signature = "Box<int>";
+        identified.time = std::chrono::milliseconds(100);
+        identified.count = 1;
+
+        unit.templates = {unidentified_function, unidentified_class, identified};
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& templates = result.value().templates;
+        ASSERT_EQ(templates.templates.size(), 1u);
+        EXPECT_EQ(templates.templates.front().full_signature, "Box<int>");
+        EXPECT_EQ(templates.templates.front().total_time, std::chrono::milliseconds(100));
+        EXPECT_EQ(templates.templates.front().instantiation_count, 1u);
+        EXPECT_EQ(templates.total_template_time, std::chrono::milliseconds(100));
+        EXPECT_EQ(templates.total_instantiations, 1u);
+    }
+
     TEST_F(TemplateAnalyzerTest, SkipsWhenDisabled) {
         const auto trace = create_test_trace();
         AnalysisOptions options;
