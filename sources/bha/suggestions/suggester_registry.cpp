@@ -219,6 +219,14 @@ namespace bha::suggestions
             }
 
             for (auto& suggestion : result_value.suggestions) {
+                if (!std::isfinite(suggestion.confidence) ||
+                    suggestion.confidence < 0.0 || suggestion.confidence > 1.0 ||
+                    suggestion.estimated_savings < Duration::zero() ||
+                    !std::isfinite(suggestion.estimated_savings_percent) ||
+                    suggestion.estimated_savings_percent < 0.0) {
+                    continue;
+                }
+
                 if (options.conservative_abi_sensitive_headers &&
                     suggester->policy().abi_sensitivity == SuggesterAbiSensitivity::HeaderSurface &&
                     suggestion_touches_abi_sensitive_header(suggestion, project_root)) {

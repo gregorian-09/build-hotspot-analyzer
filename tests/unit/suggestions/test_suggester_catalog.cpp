@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <limits>
 
 namespace bha::suggestions {
 
@@ -12,8 +13,18 @@ namespace bha::suggestions {
 
         class AbiSensitiveStubSuggester final : public ISuggester {
         public:
-            AbiSensitiveStubSuggester(std::string id, std::filesystem::path target)
-                : id_(std::move(id)), target_(std::move(target)) {}
+            AbiSensitiveStubSuggester(
+                std::string id,
+                std::filesystem::path target,
+                const double confidence = 0.9,
+                const Duration savings = Duration::zero(),
+                const double savings_percent = 0.0
+            )
+                : id_(std::move(id)),
+                  target_(std::move(target)),
+                  confidence_(confidence),
+                  savings_(savings),
+                  savings_percent_(savings_percent) {}
 
             [[nodiscard]] std::string_view name() const noexcept override {
                 return "AbiSensitiveStubSuggester";
@@ -41,7 +52,9 @@ namespace bha::suggestions {
                 suggestion.id = id_;
                 suggestion.type = SuggestionType::ForwardDeclaration;
                 suggestion.priority = Priority::Medium;
-                suggestion.confidence = 0.9;
+                suggestion.confidence = confidence_;
+                suggestion.estimated_savings = savings_;
+                suggestion.estimated_savings_percent = savings_percent_;
                 suggestion.is_safe = true;
                 suggestion.target_file.path = target_;
                 suggestion.application_mode = SuggestionApplicationMode::DirectEdits;
@@ -62,6 +75,9 @@ namespace bha::suggestions {
         private:
             std::string id_;
             std::filesystem::path target_;
+            double confidence_;
+            Duration savings_;
+            double savings_percent_;
         };
 
         void write_file(const std::filesystem::path& path, const std::string& content) {
@@ -289,6 +305,51 @@ namespace bha::suggestions {
                 return suggestion.id == "unlimited-a" || suggestion.id == "unlimited-b";
             }),
             2
+        );
+
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+    }
+
+    TEST(SuggesterCatalogTest, DropsInvalidSuggestionMetadata) {
+        const auto unique_suffix = std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count()
+        );
+        const auto root = std::filesystem::temp_directory_path() / ("bha-invalid-suggestion-metadata-" + unique_suffix);
+        const auto target = root / "include" / "widget.h";
+        write_file(target, "#pragma once\nstruct widget;\n");
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.min_confidence = 0.0;
+        options.enable_consolidation = false;
+        options.restrict_to_trace = false;
+
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>(
+                "invalid-confidence",
+                target,
+                std::numeric_limits<double>::quiet_NaN()
+            )
+        );
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>(
+                "invalid-savings",
+                target,
+                0.9,
+                Duration(-1),
+                -1.0
+            )
+        );
+
+        const auto result = generate_all_suggestions(trace, analysis, options, root);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(
+            std::ranges::count_if(result.value(), [](const Suggestion& suggestion) {
+                return suggestion.id == "invalid-confidence" || suggestion.id == "invalid-savings";
+            }),
+            0
         );
 
         std::error_code ec;
