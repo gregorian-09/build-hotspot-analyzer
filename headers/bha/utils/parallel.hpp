@@ -277,20 +277,25 @@ namespace bha::utils {
             return initial;
         }
 
-        auto num_threads = pool.size();
-        auto chunk_size = (items.size() + num_threads - 1) / num_threads;
+        const auto num_threads = std::max<std::size_t>(pool.size(), 1);
+        const auto chunk_size = items.size() / num_threads +
+            (items.size() % num_threads != 0 ? 1 : 0);
 
         std::vector<std::future<T>> futures;
 
-        for (std::size_t i = 0; i < items.size(); i += chunk_size) {
-            auto end = std::min(i + chunk_size, items.size());
-            futures.push_back(pool.submit([&items, &reducer, i, end, &initial]() {
+        for (std::size_t begin = 0; begin < items.size();) {
+            const auto remaining = items.size() - begin;
+            const auto end = remaining <= chunk_size
+                ? items.size()
+                : begin + chunk_size;
+            futures.push_back(pool.submit([&items, &reducer, begin, end, &initial]() {
                 T result = initial;
-                for (std::size_t j = i; j < end; ++j) {
+                for (std::size_t j = begin; j < end; ++j) {
                     result = reducer(result, items[j]);
                 }
                 return result;
             }));
+            begin = end;
         }
 
         T result = initial;
