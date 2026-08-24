@@ -8,6 +8,8 @@
 
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 namespace bha::utils
 {
     TEST(TrimTest, TrimLeft) {
@@ -98,6 +100,16 @@ namespace bha::utils
         EXPECT_TRUE(contains("hello", "hello"));
         EXPECT_FALSE(contains("hello", "xyz"));
         EXPECT_TRUE(contains("hello", ""));
+    }
+
+    TEST(FormatPathTest, PreservesSmallWidthBoundaries) {
+        const std::filesystem::path path = "abcdef";
+
+        EXPECT_EQ(format_path(path, 0), "");
+        EXPECT_EQ(format_path(path, 1), "f");
+        EXPECT_EQ(format_path(path, 2), "ef");
+        EXPECT_EQ(format_path(path, 3), "...");
+        EXPECT_EQ(format_path(path, 5), "...ef");
     }
 
     TEST(IContainsTest, HandlesEmptyNeedle) {

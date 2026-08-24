@@ -5,9 +5,11 @@
 #include <chrono>
 #include <cstddef>
 #include <ctime>
+#include <filesystem>
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace bha::utils {
 
@@ -90,8 +92,11 @@ namespace bha::utils {
         if (str.length() <= max_width) {
             return str;
         }
-        static constexpr const char* ellipsis = "...";
-        return ellipsis + str.substr(str.length() - max_width + 3);
+        static constexpr std::string_view ellipsis = "...";
+        if (max_width < ellipsis.size()) {
+            return str.substr(str.size() - max_width);
+        }
+        return std::string(ellipsis) + str.substr(str.size() - (max_width - ellipsis.size()));
     }
 
     inline std::string format_timestamp(const Timestamp ts) {
