@@ -221,10 +221,6 @@ namespace bha::parsers {
             );
         }
 
-        if (unit.metrics.total_time == Duration::zero()) {
-            unit.metrics.total_time = unit.metrics.frontend_time + unit.metrics.backend_time;
-        }
-
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }
 

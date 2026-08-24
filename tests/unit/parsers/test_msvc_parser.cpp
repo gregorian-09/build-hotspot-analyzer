@@ -88,6 +88,22 @@ time(C:\path\to\c2.dll)=1.000s
         EXPECT_EQ(unit.metrics.total_time, std::chrono::seconds(3));
     }
 
+    TEST_F(MSVCParserTest, DoesNotInferTotalTimeFromCompilerComponents) {
+        constexpr std::string_view content =
+            "time(c1xx.dll)=1.2s\n"
+            "time(c2.dll)=0.8s\n";
+
+        const auto result = parser_->parse_content(content, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+        EXPECT_EQ(unit.metrics.frontend_time, std::chrono::duration_cast<Duration>(
+            std::chrono::duration<double>(1.2)));
+        EXPECT_EQ(unit.metrics.backend_time, std::chrono::duration_cast<Duration>(
+            std::chrono::duration<double>(0.8)));
+        EXPECT_EQ(unit.metrics.total_time, Duration::zero());
+    }
+
     TEST_F(MSVCParserTest, RejectsMalformedDuration) {
         constexpr std::string_view content =
             "time(c1xx.dll)=not-a-duration\n"
