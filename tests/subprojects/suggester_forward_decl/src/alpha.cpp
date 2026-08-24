@@ -1,4 +1,5 @@
 #include "alpha.hpp"
+#include "payload.hpp"
 
 namespace fwd_decl {
 
@@ -12,8 +13,12 @@ void Alpha::replace_beta(Beta* beta) {
     beta_ = beta;
 }
 
-std::string Alpha::describe(const Beta& beta) const {
-    return beta.name();
+std::string Alpha::describe(const Beta&) const {
+    return "beta";
+}
+
+Payload* preserve_payload(Payload* payload) {
+    return payload;
 }
 
 }  // namespace fwd_decl

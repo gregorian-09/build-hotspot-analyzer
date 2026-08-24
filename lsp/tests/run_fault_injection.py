@@ -87,7 +87,14 @@ def scenario_semantic_forward_decl_rollback(server_path: Path, bha_bin: Path, wo
     print("[scenario 1] stale forward-decl semantic breakage triggers rollback")
     fixture = REPO_ROOT / "tests" / "subprojects" / "suggester_forward_decl"
     project_root = workspace_root / "scenario_forward_decl"
-    shutil.copytree(fixture, project_root)
+    # Generated CMake state contains absolute source paths. Copy only source
+    # inputs so the fixture's first BHA build creates a database for the copied
+    # workspace instead of replaying commands from the repository checkout.
+    shutil.copytree(
+        fixture,
+        project_root,
+        ignore=shutil.ignore_patterns("build", ".lsp-optimization-backup", ".bha")
+    )
 
     build_dir = project_root / "build"
     trace_dir = project_root / "traces"
@@ -127,6 +134,7 @@ def scenario_semantic_forward_decl_rollback(server_path: Path, bha_bin: Path, wo
                 "projectRoot": str(project_root),
                 "buildDir": str(build_dir),
                 "rebuild": False,
+                "enabledTypes": ["forward-decl"],
             }],
             timeout_seconds=600,
             timeout_label="scenario1 analyze",
@@ -145,10 +153,30 @@ def scenario_semantic_forward_decl_rollback(server_path: Path, bha_bin: Path, wo
         suggestion_id = forward.get("id", "")
         ensure(bool(suggestion_id), "Forward-decl suggestion id missing")
 
-        alpha_hpp = project_root / "include" / "alpha.hpp"
-        stale_content = alpha_hpp.read_text(encoding="utf-8")
-        stale_content += "\nstatic_assert(sizeof(fwd_decl::Beta) > 0, \"force complete type\");\n"
-        alpha_hpp.write_text(stale_content, encoding="utf-8")
+        details = execute_command_with_timeout(
+            client,
+            "bha.getSuggestionDetails",
+            [{"suggestionId": suggestion_id}],
+            timeout_seconds=60,
+            timeout_label="scenario1 getSuggestionDetails",
+        )
+        ensure(details is not None and "result" in details, "Suggestion details failed in scenario 1")
+        text_edits = details["result"].get("textEdits", [])
+        edit_files = sorted({Path(edit["file"]).resolve() for edit in text_edits})
+        ensure(bool(edit_files), "Forward-decl suggestion has no edit targets")
+        ensure(
+            any("Payload" in str(edit.get("newText", "")) for edit in text_edits),
+            "Scenario 1 did not select the Payload forward declaration"
+        )
+        injected_contents = {}
+        for edit_file in edit_files:
+            ensure(edit_file.exists(), f"Forward-decl edit target does not exist: {edit_file}")
+            original = edit_file.read_text(encoding="utf-8")
+            injected = original + (
+                "\nstatic_assert(sizeof(fwd_decl::Payload) > 0, \"force complete type\");\n"
+            )
+            injected_contents[edit_file] = injected
+            edit_file.write_text(injected, encoding="utf-8")
 
         apply = execute_command_with_timeout(
             client,
@@ -160,8 +188,9 @@ def scenario_semantic_forward_decl_rollback(server_path: Path, bha_bin: Path, wo
         ensure(apply is not None and "result" in apply, "applySuggestion failed in scenario 1")
         result = apply["result"]
         ensure(not result.get("success", False), "Scenario 1 expected apply failure due semantic gate")
-        after = alpha_hpp.read_text(encoding="utf-8")
-        ensure(after == stale_content, "Scenario 1 rollback did not restore pre-apply file content")
+        for edit_file, injected in injected_contents.items():
+            after = edit_file.read_text(encoding="utf-8")
+            ensure(after == injected, f"Scenario 1 rollback did not preserve {edit_file}")
     finally:
         try:
             client.shutdown()
