@@ -116,7 +116,14 @@ namespace bha::analyzers {
                     }
                 }
 
-                best_duration[index] = predecessor_duration + events[index].event->duration;
+                const auto sum = utils::checked_add_duration(
+                    predecessor_duration,
+                    events[index].event->duration
+                );
+                if (!sum.has_value()) {
+                    return false;
+                }
+                best_duration[index] = *sum;
                 best_path[index] = std::move(predecessor_path);
                 best_path[index].push_back(events[index].event->id);
                 state[index] = 2;
@@ -179,6 +186,8 @@ namespace bha::analyzers {
 
         std::unordered_set<std::underlying_type_t<BuildStepRole>> stdout_overflowed_roles;
         std::unordered_set<std::underlying_type_t<BuildStepRole>> stderr_overflowed_roles;
+        std::unordered_set<std::underlying_type_t<BuildStepRole>> duration_overflowed_roles;
+        bool serial_time_overflow = false;
 
         const bool has_host_system_value = session.host_system.has_value() && (
             session.host_system->os_name.has_value() ||
@@ -234,7 +243,19 @@ namespace bha::analyzers {
             ++step->total_commands;
             if (command.has_exact_timing()) {
                 ++step->timed_commands;
-                step->wall_clock_time += command.duration;
+                const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(command.role);
+                if (!duration_overflowed_roles.contains(role)) {
+                    const auto sum = utils::checked_add_duration(
+                        step->wall_clock_time,
+                        command.duration
+                    );
+                    if (sum.has_value()) {
+                        step->wall_clock_time = *sum;
+                    } else {
+                        duration_overflowed_roles.insert(role);
+                        step->wall_clock_time = Duration::zero();
+                    }
+                }
             }
             if (command.result.has_value()) {
                 ++step->result_observations;
@@ -347,16 +368,19 @@ namespace bha::analyzers {
             const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(step.role);
             const bool output_overflowed =
                 stdout_overflowed_roles.contains(role) || stderr_overflowed_roles.contains(role);
+            const bool duration_overflowed = duration_overflowed_roles.contains(role);
             auto wall_time = capability(
                 "build.step.wall_time",
-                step.timed_commands == step.total_commands
+                !duration_overflowed && step.timed_commands == step.total_commands
                     ? EvidenceKind::Derived
                     : EvidenceKind::Unavailable,
                 "BuildSessionAnalyzer",
                 scope,
-                step.timed_commands == step.total_commands
-                    ? ""
-                    : "At least one command in this role has no exact producer timing"
+                duration_overflowed
+                    ? "Exact command durations overflowed the aggregate representation"
+                    : step.timed_commands == step.total_commands
+                        ? ""
+                        : "At least one command in this role has no exact producer timing"
             );
             wall_time.provenance.capture_mode = "producer-command-events";
             wall_time.provenance.timing_domain = TimingDomain::WallClock;
@@ -450,7 +474,19 @@ namespace bha::analyzers {
 
         analysis.wall_clock_time = last_end - first_start;
         for (const auto& event : timed_events) {
-            analysis.serial_time += event.event->duration;
+            if (serial_time_overflow) {
+                break;
+            }
+            const auto sum = utils::checked_add_duration(
+                analysis.serial_time,
+                event.event->duration
+            );
+            if (sum.has_value()) {
+                analysis.serial_time = *sum;
+            } else {
+                serial_time_overflow = true;
+                analysis.serial_time = Duration::zero();
+            }
         }
 
         std::vector<Boundary> boundaries;
@@ -482,13 +518,14 @@ namespace bha::analyzers {
             }
         }
 
-        if (analysis.wall_clock_time > Duration::zero()) {
+        if (!serial_time_overflow && analysis.wall_clock_time > Duration::zero()) {
             analysis.average_parallelism =
                 static_cast<double>(analysis.serial_time.count()) /
                 static_cast<double>(analysis.wall_clock_time.count());
         }
 
-        const bool all_commands_timed = analysis.timed_commands == analysis.total_commands;
+        const bool all_commands_timed = !serial_time_overflow &&
+            analysis.timed_commands == analysis.total_commands;
         add_capability(
             analysis.metric_capabilities,
             capability(
@@ -496,7 +533,9 @@ namespace bha::analyzers {
                 all_commands_timed ? EvidenceKind::Derived : EvidenceKind::Unavailable,
                 "build-session",
                 "session",
-                all_commands_timed ? "" : "Some commands do not have exact timing"
+                serial_time_overflow
+                    ? "Exact command durations overflowed the aggregate representation"
+                    : all_commands_timed ? "" : "Some commands do not have exact timing"
             )
         );
 

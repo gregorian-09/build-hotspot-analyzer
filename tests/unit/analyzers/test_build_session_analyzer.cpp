@@ -80,6 +80,32 @@ namespace bha::analyzers::test {
         EXPECT_DOUBLE_EQ(analysis.average_parallelism, 1.0);
     }
 
+    TEST(BuildSessionAnalyzerTest, FailsClosedWhenSerialTimeAggregationOverflows) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto first = command("first", 0, 0);
+        first.duration = Duration::max();
+        auto second = command("second", 0, 0);
+        second.duration = Duration(1);
+        trace.build_session->commands = {first, second};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.timed_commands, 2u);
+        EXPECT_EQ(analysis.serial_time, Duration::zero());
+        const auto scheduler = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.scheduler.parallelism",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(scheduler, analysis.metric_capabilities.end());
+        EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(scheduler->provenance.limitation.empty());
+    }
+
     TEST(BuildSessionAnalyzerTest, ComputesCriticalPathFromCompleteDependencies) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

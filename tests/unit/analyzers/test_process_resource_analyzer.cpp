@@ -47,4 +47,34 @@ namespace bha::analyzers::test {
         EXPECT_TRUE(result.value().process_resources.metric_capabilities.empty());
     }
 
+    TEST(ProcessResourceAnalyzerTest, FailsClosedWhenDurationAggregationOverflows) {
+        BuildTrace trace;
+        trace.process_resource_report = ProcessResourceReport{};
+        trace.process_resource_report->observations = {
+            {"clang", "one.o", Duration::max(), Duration::max(), 87536},
+            {"clang", "two.o", Duration(1), Duration(1), 53568}
+        };
+        MetricProvenance provenance;
+        provenance.evidence = EvidenceKind::Observed;
+        provenance.producer = "clang";
+        trace.process_resource_report->metric_capabilities.push_back({
+            "process.resource_counters",
+            provenance
+        });
+
+        ProcessResourceAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& resources = result.value().process_resources;
+        EXPECT_EQ(resources.total_process_time, Duration::zero());
+        EXPECT_EQ(resources.total_user_time, Duration::zero());
+        ASSERT_EQ(resources.metric_capabilities.size(), 1u);
+        EXPECT_EQ(
+            resources.metric_capabilities.front().provenance.evidence,
+            EvidenceKind::Unavailable
+        );
+        EXPECT_FALSE(resources.metric_capabilities.front().provenance.limitation.empty());
+    }
+
 }  // namespace bha::analyzers::test

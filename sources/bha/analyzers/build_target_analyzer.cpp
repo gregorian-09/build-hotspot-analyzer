@@ -1,10 +1,12 @@
 // Created by gregorian-rayne on 8/22/26.
 
 #include "bha/analyzers/build_target_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 namespace bha::analyzers {
@@ -85,6 +87,8 @@ namespace bha::analyzers {
         auto& analysis = result.targets;
         analysis.targets.reserve(trace.target_graph->targets.size());
         std::unordered_map<std::string, std::vector<std::size_t>> target_indexes;
+        std::unordered_set<std::size_t> compile_time_overflow_targets;
+        std::unordered_set<std::size_t> link_time_overflow_targets;
         for (const auto& target : trace.target_graph->targets) {
             BuildTargetAnalysisResult::TargetInfo info;
             info.id = target.id;
@@ -116,18 +120,41 @@ namespace bha::analyzers {
             }
 
             ++analysis.matched_commands;
-            auto& target = analysis.targets[target_it->second.front()];
+            const auto target_index = target_it->second.front();
+            auto& target = analysis.targets[target_index];
             if (event.role == BuildStepRole::Compile) {
                 ++target.compile_commands;
                 if (event.has_exact_timing()) {
                     ++target.timed_compile_commands;
-                    target.compile_wall_clock_time += event.duration;
+                    if (!compile_time_overflow_targets.contains(target_index)) {
+                        const auto sum = utils::checked_add_duration(
+                            target.compile_wall_clock_time,
+                            event.duration
+                        );
+                        if (sum.has_value()) {
+                            target.compile_wall_clock_time = *sum;
+                        } else {
+                            compile_time_overflow_targets.insert(target_index);
+                            target.compile_wall_clock_time = Duration::zero();
+                        }
+                    }
                 }
             } else {
                 ++target.link_commands;
                 if (event.has_exact_timing()) {
                     ++target.timed_link_commands;
-                    target.link_wall_clock_time += event.duration;
+                    if (!link_time_overflow_targets.contains(target_index)) {
+                        const auto sum = utils::checked_add_duration(
+                            target.link_wall_clock_time,
+                            event.duration
+                        );
+                        if (sum.has_value()) {
+                            target.link_wall_clock_time = *sum;
+                        } else {
+                            link_time_overflow_targets.insert(target_index);
+                            target.link_wall_clock_time = Duration::zero();
+                        }
+                    }
                 }
             }
             add_output_sizes(target, event);
@@ -175,7 +202,16 @@ namespace bha::analyzers {
             output_observations += target.output_size_observations;
         }
 
-        if (timed_compile_commands > 0) {
+        if (!compile_time_overflow_targets.empty()) {
+            add_capability(
+                analysis,
+                capability(
+                    "build.target.compile_wall_time",
+                    EvidenceKind::Unavailable,
+                    "At least one target's exact compile durations overflowed the aggregate representation"
+                )
+            );
+        } else if (timed_compile_commands > 0) {
             add_capability(
                 analysis,
                 capability(
@@ -197,7 +233,16 @@ namespace bha::analyzers {
             );
         }
 
-        if (timed_link_commands > 0) {
+        if (!link_time_overflow_targets.empty()) {
+            add_capability(
+                analysis,
+                capability(
+                    "build.target.link_wall_time",
+                    EvidenceKind::Unavailable,
+                    "At least one target's exact link durations overflowed the aggregate representation"
+                )
+            );
+        } else if (timed_link_commands > 0) {
             add_capability(
                 analysis,
                 capability(

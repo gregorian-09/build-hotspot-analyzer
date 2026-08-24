@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cstdint>
 #include <limits>
 
@@ -18,6 +19,25 @@ namespace bha::utils::test {
         const auto result = checked_add<std::uint64_t>(
             std::numeric_limits<std::uint64_t>::max(),
             1
+        );
+
+        EXPECT_FALSE(result.has_value());
+    }
+
+    TEST(NumericUtilsTest, CheckedAddDurationReturnsExactSignedSum) {
+        const auto result = checked_add_duration(
+            std::chrono::nanoseconds(12),
+            std::chrono::nanoseconds(-5)
+        );
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(*result, std::chrono::nanoseconds(7));
+    }
+
+    TEST(NumericUtilsTest, CheckedAddDurationRejectsSignedOverflow) {
+        const auto result = checked_add_duration(
+            std::chrono::nanoseconds::max(),
+            std::chrono::nanoseconds(1)
         );
 
         EXPECT_FALSE(result.has_value());

@@ -1,6 +1,7 @@
 // Created by gregorian-rayne on 8/22/26.
 
 #include "bha/analyzers/linker_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -74,6 +75,7 @@ namespace bha::analyzers {
         }
 
         bool output_size_overflow = false;
+        bool wall_time_overflow = false;
         if (trace.build_session.has_value()) {
             for (const auto& event : trace.build_session->commands) {
                 if (event.role != BuildStepRole::Link) {
@@ -83,7 +85,18 @@ namespace bha::analyzers {
                 ++analysis.invocations;
                 if (event.has_exact_timing()) {
                     ++analysis.timed_invocations;
-                    analysis.wall_clock_time += event.duration;
+                    if (!wall_time_overflow) {
+                        const auto sum = utils::checked_add_duration(
+                            analysis.wall_clock_time,
+                            event.duration
+                        );
+                        if (sum.has_value()) {
+                            analysis.wall_clock_time = *sum;
+                        } else {
+                            wall_time_overflow = true;
+                            analysis.wall_clock_time = Duration::zero();
+                        }
+                    }
                 }
 
                 if (event.outputs.empty() || event.outputs.size() != event.output_sizes.size()) {
@@ -119,7 +132,16 @@ namespace bha::analyzers {
             return Result<AnalysisResult, Error>::success(std::move(result));
         }
 
-        if (analysis.timed_invocations > 0) {
+        if (wall_time_overflow) {
+            add_capability(
+                analysis,
+                capability(
+                    "link.wall_time",
+                    EvidenceKind::Unavailable,
+                    "Exact link command durations overflowed the aggregate representation"
+                )
+            );
+        } else if (analysis.timed_invocations > 0) {
             const std::string limitation = analysis.timed_invocations == analysis.invocations
                 ? std::string{}
                 : "Some link commands lack exact producer timing";

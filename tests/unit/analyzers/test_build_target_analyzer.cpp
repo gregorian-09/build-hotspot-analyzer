@@ -135,4 +135,32 @@ namespace bha::analyzers::test {
         EXPECT_EQ(ownership->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildTargetAnalyzerTest, FailsClosedWhenTargetDurationAggregationOverflows) {
+        BuildTrace trace;
+        trace.target_graph = BuildTargetGraph{};
+        trace.target_graph->complete = true;
+        trace.target_graph->targets = {
+            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}, {}}
+        };
+        trace.build_session = BuildSession{};
+        auto first = command(BuildStepRole::Compile, "app", 0, 1);
+        first.duration = Duration::max();
+        auto second = command(BuildStepRole::Compile, "app", 0, 1);
+        second.duration = Duration(1);
+        trace.build_session->commands = {first, second};
+
+        BuildTargetAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().targets;
+        ASSERT_EQ(analysis.targets.size(), 1u);
+        EXPECT_EQ(analysis.targets.front().timed_compile_commands, 2u);
+        EXPECT_EQ(analysis.targets.front().compile_wall_clock_time, Duration::zero());
+        const auto* compile_time = find_capability(analysis, "build.target.compile_wall_time");
+        ASSERT_NE(compile_time, nullptr);
+        EXPECT_EQ(compile_time->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(compile_time->provenance.limitation.empty());
+    }
+
 }  // namespace bha::analyzers::test

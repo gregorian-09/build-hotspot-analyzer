@@ -141,4 +141,26 @@ namespace bha::analyzers::test {
         EXPECT_EQ(trace_wall_time->provenance.evidence, EvidenceKind::Observed);
     }
 
+    TEST(LinkerAnalyzerTest, FailsClosedWhenWallTimeAggregationOverflows) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto first = link_command("first", 0, 1);
+        first.duration = Duration::max();
+        auto second = link_command("second", 0, 1);
+        second.duration = Duration(1);
+        trace.build_session->commands = {first, second};
+
+        LinkerAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().linker;
+        EXPECT_EQ(analysis.timed_invocations, 2u);
+        EXPECT_EQ(analysis.wall_clock_time, Duration::zero());
+        const auto* wall_time = find_capability(analysis, "link.wall_time");
+        ASSERT_NE(wall_time, nullptr);
+        EXPECT_EQ(wall_time->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(wall_time->provenance.limitation.empty());
+    }
+
 }  // namespace bha::analyzers::test
