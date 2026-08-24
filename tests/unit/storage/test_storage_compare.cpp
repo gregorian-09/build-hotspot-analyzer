@@ -23,6 +23,7 @@ analyzers::AnalysisResult make_analysis(
         file.file = name;
         file.compile_time = time;
         analysis.files.push_back(file);
+        analysis.performance.sequential_time += time;
     }
     return analysis;
 }
@@ -129,6 +130,30 @@ TEST(StorageCompareTest, ReportsObservedTranslationUnitRegressionDistribution) {
     EXPECT_EQ(distribution.p99_delta, std::chrono::milliseconds(400));
     EXPECT_EQ(distribution.max_delta, std::chrono::milliseconds(400));
     EXPECT_TRUE(comparison.regressions.empty());
+}
+
+TEST(StorageCompareTest, UsesCompleteSerialTimeInsteadOfFilteredFileRows) {
+    auto old_analysis = make_analysis(
+        {{"slow.cpp", std::chrono::milliseconds(1000)}},
+        std::chrono::milliseconds(1000),
+        Duration::zero(),
+        Duration::zero()
+    );
+    auto new_analysis = make_analysis(
+        {{"slow.cpp", std::chrono::milliseconds(1000)}},
+        std::chrono::milliseconds(1200),
+        Duration::zero(),
+        Duration::zero()
+    );
+
+    old_analysis.performance.sequential_time = std::chrono::milliseconds(3000);
+    new_analysis.performance.sequential_time = std::chrono::milliseconds(3600);
+
+    const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
+
+    EXPECT_EQ(comparison.translation_unit.old_time, std::chrono::milliseconds(3000));
+    EXPECT_EQ(comparison.translation_unit.new_time, std::chrono::milliseconds(3600));
+    EXPECT_NEAR(comparison.translation_unit.percent_change, 20.0, 1e-9);
 }
 
 TEST(StorageCompareTest, SummarizesRepeatedObservedBuildTimes) {

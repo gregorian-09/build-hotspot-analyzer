@@ -1312,14 +1312,6 @@ namespace bha::storage
             return 100.0 * static_cast<double>(delta.count()) / static_cast<double>(old_time.count());
         };
 
-        auto sum_file_compile_time = [](const std::vector<analyzers::FileAnalysisResult>& files) -> Duration {
-            Duration total = Duration::zero();
-            for (const auto& file : files) {
-                total += file.compile_time;
-            }
-            return total;
-        };
-
         auto set_regression_distribution = [](
             ComparisonResult::RegressionDistribution& distribution,
             std::vector<Duration> deltas
@@ -1356,8 +1348,8 @@ namespace bha::storage
 
         result.build_time_percent_change = percent_change(old_time, result.build_time_delta);
 
-        result.translation_unit.old_time = sum_file_compile_time(old_result.files);
-        result.translation_unit.new_time = sum_file_compile_time(new_result.files);
+        result.translation_unit.old_time = old_result.performance.sequential_time;
+        result.translation_unit.new_time = new_result.performance.sequential_time;
         result.translation_unit.delta = result.translation_unit.new_time - result.translation_unit.old_time;
         result.translation_unit.percent_change =
             percent_change(result.translation_unit.old_time, result.translation_unit.delta);
