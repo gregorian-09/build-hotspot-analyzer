@@ -188,7 +188,9 @@ namespace bha::analyzers {
         std::unordered_set<std::underlying_type_t<BuildStepRole>> stdout_overflowed_roles;
         std::unordered_set<std::underlying_type_t<BuildStepRole>> stderr_overflowed_roles;
         std::unordered_set<std::underlying_type_t<BuildStepRole>> duration_overflowed_roles;
+        std::unordered_set<std::underlying_type_t<BuildStepRole>> invalid_duration_roles;
         bool serial_time_overflow = false;
+        bool invalid_duration = false;
 
         const bool has_host_system_value = session.host_system.has_value() && (
             session.host_system->os_name.has_value() ||
@@ -242,7 +244,13 @@ namespace bha::analyzers {
             }
 
             ++step->total_commands;
-            if (command.has_exact_timing()) {
+            const bool observed_timing = command.start_time.has_value() &&
+                command.timing_provenance.evidence == EvidenceKind::Observed;
+            if (observed_timing && command.duration < Duration::zero()) {
+                const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(command.role);
+                invalid_duration = true;
+                invalid_duration_roles.insert(role);
+            } else if (command.has_exact_timing()) {
                 ++step->timed_commands;
                 const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(command.role);
                 if (!duration_overflowed_roles.contains(role)) {
@@ -372,12 +380,15 @@ namespace bha::analyzers {
             const bool duration_overflowed = duration_overflowed_roles.contains(role);
             auto wall_time = capability(
                 "build.step.wall_time",
-                !duration_overflowed && step.timed_commands == step.total_commands
+                !invalid_duration_roles.contains(role) &&
+                        !duration_overflowed && step.timed_commands == step.total_commands
                     ? EvidenceKind::Derived
                     : EvidenceKind::Unavailable,
                 "BuildSessionAnalyzer",
                 scope,
-                duration_overflowed
+                invalid_duration_roles.contains(role)
+                    ? "Producer command timing contained a negative duration"
+                    : duration_overflowed
                     ? "Exact command durations overflowed the aggregate representation"
                     : step.timed_commands == step.total_commands
                         ? ""
@@ -428,6 +439,15 @@ namespace bha::analyzers {
         std::size_t exact_timed_commands = 0;
         bool end_time_overflow = false;
         for (const auto& command : session.commands) {
+            if (command.start_time.has_value() &&
+                command.timing_provenance.evidence == EvidenceKind::Observed &&
+                command.duration < Duration::zero()) {
+                invalid_duration = true;
+                invalid_duration_roles.insert(
+                    static_cast<std::underlying_type_t<BuildStepRole>>(command.role)
+                );
+                continue;
+            }
             if (!command.has_exact_timing()) {
                 continue;
             }
@@ -454,18 +474,20 @@ namespace bha::analyzers {
             analysis.metric_capabilities,
             capability(
                 "build.command.wall_time",
-                !end_time_overflow && !timed_events.empty()
+                !invalid_duration && !end_time_overflow && !timed_events.empty()
                     ? EvidenceKind::Observed
                     : EvidenceKind::Unavailable,
                 "build-session",
                 "command",
-                end_time_overflow
+                invalid_duration
+                    ? "Producer command timing contained a negative duration"
+                    : end_time_overflow
                     ? "A command timestamp plus duration exceeded the platform timestamp representation"
                     : timed_events.empty() ? "No command has exact producer timing" : ""
             )
         );
 
-        if (timed_events.empty() || end_time_overflow) {
+        if (timed_events.empty() || end_time_overflow || invalid_duration) {
             analysis.wall_clock_time = Duration::zero();
             analysis.serial_time = Duration::zero();
             add_capability(
@@ -475,7 +497,9 @@ namespace bha::analyzers {
                     EvidenceKind::Unavailable,
                     "build-session",
                     "session",
-                    end_time_overflow
+                    invalid_duration
+                        ? "Producer command timing contained a negative duration"
+                        : end_time_overflow
                         ? "A command timestamp plus duration exceeded the platform timestamp representation"
                         : "No complete-timing command events were captured"
                 )

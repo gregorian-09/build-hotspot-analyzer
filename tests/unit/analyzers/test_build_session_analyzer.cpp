@@ -138,6 +138,41 @@ namespace bha::analyzers::test {
         EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildSessionAnalyzerTest, FailsClosedWhenCommandDurationIsNegative) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto event = command("negative-duration", 0, 0);
+        event.duration = Duration(-1);
+        trace.build_session->commands = {event};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.timed_commands, 0u);
+        EXPECT_EQ(analysis.wall_clock_time, Duration::zero());
+        EXPECT_EQ(analysis.serial_time, Duration::zero());
+        const auto command_wall_time = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.command.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(command_wall_time, analysis.metric_capabilities.end());
+        EXPECT_EQ(command_wall_time->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_EQ(
+            command_wall_time->provenance.limitation,
+            "Producer command timing contained a negative duration"
+        );
+        const auto scheduler = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.scheduler",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(scheduler, analysis.metric_capabilities.end());
+        EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
+    }
+
     TEST(BuildSessionAnalyzerTest, FailsClosedWhenWallClockSpanOverflows) {
         BuildTrace trace;
         trace.build_session = BuildSession{};
