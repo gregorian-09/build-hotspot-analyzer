@@ -23,9 +23,17 @@ namespace bha::analyzers {
 
         bool process_time_overflow = false;
         bool user_time_overflow = false;
+        bool process_time_invalid = false;
+        bool user_time_invalid = false;
 
         for (const auto& observation : report.observations) {
-            if (!process_time_overflow) {
+            if (!process_time_overflow && !process_time_invalid) {
+                if (observation.total_time < Duration::zero()) {
+                    process_time_invalid = true;
+                    analysis.total_process_time = Duration::zero();
+                }
+            }
+            if (!process_time_overflow && !process_time_invalid) {
                 const auto sum = utils::checked_add_duration(
                     analysis.total_process_time,
                     observation.total_time
@@ -37,7 +45,13 @@ namespace bha::analyzers {
                     analysis.total_process_time = Duration::zero();
                 }
             }
-            if (!user_time_overflow) {
+            if (!user_time_overflow && !user_time_invalid) {
+                if (observation.user_time < Duration::zero()) {
+                    user_time_invalid = true;
+                    analysis.total_user_time = Duration::zero();
+                }
+            }
+            if (!user_time_overflow && !user_time_invalid) {
                 const auto sum = utils::checked_add_duration(
                     analysis.total_user_time,
                     observation.user_time
@@ -54,12 +68,13 @@ namespace bha::analyzers {
             }
         }
 
-        if (process_time_overflow || user_time_overflow) {
+        if (process_time_overflow || user_time_overflow || process_time_invalid || user_time_invalid) {
             for (auto& capability : analysis.metric_capabilities) {
                 if (capability.metric == "process.resource_counters") {
                     capability.provenance.evidence = EvidenceKind::Unavailable;
-                    capability.provenance.limitation =
-                        "Producer resource rows were observed, but an aggregate duration exceeded the representation";
+                    capability.provenance.limitation = process_time_invalid || user_time_invalid
+                        ? "Producer resource rows contained a negative duration"
+                        : "Producer resource rows were observed, but an aggregate duration exceeded the representation";
                 }
             }
         }

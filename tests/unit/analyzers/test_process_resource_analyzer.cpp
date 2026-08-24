@@ -77,4 +77,44 @@ namespace bha::analyzers::test {
         EXPECT_FALSE(resources.metric_capabilities.front().provenance.limitation.empty());
     }
 
+    TEST(ProcessResourceAnalyzerTest, FailsClosedWhenDurationObservationIsNegative) {
+        BuildTrace trace;
+        trace.process_resource_report = ProcessResourceReport{};
+        trace.process_resource_report->observations = {
+            {"clang", "one.o", Duration(-1), std::chrono::milliseconds(2), 87536},
+            {"clang", "two.o", std::chrono::milliseconds(3), Duration(-1), 53568}
+        };
+        trace.process_resource_report->metric_capabilities.push_back({
+            "process.resource_counters",
+            MetricProvenance{
+                EvidenceKind::Observed,
+                "clang",
+                "",
+                "-fproc-stat-report=FILE",
+                "build",
+                TimingDomain::WallClock,
+                TimingAggregation::Exclusive,
+                ""
+            }
+        });
+
+        ProcessResourceAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& resources = result.value().process_resources;
+        EXPECT_EQ(resources.total_process_time, Duration::zero());
+        EXPECT_EQ(resources.total_user_time, Duration::zero());
+        EXPECT_EQ(resources.peak_memory_kib, 87536u);
+        ASSERT_EQ(resources.metric_capabilities.size(), 1u);
+        EXPECT_EQ(
+            resources.metric_capabilities.front().provenance.evidence,
+            EvidenceKind::Unavailable
+        );
+        EXPECT_EQ(
+            resources.metric_capabilities.front().provenance.limitation,
+            "Producer resource rows contained a negative duration"
+        );
+    }
+
 }  // namespace bha::analyzers::test
