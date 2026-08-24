@@ -46,18 +46,25 @@ namespace bha::utils {
     [[nodiscard]] inline int count_paren_delta_outside_quotes(std::string_view text) {
         int delta = 0;
         bool in_quote = false;
-        char quote = '\0';
+        bool escaped = false;
 
         for (const char c : text) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
             if (in_quote) {
-                if (c == quote) {
+                if (c == '"') {
                     in_quote = false;
                 }
                 continue;
             }
-            if (c == '"' || c == '\'') {
+            if (c == '"') {
                 in_quote = true;
-                quote = c;
                 continue;
             }
             if (c == '(') {
@@ -74,7 +81,7 @@ namespace bha::utils {
         std::vector<std::string> tokens;
         std::string current;
         bool in_quote = false;
-        char quote = '\0';
+        bool escaped = false;
 
         auto flush = [&]() {
             if (!current.empty()) {
@@ -85,17 +92,25 @@ namespace bha::utils {
 
         for (std::size_t i = 0; i < args.size(); ++i) {
             const char c = args[i];
+            if (escaped) {
+                current.push_back(c);
+                escaped = false;
+                continue;
+            }
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
             if (in_quote) {
-                if (c == quote) {
+                if (c == '"') {
                     in_quote = false;
                 } else {
                     current.push_back(c);
                 }
                 continue;
             }
-            if (c == '"' || c == '\'') {
+            if (c == '"') {
                 in_quote = true;
-                quote = c;
                 continue;
             }
             if (std::isspace(static_cast<unsigned char>(c)) || c == ';') {
@@ -103,6 +118,9 @@ namespace bha::utils {
                 continue;
             }
             current.push_back(c);
+        }
+        if (escaped) {
+            current.push_back('\\');
         }
         flush();
         return tokens;

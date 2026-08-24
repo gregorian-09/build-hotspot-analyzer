@@ -72,18 +72,25 @@ namespace bha::suggestions {
 
         std::string remove_cmake_comment(std::string_view line) {
             bool in_quote = false;
-            char quote = '\0';
+            bool escaped = false;
             for (std::size_t index = 0; index < line.size(); ++index) {
                 const char character = line[index];
+                if (escaped) {
+                    escaped = false;
+                    continue;
+                }
+                if (character == '\\') {
+                    escaped = true;
+                    continue;
+                }
                 if (in_quote) {
-                    if (character == quote) {
+                    if (character == '"') {
                         in_quote = false;
                     }
                     continue;
                 }
-                if (character == '"' || character == '\'') {
+                if (character == '"') {
                     in_quote = true;
-                    quote = character;
                     continue;
                 }
                 if (character == '#') {
