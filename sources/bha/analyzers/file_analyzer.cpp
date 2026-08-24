@@ -5,7 +5,6 @@
 #include "bha/analyzers/file_analyzer.hpp"
 
 #include <algorithm>
-#include <numeric>
 
 namespace bha::analyzers
 {
@@ -34,16 +33,6 @@ namespace bha::analyzers
             return result;
         }
 
-        Duration calculate_percentile(const std::vector<Duration>& sorted_times, double percentile) {
-            if (sorted_times.empty()) {
-                return Duration::zero();
-            }
-
-            const auto index = static_cast<std::size_t>(percentile / 100.0 *
-                                                  static_cast<double>(sorted_times.size() - 1));
-            return sorted_times[std::min(index, sorted_times.size() - 1)];
-        }
-
     }  // namespace
 
     Result<AnalysisResult, Error> FileAnalyzer::analyze(
@@ -61,11 +50,8 @@ namespace bha::analyzers
         const Duration total_time = trace.total_time;
 
         result.files.reserve(trace.units.size());
-        std::vector<Duration> all_times;
-        all_times.reserve(trace.units.size());
 
         for (const auto& unit : trace.units) {
-            all_times.push_back(unit.metrics.total_time);
             if (unit.metrics.total_time < options.min_duration_threshold) {
                 continue;
             }
@@ -82,27 +68,6 @@ namespace bha::analyzers
         for (std::size_t i = 0; i < result.files.size(); ++i) {
             result.files[i].rank = i + 1;
         }
-
-        std::ranges::sort(all_times);
-
-        result.performance.total_build_time = trace.total_time;
-        result.performance.total_files = trace.units.size();
-
-        if (!all_times.empty()) {
-            const Duration sum = std::accumulate(all_times.begin(), all_times.end(), Duration::zero());
-            result.performance.avg_file_time = sum / all_times.size();
-            result.performance.median_file_time = calculate_percentile(all_times, 50.0);
-            result.performance.p90_file_time = calculate_percentile(all_times, 90.0);
-            result.performance.p99_file_time = calculate_percentile(all_times, 99.0);
-            result.performance.sequential_time = sum;
-        }
-
-        const std::size_t slowest_count = std::min(static_cast<std::size_t>(10), result.files.size());
-        result.performance.slowest_files.assign(
-            result.files.begin(),
-            result.files.begin() + static_cast<std::ptrdiff_t>(slowest_count)
-        );
-        result.performance.slowest_file_count = slowest_count;
 
         const auto end_time = std::chrono::steady_clock::now();
         result.analysis_time = std::chrono::system_clock::now();

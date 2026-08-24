@@ -86,7 +86,7 @@ namespace bha::analyzers
         }
     }
 
-    TEST_F(FileAnalyzerTest, PerformanceMetrics) {
+    TEST_F(FileAnalyzerTest, LeavesAggregatePerformanceToDedicatedAnalyzer) {
         const auto trace = create_test_trace();
         constexpr AnalysisOptions options;
 
@@ -95,9 +95,9 @@ namespace bha::analyzers
         ASSERT_TRUE(result.is_ok());
         const auto& perf = result.value().performance;
 
-        EXPECT_EQ(perf.total_files, 3u);
-        EXPECT_GT(perf.avg_file_time.count(), 0);
-        EXPECT_LE(perf.slowest_file_count, 10u);
+        EXPECT_EQ(perf.total_files, 0u);
+        EXPECT_EQ(perf.avg_file_time, Duration::zero());
+        EXPECT_TRUE(perf.slowest_files.empty());
     }
 
     TEST_F(FileAnalyzerTest, RespectsMinDurationThreshold) {
@@ -109,12 +109,7 @@ namespace bha::analyzers
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(result.value().files.size(), 1u);
-        EXPECT_EQ(
-            result.value().performance.avg_file_time,
-            std::chrono::nanoseconds(3333333333LL)
-        );
-        EXPECT_EQ(result.value().performance.median_file_time, std::chrono::seconds(3));
-        EXPECT_EQ(result.value().performance.sequential_time, std::chrono::seconds(10));
+        EXPECT_EQ(result.value().files.front().file, fs::path("/src/main.cpp"));
     }
 
     TEST_F(FileAnalyzerTest, DoesNotInferPercentagesWithoutBuildDuration) {
