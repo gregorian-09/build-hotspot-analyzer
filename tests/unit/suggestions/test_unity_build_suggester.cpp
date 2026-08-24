@@ -11,6 +11,7 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -380,6 +381,49 @@ namespace bha::suggestions {
         EXPECT_FALSE(found_global_edit);
         EXPECT_FALSE(found_manual_unity_file);
         EXPECT_EQ(result.value().suggestions.front().estimated_savings, Duration::zero());
+    }
+
+    TEST_F(UnityBuildSuggesterTest, ParsesBracketCommentsAndMultilineCommands) {
+        TempDir temp("bha-unity-cmake-lexical-state-");
+        write_file(temp.root / "CMakeLists.txt", "#[=[\n"
+                                                  "add_library(fake src/fake.cpp)\n"
+                                                  "set_property(TARGET core PROPERTY UNITY_BUILD ON)\n"
+                                                  "]=]\n"
+                                                  "project(UnityLexicalState)\n"
+                                                  "add_library(core\n"
+                                                  "  src/a.cpp\n"
+                                                  "  src/b.cpp\n"
+                                                  ")\n");
+        write_file(temp.root / "src" / "a.cpp", "int a() { return 1; }\n");
+        write_file(temp.root / "src" / "b.cpp", "int b() { return 2; }\n");
+        write_compile_database(temp.root, {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}, {},
+                               {{"core", {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}}});
+
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(2);
+
+        analyzers::AnalysisResult analysis;
+        for (const auto& source : {temp.root / "src" / "a.cpp", temp.root / "src" / "b.cpp"}) {
+            analyzers::FileAnalysisResult file;
+            file.file = source;
+            file.compile_time = std::chrono::milliseconds(200);
+            analysis.files.push_back(file);
+        }
+
+        SuggesterOptions options;
+        options.compile_commands_path = temp.root / "compile_commands.json";
+        const SuggestionContext context{trace, analysis, options, temp.root};
+        const auto result = suggester_->suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_FALSE(result.value().suggestions.empty());
+        EXPECT_TRUE(std::ranges::any_of(result.value().suggestions, [&](const auto& suggestion) {
+            return std::ranges::any_of(suggestion.edits, [&](const auto& edit) {
+                return edit.file == temp.root / "CMakeLists.txt" &&
+                       edit.new_text.find("set_property(TARGET core PROPERTY UNITY_BUILD ON)") !=
+                           std::string::npos;
+            });
+        }));
     }
 
     TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetAlreadyHasUnityEnabled) {

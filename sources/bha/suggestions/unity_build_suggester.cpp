@@ -70,11 +70,34 @@ namespace bha::suggestions {
             return extension == ".cc" || extension == ".cpp" || extension == ".cxx" || extension == ".c++";
         }
 
-        std::string remove_cmake_comment(std::string_view line) {
+        std::string strip_cmake_comments(std::string_view content) {
+            std::string cleaned(content);
             bool in_quote = false;
             bool escaped = false;
-            for (std::size_t index = 0; index < line.size(); ++index) {
-                const char character = line[index];
+            std::optional<std::size_t> bracket_equals;
+            std::optional<std::size_t> bracket_comment_equals;
+
+            for (std::size_t index = 0; index < cleaned.size(); ++index) {
+                const char character = cleaned[index];
+                if (bracket_comment_equals.has_value()) {
+                    if (utils::detail::cmake_bracket_closes(cleaned, index, *bracket_comment_equals)) {
+                        for (std::size_t offset = 0; offset <= *bracket_comment_equals + 1; ++offset) {
+                            cleaned[index + offset] = ' ';
+                        }
+                        index += *bracket_comment_equals + 1;
+                        bracket_comment_equals.reset();
+                    } else if (character != '\n') {
+                        cleaned[index] = ' ';
+                    }
+                    continue;
+                }
+                if (bracket_equals.has_value()) {
+                    if (utils::detail::cmake_bracket_closes(cleaned, index, *bracket_equals)) {
+                        index += *bracket_equals + 1;
+                        bracket_equals.reset();
+                    }
+                    continue;
+                }
                 if (escaped) {
                     escaped = false;
                     continue;
@@ -93,16 +116,40 @@ namespace bha::suggestions {
                     in_quote = true;
                     continue;
                 }
+                if (const auto equals = utils::detail::cmake_bracket_equals(cleaned, index);
+                    equals.has_value()) {
+                    bracket_equals = *equals;
+                    index += *equals + 1;
+                    continue;
+                }
                 if (character == '#') {
-                    return std::string(line.substr(0, index));
+                    if (const auto equals = index + 1 < cleaned.size()
+                            ? utils::detail::cmake_bracket_equals(cleaned, index + 1)
+                            : std::nullopt;
+                        equals.has_value()) {
+                        cleaned[index] = ' ';
+                        const std::size_t opening_end = index + *equals + 2;
+                        for (std::size_t offset = 1; offset <= *equals + 2; ++offset) {
+                            cleaned[index + offset] = ' ';
+                        }
+                        bracket_comment_equals = *equals;
+                        index = opening_end;
+                        continue;
+                    }
+                    std::size_t comment_end = index;
+                    while (comment_end < cleaned.size() && cleaned[comment_end] != '\n') {
+                        cleaned[comment_end] = ' ';
+                        ++comment_end;
+                    }
+                    index = comment_end;
                 }
             }
-            return std::string(line);
+            return cleaned;
         }
 
         std::vector<CMakeCommand> parse_cmake_commands(const std::string& content) {
             std::vector<CMakeCommand> commands;
-            std::istringstream input(content);
+            std::istringstream input(strip_cmake_comments(content));
             std::string line;
             std::string pending;
             std::size_t pending_line = 0;
@@ -111,7 +158,6 @@ namespace bha::suggestions {
             bool collecting = false;
 
             while (std::getline(input, line)) {
-                line = remove_cmake_comment(line);
                 const auto first = line.find_first_not_of(" \t\r\n");
                 const std::string trimmed = first == std::string::npos ? std::string{} : line.substr(first);
                 if (trimmed.empty()) {
@@ -133,7 +179,7 @@ namespace bha::suggestions {
                     pending += trimmed;
                 }
 
-                parenthesis_depth += utils::count_paren_delta_outside_quotes(trimmed);
+                parenthesis_depth = utils::count_paren_delta_outside_quotes(pending);
                 if (parenthesis_depth <= 0) {
                     const auto start = utils::parse_cmake_command_start(pending);
                     if (start.has_value()) {
