@@ -129,6 +129,29 @@ namespace bha::analyzers
         }
     }
 
+    TEST_F(DependencyAnalyzerTest, DoesNotInventEmptyHeaderOrConsumerIdentities) {
+        BuildTrace trace;
+
+        CompilationUnit source_less_unit;
+        source_less_unit.includes = {
+            {"", std::chrono::milliseconds(20), 0, {}, {}, std::nullopt},
+            {"/include/observed.h", std::chrono::milliseconds(30), 0, {}, {}, std::nullopt}
+        };
+        trace.units.push_back(std::move(source_less_unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& headers = result.value().dependencies.headers;
+        ASSERT_EQ(headers.size(), 1u);
+        EXPECT_EQ(headers.front().path, fs::path("/include/observed.h"));
+        EXPECT_EQ(headers.front().inclusion_count, 1u);
+        EXPECT_EQ(headers.front().including_files, 0u);
+        EXPECT_TRUE(headers.front().included_by.empty());
+        EXPECT_EQ(result.value().dependencies.total_includes, 1u);
+    }
+
     // ======================================================================
     // Char-scanner tests for parse_include_directives_from_file
     // ======================================================================

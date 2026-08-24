@@ -44,6 +44,9 @@ namespace bha::analyzers
             const std::string source_key = path_key(unit.source_file);
 
             for (const auto& include : unit.includes) {
+                if (include.header.empty()) {
+                    continue;
+                }
                 const std::string header_key = path_key(include.header);
 
                 auto& stats = header_map[header_key];
@@ -53,7 +56,9 @@ namespace bha::analyzers
 
                 stats.total_parse_time += include.parse_time;
                 ++stats.inclusion_count;
-                stats.including_files.insert(source_key);
+                if (!source_key.empty()) {
+                    stats.including_files.insert(source_key);
+                }
                 if (include.self_parse_time.has_value()) {
                     if (stats.self_time_available) {
                         stats.self_parse_time += *include.self_parse_time;
@@ -105,7 +110,11 @@ namespace bha::analyzers
 
         result.dependencies.total_includes = 0;
         for (const auto& unit : trace.units) {
-            result.dependencies.total_includes += unit.includes.size();
+            for (const auto& include : unit.includes) {
+                if (!include.header.empty()) {
+                    ++result.dependencies.total_includes;
+                }
+            }
         }
         result.dependencies.unique_headers = header_map.size();
         result.dependencies.max_include_depth = max_depth;
