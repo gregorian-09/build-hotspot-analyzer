@@ -11,6 +11,7 @@
 #include <future>
 #include <mutex>
 #include <optional>
+#include <utility>
 
 namespace bha::analyzers
 {
@@ -102,7 +103,8 @@ namespace bha::analyzers
         // Launch all analyzers in parallel. Each analyzer is independent
         // (read-only access to trace and options), so wall time becomes
         // max(analyzer times) instead of sum(analyzer times).
-        std::vector<std::future<Result<AnalysisResult, Error>>> futures;
+        using TimedAnalysis = std::pair<Result<AnalysisResult, Error>, Duration>;
+        std::vector<std::future<TimedAnalysis>> futures;
         futures.reserve(analyzers.size());
 
         for (const auto* analyzer : analyzers) {
@@ -110,18 +112,28 @@ namespace bha::analyzers
                 break;
             }
             futures.push_back(std::async(std::launch::async, [analyzer, &trace, &options]() {
-                return analyzer->analyze(trace, options);
+                const auto analyzer_start = std::chrono::steady_clock::now();
+                auto result = analyzer->analyze(trace, options);
+                const auto analyzer_elapsed = std::chrono::duration_cast<Duration>(
+                    std::chrono::steady_clock::now() - analyzer_start
+                );
+                return std::make_pair(std::move(result), analyzer_elapsed);
             }));
         }
 
         // Merge results sequentially (fast path: mutex-free, results are independent)
         for (auto& future : futures) {
-            const auto analyzer_start = std::chrono::steady_clock::now();
-            auto result = future.get();
-            const auto analyzer_elapsed = std::chrono::steady_clock::now() - analyzer_start;
+            auto timed_result = future.get();
+            auto result = std::move(timed_result.first);
+            const auto analyzer_elapsed = timed_result.second;
 
             if (options.max_analyzer_time != Duration::zero() &&
                 analyzer_elapsed >= options.max_analyzer_time) {
+                continue;
+            }
+
+            if (total_deadline.has_value() &&
+                std::chrono::steady_clock::now() >= *total_deadline) {
                 continue;
             }
 
