@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <optional>
 #include <ranges>
@@ -47,6 +48,19 @@ namespace bha::suggestions
         const SuggesterOptions& options,
         const fs::path& project_root
     ) {
+        if (options.max_total_time < Duration::zero() ||
+            options.max_suggester_time < Duration::zero()) {
+            return Result<std::vector<Suggestion>, Error>::failure(
+                Error::invalid_argument("Suggester duration options cannot be negative")
+            );
+        }
+        if (!std::isfinite(options.min_confidence) ||
+            options.min_confidence < 0.0 || options.min_confidence > 1.0) {
+            return Result<std::vector<Suggestion>, Error>::failure(
+                Error::invalid_argument("Suggester confidence threshold must be finite and in [0, 1]")
+            );
+        }
+
         std::vector<Suggestion> all_suggestions;
 
         std::atomic<bool> cancelled{false};
@@ -229,12 +243,14 @@ namespace bha::suggestions
 
                 all_suggestions.push_back(std::move(suggestion));
 
-                if (all_suggestions.size() >= options.max_suggestions) {
+                if (options.max_suggestions > 0 &&
+                    all_suggestions.size() >= options.max_suggestions) {
                     break;
                 }
             }
 
-            if (all_suggestions.size() >= options.max_suggestions) {
+            if (options.max_suggestions > 0 &&
+                all_suggestions.size() >= options.max_suggestions) {
                 break;
             }
         }

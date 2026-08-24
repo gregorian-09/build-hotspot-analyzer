@@ -236,4 +236,63 @@ namespace bha::suggestions {
         std::filesystem::remove_all(root, ec);
     }
 
+    TEST(SuggesterCatalogTest, RejectsInvalidSuggestionOptions) {
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+
+        const auto expect_invalid = [&trace, &analysis](const SuggesterOptions& options) {
+            const auto result = generate_all_suggestions(trace, analysis, options);
+            ASSERT_TRUE(result.is_err());
+            EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+        };
+
+        SuggesterOptions negative_total;
+        negative_total.max_total_time = Duration(-1);
+        expect_invalid(negative_total);
+
+        SuggesterOptions negative_suggester;
+        negative_suggester.max_suggester_time = Duration(-1);
+        expect_invalid(negative_suggester);
+
+        SuggesterOptions invalid_confidence;
+        invalid_confidence.min_confidence = 1.1;
+        expect_invalid(invalid_confidence);
+    }
+
+    TEST(SuggesterCatalogTest, TreatsZeroMaxSuggestionsAsUnlimited) {
+        const auto unique_suffix = std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count()
+        );
+        const auto root = std::filesystem::temp_directory_path() / ("bha-unlimited-suggestions-" + unique_suffix);
+        const auto target = root / "include" / "widget.h";
+        write_file(target, "#pragma once\nstruct widget;\n");
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.max_suggestions = 0;
+        options.min_confidence = 0.0;
+        options.enable_consolidation = false;
+        options.restrict_to_trace = false;
+
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("unlimited-a", target)
+        );
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("unlimited-b", target)
+        );
+
+        const auto result = generate_all_suggestions(trace, analysis, options, root);
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(
+            std::ranges::count_if(result.value(), [](const Suggestion& suggestion) {
+                return suggestion.id == "unlimited-a" || suggestion.id == "unlimited-b";
+            }),
+            2
+        );
+
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+    }
+
 }  // namespace bha::suggestions

@@ -1168,6 +1168,7 @@ namespace bha {
      * Suggestion generation options.
      */
     struct SuggesterOptions {
+        /// Maximum suggestions to retain; zero means unlimited.
         std::size_t max_suggestions = 100;
         Priority min_priority = Priority::Low;
         double min_confidence = 0.5;
