@@ -418,6 +418,12 @@ namespace bha::analyzers {
         std::vector<Boundary> boundaries;
         boundaries.reserve(timed_events.size() * 2);
         for (const auto& event : timed_events) {
+            // A zero-length event contributes no occupied interval. Adding an
+            // end boundary before its start boundary would underflow `active`
+            // during the half-open interval sweep.
+            if (event.event->duration == Duration::zero()) {
+                continue;
+            }
             boundaries.push_back({*event.event->start_time, 1});
             boundaries.push_back({event.end_time, -1});
         }

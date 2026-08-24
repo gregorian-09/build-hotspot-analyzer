@@ -59,6 +59,27 @@ namespace bha::analyzers::test {
         EXPECT_EQ(critical->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildSessionAnalyzerTest, ZeroDurationCommandsDoNotUnderflowParallelism) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        trace.build_session->commands = {
+            command("zero-duration", 0, 0),
+            command("compile-a", 0, 1)
+        };
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.total_commands, 2u);
+        EXPECT_EQ(analysis.timed_commands, 2u);
+        EXPECT_EQ(analysis.wall_clock_time, std::chrono::seconds(1));
+        EXPECT_EQ(analysis.serial_time, std::chrono::seconds(1));
+        EXPECT_EQ(analysis.peak_parallelism, 1u);
+        EXPECT_DOUBLE_EQ(analysis.average_parallelism, 1.0);
+    }
+
     TEST(BuildSessionAnalyzerTest, ComputesCriticalPathFromCompleteDependencies) {
         BuildTrace trace;
         trace.build_session = BuildSession{};
