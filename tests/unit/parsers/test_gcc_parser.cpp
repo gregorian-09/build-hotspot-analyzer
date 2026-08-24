@@ -44,7 +44,7 @@ phase lang. deferred                  :   0.02 (  1%)   0.00 (  0%)   0.02 (  1%
         EXPECT_FALSE(parser_->can_parse_content(invalid_content));
     }
 
-    TEST_F(GCCParserTest, ParseContent_BasicReport) {
+    TEST_F(GCCParserTest, DoesNotInferTotalTimeFromPhaseRows) {
         const std::string content = R"(
 Time variable                                   usr           sys          wall
 phase parsing                         :   0.50 ( 25%)   0.10 (  5%)   0.60 ( 30%)
@@ -59,7 +59,7 @@ phase last asm                        :   0.10 (  5%)   0.02 (  1%)   0.12 (  6%
         const auto& unit = result.value();
 
         EXPECT_EQ(unit.source_file, fs::path("/src/test.cpp"));
-        EXPECT_GT(unit.metrics.total_time.count(), 0);
+        EXPECT_EQ(unit.metrics.total_time, Duration::zero());
         EXPECT_GT(unit.metrics.breakdown.parsing.count(), 0);
         EXPECT_EQ(unit.metrics.breakdown.semantic_analysis, Duration::zero());
         EXPECT_EQ(unit.metrics.breakdown.optimization, Duration::zero());

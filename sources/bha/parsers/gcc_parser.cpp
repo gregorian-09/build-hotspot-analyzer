@@ -335,7 +335,6 @@ namespace bha::parsers {
         unit.metrics.path = source_hint;
 
         const auto lines = utils::split(content, '\n');
-        Duration total_wall = Duration::zero();
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
         bool saw_template_phase = false;
@@ -360,7 +359,6 @@ namespace bha::parsers {
                 continue;
             }
 
-            total_wall += timing.wall_time;
             saw_template_phase = saw_template_phase || timing.phase_name == "phase lang. deferred";
             map_phase_to_breakdown(timing, unit.metrics.breakdown);
 
@@ -383,7 +381,7 @@ namespace bha::parsers {
             );
         }
 
-        unit.metrics.total_time = reported_total.value_or(total_wall);
+        unit.metrics.total_time = reported_total.value_or(Duration::zero());
         unit.metrics.frontend_time = frontend_time;
         unit.metrics.backend_time = backend_time;
 
