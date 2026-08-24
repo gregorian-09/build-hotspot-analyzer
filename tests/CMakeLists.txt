@@ -14,7 +14,6 @@ add_executable(bha_tests
         unit/build_systems/test_adapter.cpp
         unit/build_sessions/test_cmake_instrumentation.cpp
         unit/build_sessions/test_cmake_file_api.cpp
-        unit/graph/test_graph.cpp
         unit/core/test_error.cpp
         unit/core/test_result.cpp
         unit/core/test_types.cpp

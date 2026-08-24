@@ -230,7 +230,6 @@ target_sources(bha_lib PRIVATE
         sources/bha/parsers/p1689_module_parser.cpp
         sources/bha/parsers/process_resource_parser.cpp
         sources/bha/parsers/memory_parser.cpp
-        sources/bha/graph/graph.cpp
         sources/bha/project_index.cpp
         sources/bha/build_systems/adapter.cpp
         sources/bha/build_systems/adapter_support.cpp
