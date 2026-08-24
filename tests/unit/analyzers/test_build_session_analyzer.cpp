@@ -138,6 +138,36 @@ namespace bha::analyzers::test {
         EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildSessionAnalyzerTest, FailsClosedWhenWallClockSpanOverflows) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto first = command("minimum-start", 0, 0);
+        first.start_time = Timestamp::min();
+        auto last = command("maximum-end", 0, 0);
+        last.start_time = Timestamp::max();
+        trace.build_session->commands = {first, last};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.wall_clock_time, Duration::zero());
+        EXPECT_EQ(analysis.serial_time, Duration::zero());
+        EXPECT_DOUBLE_EQ(analysis.average_parallelism, 0.0);
+        const auto parallelism = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.scheduler.parallelism",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(parallelism, analysis.metric_capabilities.end());
+        EXPECT_EQ(parallelism->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_EQ(
+            parallelism->provenance.limitation,
+            "The build-session wall-clock span exceeded the duration representation"
+        );
+    }
+
     TEST(BuildSessionAnalyzerTest, ComputesCriticalPathFromCompleteDependencies) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

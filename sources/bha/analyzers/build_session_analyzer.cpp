@@ -494,7 +494,16 @@ namespace bha::analyzers {
             [](const TimedEvent& event) { return event.end_time; }
         )->end_time;
 
-        analysis.wall_clock_time = last_end - first_start;
+        const auto wall_clock_time = utils::checked_sub_duration(
+            last_end.time_since_epoch(),
+            first_start.time_since_epoch()
+        );
+        const bool wall_clock_overflow = !wall_clock_time.has_value();
+        if (wall_clock_time.has_value()) {
+            analysis.wall_clock_time = *wall_clock_time;
+        } else {
+            analysis.wall_clock_time = Duration::zero();
+        }
         for (const auto& event : timed_events) {
             if (serial_time_overflow) {
                 break;
@@ -547,6 +556,7 @@ namespace bha::analyzers {
         }
 
         const bool all_commands_timed = !serial_time_overflow && !end_time_overflow &&
+            !wall_clock_overflow &&
             analysis.timed_commands == analysis.total_commands;
         add_capability(
             analysis.metric_capabilities,
@@ -557,6 +567,8 @@ namespace bha::analyzers {
                 "session",
                 serial_time_overflow
                     ? "Exact command durations overflowed the aggregate representation"
+                    : wall_clock_overflow
+                        ? "The build-session wall-clock span exceeded the duration representation"
                     : all_commands_timed ? "" : "Some commands do not have exact timing"
             )
         );
