@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <regex>
 #include <sstream>
 #include <thread>
 #include <tuple>
