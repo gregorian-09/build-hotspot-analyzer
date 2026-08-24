@@ -111,7 +111,7 @@ namespace bha::parsers {
         }
 
         struct ParsedTimeField {
-            double seconds = 0.0;
+            Duration duration = Duration::zero();
             std::size_t next_position = 0;
         };
 
@@ -140,8 +140,13 @@ namespace bha::parsers {
             );
             if (number_error != std::errc() ||
                 number_end != number.data() + number.size() ||
-                !std::isfinite(seconds) || seconds < 0.0 ||
-                seconds > static_cast<double>(Duration::max().count()) / 1'000'000'000.0) {
+                !std::isfinite(seconds) || seconds < 0.0) {
+                return std::nullopt;
+            }
+            const auto duration = utils::checked_duration_cast<Duration>(
+                std::chrono::duration<double>(seconds)
+            );
+            if (!duration.has_value()) {
                 return std::nullopt;
             }
 
@@ -173,7 +178,7 @@ namespace bha::parsers {
                 return std::nullopt;
             }
 
-            return ParsedTimeField{seconds, close + 1};
+            return ParsedTimeField{*duration, close + 1};
         }
 
         std::optional<ParsedTimeField> parse_plain_time_field(
@@ -200,11 +205,16 @@ namespace bha::parsers {
             );
             if (number_error != std::errc() ||
                 number_end != number.data() + number.size() ||
-                !std::isfinite(seconds) || seconds < 0.0 ||
-                seconds > static_cast<double>(Duration::max().count()) / 1'000'000'000.0) {
+                !std::isfinite(seconds) || seconds < 0.0) {
                 return std::nullopt;
             }
-            return ParsedTimeField{seconds, position};
+            const auto duration = utils::checked_duration_cast<Duration>(
+                std::chrono::duration<double>(seconds)
+            );
+            if (!duration.has_value()) {
+                return std::nullopt;
+            }
+            return ParsedTimeField{*duration, position};
         }
 
         TimingLineParse parse_timing_line(
@@ -227,7 +237,7 @@ namespace bha::parsers {
             TimingLineParse result;
             result.is_report_row = true;
             result.timing.phase_name = std::string(phase_name);
-            std::array<double, 3> seconds{};
+            std::array<Duration, 3> durations{};
             auto position = colon_pos + 1;
             for (std::size_t index = 0; index < schema.timing_columns; ++index) {
                 const auto field = is_total
@@ -237,20 +247,16 @@ namespace bha::parsers {
                     result.valid = false;
                     return result;
                 }
-                seconds[index] = field->seconds;
+                durations[index] = field->duration;
                 position = field->next_position;
             }
 
             if (schema.timing_columns == 3) {
-                result.timing.user_time = std::chrono::duration_cast<Duration>(
-                    std::chrono::duration<double>(seconds[0]));
-                result.timing.sys_time = std::chrono::duration_cast<Duration>(
-                    std::chrono::duration<double>(seconds[1]));
-                result.timing.wall_time = std::chrono::duration_cast<Duration>(
-                    std::chrono::duration<double>(seconds[2]));
+                result.timing.user_time = durations[0];
+                result.timing.sys_time = durations[1];
+                result.timing.wall_time = durations[2];
             } else {
-                result.timing.wall_time = std::chrono::duration_cast<Duration>(
-                    std::chrono::duration<double>(seconds[0]));
+                result.timing.wall_time = durations[0];
             }
             return result;
         }

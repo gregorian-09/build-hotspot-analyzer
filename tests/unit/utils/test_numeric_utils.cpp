@@ -60,4 +60,21 @@ namespace bha::utils::test {
         );
     }
 
+    TEST(NumericUtilsTest, CheckedDurationCastPreservesRepresentableValue) {
+        const auto result = checked_duration_cast<decltype(std::chrono::nanoseconds{})>(
+            std::chrono::duration<double>(1.25)
+        );
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(*result, std::chrono::milliseconds(1250));
+    }
+
+    TEST(NumericUtilsTest, CheckedDurationCastRejectsUnrepresentableValue) {
+        const auto result = checked_duration_cast<decltype(std::chrono::nanoseconds{})>(
+            std::chrono::duration<double, std::micro>(1e30)
+        );
+
+        EXPECT_FALSE(result.has_value());
+    }
+
 }  // namespace bha::utils::test

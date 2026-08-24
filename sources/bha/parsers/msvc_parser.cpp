@@ -53,11 +53,10 @@ namespace bha::parsers {
                 trimmed.data(), trimmed.data() + trimmed.size(), seconds
             );
             if (error != std::errc() || end != trimmed.data() + trimmed.size() ||
-                !std::isfinite(seconds) || seconds < 0.0 ||
-                seconds > static_cast<double>(Duration::max().count()) / 1'000'000'000.0) {
+                !std::isfinite(seconds) || seconds < 0.0) {
                 return std::nullopt;
             }
-            return std::chrono::duration_cast<Duration>(
+            return utils::checked_duration_cast<Duration>(
                 std::chrono::duration<double>(seconds)
             );
         }

@@ -3,6 +3,7 @@
 #include "bha/parsers/lld_trace_parser.hpp"
 
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -45,8 +46,8 @@ namespace bha::parsers {
             return Result<double, Error>::success(value);
         }
 
-        Duration microseconds_to_duration(const double microseconds) {
-            return std::chrono::duration_cast<Duration>(
+        std::optional<Duration> microseconds_to_duration(const double microseconds) {
+            return utils::checked_duration_cast<Duration>(
                 std::chrono::duration<double, std::micro>(microseconds)
             );
         }
@@ -114,10 +115,21 @@ namespace bha::parsers {
                     return Result<LinkerTrace, Error>::failure(duration.error());
                 }
 
+                const auto start_offset = microseconds_to_duration(timestamp.value());
+                const auto event_duration = microseconds_to_duration(duration.value());
+                if (!start_offset.has_value() || !event_duration.has_value()) {
+                    return Result<LinkerTrace, Error>::failure(
+                        Error::parse_error(
+                            "LLD time trace event exceeds the supported duration representation",
+                            source_hint.string()
+                        )
+                    );
+                }
+
                 LinkerTraceEvent event;
                 event.name = event_json["name"].get<std::string>();
-                event.start_offset = microseconds_to_duration(timestamp.value());
-                event.duration = microseconds_to_duration(duration.value());
+                event.start_offset = *start_offset;
+                event.duration = *event_duration;
                 if (event_json.contains("args") && event_json["args"].is_object() &&
                     event_json["args"].contains("detail") &&
                     event_json["args"]["detail"].is_string()) {

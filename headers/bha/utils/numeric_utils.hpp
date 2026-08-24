@@ -1,8 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <cmath>
 #include <limits>
 #include <optional>
+#include <ratio>
 #include <type_traits>
 
 namespace bha::utils {
@@ -38,6 +40,32 @@ namespace bha::utils {
         }
 
         return std::chrono::duration<Rep, Period>(left_count + right_count);
+    }
+
+    /// Converts a floating-point duration to the nearest target tick without
+    /// allowing an out-of-range conversion to reach duration's integral rep.
+    template <typename ToDuration, typename FromRep, typename FromPeriod>
+    [[nodiscard]] std::optional<ToDuration> checked_duration_cast(
+        const std::chrono::duration<FromRep, FromPeriod> value
+    ) noexcept {
+        using ToRep = typename ToDuration::rep;
+        using ToPeriod = typename ToDuration::period;
+        static_assert(std::is_integral_v<ToRep>, "checked_duration_cast requires an integral target representation");
+        static_assert(std::is_floating_point_v<FromRep>, "checked_duration_cast requires a floating source representation");
+
+        using conversion = std::ratio_divide<FromPeriod, ToPeriod>;
+        const long double target_count =
+            static_cast<long double>(value.count()) *
+            static_cast<long double>(conversion::num) /
+            static_cast<long double>(conversion::den);
+        const long double rounded_count = std::round(target_count);
+        if (!std::isfinite(rounded_count) ||
+            rounded_count < static_cast<long double>(std::numeric_limits<ToRep>::lowest()) ||
+            rounded_count > static_cast<long double>(std::numeric_limits<ToRep>::max())) {
+            return std::nullopt;
+        }
+
+        return ToDuration(static_cast<ToRep>(rounded_count));
     }
 
     template <typename Clock>

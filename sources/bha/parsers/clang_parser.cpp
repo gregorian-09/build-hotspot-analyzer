@@ -25,8 +25,8 @@ namespace bha::parsers {
 
         constexpr std::string_view CLANG_TRACE_MARKER = "traceEvents";
 
-        Duration microseconds_to_duration(const double us) {
-            return std::chrono::duration_cast<Duration>(
+        std::optional<Duration> microseconds_to_duration(const double us) {
+            return utils::checked_duration_cast<Duration>(
                 std::chrono::duration<double, std::micro>(us)
             );
         }
@@ -394,10 +394,11 @@ namespace bha::parsers {
                         }
                     }
 
-                    const auto sum = utils::checked_add_duration(
-                        tmpl.time,
-                        microseconds_to_duration(event.duration)
-                    );
+                    const auto duration = microseconds_to_duration(event.duration);
+                    if (!duration.has_value()) {
+                        return false;
+                    }
+                    const auto sum = utils::checked_add_duration(tmpl.time, *duration);
                     if (!sum.has_value()) {
                         return false;
                     }
@@ -529,7 +530,12 @@ namespace bha::parsers {
                         processing_result.all_self_times_available = false;
                         continue;
                     }
-                    source_events[index].self_parse_time = microseconds_to_duration(self_duration);
+                    const auto self_time = microseconds_to_duration(self_duration);
+                    if (!self_time.has_value()) {
+                        processing_result.all_self_times_available = false;
+                        continue;
+                    }
+                    source_events[index].self_parse_time = *self_time;
                 }
                 group_start = group_end;
             }
@@ -561,9 +567,13 @@ namespace bha::parsers {
             for (const auto& event : source_events) {
                 auto& stats = include_map[event.detail];
                 stats.info.header = event.detail;
+                const auto duration = microseconds_to_duration(event.duration);
+                if (!duration.has_value()) {
+                    return false;
+                }
                 if (const auto sum = utils::checked_add_duration(
                         stats.info.parse_time,
-                        microseconds_to_duration(event.duration)
+                        *duration
                     ); sum.has_value()) {
                     stats.info.parse_time = *sum;
                 } else {
@@ -620,43 +630,46 @@ namespace bha::parsers {
 
             for (const auto& event : events) {
                 const auto dur = microseconds_to_duration(event.duration);
+                if (!dur.has_value()) {
+                    return false;
+                }
 
                 if (event.name == "Total ExecuteCompiler" || event.name == "ExecuteCompiler") {
-                    metrics.total_time = dur;
+                    metrics.total_time = *dur;
                 }
                 else if (event.name == "Total Frontend") {
-                    frontend_time = dur;
+                    frontend_time = *dur;
                 }
                 else if (event.name == "Total Backend") {
-                    backend_time = dur;
+                    backend_time = *dur;
                 }
                 else if (event.name == "Total Source") {
-                    if (!add_duration(metrics.breakdown.preprocessing, dur)) {
+                    if (!add_duration(metrics.breakdown.preprocessing, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total ParseClass" || event.name == "ParseClass") {
-                    if (!add_duration(metrics.breakdown.parsing, dur)) {
+                    if (!add_duration(metrics.breakdown.parsing, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total PerformPendingInstantiations" ||
                          event.name == "Total InstantiateClass" ||
                          event.name == "Total InstantiateFunction") {
-                    if (!add_duration(metrics.breakdown.template_instantiation, dur)) {
+                    if (!add_duration(metrics.breakdown.template_instantiation, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total CodeGen Function" ||
                          event.name == "Total PerFunctionPasses") {
-                    if (!add_duration(metrics.breakdown.code_generation, dur)) {
+                    if (!add_duration(metrics.breakdown.code_generation, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total OptModule" ||
                          event.name == "Total RunLoopPass" ||
                          event.name == "Total OptFunction") {
-                    if (!add_duration(metrics.breakdown.optimization, dur)) {
+                    if (!add_duration(metrics.breakdown.optimization, *dur)) {
                         return false;
                     }
                 }
