@@ -121,19 +121,20 @@ namespace bha::utils {
         }
         std::vector<fs::path> result;
         auto process_entry = [&](const fs::directory_entry& entry) {
-            if (entry.is_regular_file()) {
+            if (entry.is_regular_file(ec)) {
                 if (extension.empty() || entry.path().extension() == extension) {
                     result.push_back(entry.path());
                 }
             }
+            return !ec;
         };
         if (recursive) {
             for (fs::recursive_directory_iterator it(dir, ec), end; it != end && !ec; ++it) {
-                process_entry(*it);
+                if (!process_entry(*it)) break;
             }
         } else {
             for (fs::directory_iterator it(dir, ec), end; it != end && !ec; ++it) {
-                process_entry(*it);
+                if (!process_entry(*it)) break;
             }
         }
         if (ec) {
