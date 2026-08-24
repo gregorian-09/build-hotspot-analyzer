@@ -874,7 +874,7 @@ namespace bha::suggestions {
             const std::vector<CompilationUnit>& commands
         ) {
             std::uint64_t hash = 1469598103934665603ULL;
-            hash = fnv1a_append(hash, "bha-template-semantic-index-v11");
+            hash = fnv1a_append(hash, "bha-template-semantic-index-v12");
             for (const auto& command : commands) {
                 hash = fnv1a_append(hash, command.source_file.generic_string());
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -1007,7 +1007,8 @@ namespace bha::suggestions {
                 {"has_dependent_use_context", record.has_dependent_use_context},
                 {"has_unsupported_scope", record.has_unsupported_scope},
                 {"has_unsupported_function_form", record.has_unsupported_function_form},
-                {"has_unsupported_variable_form", record.has_unsupported_variable_form}
+                {"has_unsupported_variable_form", record.has_unsupported_variable_form},
+                {"has_declaration_identity_conflict", record.has_declaration_identity_conflict}
             };
         }
 
@@ -1041,6 +1042,9 @@ namespace bha::suggestions {
             );
             record.has_unsupported_variable_form = value.value(
                 "has_unsupported_variable_form", false
+            );
+            record.has_declaration_identity_conflict = value.value(
+                "has_declaration_identity_conflict", false
             );
             if (value.contains("use_files") && value["use_files"].is_array()) {
                 for (const auto& file : value["use_files"]) {
@@ -1128,7 +1132,7 @@ namespace bha::suggestions {
                 try {
                     json cache;
                     input >> cache;
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v11" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v12" &&
                         cache.value("fingerprint", "") == fingerprint &&
                         cache.contains("records") && cache["records"].is_array()) {
                         for (const auto& value : cache["records"]) {
@@ -1137,7 +1141,7 @@ namespace bha::suggestions {
                         status_ = TemplateSemanticStatus::Parsed;
                         return;
                     }
-                    if (cache.value("schema", "") == "bha-template-semantic-index-v11" &&
+                    if (cache.value("schema", "") == "bha-template-semantic-index-v12" &&
                         cache.contains("translation_units") && cache["translation_units"].is_array()) {
                         reusable_cache = std::move(cache);
                     }
@@ -1251,6 +1255,14 @@ namespace bha::suggestions {
             }
 
             auto& existing = merged[it->second];
+            existing.has_declaration_identity_conflict = existing.has_declaration_identity_conflict ||
+                existing.declaration_kind != record.declaration_kind ||
+                (!existing.canonical_extern_declaration.empty() &&
+                 !record.canonical_extern_declaration.empty() &&
+                 existing.canonical_extern_declaration != record.canonical_extern_declaration) ||
+                (!existing.canonical_explicit_definition.empty() &&
+                 !record.canonical_explicit_definition.empty() &&
+                 existing.canonical_explicit_definition != record.canonical_explicit_definition);
             existing.complete_definition = existing.complete_definition || record.complete_definition;
             existing.has_explicit_instantiation =
                 existing.has_explicit_instantiation || record.has_explicit_instantiation;
@@ -1354,7 +1366,7 @@ namespace bha::suggestions {
             fs::create_directories(cache_path.parent_path(), ec);
             if (!ec) {
                 json cache;
-                cache["schema"] = "bha-template-semantic-index-v11";
+                cache["schema"] = "bha-template-semantic-index-v12";
                 cache["fingerprint"] = fingerprint;
                 cache["records"] = json::array();
                 for (const auto& record : records_) {

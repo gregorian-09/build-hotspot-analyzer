@@ -50,6 +50,7 @@ namespace bha::suggestions {
         bool has_unsupported_scope = false;
         bool has_unsupported_function_form = false;
         bool has_unsupported_variable_form = false;
+        bool has_declaration_identity_conflict = false;
     };
 
     /**

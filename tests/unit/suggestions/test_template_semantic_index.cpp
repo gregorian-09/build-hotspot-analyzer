@@ -210,6 +210,48 @@ namespace bha::suggestions {
             EXPECT_FALSE(match->has_single_explicit_definition);
         }
 
+        TEST_F(TemplateSemanticIndexTest, RejectsDeclarationIdentityConflictAcrossConfigurations) {
+            const auto header = root_ / "box.hpp";
+            std::ofstream(header)
+                << "#ifdef BHA_FUNCTION_FORM\n"
+                << "template <typename T> int Box(T value) { return value; }\n"
+                << "#else\n"
+                << "template <typename T> struct Box { T value{}; };\n"
+                << "#endif\n";
+
+            const auto class_source = root_ / "src" / "class.cpp";
+            std::ofstream(class_source)
+                << "#include \"../box.hpp\"\n"
+                << "template struct Box<int>;\n";
+            const auto function_source = root_ / "src" / "function.cpp";
+            std::ofstream(function_source)
+                << "#include \"../box.hpp\"\n"
+                << "template int Box<int>(int);\n";
+
+            const auto database = root_ / "compile_commands.json";
+            std::ofstream(database)
+                << "[{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/class.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/class.cpp\"]},"
+                << "{\"directory\":\"" << root_.string() << "\","
+                << "\"file\":\"src/function.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-DBHA_FUNCTION_FORM\","
+                << "\"-c\",\"src/function.cpp\"]}]";
+
+            ProjectIndex project_index(root_, database);
+            TemplateSemanticIndex index(project_index);
+            index.build();
+
+            if (index.status() == TemplateSemanticStatus::Unavailable) {
+                GTEST_SKIP() << index.diagnostic();
+            }
+
+            ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
+            const auto* match = index.find_exact("Box<int>");
+            ASSERT_NE(match, nullptr);
+            EXPECT_TRUE(match->has_declaration_identity_conflict);
+        }
+
         TEST_F(TemplateSemanticIndexTest, RejectsTranslationUnitWithClangDiagnostics) {
             const auto source = root_ / "src" / "broken.cpp";
             std::ofstream(source) << "template <typename T> struct Broken { T value; };\n"

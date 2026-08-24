@@ -28,7 +28,7 @@ namespace {
             !record.complete_definition || !record.has_external_linkage ||
             !record.has_single_explicit_definition || record.has_dependent_arguments ||
             record.has_unsupported_scope || record.has_unsupported_function_form ||
-            record.has_unsupported_variable_form ||
+            record.has_unsupported_variable_form || record.has_declaration_identity_conflict ||
             record.declaration_file.empty() ||
             record.declaration_end_line == 0 || record.explicit_definition_files.empty()) {
             return std::nullopt;
