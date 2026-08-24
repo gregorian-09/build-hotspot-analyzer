@@ -1080,7 +1080,10 @@ namespace bha::storage
                     Error(ErrorCode::IoError, "Failed to open snapshot file for writing: " + path.string())
                 );
             }
+            file.exceptions(std::ios::badbit | std::ios::failbit);
             file << std::setw(2) << j << std::endl;
+            file.flush();
+            file.close();
             return Result<void, Error>::success();
         } catch (const std::exception& e) {
             return Result<void, Error>::failure(
@@ -1279,7 +1282,15 @@ namespace bha::storage
 
         try {
             std::ofstream file(baseline_file());
+            if (!file.is_open()) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::IoError, "Failed to open baseline file for writing: " + baseline_file().string())
+                );
+            }
+            file.exceptions(std::ios::badbit | std::ios::failbit);
             file << name;
+            file.flush();
+            file.close();
             return Result<void, Error>::success();
         } catch (const std::exception& e) {
             return Result<void, Error>::failure(

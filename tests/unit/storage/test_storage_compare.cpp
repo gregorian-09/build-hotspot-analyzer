@@ -339,6 +339,31 @@ TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
     fs::remove_all(root, ec);
 }
 
+TEST(StorageSnapshotTest, RejectsBaselineWriteWhenPathIsNotAFile) {
+    namespace fs = std::filesystem;
+
+    const auto unique = std::to_string(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()
+        ).count()
+    );
+    const fs::path root = fs::temp_directory_path() / ("bha-baseline-write-failure-" + unique);
+
+    SnapshotStore store(root);
+    const auto analysis = make_analysis({}, std::chrono::milliseconds(100), Duration::zero(), Duration::zero());
+    ASSERT_TRUE(store.save("run", analysis).is_ok());
+
+    std::error_code ec;
+    ASSERT_TRUE(fs::create_directory(root / ".baseline", ec));
+    ASSERT_FALSE(ec);
+
+    const auto result = store.set_baseline("run");
+
+    ASSERT_TRUE(result.is_err());
+    EXPECT_EQ(result.error().code(), ErrorCode::IoError);
+    fs::remove_all(root, ec);
+}
+
 TEST(StorageSnapshotTest, RejectsUnrepresentablePersistedDuration) {
     namespace fs = std::filesystem;
 
