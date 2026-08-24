@@ -102,6 +102,24 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
     }
 
+    TEST_F(HeaderSplitSuggesterTest, IgnoresDependencyHeadersOutsideProjectRoot) {
+        const auto external_header = root_.parent_path() / "bha-header-split-external.hpp";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source) << "struct External;\nExternal* use_external();\n";
+        write_compile_commands();
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(external_header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = HeaderSplitSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_EQ(result.value().items_analyzed, 0u);
+    }
+
     TEST_F(HeaderSplitSuggesterTest, RejectsCompleteTypeUse) {
         const auto header = root_ / "include" / "box.hpp";
         std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";

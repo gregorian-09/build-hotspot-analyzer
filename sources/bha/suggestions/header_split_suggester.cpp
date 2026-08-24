@@ -110,7 +110,8 @@ namespace bha::suggestions {
 
         std::vector<const analyzers::DependencyAnalysisResult::HeaderInfo*> headers;
         for (const auto& header : context.analysis.dependencies.headers) {
-            if (is_header_file_path(header.path) && !header.included_by.empty()) {
+            if (is_header_file_path(header.path) && !header.included_by.empty() &&
+                is_project_owned_path(context, header.path)) {
                 headers.push_back(&header);
             }
         }
@@ -127,7 +128,8 @@ namespace bha::suggestions {
             const auto semantic = analyze_forward_declarations(
                 *context.project_index,
                 header_info->path,
-                commands
+                commands,
+                context.forward_decl_semantic_cache.get()
             );
             if (!semantic.available || semantic.records.empty() ||
                 std::ranges::any_of(semantic.records, [](const auto& record) {

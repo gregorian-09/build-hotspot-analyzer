@@ -23,12 +23,14 @@
 
 #include "bha/types.hpp"
 #include "bha/project_index.hpp"
+#include "bha/suggestions/forward_decl_semantic_index.hpp"
 #include "bha/suggestions/suggester_policy.hpp"
 #include "bha/suggestions/suggester_interface.hpp"
 #include "bha/result.hpp"
 #include "bha/error.hpp"
 #include "bha/analyzers/analyzer.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/path_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <atomic>
@@ -69,6 +71,7 @@ namespace bha::suggestions {
         const SuggesterOptions& options;
         fs::path project_root;
         std::shared_ptr<ProjectIndex> project_index;
+        std::shared_ptr<ForwardDeclSemanticCache> forward_decl_semantic_cache;
 
         /// Optional cancellation token. Suggesters should check this periodically
         /// in long-running loops and return early if canceled.
@@ -96,6 +99,7 @@ namespace bha::suggestions {
               options(options_ref),
               project_root(std::move(root)),
               project_index(std::make_shared<ProjectIndex>(project_root, options_ref.compile_commands_path)),
+              forward_decl_semantic_cache(std::make_shared<ForwardDeclSemanticCache>()),
               cancelled(cancelled_ptr),
               deadline(std::move(deadline_value)),
               target_files(std::move(files)),

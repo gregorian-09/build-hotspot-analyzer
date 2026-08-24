@@ -140,6 +140,48 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
     }
 
+    TEST_F(ForwardDeclSuggesterTest, IgnoresDependencyHeadersOutsideProjectRoot) {
+        const auto external_header = root_.parent_path() / "bha-forward-decl-external.hpp";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source) << "struct External;\nExternal* use_external();\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(external_header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+        EXPECT_EQ(result.value().items_analyzed, 0u);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, ReusesSemanticEvidenceForExactCommandInputs) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box();\n";
+        write_compile_commands(root_, source);
+
+        ProjectIndex project_index(root_, root_ / "compile_commands.json");
+        const auto commands = project_index.compile_commands();
+        ASSERT_EQ(commands.size(), 1u);
+
+        ForwardDeclSemanticCache cache;
+        const auto first = analyze_forward_declarations(project_index, header, commands, &cache);
+        const auto second = analyze_forward_declarations(project_index, header, commands, &cache);
+
+        ASSERT_TRUE(first.available);
+        ASSERT_TRUE(second.available);
+        ASSERT_EQ(cache.analyses.size(), 1u);
+        EXPECT_EQ(second.records.size(), first.records.size());
+        EXPECT_EQ(second.includes.size(), first.includes.size());
+    }
+
     TEST_F(ForwardDeclSuggesterTest, RejectsMacroExpandedInclude) {
         const auto header = root_ / "include" / "box.hpp";
         std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";

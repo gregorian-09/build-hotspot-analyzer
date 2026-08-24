@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string_view>
 
 #ifndef BHA_HAVE_CLANG_TOOLING
@@ -33,7 +34,24 @@
 namespace bha::suggestions {
     namespace {
 
+        std::string semantic_cache_key(
+            const fs::path& header,
+            const std::vector<CompilationUnit>& commands
+        ) {
+            std::ostringstream key;
+            key << header.lexically_normal().generic_string() << '\0';
+            for (const auto& command : commands) {
+                key << command.source_file.lexically_normal().generic_string() << '\0';
+                key << command.working_directory.lexically_normal().generic_string() << '\0';
+                for (const auto& argument : command.command_line) {
+                    key << argument << '\0';
+                }
+            }
+            return key.str();
+        }
+
 #if BHA_HAVE_CLANG_TOOLING
+
         fs::path spelling_path(
             const clang::SourceManager& source_manager,
             const clang::SourceLocation location
@@ -779,9 +797,16 @@ namespace bha::suggestions {
     ForwardDeclSemanticResult analyze_forward_declarations(
         ProjectIndex& project_index,
         const fs::path& header,
-        const std::vector<CompilationUnit>& commands
+        const std::vector<CompilationUnit>& commands,
+        ForwardDeclSemanticCache* cache
     ) {
         ForwardDeclSemanticResult result;
+        const auto cache_key = semantic_cache_key(header, commands);
+        if (cache != nullptr) {
+            if (const auto cached = cache->analyses.find(cache_key); cached != cache->analyses.end()) {
+                return cached->second;
+            }
+        }
 #if !BHA_HAVE_CLANG_TOOLING
         (void)project_index;
         (void)header;
@@ -853,6 +878,9 @@ namespace bha::suggestions {
         result.available = !result.records.empty();
         if (!result.available && result.diagnostic.empty()) {
             result.diagnostic = "No AST declaration from the target header was observed";
+        }
+        if (cache != nullptr && result.available) {
+            cache->analyses.emplace(cache_key, result);
         }
         return result;
 #endif

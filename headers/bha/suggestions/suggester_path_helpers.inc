@@ -8,6 +8,31 @@
 
     [[nodiscard]] inline fs::path resolve_source_path(const fs::path& path);
 
+    /**
+     * Restrict source-transforming semantic passes to files owned by the
+     * analyzed project. Dependency and system headers are evidence inputs,
+     * not edit targets, and replaying them for every translation unit is both
+     * unsafe and needlessly expensive.
+     */
+    [[nodiscard]] inline bool is_project_owned_path(
+        const SuggestionContext& context,
+        const fs::path& path
+    ) {
+        if (!context.project_index || path.empty()) {
+            return false;
+        }
+        const fs::path root = context.project_root.empty()
+            ? context.project_index->project_root()
+            : context.project_root;
+        if (root.empty()) {
+            return false;
+        }
+        return bha::utils::is_under(
+            context.project_index->resolve(path),
+            context.project_index->resolve(root)
+        );
+    }
+
     [[nodiscard]] inline std::string repo_relative_path_string(
         const fs::path& path,
         const fs::path& project_root
