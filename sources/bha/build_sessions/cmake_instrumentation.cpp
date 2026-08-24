@@ -739,7 +739,6 @@ namespace bha::build_sessions {
         trace.compiler = CompilerType::Clang;
         trace.id = path.generic_string();
         for (auto& unit : referenced_units) {
-            trace.total_time += unit.metrics.total_time;
             if (static_cast<std::uint8_t>(unit.template_evidence) >
                 static_cast<std::uint8_t>(trace.template_evidence)) {
                 trace.template_evidence = unit.template_evidence;

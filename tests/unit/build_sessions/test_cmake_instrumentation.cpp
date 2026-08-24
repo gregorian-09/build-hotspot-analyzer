@@ -353,6 +353,7 @@ namespace bha::build_sessions::test {
         ASSERT_EQ(trace.units.size(), 1u);
         EXPECT_EQ(trace.units.front().source_file, fs::path("/src/main.cpp"));
         EXPECT_EQ(trace.units.front().metrics.total_time, std::chrono::microseconds(250));
+        EXPECT_EQ(trace.total_time, Duration::zero());
 
         std::error_code ec;
         fs::remove_all(root, ec);
