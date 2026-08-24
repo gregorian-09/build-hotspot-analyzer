@@ -178,12 +178,11 @@ TEST(StorageCompareTest, KeepsZeroBaselinePercentagesUnavailable) {
 
     const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
 
-    EXPECT_TRUE(comparison.is_regression());
+    EXPECT_FALSE(comparison.is_regression());
     EXPECT_FALSE(comparison.is_significant());
     EXPECT_FALSE(comparison.build_time_percent_change.has_value());
     EXPECT_FALSE(comparison.translation_unit.percent_change.has_value());
-    ASSERT_EQ(comparison.regressions.size(), 1u);
-    EXPECT_FALSE(comparison.regressions.front().percent_change.has_value());
+    EXPECT_TRUE(comparison.regressions.empty());
 }
 
 TEST(StorageCompareTest, SummarizesRepeatedObservedBuildTimes) {

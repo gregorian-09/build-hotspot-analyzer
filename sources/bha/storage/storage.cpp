@@ -1305,10 +1305,11 @@ namespace bha::storage
         const analyzers::AnalysisResult& new_result,
         const double significance_threshold
     ) {
-        auto percent_change = [](const Duration old_time, const Duration delta) -> std::optional<double> {
-            if (old_time.count() <= 0) {
+        auto percent_change = [](const Duration old_time, const Duration new_time) -> std::optional<double> {
+            if (old_time.count() <= 0 || new_time.count() <= 0) {
                 return std::nullopt;
             }
+            const auto delta = new_time - old_time;
             return 100.0 * static_cast<double>(delta.count()) /
                 static_cast<double>(old_time.count());
         };
@@ -1347,23 +1348,23 @@ namespace bha::storage
         auto new_time = new_result.performance.total_build_time;
         result.build_time_delta = new_time - old_time;
 
-        result.build_time_percent_change = percent_change(old_time, result.build_time_delta);
+        result.build_time_percent_change = percent_change(old_time, new_time);
 
         result.translation_unit.old_time = old_result.performance.sequential_time;
         result.translation_unit.new_time = new_result.performance.sequential_time;
         result.translation_unit.delta = result.translation_unit.new_time - result.translation_unit.old_time;
         result.translation_unit.percent_change =
-            percent_change(result.translation_unit.old_time, result.translation_unit.delta);
+            percent_change(result.translation_unit.old_time, result.translation_unit.new_time);
 
         result.headers.old_time = old_result.dependencies.total_include_time;
         result.headers.new_time = new_result.dependencies.total_include_time;
         result.headers.delta = result.headers.new_time - result.headers.old_time;
-        result.headers.percent_change = percent_change(result.headers.old_time, result.headers.delta);
+        result.headers.percent_change = percent_change(result.headers.old_time, result.headers.new_time);
 
         result.templates.old_time = old_result.templates.total_template_time;
         result.templates.new_time = new_result.templates.total_template_time;
         result.templates.delta = result.templates.new_time - result.templates.old_time;
-        result.templates.percent_change = percent_change(result.templates.old_time, result.templates.delta);
+        result.templates.percent_change = percent_change(result.templates.old_time, result.templates.new_time);
 
         // File count change
         result.file_count_delta =
@@ -1390,15 +1391,14 @@ namespace bha::storage
             } else {
                 const auto* new_file = it->second;
                 auto delta = new_file->compile_time - old_file->compile_time;
-                const auto percent = percent_change(old_file->compile_time, delta);
+                const auto percent = percent_change(old_file->compile_time, new_file->compile_time);
                 ++result.translation_unit_regressions.matched_files;
                 if (delta.count() > 0) {
                     positive_deltas.push_back(delta);
                 }
 
-                const bool significant = percent.has_value()
-                    ? std::abs(*percent) > significance_threshold * 100.0
-                    : delta != Duration::zero();
+                const bool significant = percent.has_value() &&
+                    std::abs(*percent) > significance_threshold * 100.0;
                 if (significant) {
                     ComparisonResult::FileChange change;
                     change.file = path;

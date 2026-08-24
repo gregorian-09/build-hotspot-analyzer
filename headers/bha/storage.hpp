@@ -147,8 +147,12 @@ namespace bha::storage
         std::vector<TemplateChange> template_regressions;
         std::vector<TemplateChange> template_improvements;
 
-        bool is_regression() const { return build_time_delta.count() > 0; }
-        bool is_improvement() const { return build_time_delta.count() < 0; }
+        bool is_regression() const {
+            return build_time_percent_change.has_value() && build_time_delta.count() > 0;
+        }
+        bool is_improvement() const {
+            return build_time_percent_change.has_value() && build_time_delta.count() < 0;
+        }
         bool is_significant() const {
             return build_time_percent_change.has_value() &&
                    std::abs(*build_time_percent_change) > significance_threshold_percent;
