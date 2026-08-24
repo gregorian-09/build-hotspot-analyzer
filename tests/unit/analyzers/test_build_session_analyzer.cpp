@@ -106,6 +106,36 @@ namespace bha::analyzers::test {
         EXPECT_FALSE(scheduler->provenance.limitation.empty());
     }
 
+    TEST(BuildSessionAnalyzerTest, FailsClosedWhenCommandEndTimestampOverflows) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto event = command("overflowing-end", 0, 1);
+        event.start_time = Timestamp::max();
+        trace.build_session->commands = {event};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.timed_commands, 1u);
+        EXPECT_EQ(analysis.wall_clock_time, Duration::zero());
+        const auto command_wall_time = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.command.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(command_wall_time, analysis.metric_capabilities.end());
+        EXPECT_EQ(command_wall_time->provenance.evidence, EvidenceKind::Unavailable);
+        const auto scheduler = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.scheduler",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(scheduler, analysis.metric_capabilities.end());
+        EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
+    }
+
     TEST(BuildSessionAnalyzerTest, ComputesCriticalPathFromCompleteDependencies) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

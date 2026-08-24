@@ -424,30 +424,49 @@ namespace bha::analyzers {
 
         std::vector<TimedEvent> timed_events;
         timed_events.reserve(session.commands.size());
+        std::size_t exact_timed_commands = 0;
+        bool end_time_overflow = false;
         for (const auto& command : session.commands) {
             if (!command.has_exact_timing()) {
                 continue;
             }
 
+            ++exact_timed_commands;
+            const auto duration = std::chrono::duration_cast<Timestamp::duration>(command.duration);
+            const auto end = utils::checked_add_duration(
+                command.start_time->time_since_epoch(),
+                duration
+            );
+            if (!end.has_value()) {
+                end_time_overflow = true;
+                continue;
+            }
+
             timed_events.push_back({
                 &command,
-                *command.start_time + command.duration
+                Timestamp(*end)
             });
         }
 
-        analysis.timed_commands = timed_events.size();
+        analysis.timed_commands = exact_timed_commands;
         set_capability(
             analysis.metric_capabilities,
             capability(
                 "build.command.wall_time",
-                timed_events.empty() ? EvidenceKind::Unavailable : EvidenceKind::Observed,
+                !end_time_overflow && !timed_events.empty()
+                    ? EvidenceKind::Observed
+                    : EvidenceKind::Unavailable,
                 "build-session",
                 "command",
-                timed_events.empty() ? "No command has exact producer timing" : ""
+                end_time_overflow
+                    ? "A command timestamp plus duration exceeded the platform timestamp representation"
+                    : timed_events.empty() ? "No command has exact producer timing" : ""
             )
         );
 
-        if (timed_events.empty()) {
+        if (timed_events.empty() || end_time_overflow) {
+            analysis.wall_clock_time = Duration::zero();
+            analysis.serial_time = Duration::zero();
             add_capability(
                 analysis.metric_capabilities,
                 capability(
@@ -455,7 +474,9 @@ namespace bha::analyzers {
                     EvidenceKind::Unavailable,
                     "build-session",
                     "session",
-                    "No complete-timing command events were captured"
+                    end_time_overflow
+                        ? "A command timestamp plus duration exceeded the platform timestamp representation"
+                        : "No complete-timing command events were captured"
                 )
             );
             return Result<AnalysisResult, Error>::success(std::move(result));
@@ -524,7 +545,7 @@ namespace bha::analyzers {
                 static_cast<double>(analysis.wall_clock_time.count());
         }
 
-        const bool all_commands_timed = !serial_time_overflow &&
+        const bool all_commands_timed = !serial_time_overflow && !end_time_overflow &&
             analysis.timed_commands == analysis.total_commands;
         add_capability(
             analysis.metric_capabilities,
