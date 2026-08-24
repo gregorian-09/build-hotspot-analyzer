@@ -53,6 +53,15 @@ namespace bha::analyzers {
             ) != analysis.metric_capabilities.end();
         }
 
+        bool checked_increment(std::size_t& value) {
+            const auto sum = utils::checked_add(value, std::size_t{1});
+            if (!sum.has_value()) {
+                return false;
+            }
+            value = *sum;
+            return true;
+        }
+
     }  // namespace
 
     Result<AnalysisResult, Error> LinkerAnalyzer::analyze(
@@ -100,9 +109,17 @@ namespace bha::analyzers {
                     continue;
                 }
 
-                ++analysis.invocations;
+                if (!checked_increment(analysis.invocations)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Link invocation count overflowed")
+                    );
+                }
                 if (event.has_exact_timing()) {
-                    ++analysis.timed_invocations;
+                    if (!checked_increment(analysis.timed_invocations)) {
+                        return Result<AnalysisResult, Error>::failure(
+                            Error::analysis_error("Timed link invocation count overflowed")
+                        );
+                    }
                     if (!wall_time_overflow) {
                         const auto sum = utils::checked_add_duration(
                             analysis.wall_clock_time,
@@ -133,7 +150,10 @@ namespace bha::analyzers {
                     continue;
                 }
 
-                ++analysis.output_size_observations;
+                if (!checked_increment(analysis.output_size_observations)) {
+                    output_size_overflow = true;
+                    continue;
+                }
                 if (event_output_bytes >
                     std::numeric_limits<std::uintmax_t>::max() - analysis.output_bytes) {
                     output_size_overflow = true;
