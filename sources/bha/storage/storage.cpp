@@ -1466,18 +1466,23 @@ namespace bha::storage
         std::unordered_map<std::string, const analyzers::TemplateAnalysisResult::TemplateInfo*> new_templates;
 
         for (const auto& t : old_result.templates.templates) {
-            old_templates[t.name] = &t;
+            if (!t.full_signature.empty()) {
+                old_templates[t.full_signature] = &t;
+            }
         }
         for (const auto& t : new_result.templates.templates) {
-            new_templates[t.name] = &t;
+            if (!t.full_signature.empty()) {
+                new_templates[t.full_signature] = &t;
+            }
         }
 
-        for (const auto& [name, old_t] : old_templates) {
-            if (auto it = new_templates.find(name); it != new_templates.end()) {
+        for (const auto& [full_signature, old_t] : old_templates) {
+            if (auto it = new_templates.find(full_signature); it != new_templates.end()) {
                 if (const auto* new_t = it->second; old_t->instantiation_count != new_t->instantiation_count ||
                     old_t->total_time != new_t->total_time) {
                     ComparisonResult::TemplateChange change;
-                    change.name = name;
+                    change.name = old_t->name;
+                    change.full_signature = full_signature;
                     change.old_count = old_t->instantiation_count;
                     change.new_count = new_t->instantiation_count;
                     change.old_time = old_t->total_time;

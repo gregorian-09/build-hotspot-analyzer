@@ -135,7 +135,10 @@ namespace bha::storage
         std::vector<HeaderChange> header_improvements;
 
         struct TemplateChange {
+            /// Friendly template name from the producer.
             std::string name;
+            /// Exact specialization identity used for matching snapshots.
+            std::string full_signature;
             std::size_t old_count;
             std::size_t new_count;
             Duration old_time;

@@ -239,6 +239,39 @@ TEST(StorageCompareTest, RejectsEmptyRepeatedRunSet) {
         EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
     }
 
+    TEST(StorageCompareTest, MatchesTemplatesByFullSignature) {
+        auto old_analysis = make_analysis({}, std::chrono::milliseconds(100), Duration::zero(), Duration::zero());
+        auto new_analysis = old_analysis;
+
+        analyzers::TemplateAnalysisResult::TemplateInfo old_int;
+        old_int.name = "Box";
+        old_int.full_signature = "Box<int>";
+        old_int.total_time = std::chrono::milliseconds(10);
+        old_int.instantiation_count = 1;
+
+        analyzers::TemplateAnalysisResult::TemplateInfo old_double;
+        old_double.name = "Box";
+        old_double.full_signature = "Box<double>";
+        old_double.total_time = std::chrono::milliseconds(20);
+        old_double.instantiation_count = 1;
+
+        analyzers::TemplateAnalysisResult::TemplateInfo new_int = old_int;
+        new_int.total_time = std::chrono::milliseconds(30);
+        new_int.instantiation_count = 2;
+        analyzers::TemplateAnalysisResult::TemplateInfo new_double = old_double;
+
+        old_analysis.templates.templates = {old_int, old_double};
+        new_analysis.templates.templates = {new_int, new_double};
+
+        const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
+
+        ASSERT_EQ(comparison.template_regressions.size(), 1u);
+        EXPECT_EQ(comparison.template_regressions.front().name, "Box");
+        EXPECT_EQ(comparison.template_regressions.front().full_signature, "Box<int>");
+        EXPECT_EQ(comparison.template_regressions.front().old_count, 1u);
+        EXPECT_EQ(comparison.template_regressions.front().new_count, 2u);
+    }
+
     TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
     namespace fs = std::filesystem;
 
