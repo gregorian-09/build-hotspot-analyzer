@@ -34,6 +34,11 @@ namespace bha::analyzers {
         std::unordered_map<std::string, SymbolData> symbol_map;
 
         for (const auto& unit : trace.units) {
+            if (unit.source_file.empty()) {
+                // Without a producer source identity, definitions and uses
+                // cannot be attributed to a translation unit safely.
+                continue;
+            }
             const std::string source_key = path_key(unit.source_file);
 
             // A symbol name is retained exactly as supplied by the producer.

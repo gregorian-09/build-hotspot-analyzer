@@ -383,6 +383,26 @@ namespace bha::analyzers {
         EXPECT_EQ(result.value().symbols.total_symbols, 2u);
     }
 
+    TEST_F(SymbolAnalyzerTest, RejectsSymbolRowsWithoutSourceIdentity) {
+        BuildTrace trace;
+
+        CompilationUnit first;
+        first.symbols_defined = {"SharedSymbol"};
+        IncludeInfo first_include;
+        first_include.symbols_used = {"SharedSymbol"};
+        first.includes.push_back(first_include);
+
+        CompilationUnit second = first;
+        trace.units = {first, second};
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().symbols.symbols.empty());
+        EXPECT_EQ(result.value().symbols.total_symbols, 0u);
+    }
+
     TEST_F(SymbolAnalyzerTest, NormalizedPathMatching) {
         BuildTrace trace;
 
