@@ -125,6 +125,11 @@ namespace bha::analyzers {
             }
         }
 
+        if (output_size_overflow) {
+            analysis.output_size_observations = 0;
+            analysis.output_bytes = 0;
+        }
+
         if (analysis.invocations == 0 && has_linker_trace) {
             analysis.invocations = 1;
         }

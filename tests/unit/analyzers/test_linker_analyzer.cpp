@@ -3,6 +3,7 @@
 #include "bha/analyzers/linker_analyzer.hpp"
 
 #include <algorithm>
+#include <limits>
 
 namespace bha::analyzers::test {
     namespace {
@@ -161,6 +162,30 @@ namespace bha::analyzers::test {
         ASSERT_NE(wall_time, nullptr);
         EXPECT_EQ(wall_time->provenance.evidence, EvidenceKind::Unavailable);
         EXPECT_FALSE(wall_time->provenance.limitation.empty());
+    }
+
+    TEST(LinkerAnalyzerTest, FailsClosedWithoutRetainingPartialOutputAggregate) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto first = link_command("first", 0, 1);
+        first.outputs = {"first"};
+        first.output_sizes = {std::numeric_limits<std::uintmax_t>::max()};
+        auto second = link_command("second", 0, 1);
+        second.outputs = {"second"};
+        second.output_sizes = {1};
+        trace.build_session->commands = {first, second};
+
+        LinkerAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().linker;
+        EXPECT_EQ(analysis.output_size_observations, 0u);
+        EXPECT_EQ(analysis.output_bytes, 0u);
+        const auto* output_bytes = find_capability(analysis, "link.output_bytes");
+        ASSERT_NE(output_bytes, nullptr);
+        EXPECT_EQ(output_bytes->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(output_bytes->provenance.limitation.empty());
     }
 
 }  // namespace bha::analyzers::test
