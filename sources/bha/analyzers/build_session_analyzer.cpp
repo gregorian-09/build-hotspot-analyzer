@@ -1,12 +1,13 @@
 // Created by gregorian-rayne on 8/22/26.
 
 #include "bha/analyzers/build_session_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <iterator>
-#include <limits>
 #include <type_traits>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 namespace bha::analyzers {
@@ -143,21 +144,25 @@ namespace bha::analyzers {
 
         const auto add_output_bytes = [](
             std::optional<std::uint64_t>& total,
-            const std::optional<std::string>& output
+            const std::optional<std::string>& output,
+            const std::underlying_type_t<BuildStepRole> role,
+            std::unordered_set<std::underlying_type_t<BuildStepRole>>& overflowed_roles
         ) {
-            if (!output.has_value()) {
+            if (!output.has_value() || overflowed_roles.contains(role)) {
                 return;
             }
             const auto size = static_cast<std::uint64_t>(output->size());
-            if (!total.has_value()) {
-                total = 0;
-            }
-            if (size > std::numeric_limits<std::uint64_t>::max() - *total) {
+            const auto sum = utils::checked_add(total.value_or(0), size);
+            if (!sum.has_value()) {
                 total.reset();
+                overflowed_roles.insert(role);
                 return;
             }
-            *total += size;
+            total = *sum;
         };
+
+        std::unordered_set<std::underlying_type_t<BuildStepRole>> stdout_overflowed_roles;
+        std::unordered_set<std::underlying_type_t<BuildStepRole>> stderr_overflowed_roles;
 
         const bool has_host_system_value = session.host_system.has_value() && (
             session.host_system->os_name.has_value() ||
@@ -226,8 +231,19 @@ namespace bha::analyzers {
             if (command.standard_output.has_value() || command.standard_error.has_value()) {
                 ++step->output_observations;
             }
-            add_output_bytes(step->stdout_bytes, command.standard_output);
-            add_output_bytes(step->stderr_bytes, command.standard_error);
+            const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(command.role);
+            add_output_bytes(
+                step->stdout_bytes,
+                command.standard_output,
+                role,
+                stdout_overflowed_roles
+            );
+            add_output_bytes(
+                step->stderr_bytes,
+                command.standard_error,
+                role,
+                stderr_overflowed_roles
+            );
         }
 
         auto& host = analysis.host_telemetry;
@@ -312,6 +328,9 @@ namespace bha::analyzers {
 
         for (const auto& step : analysis.step_metrics) {
             const std::string scope = std::string("role:") + to_string(step.role);
+            const auto role = static_cast<std::underlying_type_t<BuildStepRole>>(step.role);
+            const bool output_overflowed =
+                stdout_overflowed_roles.contains(role) || stderr_overflowed_roles.contains(role);
             auto wall_time = capability(
                 "build.step.wall_time",
                 step.timed_commands == step.total_commands
@@ -344,15 +363,18 @@ namespace bha::analyzers {
 
             auto output_bytes = capability(
                 "build.step.output_bytes",
-                step.output_observations > 0 &&
+                !output_overflowed &&
+                        step.output_observations > 0 &&
                         (step.stdout_bytes.has_value() || step.stderr_bytes.has_value())
                     ? EvidenceKind::Derived
                     : EvidenceKind::Unavailable,
                 "BuildSessionAnalyzer",
                 scope,
-                step.output_observations > 0
-                    ? "Only streams present in producer snippets are summed"
-                    : "CMake captureOutput was not captured for this role"
+                output_overflowed
+                    ? "Producer-captured output exceeded the aggregate representation"
+                    : step.output_observations > 0
+                        ? "Only streams present in producer snippets are summed"
+                        : "CMake captureOutput was not captured for this role"
             );
             output_bytes.provenance.capture_mode = "captureOutput";
             output_bytes.provenance.timing_domain = TimingDomain::None;

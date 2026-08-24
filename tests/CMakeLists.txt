@@ -1,6 +1,7 @@
 add_executable(bha_tests
         unit/utils/test_path_utils.cpp
         unit/utils/test_string_utils.cpp
+        unit/utils/test_numeric_utils.cpp
         unit/parsers/test_clang_parser.cpp
         unit/parsers/test_gcc_parser.cpp
         unit/parsers/test_msvc_parser.cpp
