@@ -405,9 +405,24 @@
 
         /**
          * Applies a single TextEdit to the content string.
-         * TextEdit uses 0-based line and column numbers.
+         * Compiler-derived edits use their original byte range. Other edits
+         * use the LSP-compatible line and UTF-16 column coordinates.
          */
         bool apply_single_edit(std::string& content, const bha::TextEdit& edit) {
+            if (!edit.is_valid()) {
+                return false;
+            }
+
+            if (edit.has_byte_range()) {
+                const std::size_t start = *edit.byte_offset;
+                const std::size_t length = *edit.byte_length;
+                if (start > content.size() || length > content.size() - start) {
+                    return false;
+                }
+                content.replace(start, length, edit.new_text);
+                return true;
+            }
+
             auto start_offset = line_col_to_offset(content, edit.start_line, edit.start_col);
             auto end_offset = line_col_to_offset(content, edit.end_line, edit.end_col);
 
@@ -448,9 +463,31 @@
             );
             in.close();
 
+            const bool has_byte_ranges = std::ranges::any_of(
+                edits,
+                [](const bha::TextEdit& edit) { return edit.has_byte_range(); }
+            );
+            const bool all_have_byte_ranges = std::ranges::all_of(
+                edits,
+                [](const bha::TextEdit& edit) { return edit.has_byte_range(); }
+            );
+            if (has_byte_ranges != all_have_byte_ranges ||
+                std::ranges::any_of(
+                    edits,
+                    [](const bha::TextEdit& edit) { return edit.has_partial_byte_range(); }
+                )) {
+                return false;
+            }
+
             // Sort edits in reverse order (later positions first)
             // This ensures applying one edit doesn't shift positions of subsequent edits
-            std::ranges::sort(edits, [](const bha::TextEdit& a, const bha::TextEdit& b) {
+            std::ranges::sort(edits, [has_byte_ranges](const bha::TextEdit& a, const bha::TextEdit& b) {
+                if (has_byte_ranges) {
+                    if (*a.byte_offset != *b.byte_offset) {
+                        return *a.byte_offset > *b.byte_offset;
+                    }
+                    return *a.byte_length > *b.byte_length;
+                }
                 if (a.start_line != b.start_line) {
                     return a.start_line > b.start_line;  // Later lines first
                 }

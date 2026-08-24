@@ -74,6 +74,38 @@ namespace bha::suggestions
                 return false;
             }
 
+            if (left.has_byte_range() && right.has_byte_range()) {
+                const bool identical =
+                    *left.byte_offset == *right.byte_offset &&
+                    *left.byte_length == *right.byte_length &&
+                    left.new_text == right.new_text;
+                if (identical) {
+                    return false;
+                }
+
+                const bool ranges_overlap = *left.byte_offset <= *right.byte_offset
+                    ? *right.byte_offset - *left.byte_offset < *left.byte_length
+                    : *left.byte_offset - *right.byte_offset < *right.byte_length;
+                if (ranges_overlap) {
+                    return true;
+                }
+
+                const auto point_inclusive = [](const TextEdit& edit, const TextEdit& insertion) {
+                    const std::size_t point = *insertion.byte_offset;
+                    if (point < *edit.byte_offset) {
+                        return false;
+                    }
+                    return point - *edit.byte_offset <= *edit.byte_length;
+                };
+                if (*left.byte_length == 0 && point_inclusive(right, left)) {
+                    return true;
+                }
+                if (*right.byte_length == 0 && point_inclusive(left, right)) {
+                    return true;
+                }
+                return false;
+            }
+
             const bool identical =
                 position_equal(left.start_line, left.start_col, right.start_line, right.start_col) &&
                 position_equal(left.end_line, left.end_col, right.end_line, right.end_col) &&
@@ -409,9 +441,31 @@ namespace bha::suggestions
             return all_edits;
         }
 
+        if (std::ranges::any_of(
+                all_edits,
+                [](const TextEdit& edit) { return edit.has_partial_byte_range(); }
+            )) {
+            return std::nullopt;
+        }
+
+        for (std::size_t i = 0; i < all_edits.size(); ++i) {
+            for (std::size_t j = i + 1; j < all_edits.size(); ++j) {
+                if (all_edits[i].file == all_edits[j].file &&
+                    all_edits[i].has_byte_range() != all_edits[j].has_byte_range()) {
+                    return std::nullopt;
+                }
+            }
+        }
+
         std::ranges::sort(all_edits, [](const TextEdit& a, const TextEdit& b) {
             if (a.file != b.file) {
                 return a.file < b.file;
+            }
+            if (a.has_byte_range() && b.has_byte_range()) {
+                if (*a.byte_offset != *b.byte_offset) {
+                    return *a.byte_offset < *b.byte_offset;
+                }
+                return *a.byte_length < *b.byte_length;
             }
             if (a.start_line != b.start_line) {
                 return a.start_line < b.start_line;
@@ -433,6 +487,10 @@ namespace bha::suggestions
                 merged,
                 [&edit](const TextEdit& existing) {
                     return existing.file == edit.file &&
+                        existing.has_byte_range() == edit.has_byte_range() &&
+                        (!existing.has_byte_range() ||
+                         (*existing.byte_offset == *edit.byte_offset &&
+                          *existing.byte_length == *edit.byte_length)) &&
                         existing.start_line == edit.start_line &&
                         existing.start_col == edit.start_col &&
                         existing.end_line == edit.end_line &&

@@ -97,6 +97,8 @@ namespace bha::suggestions {
         ASSERT_EQ(suggestion.edits.size(), 2u);
         EXPECT_EQ(suggestion.edits.front().file.filename(), "box_fwd.hpp");
         EXPECT_NE(suggestion.edits.front().new_text.find("struct Box;"), std::string::npos);
+        ASSERT_TRUE(suggestion.edits.back().has_byte_range());
+        EXPECT_GT(*suggestion.edits.back().byte_length, 0u);
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
     }
 

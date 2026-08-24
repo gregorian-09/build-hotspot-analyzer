@@ -72,7 +72,8 @@ namespace {
         );
         if (typed_replacement.getFilePath().empty() ||
             typed_replacement.getOffset() != record.declaration_end_offset ||
-            typed_replacement.getLength() != 0) {
+            typed_replacement.getLength() != 0 ||
+            !typed_replacement.isApplicable()) {
             return std::nullopt;
         }
 #else
@@ -86,6 +87,8 @@ namespace {
         edit.end_line = edit.start_line;
         edit.end_col = 0;
         edit.new_text = record.canonical_extern_declaration + "\n";
+        edit.byte_offset = record.declaration_end_offset;
+        edit.byte_length = 0;
         return edit;
     }
 

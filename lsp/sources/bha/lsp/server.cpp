@@ -1707,6 +1707,16 @@ namespace bha::lsp
             return fallback;
         };
 
+        auto read_optional_size = [](const json& item, const char* snake, const char* camel) {
+            if (item.contains(snake) && item[snake].is_number_unsigned()) {
+                return std::optional<std::size_t>(item[snake].get<std::size_t>());
+            }
+            if (item.contains(camel) && item[camel].is_number_unsigned()) {
+                return std::optional<std::size_t>(item[camel].get<std::size_t>());
+            }
+            return std::optional<std::size_t>{};
+        };
+
         std::vector<bha::TextEdit> edits;
         auto append_edits_array = [&](const json& edit_array) {
             if (!edit_array.is_array()) {
@@ -1737,6 +1747,8 @@ namespace bha::lsp
                 edit.start_col = read_size(item, "start_col", "startCol", 0);
                 edit.end_line = read_size(item, "end_line", "endLine", edit.start_line);
                 edit.end_col = read_size(item, "end_col", "endCol", edit.start_col);
+                edit.byte_offset = read_optional_size(item, "byte_offset", "byteOffset");
+                edit.byte_length = read_optional_size(item, "byte_length", "byteLength");
                 if (item.contains("new_text") && item["new_text"].is_string()) {
                     edit.new_text = item["new_text"].get<std::string>();
                 } else if (item.contains("newText") && item["newText"].is_string()) {
@@ -2705,6 +2717,10 @@ namespace bha::lsp
                 edit_json["endLine"] = edit.end_line;
                 edit_json["endCol"] = edit.end_col;
                 edit_json["newText"] = edit.new_text;
+                if (edit.has_byte_range()) {
+                    edit_json["byteOffset"] = *edit.byte_offset;
+                    edit_json["byteLength"] = *edit.byte_length;
+                }
                 text_edits.push_back(edit_json);
             }
         }

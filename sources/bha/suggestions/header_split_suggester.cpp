@@ -243,6 +243,8 @@ namespace bha::suggestions {
                 replacement.end_line = include.line;
                 replacement.end_col = include.col_end;
                 replacement.new_text = replacement_text;
+                replacement.byte_offset = include.offset;
+                replacement.byte_length = include.length;
                 suggestion.edits.push_back(std::move(replacement));
                 if (std::ranges::none_of(
                         suggestion.secondary_files,

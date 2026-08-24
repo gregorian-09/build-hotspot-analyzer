@@ -160,6 +160,74 @@ namespace bha::lsp
         EXPECT_EQ(content, "before\n");
     }
 
+    TEST_F(SuggestionManagerRollbackTest, AppliesCompilerByteRangeWithoutUsingStaleLspPosition) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "alpha\nbeta\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
+        bha::TextEdit edit;
+        edit.file = source;
+        edit.start_line = 0;
+        edit.start_col = 0;
+        edit.end_line = 0;
+        edit.end_col = 0;
+        edit.new_text = "BETA";
+        edit.byte_offset = 6;
+        edit.byte_length = 4;
+
+        const auto result = manager.apply_edit_bundle({edit}, false);
+        ASSERT_TRUE(result.success);
+
+        std::ifstream in(source);
+        const std::string content(
+            (std::istreambuf_iterator<char>(in)),
+            std::istreambuf_iterator<char>()
+        );
+        EXPECT_EQ(content, "alpha\nBETA\n");
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, RejectsMixedByteAndLineRangesInOneFile) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "alpha\nbeta\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
+        bha::TextEdit byte_edit;
+        byte_edit.file = source;
+        byte_edit.new_text = "A";
+        byte_edit.byte_offset = 0;
+        byte_edit.byte_length = 1;
+
+        bha::TextEdit line_edit;
+        line_edit.file = source;
+        line_edit.start_line = 1;
+        line_edit.end_line = 1;
+        line_edit.start_col = 0;
+        line_edit.end_col = 4;
+        line_edit.new_text = "BETA";
+
+        const auto result = manager.apply_edit_bundle({byte_edit, line_edit}, false);
+        EXPECT_FALSE(result.success);
+
+        std::ifstream in(source);
+        const std::string content(
+            (std::istreambuf_iterator<char>(in)),
+            std::istreambuf_iterator<char>()
+        );
+        EXPECT_EQ(content, "alpha\nbeta\n");
+    }
+
     TEST_F(SuggestionManagerRollbackTest, PCHValidationUsesCompileBackedIncludersOfTargetHeader) {
         const fs::path include_dir = temp_root_ / "include";
         const fs::path src_dir = temp_root_ / "src";

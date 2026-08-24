@@ -1005,9 +1005,21 @@ namespace bha {
         std::size_t end_line = 0;      ///< 0-based line number
         std::size_t end_col = 0;       ///< 0-based column (UTF-16 offset)
         std::string new_text{};        ///< Replacement text
+        /// Byte offset in the original file, when derived from Clang.
+        std::optional<std::size_t> byte_offset{};
+        /// Number of original-file bytes replaced at byte_offset.
+        std::optional<std::size_t> byte_length{};
+
+        [[nodiscard]] bool has_byte_range() const noexcept {
+            return byte_offset.has_value() && byte_length.has_value();
+        }
+
+        [[nodiscard]] bool has_partial_byte_range() const noexcept {
+            return byte_offset.has_value() != byte_length.has_value();
+        }
 
         [[nodiscard]] bool is_valid() const noexcept {
-            return !file.empty() && (start_line < end_line ||
+            return !file.empty() && !has_partial_byte_range() && (start_line < end_line ||
                    (start_line == end_line && start_col <= end_col));
         }
 

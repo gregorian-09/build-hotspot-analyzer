@@ -274,6 +274,18 @@ namespace bha
         EXPECT_EQ(resolve_application_mode(suggestion), SuggestionApplicationMode::DirectEdits);
     }
 
+    TEST(TextEditTest, PartialCompilerRangeIsInvalid) {
+        TextEdit edit;
+        edit.file = "widget.hpp";
+        edit.start_line = 1;
+        edit.end_line = 1;
+        edit.byte_offset = 12;
+
+        EXPECT_FALSE(edit.has_byte_range());
+        EXPECT_TRUE(edit.has_partial_byte_range());
+        EXPECT_FALSE(edit.is_valid());
+    }
+
     TEST(AnalysisOptionsTest, DefaultValues) {
         constexpr AnalysisOptions options;
 

@@ -211,6 +211,8 @@ namespace bha::suggestions {
         ASSERT_EQ(suggestion.edits.size(), 1u);
         EXPECT_EQ(suggestion.edits.front().file, header);
         EXPECT_EQ(suggestion.edits.front().new_text, "extern template class Box<int>;\n");
+        ASSERT_TRUE(suggestion.edits.front().has_byte_range());
+        EXPECT_EQ(*suggestion.edits.front().byte_length, 0u);
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
         ASSERT_EQ(suggestion.hotspot_origins.size(), 1u);
         EXPECT_EQ(suggestion.hotspot_origins.front().kind, "template_origin");

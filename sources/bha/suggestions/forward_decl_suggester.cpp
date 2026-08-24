@@ -231,6 +231,8 @@ namespace bha::suggestions {
                 edit.end_line = include.line;
                 edit.end_col = include.col_end;
                 edit.new_text = format_separated_block(declaration_text);
+                edit.byte_offset = include.offset;
+                edit.byte_length = include.length;
                 suggestion.edits.push_back(std::move(edit));
                 FileTarget target;
                 target.path = file;
