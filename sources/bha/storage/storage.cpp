@@ -3,6 +3,7 @@
 //
 
 #include "bha/storage.hpp"
+#include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/time_utils.hpp"
 
 #include <nlohmann/json.hpp>
@@ -1327,7 +1328,16 @@ namespace bha::storage
             distribution.min_delta = deltas.front();
             distribution.max_delta = deltas.back();
             for (const auto delta : deltas) {
-                distribution.total_delta += delta;
+                const auto sum = utils::checked_add_duration(
+                    distribution.total_delta,
+                    delta
+                );
+                if (!sum.has_value()) {
+                    distribution.total_delta = Duration::zero();
+                    distribution.total_delta_available = false;
+                    break;
+                }
+                distribution.total_delta = *sum;
             }
 
             const auto nearest_rank = [&deltas](const std::size_t numerator, const std::size_t denominator) {

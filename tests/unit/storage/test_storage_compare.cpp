@@ -129,12 +129,34 @@ TEST(StorageCompareTest, ReportsObservedTranslationUnitRegressionDistribution) {
     EXPECT_EQ(distribution.matched_files, 3u);
     EXPECT_EQ(distribution.regressed_files, 2u);
     EXPECT_EQ(distribution.total_delta, std::chrono::milliseconds(500));
+    EXPECT_TRUE(distribution.total_delta_available);
     EXPECT_EQ(distribution.min_delta, std::chrono::milliseconds(100));
     EXPECT_EQ(distribution.median_delta, std::chrono::milliseconds(100));
     EXPECT_EQ(distribution.p90_delta, std::chrono::milliseconds(400));
     EXPECT_EQ(distribution.p99_delta, std::chrono::milliseconds(400));
     EXPECT_EQ(distribution.max_delta, std::chrono::milliseconds(400));
     EXPECT_TRUE(comparison.regressions.empty());
+}
+
+TEST(StorageCompareTest, MarksRegressionTotalUnavailableAfterOverflow) {
+    analyzers::AnalysisResult old_analysis;
+    analyzers::AnalysisResult new_analysis;
+    old_analysis.files = {
+        analyzers::FileAnalysisResult{"a.cpp"},
+        analyzers::FileAnalysisResult{"b.cpp"}
+    };
+    new_analysis.files = {
+        analyzers::FileAnalysisResult{"a.cpp", Duration::max()},
+        analyzers::FileAnalysisResult{"b.cpp", Duration::max()}
+    };
+
+    const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
+
+    const auto& distribution = comparison.translation_unit_regressions;
+    EXPECT_EQ(distribution.matched_files, 2u);
+    EXPECT_EQ(distribution.regressed_files, 2u);
+    EXPECT_FALSE(distribution.total_delta_available);
+    EXPECT_EQ(distribution.total_delta, Duration::zero());
 }
 
 TEST(StorageCompareTest, UsesCompleteSerialTimeInsteadOfFilteredFileRows) {

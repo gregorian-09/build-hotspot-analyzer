@@ -75,6 +75,7 @@ namespace bha::storage
             std::size_t matched_files = 0;
             std::size_t regressed_files = 0;
             Duration total_delta = Duration::zero();
+            bool total_delta_available = true;
             Duration min_delta = Duration::zero();
             Duration median_delta = Duration::zero();
             Duration p90_delta = Duration::zero();
