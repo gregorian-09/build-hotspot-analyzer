@@ -153,6 +153,21 @@ namespace bha::analyzers {
         EXPECT_EQ(templates.total_instantiations, 1u);
     }
 
+    TEST_F(TemplateAnalyzerTest, RejectsOverflowingTemplateTiming) {
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.templates = {
+            {"InstantiateClass", "Box<int>", {}, Duration::max(), {}, 1},
+            {"InstantiateClass", "Box<int>", {}, Duration(1), {}, 1}
+        };
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST_F(TemplateAnalyzerTest, SkipsWhenDisabled) {
         const auto trace = create_test_trace();
         AnalysisOptions options;

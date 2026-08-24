@@ -3,6 +3,7 @@
 //
 
 #include "bha/analyzers/template_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -56,9 +57,31 @@ namespace bha::analyzers
                     full_signature = tmpl.full_signature;
                 }
 
-                total_time += tmpl.time;
-                instantiation_count += tmpl.count;
-                total_template_time += tmpl.time;
+                if (const auto sum = utils::checked_add_duration(total_time, tmpl.time); sum.has_value()) {
+                    total_time = *sum;
+                } else {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error(
+                            "Template timing exceeded the supported aggregate duration range"
+                        )
+                    );
+                }
+                if (const auto sum = utils::checked_add(instantiation_count, tmpl.count); sum.has_value()) {
+                    instantiation_count = *sum;
+                } else {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Template instantiation count overflowed")
+                    );
+                }
+                if (const auto sum = utils::checked_add_duration(total_template_time, tmpl.time); sum.has_value()) {
+                    total_template_time = *sum;
+                } else {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error(
+                            "Total template timing exceeded the supported aggregate duration range"
+                        )
+                    );
+                }
 
                 if (tmpl.location.has_location()) {
                     locations.push_back(tmpl.location);
@@ -108,7 +131,16 @@ namespace bha::analyzers
 
         result.templates.total_instantiations = 0;
         for (const auto& tmpl : result.templates.templates) {
-            result.templates.total_instantiations += tmpl.instantiation_count;
+            const auto sum = utils::checked_add(
+                result.templates.total_instantiations,
+                tmpl.instantiation_count
+            );
+            if (!sum.has_value()) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Total template instantiation count overflowed")
+                );
+            }
+            result.templates.total_instantiations = *sum;
         }
 
         const auto end_time = std::chrono::steady_clock::now();

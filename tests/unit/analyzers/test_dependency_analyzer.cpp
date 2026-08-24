@@ -152,6 +152,22 @@ namespace bha::analyzers
         EXPECT_EQ(result.value().dependencies.total_includes, 1u);
     }
 
+    TEST_F(DependencyAnalyzerTest, RejectsOverflowingHeaderTiming) {
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = "/src/main.cpp";
+        unit.includes = {
+            {"/include/header.h", Duration::max(), 0, {}, {}, std::nullopt},
+            {"/include/header.h", Duration(1), 0, {}, {}, std::nullopt}
+        };
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     // ======================================================================
     // Char-scanner tests for parse_include_directives_from_file
     // ======================================================================

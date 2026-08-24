@@ -3,6 +3,7 @@
 //
 
 #include "bha/analyzers/dependency_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -54,20 +55,53 @@ namespace bha::analyzers
                     stats.path = include.header;
                 }
 
-                stats.total_parse_time += include.parse_time;
+                if (const auto sum = utils::checked_add_duration(
+                        stats.total_parse_time,
+                        include.parse_time
+                    ); sum.has_value()) {
+                    stats.total_parse_time = *sum;
+                } else {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error(
+                            "Header parse timing exceeded the supported aggregate duration range"
+                        )
+                    );
+                }
                 ++stats.inclusion_count;
                 if (!source_key.empty()) {
                     stats.including_files.insert(source_key);
                 }
                 if (include.self_parse_time.has_value()) {
                     if (stats.self_time_available) {
-                        stats.self_parse_time += *include.self_parse_time;
+                        if (const auto sum = utils::checked_add_duration(
+                                stats.self_parse_time,
+                                *include.self_parse_time
+                            ); sum.has_value()) {
+                            stats.self_parse_time = *sum;
+                        } else {
+                            return Result<AnalysisResult, Error>::failure(
+                                Error::analysis_error(
+                                    "Header self-parse timing exceeded the supported aggregate duration range"
+                                )
+                            );
+                        }
                     }
                 } else {
                     stats.self_time_available = false;
                 }
 
-                total_include_time += include.parse_time;
+                if (const auto sum = utils::checked_add_duration(
+                        total_include_time,
+                        include.parse_time
+                    ); sum.has_value()) {
+                    total_include_time = *sum;
+                } else {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error(
+                            "Total include timing exceeded the supported aggregate duration range"
+                        )
+                    );
+                }
                 max_depth = std::max(max_depth, include.depth);
             }
         }

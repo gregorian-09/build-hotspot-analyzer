@@ -3,9 +3,9 @@
 //
 
 #include "bha/analyzers/performance_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
-#include <numeric>
 #include <ranges>
 #include <utility>
 
@@ -49,7 +49,18 @@ namespace bha::analyzers {
         for (const auto& unit : trace.units) {
             const Duration compile_time = unit.metrics.total_time;
             compile_times.push_back(compile_time);
-            sequential_total += compile_time;
+            const auto sequential_sum = utils::checked_add_duration(
+                sequential_total,
+                compile_time
+            );
+            if (!sequential_sum.has_value()) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error(
+                        "Sequential compile timing exceeded the supported aggregate duration range"
+                    )
+                );
+            }
+            sequential_total = *sequential_sum;
 
             FileAnalysisResult file_result;
             file_result.file = unit.source_file;
@@ -77,12 +88,7 @@ namespace bha::analyzers {
         }
 
         if (!compile_times.empty()) {
-            const auto total = std::accumulate(
-                compile_times.begin(),
-                compile_times.end(),
-                Duration::zero()
-            );
-            result.performance.avg_file_time = total / compile_times.size();
+            result.performance.avg_file_time = sequential_total / compile_times.size();
             result.performance.median_file_time = calculate_percentile(compile_times, 50.0);
             result.performance.p90_file_time = calculate_percentile(compile_times, 90.0);
             result.performance.p99_file_time = calculate_percentile(compile_times, 99.0);
@@ -94,7 +100,16 @@ namespace bha::analyzers {
                 continue;
             }
 
-            result.performance.total_memory.max_stack_bytes += file.memory.max_stack_bytes;
+            const auto memory_sum = utils::checked_add(
+                result.performance.total_memory.max_stack_bytes,
+                file.memory.max_stack_bytes
+            );
+            if (!memory_sum.has_value()) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Total stack-memory telemetry overflowed")
+                );
+            }
+            result.performance.total_memory.max_stack_bytes = *memory_sum;
             if (file.memory.max_stack_bytes > result.performance.peak_memory.max_stack_bytes) {
                 result.performance.peak_memory = file.memory;
             }
