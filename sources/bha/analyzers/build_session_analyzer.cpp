@@ -43,6 +43,22 @@ namespace bha::analyzers {
             }
         }
 
+        void set_capability(
+            std::vector<MetricCapability>& capabilities,
+            MetricCapability value
+        ) {
+            const auto existing = std::ranges::find(
+                capabilities,
+                value.metric,
+                &MetricCapability::metric
+            );
+            if (existing == capabilities.end()) {
+                capabilities.push_back(std::move(value));
+            } else {
+                *existing = std::move(value);
+            }
+        }
+
         struct TimedEvent {
             const BuildCommandEvent* event = nullptr;
             Timestamp end_time{};
@@ -396,7 +412,7 @@ namespace bha::analyzers {
         }
 
         analysis.timed_commands = timed_events.size();
-        add_capability(
+        set_capability(
             analysis.metric_capabilities,
             capability(
                 "build.command.wall_time",

@@ -132,6 +132,37 @@ namespace bha::analyzers::test {
         EXPECT_EQ(parallelism->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(BuildSessionAnalyzerTest, ReplacesStaleObservedCapabilityWhenTimingIsAbsent) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        trace.build_session->metric_capabilities.push_back({
+            "build.command.wall_time",
+            MetricProvenance{
+                EvidenceKind::Observed,
+                "cmake-instrumentation",
+                "",
+                "api-v1",
+                "command",
+                TimingDomain::WallClock,
+                TimingAggregation::Exclusive,
+                ""
+            }
+        });
+        trace.build_session->commands = {BuildCommandEvent{}};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto capability = std::ranges::find(
+            result.value().build_session.metric_capabilities,
+            "build.command.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, result.value().build_session.metric_capabilities.end());
+        EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Unavailable);
+    }
+
     TEST(BuildSessionAnalyzerTest, ReportsProducerDefinedRoleMetrics) {
         BuildTrace trace;
         trace.build_session = BuildSession{};
