@@ -100,6 +100,16 @@ namespace bha::utils
         EXPECT_TRUE(contains("hello", ""));
     }
 
+    TEST(IContainsTest, HandlesEmptyNeedle) {
+        EXPECT_TRUE(icontains("hello", ""));
+        EXPECT_TRUE(icontains("", ""));
+    }
+
+    TEST(IContainsTest, MatchesWithoutCase) {
+        EXPECT_TRUE(icontains("Hello World", "WORLD"));
+        EXPECT_FALSE(icontains("Hello", "WORLD"));
+    }
+
     TEST(CaseConversionTest, ToLower) {
         EXPECT_EQ(to_lower("HELLO"), "hello");
         EXPECT_EQ(to_lower("Hello World"), "hello world");

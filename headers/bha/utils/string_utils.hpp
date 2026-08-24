@@ -102,8 +102,9 @@ namespace bha::utils {
     }
 
     inline bool icontains(const std::string_view s, const std::string_view needle) noexcept {
+        if (needle.empty()) return true;
         if (needle.size() > s.size()) return false;
-        const auto end = s.end() - needle.size() + 1;
+        const auto end = s.begin() + (s.size() - needle.size() + 1);
         for (auto it = s.begin(); it != end; ++it) {
             bool match = true;
             for (std::size_t i = 0; i < needle.size(); ++i) {
@@ -279,4 +280,3 @@ namespace bha::utils {
     }
 
 }  // namespace bha::utils
-
