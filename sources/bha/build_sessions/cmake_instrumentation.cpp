@@ -705,6 +705,16 @@ namespace bha::build_sessions {
             );
         }
 
+        const BuildCommandEvent* whole_build_event = nullptr;
+        std::size_t whole_build_event_count = 0;
+        for (const auto& command : session.commands) {
+            if (command.role != BuildStepRole::Build) {
+                continue;
+            }
+            ++whole_build_event_count;
+            whole_build_event = &command;
+        }
+
         parsers::ClangTraceParser clang_parser;
         std::set<fs::path> referenced_files;
         std::vector<CompilationUnit> referenced_units;
@@ -738,6 +748,12 @@ namespace bha::build_sessions {
         trace.build_system = BuildSystemType::CMake;
         trace.compiler = CompilerType::Clang;
         trace.id = path.generic_string();
+        if (trace.total_time == Duration::zero() &&
+            whole_build_event_count == 1 &&
+            whole_build_event != nullptr &&
+            whole_build_event->has_exact_timing()) {
+            trace.total_time = whole_build_event->duration;
+        }
         for (auto& unit : referenced_units) {
             if (static_cast<std::uint8_t>(unit.template_evidence) >
                 static_cast<std::uint8_t>(trace.template_evidence)) {

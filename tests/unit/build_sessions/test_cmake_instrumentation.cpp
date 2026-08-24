@@ -359,6 +359,44 @@ namespace bha::build_sessions::test {
         fs::remove_all(root, ec);
     }
 
+    TEST(CMakeInstrumentationParserTest, UsesExplicitWholeBuildSnippetForBuildTotal) {
+        const auto unique = std::to_string(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()
+            ).count()
+        );
+        const fs::path root = fs::temp_directory_path() / ("bha-cmake-build-total-" + unique);
+        const fs::path data = root / "data";
+        const fs::path build_snippet = data / "build.json";
+        const fs::path index = root / "index.json";
+        ASSERT_TRUE(fs::create_directories(data));
+
+        constexpr std::string_view snippet = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "build",
+  "result": null,
+  "timeStart": 1737053448177,
+  "duration": 125
+})json";
+        const auto index_content = std::string(R"json({
+  "version": {"major": 1, "minor": 1},
+  "dataDir": ")json") + data.string() + R"json(",
+  "snippets": ["build.json"]
+})json";
+        ASSERT_TRUE(utils::write_file(build_snippet, snippet).is_ok());
+        ASSERT_TRUE(utils::write_file(index, index_content).is_ok());
+
+        BuildTrace trace;
+        CMakeInstrumentationParser parser;
+        const auto result = parser.attach_to_trace(trace, index);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(trace.total_time, std::chrono::milliseconds(125));
+
+        std::error_code ec;
+        fs::remove_all(root, ec);
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsMissingReferencedClangTraceWithoutMutation) {
         const auto unique = std::to_string(
             std::chrono::duration_cast<std::chrono::nanoseconds>(
