@@ -56,4 +56,16 @@ namespace bha::utils {
         EXPECT_TRUE(list_files(temp.path / "file.cpp").is_err());
     }
 
+    TEST(FileUtilsTest, CreatesAndNamesTemporaryFiles) {
+        const auto result = create_temp_file("bha", ".trace");
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(fs::is_regular_file(result.value()));
+        EXPECT_EQ(result.value().extension(), ".trace");
+
+        std::error_code ec;
+        EXPECT_TRUE(fs::remove(result.value(), ec));
+        EXPECT_FALSE(ec);
+    }
+
 }  // namespace bha::utils

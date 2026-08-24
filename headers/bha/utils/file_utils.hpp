@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -172,6 +173,8 @@ namespace bha::utils {
             if (std::error_code rename_ec; !fs::equivalent(temp_path, renamed, rename_ec) || rename_ec) {
                 fs::rename(temp_path, renamed, rename_ec);
                 if (rename_ec) {
+                    std::error_code cleanup_ec;
+                    fs::remove(temp_path, cleanup_ec);
                     return Result<fs::path, Error>::failure(
                         Error::io_error("Failed to rename temp file", rename_ec.message()));
                 }
@@ -181,6 +184,10 @@ namespace bha::utils {
         return Result<fs::path, Error>::success(std::move(temp_path));
 #else
         const std::string suffix(extension);
+        if (suffix.size() > static_cast<std::size_t>(std::numeric_limits<int>::max())) {
+            return Result<fs::path, Error>::failure(
+                Error::invalid_argument("Temporary-file extension is too long"));
+        }
         std::string tmpl = (temp_dir / (std::string(prefix) + "XXXXXX" + suffix)).string();
         std::vector<char> buf(tmpl.begin(), tmpl.end());
         buf.push_back('\0');
@@ -193,8 +200,13 @@ namespace bha::utils {
         if (fd == -1) {
             return Result<fs::path, Error>::failure(Error::io_error("Failed to create temp file"));
         }
-        close(fd);
-        return Result<fs::path, Error>::success(fs::path(buf.data()));
+        const fs::path temp_path(buf.data());
+        if (close(fd) != 0) {
+            std::error_code cleanup_ec;
+            fs::remove(temp_path, cleanup_ec);
+            return Result<fs::path, Error>::failure(Error::io_error("Failed to close temp file"));
+        }
+        return Result<fs::path, Error>::success(temp_path);
 #endif
     }
 
