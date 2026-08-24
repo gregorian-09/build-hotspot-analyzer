@@ -4,6 +4,7 @@
 
 #include "bha/parsers/clang_parser.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -70,14 +71,14 @@ namespace bha::build_sessions {
             );
         }
 
-        Timestamp timestamp_from_milliseconds(const double milliseconds) {
-            return Timestamp(std::chrono::duration_cast<Timestamp::duration>(
+        std::optional<Timestamp::duration> timestamp_from_milliseconds(const double milliseconds) {
+            return utils::checked_duration_cast<Timestamp::duration>(
                 std::chrono::duration<double, std::milli>(milliseconds)
-            ));
+            );
         }
 
-        Duration duration_from_milliseconds(const double milliseconds) {
-            return std::chrono::duration_cast<Duration>(
+        std::optional<Duration> duration_from_milliseconds(const double milliseconds) {
+            return utils::checked_duration_cast<Duration>(
                 std::chrono::duration<double, std::milli>(milliseconds)
             );
         }
@@ -423,8 +424,18 @@ namespace bha::build_sessions {
                     event.trace_file = object["traceFile"].get<std::string>();
                 }
             }
-            event.start_time = timestamp_from_milliseconds(start_result.value());
-            event.duration = duration_from_milliseconds(duration_result.value());
+            const auto start_time = timestamp_from_milliseconds(start_result.value());
+            const auto duration = duration_from_milliseconds(duration_result.value());
+            if (!start_time.has_value() || !duration.has_value()) {
+                return Result<BuildCommandEvent, Error>::failure(
+                    Error::parse_error(
+                        "CMake instrumentation timing exceeds the supported representation",
+                        source_hint.string()
+                    )
+                );
+            }
+            event.start_time = Timestamp(*start_time);
+            event.duration = *duration;
 
             if (object.contains("result") && !object["result"].is_null()) {
                 if (!object["result"].is_number_integer()) {

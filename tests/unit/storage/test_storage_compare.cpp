@@ -3,6 +3,7 @@
 #include "bha/storage.hpp"
 
 #include <filesystem>
+#include <fstream>
 
 namespace bha::storage::test {
 
@@ -293,7 +294,7 @@ TEST(StorageCompareTest, RejectsEmptyRepeatedRunSet) {
         EXPECT_EQ(comparison.template_regressions.front().new_count, 2u);
     }
 
-    TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
+TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
     namespace fs = std::filesystem;
 
     const auto unique = std::to_string(
@@ -317,6 +318,32 @@ TEST(StorageCompareTest, RejectsEmptyRepeatedRunSet) {
     const auto duplicate = store.summarize_repeated_runs({"run-1", "run-1"});
     ASSERT_TRUE(duplicate.is_err());
     EXPECT_EQ(duplicate.error().code(), ErrorCode::InvalidArgument);
+
+    std::error_code ec;
+    fs::remove_all(root, ec);
+}
+
+TEST(StorageSnapshotTest, RejectsUnrepresentablePersistedDuration) {
+    namespace fs = std::filesystem;
+
+    const auto unique = std::to_string(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()
+        ).count()
+    );
+    const fs::path root = fs::temp_directory_path() / ("bha-invalid-duration-snapshot-" + unique);
+    ASSERT_TRUE(fs::create_directories(root));
+    {
+        std::ofstream file(root / "invalid.json");
+        ASSERT_TRUE(file.is_open());
+        file << R"json({"total_build_time_ms":1e30})json";
+    }
+
+    SnapshotStore store(root);
+    const auto result = store.load("invalid");
+
+    ASSERT_TRUE(result.is_err());
+    EXPECT_EQ(result.error().code(), ErrorCode::ParseError);
 
     std::error_code ec;
     fs::remove_all(root, ec);

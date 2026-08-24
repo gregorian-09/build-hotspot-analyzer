@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <unordered_set>
 
 namespace bha::storage
@@ -50,9 +51,16 @@ namespace bha::storage
          * Converts milliseconds to Duration.
          */
         Duration ms_to_duration(const double ms) {
-            return std::chrono::duration_cast<Duration>(
-                std::chrono::microseconds(static_cast<int64_t>(ms * 1000))
+            if (ms < 0.0) {
+                throw std::invalid_argument("Snapshot duration must be finite and non-negative");
+            }
+            const auto duration = utils::checked_duration_cast<Duration>(
+                std::chrono::duration<double, std::milli>(ms)
             );
+            if (!duration.has_value()) {
+                throw std::invalid_argument("Snapshot duration exceeds the supported representation");
+            }
+            return *duration;
         }
 
         EvidenceKind evidence_kind_from_string(const std::string& value) {
@@ -1098,6 +1106,10 @@ namespace bha::storage
             }
 
             return Result<Snapshot, Error>::success(std::move(snapshot));
+        } catch (const std::invalid_argument& e) {
+            return Result<Snapshot, Error>::failure(
+                Error(ErrorCode::ParseError, std::string("Invalid snapshot timing value: ") + e.what())
+            );
         } catch (const nlohmann::json::exception& e) {
             return Result<Snapshot, Error>::failure(
                 Error(ErrorCode::ParseError, std::string("Failed to parse snapshot JSON: ") + e.what())

@@ -151,6 +151,21 @@ namespace bha::build_sessions::test {
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST(CMakeInstrumentationParserTest, RejectsUnrepresentableTimingValue) {
+        constexpr std::string_view content = R"json({
+  "version": {"major": 1, "minor": 1},
+  "role": "compile",
+  "result": 0,
+  "timeStart": 1e30,
+  "duration": 31
+})json";
+
+        CMakeInstrumentationParser parser;
+        const auto result = parser.parse_content(content, "compile.json");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST(CMakeInstrumentationParserTest, RejectsInvalidStaticSystemInformationValue) {
         const auto unique = std::to_string(
             std::chrono::duration_cast<std::chrono::nanoseconds>(
