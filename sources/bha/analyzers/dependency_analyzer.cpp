@@ -48,6 +48,13 @@ namespace bha::analyzers
                 if (include.header.empty()) {
                     continue;
                 }
+                if (include.parse_time < Duration::zero() ||
+                    (include.self_parse_time.has_value() &&
+                        *include.self_parse_time < Duration::zero())) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Header parse timing cannot be negative")
+                    );
+                }
                 const std::string header_key = path_key(include.header);
 
                 auto& stats = header_map[header_key];

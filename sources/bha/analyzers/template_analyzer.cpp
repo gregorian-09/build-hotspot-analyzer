@@ -40,9 +40,19 @@ namespace bha::analyzers
         std::unordered_map<std::string, TemplateStats> template_map;
         Duration total_template_time = Duration::zero();
         const Duration total_build_time = trace.total_time;
+        if (total_build_time < Duration::zero()) {
+            return Result<AnalysisResult, Error>::failure(
+                Error::analysis_error("Build timing cannot be negative")
+            );
+        }
 
         for (const auto& unit : trace.units) {
             for (const auto& tmpl : unit.templates) {
+                if (tmpl.time < Duration::zero()) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Template timing cannot be negative")
+                    );
+                }
                 if (tmpl.full_signature.empty()) {
                     // A friendly name is not a stable specialization identity.
                     // Do not collapse unidentified producer rows into one entry.

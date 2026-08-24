@@ -168,6 +168,22 @@ namespace bha::analyzers
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST_F(DependencyAnalyzerTest, RejectsNegativeHeaderTiming) {
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.source_file = "/src/main.cpp";
+        unit.includes = {
+            {"/include/header.h", Duration(-1), 0, {}, {}, std::nullopt}
+        };
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::AnalysisError);
+    }
+
     // ======================================================================
     // Char-scanner tests for parse_include_directives_from_file
     // ======================================================================

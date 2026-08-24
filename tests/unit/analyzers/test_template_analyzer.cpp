@@ -168,6 +168,21 @@ namespace bha::analyzers {
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST_F(TemplateAnalyzerTest, RejectsNegativeTemplateTiming) {
+        BuildTrace trace;
+        CompilationUnit unit;
+        unit.templates = {
+            {"InstantiateClass", "Box<int>", {}, Duration(-1), {}, 1}
+        };
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::AnalysisError);
+    }
+
     TEST_F(TemplateAnalyzerTest, SkipsWhenDisabled) {
         const auto trace = create_test_trace();
         AnalysisOptions options;
