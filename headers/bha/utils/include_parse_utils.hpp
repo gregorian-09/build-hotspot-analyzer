@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -9,6 +10,39 @@
 #include <vector>
 
 namespace bha::utils {
+
+    namespace detail {
+
+        [[nodiscard]] inline bool skip_include_trivia(
+            const std::string_view line,
+            std::size_t& position
+        ) noexcept {
+            while (position < line.size()) {
+                if (std::isspace(static_cast<unsigned char>(line[position])) != 0) {
+                    ++position;
+                    continue;
+                }
+                if (line[position] != '/' || position + 1 >= line.size()) {
+                    return true;
+                }
+                if (line[position + 1] == '/') {
+                    position = line.size();
+                    return true;
+                }
+                if (line[position + 1] != '*') {
+                    return true;
+                }
+
+                const std::size_t comment_end = line.find("*/", position + 2);
+                if (comment_end == std::string_view::npos) {
+                    return false;
+                }
+                position = comment_end + 2;
+            }
+            return true;
+        }
+
+    }  // namespace detail
 
     struct ParsedIncludeDirective {
         std::string header_name;
@@ -20,17 +54,12 @@ namespace bha::utils {
     ) {
         std::size_t pos = 0;
 
-        while (pos < line.size() && (line[pos] == ' ' || line[pos] == '\t')) {
-            ++pos;
-        }
-        if (pos >= line.size() || line[pos] != '#') {
+        if (!detail::skip_include_trivia(line, pos) || pos >= line.size() || line[pos] != '#') {
             return std::nullopt;
         }
         ++pos;
 
-        while (pos < line.size() && (line[pos] == ' ' || line[pos] == '\t')) {
-            ++pos;
-        }
+        if (!detail::skip_include_trivia(line, pos)) return std::nullopt;
 
         constexpr std::string_view include_kwd = "include";
         if (pos + include_kwd.size() > line.size() ||
@@ -39,9 +68,7 @@ namespace bha::utils {
         }
         pos += include_kwd.size();
 
-        while (pos < line.size() && (line[pos] == ' ' || line[pos] == '\t')) {
-            ++pos;
-        }
+        if (!detail::skip_include_trivia(line, pos)) return std::nullopt;
         if (pos >= line.size() || (line[pos] != '"' && line[pos] != '<')) {
             return std::nullopt;
         }
@@ -56,8 +83,14 @@ namespace bha::utils {
             return std::nullopt;
         }
 
+        const std::size_t end = pos;
+        ++pos;
+        if (!detail::skip_include_trivia(line, pos) || pos != line.size()) {
+            return std::nullopt;
+        }
+
         return ParsedIncludeDirective{
-            std::filesystem::path(line.substr(start, pos - start)).lexically_normal().generic_string(),
+            std::filesystem::path(line.substr(start, end - start)).lexically_normal().generic_string(),
             delimiter == '<'
         };
     }

@@ -4,6 +4,7 @@ add_executable(bha_tests
         unit/utils/test_numeric_utils.cpp
         unit/utils/test_parallel.cpp
         unit/utils/test_cmake_parse_utils.cpp
+        unit/utils/test_include_parse_utils.cpp
         unit/parsers/test_clang_parser.cpp
         unit/parsers/test_gcc_parser.cpp
         unit/parsers/test_msvc_parser.cpp
