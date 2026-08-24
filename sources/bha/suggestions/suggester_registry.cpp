@@ -69,7 +69,7 @@ namespace bha::suggestions
         context.cancelled = &cancelled;
         if (options.restrict_to_trace) {
             std::unordered_set<std::string> targets;
-            targets.reserve(analysis.files.size() * 2 + 64);
+            targets.reserve(analysis.files.size());
 
             auto normalize = [&](const fs::path& path) {
                 fs::path resolved = path;
