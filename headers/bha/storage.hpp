@@ -61,7 +61,8 @@ namespace bha::storage
             Duration old_time = Duration::zero();
             Duration new_time = Duration::zero();
             Duration delta = Duration::zero();
-            double percent_change = 0.0;
+            /// Undefined when the old value is zero or unavailable.
+            std::optional<double> percent_change;
         };
 
         /**
@@ -99,7 +100,8 @@ namespace bha::storage
 
         // Overall changes
         Duration build_time_delta;           // Positive = slower, negative = faster
-        double build_time_percent_change;    // Percentage change
+        /// Undefined when the old build time is zero or unavailable.
+        std::optional<double> build_time_percent_change;
         int64_t file_count_delta;            // Change in file count
         double significance_threshold_percent = 5.0;
 
@@ -114,7 +116,8 @@ namespace bha::storage
             Duration old_time;
             Duration new_time;
             Duration delta;
-            double percent_change;
+            /// Undefined when the old file time is zero or unavailable.
+            std::optional<double> percent_change;
         };
         std::vector<FileChange> regressions;  // Files that got slower
         std::vector<FileChange> improvements; // Files that got faster
@@ -144,7 +147,8 @@ namespace bha::storage
         bool is_regression() const { return build_time_delta.count() > 0; }
         bool is_improvement() const { return build_time_delta.count() < 0; }
         bool is_significant() const {
-            return std::abs(build_time_percent_change) > significance_threshold_percent;
+            return build_time_percent_change.has_value() &&
+                   std::abs(*build_time_percent_change) > significance_threshold_percent;
         }
     };
 

@@ -1305,11 +1305,12 @@ namespace bha::storage
         const analyzers::AnalysisResult& new_result,
         const double significance_threshold
     ) {
-        auto percent_change = [](const Duration old_time, const Duration delta) -> double {
+        auto percent_change = [](const Duration old_time, const Duration delta) -> std::optional<double> {
             if (old_time.count() <= 0) {
-                return 0.0;
+                return std::nullopt;
             }
-            return 100.0 * static_cast<double>(delta.count()) / static_cast<double>(old_time.count());
+            return 100.0 * static_cast<double>(delta.count()) /
+                static_cast<double>(old_time.count());
         };
 
         auto set_regression_distribution = [](
@@ -1389,13 +1390,16 @@ namespace bha::storage
             } else {
                 const auto* new_file = it->second;
                 auto delta = new_file->compile_time - old_file->compile_time;
-                const double percent = percent_change(old_file->compile_time, delta);
+                const auto percent = percent_change(old_file->compile_time, delta);
                 ++result.translation_unit_regressions.matched_files;
                 if (delta.count() > 0) {
                     positive_deltas.push_back(delta);
                 }
 
-                if (std::abs(percent) > significance_threshold * 100.0) {
+                const bool significant = percent.has_value()
+                    ? std::abs(*percent) > significance_threshold * 100.0
+                    : delta != Duration::zero();
+                if (significant) {
                     ComparisonResult::FileChange change;
                     change.file = path;
                     change.old_time = old_file->compile_time;

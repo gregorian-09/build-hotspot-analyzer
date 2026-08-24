@@ -45,10 +45,14 @@ TEST(StorageCompareTest, ComputesCategoryPercentChanges) {
 
     const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
 
-    EXPECT_NEAR(comparison.build_time_percent_change, 20.0, 1e-9);
-    EXPECT_NEAR(comparison.translation_unit.percent_change, 20.0, 1e-9);
-    EXPECT_NEAR(comparison.headers.percent_change, 15.0, 1e-9);
-    EXPECT_NEAR(comparison.templates.percent_change, -20.0, 1e-9);
+    ASSERT_TRUE(comparison.build_time_percent_change.has_value());
+    EXPECT_NEAR(*comparison.build_time_percent_change, 20.0, 1e-9);
+    ASSERT_TRUE(comparison.translation_unit.percent_change.has_value());
+    EXPECT_NEAR(*comparison.translation_unit.percent_change, 20.0, 1e-9);
+    ASSERT_TRUE(comparison.headers.percent_change.has_value());
+    EXPECT_NEAR(*comparison.headers.percent_change, 15.0, 1e-9);
+    ASSERT_TRUE(comparison.templates.percent_change.has_value());
+    EXPECT_NEAR(*comparison.templates.percent_change, -20.0, 1e-9);
     EXPECT_NEAR(comparison.significance_threshold_percent, 5.0, 1e-9);
     EXPECT_TRUE(comparison.is_significant());
 }
@@ -93,7 +97,8 @@ TEST(StorageCompareTest, FileRegressionThresholdFollowsConfiguredSignificance) {
 
     EXPECT_TRUE(comparison_5.regressions.empty());
     ASSERT_EQ(comparison_2.regressions.size(), 1u);
-    EXPECT_NEAR(comparison_2.regressions.front().percent_change, 4.0, 1e-9);
+    ASSERT_TRUE(comparison_2.regressions.front().percent_change.has_value());
+    EXPECT_NEAR(*comparison_2.regressions.front().percent_change, 4.0, 1e-9);
 }
 
 TEST(StorageCompareTest, ReportsObservedTranslationUnitRegressionDistribution) {
@@ -153,7 +158,32 @@ TEST(StorageCompareTest, UsesCompleteSerialTimeInsteadOfFilteredFileRows) {
 
     EXPECT_EQ(comparison.translation_unit.old_time, std::chrono::milliseconds(3000));
     EXPECT_EQ(comparison.translation_unit.new_time, std::chrono::milliseconds(3600));
-    EXPECT_NEAR(comparison.translation_unit.percent_change, 20.0, 1e-9);
+    ASSERT_TRUE(comparison.translation_unit.percent_change.has_value());
+    EXPECT_NEAR(*comparison.translation_unit.percent_change, 20.0, 1e-9);
+}
+
+TEST(StorageCompareTest, KeepsZeroBaselinePercentagesUnavailable) {
+    const auto old_analysis = make_analysis(
+        {{"new.cpp", Duration::zero()}},
+        Duration::zero(),
+        Duration::zero(),
+        Duration::zero()
+    );
+    const auto new_analysis = make_analysis(
+        {{"new.cpp", std::chrono::milliseconds(100)}},
+        std::chrono::milliseconds(100),
+        std::chrono::milliseconds(50),
+        std::chrono::milliseconds(25)
+    );
+
+    const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
+
+    EXPECT_TRUE(comparison.is_regression());
+    EXPECT_FALSE(comparison.is_significant());
+    EXPECT_FALSE(comparison.build_time_percent_change.has_value());
+    EXPECT_FALSE(comparison.translation_unit.percent_change.has_value());
+    ASSERT_EQ(comparison.regressions.size(), 1u);
+    EXPECT_FALSE(comparison.regressions.front().percent_change.has_value());
 }
 
 TEST(StorageCompareTest, SummarizesRepeatedObservedBuildTimes) {
