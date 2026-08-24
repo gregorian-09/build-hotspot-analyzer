@@ -3,11 +3,15 @@
 //
 
 #include "bha/suggestions/consolidator.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
+#include <optional>
 #include <ranges>
 #include <sstream>
+#include <tuple>
 #include <unordered_set>
 
 namespace bha::suggestions
@@ -23,6 +27,87 @@ namespace bha::suggestions
             std::ranges::copy_if(suggestions, std::back_inserter(filtered),
                 [type](const Suggestion& s) { return s.type == type; });
             return filtered;
+        }
+
+        std::optional<double> conservative_confidence(
+            const std::vector<Suggestion>& suggestions
+        ) {
+            if (suggestions.empty()) {
+                return std::nullopt;
+            }
+
+            double result = suggestions.front().confidence;
+            if (!std::isfinite(result) || result < 0.0 || result > 1.0) {
+                return std::nullopt;
+            }
+
+            for (const auto& suggestion : suggestions) {
+                if (!std::isfinite(suggestion.confidence) ||
+                    suggestion.confidence < 0.0 || suggestion.confidence > 1.0) {
+                    return std::nullopt;
+                }
+                result = std::min(result, suggestion.confidence);
+            }
+            return result;
+        }
+
+        bool position_less(
+            const std::size_t line_a,
+            const std::size_t col_a,
+            const std::size_t line_b,
+            const std::size_t col_b
+        ) {
+            return std::tie(line_a, col_a) < std::tie(line_b, col_b);
+        }
+
+        bool position_equal(
+            const std::size_t line_a,
+            const std::size_t col_a,
+            const std::size_t line_b,
+            const std::size_t col_b
+        ) {
+            return line_a == line_b && col_a == col_b;
+        }
+
+        bool edit_ranges_conflict(const TextEdit& left, const TextEdit& right) {
+            if (left.file != right.file) {
+                return false;
+            }
+
+            const bool identical =
+                position_equal(left.start_line, left.start_col, right.start_line, right.start_col) &&
+                position_equal(left.end_line, left.end_col, right.end_line, right.end_col) &&
+                left.new_text == right.new_text;
+            if (identical) {
+                return false;
+            }
+
+            const bool ranges_overlap =
+                position_less(left.start_line, left.start_col, right.end_line, right.end_col) &&
+                position_less(right.start_line, right.start_col, left.end_line, left.end_col);
+            if (ranges_overlap) {
+                return true;
+            }
+
+            const auto point_inclusive = [](const TextEdit& edit, const TextEdit& insertion) {
+                const bool after_start = !position_less(
+                    insertion.start_line, insertion.start_col,
+                    edit.start_line, edit.start_col
+                );
+                const bool before_end = !position_less(
+                    edit.end_line, edit.end_col,
+                    insertion.start_line, insertion.start_col
+                );
+                return after_start && before_end;
+            };
+
+            if (left.is_insertion() && point_inclusive(right, left)) {
+                return true;
+            }
+            if (right.is_insertion() && point_inclusive(left, right)) {
+                return true;
+            }
+            return false;
         }
 
     }  // namespace
@@ -129,7 +214,6 @@ namespace bha::suggestions
         }
 
         consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
         consolidated.title = "Header Splitting Opportunities (" + std::to_string(by_file.size()) + " headers)";
 
         std::ostringstream rationale;
@@ -139,9 +223,19 @@ namespace bha::suggestions
 
         consolidated.implementation_steps = merge_steps(suggestions);
         consolidated.is_safe = false;
-        consolidated.confidence = 0.7;
+        const auto confidence = conservative_confidence(suggestions);
+        const auto impact = merge_impacts(suggestions);
+        const auto edits = merge_edits(suggestions);
+        if (!confidence || !impact || !edits) {
+            return std::nullopt;
+        }
+        consolidated.confidence = *confidence;
+        consolidated.impact = *impact;
 
-        consolidated.edits = merge_edits(suggestions);
+        consolidated.edits = *edits;
+        consolidated.caveats.push_back(
+            "Savings remain unavailable until a post-edit trace is captured"
+        );
 
         return consolidated;
     }
@@ -177,7 +271,13 @@ namespace bha::suggestions
         }
 
         consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
+        const auto impact = merge_impacts(suggestions);
+        const auto confidence = conservative_confidence(suggestions);
+        const auto edits = merge_edits(suggestions);
+        if (!impact || !confidence || !edits) {
+            return std::nullopt;
+        }
+        consolidated.impact = *impact;
         consolidated.title = "Include Cleanup (" + std::to_string(suggestions.size()) + " includes)";
         consolidated.rationale = "Removing unused includes reduces compilation time and dependencies.";
         const bool all_safe = std::ranges::all_of(
@@ -185,10 +285,13 @@ namespace bha::suggestions
             [](const Suggestion& s) { return s.is_safe; }
         );
         consolidated.is_safe = all_safe;
-        consolidated.confidence = all_safe ? 0.98 : 0.75;
+        consolidated.confidence = *confidence;
         consolidated.target_file = suggestions.front().target_file;
 
-        consolidated.edits = merge_edits(suggestions);
+        consolidated.edits = *edits;
+        consolidated.caveats.push_back(
+            "Savings remain unavailable until a post-edit trace is captured"
+        );
 
         return consolidated;
     }
@@ -215,18 +318,27 @@ namespace bha::suggestions
         }
 
         consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
+        const auto impact = merge_impacts(suggestions);
+        const auto confidence = conservative_confidence(suggestions);
+        const auto edits = merge_edits(suggestions);
+        if (!impact || !confidence || !edits) {
+            return std::nullopt;
+        }
+        consolidated.impact = *impact;
         consolidated.title = "Forward Declaration Opportunities (" + std::to_string(suggestions.size()) + " locations)";
         consolidated.is_safe = false;
-        consolidated.confidence = 0.7;
+        consolidated.confidence = *confidence;
 
-        consolidated.edits = merge_edits(suggestions);
+        consolidated.edits = *edits;
+        consolidated.caveats.push_back(
+            "Savings remain unavailable until a post-edit trace is captured"
+        );
 
         return consolidated;
     }
 
 
-    Impact SuggestionConsolidator::merge_impacts(
+    std::optional<Impact> SuggestionConsolidator::merge_impacts(
         const std::vector<Suggestion>& suggestions
     )
     {
@@ -238,9 +350,24 @@ namespace bha::suggestions
                 sug.impact.files_benefiting.begin(),
                 sug.impact.files_benefiting.end()
             );
-            merged.total_files_affected += sug.impact.total_files_affected;
-            merged.cumulative_savings += sug.impact.cumulative_savings;
-            merged.rebuild_files_count += sug.impact.rebuild_files_count;
+            const auto total_files = utils::checked_add(
+                merged.total_files_affected,
+                sug.impact.total_files_affected
+            );
+            const auto cumulative_savings = utils::checked_add_duration(
+                merged.cumulative_savings,
+                sug.impact.cumulative_savings
+            );
+            const auto rebuild_files = utils::checked_add(
+                merged.rebuild_files_count,
+                sug.impact.rebuild_files_count
+            );
+            if (!total_files || !cumulative_savings || !rebuild_files) {
+                return std::nullopt;
+            }
+            merged.total_files_affected = *total_files;
+            merged.cumulative_savings = *cumulative_savings;
+            merged.rebuild_files_count = *rebuild_files;
         }
 
         std::ranges::sort(merged.files_benefiting);
@@ -269,7 +396,7 @@ namespace bha::suggestions
         return merged;
     }
 
-    std::vector<TextEdit> SuggestionConsolidator::merge_edits(
+    std::optional<std::vector<TextEdit>> SuggestionConsolidator::merge_edits(
         const std::vector<Suggestion>& suggestions
     ) {
         std::vector<TextEdit> all_edits;
@@ -296,26 +423,24 @@ namespace bha::suggestions
         merged.reserve(all_edits.size());
 
         for (const auto& edit : all_edits) {
-            bool conflict = false;
-
             for (const auto& existing : merged) {
-                if (existing.file != edit.file) {
-                    continue;
-                }
-
-                const bool overlaps =
-                    (edit.start_line < existing.end_line ||
-                     (edit.start_line == existing.end_line && edit.start_col < existing.end_col)) &&
-                    (edit.end_line > existing.start_line ||
-                     (edit.end_line == existing.start_line && edit.end_col > existing.start_col));
-
-                if (overlaps) {
-                    conflict = true;
-                    break;
+                if (edit_ranges_conflict(existing, edit)) {
+                    return std::nullopt;
                 }
             }
 
-            if (!conflict) {
+            const bool duplicate = std::ranges::any_of(
+                merged,
+                [&edit](const TextEdit& existing) {
+                    return existing.file == edit.file &&
+                        existing.start_line == edit.start_line &&
+                        existing.start_col == edit.start_col &&
+                        existing.end_line == edit.end_line &&
+                        existing.end_col == edit.end_col &&
+                        existing.new_text == edit.new_text;
+                }
+            );
+            if (!duplicate) {
                 merged.push_back(edit);
             }
         }
@@ -370,9 +495,6 @@ namespace bha::suggestions
         desc << "The PIMPL idiom moves private implementation details to a separate compilation unit, "
              << "reducing header dependencies and improving incremental build times.\n\n";
 
-        Duration total_savings = Duration::zero();
-        double total_percent = 0.0;
-
         for (const auto& [module, sug_list] : by_module) {
             desc << "**Module: " << module << "** (" << sug_list.size() << " candidates)\n";
 
@@ -383,8 +505,6 @@ namespace bha::suggestions
                 }
                 desc << "\n";
 
-                total_savings += sug->estimated_savings;
-                total_percent += sug->estimated_savings_percent;
             }
             desc << "\n";
         }
@@ -407,7 +527,13 @@ namespace bha::suggestions
         desc << "```\n";
 
         consolidated.description = desc.str();
-        consolidated.impact = merge_impacts(suggestions);
+        const auto impact = merge_impacts(suggestions);
+        const auto confidence = conservative_confidence(suggestions);
+        const auto edits = merge_edits(suggestions);
+        if (!impact || !confidence || !edits) {
+            return std::nullopt;
+        }
+        consolidated.impact = *impact;
         consolidated.title = "PIMPL Pattern Opportunities (" + std::to_string(suggestions.size()) + " classes)";
 
         consolidated.rationale = "These classes have significant private implementation details that cause "
@@ -435,11 +561,13 @@ namespace bha::suggestions
             "Verify no functionality regression. Check for memory leaks with sanitizers.";
 
         consolidated.is_safe = false;
-        consolidated.confidence = 0.75;
-        consolidated.estimated_savings = total_savings;
-        consolidated.estimated_savings_percent = total_percent;
+        consolidated.confidence = *confidence;
+        consolidated.estimated_savings_evidence = EvidenceKind::Unavailable;
+        consolidated.caveats.push_back(
+            "Savings remain unavailable until a post-edit trace is captured"
+        );
 
-        consolidated.edits = merge_edits(suggestions);
+        consolidated.edits = *edits;
 
         return consolidated;
     }

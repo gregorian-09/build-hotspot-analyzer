@@ -1084,6 +1084,8 @@ namespace bha {
 
         Duration estimated_savings = Duration::zero();
         double estimated_savings_percent = 0.0;
+        /// Provenance for the savings fields; unavailable means no estimate was made.
+        EvidenceKind estimated_savings_evidence = EvidenceKind::Unavailable;
 
         FileTarget target_file;
         std::vector<FileTarget> secondary_files;

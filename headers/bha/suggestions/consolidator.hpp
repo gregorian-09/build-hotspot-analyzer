@@ -82,7 +82,7 @@ namespace bha::suggestions
         /**
          * Merges impact assessments from multiple suggestions.
          */
-        [[nodiscard]] static Impact merge_impacts(
+        [[nodiscard]] static std::optional<Impact> merge_impacts(
             const std::vector<Suggestion>& suggestions
         );
 
@@ -96,9 +96,10 @@ namespace bha::suggestions
         /**
          * Merges TextEdits from multiple suggestions, handling conflicts.
          *
-         * The merge keeps deterministic ordering and drops exact duplicates.
+         * The merge keeps deterministic ordering, drops exact duplicates, and
+         * fails closed when non-identical edits overlap.
          */
-        [[nodiscard]] static std::vector<TextEdit> merge_edits(
+        [[nodiscard]] static std::optional<std::vector<TextEdit>> merge_edits(
             const std::vector<Suggestion>& suggestions
         );
 

@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include <limits>
+
 namespace bha::suggestions
 {
     class ConsolidatorTest : public ::testing::Test {
@@ -133,6 +135,97 @@ namespace bha::suggestions
         EXPECT_EQ(result[1].title, "Instantiate Bar<int>");
         EXPECT_EQ(result[0].target_file.path, "foo.cpp");
         EXPECT_EQ(result[1].target_file.path, "bar.cpp");
+    }
+
+    TEST_F(ConsolidatorTest, PreservesTheLeastConfidentChildEvidence) {
+        Suggestion first;
+        first.type = SuggestionType::IncludeRemoval;
+        first.target_file.path = "first.cpp";
+        first.confidence = 0.95;
+        first.is_safe = true;
+
+        Suggestion second;
+        second.type = SuggestionType::IncludeRemoval;
+        second.target_file.path = "second.cpp";
+        second.confidence = 0.6;
+        second.is_safe = true;
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        ASSERT_EQ(result.size(), 1u);
+        EXPECT_DOUBLE_EQ(result.front().confidence, 0.6);
+        EXPECT_TRUE(result.front().is_safe);
+    }
+
+    TEST_F(ConsolidatorTest, DeduplicatesIdenticalEdits) {
+        Suggestion first;
+        first.type = SuggestionType::IncludeRemoval;
+        first.target_file.path = "source.cpp";
+        first.confidence = 0.9;
+        first.edits.push_back(make_file_edit("source.cpp", "replacement"));
+
+        Suggestion duplicate = first;
+        const auto result = consolidator_->consolidate({first, duplicate});
+
+        ASSERT_EQ(result.size(), 1u);
+        ASSERT_EQ(result.front().edits.size(), 1u);
+        EXPECT_EQ(result.front().edits.front().new_text, "replacement");
+    }
+
+    TEST_F(ConsolidatorTest, RejectsConflictingEdits) {
+        Suggestion first;
+        first.type = SuggestionType::IncludeRemoval;
+        first.target_file.path = "source.cpp";
+        first.confidence = 0.9;
+        first.edits.push_back(TextEdit{
+            "source.cpp", 0, 0, 0, 5, "first"
+        });
+
+        Suggestion second = first;
+        second.edits.front().end_col = 7;
+        second.edits.front().new_text = "second";
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        EXPECT_TRUE(result.empty());
+    }
+
+    TEST_F(ConsolidatorTest, RejectsImpactOverflow) {
+        Suggestion first;
+        first.type = SuggestionType::IncludeRemoval;
+        first.target_file.path = "first.cpp";
+        first.confidence = 0.9;
+        first.impact.total_files_affected = std::numeric_limits<std::size_t>::max();
+
+        Suggestion second = first;
+        second.target_file.path = "second.cpp";
+        second.impact.total_files_affected = 1;
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        EXPECT_TRUE(result.empty());
+    }
+
+    TEST_F(ConsolidatorTest, DoesNotInventPimplSavings) {
+        Suggestion first;
+        first.type = SuggestionType::PIMPLPattern;
+        first.target_file.path = "first.hpp";
+        first.confidence = 0.9;
+        first.estimated_savings = std::chrono::milliseconds(100);
+        first.estimated_savings_percent = 10.0;
+        first.estimated_savings_evidence = EvidenceKind::Observed;
+
+        Suggestion second = first;
+        second.target_file.path = "second.hpp";
+        second.estimated_savings = std::chrono::milliseconds(200);
+        second.estimated_savings_percent = 20.0;
+
+        const auto result = consolidator_->consolidate({first, second});
+
+        ASSERT_EQ(result.size(), 1u);
+        EXPECT_EQ(result.front().estimated_savings, Duration::zero());
+        EXPECT_DOUBLE_EQ(result.front().estimated_savings_percent, 0.0);
+        EXPECT_EQ(result.front().estimated_savings_evidence, EvidenceKind::Unavailable);
     }
 
 }

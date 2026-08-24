@@ -827,6 +827,8 @@ namespace bha::storage
             j["confidence"] = sugg.confidence;
             j["priority"] = static_cast<int>(sugg.priority);
             j["estimated_savings_ms"] = duration_to_ms(sugg.estimated_savings);
+            j["estimated_savings_percent"] = sugg.estimated_savings_percent;
+            j["estimated_savings_evidence"] = to_string(sugg.estimated_savings_evidence);
             j["is_safe"] = sugg.is_safe;
             j["application_mode"] = to_string(resolve_application_mode(sugg));
             if (sugg.refactor_class_name) {
@@ -874,6 +876,10 @@ namespace bha::storage
             sugg.confidence = j.value("confidence", 0.0);
             sugg.priority = static_cast<Priority>(j.value("priority", 0));
             sugg.estimated_savings = ms_to_duration(j.value("estimated_savings_ms", 0.0));
+            sugg.estimated_savings_percent = j.value("estimated_savings_percent", 0.0);
+            sugg.estimated_savings_evidence = evidence_kind_from_string(
+                j.value("estimated_savings_evidence", std::string("unavailable"))
+            );
             sugg.is_safe = j.value("is_safe", false);
             sugg.application_mode = suggestion_application_mode_from_string(
                 j.value("application_mode", std::string(to_string(SuggestionApplicationMode::Advisory)))

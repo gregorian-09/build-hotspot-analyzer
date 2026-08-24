@@ -694,4 +694,38 @@ TEST(StorageSnapshotTest, PersistsSuggestionHotspotOrigins) {
     fs::remove_all(root, ec);
 }
 
+TEST(StorageSnapshotTest, PersistsSuggestionSavingsEvidence) {
+    namespace fs = std::filesystem;
+
+    const auto unique = std::to_string(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()
+        ).count()
+    );
+    const fs::path root = fs::temp_directory_path() / ("bha-suggestion-savings-" + unique);
+
+    SnapshotStore store(root);
+    analyzers::AnalysisResult analysis;
+
+    Suggestion suggestion;
+    suggestion.id = "observed-savings";
+    suggestion.type = SuggestionType::ExplicitTemplate;
+    suggestion.estimated_savings = std::chrono::milliseconds(125);
+    suggestion.estimated_savings_percent = 4.5;
+    suggestion.estimated_savings_evidence = EvidenceKind::Observed;
+
+    ASSERT_TRUE(store.save("savings-evidence", analysis, {suggestion}).is_ok());
+
+    const auto load_result = store.load("savings-evidence");
+    ASSERT_TRUE(load_result.is_ok());
+    ASSERT_EQ(load_result.value().suggestions.size(), 1u);
+    const auto& loaded = load_result.value().suggestions.front();
+    EXPECT_EQ(loaded.estimated_savings, std::chrono::milliseconds(125));
+    EXPECT_DOUBLE_EQ(loaded.estimated_savings_percent, 4.5);
+    EXPECT_EQ(loaded.estimated_savings_evidence, EvidenceKind::Observed);
+
+    std::error_code ec;
+    fs::remove_all(root, ec);
+}
+
 }  // namespace bha::storage::test
