@@ -1,4 +1,5 @@
 add_library(bha_lsp_core STATIC
+    sources/bha/lsp/diagnostic_parser.cpp
     sources/bha/lsp/suggestion_manager.cpp
 )
 add_library(bha::lsp_core ALIAS bha_lsp_core)

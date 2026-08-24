@@ -1,4 +1,5 @@
 #include "bha/lsp/suggestion_manager.hpp"
+#include "bha/lsp/diagnostic_parser.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/analyzers/analyzer.hpp"
@@ -17,7 +18,6 @@
 #include <cstdio>
 #include <fstream>
 #include <iomanip>
-#include <regex>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -848,25 +848,10 @@ namespace bha::lsp
         const std::string& syntax_output,
         std::vector<Diagnostic>& errors
     ) {
-        static const std::regex diagnostic_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
+        const auto compiler_diagnostics = parse_compiler_diagnostics(syntax_output);
+        errors.insert(errors.end(), compiler_diagnostics.begin(), compiler_diagnostics.end());
 
-        bool emitted_compiler_diag = false;
-        std::smatch match;
-        auto search_start = syntax_output.cbegin();
-        while (std::regex_search(search_start, syntax_output.cend(), match, diagnostic_regex)) {
-            Diagnostic diag;
-            diag.range.start.line = std::stoi(match[2]) - 1;
-            diag.range.start.character = std::stoi(match[3]) - 1;
-            diag.range.end = diag.range.start;
-            diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
-            diag.source = "compiler";
-            diag.message = match[5];
-            errors.push_back(std::move(diag));
-            emitted_compiler_diag = true;
-            search_start = match.suffix().first;
-        }
-
-        if (emitted_compiler_diag) {
+        if (!compiler_diagnostics.empty()) {
             return false;
         }
 

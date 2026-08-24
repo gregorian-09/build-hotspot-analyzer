@@ -3,6 +3,7 @@
 //
 
 #include "bha/lsp/suggestion_manager.hpp"
+#include "bha/lsp/diagnostic_parser.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -12,6 +13,40 @@
 namespace bha::lsp
 {
     namespace fs = std::filesystem;
+
+    TEST(CompilerDiagnosticParserTest, ParsesClangAndGccLocationsWithColonsInPath) {
+        const auto diagnostics = parse_compiler_diagnostics(
+            "C:/work:tree/source.cpp:12:7: error: expected ';'\n"
+            "/tmp/source.cpp:4:2: warning: unused variable\n"
+            "not a compiler diagnostic\n"
+        );
+
+        ASSERT_EQ(diagnostics.size(), 2u);
+        EXPECT_EQ(diagnostics[0].range.start.line, 11);
+        EXPECT_EQ(diagnostics[0].range.start.character, 6);
+        EXPECT_EQ(diagnostics[0].severity, DiagnosticSeverity::Error);
+        EXPECT_EQ(diagnostics[0].message, "expected ';'");
+        EXPECT_EQ(diagnostics[1].range.start.line, 3);
+        EXPECT_EQ(diagnostics[1].range.start.character, 1);
+        EXPECT_EQ(diagnostics[1].severity, DiagnosticSeverity::Warning);
+    }
+
+    TEST(CompilerDiagnosticParserTest, ParsesMsvcLocationsAndRejectsMalformedCoordinates) {
+        const auto diagnostics = parse_compiler_diagnostics(
+            "C:\\work\\source.cpp(21,9): error C2143: missing token\r\n"
+            "C:\\work\\source.cpp(22): warning C4100: unused parameter\n"
+            "C:\\work\\source.cpp(x,3): error C0000: malformed\n"
+        );
+
+        ASSERT_EQ(diagnostics.size(), 2u);
+        EXPECT_EQ(diagnostics[0].range.start.line, 20);
+        EXPECT_EQ(diagnostics[0].range.start.character, 8);
+        EXPECT_EQ(diagnostics[0].severity, DiagnosticSeverity::Error);
+        EXPECT_EQ(diagnostics[0].message, "C2143: missing token");
+        EXPECT_EQ(diagnostics[1].range.start.line, 21);
+        EXPECT_EQ(diagnostics[1].range.start.character, 0);
+        EXPECT_EQ(diagnostics[1].severity, DiagnosticSeverity::Warning);
+    }
 
     class SuggestionManagerTestAccess {
     public:

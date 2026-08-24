@@ -1,4 +1,5 @@
 #include "bha/lsp/server.hpp"
+#include "bha/lsp/diagnostic_parser.hpp"
 #include "bha/lsp/uri.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
@@ -16,7 +17,6 @@
 #include <fstream>
 #include <iomanip>
 #include <limits>
-#include <regex>
 #include <thread>
 #include <unordered_set>
 #ifndef _WIN32
@@ -2871,20 +2871,8 @@ namespace bha::lsp
                     return true;
                 }
 
-                std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
-                std::smatch match;
-                auto search_start = build.output.cbegin();
-                while (std::regex_search(search_start, build.output.cend(), match, error_regex)) {
-                    Diagnostic diag;
-                    diag.range.start.line = std::stoi(match[2]) - 1;
-                    diag.range.start.character = std::stoi(match[3]) - 1;
-                    diag.range.end = diag.range.start;
-                    diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
-                    diag.message = match[5];
-                    diag.source = "compiler";
-                    errors.push_back(std::move(diag));
-                    search_start = match.suffix().first;
-                }
+                const auto compiler_diagnostics = parse_compiler_diagnostics(build.output);
+                errors.insert(errors.end(), compiler_diagnostics.begin(), compiler_diagnostics.end());
 
                 if (errors.empty()) {
                     Diagnostic diag;
@@ -2946,20 +2934,8 @@ namespace bha::lsp
                     return true;
                 }
 
-                std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
-                std::smatch match;
-                auto search_start = build.output.cbegin();
-                while (std::regex_search(search_start, build.output.cend(), match, error_regex)) {
-                    Diagnostic diag;
-                    diag.range.start.line = std::stoi(match[2]) - 1;
-                    diag.range.start.character = std::stoi(match[3]) - 1;
-                    diag.range.end = diag.range.start;
-                    diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
-                    diag.message = match[5];
-                    diag.source = "compiler";
-                    errors.push_back(std::move(diag));
-                    search_start = match.suffix().first;
-                }
+                const auto compiler_diagnostics = parse_compiler_diagnostics(build.output);
+                errors.insert(errors.end(), compiler_diagnostics.begin(), compiler_diagnostics.end());
 
                 if (errors.empty()) {
                     Diagnostic diag;
@@ -3032,21 +3008,8 @@ namespace bha::lsp
         bool const success = (exit_code == 0);
 
         if (!success) {
-            std::regex const error_regex(R"(([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*))");
-            std::smatch match;
-            auto search_start = output.cbegin();
-
-            while (std::regex_search(search_start, output.cend(), match, error_regex)) {
-                Diagnostic diag;
-                diag.range.start.line = std::stoi(match[2]) - 1;
-                diag.range.start.character = std::stoi(match[3]) - 1;
-                diag.range.end = diag.range.start;
-                diag.severity = (match[4] == "error") ? DiagnosticSeverity::Error : DiagnosticSeverity::Warning;
-                diag.message = match[5];
-                diag.source = "compiler";
-                errors.push_back(diag);
-                search_start = match.suffix().first;
-            }
+            const auto compiler_diagnostics = parse_compiler_diagnostics(output);
+            errors.insert(errors.end(), compiler_diagnostics.begin(), compiler_diagnostics.end());
 
             if (errors.empty()) {
                 Diagnostic diag;
