@@ -23,6 +23,7 @@
 
 #include "bha/parsers/gcc_parser.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <charconv>
@@ -254,37 +255,78 @@ namespace bha::parsers {
             return result;
         }
 
-        void map_phase_to_breakdown(const TimingLine& timing, TimeBreakdown& breakdown) {
+        bool map_phase_to_breakdown(const TimingLine& timing, TimeBreakdown& breakdown) {
             const auto& name = timing.phase_name;
+            const auto add_unclassified = [&]() {
+                return utils::checked_add_duration(
+                    breakdown.unclassified,
+                    timing.wall_time
+                );
+            };
+            const auto add_parsing = [&]() {
+                return utils::checked_add_duration(
+                    breakdown.parsing,
+                    timing.wall_time
+                );
+            };
 
             // Official GCC phase names (must match exactly from timevar.def)
             if (name == "phase parsing" || name == "phase late parsing cleanups") {
-                breakdown.parsing += timing.wall_time;
+                const auto sum = add_parsing();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.parsing = *sum;
             }
             else if (name == "phase lang. deferred") {
                 // GCC reports this as one aggregate phase; it is not a
                 // per-template or semantic-only measurement.
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
             else if (name == "phase opt and generate") {
                 // This phase combines optimization and code generation.
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
             else if (name == "phase last asm") {
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
             else if (name == "phase stream in" || name == "phase stream out") {
                 // LTO stream phases are not normalized optimization timings.
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
             else if (name == "phase finalize") {
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
             else {
                 // Preserve unrecognized GCC timing variables without
                 // guessing a normalized compiler phase.
-                breakdown.unclassified += timing.wall_time;
+                const auto sum = add_unclassified();
+                if (!sum.has_value()) {
+                    return false;
+                }
+                breakdown.unclassified = *sum;
             }
+            return true;
         }
     }  // namespace
 
@@ -360,18 +402,43 @@ namespace bha::parsers {
             }
 
             saw_template_phase = saw_template_phase || timing.phase_name == "phase lang. deferred";
-            map_phase_to_breakdown(timing, unit.metrics.breakdown);
+            if (!map_phase_to_breakdown(timing, unit.metrics.breakdown)) {
+                return Result<CompilationUnit, Error>::failure(
+                    Error::parse_error(
+                        "GCC phase timing exceeded the supported aggregate duration range",
+                        source_hint.string()
+                    )
+                );
+            }
 
             if (timing.phase_name == "phase parsing" ||
                 timing.phase_name == "phase lang. deferred" ||
                 timing.phase_name == "phase late parsing cleanups") {
-                frontend_time += timing.wall_time;
+                const auto sum = utils::checked_add_duration(frontend_time, timing.wall_time);
+                if (!sum.has_value()) {
+                    return Result<CompilationUnit, Error>::failure(
+                        Error::parse_error(
+                            "GCC frontend timing exceeded the supported aggregate duration range",
+                            source_hint.string()
+                        )
+                    );
+                }
+                frontend_time = *sum;
             }
             else if (timing.phase_name == "phase opt and generate" ||
                      timing.phase_name == "phase last asm" ||
                      timing.phase_name == "phase stream in" ||
                      timing.phase_name == "phase stream out") {
-                backend_time += timing.wall_time;
+                const auto sum = utils::checked_add_duration(backend_time, timing.wall_time);
+                if (!sum.has_value()) {
+                    return Result<CompilationUnit, Error>::failure(
+                        Error::parse_error(
+                            "GCC backend timing exceeded the supported aggregate duration range",
+                            source_hint.string()
+                        )
+                    );
+                }
+                backend_time = *sum;
             }
         }
 

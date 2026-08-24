@@ -23,6 +23,7 @@
 
 #include "bha/parsers/msvc_parser.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
 #include <charconv>
@@ -198,14 +199,36 @@ namespace bha::parsers {
                 );
             }
             const auto& timing = parsed.timing;
+            const auto add_duration = [&](Duration& total) {
+                const auto sum = utils::checked_add_duration(total, timing.total_time);
+                if (!sum.has_value()) {
+                    return false;
+                }
+                total = *sum;
+                return true;
+            };
 
             if (is_msvc_component(timing.target, MSVC_C1XX)) {
-                unit.metrics.frontend_time += timing.total_time;
-                unit.metrics.breakdown.unclassified += timing.total_time;
+                if (!add_duration(unit.metrics.frontend_time) ||
+                    !add_duration(unit.metrics.breakdown.unclassified)) {
+                    return Result<CompilationUnit, Error>::failure(
+                        Error::parse_error(
+                            "MSVC frontend timing exceeded the supported aggregate duration range",
+                            source_hint.string()
+                        )
+                    );
+                }
             }
             else if (is_msvc_component(timing.target, MSVC_C2)) {
-                unit.metrics.backend_time += timing.total_time;
-                unit.metrics.breakdown.unclassified += timing.total_time;
+                if (!add_duration(unit.metrics.backend_time) ||
+                    !add_duration(unit.metrics.breakdown.unclassified)) {
+                    return Result<CompilationUnit, Error>::failure(
+                        Error::parse_error(
+                            "MSVC backend timing exceeded the supported aggregate duration range",
+                            source_hint.string()
+                        )
+                    );
+                }
             }
             else if (is_source_target(timing.target)) {
                 unit.source_file = timing.target;

@@ -102,4 +102,16 @@ phase parsing                         :   0.12 (  8%)   malformed   0.13 (  8%)
         auto result = parser_->parse_content(content, "/src/test.cpp");
         EXPECT_TRUE(result.is_err());
     }
+
+    TEST_F(GCCParserTest, RejectsPhaseAggregateOverflow) {
+        const std::string content = R"(
+Time variable                                   usr           sys          wall
+phase parsing                         :   0.0 (  0%)   0.0 (  0%)   9000000000.0 (  0%)
+phase parsing                         :   0.0 (  0%)   0.0 (  0%)   300000000.0 (  0%)
+)";
+
+        const auto result = parser_->parse_content(content, "/src/test.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
 }

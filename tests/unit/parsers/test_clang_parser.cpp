@@ -391,6 +391,19 @@ namespace bha::parsers
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST_F(ClangParserTest, ParseContent_RejectsTemplateAggregateOverflow) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"InstantiateClass","ph":"X","ts":0,"dur":9.0e15,"args":{"detail":"Box<int>"}},
+                {"name":"InstantiateClass","ph":"X","ts":1,"dur":3.0e14,"args":{"detail":"Box<int>"}}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST_F(ClangParserTest, ParseFile_NotFound) {
         auto result = parser_->parse_file("/nonexistent/file.json");
 

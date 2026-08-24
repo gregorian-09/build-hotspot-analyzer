@@ -117,4 +117,14 @@ time(C:\path\to\c2.dll)=1.000s
             "time(C:\\path\\not-c1xx.dll.backup)=1.0s\n";
         EXPECT_FALSE(parser_->can_parse_content(content));
     }
+
+    TEST_F(MSVCParserTest, RejectsComponentAggregateOverflow) {
+        const std::string content =
+            "time(c1xx.dll)=9000000000.0s\n"
+            "time(c1xx.dll)=300000000.0s\n";
+
+        const auto result = parser_->parse_content(content, {});
+
+        EXPECT_TRUE(result.is_err());
+    }
 }

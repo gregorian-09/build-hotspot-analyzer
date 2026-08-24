@@ -4,6 +4,7 @@
 
 #include "bha/parsers/clang_parser.hpp"
 #include "bha/utils/file_utils.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -349,7 +350,7 @@ namespace bha::parsers {
             return {};
         }
 
-        void process_template_events(
+        bool process_template_events(
             const std::vector<TraceEvent>& events,
             std::vector<TemplateInstantiation>& templates
         ) {
@@ -371,7 +372,14 @@ namespace bha::parsers {
                         }
                     }
 
-                    tmpl.time += microseconds_to_duration(event.duration);
+                    const auto sum = utils::checked_add_duration(
+                        tmpl.time,
+                        microseconds_to_duration(event.duration)
+                    );
+                    if (!sum.has_value()) {
+                        return false;
+                    }
+                    tmpl.time = *sum;
                     ++tmpl.count;
                 }
             }
@@ -385,9 +393,10 @@ namespace bha::parsers {
                               [](const auto& a, const auto& b) {
                                   return a.time > b.time;
                               });
+            return true;
         }
 
-        void process_include_events(
+        bool process_include_events(
             const std::vector<TraceEvent>& events,
             std::vector<IncludeInfo>& includes,
             IncludeProcessingResult& processing_result
@@ -525,11 +534,25 @@ namespace bha::parsers {
             for (const auto& event : source_events) {
                 auto& stats = include_map[event.detail];
                 stats.info.header = event.detail;
-                stats.info.parse_time += microseconds_to_duration(event.duration);
+                if (const auto sum = utils::checked_add_duration(
+                        stats.info.parse_time,
+                        microseconds_to_duration(event.duration)
+                    ); sum.has_value()) {
+                    stats.info.parse_time = *sum;
+                } else {
+                    return false;
+                }
                 stats.info.depth = std::max(stats.info.depth, event.depth);
                 if (event.self_parse_time.has_value()) {
                     if (stats.self_time_available) {
-                        stats.self_parse_time += *event.self_parse_time;
+                        if (const auto sum = utils::checked_add_duration(
+                                stats.self_parse_time,
+                                *event.self_parse_time
+                            ); sum.has_value()) {
+                            stats.self_parse_time = *sum;
+                        } else {
+                            return false;
+                        }
                     }
                 } else {
                     stats.self_time_available = false;
@@ -548,14 +571,25 @@ namespace bha::parsers {
                               [](const auto& a, const auto& b) {
                                   return a.parse_time > b.parse_time;
                               });
+            return true;
         }
 
-        void calculate_metrics(
+        bool calculate_metrics(
             const std::vector<TraceEvent>& events,
             FileMetrics& metrics
         ) {
             Duration frontend_time = Duration::zero();
             Duration backend_time = Duration::zero();
+            const auto add_duration = [](
+                Duration& total,
+                const Duration value
+            ) {
+                if (const auto sum = utils::checked_add_duration(total, value); sum.has_value()) {
+                    total = *sum;
+                    return true;
+                }
+                return false;
+            };
 
             for (const auto& event : events) {
                 const auto dur = microseconds_to_duration(event.duration);
@@ -570,29 +604,40 @@ namespace bha::parsers {
                     backend_time = dur;
                 }
                 else if (event.name == "Total Source") {
-                    metrics.breakdown.preprocessing += dur;
+                    if (!add_duration(metrics.breakdown.preprocessing, dur)) {
+                        return false;
+                    }
                 }
                 else if (event.name == "Total ParseClass" || event.name == "ParseClass") {
-                    metrics.breakdown.parsing += dur;
+                    if (!add_duration(metrics.breakdown.parsing, dur)) {
+                        return false;
+                    }
                 }
                 else if (event.name == "Total PerformPendingInstantiations" ||
                          event.name == "Total InstantiateClass" ||
                          event.name == "Total InstantiateFunction") {
-                    metrics.breakdown.template_instantiation += dur;
+                    if (!add_duration(metrics.breakdown.template_instantiation, dur)) {
+                        return false;
+                    }
                 }
                 else if (event.name == "Total CodeGen Function" ||
                          event.name == "Total PerFunctionPasses") {
-                    metrics.breakdown.code_generation += dur;
+                    if (!add_duration(metrics.breakdown.code_generation, dur)) {
+                        return false;
+                    }
                 }
                 else if (event.name == "Total OptModule" ||
                          event.name == "Total RunLoopPass" ||
                          event.name == "Total OptFunction") {
-                    metrics.breakdown.optimization += dur;
+                    if (!add_duration(metrics.breakdown.optimization, dur)) {
+                        return false;
+                    }
                 }
             }
 
             metrics.frontend_time = frontend_time;
             metrics.backend_time = backend_time;
+            return true;
         }
 
     }  // namespace
@@ -681,7 +726,14 @@ namespace bha::parsers {
 
         unit.metrics.path = unit.source_file;
 
-        process_template_events(events, unit.templates);
+        if (!process_template_events(events, unit.templates)) {
+            return Result<CompilationUnit, Error>::failure(
+                Error::parse_error(
+                    "Clang template timing exceeded the supported aggregate duration range",
+                    source_hint.string()
+                )
+            );
+        }
         if (!unit.templates.empty()) {
             const bool has_location = std::ranges::any_of(
                 unit.templates,
@@ -692,7 +744,14 @@ namespace bha::parsers {
                 : TemplateEvidence::PerSpecializationTiming;
         }
         IncludeProcessingResult include_processing;
-        process_include_events(events, unit.includes, include_processing);
+        if (!process_include_events(events, unit.includes, include_processing)) {
+            return Result<CompilationUnit, Error>::failure(
+                Error::parse_error(
+                    "Clang include timing exceeded the supported aggregate duration range",
+                    source_hint.string()
+                )
+            );
+        }
         if (include_processing.has_source_events) {
             MetricCapability capability;
             capability.metric = "frontend.source_self_time";
@@ -708,7 +767,14 @@ namespace bha::parsers {
             }
             unit.metric_capabilities.push_back(std::move(capability));
         }
-        calculate_metrics(events, unit.metrics);
+        if (!calculate_metrics(events, unit.metrics)) {
+            return Result<CompilationUnit, Error>::failure(
+                Error::parse_error(
+                    "Clang phase timing exceeded the supported aggregate duration range",
+                    source_hint.string()
+                )
+            );
+        }
 
         unit.metrics.direct_includes = unit.includes.size();
 
