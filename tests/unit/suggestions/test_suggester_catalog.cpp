@@ -367,4 +367,48 @@ namespace bha::suggestions {
         std::filesystem::remove_all(root, ec);
     }
 
+    TEST(SuggesterCatalogTest, OrdersTiedSuggestionsDeterministically) {
+        const auto unique_suffix = std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count()
+        );
+        const auto root = std::filesystem::temp_directory_path() /
+            ("bha-deterministic-suggestion-order-" + unique_suffix);
+        const auto target = root / "include" / "widget.h";
+        write_file(target, "#pragma once\nstruct widget;\n");
+
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        SuggesterOptions options;
+        options.min_confidence = 0.0;
+        options.enable_consolidation = false;
+        options.restrict_to_trace = false;
+
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("ordering-b", target)
+        );
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>("ordering-a", target)
+        );
+
+        const auto result = generate_all_suggestions(trace, analysis, options, root);
+        ASSERT_TRUE(result.is_ok());
+        const auto first = std::ranges::find_if(
+            result.value(),
+            [](const Suggestion& suggestion) { return suggestion.id == "ordering-a"; }
+        );
+        const auto second = std::ranges::find_if(
+            result.value(),
+            [](const Suggestion& suggestion) { return suggestion.id == "ordering-b"; }
+        );
+        ASSERT_NE(first, result.value().end());
+        ASSERT_NE(second, result.value().end());
+        EXPECT_LT(
+            std::ranges::distance(result.value().begin(), first),
+            std::ranges::distance(result.value().begin(), second)
+        );
+
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec);
+    }
+
 }  // namespace bha::suggestions

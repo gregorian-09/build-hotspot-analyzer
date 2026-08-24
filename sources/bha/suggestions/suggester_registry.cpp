@@ -279,7 +279,13 @@ namespace bha::suggestions
                               if (a.priority != b.priority) {
                                   return a.priority < b.priority;
                               }
-                              return a.estimated_savings > b.estimated_savings;
+                              if (a.estimated_savings != b.estimated_savings) {
+                                  return a.estimated_savings > b.estimated_savings;
+                              }
+                              if (a.estimated_savings_percent != b.estimated_savings_percent) {
+                                  return a.estimated_savings_percent > b.estimated_savings_percent;
+                              }
+                              return a.id < b.id;
                           });
 
         return Result<std::vector<Suggestion>, Error>::success(std::move(all_suggestions));
