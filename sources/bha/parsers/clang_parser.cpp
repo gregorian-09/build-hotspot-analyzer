@@ -241,6 +241,17 @@ namespace bha::parsers {
                 event.has_thread_identity = true;
             }
 
+            if ((event.name == "InstantiateClass" ||
+                 event.name == "InstantiateFunction") &&
+                event.detail.empty()) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang template instantiation event requires a non-empty specialization detail",
+                        source_hint.string()
+                    )
+                );
+            }
+
             return Result<TraceEvent, Error>::success(std::move(event));
         }
 

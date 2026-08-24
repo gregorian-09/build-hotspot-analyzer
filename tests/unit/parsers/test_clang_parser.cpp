@@ -113,6 +113,18 @@ namespace bha::parsers
         );
     }
 
+    TEST_F(ClangParserTest, ParseContent_RejectsTemplateInstantiationWithoutIdentity) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":100,"name":"InstantiateClass"}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        ASSERT_TRUE(result.is_err());
+    }
+
     TEST_F(ClangParserTest, ParseContent_IncludeInfo) {
         const std::string content = R"({
             "traceEvents": [
