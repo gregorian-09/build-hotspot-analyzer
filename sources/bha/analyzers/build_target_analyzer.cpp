@@ -55,6 +55,15 @@ namespace bha::analyzers {
             Overflow
         };
 
+        bool checked_increment(std::size_t& value) {
+            const auto sum = utils::checked_add(value, std::size_t{1});
+            if (!sum.has_value()) {
+                return false;
+            }
+            value = *sum;
+            return true;
+        }
+
         OutputSizeResult add_output_sizes(
             BuildTargetAnalysisResult::TargetInfo& target,
             const BuildCommandEvent& event
@@ -73,7 +82,9 @@ namespace bha::analyzers {
             if (bytes > std::numeric_limits<std::uintmax_t>::max() - target.output_bytes) {
                 return OutputSizeResult::Overflow;
             }
-            ++target.output_size_observations;
+            if (!checked_increment(target.output_size_observations)) {
+                return OutputSizeResult::Overflow;
+            }
             target.output_bytes += bytes;
             return OutputSizeResult::Observed;
         }
@@ -104,8 +115,21 @@ namespace bha::analyzers {
             info.dependencies = target.dependencies;
             info.precompile_headers = target.precompile_headers;
             if (!info.precompile_headers.empty()) {
-                ++analysis.pch_targets;
-                analysis.pch_headers += info.precompile_headers.size();
+                if (!checked_increment(analysis.pch_targets)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Precompiled-header target count overflowed")
+                    );
+                }
+                const auto pch_header_count = utils::checked_add(
+                    analysis.pch_headers,
+                    info.precompile_headers.size()
+                );
+                if (!pch_header_count.has_value()) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Precompiled-header count overflowed")
+                    );
+                }
+                analysis.pch_headers = *pch_header_count;
             }
             target_indexes[info.name].push_back(analysis.targets.size());
             analysis.targets.push_back(std::move(info));
@@ -118,21 +142,41 @@ namespace bha::analyzers {
             if (event.target.empty()) {
                 continue;
             }
-            ++analysis.target_commands;
+            if (!checked_increment(analysis.target_commands)) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Target command count overflowed")
+                );
+            }
 
             const auto target_it = target_indexes.find(event.target);
             if (target_it == target_indexes.end() || target_it->second.size() != 1) {
-                ++analysis.unmatched_commands;
+                if (!checked_increment(analysis.unmatched_commands)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Unmatched target command count overflowed")
+                    );
+                }
                 continue;
             }
 
-            ++analysis.matched_commands;
+            if (!checked_increment(analysis.matched_commands)) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Matched target command count overflowed")
+                );
+            }
             const auto target_index = target_it->second.front();
             auto& target = analysis.targets[target_index];
             if (event.role == BuildStepRole::Compile) {
-                ++target.compile_commands;
+                if (!checked_increment(target.compile_commands)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Target compile command count overflowed")
+                    );
+                }
                 if (event.has_exact_timing()) {
-                    ++target.timed_compile_commands;
+                    if (!checked_increment(target.timed_compile_commands)) {
+                        return Result<AnalysisResult, Error>::failure(
+                            Error::analysis_error("Timed target compile command count overflowed")
+                        );
+                    }
                     if (!compile_time_overflow_targets.contains(target_index)) {
                         const auto sum = utils::checked_add_duration(
                             target.compile_wall_clock_time,
@@ -147,9 +191,17 @@ namespace bha::analyzers {
                     }
                 }
             } else {
-                ++target.link_commands;
+                if (!checked_increment(target.link_commands)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Target link command count overflowed")
+                    );
+                }
                 if (event.has_exact_timing()) {
-                    ++target.timed_link_commands;
+                    if (!checked_increment(target.timed_link_commands)) {
+                        return Result<AnalysisResult, Error>::failure(
+                            Error::analysis_error("Timed target link command count overflowed")
+                        );
+                    }
                     if (!link_time_overflow_targets.contains(target_index)) {
                         const auto sum = utils::checked_add_duration(
                             target.link_wall_clock_time,
@@ -207,12 +259,24 @@ namespace bha::analyzers {
         std::size_t link_commands = 0;
         std::size_t timed_link_commands = 0;
         std::size_t output_observations = 0;
+        const auto add_count = [](std::size_t& total, const std::size_t value) {
+            const auto sum = utils::checked_add(total, value);
+            if (!sum.has_value()) {
+                return false;
+            }
+            total = *sum;
+            return true;
+        };
         for (const auto& target : analysis.targets) {
-            compile_commands += target.compile_commands;
-            timed_compile_commands += target.timed_compile_commands;
-            link_commands += target.link_commands;
-            timed_link_commands += target.timed_link_commands;
-            output_observations += target.output_size_observations;
+            if (!add_count(compile_commands, target.compile_commands) ||
+                !add_count(timed_compile_commands, target.timed_compile_commands) ||
+                !add_count(link_commands, target.link_commands) ||
+                !add_count(timed_link_commands, target.timed_link_commands) ||
+                !add_count(output_observations, target.output_size_observations)) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Target metric count aggregation overflowed")
+                );
+            }
         }
 
         if (!compile_time_overflow_targets.empty()) {
