@@ -78,6 +78,23 @@ namespace bha::parsers
         EXPECT_TRUE(unit.metrics.backend_time == std::chrono::milliseconds(200));
     }
 
+    TEST_F(ClangParserTest, DoesNotInferTotalTimeFromFrontendAndBackendPhases) {
+        const std::string content = R"({
+            "traceEvents": [
+                {"pid":1,"tid":0,"ph":"X","ts":0,"dur":800000,"name":"Total Frontend"},
+                {"pid":1,"tid":0,"ph":"X","ts":900000,"dur":200000,"name":"Total Backend"}
+            ]
+        })";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+        EXPECT_EQ(unit.metrics.frontend_time, std::chrono::milliseconds(800));
+        EXPECT_EQ(unit.metrics.backend_time, std::chrono::milliseconds(200));
+        EXPECT_EQ(unit.metrics.total_time, Duration::zero());
+    }
+
     TEST_F(ClangParserTest, ParseContent_TemplateInstantiations) {
         const std::string content = R"json({
             "traceEvents": [

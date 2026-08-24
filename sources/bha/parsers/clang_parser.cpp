@@ -593,10 +593,6 @@ namespace bha::parsers {
 
             metrics.frontend_time = frontend_time;
             metrics.backend_time = backend_time;
-
-            if (metrics.total_time == Duration::zero() && frontend_time != Duration::zero()) {
-                metrics.total_time = frontend_time + backend_time;
-            }
         }
 
     }  // namespace
