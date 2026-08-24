@@ -528,7 +528,8 @@ namespace bha::suggestions {
                 const clang::Module*,
                 clang::SrcMgr::CharacteristicKind
             ) override {
-                if (!file.has_value()) {
+                if (!file.has_value() || hash_location.isMacroID() ||
+                    filename_range.getBegin().isMacroID() || filename_range.getEnd().isMacroID()) {
                     return;
                 }
                 const fs::path included = fs::path(file->getName().str()).lexically_normal();
@@ -676,6 +677,8 @@ namespace bha::suggestions {
                 clang::SrcMgr::CharacteristicKind
             ) override {
                 if (replacement_.has_value() ||
+                    hash_location.isMacroID() || filename_range.getBegin().isMacroID() ||
+                    filename_range.getEnd().isMacroID() ||
                     spelling_path(source_manager_, hash_location) != source_file_ ||
                     source_manager_.getSpellingLineNumber(hash_location) - 1 != line_ ||
                     filename != spelling_) {

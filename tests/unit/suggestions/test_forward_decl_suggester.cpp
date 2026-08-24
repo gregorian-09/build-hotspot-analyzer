@@ -140,6 +140,27 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
     }
 
+    TEST_F(ForwardDeclSuggesterTest, RejectsMacroExpandedInclude) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#define BHA_BOX_HEADER \"box.hpp\"\n"
+            << "#include BHA_BOX_HEADER\n"
+            << "Box* make_box();\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
+    }
+
     TEST_F(ForwardDeclSuggesterTest, RejectsAstProvenCompleteTypeUse) {
         const auto header = root_ / "include" / "box.hpp";
         std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
