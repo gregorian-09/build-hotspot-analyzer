@@ -116,14 +116,42 @@ namespace bha::cli
             return green(ss.str());
         }
 
-        bool gate_exceeded(const double percent_change, const std::optional<double> gate_percent) {
-            return gate_percent.has_value() && percent_change > *gate_percent;
+        std::string format_percent_change(const std::optional<double> percent) {
+            if (!percent.has_value()) {
+                return dim("n/a");
+            }
+            return format_percent_change(*percent);
         }
 
         std::string format_percent_plain(const double percent) {
             std::ostringstream ss;
             ss << std::fixed << std::setprecision(1) << percent << "%";
             return ss.str();
+        }
+
+        std::string format_percent_plain(const std::optional<double> percent) {
+            return percent.has_value() ? format_percent_plain(*percent) : "n/a";
+        }
+
+        std::string format_percent_magnitude(const std::optional<double> percent) {
+            return percent.has_value() ? format_percent_plain(std::abs(*percent)) : "n/a";
+        }
+
+        bool gate_exceeded(
+            const std::optional<double> percent_change,
+            const std::optional<double> gate_percent
+        ) {
+            return percent_change.has_value() && gate_percent.has_value() &&
+                *percent_change > *gate_percent;
+        }
+
+        std::string format_optional_json_number(const std::optional<double> value) {
+            if (!value.has_value()) {
+                return "null";
+            }
+            std::ostringstream output;
+            output << std::setprecision(17) << *value;
+            return output.str();
         }
 
     }  // namespace
@@ -421,11 +449,11 @@ namespace bha::cli
             if (overall_regression_failed) {
                 std::cout << red("! REGRESSION DETECTED") << "\n";
                 std::cout << "  Build time increased by "
-                          << std::fixed << std::setprecision(1) << result.build_time_percent_change << "%\n";
+                          << format_percent_plain(result.build_time_percent_change) << "\n";
             } else if (result.is_improvement() && result.is_significant()) {
                 std::cout << green("+ BUILD TIME IMPROVED") << "\n";
                 std::cout << "  Build time decreased by "
-                          << std::fixed << std::setprecision(1) << -result.build_time_percent_change << "%\n";
+                          << format_percent_magnitude(result.build_time_percent_change) << "\n";
             } else {
                 std::cout << dim("= No significant change") << "\n";
             }
@@ -463,7 +491,9 @@ namespace bha::cli
                     if (count >= top_count) break;
 
                     std::ostringstream pct;
-                    pct << std::fixed << std::setprecision(1) << "+" << percent_change << "%";
+                    pct << (percent_change.has_value()
+                        ? "+" + format_percent_plain(*percent_change)
+                        : "n/a");
 
                     table.add_row({
                         format_path(file, 40),
@@ -498,15 +528,12 @@ namespace bha::cli
                 for (const auto& [file, old_time, new_time, delta, percent_change] : result.improvements) {
                     if (count >= top_count) break;
 
-                    std::ostringstream pct;
-                    pct << std::fixed << std::setprecision(1) << percent_change << "%";
-
                     table.add_row({
                         format_path(file, 40),
                         format_dur(old_time),
                         format_dur(new_time),
                         format_dur(delta),
-                        pct.str()
+                        format_percent_plain(percent_change)
                     });
                     count++;
                 }
@@ -566,11 +593,12 @@ namespace bha::cli
                           << " (" << result.template_regressions.size() << ")\n";
 
                 std::size_t count = 0;
-                for (const auto& [name, old_count, new_count, old_time, new_time] : result.template_regressions) {
+                for (const auto& change : result.template_regressions) {
                     if (count >= 5) break;
-                    std::cout << "  " << name
-                              << " - count: " << old_count << " -> " << new_count
-                              << ", time: " << format_dur(old_time) << " -> " << format_dur(new_time) << "\n";
+                    std::cout << "  " << change.name
+                              << " - count: " << change.old_count << " -> " << change.new_count
+                              << ", time: " << format_dur(change.old_time)
+                              << " -> " << format_dur(change.new_time) << "\n";
                     count++;
                 }
             }
@@ -594,7 +622,8 @@ namespace bha::cli
             std::cout << "  \"new_snapshot\": \"" << new_name << "\",\n";
             std::cout << "  \"build_time_delta_ms\": "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(result.build_time_delta).count() << ",\n";
-            std::cout << "  \"build_time_percent_change\": " << result.build_time_percent_change << ",\n";
+            std::cout << "  \"build_time_percent_change\": "
+                      << format_optional_json_number(result.build_time_percent_change) << ",\n";
             std::cout << "  \"significance_threshold_percent\": " << result.significance_threshold_percent << ",\n";
             std::cout << "  \"file_count_delta\": " << result.file_count_delta << ",\n";
             std::cout << "  \"is_regression\": " << (result.is_regression() ? "true" : "false") << ",\n";
@@ -627,19 +656,22 @@ namespace bha::cli
             std::cout << "  \"categories\": {\n";
             std::cout << "    \"translation_unit\": {\n";
             std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.translation_unit.delta).count() << ",\n";
-            std::cout << "      \"percent_change\": " << result.translation_unit.percent_change << ",\n";
+            std::cout << "      \"percent_change\": "
+                      << format_optional_json_number(result.translation_unit.percent_change) << ",\n";
             std::cout << "      \"gate_percent\": " << (gate_tu ? std::to_string(*gate_tu) : "null") << ",\n";
             std::cout << "      \"gate_failed\": " << (tu_gate_failed ? "true" : "false") << "\n";
             std::cout << "    },\n";
             std::cout << "    \"headers\": {\n";
             std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.headers.delta).count() << ",\n";
-            std::cout << "      \"percent_change\": " << result.headers.percent_change << ",\n";
+            std::cout << "      \"percent_change\": "
+                      << format_optional_json_number(result.headers.percent_change) << ",\n";
             std::cout << "      \"gate_percent\": " << (gate_header ? std::to_string(*gate_header) : "null") << ",\n";
             std::cout << "      \"gate_failed\": " << (header_gate_failed ? "true" : "false") << "\n";
             std::cout << "    },\n";
             std::cout << "    \"templates\": {\n";
             std::cout << "      \"delta_ms\": " << std::chrono::duration_cast<std::chrono::milliseconds>(result.templates.delta).count() << ",\n";
-            std::cout << "      \"percent_change\": " << result.templates.percent_change << ",\n";
+            std::cout << "      \"percent_change\": "
+                      << format_optional_json_number(result.templates.percent_change) << ",\n";
             std::cout << "      \"gate_percent\": " << (gate_template ? std::to_string(*gate_template) : "null") << ",\n";
             std::cout << "      \"gate_failed\": " << (template_gate_failed ? "true" : "false") << "\n";
             std::cout << "    }\n";

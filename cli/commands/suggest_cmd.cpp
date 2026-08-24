@@ -561,13 +561,13 @@ namespace bha::cli
                         std::cout << "Text Edits (" << s.edits.size() << "):\n";
                     }
                     for (std::size_t j = 0; j < s.edits.size(); ++j) {
-                        const auto& [file, start_line, start_col, end_line, end_col, new_text] = s.edits[j];
-                        std::cout << "  [" << (j + 1) << "] " << file.string();
-                        std::cout << ":" << start_line << ":" << start_col;
-                        std::cout << " -> " << end_line << ":" << end_col << "\n";
+                        const auto& edit = s.edits[j];
+                        std::cout << "  [" << (j + 1) << "] " << edit.file.string();
+                        std::cout << ":" << edit.start_line << ":" << edit.start_col;
+                        std::cout << " -> " << edit.end_line << ":" << edit.end_col << "\n";
 
-                        if (!new_text.empty()) {
-                            std::istringstream stream(new_text);
+                        if (!edit.new_text.empty()) {
+                            std::istringstream stream(edit.new_text);
                             std::string line;
                             bool first = true;
                             while (std::getline(stream, line)) {
@@ -582,8 +582,6 @@ namespace bha::cli
                                 } else {
                                     std::cout << line << "\n";
                                 }
-                            }
-                            if (new_text.empty() || new_text.back() == '\n') {
                             }
                         } else {
                             if (colors::enabled()) {
