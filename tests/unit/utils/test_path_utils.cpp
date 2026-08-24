@@ -31,6 +31,21 @@ namespace bha::utils
         EXPECT_FALSE(is_under("/home/user/project", "/home/user/project/src"));
     }
 
+    TEST(IsUnderTest, UsesPathComponentsInsteadOfStringFragments) {
+        EXPECT_TRUE(is_under("/home/user/project/foo..bar", "/home/user/project"));
+        EXPECT_TRUE(is_under("/home/user/project/.config", "/home/user/project"));
+        EXPECT_FALSE(is_under("/home/user/project", "/home/user/project"));
+    }
+
+    TEST(CommonAncestorTest, KeepsSharedParentForSiblingFiles) {
+        const std::vector<fs::path> paths = {
+            "/home/user/project/src/one.cpp",
+            "/home/user/project/src/two.cpp"
+        };
+
+        EXPECT_EQ(common_ancestor(paths), fs::path("/home/user/project/src"));
+    }
+
     TEST(ReplaceExtensionTest, Basic) {
         EXPECT_EQ(replace_extension("file.cpp", ".h"), fs::path("file.h"));
         EXPECT_EQ(replace_extension("file.cpp", "h"), fs::path("file.h"));

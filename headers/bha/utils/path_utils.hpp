@@ -22,6 +22,20 @@ namespace bha::utils {
 
     namespace fs = std::filesystem;
 
+    namespace detail {
+
+        inline bool is_relative_to_or_equal(const fs::path& relative) {
+            const auto normalized = relative.lexically_normal();
+            if (normalized.empty() || normalized.is_absolute()) {
+                return false;
+            }
+
+            const auto first = normalized.begin();
+            return first != normalized.end() && *first != "..";
+        }
+
+    }  // namespace detail
+
     /**
      * Normalizes a path by resolving . and .. components.
      *
@@ -91,7 +105,7 @@ namespace bha::utils {
             auto normalized = normalize(paths[i]).parent_path();
 
             while (!result.empty()) {
-                if (auto rel = make_relative(normalized, result); !rel.empty() && rel.native()[0] != '.') {
+                if (auto rel = make_relative(normalized, result); detail::is_relative_to_or_equal(rel)) {
                     break;
                 }
                 if (result == result.root_path()) {
@@ -120,8 +134,7 @@ namespace bha::utils {
             return false;
         }
 
-        const auto rel_str = rel.string();
-        return !rel_str.empty() && rel_str[0] != '.' && rel_str.find("..") == std::string::npos;
+        return detail::is_relative_to_or_equal(rel) && rel.lexically_normal() != fs::path(".");
     }
 
     /**
