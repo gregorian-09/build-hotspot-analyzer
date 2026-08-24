@@ -4,6 +4,7 @@
 
 #include "bha/suggestions/suggester.hpp"
 #include "bha/suggestions/consolidator.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -114,9 +115,16 @@ namespace bha::suggestions
         }
 
         const auto total_start = std::chrono::steady_clock::now();
-        const auto total_deadline = options.max_total_time != Duration::zero()
-            ? std::optional<std::chrono::steady_clock::time_point>(total_start + options.max_total_time)
-            : std::optional<std::chrono::steady_clock::time_point>();
+        std::optional<std::chrono::steady_clock::time_point> total_deadline;
+        if (options.max_total_time != Duration::zero()) {
+            const auto deadline = utils::checked_add_time_point<std::chrono::steady_clock>(
+                total_start,
+                std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+                    options.max_total_time
+                )
+            );
+            total_deadline = deadline.value_or(std::chrono::steady_clock::time_point::max());
+        }
 
         for (const auto& suggester : SuggesterRegistry::instance().suggesters()) {
             if (!language_support_matches(suggester->policy().language_support, project_languages)) {
@@ -146,7 +154,15 @@ namespace bha::suggestions
 
             const auto suggester_start = std::chrono::steady_clock::now();
             if (options.max_suggester_time != Duration::zero()) {
-                auto deadline = suggester_start + options.max_suggester_time;
+                const auto suggester_deadline = utils::checked_add_time_point<std::chrono::steady_clock>(
+                    suggester_start,
+                    std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+                        options.max_suggester_time
+                    )
+                );
+                auto deadline = suggester_deadline.value_or(
+                    std::chrono::steady_clock::time_point::max()
+                );
                 if (total_deadline.has_value() && *total_deadline < deadline) {
                     deadline = *total_deadline;
                 }

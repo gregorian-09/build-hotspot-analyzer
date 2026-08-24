@@ -43,4 +43,21 @@ namespace bha::utils::test {
         EXPECT_FALSE(result.has_value());
     }
 
+    TEST(NumericUtilsTest, CheckedAddTimePointRejectsOverflow) {
+        using Clock = std::chrono::steady_clock;
+
+        EXPECT_FALSE(
+            checked_add_time_point<Clock>(
+                Clock::time_point::max(),
+                Clock::duration(1)
+            ).has_value()
+        );
+        EXPECT_TRUE(
+            checked_add_time_point<Clock>(
+                Clock::time_point{},
+                Clock::duration(1)
+            ).has_value()
+        );
+    }
+
 }  // namespace bha::utils::test

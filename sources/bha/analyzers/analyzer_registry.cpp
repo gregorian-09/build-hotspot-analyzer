@@ -93,9 +93,16 @@ namespace bha::analyzers
             }
         }
         const auto start_time = std::chrono::steady_clock::now();
-        const auto total_deadline = options.max_total_time != Duration::zero()
-            ? std::optional<std::chrono::steady_clock::time_point>(start_time + options.max_total_time)
-            : std::optional<std::chrono::steady_clock::time_point>();
+        std::optional<std::chrono::steady_clock::time_point> total_deadline;
+        if (options.max_total_time != Duration::zero()) {
+            const auto deadline = utils::checked_add_time_point<std::chrono::steady_clock>(
+                start_time,
+                std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+                    options.max_total_time
+                )
+            );
+            total_deadline = deadline.value_or(std::chrono::steady_clock::time_point::max());
+        }
 
         std::unordered_map<std::string, FileAnalysisResult> file_map;
 

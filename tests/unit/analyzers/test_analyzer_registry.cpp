@@ -47,6 +47,16 @@ namespace bha::analyzers::test {
         EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.3);
     }
 
+    TEST_F(AnalyzerRegistryTest, SaturatesUnrepresentableAnalysisDeadline) {
+        BuildTrace trace;
+        AnalysisOptions options;
+        options.max_total_time = Duration::max();
+
+        const auto result = run_full_analysis(trace, options);
+
+        EXPECT_TRUE(result.is_ok());
+    }
+
     TEST_F(AnalyzerRegistryTest, RetainsRoleScopedCapabilities) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

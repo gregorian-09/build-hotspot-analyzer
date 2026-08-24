@@ -40,4 +40,16 @@ namespace bha::utils {
         return std::chrono::duration<Rep, Period>(left_count + right_count);
     }
 
+    template <typename Clock>
+    [[nodiscard]] constexpr std::optional<typename Clock::time_point> checked_add_time_point(
+        const typename Clock::time_point start,
+        const typename Clock::duration delta
+    ) noexcept {
+        const auto sum = checked_add_duration(start.time_since_epoch(), delta);
+        if (!sum.has_value()) {
+            return std::nullopt;
+        }
+        return typename Clock::time_point(*sum);
+    }
+
 }  // namespace bha::utils
