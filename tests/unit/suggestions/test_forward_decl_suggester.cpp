@@ -52,6 +52,22 @@ namespace bha::suggestions {
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I../include\",\"-c\",\"../src/use.cpp\"]}]";
         }
 
+        void write_conditional_compile_commands(
+            const std::filesystem::path& root
+        ) {
+            std::ofstream(root / "compile_commands.json")
+                << "[{\"directory\":\"" << root.string() << "\","
+                << "\"file\":\"src/use.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
+                << (root / "include").string() << "\",\"-c\",\""
+                << (root / "src/use.cpp").string() << "\"]},"
+                << "{\"directory\":\"" << root.string() << "\","
+                << "\"file\":\"src/other.cpp\","
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-DBHA_CLASS_FORM\",\"-I"
+                << (root / "include").string() << "\",\"-c\",\""
+                << (root / "src/other.cpp").string() << "\"]}]";
+        }
+
         analyzers::AnalysisResult dependency_analysis(
             const std::filesystem::path& header,
             const std::filesystem::path& source
@@ -296,6 +312,43 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_TRUE(result.value().suggestions.front().is_safe);
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, RejectsConflictingDeclarationKindsAcrossCommands) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "#ifdef BHA_CLASS_FORM\n"
+            << "class Box { public: int value; };\n"
+            << "#else\n"
+            << "struct Box { int value; };\n"
+            << "#endif\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box();\n";
+        const auto other = root_ / "src" / "other.cpp";
+        std::ofstream(other)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_other();\n";
+        write_conditional_compile_commands(root_);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        analyzers::AnalysisResult analysis;
+        analyzers::DependencyAnalysisResult::HeaderInfo info;
+        info.path = header;
+        info.total_parse_time = std::chrono::milliseconds(1000);
+        info.inclusion_count = 2;
+        info.including_files = 2;
+        info.included_by = {source, other};
+        analysis.dependencies.headers.push_back(std::move(info));
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto result = ForwardDeclSuggester{}.suggest(context);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_TRUE(result.value().suggestions.empty());
     }
 
     TEST_F(ForwardDeclSuggesterTest, RejectsExpressionCompleteTypeUses) {

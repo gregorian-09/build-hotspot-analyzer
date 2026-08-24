@@ -33,6 +33,7 @@ namespace bha::suggestions {
         bool macro_generated = false;
         bool template_declaration = false;
         bool unsupported_scope = false;
+        bool declaration_shape_conflict = false;
         std::vector<ForwardDeclSemanticUse> uses;
     };
 

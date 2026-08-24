@@ -87,6 +87,19 @@ namespace bha::suggestions {
             return result;
         }
 
+        bool same_namespace_context(
+            const std::vector<ForwardDeclSemanticNamespace>& left,
+            const std::vector<ForwardDeclSemanticNamespace>& right
+        ) {
+            if (left.size() != right.size()) {
+                return false;
+            }
+            return std::ranges::equal(left, right, [](const auto& left_namespace, const auto& right_namespace) {
+                return left_namespace.name == right_namespace.name &&
+                    left_namespace.inline_namespace == right_namespace.inline_namespace;
+            });
+        }
+
         std::vector<std::string> tooling_arguments(const CompilationUnit& command) {
             std::vector<std::string> arguments;
             if (command.command_line.empty()) {
@@ -813,6 +826,9 @@ namespace bha::suggestions {
                 existing->macro_generated = existing->macro_generated || record.macro_generated;
                 existing->template_declaration = existing->template_declaration || record.template_declaration;
                 existing->unsupported_scope = existing->unsupported_scope || record.unsupported_scope;
+                existing->declaration_shape_conflict = existing->declaration_shape_conflict ||
+                    existing->keyword != record.keyword ||
+                    !same_namespace_context(existing->namespaces, record.namespaces);
                 for (auto& use : record.uses) {
                     const bool duplicate = std::ranges::any_of(
                         existing->uses,
