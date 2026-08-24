@@ -1,6 +1,7 @@
 // Created by gregorian-rayne on 8/22/26.
 
 #include "bha/analyzers/module_analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
 #include <unordered_map>
@@ -51,12 +52,24 @@ namespace bha::analyzers {
         const auto& graph = *trace.module_dependency_graph;
         auto& analysis = result.modules;
         analysis.rules = graph.rules.size();
+        const auto add_count = [](std::size_t& total, const std::size_t value) {
+            const auto sum = utils::checked_add(total, value);
+            if (!sum.has_value()) {
+                return false;
+            }
+            total = *sum;
+            return true;
+        };
 
         std::unordered_map<std::string, std::size_t> owners;
         std::unordered_set<std::string> ambiguous_owners;
         for (std::size_t rule_index = 0; rule_index < graph.rules.size(); ++rule_index) {
             const auto& rule = graph.rules[rule_index];
-            analysis.provided_modules += rule.provides.size();
+            if (!add_count(analysis.provided_modules, rule.provides.size())) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Provided module count overflowed")
+                );
+            }
             for (const auto& provided : rule.provides) {
                 if (!owners.emplace(provided.logical_name, rule_index).second) {
                     ambiguous_owners.insert(provided.logical_name);
@@ -65,19 +78,35 @@ namespace bha::analyzers {
         }
 
         for (const auto& rule : graph.rules) {
-            analysis.required_modules += rule.requirements.size();
+            if (!add_count(analysis.required_modules, rule.requirements.size())) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Required module count overflowed")
+                );
+            }
             if (rule.provides.empty()) {
-                analysis.unowned_dependencies += rule.requirements.size();
+                if (!add_count(analysis.unowned_dependencies, rule.requirements.size())) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Unowned module dependency count overflowed")
+                    );
+                }
                 continue;
             }
 
             for (const auto& required : rule.requirements) {
                 if (!owners.contains(required.logical_name) ||
                     ambiguous_owners.contains(required.logical_name)) {
-                    ++analysis.unresolved_dependencies;
+                    if (!add_count(analysis.unresolved_dependencies, 1)) {
+                        return Result<AnalysisResult, Error>::failure(
+                            Error::analysis_error("Unresolved module dependency count overflowed")
+                        );
+                    }
                     continue;
                 }
-                ++analysis.resolved_dependencies;
+                if (!add_count(analysis.resolved_dependencies, 1)) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Resolved module dependency count overflowed")
+                    );
+                }
                 for (const auto& provided : rule.provides) {
                     analysis.dependencies.emplace_back(
                         required.logical_name,
