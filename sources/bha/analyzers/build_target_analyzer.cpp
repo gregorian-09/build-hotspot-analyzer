@@ -49,27 +49,33 @@ namespace bha::analyzers {
             return !event.outputs.empty() && event.outputs.size() == event.output_sizes.size();
         }
 
-        bool add_output_sizes(
+        enum class OutputSizeResult {
+            Unavailable,
+            Observed,
+            Overflow
+        };
+
+        OutputSizeResult add_output_sizes(
             BuildTargetAnalysisResult::TargetInfo& target,
             const BuildCommandEvent& event
         ) {
             if (!has_exact_output_sizes(event)) {
-                return false;
+                return OutputSizeResult::Unavailable;
             }
 
             std::uintmax_t bytes = 0;
             for (const auto size : event.output_sizes) {
                 if (size > std::numeric_limits<std::uintmax_t>::max() - bytes) {
-                    return false;
+                    return OutputSizeResult::Overflow;
                 }
                 bytes += size;
             }
             if (bytes > std::numeric_limits<std::uintmax_t>::max() - target.output_bytes) {
-                return false;
+                return OutputSizeResult::Overflow;
             }
             ++target.output_size_observations;
             target.output_bytes += bytes;
-            return true;
+            return OutputSizeResult::Observed;
         }
 
     }  // namespace
@@ -89,6 +95,7 @@ namespace bha::analyzers {
         std::unordered_map<std::string, std::vector<std::size_t>> target_indexes;
         std::unordered_set<std::size_t> compile_time_overflow_targets;
         std::unordered_set<std::size_t> link_time_overflow_targets;
+        std::unordered_set<std::size_t> output_size_overflow_targets;
         for (const auto& target : trace.target_graph->targets) {
             BuildTargetAnalysisResult::TargetInfo info;
             info.id = target.id;
@@ -157,7 +164,13 @@ namespace bha::analyzers {
                     }
                 }
             }
-            add_output_sizes(target, event);
+            if (!output_size_overflow_targets.contains(target_index)) {
+                if (add_output_sizes(target, event) == OutputSizeResult::Overflow) {
+                    output_size_overflow_targets.insert(target_index);
+                    target.output_bytes = 0;
+                    target.output_size_observations = 0;
+                }
+            }
         }
 
         const std::string ownership_limitation = analysis.unmatched_commands == 0
@@ -268,9 +281,11 @@ namespace bha::analyzers {
             analysis,
             capability(
                 "build.target.output_bytes",
-                output_observations > 0 ? EvidenceKind::Derived : EvidenceKind::Unavailable,
-                output_observations > 0
-                    ? std::string{}
+                output_size_overflow_targets.empty() && output_observations > 0
+                    ? EvidenceKind::Derived
+                    : EvidenceKind::Unavailable,
+                !output_size_overflow_targets.empty()
+                    ? "Producer-reported output sizes overflowed the aggregate representation"
                     : "No matched compile or link event has aligned producer output-size arrays",
                 TimingDomain::None,
                 TimingAggregation::None

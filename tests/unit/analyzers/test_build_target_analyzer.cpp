@@ -3,6 +3,7 @@
 #include "bha/analyzers/build_target_analyzer.hpp"
 
 #include <algorithm>
+#include <limits>
 
 namespace bha::analyzers::test {
     namespace {
@@ -161,6 +162,34 @@ namespace bha::analyzers::test {
         ASSERT_NE(compile_time, nullptr);
         EXPECT_EQ(compile_time->provenance.evidence, EvidenceKind::Unavailable);
         EXPECT_FALSE(compile_time->provenance.limitation.empty());
+    }
+
+    TEST(BuildTargetAnalyzerTest, FailsClosedWhenTargetOutputSizeAggregationOverflows) {
+        BuildTrace trace;
+        trace.target_graph = BuildTargetGraph{};
+        trace.target_graph->complete = true;
+        trace.target_graph->targets = {
+            BuildTarget{"app-id", "app", "EXECUTABLE", {}, {}, {}, {}, "CXX", false, {}, {}}
+        };
+        trace.build_session = BuildSession{};
+        auto first = command(BuildStepRole::Link, "app", 0, 1);
+        first.output_sizes = {std::numeric_limits<std::uintmax_t>::max()};
+        auto second = command(BuildStepRole::Link, "app", 0, 1);
+        second.output_sizes = {1};
+        trace.build_session->commands = {first, second};
+
+        BuildTargetAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().targets;
+        ASSERT_EQ(analysis.targets.size(), 1u);
+        EXPECT_EQ(analysis.targets.front().output_bytes, 0u);
+        EXPECT_EQ(analysis.targets.front().output_size_observations, 0u);
+        const auto* output_bytes = find_capability(analysis, "build.target.output_bytes");
+        ASSERT_NE(output_bytes, nullptr);
+        EXPECT_EQ(output_bytes->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(output_bytes->provenance.limitation.empty());
     }
 
 }  // namespace bha::analyzers::test

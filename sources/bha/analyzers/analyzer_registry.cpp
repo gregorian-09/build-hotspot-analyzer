@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include "bha/analyzers/analyzer.hpp"
+#include "bha/utils/numeric_utils.hpp"
 #include <unordered_map>
 #include <chrono>
 #include <future>
@@ -220,8 +221,19 @@ namespace bha::analyzers
                         combined_result.performance.peak_memory = partial.performance.peak_memory;
                     }
                     if (partial.performance.total_memory.max_stack_bytes > 0) {
-                        combined_result.performance.total_memory.max_stack_bytes +=
-                            partial.performance.total_memory.max_stack_bytes;
+                        const auto total_stack_bytes = utils::checked_add(
+                            combined_result.performance.total_memory.max_stack_bytes,
+                            partial.performance.total_memory.max_stack_bytes
+                        );
+                        if (!total_stack_bytes.has_value()) {
+                            return Result<AnalysisResult, Error>::failure(
+                                Error::analysis_error(
+                                    "Combined stack-memory telemetry overflowed"
+                                )
+                            );
+                        }
+                        combined_result.performance.total_memory.max_stack_bytes =
+                            *total_stack_bytes;
                     }
                 }
             }
