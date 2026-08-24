@@ -14,6 +14,40 @@
 
 namespace bha::analyzers
 {
+    namespace {
+
+        bool same_capability_identity(
+            const MetricCapability& left,
+            const MetricCapability& right
+        ) {
+            return left.metric == right.metric &&
+                left.provenance.producer == right.provenance.producer &&
+                left.provenance.producer_version == right.provenance.producer_version &&
+                left.provenance.capture_mode == right.provenance.capture_mode &&
+                left.provenance.scope == right.provenance.scope &&
+                left.provenance.timing_domain == right.provenance.timing_domain &&
+                left.provenance.timing_aggregation == right.provenance.timing_aggregation;
+        }
+
+        void add_capability(
+            std::vector<MetricCapability>& capabilities,
+            MetricCapability value
+        ) {
+            const auto existing = std::ranges::find_if(
+                capabilities,
+                [&value](const MetricCapability& candidate) {
+                    return same_capability_identity(candidate, value);
+                }
+            );
+            if (existing == capabilities.end()) {
+                capabilities.push_back(std::move(value));
+            } else if (!existing->provenance.has_evidence() && value.provenance.has_evidence()) {
+                *existing = std::move(value);
+            }
+        }
+
+    }  // namespace
+
     AnalyzerRegistry& AnalyzerRegistry::instance() {
         static AnalyzerRegistry registry;
         return registry;
@@ -48,17 +82,12 @@ namespace bha::analyzers
         const AnalysisOptions& options
     ) {
         AnalysisResult combined_result;
-        combined_result.metric_capabilities = trace.metric_capabilities;
+        for (const auto& capability : trace.metric_capabilities) {
+            add_capability(combined_result.metric_capabilities, capability);
+        }
         for (const auto& unit : trace.units) {
             for (const auto& capability : unit.metric_capabilities) {
-                const auto existing = std::ranges::find(
-                    combined_result.metric_capabilities,
-                    capability.metric,
-                    &MetricCapability::metric
-                );
-                if (existing == combined_result.metric_capabilities.end()) {
-                    combined_result.metric_capabilities.push_back(capability);
-                }
+                add_capability(combined_result.metric_capabilities, capability);
             }
         }
         const auto start_time = std::chrono::steady_clock::now();
@@ -200,14 +229,7 @@ namespace bha::analyzers
             }
 
             for (const auto& capability : partial.dependencies.metric_capabilities) {
-                const auto existing = std::ranges::find(
-                    combined_result.metric_capabilities,
-                    capability.metric,
-                    &MetricCapability::metric
-                );
-                if (existing == combined_result.metric_capabilities.end()) {
-                    combined_result.metric_capabilities.push_back(capability);
-                }
+                add_capability(combined_result.metric_capabilities, capability);
             }
 
             if (!partial.templates.templates.empty()) {
@@ -225,14 +247,7 @@ namespace bha::analyzers
                 partial.cache_distribution.cache_misses > 0 ||
                 !partial.cache_distribution.metric_capabilities.empty()) {
                 for (const auto& capability : partial.cache_distribution.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.cache_distribution = partial.cache_distribution;
             }
@@ -242,56 +257,28 @@ namespace bha::analyzers
                 partial.build_session.compile_trace_references > 0 ||
                 !partial.build_session.metric_capabilities.empty()) {
                 for (const auto& capability : partial.build_session.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.build_session = std::move(partial.build_session);
             }
 
             if (partial.linker.invocations > 0) {
                 for (const auto& capability : partial.linker.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.linker = std::move(partial.linker);
             }
 
             if (!partial.targets.targets.empty()) {
                 for (const auto& capability : partial.targets.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.targets = std::move(partial.targets);
             }
 
             if (partial.modules.rules > 0 || !partial.modules.metric_capabilities.empty()) {
                 for (const auto& capability : partial.modules.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.modules = std::move(partial.modules);
             }
@@ -299,14 +286,7 @@ namespace bha::analyzers
             if (partial.process_resources.observations > 0 ||
                 !partial.process_resources.metric_capabilities.empty()) {
                 for (const auto& capability : partial.process_resources.metric_capabilities) {
-                    const auto existing = std::ranges::find(
-                        combined_result.metric_capabilities,
-                        capability.metric,
-                        &MetricCapability::metric
-                    );
-                    if (existing == combined_result.metric_capabilities.end()) {
-                        combined_result.metric_capabilities.push_back(capability);
-                    }
+                    add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.process_resources = std::move(partial.process_resources);
             }

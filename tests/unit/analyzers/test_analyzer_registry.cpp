@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <gtest/gtest.h>
 
 #include "bha/analyzers/all_analyzers.hpp"
@@ -44,6 +45,41 @@ namespace bha::analyzers::test {
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.3);
+    }
+
+    TEST_F(AnalyzerRegistryTest, RetainsRoleScopedCapabilities) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+
+        BuildCommandEvent configure;
+        configure.id = "configure";
+        configure.role = BuildStepRole::Configure;
+        configure.start_time = Timestamp(std::chrono::system_clock::duration(std::chrono::seconds(0)));
+        configure.duration = std::chrono::seconds(1);
+        configure.timing_provenance.evidence = EvidenceKind::Observed;
+
+        BuildCommandEvent test;
+        test.id = "test";
+        test.role = BuildStepRole::Test;
+        test.start_time = Timestamp(std::chrono::system_clock::duration(std::chrono::seconds(1)));
+        test.duration = std::chrono::seconds(1);
+        test.timing_provenance.evidence = EvidenceKind::Observed;
+
+        trace.build_session->commands = {configure, test};
+
+        const auto result = run_full_analysis(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        std::vector<std::string> scopes;
+        for (const auto& capability : result.value().metric_capabilities) {
+            if (capability.metric == "build.step.wall_time") {
+                scopes.push_back(capability.provenance.scope);
+            }
+        }
+
+        ASSERT_EQ(scopes.size(), 2u);
+        EXPECT_NE(std::ranges::find(scopes, "role:configure"), scopes.end());
+        EXPECT_NE(std::ranges::find(scopes, "role:test"), scopes.end());
     }
 
 }  // namespace bha::analyzers::test
