@@ -10,6 +10,26 @@ namespace bha::analyzers
 {
     namespace {
 
+        bool has_negative_timing(const CompilationUnit& unit) {
+            for (const auto value : {
+                unit.metrics.total_time,
+                unit.metrics.frontend_time,
+                unit.metrics.backend_time,
+                unit.metrics.breakdown.preprocessing,
+                unit.metrics.breakdown.parsing,
+                unit.metrics.breakdown.semantic_analysis,
+                unit.metrics.breakdown.template_instantiation,
+                unit.metrics.breakdown.code_generation,
+                unit.metrics.breakdown.optimization,
+                unit.metrics.breakdown.unclassified
+            }) {
+                if (value < Duration::zero()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         FileAnalysisResult analyze_compilation_unit(
             const CompilationUnit& unit,
             const Duration total_time
@@ -47,11 +67,22 @@ namespace bha::analyzers
             return Result<AnalysisResult, Error>::success(std::move(result));
         }
 
+        if (trace.total_time < Duration::zero()) {
+            return Result<AnalysisResult, Error>::failure(
+                Error::analysis_error("Build timing cannot be negative")
+            );
+        }
+
         const Duration total_time = trace.total_time;
 
         result.files.reserve(trace.units.size());
 
         for (const auto& unit : trace.units) {
+            if (has_negative_timing(unit)) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Compilation timing cannot be negative")
+                );
+            }
             if (unit.metrics.total_time < options.min_duration_threshold) {
                 continue;
             }

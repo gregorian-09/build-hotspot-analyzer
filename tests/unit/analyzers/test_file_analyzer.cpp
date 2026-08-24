@@ -125,4 +125,18 @@ namespace bha::analyzers
             EXPECT_DOUBLE_EQ(file.time_percent, 0.0);
         }
     }
+
+    TEST_F(FileAnalyzerTest, RejectsNegativeCompilationTiming) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(1);
+        CompilationUnit unit;
+        unit.metrics.frontend_time = Duration(-1);
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::AnalysisError);
+    }
 }

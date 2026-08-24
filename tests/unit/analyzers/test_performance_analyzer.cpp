@@ -86,6 +86,20 @@ namespace bha::analyzers {
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST_F(PerformanceAnalyzerTest, RejectsNegativeCompilationTiming) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(1);
+        CompilationUnit unit;
+        unit.metrics.total_time = Duration(-1);
+        trace.units.push_back(std::move(unit));
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::AnalysisError);
+    }
+
     TEST_F(PerformanceAnalyzerTest, CalculatesParallelismEfficiency) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(30);

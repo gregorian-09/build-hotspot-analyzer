@@ -27,6 +27,26 @@ namespace bha::analyzers {
             return times[index];
         }
 
+        bool has_negative_timing(const CompilationUnit& unit) {
+            for (const auto value : {
+                unit.metrics.total_time,
+                unit.metrics.frontend_time,
+                unit.metrics.backend_time,
+                unit.metrics.breakdown.preprocessing,
+                unit.metrics.breakdown.parsing,
+                unit.metrics.breakdown.semantic_analysis,
+                unit.metrics.breakdown.template_instantiation,
+                unit.metrics.breakdown.code_generation,
+                unit.metrics.breakdown.optimization,
+                unit.metrics.breakdown.unclassified
+            }) {
+                if (value < Duration::zero()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }  // namespace
 
     Result<AnalysisResult, Error> PerformanceAnalyzer::analyze(
@@ -39,6 +59,12 @@ namespace bha::analyzers {
             return Result<AnalysisResult, Error>::success(std::move(result));
         }
 
+        if (trace.total_time < Duration::zero()) {
+            return Result<AnalysisResult, Error>::failure(
+                Error::analysis_error("Build timing cannot be negative")
+            );
+        }
+
         result.performance.total_build_time = trace.total_time;
         result.performance.total_files = trace.units.size();
 
@@ -47,6 +73,11 @@ namespace bha::analyzers {
         Duration sequential_total = Duration::zero();
 
         for (const auto& unit : trace.units) {
+            if (has_negative_timing(unit)) {
+                return Result<AnalysisResult, Error>::failure(
+                    Error::analysis_error("Compilation timing cannot be negative")
+                );
+            }
             const Duration compile_time = unit.metrics.total_time;
             compile_times.push_back(compile_time);
             const auto sequential_sum = utils::checked_add_duration(
