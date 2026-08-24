@@ -39,6 +39,7 @@ namespace bha::analyzers
 
         std::unordered_map<std::string, HeaderStats> header_map;
         std::size_t max_depth = 0;
+        std::size_t total_includes = 0;
         Duration total_include_time = Duration::zero();
 
         for (const auto& unit : trace.units) {
@@ -74,7 +75,16 @@ namespace bha::analyzers
                         )
                     );
                 }
-                ++stats.inclusion_count;
+                const auto inclusion_count = utils::checked_add(
+                    stats.inclusion_count,
+                    std::size_t{1}
+                );
+                if (!inclusion_count.has_value()) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Header inclusion count overflowed")
+                    );
+                }
+                stats.inclusion_count = *inclusion_count;
                 if (!source_key.empty()) {
                     stats.including_files.insert(source_key);
                 }
@@ -109,6 +119,16 @@ namespace bha::analyzers
                         )
                     );
                 }
+                const auto include_count = utils::checked_add(
+                    total_includes,
+                    std::size_t{1}
+                );
+                if (!include_count.has_value()) {
+                    return Result<AnalysisResult, Error>::failure(
+                        Error::analysis_error("Total include count overflowed")
+                    );
+                }
+                total_includes = *include_count;
                 max_depth = std::max(max_depth, include.depth);
             }
         }
@@ -149,14 +169,7 @@ namespace bha::analyzers
                               return a.path.generic_string() < b.path.generic_string();
                           });
 
-        result.dependencies.total_includes = 0;
-        for (const auto& unit : trace.units) {
-            for (const auto& include : unit.includes) {
-                if (!include.header.empty()) {
-                    ++result.dependencies.total_includes;
-                }
-            }
-        }
+        result.dependencies.total_includes = total_includes;
         result.dependencies.unique_headers = header_map.size();
         result.dependencies.max_include_depth = max_depth;
         result.dependencies.total_include_time = total_include_time;
