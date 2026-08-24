@@ -40,6 +40,7 @@ add_executable(bha_tests
         unit/analyzers/test_module_analyzer.cpp
         unit/analyzers/test_process_resource_analyzer.cpp
         unit/analyzers/test_performance_analyzer.cpp
+        unit/analyzers/test_analyzer_registry.cpp
         unit/analyzers/test_symbol_analyzer.cpp
         unit/analyzers/test_template_analyzer.cpp
         unit/exporters/test_exporter.cpp

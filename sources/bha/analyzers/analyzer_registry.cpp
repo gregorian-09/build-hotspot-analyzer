@@ -162,7 +162,15 @@ namespace bha::analyzers
                 }
             }
 
-            if (partial.performance.total_build_time != Duration::zero()) {
+            // Per-translation-unit and serial compile metrics remain valid even
+            // when the producer did not expose an exact whole-build duration.
+            const bool has_performance_observations =
+                partial.performance.total_files > 0 ||
+                partial.performance.total_build_time != Duration::zero() ||
+                partial.performance.sequential_time != Duration::zero() ||
+                partial.performance.parallel_time != Duration::zero() ||
+                !partial.performance.slowest_files.empty();
+            if (has_performance_observations) {
                 if (combined_result.performance.total_build_time == Duration::zero()) {
                     combined_result.performance = partial.performance;
                 } else {
