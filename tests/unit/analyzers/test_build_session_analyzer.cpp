@@ -1,5 +1,7 @@
 #include <algorithm>
+#include <cmath>
 #include <gtest/gtest.h>
+#include <limits>
 
 #include "bha/analyzers/build_session_analyzer.hpp"
 
@@ -353,6 +355,31 @@ namespace bha::analyzers::test {
         ASSERT_NE(capability, result.value().build_session.metric_capabilities.end());
         EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Observed);
         EXPECT_EQ(capability->provenance.capture_mode, "api-v1.1-snippet");
+    }
+
+    TEST(BuildSessionAnalyzerTest, IgnoresInvalidCpuLoadSamples) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto event = command("compile", 0, 1);
+        event.before_cpu_load_average = std::numeric_limits<double>::quiet_NaN();
+        event.after_cpu_load_average = -1.0;
+        trace.build_session->commands = {event};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& host = result.value().build_session.host_telemetry;
+        EXPECT_EQ(host.cpu_load_samples, 0u);
+        EXPECT_FALSE(host.peak_before_cpu_load_average.has_value());
+        EXPECT_FALSE(host.peak_after_cpu_load_average.has_value());
+        const auto capability = std::ranges::find(
+            host.metric_capabilities,
+            "build.host.cpu_load_average_peak",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, host.metric_capabilities.end());
+        EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Unavailable);
     }
 
 }  // namespace bha::analyzers::test

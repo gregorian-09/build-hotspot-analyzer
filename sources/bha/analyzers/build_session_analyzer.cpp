@@ -4,6 +4,7 @@
 #include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <type_traits>
 #include <unordered_map>
@@ -299,7 +300,7 @@ namespace bha::analyzers {
         const auto observe_before_cpu = [&host](
             const std::optional<double> value
         ) {
-            if (!value.has_value()) {
+            if (!value.has_value() || !std::isfinite(*value) || *value < 0.0) {
                 return;
             }
             ++host.cpu_load_samples;
@@ -311,7 +312,7 @@ namespace bha::analyzers {
         const auto observe_after_cpu = [&host](
             const std::optional<double> value
         ) {
-            if (!value.has_value()) {
+            if (!value.has_value() || !std::isfinite(*value) || *value < 0.0) {
                 return;
             }
             ++host.cpu_load_samples;
