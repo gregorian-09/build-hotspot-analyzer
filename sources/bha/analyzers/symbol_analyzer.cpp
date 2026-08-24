@@ -50,22 +50,6 @@ namespace bha::analyzers {
                 }
             }
 
-            // Each trace record is one observed event. Use an explicit producer
-            // count when present; otherwise retain the record as one event.
-            for (const auto& template_event : unit.templates) {
-                if (template_event.name.empty()) {
-                    continue;
-                }
-
-                auto& data = symbol_map[template_event.name];
-                if (data.used_in_set.insert(source_key).second) {
-                    data.used_in.push_back(unit.source_file);
-                }
-                data.usage_count += template_event.count == 0
-                    ? 1
-                    : template_event.count;
-            }
-
             // An include proves only that a header was read. A use is accepted
             // only when the producer provides the exact referenced symbol name.
             for (const auto& include : unit.includes) {

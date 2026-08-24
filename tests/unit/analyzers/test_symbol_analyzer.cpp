@@ -83,7 +83,7 @@ namespace bha::analyzers {
         }
     }
 
-    TEST_F(SymbolAnalyzerTest, TracksTemplateInstantiations) {
+    TEST_F(SymbolAnalyzerTest, DoesNotTreatTemplateEventsAsSymbols) {
         BuildTrace trace;
 
         CompilationUnit unit1;
@@ -106,16 +106,8 @@ namespace bha::analyzers {
         auto result = analyzer_->analyze(trace, options);
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_GE(result.value().symbols.total_symbols, 1u);
-
-        bool found = false;
-        for (const auto& sym : result.value().symbols.symbols) {
-            if (sym.name == "std::vector<int>") {
-                found = true;
-                EXPECT_GE(sym.usage_count, 2u);  // Used in both files
-            }
-        }
-        EXPECT_TRUE(found);
+        EXPECT_EQ(result.value().symbols.total_symbols, 0u);
+        EXPECT_TRUE(result.value().symbols.symbols.empty());
     }
 
     TEST_F(SymbolAnalyzerTest, IdentifiesUnusedSymbols) {
@@ -163,19 +155,23 @@ namespace bha::analyzers {
 
         CompilationUnit unit2;
         unit2.source_file = "user1.cpp";
-        TemplateInstantiation tmpl;
-        tmpl.name = "frequently_used";
-        unit2.templates.push_back(tmpl);
+        IncludeInfo include1;
+        include1.symbols_used = {"frequently_used"};
+        unit2.includes.push_back(include1);
         trace.units.push_back(unit2);
 
         CompilationUnit unit3;
         unit3.source_file = "user2.cpp";
-        unit3.templates.push_back(tmpl);  // Same template
+        IncludeInfo include2;
+        include2.symbols_used = {"frequently_used"};
+        unit3.includes.push_back(include2);
         trace.units.push_back(unit3);
 
         CompilationUnit unit4;
         unit4.source_file = "user3.cpp";
-        unit4.templates.push_back(tmpl);  // Same template
+        IncludeInfo include3;
+        include3.symbols_used = {"frequently_used"};
+        unit4.includes.push_back(include3);
         trace.units.push_back(unit4);
 
         AnalysisOptions options;

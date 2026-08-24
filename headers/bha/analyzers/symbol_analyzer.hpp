@@ -25,7 +25,6 @@ namespace bha::analyzers {
      * Reports:
      * - Exact producer-provided symbol names and definition locations
      * - Exact symbol uses attached to include records
-     * - Observed template event counts
      * - Producer-defined symbols with no observed uses
      */
     class SymbolAnalyzer : public IAnalyzer {
