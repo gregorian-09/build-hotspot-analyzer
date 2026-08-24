@@ -208,6 +208,22 @@ TEST(StorageCompareTest, KeepsZeroBaselinePercentagesUnavailable) {
     EXPECT_TRUE(comparison.regressions.empty());
 }
 
+TEST(StorageCompareTest, RejectsUnrepresentableInMemoryDurationDelta) {
+    auto old_analysis = make_analysis({}, Duration::min(), Duration::min(), Duration::min());
+    auto new_analysis = make_analysis({}, Duration::max(), Duration::max(), Duration::max());
+
+    const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
+
+    EXPECT_EQ(comparison.build_time_delta, Duration::zero());
+    EXPECT_FALSE(comparison.build_time_percent_change.has_value());
+    EXPECT_EQ(comparison.translation_unit.delta, Duration::zero());
+    EXPECT_FALSE(comparison.translation_unit.percent_change.has_value());
+    EXPECT_EQ(comparison.headers.delta, Duration::zero());
+    EXPECT_FALSE(comparison.headers.percent_change.has_value());
+    EXPECT_EQ(comparison.templates.delta, Duration::zero());
+    EXPECT_FALSE(comparison.templates.percent_change.has_value());
+}
+
 TEST(StorageCompareTest, SummarizesRepeatedObservedBuildTimes) {
     const std::vector<analyzers::AnalysisResult> analyses = {
         make_analysis({}, std::chrono::milliseconds(100), Duration::zero(), Duration::zero()),

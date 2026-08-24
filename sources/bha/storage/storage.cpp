@@ -1328,8 +1328,11 @@ namespace bha::storage
             if (old_time.count() <= 0 || new_time.count() <= 0) {
                 return std::nullopt;
             }
-            const auto delta = new_time - old_time;
-            return 100.0 * static_cast<double>(delta.count()) /
+            const auto delta = utils::checked_sub_duration(new_time, old_time);
+            if (!delta.has_value()) {
+                return std::nullopt;
+            }
+            return 100.0 * static_cast<double>(delta->count()) /
                 static_cast<double>(old_time.count());
         };
 
@@ -1374,24 +1377,41 @@ namespace bha::storage
         // Overall build time change
         auto old_time = old_result.performance.total_build_time;
         auto new_time = new_result.performance.total_build_time;
-        result.build_time_delta = new_time - old_time;
+        if (const auto delta = utils::checked_sub_duration(new_time, old_time); delta.has_value()) {
+            result.build_time_delta = *delta;
+        }
 
         result.build_time_percent_change = percent_change(old_time, new_time);
 
         result.translation_unit.old_time = old_result.performance.sequential_time;
         result.translation_unit.new_time = new_result.performance.sequential_time;
-        result.translation_unit.delta = result.translation_unit.new_time - result.translation_unit.old_time;
+        if (const auto delta = utils::checked_sub_duration(
+                result.translation_unit.new_time,
+                result.translation_unit.old_time
+            ); delta.has_value()) {
+            result.translation_unit.delta = *delta;
+        }
         result.translation_unit.percent_change =
             percent_change(result.translation_unit.old_time, result.translation_unit.new_time);
 
         result.headers.old_time = old_result.dependencies.total_include_time;
         result.headers.new_time = new_result.dependencies.total_include_time;
-        result.headers.delta = result.headers.new_time - result.headers.old_time;
+        if (const auto delta = utils::checked_sub_duration(
+                result.headers.new_time,
+                result.headers.old_time
+            ); delta.has_value()) {
+            result.headers.delta = *delta;
+        }
         result.headers.percent_change = percent_change(result.headers.old_time, result.headers.new_time);
 
         result.templates.old_time = old_result.templates.total_template_time;
         result.templates.new_time = new_result.templates.total_template_time;
-        result.templates.delta = result.templates.new_time - result.templates.old_time;
+        if (const auto delta = utils::checked_sub_duration(
+                result.templates.new_time,
+                result.templates.old_time
+            ); delta.has_value()) {
+            result.templates.delta = *delta;
+        }
         result.templates.percent_change = percent_change(result.templates.old_time, result.templates.new_time);
 
         // File count change
@@ -1418,7 +1438,15 @@ namespace bha::storage
                 result.removed_files.emplace_back(path);
             } else {
                 const auto* new_file = it->second;
-                auto delta = new_file->compile_time - old_file->compile_time;
+                const auto delta_result = utils::checked_sub_duration(
+                    new_file->compile_time,
+                    old_file->compile_time
+                );
+                if (!delta_result.has_value()) {
+                    ++result.translation_unit_regressions.matched_files;
+                    continue;
+                }
+                const auto delta = *delta_result;
                 const auto percent = percent_change(old_file->compile_time, new_file->compile_time);
                 ++result.translation_unit_regressions.matched_files;
                 if (delta.count() > 0) {
@@ -1565,12 +1593,9 @@ namespace bha::storage
         }
 
         const auto to_duration = [](const long double value) -> std::optional<Duration> {
-            if (!std::isfinite(value) ||
-                value < static_cast<long double>(std::numeric_limits<Duration::rep>::min()) ||
-                value > static_cast<long double>(std::numeric_limits<Duration::rep>::max())) {
-                return std::nullopt;
-            }
-            return Duration(static_cast<Duration::rep>(std::llround(value)));
+            return utils::checked_duration_cast<Duration>(
+                std::chrono::duration<long double, std::nano>(value)
+            );
         };
 
         const auto mean = to_duration(sum / static_cast<long double>(samples.size()));

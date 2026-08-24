@@ -42,6 +42,27 @@ namespace bha::utils {
         return std::chrono::duration<Rep, Period>(left_count + right_count);
     }
 
+    template <typename Rep, typename Period>
+    [[nodiscard]] constexpr std::optional<std::chrono::duration<Rep, Period>> checked_sub_duration(
+        const std::chrono::duration<Rep, Period> left,
+        const std::chrono::duration<Rep, Period> right
+    ) noexcept {
+        static_assert(std::is_integral_v<Rep>, "checked_sub_duration requires an integral representation");
+
+        const Rep left_count = left.count();
+        const Rep right_count = right.count();
+        if constexpr (std::is_signed_v<Rep>) {
+            if ((right_count > 0 && left_count < std::numeric_limits<Rep>::min() + right_count) ||
+                (right_count < 0 && left_count > std::numeric_limits<Rep>::max() + right_count)) {
+                return std::nullopt;
+            }
+        } else if (left_count < right_count) {
+            return std::nullopt;
+        }
+
+        return std::chrono::duration<Rep, Period>(left_count - right_count);
+    }
+
     /// Converts a floating-point duration to the nearest target tick without
     /// allowing an out-of-range conversion to reach duration's integral rep.
     template <typename ToDuration, typename FromRep, typename FromPeriod>

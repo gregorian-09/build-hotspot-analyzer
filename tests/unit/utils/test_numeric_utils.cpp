@@ -43,6 +43,25 @@ namespace bha::utils::test {
         EXPECT_FALSE(result.has_value());
     }
 
+    TEST(NumericUtilsTest, CheckedSubDurationReturnsExactSignedDifference) {
+        const auto result = checked_sub_duration(
+            std::chrono::nanoseconds(12),
+            std::chrono::nanoseconds(5)
+        );
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(*result, std::chrono::nanoseconds(7));
+    }
+
+    TEST(NumericUtilsTest, CheckedSubDurationRejectsSignedOverflow) {
+        const auto result = checked_sub_duration(
+            std::chrono::nanoseconds::min(),
+            std::chrono::nanoseconds(1)
+        );
+
+        EXPECT_FALSE(result.has_value());
+    }
+
     TEST(NumericUtilsTest, CheckedAddTimePointRejectsOverflow) {
         using Clock = std::chrono::steady_clock;
 
