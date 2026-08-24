@@ -342,12 +342,23 @@ namespace bha::suggestions {
                 -1.0
             )
         );
+        SuggesterRegistry::instance().register_suggester(
+            std::make_unique<AbiSensitiveStubSuggester>(
+                "stale-unavailable-savings",
+                target,
+                0.9,
+                Duration(1),
+                1.0
+            )
+        );
 
         const auto result = generate_all_suggestions(trace, analysis, options, root);
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(
             std::ranges::count_if(result.value(), [](const Suggestion& suggestion) {
-                return suggestion.id == "invalid-confidence" || suggestion.id == "invalid-savings";
+                return suggestion.id == "invalid-confidence" ||
+                    suggestion.id == "invalid-savings" ||
+                    suggestion.id == "stale-unavailable-savings";
             }),
             0
         );

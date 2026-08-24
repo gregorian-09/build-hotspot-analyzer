@@ -223,7 +223,10 @@ namespace bha::suggestions
                     suggestion.confidence < 0.0 || suggestion.confidence > 1.0 ||
                     suggestion.estimated_savings < Duration::zero() ||
                     !std::isfinite(suggestion.estimated_savings_percent) ||
-                    suggestion.estimated_savings_percent < 0.0) {
+                    suggestion.estimated_savings_percent < 0.0 ||
+                    (suggestion.estimated_savings_evidence == EvidenceKind::Unavailable &&
+                        (suggestion.estimated_savings != Duration::zero() ||
+                            suggestion.estimated_savings_percent != 0.0))) {
                     continue;
                 }
 
