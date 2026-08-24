@@ -142,6 +142,32 @@ namespace bha::analyzers::test {
         EXPECT_EQ(trace_wall_time->provenance.evidence, EvidenceKind::Observed);
     }
 
+    TEST(LinkerAnalyzerTest, RejectsNegativeAttachedTraceDurations) {
+        BuildTrace trace;
+        trace.linker_trace = LinkerTrace{};
+        trace.linker_trace->execute_linker_time = std::chrono::milliseconds(20);
+        trace.linker_trace->lto_time = Duration(-1);
+
+        LinkerAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().linker;
+        ASSERT_TRUE(analysis.trace_wall_clock_time.has_value());
+        EXPECT_EQ(*analysis.trace_wall_clock_time, std::chrono::milliseconds(20));
+        EXPECT_FALSE(analysis.lto_time.has_value());
+        const auto* lto = find_capability(analysis, "lto.wall_time");
+        ASSERT_NE(lto, nullptr);
+        EXPECT_EQ(lto->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_EQ(
+            lto->provenance.limitation,
+            "Attached linker time-trace evidence contained a negative LTO duration"
+        );
+        const auto* trace_wall_time = find_capability(analysis, "linker.trace.wall_time");
+        ASSERT_NE(trace_wall_time, nullptr);
+        EXPECT_EQ(trace_wall_time->provenance.evidence, EvidenceKind::Observed);
+    }
+
     TEST(LinkerAnalyzerTest, FailsClosedWhenWallTimeAggregationOverflows) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

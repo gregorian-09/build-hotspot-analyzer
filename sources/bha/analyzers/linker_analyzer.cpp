@@ -66,10 +66,28 @@ namespace bha::analyzers {
         }
 
         auto& analysis = result.linker;
+        bool invalid_trace_wall_time = false;
+        bool invalid_lto_time = false;
         if (has_linker_trace) {
-            analysis.trace_wall_clock_time = trace.linker_trace->execute_linker_time;
-            analysis.lto_time = trace.linker_trace->lto_time;
+            if (trace.linker_trace->execute_linker_time.has_value()) {
+                if (*trace.linker_trace->execute_linker_time < Duration::zero()) {
+                    invalid_trace_wall_time = true;
+                } else {
+                    analysis.trace_wall_clock_time = trace.linker_trace->execute_linker_time;
+                }
+            }
+            if (trace.linker_trace->lto_time.has_value()) {
+                if (*trace.linker_trace->lto_time < Duration::zero()) {
+                    invalid_lto_time = true;
+                } else {
+                    analysis.lto_time = trace.linker_trace->lto_time;
+                }
+            }
             for (const auto& metric : trace.linker_trace->metric_capabilities) {
+                if ((invalid_trace_wall_time && metric.metric == "linker.trace.wall_time") ||
+                    (invalid_lto_time && metric.metric == "lto.wall_time")) {
+                    continue;
+                }
                 add_capability(analysis, metric);
             }
         }
@@ -212,7 +230,9 @@ namespace bha::analyzers {
                 capability(
                     "lto.wall_time",
                     EvidenceKind::Unavailable,
-                    "No linker time-trace evidence is attached to this build session"
+                    invalid_lto_time
+                        ? "Attached linker time-trace evidence contained a negative LTO duration"
+                        : "No linker time-trace evidence is attached to this build session"
                 )
             );
         }
@@ -230,6 +250,18 @@ namespace bha::analyzers {
             trace_capability.provenance.capture_mode = "--time-trace";
             trace_capability.provenance.scope = "ExecuteLinker";
             add_capability(analysis, std::move(trace_capability));
+        } else if (has_linker_trace && invalid_trace_wall_time &&
+                   !has_capability(analysis, "linker.trace.wall_time")) {
+            add_capability(
+                analysis,
+                capability(
+                    "linker.trace.wall_time",
+                    EvidenceKind::Unavailable,
+                    "Attached linker time-trace evidence contained a negative ExecuteLinker duration",
+                    TimingDomain::WallClock,
+                    TimingAggregation::Inclusive
+                )
+            );
         }
 
         if (has_linker_trace && analysis.lto_time.has_value() &&
