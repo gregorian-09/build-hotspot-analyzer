@@ -63,6 +63,62 @@ namespace bha::storage
             return *duration;
         }
 
+        double read_finite_double(
+            const nlohmann::json& object,
+            const char* field,
+            const double default_value
+        ) {
+            const double value = object.value(field, default_value);
+            if (!std::isfinite(value)) {
+                throw std::invalid_argument(
+                    std::string("Snapshot field '") + field + "' must be finite"
+                );
+            }
+            return value;
+        }
+
+        double read_nonnegative_double(
+            const nlohmann::json& object,
+            const char* field,
+            const double default_value
+        ) {
+            const double value = read_finite_double(object, field, default_value);
+            if (value < 0.0) {
+                throw std::invalid_argument(
+                    std::string("Snapshot field '") + field + "' must be non-negative"
+                );
+            }
+            return value;
+        }
+
+        double read_unit_interval_double(
+            const nlohmann::json& object,
+            const char* field,
+            const double default_value
+        ) {
+            const double value = read_finite_double(object, field, default_value);
+            if (value < 0.0 || value > 1.0) {
+                throw std::invalid_argument(
+                    std::string("Snapshot field '") + field + "' must be in [0, 1]"
+                );
+            }
+            return value;
+        }
+
+        double read_percentage_double(
+            const nlohmann::json& object,
+            const char* field,
+            const double default_value
+        ) {
+            const double value = read_finite_double(object, field, default_value);
+            if (value < 0.0 || value > 100.0) {
+                throw std::invalid_argument(
+                    std::string("Snapshot field '") + field + "' must be in [0, 100]"
+                );
+            }
+            return value;
+        }
+
         EvidenceKind evidence_kind_from_string(const std::string& value) {
             if (value == "observed") {
                 return EvidenceKind::Observed;
@@ -263,7 +319,7 @@ namespace bha::storage
             file.compile_time = ms_to_duration(j.value("compile_time_ms", 0.0));
             file.frontend_time = ms_to_duration(j.value("frontend_time_ms", 0.0));
             file.backend_time = ms_to_duration(j.value("backend_time_ms", 0.0));
-            file.time_percent = j.value("time_percent", 0.0);
+            file.time_percent = read_nonnegative_double(j, "time_percent", 0.0);
             file.rank = j.value("rank", std::size_t{0});
             file.include_count = j.value("include_count", std::size_t{0});
             file.template_count = j.value("template_count", std::size_t{0});
@@ -359,7 +415,11 @@ namespace bha::storage
         analyzers::TemplateAnalysisResult deserialize_templates(const nlohmann::json& j) {
             analyzers::TemplateAnalysisResult tmpl;
             tmpl.total_template_time = ms_to_duration(j.value("total_template_time_ms", 0.0));
-            tmpl.template_time_percent = j.value("template_time_percent", 0.0);
+            tmpl.template_time_percent = read_nonnegative_double(
+                j,
+                "template_time_percent",
+                0.0
+            );
             tmpl.total_instantiations = j.value("total_instantiations", std::size_t{0});
 
             if (j.contains("templates")) {
@@ -369,7 +429,7 @@ namespace bha::storage
                     t.full_signature = tj.value("full_signature", "");
                     t.total_time = ms_to_duration(tj.value("total_time_ms", 0.0));
                     t.instantiation_count = tj.value("instantiation_count", std::size_t{0});
-                    t.time_percent = tj.value("time_percent", 0.0);
+                    t.time_percent = read_nonnegative_double(tj, "time_percent", 0.0);
                     tmpl.templates.push_back(t);
                 }
             }
@@ -402,7 +462,11 @@ namespace bha::storage
             perf.total_build_time = ms_to_duration(j.value("total_build_time_ms", 0.0));
             perf.sequential_time = ms_to_duration(j.value("sequential_time_ms", 0.0));
             perf.parallel_time = ms_to_duration(j.value("parallel_time_ms", 0.0));
-            perf.parallelism_efficiency = j.value("parallelism_efficiency", 0.0);
+            perf.parallelism_efficiency = read_nonnegative_double(
+                j,
+                "parallelism_efficiency",
+                0.0
+            );
             perf.total_files = j.value("total_files", std::size_t{0});
             perf.avg_file_time = ms_to_duration(j.value("avg_file_time_ms", 0.0));
             perf.median_file_time = ms_to_duration(j.value("median_file_time_ms", 0.0));
@@ -456,7 +520,11 @@ namespace bha::storage
             cache.cache_writes = j.value("cache_writes", std::uint64_t{0});
             cache.compilation_failures = j.value("compilation_failures", std::uint64_t{0});
             if (j.contains("hit_rate_percent") && !j["hit_rate_percent"].is_null()) {
-                cache.hit_rate_percent = j["hit_rate_percent"].get<double>();
+                cache.hit_rate_percent = read_percentage_double(
+                    j,
+                    "hit_rate_percent",
+                    0.0
+                );
             }
             if (j.contains("metric_capabilities")) {
                 cache.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
@@ -538,7 +606,11 @@ namespace bha::storage
             session.wall_clock_time = ms_to_duration(j.value("wall_clock_time_ms", 0.0));
             session.serial_time = ms_to_duration(j.value("serial_time_ms", 0.0));
             session.peak_parallelism = j.value("peak_parallelism", std::size_t{0});
-            session.average_parallelism = j.value("average_parallelism", 0.0);
+            session.average_parallelism = read_nonnegative_double(
+                j,
+                "average_parallelism",
+                0.0
+            );
             session.critical_path_time = ms_to_duration(j.value("critical_path_time_ms", 0.0));
             session.compile_trace_references = j.value(
                 "compile_trace_references",
@@ -596,15 +668,13 @@ namespace bha::storage
                 );
                 if (host.contains("peak_before_cpu_load_average") &&
                     !host["peak_before_cpu_load_average"].is_null()) {
-                    session.host_telemetry.peak_before_cpu_load_average = host[
-                        "peak_before_cpu_load_average"
-                    ].get<double>();
+                    session.host_telemetry.peak_before_cpu_load_average =
+                        read_nonnegative_double(host, "peak_before_cpu_load_average", 0.0);
                 }
                 if (host.contains("peak_after_cpu_load_average") &&
                     !host["peak_after_cpu_load_average"].is_null()) {
-                    session.host_telemetry.peak_after_cpu_load_average = host[
-                        "peak_after_cpu_load_average"
-                    ].get<double>();
+                    session.host_telemetry.peak_after_cpu_load_average =
+                        read_nonnegative_double(host, "peak_after_cpu_load_average", 0.0);
                 }
                 if (host.contains("metric_capabilities")) {
                     session.host_telemetry.metric_capabilities =
@@ -881,10 +951,14 @@ namespace bha::storage
             sugg.description = j.value("description", "");
             sugg.target_file.path = j.value("target_file", "");
             sugg.target_file.line_start = j.value("target_line", std::size_t{0});
-            sugg.confidence = j.value("confidence", 0.0);
+            sugg.confidence = read_unit_interval_double(j, "confidence", 0.0);
             sugg.priority = static_cast<Priority>(j.value("priority", 0));
             sugg.estimated_savings = ms_to_duration(j.value("estimated_savings_ms", 0.0));
-            sugg.estimated_savings_percent = j.value("estimated_savings_percent", 0.0);
+            sugg.estimated_savings_percent = read_nonnegative_double(
+                j,
+                "estimated_savings_percent",
+                0.0
+            );
             sugg.estimated_savings_evidence = evidence_kind_from_string(
                 j.value("estimated_savings_evidence", std::string("unavailable"))
             );

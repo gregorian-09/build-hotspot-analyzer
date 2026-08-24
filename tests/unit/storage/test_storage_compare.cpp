@@ -365,6 +365,45 @@ TEST(StorageSnapshotTest, RejectsUnrepresentablePersistedDuration) {
     fs::remove_all(root, ec);
 }
 
+TEST(StorageSnapshotTest, RejectsInvalidPersistedFloatingMetrics) {
+    namespace fs = std::filesystem;
+
+    const auto unique = std::to_string(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()
+        ).count()
+    );
+    const fs::path root = fs::temp_directory_path() / ("bha-invalid-floating-snapshot-" + unique);
+    ASSERT_TRUE(fs::create_directories(root));
+
+    const std::vector<std::pair<std::string, std::string>> invalid_snapshots = {
+        {"file-percent", R"json({"files":[{"time_percent":-1.0}]})json"},
+        {"template-percent", R"json({"templates":{"template_time_percent":-1.0}})json"},
+        {"parallelism-efficiency", R"json({"performance":{"parallelism_efficiency":-1.0}})json"},
+        {"cache-hit-rate", R"json({"cache_distribution":{"hit_rate_percent":101.0}})json"},
+        {"average-parallelism", R"json({"build_session":{"average_parallelism":-1.0}})json"},
+        {"cpu-load", R"json({"build_session":{"host_telemetry":{"peak_before_cpu_load_average":-1.0}}})json"},
+        {"confidence", R"json({"suggestions":[{"confidence":1.1}]})json"},
+        {"savings-percent", R"json({"suggestions":[{"estimated_savings_percent":-1.0}]})json"}
+    };
+
+    for (const auto& [name, contents] : invalid_snapshots) {
+        {
+            std::ofstream file(root / (name + ".json"));
+            ASSERT_TRUE(file.is_open());
+            file << contents;
+        }
+
+        SnapshotStore store(root);
+        const auto result = store.load(name);
+        ASSERT_TRUE(result.is_err()) << name;
+        EXPECT_EQ(result.error().code(), ErrorCode::ParseError) << name;
+    }
+
+    std::error_code ec;
+    fs::remove_all(root, ec);
+}
+
 TEST(StorageSnapshotTest, PersistsCacheDistributionMetrics) {
     namespace fs = std::filesystem;
 
