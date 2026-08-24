@@ -215,7 +215,7 @@ TEST(StorageCompareTest, RejectsEmptyRepeatedRunSet) {
     EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
 }
 
-TEST(StorageCompareTest, RejectsNegativeRepeatedBuildTime) {
+    TEST(StorageCompareTest, RejectsNegativeRepeatedBuildTime) {
     const std::vector<analyzers::AnalysisResult> analyses = {
         make_analysis({}, std::chrono::milliseconds(-1), Duration::zero(), Duration::zero()),
         make_analysis({}, std::chrono::milliseconds(1), Duration::zero(), Duration::zero())
@@ -223,11 +223,23 @@ TEST(StorageCompareTest, RejectsNegativeRepeatedBuildTime) {
 
     const auto result = summarize_repeated_analyses(analyses);
 
-    ASSERT_TRUE(result.is_err());
-    EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
-}
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+    }
 
-TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
+    TEST(StorageCompareTest, RejectsUnavailableRepeatedBuildTime) {
+        const std::vector<analyzers::AnalysisResult> analyses = {
+            make_analysis({}, Duration::zero(), Duration::zero(), Duration::zero()),
+            make_analysis({}, std::chrono::milliseconds(1), Duration::zero(), Duration::zero())
+        };
+
+        const auto result = summarize_repeated_analyses(analyses);
+
+        ASSERT_TRUE(result.is_err());
+        EXPECT_EQ(result.error().code(), ErrorCode::InvalidArgument);
+    }
+
+    TEST(StorageSnapshotTest, SummarizesNamedRunsAndRejectsDuplicates) {
     namespace fs = std::filesystem;
 
     const auto unique = std::to_string(

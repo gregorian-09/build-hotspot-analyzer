@@ -1508,9 +1508,12 @@ namespace bha::storage
         std::vector<Duration> samples;
         samples.reserve(analyses.size());
         for (const auto& analysis : analyses) {
-            if (analysis.performance.total_build_time.count() < 0) {
+            if (analysis.performance.total_build_time <= Duration::zero()) {
                 return Result<ComparisonResult::RepeatedRunDistribution, Error>::failure(
-                    Error(ErrorCode::InvalidArgument, "Repeated-run build times cannot be negative")
+                    Error(
+                        ErrorCode::InvalidArgument,
+                        "Repeated-run build times must be positive producer observations"
+                    )
                 );
             }
             samples.push_back(analysis.performance.total_build_time);
