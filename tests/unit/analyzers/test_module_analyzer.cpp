@@ -75,4 +75,40 @@ namespace bha::analyzers::test {
         EXPECT_EQ(analysis.unowned_dependencies, 1u);
         EXPECT_TRUE(analysis.dependencies.empty());
     }
+
+    TEST(ModuleAnalyzerTest, FailsClosedForAmbiguousModuleOwnership) {
+        BuildTrace trace;
+        trace.module_dependency_graph = ModuleDependencyGraph{};
+
+        ModuleDependencyRule first_owner;
+        first_owner.primary_output = "First.o";
+        first_owner.provides.push_back({"Shared", std::nullopt, std::nullopt});
+
+        ModuleDependencyRule second_owner;
+        second_owner.primary_output = "Second.o";
+        second_owner.provides.push_back({"Shared", std::nullopt, std::nullopt});
+
+        ModuleDependencyRule consumer;
+        consumer.primary_output = "Consumer.o";
+        consumer.provides.push_back({"Consumer", std::nullopt, std::nullopt});
+        consumer.requirements.push_back({"Shared", std::nullopt, std::nullopt});
+
+        trace.module_dependency_graph->rules = {first_owner, second_owner, consumer};
+
+        ModuleAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().modules;
+        EXPECT_EQ(analysis.resolved_dependencies, 0u);
+        EXPECT_EQ(analysis.unresolved_dependencies, 1u);
+        EXPECT_TRUE(analysis.dependencies.empty());
+        const auto capability = std::ranges::find(
+            analysis.metric_capabilities,
+            "module.dependency_graph",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, analysis.metric_capabilities.end());
+        EXPECT_FALSE(capability->provenance.limitation.empty());
+    }
 }  // namespace bha::analyzers::test

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 namespace bha::analyzers {
@@ -52,11 +53,14 @@ namespace bha::analyzers {
         analysis.rules = graph.rules.size();
 
         std::unordered_map<std::string, std::size_t> owners;
+        std::unordered_set<std::string> ambiguous_owners;
         for (std::size_t rule_index = 0; rule_index < graph.rules.size(); ++rule_index) {
             const auto& rule = graph.rules[rule_index];
             analysis.provided_modules += rule.provides.size();
             for (const auto& provided : rule.provides) {
-                owners.emplace(provided.logical_name, rule_index);
+                if (!owners.emplace(provided.logical_name, rule_index).second) {
+                    ambiguous_owners.insert(provided.logical_name);
+                }
             }
         }
 
@@ -68,7 +72,8 @@ namespace bha::analyzers {
             }
 
             for (const auto& required : rule.requirements) {
-                if (!owners.contains(required.logical_name)) {
+                if (!owners.contains(required.logical_name) ||
+                    ambiguous_owners.contains(required.logical_name)) {
                     ++analysis.unresolved_dependencies;
                     continue;
                 }
@@ -93,7 +98,7 @@ namespace bha::analyzers {
                 "module.dependency_graph",
                 complete
                     ? std::string{}
-                    : "Some P1689 requirements have no producer-provided owner; no path or command inference was used"
+                    : "Some P1689 requirements have no unique producer-provided owner; no path or command inference was used"
             )
         );
         add_capability(analysis, derived_capability("module.rule_count"));
