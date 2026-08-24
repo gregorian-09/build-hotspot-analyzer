@@ -234,6 +234,37 @@ namespace bha::suggestions {
                 return true;
             }
 
+            bool VisitCStyleCastExpr(clang::CStyleCastExpr* expression) {
+                if (expression) {
+                    record_use(
+                        expression->getTypeAsWritten(),
+                        expression->getBeginLoc(),
+                        requires_complete_object_type(expression->getTypeAsWritten())
+                    );
+                    if (expression->getSubExpr()) {
+                        const auto type = expression->getSubExpr()->getType();
+                        record_use(
+                            type,
+                            expression->getBeginLoc(),
+                            requires_complete_object_type(type)
+                        );
+                    }
+                }
+                return true;
+            }
+
+            bool VisitCXXThrowExpr(clang::CXXThrowExpr* expression) {
+                if (expression && expression->getSubExpr()) {
+                    const auto type = expression->getSubExpr()->getType();
+                    record_use(
+                        type,
+                        expression->getBeginLoc(),
+                        requires_complete_object_type(type)
+                    );
+                }
+                return true;
+            }
+
             bool VisitCXXTypeidExpr(clang::CXXTypeidExpr* expression) {
                 if (expression) {
                     if (expression->isTypeOperand()) {
@@ -302,6 +333,10 @@ namespace bha::suggestions {
             }
 
         private:
+            static bool requires_complete_object_type(const clang::QualType type) {
+                return !type.isNull() && !type->isPointerType() && !type->isReferenceType();
+            }
+
             void record_use(
                 clang::QualType type,
                 const clang::SourceLocation location,
