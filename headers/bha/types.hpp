@@ -31,6 +31,8 @@
 #include <string_view>
 #include <cstdint>
 
+#include "bha/utils/numeric_utils.hpp"
+
 namespace bha {
 
     namespace fs = std::filesystem;
@@ -516,10 +518,24 @@ namespace bha {
         /// Time reported by the producer without a safe normalized category.
         Duration unclassified = Duration::zero();
 
-        [[nodiscard]] Duration total() const noexcept {
-            return preprocessing + parsing + semantic_analysis +
-                   template_instantiation + code_generation + optimization +
-                   unclassified;
+        [[nodiscard]] std::optional<Duration> total() const noexcept {
+            Duration result = Duration::zero();
+            for (const auto value : {
+                preprocessing,
+                parsing,
+                semantic_analysis,
+                template_instantiation,
+                code_generation,
+                optimization,
+                unclassified
+            }) {
+                const auto sum = utils::checked_add_duration(result, value);
+                if (!sum.has_value()) {
+                    return std::nullopt;
+                }
+                result = *sum;
+            }
+            return result;
         }
     };
 

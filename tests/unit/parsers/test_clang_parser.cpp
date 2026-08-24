@@ -367,6 +367,18 @@ namespace bha::parsers
         EXPECT_TRUE(result.is_err());
     }
 
+    TEST_F(ClangParserTest, ParseContent_RejectsUnrepresentableIntervalEndpoint) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"name":"Source","ph":"X","ts":9000000000000000.0,"dur":500000000000000.0,"args":{"detail":"/include/header.h"}}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        EXPECT_TRUE(result.is_err());
+    }
+
     TEST_F(ClangParserTest, ParseContent_RejectsMalformedEventArguments) {
         constexpr std::string_view content = R"json({
             "traceEvents": [

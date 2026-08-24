@@ -149,6 +149,28 @@ namespace bha::parsers {
                 return Result<TraceEvent, Error>::failure(duration.error());
             }
 
+            const double max_supported_microseconds =
+                static_cast<double>(Duration::max().count()) / 1000.0;
+            if (event.timestamp > max_supported_microseconds) {
+                return Result<TraceEvent, Error>::failure(
+                    Error::parse_error(
+                        "Clang time trace timestamp exceeds the supported range",
+                        source_hint.string()
+                    )
+                );
+            }
+            if (complete_event) {
+                const double end_time = event.timestamp + event.duration;
+                if (!std::isfinite(end_time) || end_time > max_supported_microseconds) {
+                    return Result<TraceEvent, Error>::failure(
+                        Error::parse_error(
+                            "Clang time trace interval exceeds the supported range",
+                            source_hint.string()
+                        )
+                    );
+                }
+            }
+
             if (event_json.contains("cat")) {
                 if (!event_json["cat"].is_string()) {
                     return Result<TraceEvent, Error>::failure(
@@ -484,7 +506,12 @@ namespace bha::parsers {
                             valid_nesting = false;
                             break;
                         }
-                        parent.child_duration += current.duration;
+                        const double child_duration = parent.child_duration + current.duration;
+                        if (!std::isfinite(child_duration)) {
+                            valid_nesting = false;
+                            break;
+                        }
+                        parent.child_duration = child_duration;
                     }
                     stack.push_back(index);
                 }

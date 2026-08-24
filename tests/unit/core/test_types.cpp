@@ -37,7 +37,16 @@ namespace bha
         breakdown.unclassified = std::chrono::milliseconds(100);
 
         const auto total = breakdown.total();
-        EXPECT_TRUE(total == std::chrono::milliseconds(1100));
+        ASSERT_TRUE(total.has_value());
+        EXPECT_EQ(*total, std::chrono::milliseconds(1100));
+    }
+
+    TEST(TimeBreakdownTest, RejectsAggregateOverflow) {
+        TimeBreakdown breakdown;
+        breakdown.preprocessing = Duration::max();
+        breakdown.parsing = Duration(1);
+
+        EXPECT_FALSE(breakdown.total().has_value());
     }
 
     TEST(CompilerTypeTest, ToString) {
