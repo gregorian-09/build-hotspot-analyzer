@@ -533,6 +533,18 @@ namespace bha::exporters::test
         EXPECT_TRUE(csv_str.find("utils.cpp") != std::string::npos);
     }
 
+    TEST_F(CsvExporterTest, IncludesSavingsEvidenceAndUnavailableValue) {
+        ExportOptions options;
+        options.include_suggestions = true;
+
+        const auto result = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& csv_str = result.value();
+        EXPECT_TRUE(csv_str.find("Savings Evidence") != std::string::npos);
+        EXPECT_TRUE(csv_str.find("unavailable") != std::string::npos);
+    }
+
     // ============================================================================
     // Markdown Exporter Tests
     // ============================================================================
@@ -568,6 +580,16 @@ namespace bha::exporters::test
         const auto& md_str = result.value();
         EXPECT_TRUE(md_str.find("# ") != std::string::npos);
         EXPECT_TRUE(md_str.find("|") != std::string::npos);
+    }
+
+    TEST_F(MarkdownExporterTest, LabelsUnmeasuredSavingsAsUnavailable) {
+        ExportOptions options;
+        options.include_suggestions = true;
+
+        const auto result = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(result.is_ok());
+
+        EXPECT_TRUE(result.value().find("**Est. Savings:** unavailable") != std::string::npos);
     }
 
     // ============================================================================

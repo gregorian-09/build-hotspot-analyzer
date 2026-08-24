@@ -3,6 +3,7 @@
 //
 
 #include "bha/exporters/exporter.hpp"
+#include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/time_utils.hpp"
 
 #include <nlohmann/json.hpp>
@@ -48,6 +49,33 @@ namespace bha::exporters
                 ss << std::fixed << std::setprecision(2) << ms << " ms";
             }
             return ss.str();
+        }
+
+        std::optional<Duration> total_estimated_savings(
+            const std::vector<Suggestion>& suggestions
+        ) {
+            Duration total = Duration::zero();
+            for (const auto& suggestion : suggestions) {
+                if (suggestion.estimated_savings_evidence == EvidenceKind::Unavailable) {
+                    return std::nullopt;
+                }
+                const auto sum = utils::checked_add_duration(
+                    total,
+                    suggestion.estimated_savings
+                );
+                if (!sum.has_value()) {
+                    return std::nullopt;
+                }
+                total = *sum;
+            }
+            return total;
+        }
+
+        std::string format_estimated_savings(const Suggestion& suggestion) {
+            if (suggestion.estimated_savings_evidence == EvidenceKind::Unavailable) {
+                return "unavailable";
+            }
+            return format_duration_human(suggestion.estimated_savings);
         }
 
         nlohmann::json serialize_metric_capability(const MetricCapability& capability) {
@@ -999,7 +1027,7 @@ namespace bha::exporters
         std::size_t high_count = 0;
         std::size_t medium_count = 0;
         std::size_t low_count = 0;
-        Duration total_savings = Duration::zero();
+        const auto total_savings = total_estimated_savings(suggestions);
 
         std::vector<std::size_t> suggestion_order(suggestions.size());
         std::iota(suggestion_order.begin(), suggestion_order.end(), 0);
@@ -1011,14 +1039,15 @@ namespace bha::exporters
             if (a_rank != b_rank) {
                 return a_rank > b_rank;
             }
-            if (a.estimated_savings != b.estimated_savings) {
+            if (a.estimated_savings_evidence != EvidenceKind::Unavailable &&
+                b.estimated_savings_evidence != EvidenceKind::Unavailable &&
+                a.estimated_savings != b.estimated_savings) {
                 return a.estimated_savings > b.estimated_savings;
             }
             return a.confidence > b.confidence;
         });
 
         for (const auto& suggestion : suggestions) {
-            total_savings += suggestion.estimated_savings;
             switch (suggestion.priority) {
                 case Priority::Critical: ++critical_count; break;
                 case Priority::High: ++high_count; break;
@@ -1032,7 +1061,9 @@ namespace bha::exporters
                         << "  <div class=\"dep-stats\">\n"
                         << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << suggestions.size() << "</div><div class=\"dep-stat-label\">Total Suggestions</div></div>\n"
                         << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << (critical_count + high_count) << "</div><div class=\"dep-stat-label\">High Impact</div></div>\n"
-                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << format_duration_human(total_savings) << "</div><div class=\"dep-stat-label\">Est. Total Savings</div></div>\n"
+                        << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">"
+                        << (total_savings.has_value() ? format_duration_human(*total_savings) : "unavailable")
+                        << "</div><div class=\"dep-stat-label\">Est. Total Savings</div></div>\n"
                         << "    <div class=\"dep-stat\"><div class=\"dep-stat-value\">" << critical_count << "/" << high_count << "/" << medium_count << "/" << low_count
                         << "</div><div class=\"dep-stat-label\">C/H/M/L Mix</div></div>\n"
                         << "  </div>\n"
@@ -1048,7 +1079,7 @@ namespace bha::exporters
                 suggestion_cards << "    <a class=\"suggestion-quick-item\" href=\"#suggestion-" << idx << "\">\n"
                                 << "      <span class=\"suggestion-quick-title\">" << escape_html(suggestion.title) << "</span>\n"
                                 << "      <span class=\"suggestion-quick-meta\">" << escape_html(to_string(suggestion.type))
-                                << " · " << format_duration_human(suggestion.estimated_savings) << "</span>\n"
+                                << " · " << format_estimated_savings(suggestion) << "</span>\n"
                                 << "    </a>\n";
             }
 
@@ -1084,7 +1115,7 @@ namespace bha::exporters
             const std::string target_path = sugg.target_file.path.empty()
                 ? "Unknown"
                 : escape_html(sugg.target_file.path.string());
-            const std::string savings_human = format_duration_human(sugg.estimated_savings);
+            const std::string savings_human = format_estimated_savings(sugg);
             const bool has_steps = !sugg.implementation_steps.empty();
             const bool has_caveats = !sugg.caveats.empty();
             const bool has_rationale = !sugg.rationale.empty();
@@ -1462,7 +1493,7 @@ namespace bha::exporters
 
         if (options.include_suggestions && !suggestions.empty()) {
             stream << "\n# Suggestions\n";
-            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Edits Count,Is Safe,Application Mode,Application Summary,Auto-Apply Blocked Reason\n";
+            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Savings Evidence,Edits Count,Is Safe,Application Mode,Application Summary,Auto-Apply Blocked Reason\n";
 
             for (const auto& sugg : suggestions) {
                 if (sugg.confidence < options.min_confidence) {
@@ -1475,7 +1506,12 @@ namespace bha::exporters
                        << sugg.target_file.line_start << ","
                        << std::fixed << std::setprecision(2) << sugg.confidence << ","
                        << static_cast<int>(sugg.priority) << ","
-                       << duration_to_ms(sugg.estimated_savings) << ","
+                       << escape_csv(
+                           sugg.estimated_savings_evidence == EvidenceKind::Unavailable
+                               ? "unavailable"
+                               : std::to_string(duration_to_ms(sugg.estimated_savings))
+                       ) << ","
+                       << to_string(sugg.estimated_savings_evidence) << ","
                        << sugg.edits.size() << ","
                        << (sugg.is_safe ? "true" : "false") << ","
                        << escape_csv(to_string(resolve_application_mode(sugg))) << ","
@@ -1595,7 +1631,7 @@ namespace bha::exporters
                 stream << "**Priority:** " << priority
                        << " | **Confidence:** " << std::fixed << std::setprecision(0)
                        << (sugg.confidence * 100) << "%"
-                       << " | **Est. Savings:** " << format_duration_human(sugg.estimated_savings) << "\n\n";
+                       << " | **Est. Savings:** " << format_estimated_savings(sugg) << "\n\n";
                 stream << "**File:** `" << sugg.target_file.path.string() << ":" << sugg.target_file.line_start << "`\n\n";
                 stream << sugg.description << "\n\n";
 
