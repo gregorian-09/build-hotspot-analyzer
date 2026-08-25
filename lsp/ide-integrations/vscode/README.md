@@ -5,7 +5,10 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 ## Features
 
 - Analyze build performance from VS Code
+- Navigate the current analysis from the persistent BHA activity-bar view
 - Show optimization suggestions produced by `bha-lsp`
+- Review measured, derived, or unavailable impact evidence before applying changes
+- Preview concrete suggestion edits in a native VS Code diff view without writing files
 - Apply one suggestion or all applicable suggestions
 - Revert applied changes through the language server workflow
 - Inspect LSP traffic when debugging extension behavior
@@ -45,9 +48,15 @@ The last successful traced build profile is persisted per workspace and reused f
 cached build directory, trace directory, and explicit compiler path are still valid.
 
 Recommended workflow:
-1. Record traces
-2. Analyze traces
-3. Review and apply suggestions
+1. Open the `BHA` activity-bar view.
+2. Record traces.
+3. Analyze traces.
+4. Select a suggestion to review its evidence, affected files, and optional native diff.
+5. Apply only after reviewing the proposed change.
+
+Inline code actions are intentionally limited to exact, automatically applicable
+forward-declaration, include-reduction, and header-split edits. Project-wide or
+advisory suggestions remain in the BHA view so their broader scope is visible.
 
 The advanced trace recording command exposes optional overrides for compiler, build type, parallel jobs, extra build
 arguments, trace output directory, and build-system selection when auto-detection is not appropriate.

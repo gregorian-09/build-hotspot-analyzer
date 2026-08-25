@@ -1202,35 +1202,54 @@ namespace bha::lsp
         }
 
         std::vector<Suggestion> suggestions;
-        {
-            std::lock_guard const lock(suggestion_manager_mutex_);
-            suggestions = suggestion_manager_->get_all_suggestions();
-        }
-        for (const auto& sug : suggestions) {
-            if (sug.target_uri && *sug.target_uri == uri) {
-                json code_action = {
-                    {"title", sug.title},
-                    {"kind", "refactor.rewrite"},
-                    {"command", {
-                        {"title", sug.title},
-                        {"command", "bha.applySuggestion"},
-                        {"arguments", json::array({json{{"suggestionId", sug.id}}})}
-                    }}
-                };
+        std::lock_guard const lock(suggestion_manager_mutex_);
+        suggestions = suggestion_manager_->get_all_suggestions();
 
-                if (sug.range) {
-                    json range_json;
-                    to_json(range_json, *sug.range);
-                    code_action["diagnostics"] = json::array({
-                        {{"range", range_json},
-                         {"message", sug.description},
-                         {"severity", static_cast<int>(DiagnosticSeverity::Hint)},
-                         {"source", "bha"}}
-                    });
-                }
-
-                result.push_back(code_action);
+        const auto supports_inline_action = [](const SuggestionType type) {
+            switch (type) {
+            case SuggestionType::IncludeReduction:
+            case SuggestionType::ForwardDeclaration:
+            case SuggestionType::HeaderSplit:
+                return true;
+            case SuggestionType::PrecompiledHeader:
+            case SuggestionType::UnityBuild:
+            case SuggestionType::TemplateOptimization:
+            case SuggestionType::PIMPLPattern:
+                return false;
             }
+            return false;
+        };
+
+        for (const auto& sug : suggestions) {
+            if (!sug.target_uri || *sug.target_uri != uri ||
+                !sug.range || !sug.auto_applicable || !supports_inline_action(sug.type)) {
+                continue;
+            }
+
+            // Inline actions are limited to concrete edit bundles. Project-level
+            // and advisory suggestions remain visible in the BHA project view.
+            const auto* raw_suggestion = suggestion_manager_->get_bha_suggestion(sug.id);
+            if (raw_suggestion == nullptr || raw_suggestion->edits.empty()) {
+                continue;
+            }
+
+            json range_json;
+            to_json(range_json, *sug.range);
+            result.push_back({
+                {"title", sug.title},
+                {"kind", "refactor.rewrite"},
+                {"diagnostics", json::array({
+                    {{"range", range_json},
+                     {"message", sug.description},
+                     {"severity", static_cast<int>(DiagnosticSeverity::Hint)},
+                     {"source", "bha"}}
+                })},
+                {"command", {
+                    {"title", sug.title},
+                    {"command", "bha.applySuggestion"},
+                    {"arguments", json::array({json{{"suggestionId", sug.id}}})}
+                }}
+            });
         }
 
         return result;
