@@ -247,6 +247,7 @@
 
         lsp_sug.title = bha_sug.title;
         lsp_sug.description = bha_sug.description;
+        lsp_sug.estimated_savings_evidence = bha::to_string(bha_sug.estimated_savings_evidence);
         lsp_sug.confidence = bha_sug.confidence;
         lsp_sug.auto_applicable = is_auto_applicable_suggestion(bha_sug);
         lsp_sug.application_mode = std::string(

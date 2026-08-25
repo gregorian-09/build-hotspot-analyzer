@@ -62,6 +62,7 @@ interface Suggestion {
         percentage: number;
         filesAffected: number;
     };
+    estimatedSavingsEvidence?: string;
 }
 
 interface AnalysisResult {
@@ -452,12 +453,33 @@ let outputChannel: vscode.OutputChannel;
 let traceOutputChannel: vscode.OutputChannel;
 let extensionContext: vscode.ExtensionContext;
 let bhaViewProvider: BhaTreeDataProvider | undefined;
+let bhaPreviewProvider: BhaPreviewContentProvider | undefined;
 const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
 const lastBuildProfileByWorkspace = new Map<string, PersistedBuildProfile>();
 const lastBackupIdByWorkspace = new Map<string, string>();
 const BUILD_PROFILE_STATE_PREFIX = 'bha.lastBuildProfile:';
 const BACKUP_ID_STATE_PREFIX = 'bha.lastBackupId:';
+
+class BhaPreviewContentProvider implements vscode.TextDocumentContentProvider {
+    private readonly changeEmitter = new vscode.EventEmitter<vscode.Uri>();
+    private readonly contents = new Map<string, string>();
+    readonly onDidChange = this.changeEmitter.event;
+
+    provideTextDocumentContent(uri: vscode.Uri): string {
+        return this.contents.get(uri.toString()) ?? '';
+    }
+
+    setContent(uri: vscode.Uri, content: string): void {
+        this.contents.set(uri.toString(), content);
+        this.changeEmitter.fire(uri);
+    }
+
+    dispose(): void {
+        this.contents.clear();
+        this.changeEmitter.dispose();
+    }
+}
 
 type BhaViewState =
     | 'starting'
@@ -858,8 +880,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(outputChannel, traceOutputChannel);
 
     bhaViewProvider = new BhaTreeDataProvider();
+    bhaPreviewProvider = new BhaPreviewContentProvider();
     context.subscriptions.push(
         bhaViewProvider,
+        bhaPreviewProvider,
+        vscode.workspace.registerTextDocumentContentProvider('bha-preview', bhaPreviewProvider),
         vscode.window.registerTreeDataProvider('buildHotspotAnalyzer.analysis', bhaViewProvider)
     );
 
@@ -958,7 +983,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('buildHotspotAnalyzer.applyAllSuggestions', cmdApplyAllSuggestions),
         vscode.commands.registerCommand('buildHotspotAnalyzer.revertChanges', cmdRevertChanges),
         vscode.commands.registerCommand('buildHotspotAnalyzer.restartServer', cmdRestartServer),
-        vscode.commands.registerCommand('buildHotspotAnalyzer.refreshView', () => bhaViewProvider?.refresh())
+        vscode.commands.registerCommand('buildHotspotAnalyzer.refreshView', () => bhaViewProvider?.refresh()),
+        vscode.commands.registerCommand('buildHotspotAnalyzer.previewSuggestion', cmdPreviewSuggestion)
     );
 
     void client.start().then(async () => {
@@ -1979,6 +2005,145 @@ async function cmdRestartServer(): Promise<void> {
     }
 }
 
+function formatEvidence(value?: string): string {
+    switch (value?.toLowerCase()) {
+        case 'observed':
+            return 'Observed';
+        case 'derived':
+            return 'Derived';
+        default:
+            return 'Unavailable';
+    }
+}
+
+function resolveSuggestionFilePath(workspaceRoot: string, candidate: string): string | undefined {
+    const trimmed = candidate.trim();
+    if (!trimmed) {
+        return undefined;
+    }
+    if (trimmed.startsWith('file://')) {
+        try {
+            return vscode.Uri.parse(trimmed).fsPath;
+        } catch {
+            return undefined;
+        }
+    }
+    return normalizeWorkspaceRelativePath(workspaceRoot, trimmed);
+}
+
+function lineColumnToOffset(content: string, line: number, column: number): number | undefined {
+    if (!Number.isInteger(line) || !Number.isInteger(column) || line < 0 || column < 0) {
+        return undefined;
+    }
+
+    let lineStart = 0;
+    for (let currentLine = 0; currentLine < line; currentLine += 1) {
+        const newline = content.indexOf('\n', lineStart);
+        if (newline < 0) {
+            return undefined;
+        }
+        lineStart = newline + 1;
+    }
+
+    const newline = content.indexOf('\n', lineStart);
+    const lineEnd = newline < 0 ? content.length : newline;
+    const contentLineEnd = lineEnd > lineStart && content[lineEnd - 1] === '\r'
+        ? lineEnd - 1
+        : lineEnd;
+    if (lineStart + column > contentLineEnd) {
+        return undefined;
+    }
+    return lineStart + column;
+}
+
+function applyPreviewEdits(content: string, edits: SuggestionTextEdit[]): string | undefined {
+    const ranges = edits.map((edit, index) => {
+        const start = lineColumnToOffset(content, edit.startLine, edit.startCol);
+        const end = lineColumnToOffset(content, edit.endLine, edit.endCol);
+        return start === undefined || end === undefined || end < start
+            ? undefined
+            : { start, end, newText: edit.newText, index };
+    });
+    if (ranges.some((range) => range === undefined)) {
+        return undefined;
+    }
+
+    const ordered = ranges as Array<{ start: number; end: number; newText: string; index: number }>;
+    ordered.sort((left, right) => left.start - right.start || left.end - right.end || left.index - right.index);
+    for (let index = 1; index < ordered.length; index += 1) {
+        if (ordered[index - 1].end > ordered[index].start) {
+            return undefined;
+        }
+    }
+
+    let preview = content;
+    for (let index = ordered.length - 1; index >= 0; index -= 1) {
+        const edit = ordered[index];
+        preview = `${preview.slice(0, edit.start)}${edit.newText}${preview.slice(edit.end)}`;
+    }
+    return preview;
+}
+
+async function cmdPreviewSuggestion(suggestionIdOrItem?: string | BhaTreeItem): Promise<void> {
+    const suggestionId = typeof suggestionIdOrItem === 'string'
+        ? suggestionIdOrItem
+        : suggestionIdOrItem?.suggestionId;
+    if (!suggestionId || suggestionId.trim().length === 0) {
+        vscode.window.showInformationMessage('Select a suggestion before previewing its diff.');
+        return;
+    }
+
+    const workspaceRoot = getWorkspaceRootPath();
+    if (!workspaceRoot || !bhaPreviewProvider) {
+        vscode.window.showErrorMessage('BHA: A workspace is required for diff preview.');
+        return;
+    }
+
+    const details = await fetchSuggestionDetails(suggestionId);
+    const edits = details?.textEdits ?? [];
+    if (edits.length === 0) {
+        vscode.window.showInformationMessage('This suggestion has no concrete text edits to preview.');
+        return;
+    }
+
+    const editsByFile = new Map<string, SuggestionTextEdit[]>();
+    for (const edit of edits) {
+        const filePath = resolveSuggestionFilePath(workspaceRoot, edit.file);
+        if (!filePath) {
+            vscode.window.showErrorMessage('BHA: The suggestion contains an invalid edit path.');
+            return;
+        }
+        const fileEdits = editsByFile.get(filePath) ?? [];
+        fileEdits.push(edit);
+        editsByFile.set(filePath, fileEdits);
+    }
+
+    let opened = 0;
+    for (const [filePath, fileEdits] of editsByFile) {
+        const sourceUri = vscode.Uri.file(filePath);
+        const original = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+        const preview = applyPreviewEdits(original, fileEdits);
+        if (preview === undefined) {
+            vscode.window.showErrorMessage(`BHA: Could not map edits to ${path.basename(filePath)} for preview.`);
+            continue;
+        }
+
+        const previewUri = sourceUri.with({ scheme: 'bha-preview' });
+        bhaPreviewProvider.setContent(previewUri, preview);
+        await vscode.commands.executeCommand(
+            'vscode.diff',
+            sourceUri,
+            previewUri,
+            `BHA Preview: ${path.basename(filePath)}`
+        );
+        opened += 1;
+    }
+
+    if (opened === 0) {
+        vscode.window.showInformationMessage('BHA: No previewable files were found for this suggestion.');
+    }
+}
+
 // ============================================================================
 // UI Components
 // ============================================================================
@@ -2211,6 +2376,8 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                 const timeSaved = safeGetNumber(impact.timeSavedMs, 0);
                 const percentage = safeGetNumber(impact.percentage, 0);
                 const filesAffected = safeGetNumber(impact.filesAffected, 0);
+                const savingsEvidence = formatEvidence(s.estimatedSavingsEvidence);
+                const hasSavingsEvidence = savingsEvidence !== 'Unavailable';
                 const mode = formatApplicationMode(s.applicationMode);
                 const isAdvisory = s.applicationMode === 'advisory';
                 const buttonLabel = s.applicationMode === 'external-refactor'
@@ -2239,16 +2406,16 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                     ${summary ? `<p class="summary">${escapeHtml(summary)}</p>` : ''}
                     <div class="impact">
                         <div class="impact-item">
+                            <span class="impact-label">Savings Evidence</span>
+                            <span class="impact-value">${savingsEvidence}</span>
+                        </div>
+                        <div class="impact-item">
                             <span class="impact-label">Estimated Savings</span>
-                            <span class="impact-value">${timeSaved > 0 ? (timeSaved / 1000).toFixed(2) + 's' : 'N/A'}</span>
+                            <span class="impact-value">${hasSavingsEvidence && timeSaved > 0 ? (timeSaved / 1000).toFixed(2) + 's' : 'Unavailable'}</span>
                         </div>
                         <div class="impact-item">
                             <span class="impact-label">Build Reduction</span>
-                            <span class="impact-value">${percentage.toFixed(1)}%</span>
-                        </div>
-                        <div class="impact-item">
-                            <span class="impact-label">Files Affected</span>
-                            <span class="impact-value">${filesAffected}</span>
+                            <span class="impact-value">${hasSavingsEvidence ? percentage.toFixed(1) + '%' : 'Unavailable'}</span>
                         </div>
                     </div>
                     <div class="meta-list">
@@ -2258,12 +2425,17 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                         ${rationale ? `<div class="meta-item"><strong>Rationale:</strong> ${escapeHtml(rationale)}</div>` : ''}
                         ${filesToCreate.length > 0 ? `<div class="meta-item"><strong>Files to create:</strong> ${escapeHtml(filesToCreate.join(', '))}</div>` : ''}
                         ${filesToModify.length > 0 ? `<div class="meta-item"><strong>Files to modify:</strong> ${escapeHtml(filesToModify.join(', '))}</div>` : ''}
+                        <div class="meta-item"><strong>Files affected:</strong> ${filesAffected}</div>
+                        <div class="meta-item"><strong>Savings status:</strong> ${savingsEvidence}${hasSavingsEvidence ? '' : ' — no measured or derived value is available'}</div>
                         ${isAdvisory ? `<div class="meta-item"><strong>Apply Mode:</strong> Manual review required${blockedReason ? ` — ${escapeHtml(blockedReason)}` : ''}</div>` : ''}
                     </div>
                     ${(detailsHtml || textEditsHtml)
                         ? `<details class="details"><summary>Suggestion Details</summary>${detailsHtml}${textEditsHtml ? `<div class="section-title" style="margin-top:12px;">Text Edits</div>${textEditsHtml}` : ''}</details>`
                         : ''}
                     <div class="card-actions">
+                        ${s.textEdits && s.textEdits.length > 0
+                            ? `<button class="secondary" onclick="previewSuggestion('${escapeHtml(s.id)}')">Preview Diff</button>`
+                            : ''}
                         ${isAdvisory
                             ? '<button class="secondary" disabled>Manual Review Required</button>'
                             : `<button onclick="applySuggestion('${escapeHtml(s.id)}')">${escapeHtml(buttonLabel)}</button>`}
@@ -2281,6 +2453,17 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                     }
                     vscode.postMessage({
                         command: 'applySuggestion',
+                        suggestionId: id
+                    });
+                }
+
+                function previewSuggestion(id) {
+                    if (!id || id.trim() === '') {
+                        console.error('Invalid suggestion ID');
+                        return;
+                    }
+                    vscode.postMessage({
+                        command: 'previewSuggestion',
                         suggestionId: id
                     });
                 }
@@ -2311,6 +2494,14 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                     if (typeof message.suggestionId === 'string' && message.suggestionId.trim()) {
                         vscode.commands.executeCommand(
                             'buildHotspotAnalyzer.applySuggestion',
+                            message.suggestionId
+                        );
+                    }
+                    break;
+                case 'previewSuggestion':
+                    if (typeof message.suggestionId === 'string' && message.suggestionId.trim()) {
+                        vscode.commands.executeCommand(
+                            'buildHotspotAnalyzer.previewSuggestion',
                             message.suggestionId
                         );
                     }

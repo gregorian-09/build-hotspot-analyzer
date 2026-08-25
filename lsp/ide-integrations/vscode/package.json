@@ -94,6 +94,11 @@
           "command": "buildHotspotAnalyzer.applySuggestion",
           "when": "view == buildHotspotAnalyzer.analysis && viewItem == bhaSuggestion",
           "group": "inline"
+        },
+        {
+          "command": "buildHotspotAnalyzer.previewSuggestion",
+          "when": "view == buildHotspotAnalyzer.analysis && viewItem == bhaSuggestion",
+          "group": "inline@2"
         }
       ]
     },
@@ -163,6 +168,10 @@
       {
         "command": "buildHotspotAnalyzer.refreshView",
         "title": "BHA: Refresh Analysis View"
+      },
+      {
+        "command": "buildHotspotAnalyzer.previewSuggestion",
+        "title": "BHA: Preview Suggestion Diff"
       }
     ]
   },

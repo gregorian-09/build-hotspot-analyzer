@@ -108,6 +108,8 @@ namespace bha::lsp
         std::string title;
         std::string description;
         Impact estimated_impact;
+        /// Provenance of the estimated impact fields.
+        std::string estimated_savings_evidence = "unavailable";
         double confidence;
         bool auto_applicable;
         std::optional<std::string> application_mode;
@@ -303,6 +305,7 @@ namespace bha::lsp
         json impact_json;
         to_json(impact_json, s.estimated_impact);
         j["estimatedImpact"] = impact_json;
+        j["estimatedSavingsEvidence"] = s.estimated_savings_evidence;
         j["confidence"] = s.confidence;
         j["autoApplicable"] = s.auto_applicable;
         if (s.application_mode) {
