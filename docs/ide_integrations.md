@@ -4,8 +4,6 @@ This guide documents how to use, package, and distribute the in-tree BHA IDE int
 
 Supported clients:
 - VS Code: `lsp/ide-integrations/vscode`
-- Neovim: `lsp/ide-integrations/neovim`
-- Emacs: `lsp/ide-integrations/emacs`
 
 All clients talk to the same language server:
 - `bha-lsp`
@@ -30,9 +28,8 @@ Use one of these approaches:
 For this project, the lowest-friction path is:
 1. GitHub-first distribution
 2. manual `.vsix` install for VS Code
-3. direct GitHub install for Neovim
-4. direct file/package-manager install for Emacs
-5. Marketplace and Open VSX later, only if needed
+3. native CLion plugin distribution after the plugin is implemented
+4. Marketplace and Open VSX later, only if needed
 
 This matters because Microsoft Marketplace publication may require Azure DevOps billing setup and can block otherwise-usable editor integrations.
 
@@ -120,48 +117,32 @@ If Marketplace publication is blocked, ship the `.vsix` through GitHub Releases:
 
 That is enough for users to install the extension without Marketplace publication.
 
-## Neovim
+## CLion
 
-Client file:
-- `lsp/ide-integrations/neovim/lua/bha/init.lua`
+No native CLion plugin is included yet. CLion is the next integration target.
+It requires an IntelliJ plugin rather than only a generic LSP launch so the BHA
+workflow can expose a tool window and native actions for:
+- analyze and evidence review
+- suggestion details and previews
+- apply and rollback
+- progress and cancellation
+- operation history and activity
 
-Requirements:
-- `nvim-lspconfig`
-- `bha-lsp` on `PATH`, or configured explicitly
+The planned plugin should keep optimization logic in the CLI and server layers
+so behavior remains consistent with the VS Code client. JetBrains documents its
+generic [Language Server Protocol integration](https://plugins.jetbrains.com/docs/intellij/language-server-protocol.html),
+but that connection alone is not treated as complete BHA support.
 
-The module exposes:
-- `:BHAAnalyze`
-- `:BHAShowSuggestions`
-- `:BHAApplySuggestion`
-- `:BHAApplyAll`
-- `:BHARevert`
+Until the native plugin exists, CLion is a planned target rather than a shipped
+in-tree client.
 
-Recommended distribution:
-- ship from the GitHub repository
-- document install snippets for the user’s preferred plugin manager
+## Generic LSP Boundary
 
-No external marketplace account is required for basic Neovim distribution.
-
-## Emacs
-
-Client file:
-- `lsp/ide-integrations/emacs/bha-lsp.el`
-
-Requirements:
-- `lsp-mode`
-- `bha-lsp` on `PATH`, or configured explicitly
-
-Recommended distribution:
-- direct GitHub install first
-- MELPA only after the package API is stable
-
-No external publishing token is required for direct usage.
-
-## Other IDEs
-
-For JetBrains or other LSP-capable IDEs, keep the integration thin:
+For any temporary editor-side experiment, keep the integration thin:
 1. start `bha-lsp`
 2. wire `workspace/executeCommand`
 3. expose analyze, preview, apply, and revert through editor-native UI
 
-All optimization logic should remain in the CLI and server layers so behavior stays consistent across editors.
+This boundary is not a supported product integration. All optimization logic
+must remain in the CLI and server layers so future editor clients cannot diverge
+in safety or evidence semantics.

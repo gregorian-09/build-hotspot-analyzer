@@ -28,7 +28,7 @@ Excluded from this matrix:
 | End-to-end onboarding workflow | `docs/quickstart.md` | Complete | Analyze, suggest, apply, export, compare flow |
 | CLI command reference | `docs/cli_reference.md` | Complete | `analyze`, `suggest`, `apply`, `build`, `record`, `export`, `snapshot`, `compare` |
 | LSP protocol reference | `docs/lsp_reference.md` | Complete | Runtime config, command contracts, payloads |
-| IDE usage and distribution | `docs/ide_integrations.md` | Complete | VS Code, Neovim, Emacs, publish prerequisites |
+| IDE usage and distribution | `docs/ide_integrations.md` | Complete | VS Code shipped; CLion native plugin planned |
 | Suggestion families and safety | `docs/suggestions_reference.md` | Complete | All suggesters, trust loop, safety gates |
 | Export formats and CI wiring | `docs/export_ci.md` | Complete | JSON/HTML/CSV/Markdown + CI usage |
 | Regression gates and snapshot model | `docs/cli_reference.md`, `docs/export_ci.md` | Complete | Thresholds and category gate behavior |

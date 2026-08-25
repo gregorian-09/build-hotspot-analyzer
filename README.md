@@ -161,8 +161,6 @@ BHA ships editor clients around the `bha-lsp` server.
 
 Supported in-tree clients:
 - VS Code: `lsp/ide-integrations/vscode`
-- Neovim: `lsp/ide-integrations/neovim`
-- Emacs: `lsp/ide-integrations/emacs`
 
 ### Build the server
 
@@ -217,23 +215,13 @@ Recommended workflow:
 Advanced trace recording supports explicit overrides for compiler, build type, parallel jobs, extra build arguments,
 trace output directory, and an optional build-system override when auto-detection is not what you want.
 
-### Neovim
+### CLion
 
-Client module:
-- `lsp/ide-integrations/neovim/lua/bha/init.lua`
-
-Requirements:
-- `nvim-lspconfig`
-- `bha-lsp` on `PATH` or configured explicitly
-
-### Emacs
-
-Client module:
-- `lsp/ide-integrations/emacs/bha-lsp.el`
-
-Requirements:
-- `lsp-mode`
-- `bha-lsp` on `PATH` or configured explicitly
+There is no native CLion plugin in this repository yet. CLion is the next IDE
+integration target and will require an IntelliJ plugin for BHA actions, a
+dedicated tool window, progress and cancellation, evidence display, previews,
+apply, rollback, and operation history. Starting `bha-lsp` through a generic
+LSP connection is not considered a complete CLion integration.
 
 ### Distribution strategy
 
@@ -242,7 +230,7 @@ BHA does not require Marketplace publication to be usable.
 Recommended order:
 1. GitHub-first distribution
 2. local or release-attached `.vsix` install for VS Code
-3. direct GitHub install for Neovim and Emacs
+3. native CLion plugin distribution after that integration is implemented
 4. Marketplace / Open VSX publication later, when needed
 
 This keeps the product usable even when Microsoft Marketplace account setup is blocked by Azure billing or organization requirements.
@@ -271,7 +259,7 @@ The VS Code extension icon is synchronized from:
 - `docs/quickstart.md`: end-to-end workflows
 - `docs/cli_reference.md`: CLI reference
 - `docs/lsp_reference.md`: LSP commands, settings, and apply flow
-- `docs/ide_integrations.md`: VS Code, Neovim, Emacs, local setup, and user-facing distribution
+- `docs/ide_integrations.md`: VS Code, planned CLion integration, local setup, and user-facing distribution
 - `docs/suggestions_reference.md`: suggester behavior, guardrails, and constraints
 - `docs/export_ci.md`: exporters and CI usage
 - `docs/architecture.md`: internal architecture and component layout
