@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
@@ -2394,6 +2395,7 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
             return { ...suggestion, ...details } as SuggestionDetails;
         })
     );
+    const webviewNonce = crypto.randomBytes(16).toString('base64');
     const suggestions = suggestionDetails;
     const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
     const buildTiming = resolveAnalysisBuildTiming(result);
@@ -2411,7 +2413,7 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${webviewNonce}';">
             <style>
                 body {
                     font-family: var(--vscode-font-family), system-ui, sans-serif;
@@ -2675,7 +2677,7 @@ async function showSuggestionsPanel(result: AnalysisResult): Promise<void> {
                 </div>
             `}).join('')}
 
-            <script>
+            <script nonce="${webviewNonce}">
                 const vscode = acquireVsCodeApi();
 
                 function applySuggestion(id) {

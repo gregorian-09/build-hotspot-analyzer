@@ -18013,6 +18013,7 @@ __export(extension_exports, {
 });
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
+var crypto = __toESM(require("node:crypto"));
 var fs = __toESM(require("node:fs"));
 var path = __toESM(require("node:path"));
 var import_node = __toESM(require_node3());
@@ -19789,6 +19790,7 @@ async function showSuggestionsPanel(result) {
       return { ...suggestion, ...details };
     })
   );
+  const webviewNonce = crypto.randomBytes(16).toString("base64");
   const suggestions = suggestionDetails;
   const metrics = result.baselineMetrics || { totalDurationMs: 0, filesCompiled: 0 };
   const buildTiming = resolveAnalysisBuildTiming(result);
@@ -19801,7 +19803,7 @@ async function showSuggestionsPanel(result) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${webviewNonce}';">
             <style>
                 body {
                     font-family: var(--vscode-font-family), system-ui, sans-serif;
@@ -20057,7 +20059,7 @@ async function showSuggestionsPanel(result) {
             `;
   }).join("")}
 
-            <script>
+            <script nonce="${webviewNonce}">
                 const vscode = acquireVsCodeApi();
 
                 function applySuggestion(id) {
