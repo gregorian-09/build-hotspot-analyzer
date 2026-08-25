@@ -54,6 +54,49 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "buildHotspotAnalyzer",
+          "title": "BHA",
+          "icon": "media/bha-view.svg"
+        }
+      ]
+    },
+    "views": {
+      "buildHotspotAnalyzer": [
+        {
+          "id": "buildHotspotAnalyzer.analysis",
+          "name": "Analysis"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "buildHotspotAnalyzer.refreshView",
+          "when": "view == buildHotspotAnalyzer.analysis",
+          "group": "navigation"
+        },
+        {
+          "command": "buildHotspotAnalyzer.analyzeProject",
+          "when": "view == buildHotspotAnalyzer.analysis",
+          "group": "navigation@2"
+        },
+        {
+          "command": "buildHotspotAnalyzer.showSuggestions",
+          "when": "view == buildHotspotAnalyzer.analysis",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "buildHotspotAnalyzer.applySuggestion",
+          "when": "view == buildHotspotAnalyzer.analysis && viewItem == bhaSuggestion",
+          "group": "inline"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Build Hotspot Analyzer",
@@ -116,6 +159,10 @@
       {
         "command": "buildHotspotAnalyzer.restartServer",
         "title": "BHA: Restart Language Server"
+      },
+      {
+        "command": "buildHotspotAnalyzer.refreshView",
+        "title": "BHA: Refresh Analysis View"
       }
     ]
   },
