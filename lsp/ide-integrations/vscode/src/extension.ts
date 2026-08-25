@@ -152,6 +152,7 @@ interface ApplyAllResult {
     appliedCount: number;
     skippedCount: number;
     failedCount: number;
+    appliedSuggestionIds?: string[];
     backupId?: string;
     errors: Array<{ suggestionId: string; message: string }>;
     buildValidation?: {
@@ -537,7 +538,7 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
     private result: AnalysisResult | undefined;
     private state: BhaViewState = 'starting';
     private stateDetail = 'Starting the language server...';
-    private operationStatus: { label: string; detail: string } | undefined;
+    private operationStatus: { label: string; detail: string; details: string[] } | undefined;
     private refreshing = false;
 
     dispose(): void {
@@ -558,8 +559,8 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
         this.changeEmitter.fire();
     }
 
-    setOperationStatus(label: string, detail: string): void {
-        this.operationStatus = { label, detail };
+    setOperationStatus(label: string, detail: string, details: string[] = []): void {
+        this.operationStatus = { label, detail, details };
         this.changeEmitter.fire();
     }
 
@@ -779,13 +780,21 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
         ];
         if (this.operationStatus) {
             const operationFailed = /failed|rolled back/i.test(this.operationStatus.label);
+            const operationDetails = this.operationStatus.details.map((detail) => new BhaTreeItem(
+                detail,
+                vscode.TreeItemCollapsibleState.None,
+                { icon: operationFailed ? 'warning' : 'info' }
+            ));
             roots.splice(1, 0, new BhaTreeItem(
                 this.operationStatus.label,
-                vscode.TreeItemCollapsibleState.None,
+                operationDetails.length > 0
+                    ? vscode.TreeItemCollapsibleState.Expanded
+                    : vscode.TreeItemCollapsibleState.None,
                 {
                     description: this.operationStatus.detail,
                     tooltip: this.operationStatus.detail,
-                    icon: operationFailed ? 'warning' : 'pass'
+                    icon: operationFailed ? 'warning' : 'pass',
+                    children: operationDetails
                 }
             ));
         }
@@ -1116,6 +1125,15 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
         logLine(`[${category}${jobId ? ` ${jobId}` : ''}] ${message}`);
+        if (category === 'apply') {
+            if (message.includes('Re-analyzing project') || message.includes('Rerank analysis')) {
+                bhaViewProvider?.setState('validating', 'Fresh traces are being collected to re-rank remaining suggestions.');
+                bhaViewProvider?.setOperationStatus('Re-ranking remaining suggestions', message);
+            } else if (message.includes('Fault isolation')) {
+                bhaViewProvider?.setState('validating', 'Validation failed; isolating edits that can be retained.');
+                bhaViewProvider?.setOperationStatus('Isolating bulk-apply failures', message);
+            }
+        }
     });
     client.onNotification('bha/jobStarted', (params: unknown) => {
         const payload = (params && typeof params === 'object') ? params as Record<string, unknown> : {};
@@ -1988,6 +2006,15 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}, atomic=${atomic}`
         );
         bhaViewProvider?.setState('applying', 'Applying selected suggestions and validating the result...');
+        bhaViewProvider?.setOperationStatus(
+            'Bulk apply planned',
+            `${affectedCount} suggestion(s) selected by the current filter; ${atomic ? 'atomic' : 'fault-isolating'} validation requested.`,
+            [
+                `Selection filter: ${filterChoice.label}`,
+                `Safe-only: ${safeOnly ? 'yes' : 'no'}`,
+                `Validation mode: ${atomic ? 'atomic rollback' : 'keep valid edits with fault isolation'}`
+            ]
+        );
         const workspaceRoot = getWorkspaceRootPath();
         const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
         const applyResult = await runAsyncLspCommand<unknown>(
@@ -2022,9 +2049,22 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
             const hasWarnings = errors.length > 0;
             const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+            const appliedIds = Array.isArray(applyResult.appliedSuggestionIds)
+                ? applyResult.appliedSuggestionIds
+                : [];
+            const validation = applyResult.buildValidation;
+            const finalDetails = [
+                `Selection: ${affectedCount} suggestion(s) from ${filterChoice.label}.`,
+                `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${applyResult.failedCount}.`,
+                `Validation: ${validation?.ran ? (validation.success ? 'passed' : 'failed') : 'not run'}.`,
+                `Rollback: ${applyResult.rollback?.attempted ? (applyResult.rollback.success ? 'succeeded' : 'failed') : 'not required'}`,
+                ...(appliedIds.length > 0 ? [`Applied IDs: ${appliedIds.join(', ')}`] : []),
+                ...errors.slice(0, 6).map((error) => safeGetString(error?.message, 'Unknown apply warning'))
+            ];
             bhaViewProvider?.setOperationStatus(
                 'Bulk apply completed',
-                trustLoopSummary?.message ?? `Applied ${applyResult.appliedCount} suggestion(s); skipped ${applyResult.skippedCount}.`
+                trustLoopSummary?.message ?? `Applied ${applyResult.appliedCount} suggestion(s); skipped ${applyResult.skippedCount}.`,
+                finalDetails
             );
             logLine(
                 `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? '<none>'}${trustLoopSummary ? trustLoopSummary.logSuffix : ''}`
@@ -2070,11 +2110,19 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                 }
             }
             const rollback = applyResult.rollback;
+            const validation = applyResult.buildValidation;
             bhaViewProvider?.setOperationStatus(
                 rollback?.attempted && rollback.success ? 'Bulk apply rolled back' : 'Bulk apply failed',
                 rollback?.attempted && rollback.success
                     ? 'Validation failed; the workspace was restored.'
-                    : errorDetails || 'No validation result was available.'
+                    : errorDetails || 'No validation result was available.',
+                [
+                    `Selection: ${affectedCount} suggestion(s) from ${filterChoice.label}.`,
+                    `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${failedCount}.`,
+                    `Validation: ${validation?.ran ? (validation.success ? 'passed' : 'failed') : 'not run'}.`,
+                    `Rollback: ${rollback?.attempted ? (rollback.success ? 'succeeded' : 'failed') : 'not required'}`,
+                    ...errors.slice(0, 8).map((error) => safeGetString(error?.message, 'Unknown apply error'))
+                ]
             );
             const rollbackDetails = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
