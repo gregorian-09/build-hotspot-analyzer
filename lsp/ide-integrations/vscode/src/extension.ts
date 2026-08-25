@@ -66,6 +66,7 @@ interface Suggestion {
 }
 
 interface AnalysisResult {
+    analysisId?: string;
     suggestions: Suggestion[];
     baselineMetrics?: {
         totalDurationMs: number;
@@ -239,6 +240,15 @@ interface PersistedBuildProfile {
     extraArgs: string[];
     recordedAt: string;
     buildTimeMs?: number;
+}
+
+interface PersistedAnalysisRun {
+    analysisId?: string;
+    recordedAt: string;
+    suggestionCount: number;
+    totalBuildTimeMs: number;
+    buildTimeSource: string;
+    filesAnalyzed: number;
 }
 
 interface AsyncCommandAccepted {
@@ -458,8 +468,10 @@ const lastBuildDirByWorkspace = new Map<string, string>();
 const lastTraceDirByWorkspace = new Map<string, string>();
 const lastBuildProfileByWorkspace = new Map<string, PersistedBuildProfile>();
 const lastBackupIdByWorkspace = new Map<string, string>();
+const analysisHistoryByWorkspace = new Map<string, PersistedAnalysisRun[]>();
 const BUILD_PROFILE_STATE_PREFIX = 'bha.lastBuildProfile:';
 const BACKUP_ID_STATE_PREFIX = 'bha.lastBackupId:';
+const ANALYSIS_HISTORY_STATE_PREFIX = 'bha.analysisHistory:';
 
 class BhaPreviewContentProvider implements vscode.TextDocumentContentProvider {
     private readonly changeEmitter = new vscode.EventEmitter<vscode.Uri>();
@@ -525,6 +537,7 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
     private result: AnalysisResult | undefined;
     private state: BhaViewState = 'starting';
     private stateDetail = 'Starting the language server...';
+    private operationStatus: { label: string; detail: string } | undefined;
     private refreshing = false;
 
     dispose(): void {
@@ -545,11 +558,19 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
         this.changeEmitter.fire();
     }
 
+    setOperationStatus(label: string, detail: string): void {
+        this.operationStatus = { label, detail };
+        this.changeEmitter.fire();
+    }
+
     setAnalysisResult(result: AnalysisResult): void {
         this.result = {
             ...result,
             suggestions: result.suggestions.filter(isValidSuggestion)
         };
+        if (hasAnalysisMetrics(this.result)) {
+            rememberAnalysisRun(this.result);
+        }
         this.state = 'ready';
         this.stateDetail = this.result.suggestions.length === 0
             ? 'Analysis completed without actionable suggestions.'
@@ -571,7 +592,28 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
                 arguments: []
             });
             if (isValidAnalysisResult(response)) {
-                this.setAnalysisResult(response);
+                // showMetrics intentionally contains suggestions only. Preserve the
+                // full analysis payload when a background refresh returns that cache.
+                if (this.result && !hasAnalysisMetrics(response)) {
+                    this.result = {
+                        ...this.result,
+                        suggestions: response.suggestions.filter(isValidSuggestion)
+                    };
+                    this.state = 'ready';
+                    this.stateDetail = this.result.suggestions.length === 0
+                        ? 'Analysis completed without actionable suggestions.'
+                        : 'Analysis completed; review the evidence before applying changes.';
+                    this.changeEmitter.fire();
+                } else if (!hasAnalysisMetrics(response) && response.suggestions.length === 0) {
+                    this.result = undefined;
+                    this.state = 'no-data';
+                    this.stateDetail = getAnalysisHistory(getWorkspaceRootPath()).length > 0
+                        ? 'A previous run is saved in history; analyze again to load current suggestions.'
+                        : 'Record traces and analyze the workspace to populate BHA.';
+                    this.changeEmitter.fire();
+                } else {
+                    this.setAnalysisResult(response);
+                }
             } else {
                 this.result = undefined;
                 this.state = 'no-data';
@@ -592,6 +634,7 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
         const metrics = result?.baselineMetrics;
         const timing = result ? resolveAnalysisBuildTiming(result) : undefined;
         const suggestions = result?.suggestions ?? [];
+        const history = getAnalysisHistory(getWorkspaceRootPath());
         const statusIcon = this.state === 'failed'
             ? 'error'
             : this.state === 'ready'
@@ -613,7 +656,20 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
                     { icon: 'symbol-file' }
                 )
             ]
-            : [new BhaTreeItem('No metrics available', vscode.TreeItemCollapsibleState.None, { icon: 'info' })];
+            : history.length > 0
+                ? [
+                    new BhaTreeItem(
+                        `${formatDurationMs(history[0].totalBuildTimeMs)} last recorded build`,
+                        vscode.TreeItemCollapsibleState.None,
+                        { description: `${history[0].buildTimeSource} · ${formatHistoryDate(history[0].recordedAt)}`, icon: 'clock' }
+                    ),
+                    new BhaTreeItem(
+                        `${history[0].filesAnalyzed} compilation units last analyzed`,
+                        vscode.TreeItemCollapsibleState.None,
+                        { icon: 'symbol-file' }
+                    )
+                ]
+                : [new BhaTreeItem('No metrics available', vscode.TreeItemCollapsibleState.None, { icon: 'info' })];
 
         const suggestionItems = suggestions.map((suggestion) => {
             const priority = safeGetPriority(suggestion.priority);
@@ -681,7 +737,26 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
             })
         ];
 
-        return [
+        const historyItems = history.map((run) => new BhaTreeItem(
+            formatHistoryDate(run.recordedAt),
+            vscode.TreeItemCollapsibleState.None,
+            {
+                description: `${run.suggestionCount} suggestions · ${formatDurationMs(run.totalBuildTimeMs)}`,
+                tooltip: `${run.analysisId ?? 'Analysis run'}\n${run.buildTimeSource}\n${run.filesAnalyzed} compilation units`,
+                icon: 'history'
+            }
+        ));
+        const historyGroup = new BhaTreeItem(
+            `Run History (${history.length})`,
+            history.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
+            {
+                description: history.length > 0 ? 'Persisted workspace summaries' : 'No completed runs',
+                icon: 'history',
+                children: historyItems
+            }
+        );
+
+        const roots = [
             new BhaTreeItem(
                 `BHA: ${this.state.replace('-', ' ')}`,
                 vscode.TreeItemCollapsibleState.None,
@@ -696,11 +771,25 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
                 children: metricChildren
             }),
             suggestionGroup,
+            historyGroup,
             new BhaTreeItem('Actions', vscode.TreeItemCollapsibleState.Expanded, {
                 icon: 'tools',
                 children: actionChildren
             })
         ];
+        if (this.operationStatus) {
+            const operationFailed = /failed|rolled back/i.test(this.operationStatus.label);
+            roots.splice(1, 0, new BhaTreeItem(
+                this.operationStatus.label,
+                vscode.TreeItemCollapsibleState.None,
+                {
+                    description: this.operationStatus.detail,
+                    tooltip: this.operationStatus.detail,
+                    icon: operationFailed ? 'warning' : 'pass'
+                }
+            ));
+        }
+        return roots;
     }
 }
 
@@ -714,6 +803,54 @@ function buildProfileStateKey(workspaceRoot: string): string {
 
 function backupIdStateKey(workspaceRoot: string): string {
     return `${BACKUP_ID_STATE_PREFIX}${workspaceRoot}`;
+}
+
+function analysisHistoryStateKey(workspaceRoot: string): string {
+    return `${ANALYSIS_HISTORY_STATE_PREFIX}${workspaceRoot}`;
+}
+
+function hasAnalysisMetrics(result: AnalysisResult): boolean {
+    return result.baselineMetrics !== undefined ||
+        result.buildTiming !== undefined ||
+        result.filesAnalyzed !== undefined;
+}
+
+function getAnalysisHistory(workspaceRoot: string | undefined): PersistedAnalysisRun[] {
+    return workspaceRoot ? analysisHistoryByWorkspace.get(workspaceRoot) ?? [] : [];
+}
+
+function formatHistoryDate(value: string): string {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? 'Unknown analysis time' : parsed.toLocaleString();
+}
+
+function rememberAnalysisRun(result: AnalysisResult): void {
+    const workspaceRoot = getWorkspaceRootPath();
+    if (!workspaceRoot || !hasAnalysisMetrics(result)) {
+        return;
+    }
+
+    const timing = resolveAnalysisBuildTiming(result);
+    const summary: PersistedAnalysisRun = {
+        analysisId: result.analysisId,
+        recordedAt: new Date().toISOString(),
+        suggestionCount: result.suggestions.length,
+        totalBuildTimeMs: timing.totalBuildTimeMs,
+        buildTimeSource: timing.source || 'unknown',
+        filesAnalyzed: safeGetNumber(
+            result.filesAnalyzed ?? result.baselineMetrics?.filesCompiled,
+            0
+        )
+    };
+    const previous = getAnalysisHistory(workspaceRoot);
+    const next = [
+        summary,
+        ...previous.filter((run) =>
+            !summary.analysisId || run.analysisId !== summary.analysisId
+        )
+    ].slice(0, 10);
+    analysisHistoryByWorkspace.set(workspaceRoot, next);
+    void extensionContext.workspaceState.update(analysisHistoryStateKey(workspaceRoot), next);
 }
 
 function timestamp(): string {
@@ -890,6 +1027,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     for (const folder of vscode.workspace.workspaceFolders ?? []) {
         const workspaceRoot = folder.uri.fsPath;
+        const cachedHistory = context.workspaceState.get<unknown>(analysisHistoryStateKey(workspaceRoot));
+        if (Array.isArray(cachedHistory)) {
+            const validHistory = cachedHistory.filter((run): run is PersistedAnalysisRun => {
+                if (!run || typeof run !== 'object') {
+                    return false;
+                }
+                const item = run as Record<string, unknown>;
+                return typeof item.recordedAt === 'string' &&
+                    typeof item.suggestionCount === 'number' &&
+                    typeof item.totalBuildTimeMs === 'number' &&
+                    typeof item.buildTimeSource === 'string' &&
+                    typeof item.filesAnalyzed === 'number';
+            }).slice(0, 10);
+            analysisHistoryByWorkspace.set(workspaceRoot, validHistory);
+        } else {
+            void context.workspaceState.update(analysisHistoryStateKey(workspaceRoot), undefined);
+        }
+
         const cachedProfile = validatePersistedBuildProfile(
             context.workspaceState.get<PersistedBuildProfile>(buildProfileStateKey(workspaceRoot)),
             workspaceRoot
@@ -1439,6 +1594,10 @@ async function runAnalysis(
         const validSuggestions = result.suggestions.filter(isValidSuggestion);
         result.suggestions = validSuggestions;
         bhaViewProvider?.setAnalysisResult(result);
+        bhaViewProvider?.setOperationStatus(
+            'Analysis completed',
+            `${validSuggestions.length} suggestion(s) found; evidence is ready for review.`
+        );
 
         vscode.window.showInformationMessage(
             `Analysis complete: ${validSuggestions.length} suggestions found`
@@ -1508,6 +1667,10 @@ async function recordBuildTraces(advanced: boolean): Promise<void> {
         const traceFileCount = safeGetNumber(result.traceFileCount, 0);
         const buildSystem = safeGetString(result.buildSystem, 'unknown build system');
         const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+        bhaViewProvider?.setOperationStatus(
+            'Build traces recorded',
+            `${traceFileCount} trace file(s) captured in ${formatDurationMs(buildTimeMs)}.`
+        );
         logLine(
             `Recorded traces: buildSystem=${safeGetString(result.buildSystem, 'unknown')}, traceFileCount=${traceFileCount}, traceOutputDir=${safeGetString(result.traceOutputDir, '<auto>')}, buildTimeMs=${buildTimeMs}`
         );
@@ -1698,6 +1861,10 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             bhaViewProvider?.setState('validating', 'Suggestion applied; validation completed. Refreshing results...');
             const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
             const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+            bhaViewProvider?.setOperationStatus(
+                'Suggestion applied',
+                trustLoopSummary?.message ?? `Modified ${numFiles} file(s); validation succeeded.`
+            );
             logLine(
                 `Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? '<none>'}${trustLoopSummary ? trustLoopSummary.logSuffix : ''}`
             );
@@ -1720,6 +1887,12 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
             const errorMsgs = errors.map((e) => safeGetString(e?.message, 'Unknown error'));
             const rollback = applyResult.rollback;
+            bhaViewProvider?.setOperationStatus(
+                rollback?.attempted && rollback.success ? 'Suggestion rolled back' : 'Suggestion failed',
+                rollback?.attempted && rollback.success
+                    ? 'Validation failed; the workspace was restored.'
+                    : errorMsgs.join('; ') || 'No validation result was available.'
+            );
             const rollbackSuffix = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
                 : '';
@@ -1849,6 +2022,10 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
             const hasWarnings = errors.length > 0;
             const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+            bhaViewProvider?.setOperationStatus(
+                'Bulk apply completed',
+                trustLoopSummary?.message ?? `Applied ${applyResult.appliedCount} suggestion(s); skipped ${applyResult.skippedCount}.`
+            );
             logLine(
                 `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? '<none>'}${trustLoopSummary ? trustLoopSummary.logSuffix : ''}`
             );
@@ -1893,6 +2070,12 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                 }
             }
             const rollback = applyResult.rollback;
+            bhaViewProvider?.setOperationStatus(
+                rollback?.attempted && rollback.success ? 'Bulk apply rolled back' : 'Bulk apply failed',
+                rollback?.attempted && rollback.success
+                    ? 'Validation failed; the workspace was restored.'
+                    : errorDetails || 'No validation result was available.'
+            );
             const rollbackDetails = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
                 : '';
@@ -1958,6 +2141,7 @@ async function cmdRevertChanges(): Promise<void> {
         if (revertResult.success) {
             bhaViewProvider?.setState('ready', 'Changes reverted; refresh the analysis to inspect the restored state.');
             const numFiles = Array.isArray(revertResult.restoredFiles) ? revertResult.restoredFiles.length : 0;
+            bhaViewProvider?.setOperationStatus('Changes reverted', `Restored ${numFiles} file(s) from backup.`);
             logLine(`Revert succeeded: restoredFiles=${numFiles}`);
             vscode.window.showInformationMessage(
                 `Reverted successfully. Restored ${numFiles} files.`

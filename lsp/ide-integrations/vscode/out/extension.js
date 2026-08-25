@@ -18189,8 +18189,10 @@ var lastBuildDirByWorkspace = /* @__PURE__ */ new Map();
 var lastTraceDirByWorkspace = /* @__PURE__ */ new Map();
 var lastBuildProfileByWorkspace = /* @__PURE__ */ new Map();
 var lastBackupIdByWorkspace = /* @__PURE__ */ new Map();
+var analysisHistoryByWorkspace = /* @__PURE__ */ new Map();
 var BUILD_PROFILE_STATE_PREFIX = "bha.lastBuildProfile:";
 var BACKUP_ID_STATE_PREFIX = "bha.lastBackupId:";
+var ANALYSIS_HISTORY_STATE_PREFIX = "bha.analysisHistory:";
 var BhaPreviewContentProvider = class {
   constructor() {
     this.changeEmitter = new vscode.EventEmitter();
@@ -18243,11 +18245,18 @@ var BhaTreeDataProvider = class {
     this.stateDetail = detail;
     this.changeEmitter.fire();
   }
+  setOperationStatus(label, detail) {
+    this.operationStatus = { label, detail };
+    this.changeEmitter.fire();
+  }
   setAnalysisResult(result) {
     this.result = {
       ...result,
       suggestions: result.suggestions.filter(isValidSuggestion)
     };
+    if (hasAnalysisMetrics(this.result)) {
+      rememberAnalysisRun(this.result);
+    }
     this.state = "ready";
     this.stateDetail = this.result.suggestions.length === 0 ? "Analysis completed without actionable suggestions." : "Analysis completed; review the evidence before applying changes.";
     this.changeEmitter.fire();
@@ -18265,7 +18274,22 @@ var BhaTreeDataProvider = class {
         arguments: []
       });
       if (isValidAnalysisResult(response)) {
-        this.setAnalysisResult(response);
+        if (this.result && !hasAnalysisMetrics(response)) {
+          this.result = {
+            ...this.result,
+            suggestions: response.suggestions.filter(isValidSuggestion)
+          };
+          this.state = "ready";
+          this.stateDetail = this.result.suggestions.length === 0 ? "Analysis completed without actionable suggestions." : "Analysis completed; review the evidence before applying changes.";
+          this.changeEmitter.fire();
+        } else if (!hasAnalysisMetrics(response) && response.suggestions.length === 0) {
+          this.result = void 0;
+          this.state = "no-data";
+          this.stateDetail = getAnalysisHistory(getWorkspaceRootPath()).length > 0 ? "A previous run is saved in history; analyze again to load current suggestions." : "Record traces and analyze the workspace to populate BHA.";
+          this.changeEmitter.fire();
+        } else {
+          this.setAnalysisResult(response);
+        }
       } else {
         this.result = void 0;
         this.state = "no-data";
@@ -18285,6 +18309,7 @@ var BhaTreeDataProvider = class {
     const metrics = result?.baselineMetrics;
     const timing = result ? resolveAnalysisBuildTiming(result) : void 0;
     const suggestions = result?.suggestions ?? [];
+    const history = getAnalysisHistory(getWorkspaceRootPath());
     const statusIcon = this.state === "failed" ? "error" : this.state === "ready" ? "pass" : this.state === "no-data" ? "circle-slash" : "loading~spin";
     const metricChildren = timing && metrics ? [
       new BhaTreeItem(
@@ -18294,6 +18319,17 @@ var BhaTreeDataProvider = class {
       ),
       new BhaTreeItem(
         `${safeGetNumber(result?.filesAnalyzed ?? metrics.filesCompiled, 0)} compilation units`,
+        vscode.TreeItemCollapsibleState.None,
+        { icon: "symbol-file" }
+      )
+    ] : history.length > 0 ? [
+      new BhaTreeItem(
+        `${formatDurationMs(history[0].totalBuildTimeMs)} last recorded build`,
+        vscode.TreeItemCollapsibleState.None,
+        { description: `${history[0].buildTimeSource} \xB7 ${formatHistoryDate(history[0].recordedAt)}`, icon: "clock" }
+      ),
+      new BhaTreeItem(
+        `${history[0].filesAnalyzed} compilation units last analyzed`,
         vscode.TreeItemCollapsibleState.None,
         { icon: "symbol-file" }
       )
@@ -18360,7 +18396,27 @@ ${extractSuggestionSummary(suggestion.description)}`,
         }
       })
     ];
-    return [
+    const historyItems = history.map((run) => new BhaTreeItem(
+      formatHistoryDate(run.recordedAt),
+      vscode.TreeItemCollapsibleState.None,
+      {
+        description: `${run.suggestionCount} suggestions \xB7 ${formatDurationMs(run.totalBuildTimeMs)}`,
+        tooltip: `${run.analysisId ?? "Analysis run"}
+${run.buildTimeSource}
+${run.filesAnalyzed} compilation units`,
+        icon: "history"
+      }
+    ));
+    const historyGroup = new BhaTreeItem(
+      `Run History (${history.length})`,
+      history.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
+      {
+        description: history.length > 0 ? "Persisted workspace summaries" : "No completed runs",
+        icon: "history",
+        children: historyItems
+      }
+    );
+    const roots = [
       new BhaTreeItem(
         `BHA: ${this.state.replace("-", " ")}`,
         vscode.TreeItemCollapsibleState.None,
@@ -18375,11 +18431,25 @@ ${extractSuggestionSummary(suggestion.description)}`,
         children: metricChildren
       }),
       suggestionGroup,
+      historyGroup,
       new BhaTreeItem("Actions", vscode.TreeItemCollapsibleState.Expanded, {
         icon: "tools",
         children: actionChildren
       })
     ];
+    if (this.operationStatus) {
+      const operationFailed = /failed|rolled back/i.test(this.operationStatus.label);
+      roots.splice(1, 0, new BhaTreeItem(
+        this.operationStatus.label,
+        vscode.TreeItemCollapsibleState.None,
+        {
+          description: this.operationStatus.detail,
+          tooltip: this.operationStatus.detail,
+          icon: operationFailed ? "warning" : "pass"
+        }
+      ));
+    }
+    return roots;
   }
 };
 function getWorkspaceRootPath() {
@@ -18390,6 +18460,46 @@ function buildProfileStateKey(workspaceRoot) {
 }
 function backupIdStateKey(workspaceRoot) {
   return `${BACKUP_ID_STATE_PREFIX}${workspaceRoot}`;
+}
+function analysisHistoryStateKey(workspaceRoot) {
+  return `${ANALYSIS_HISTORY_STATE_PREFIX}${workspaceRoot}`;
+}
+function hasAnalysisMetrics(result) {
+  return result.baselineMetrics !== void 0 || result.buildTiming !== void 0 || result.filesAnalyzed !== void 0;
+}
+function getAnalysisHistory(workspaceRoot) {
+  return workspaceRoot ? analysisHistoryByWorkspace.get(workspaceRoot) ?? [] : [];
+}
+function formatHistoryDate(value) {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? "Unknown analysis time" : parsed.toLocaleString();
+}
+function rememberAnalysisRun(result) {
+  const workspaceRoot = getWorkspaceRootPath();
+  if (!workspaceRoot || !hasAnalysisMetrics(result)) {
+    return;
+  }
+  const timing = resolveAnalysisBuildTiming(result);
+  const summary = {
+    analysisId: result.analysisId,
+    recordedAt: (/* @__PURE__ */ new Date()).toISOString(),
+    suggestionCount: result.suggestions.length,
+    totalBuildTimeMs: timing.totalBuildTimeMs,
+    buildTimeSource: timing.source || "unknown",
+    filesAnalyzed: safeGetNumber(
+      result.filesAnalyzed ?? result.baselineMetrics?.filesCompiled,
+      0
+    )
+  };
+  const previous = getAnalysisHistory(workspaceRoot);
+  const next = [
+    summary,
+    ...previous.filter(
+      (run) => !summary.analysisId || run.analysisId !== summary.analysisId
+    )
+  ].slice(0, 10);
+  analysisHistoryByWorkspace.set(workspaceRoot, next);
+  void extensionContext.workspaceState.update(analysisHistoryStateKey(workspaceRoot), next);
 }
 function timestamp() {
   return (/* @__PURE__ */ new Date()).toLocaleTimeString();
@@ -18530,6 +18640,19 @@ function activate(context) {
   );
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
     const workspaceRoot = folder.uri.fsPath;
+    const cachedHistory = context.workspaceState.get(analysisHistoryStateKey(workspaceRoot));
+    if (Array.isArray(cachedHistory)) {
+      const validHistory = cachedHistory.filter((run) => {
+        if (!run || typeof run !== "object") {
+          return false;
+        }
+        const item = run;
+        return typeof item.recordedAt === "string" && typeof item.suggestionCount === "number" && typeof item.totalBuildTimeMs === "number" && typeof item.buildTimeSource === "string" && typeof item.filesAnalyzed === "number";
+      }).slice(0, 10);
+      analysisHistoryByWorkspace.set(workspaceRoot, validHistory);
+    } else {
+      void context.workspaceState.update(analysisHistoryStateKey(workspaceRoot), void 0);
+    }
     const cachedProfile = validatePersistedBuildProfile(
       context.workspaceState.get(buildProfileStateKey(workspaceRoot)),
       workspaceRoot
@@ -18993,6 +19116,10 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
     const validSuggestions = result.suggestions.filter(isValidSuggestion);
     result.suggestions = validSuggestions;
     bhaViewProvider?.setAnalysisResult(result);
+    bhaViewProvider?.setOperationStatus(
+      "Analysis completed",
+      `${validSuggestions.length} suggestion(s) found; evidence is ready for review.`
+    );
     vscode.window.showInformationMessage(
       `Analysis complete: ${validSuggestions.length} suggestions found`
     );
@@ -19055,6 +19182,10 @@ async function recordBuildTraces(advanced) {
     const traceFileCount = safeGetNumber(result.traceFileCount, 0);
     const buildSystem = safeGetString(result.buildSystem, "unknown build system");
     const buildTimeMs = safeGetNumber(result.buildTimeMs, 0);
+    bhaViewProvider?.setOperationStatus(
+      "Build traces recorded",
+      `${traceFileCount} trace file(s) captured in ${formatDurationMs(buildTimeMs)}.`
+    );
     logLine(
       `Recorded traces: buildSystem=${safeGetString(result.buildSystem, "unknown")}, traceFileCount=${traceFileCount}, traceOutputDir=${safeGetString(result.traceOutputDir, "<auto>")}, buildTimeMs=${buildTimeMs}`
     );
@@ -19215,6 +19346,10 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
       bhaViewProvider?.setState("validating", "Suggestion applied; validation completed. Refreshing results...");
       const numFiles = Array.isArray(applyResult.changedFiles) ? applyResult.changedFiles.length : 0;
       const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+      bhaViewProvider?.setOperationStatus(
+        "Suggestion applied",
+        trustLoopSummary?.message ?? `Modified ${numFiles} file(s); validation succeeded.`
+      );
       logLine(
         `Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? "<none>"}${trustLoopSummary ? trustLoopSummary.logSuffix : ""}`
       );
@@ -19231,6 +19366,10 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
       const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
       const errorMsgs = errors.map((e) => safeGetString(e?.message, "Unknown error"));
       const rollback = applyResult.rollback;
+      bhaViewProvider?.setOperationStatus(
+        rollback?.attempted && rollback.success ? "Suggestion rolled back" : "Suggestion failed",
+        rollback?.attempted && rollback.success ? "Validation failed; the workspace was restored." : errorMsgs.join("; ") || "No validation result was available."
+      );
       const rollbackSuffix = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
       logLine(`Apply suggestion failed: id=${suggestionId}, errors=${errorMsgs.join("; ") || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
@@ -19337,6 +19476,10 @@ async function cmdApplyAllSuggestions() {
       const errors = Array.isArray(applyResult.errors) ? applyResult.errors : [];
       const hasWarnings = errors.length > 0;
       const trustLoopSummary = buildTrustLoopSummary(applyResult.trustLoop);
+      bhaViewProvider?.setOperationStatus(
+        "Bulk apply completed",
+        trustLoopSummary?.message ?? `Applied ${applyResult.appliedCount} suggestion(s); skipped ${applyResult.skippedCount}.`
+      );
       logLine(
         `Apply all succeeded: applied=${applyResult.appliedCount}, skipped=${applyResult.skippedCount}, warnings=${errors.length}, backupId=${applyResult.backupId ?? "<none>"}${trustLoopSummary ? trustLoopSummary.logSuffix : ""}`
       );
@@ -19369,6 +19512,10 @@ async function cmdApplyAllSuggestions() {
         }
       }
       const rollback = applyResult.rollback;
+      bhaViewProvider?.setOperationStatus(
+        rollback?.attempted && rollback.success ? "Bulk apply rolled back" : "Bulk apply failed",
+        rollback?.attempted && rollback.success ? "Validation failed; the workspace was restored." : errorDetails || "No validation result was available."
+      );
       const rollbackDetails = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
       logLine(`Apply all failed: failed=${failedCount}, errors=${errorDetails || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
@@ -19422,6 +19569,7 @@ async function cmdRevertChanges() {
     if (revertResult.success) {
       bhaViewProvider?.setState("ready", "Changes reverted; refresh the analysis to inspect the restored state.");
       const numFiles = Array.isArray(revertResult.restoredFiles) ? revertResult.restoredFiles.length : 0;
+      bhaViewProvider?.setOperationStatus("Changes reverted", `Restored ${numFiles} file(s) from backup.`);
       logLine(`Revert succeeded: restoredFiles=${numFiles}`);
       vscode.window.showInformationMessage(
         `Reverted successfully. Restored ${numFiles} files.`
