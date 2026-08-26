@@ -45,7 +45,7 @@ namespace bha::cli
                    "Examples:\n"
                    "  bha export --format json -o report.json traces/\n"
                    "  bha export --format html -o report.html build/*.json\n"
-                   "  bha export --format csv -o data.csv trace.json\n"
+                   "  bha export --format csv -o data/ trace.json\n"
                    "  bha export --format json -o report.json traces/";
         }
 
@@ -346,10 +346,21 @@ namespace bha::cli
             }
 
             if (!is_quiet()) {
-                auto size = fs::file_size(output_path);
-                std::cout << "Exported " << exporters::format_to_string(format)
-                          << " report to " << output_path.string()
-                          << " (" << format_size(size) << ")\n";
+                if (format == exporters::ExportFormat::CSV && fs::is_directory(output_path)) {
+                    std::size_t table_count = 0;
+                    for (const auto& entry : fs::directory_iterator(output_path)) {
+                        if (entry.is_regular_file() && entry.path().extension() == ".csv") {
+                            ++table_count;
+                        }
+                    }
+                    std::cout << "Exported CSV bundle to " << output_path.string()
+                              << " (" << table_count << " tables)\n";
+                } else {
+                    const auto size = fs::file_size(output_path);
+                    std::cout << "Exported " << exporters::format_to_string(format)
+                              << " report to " << output_path.string()
+                              << " (" << format_size(size) << ")\n";
+                }
             }
 
             return 0;

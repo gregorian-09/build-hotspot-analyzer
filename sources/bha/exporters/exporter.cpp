@@ -6,6 +6,7 @@
 #include "bha/exporters/analysis_document.hpp"
 #include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/time_utils.hpp"
+#include "bha/version.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -247,6 +248,61 @@ namespace bha::exporters
             }
             result += "\"";
             return result;
+        }
+
+        std::string csv_number(const double value, const int precision = 3) {
+            std::ostringstream stream;
+            stream << std::fixed << std::setprecision(precision) << value;
+            return stream.str();
+        }
+
+        std::string csv_duration(const Duration duration, const bool include_timing) {
+            return include_timing ? csv_number(duration_to_ms(duration)) : "excluded";
+        }
+
+        std::string csv_optional_duration(
+            const std::optional<Duration>& duration,
+            const bool include_timing
+        ) {
+            if (!duration.has_value()) {
+                return "unavailable";
+            }
+            return csv_duration(*duration, include_timing);
+        }
+
+        std::string csv_optional_uint64(const std::optional<std::uint64_t>& value) {
+            return value.has_value() ? std::to_string(*value) : "unavailable";
+        }
+
+        void write_csv_row(std::ostream& stream, const std::vector<std::string>& fields) {
+            for (std::size_t index = 0; index < fields.size(); ++index) {
+                if (index != 0) {
+                    stream << ',';
+                }
+                stream << escape_csv(fields[index]);
+            }
+            stream << "\r\n";
+        }
+
+        Result<void, Error> write_csv_file(
+            const fs::path& path,
+            const std::vector<std::string>& header,
+            const std::function<void(std::ostream&)>& write_rows
+        ) {
+            std::ofstream file(path);
+            if (!file.is_open()) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::IoError, "Failed to open CSV file for writing: " + path.string())
+                );
+            }
+            write_csv_row(file, header);
+            write_rows(file);
+            if (!file.good()) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::IoError, "Failed while writing CSV file: " + path.string())
+                );
+            }
+            return Result<void, Error>::success();
         }
 
         std::string application_mode_label(const Suggestion& suggestion) {
@@ -1021,65 +1077,413 @@ namespace bha::exporters
         const ExportOptions& options,
         const ExportProgressCallback progress
     ) const {
-        std::ofstream file(path);
-        if (!file.is_open()) {
-            return Result<void, Error>::failure(
-                Error(ErrorCode::IoError, "Failed to open file for writing: " + path.string())
-            );
+        const bool single_table = fs::exists(path) ? fs::is_regular_file(path) : path.extension() == ".csv";
+        if (single_table) {
+            if (options.include_suggestions) {
+                return Result<void, Error>::failure(Error(
+                    ErrorCode::InvalidArgument,
+                    "CSV suggestions require a bundle directory; use an output path without the .csv extension"
+                ));
+            }
+            std::ofstream file(path);
+            if (!file.is_open()) {
+                return Result<void, Error>::failure(
+                    Error(ErrorCode::IoError, "Failed to open file for writing: " + path.string())
+                );
+            }
+            return export_to_stream(file, analysis, suggestions, options, progress);
         }
-        return export_to_stream(file, analysis, suggestions, options, progress);
+
+        std::error_code error;
+        fs::create_directories(path, error);
+        if (error) {
+            return Result<void, Error>::failure(Error(
+                ErrorCode::IoError,
+                "Failed to create CSV bundle directory: " + path.string() + ": " + error.message()
+            ));
+        }
+        if (fs::exists(path) && !fs::is_directory(path)) {
+            return Result<void, Error>::failure(Error(
+                ErrorCode::IoError,
+                "CSV bundle output is not a directory: " + path.string()
+            ));
+        }
+
+        constexpr std::size_t table_count = 28;
+        std::size_t completed_tables = 0;
+        const auto write_table = [&](const std::string& name,
+                                     const std::vector<std::string>& header,
+                                     const std::function<void(std::ostream&)>& rows) -> Result<void, Error> {
+            const auto result = write_csv_file(path / name, header, rows);
+            if (result.is_err()) {
+                return result;
+            }
+            ++completed_tables;
+            if (progress) {
+                progress(completed_tables, table_count, "csv/" + name);
+            }
+            return Result<void, Error>::success();
+        };
+
+        Result<void, Error> result = Result<void, Error>::success();
+        if (options.include_metadata) {
+            result = write_table("metadata.csv", {"key", "value"}, [&](std::ostream& stream) {
+                write_csv_row(stream, {"document_type", "bha-analysis-csv-bundle"});
+                write_csv_row(stream, {"bha_version", VERSION_STRING});
+                write_csv_row(stream, {"generated_at", utils::format_timestamp_iso8601(std::chrono::system_clock::now())});
+                write_csv_row(stream, {"schema_version", "0.1.0"});
+            });
+            if (result.is_err()) return result;
+        }
+
+        auto write_summary_metric = [](std::ostream& stream,
+                                       const std::string& domain,
+                                       const std::string& metric,
+                                       const std::string& value,
+                                       const std::string& unit,
+                                       const std::string& evidence,
+                                       const std::string& producer,
+                                       const std::string& scope,
+                                       const std::string& limitation) {
+            write_csv_row(stream, {domain, metric, value, unit, evidence, producer, scope, limitation});
+        };
+        result = write_table(
+            "summary.csv",
+            {"domain", "metric", "value", "unit", "evidence", "producer", "scope", "limitation"},
+            [&](std::ostream& stream) {
+                write_summary_metric(stream, "performance", "total_build_time", csv_duration(analysis.performance.total_build_time, options.include_timing), "ms", "observed", "analysis", "build", "");
+                write_summary_metric(stream, "performance", "sequential_time", csv_duration(analysis.performance.sequential_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "parallel_time", csv_duration(analysis.performance.parallel_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "parallelism_efficiency", csv_number(analysis.performance.parallelism_efficiency), "ratio", "derived", "PerformanceAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "total_files", std::to_string(analysis.performance.total_files), "count", "observed", "FileAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "avg_file_time", csv_duration(analysis.performance.avg_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
+                write_summary_metric(stream, "performance", "median_file_time", csv_duration(analysis.performance.median_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
+                write_summary_metric(stream, "performance", "p90_file_time", csv_duration(analysis.performance.p90_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
+                write_summary_metric(stream, "performance", "p99_file_time", csv_duration(analysis.performance.p99_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
+                write_summary_metric(stream, "dependencies", "total_includes", std::to_string(analysis.dependencies.total_includes), "count", "observed", "DependencyAnalyzer", "build", "");
+                write_summary_metric(stream, "dependencies", "unique_headers", std::to_string(analysis.dependencies.unique_headers), "count", "observed", "DependencyAnalyzer", "build", "");
+                write_summary_metric(stream, "dependencies", "max_include_depth", std::to_string(analysis.dependencies.max_include_depth), "depth", "observed", "DependencyAnalyzer", "build", "");
+                write_summary_metric(stream, "dependencies", "total_include_time", csv_duration(analysis.dependencies.total_include_time, options.include_timing), "ms", "observed", "DependencyAnalyzer", "build", "");
+                write_summary_metric(stream, "templates", "total_template_time", csv_duration(analysis.templates.total_template_time, options.include_timing), "ms", "observed", "TemplateAnalyzer", "build", "");
+                write_summary_metric(stream, "templates", "template_time_percent", csv_number(analysis.templates.template_time_percent), "%", "derived", "TemplateAnalyzer", "build", "");
+                write_summary_metric(stream, "templates", "total_instantiations", std::to_string(analysis.templates.total_instantiations), "count", "observed", "TemplateAnalyzer", "build", "");
+                write_summary_metric(stream, "cache", "compile_requests", std::to_string(analysis.cache_distribution.compile_requests), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "executed_compilations", std::to_string(analysis.cache_distribution.executed_compilations), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "cache_hits", std::to_string(analysis.cache_distribution.cache_hits), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "cache_misses", std::to_string(analysis.cache_distribution.cache_misses), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "cache_errors", std::to_string(analysis.cache_distribution.cache_errors), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "cache_timeouts", std::to_string(analysis.cache_distribution.cache_timeouts), "count", "observed", "cache producer", "build", "");
+                write_summary_metric(stream, "cache", "hit_rate_percent", analysis.cache_distribution.hit_rate_percent.has_value() ? csv_number(*analysis.cache_distribution.hit_rate_percent) : "unavailable", "%", analysis.cache_distribution.hit_rate_percent.has_value() ? "derived" : "unavailable", "cache producer", "build", "");
+                write_summary_metric(stream, "build_session", "wall_clock_time", csv_duration(analysis.build_session.wall_clock_time, options.include_timing), "ms", "observed", "BuildSessionAnalyzer", "build", "");
+                write_summary_metric(stream, "build_session", "serial_time", csv_duration(analysis.build_session.serial_time, options.include_timing), "ms", "derived", "BuildSessionAnalyzer", "build", "");
+                write_summary_metric(stream, "build_session", "critical_path_time", csv_duration(analysis.build_session.critical_path_time, options.include_timing), "ms", "derived", "BuildSessionAnalyzer", "build", "requires complete dependency edges");
+                write_summary_metric(stream, "build_session", "peak_parallelism", std::to_string(analysis.build_session.peak_parallelism), "count", "derived", "BuildSessionAnalyzer", "build", "");
+                write_summary_metric(stream, "build_session", "compile_trace_references", std::to_string(analysis.build_session.compile_trace_references), "count", "observed", "BuildSessionAnalyzer", "build", "");
+                write_summary_metric(stream, "targets", "matched_commands", std::to_string(analysis.targets.matched_commands), "count", "derived", "BuildTargetAnalyzer", "target", "");
+                write_summary_metric(stream, "targets", "unmatched_commands", std::to_string(analysis.targets.unmatched_commands), "count", "derived", "BuildTargetAnalyzer", "target", "");
+                write_summary_metric(stream, "targets", "pch_headers", std::to_string(analysis.targets.pch_headers), "count", "observed", "BuildTargetAnalyzer", "target", "");
+                write_summary_metric(stream, "modules", "provided_modules", std::to_string(analysis.modules.provided_modules), "count", "observed", "ModuleAnalyzer", "build", "");
+                write_summary_metric(stream, "modules", "required_modules", std::to_string(analysis.modules.required_modules), "count", "observed", "ModuleAnalyzer", "build", "");
+                write_summary_metric(stream, "modules", "resolved_dependencies", std::to_string(analysis.modules.resolved_dependencies), "count", "derived", "ModuleAnalyzer", "build", "");
+                write_summary_metric(stream, "modules", "unresolved_dependencies", std::to_string(analysis.modules.unresolved_dependencies), "count", "derived", "ModuleAnalyzer", "build", "");
+                write_summary_metric(stream, "linker", "wall_clock_time", csv_duration(analysis.linker.wall_clock_time, options.include_timing), "ms", "observed", "LinkerAnalyzer", "link", "");
+                write_summary_metric(stream, "linker", "output_bytes", std::to_string(analysis.linker.output_bytes), "bytes", "observed", "LinkerAnalyzer", "link", "");
+                write_summary_metric(stream, "process", "observations", std::to_string(analysis.process_resources.observations), "count", "observed", "ProcessResourceAnalyzer", "build", "");
+                write_summary_metric(stream, "process", "total_process_time", csv_duration(analysis.process_resources.total_process_time, options.include_timing), "ms", "observed", "ProcessResourceAnalyzer", "build", "");
+                write_summary_metric(stream, "process", "total_user_time", csv_duration(analysis.process_resources.total_user_time, options.include_timing), "ms", "observed", "ProcessResourceAnalyzer", "build", "");
+                write_summary_metric(stream, "process", "peak_memory_kib", std::to_string(analysis.process_resources.peak_memory_kib), "KiB", "observed", "ProcessResourceAnalyzer", "build", "");
+            }
+        );
+        if (result.is_err()) return result;
+
+        result = write_table("metric_capabilities.csv", {"domain", "metric", "evidence", "producer", "producer_version", "capture_mode", "scope", "timing_domain", "timing_aggregation", "limitation"}, [&](std::ostream& stream) {
+            const auto write_capability = [&](const std::string& domain, const MetricCapability& capability) {
+                const auto& provenance = capability.provenance;
+                write_csv_row(stream, {domain, capability.metric, to_string(provenance.evidence), provenance.producer, provenance.producer_version, provenance.capture_mode, provenance.scope, to_string(provenance.timing_domain), to_string(provenance.timing_aggregation), provenance.limitation});
+            };
+            for (const auto& capability : analysis.metric_capabilities) write_capability("analysis", capability);
+            for (const auto& capability : analysis.dependencies.metric_capabilities) write_capability("dependencies", capability);
+            for (const auto& capability : analysis.cache_distribution.metric_capabilities) write_capability("cache", capability);
+            for (const auto& capability : analysis.build_session.metric_capabilities) write_capability("build_session", capability);
+            for (const auto& capability : analysis.build_session.host_telemetry.metric_capabilities) write_capability("host_telemetry", capability);
+            for (const auto& capability : analysis.linker.metric_capabilities) write_capability("linker", capability);
+            for (const auto& capability : analysis.targets.metric_capabilities) write_capability("targets", capability);
+            for (const auto& capability : analysis.modules.metric_capabilities) write_capability("modules", capability);
+            for (const auto& capability : analysis.process_resources.metric_capabilities) write_capability("process_resources", capability);
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("build_session.csv", {"metric", "value", "unit"}, [&](std::ostream& stream) {
+            write_csv_row(stream, {"timed_commands", std::to_string(analysis.build_session.timed_commands), "count"});
+            write_csv_row(stream, {"total_commands", std::to_string(analysis.build_session.total_commands), "count"});
+            write_csv_row(stream, {"wall_clock_time", csv_duration(analysis.build_session.wall_clock_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"serial_time", csv_duration(analysis.build_session.serial_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"peak_parallelism", std::to_string(analysis.build_session.peak_parallelism), "count"});
+            write_csv_row(stream, {"average_parallelism", csv_number(analysis.build_session.average_parallelism), "ratio"});
+            write_csv_row(stream, {"critical_path_time", csv_duration(analysis.build_session.critical_path_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"compile_trace_references", std::to_string(analysis.build_session.compile_trace_references), "count"});
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("critical_path.csv", {"position", "command_id"}, [&](std::ostream& stream) {
+            for (std::size_t index = 0; index < analysis.build_session.critical_path.size(); ++index) {
+                write_csv_row(stream, {std::to_string(index), analysis.build_session.critical_path[index]});
+            }
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("linker.csv", {"metric", "value", "unit"}, [&](std::ostream& stream) {
+            write_csv_row(stream, {"invocations", std::to_string(analysis.linker.invocations), "count"});
+            write_csv_row(stream, {"timed_invocations", std::to_string(analysis.linker.timed_invocations), "count"});
+            write_csv_row(stream, {"wall_clock_time", csv_duration(analysis.linker.wall_clock_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"trace_wall_clock_time", csv_optional_duration(analysis.linker.trace_wall_clock_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"lto_time", csv_optional_duration(analysis.linker.lto_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"output_bytes", std::to_string(analysis.linker.output_bytes), "bytes"});
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("cache.csv", {"metric", "value", "unit"}, [&](std::ostream& stream) {
+            write_csv_row(stream, {"compile_requests", std::to_string(analysis.cache_distribution.compile_requests), "count"});
+            write_csv_row(stream, {"executed_compilations", std::to_string(analysis.cache_distribution.executed_compilations), "count"});
+            write_csv_row(stream, {"cache_hits", std::to_string(analysis.cache_distribution.cache_hits), "count"});
+            write_csv_row(stream, {"cache_misses", std::to_string(analysis.cache_distribution.cache_misses), "count"});
+            write_csv_row(stream, {"cache_errors", std::to_string(analysis.cache_distribution.cache_errors), "count"});
+            write_csv_row(stream, {"cache_timeouts", std::to_string(analysis.cache_distribution.cache_timeouts), "count"});
+            write_csv_row(stream, {"hit_rate_percent", analysis.cache_distribution.hit_rate_percent.has_value() ? csv_number(*analysis.cache_distribution.hit_rate_percent) : "unavailable", "%"});
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("process_resources.csv", {"metric", "value", "unit"}, [&](std::ostream& stream) {
+            write_csv_row(stream, {"observations", std::to_string(analysis.process_resources.observations), "count"});
+            write_csv_row(stream, {"total_process_time", csv_duration(analysis.process_resources.total_process_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"total_user_time", csv_duration(analysis.process_resources.total_user_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"peak_memory_kib", std::to_string(analysis.process_resources.peak_memory_kib), "KiB"});
+        });
+        if (result.is_err()) return result;
+
+        if (options.include_file_details) {
+            result = write_table("files.csv", {"path", "compile_time_ms", "frontend_time_ms", "backend_time_ms", "preprocessing_ms", "parsing_ms", "semantic_analysis_ms", "template_instantiation_ms", "code_generation_ms", "optimization_ms", "unclassified_ms", "max_stack_bytes", "time_percent", "rank", "include_count", "template_count"}, [&](std::ostream& stream) {
+                std::size_t count = 0;
+                for (const auto& file : analysis.files) {
+                    if (options.min_compile_time > Duration::zero() && file.compile_time < options.min_compile_time) continue;
+                    if (options.max_files > 0 && count >= options.max_files) break;
+                    write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_duration(file.breakdown.preprocessing, options.include_timing), csv_duration(file.breakdown.parsing, options.include_timing), csv_duration(file.breakdown.semantic_analysis, options.include_timing), csv_duration(file.breakdown.template_instantiation, options.include_timing), csv_duration(file.breakdown.code_generation, options.include_timing), csv_duration(file.breakdown.optimization, options.include_timing), csv_duration(file.breakdown.unclassified, options.include_timing), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
+                    ++count;
+                }
+            });
+            if (result.is_err()) return result;
+        }
+
+        if (options.include_dependencies) {
+            result = write_table("headers.csv", {"path", "total_parse_time_ms", "self_parse_time_ms", "inclusion_count", "including_files"}, [&](std::ostream& stream) {
+                for (const auto& header : analysis.dependencies.headers) {
+                    write_csv_row(stream, {header.path.string(), csv_duration(header.total_parse_time, options.include_timing), csv_optional_duration(header.self_parse_time, options.include_timing), std::to_string(header.inclusion_count), std::to_string(header.including_files)});
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("dependency_edges.csv", {"source", "target", "type"}, [&](std::ostream& stream) {
+                for (const auto& header : analysis.dependencies.headers) {
+                    for (const auto& source : header.included_by) {
+                        write_csv_row(stream, {source.string(), header.path.string(), "include"});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+        }
+
+        if (options.include_templates) {
+            result = write_table("templates.csv", {"name", "full_signature", "total_time_ms", "instantiation_count", "time_percent", "location_count", "consumer_count"}, [&](std::ostream& stream) {
+                for (const auto& info : analysis.templates.templates) {
+                    write_csv_row(stream, {info.name, info.full_signature, csv_duration(info.total_time, options.include_timing), std::to_string(info.instantiation_count), csv_number(info.time_percent), std::to_string(info.locations.size()), std::to_string(info.files_using.size())});
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("template_files.csv", {"template_signature", "file"}, [&](std::ostream& stream) {
+                for (const auto& info : analysis.templates.templates) {
+                    for (const auto& file : info.files_using) {
+                        write_csv_row(stream, {info.full_signature, file});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("template_locations.csv", {"template_signature", "file", "line", "column"}, [&](std::ostream& stream) {
+                for (const auto& info : analysis.templates.templates) {
+                    for (const auto& location : info.locations) {
+                        write_csv_row(stream, {info.full_signature, location.file.string(), std::to_string(location.line), std::to_string(location.column)});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+        }
+
+        result = write_table("build_steps.csv", {"role", "total_commands", "timed_commands", "wall_clock_time_ms", "result_observations", "successful_commands", "failed_commands", "output_observations", "stdout_bytes", "stderr_bytes"}, [&](std::ostream& stream) {
+            for (const auto& step : analysis.build_session.step_metrics) {
+                write_csv_row(stream, {to_string(step.role), std::to_string(step.total_commands), std::to_string(step.timed_commands), csv_duration(step.wall_clock_time, options.include_timing), std::to_string(step.result_observations), std::to_string(step.successful_commands), std::to_string(step.failed_commands), std::to_string(step.output_observations), csv_optional_uint64(step.stdout_bytes), csv_optional_uint64(step.stderr_bytes)});
+            }
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("targets.csv", {"id", "name", "type", "compile_commands", "timed_compile_commands", "compile_wall_clock_time_ms", "link_commands", "timed_link_commands", "link_wall_clock_time_ms", "output_size_observations", "output_bytes"}, [&](std::ostream& stream) {
+            for (const auto& target : analysis.targets.targets) {
+                write_csv_row(stream, {target.id, target.name, target.type, std::to_string(target.compile_commands), std::to_string(target.timed_compile_commands), csv_duration(target.compile_wall_clock_time, options.include_timing), std::to_string(target.link_commands), std::to_string(target.timed_link_commands), csv_duration(target.link_wall_clock_time, options.include_timing), std::to_string(target.output_size_observations), std::to_string(target.output_bytes)});
+            }
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("target_dependencies.csv", {"target_id", "dependency"}, [&](std::ostream& stream) {
+            for (const auto& target : analysis.targets.targets) {
+                for (const auto& dependency : target.dependencies) {
+                    write_csv_row(stream, {target.id, dependency});
+                }
+            }
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("target_pch.csv", {"target_id", "header"}, [&](std::ostream& stream) {
+            for (const auto& target : analysis.targets.targets) {
+                for (const auto& header : target.precompile_headers) {
+                    write_csv_row(stream, {target.id, header.string()});
+                }
+            }
+        });
+        if (result.is_err()) return result;
+
+        result = write_table("modules.csv", {"required", "owner"}, [&](std::ostream& stream) {
+            for (const auto& [required, owner] : analysis.modules.dependencies) {
+                write_csv_row(stream, {required, owner});
+            }
+        });
+        if (result.is_err()) return result;
+
+        if (options.include_symbols) {
+            result = write_table("symbols.csv", {"name", "type", "defined_in", "usage_count"}, [&](std::ostream& stream) {
+                for (const auto& symbol : analysis.symbols.symbols) {
+                    write_csv_row(stream, {symbol.name, symbol.type, symbol.defined_in.string(), std::to_string(symbol.usage_count)});
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("symbol_usages.csv", {"symbol", "file"}, [&](std::ostream& stream) {
+                for (const auto& symbol : analysis.symbols.symbols) {
+                    for (const auto& file : symbol.used_in) {
+                        write_csv_row(stream, {symbol.name, file.string()});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+        }
+
+        std::vector<const Suggestion*> selected_suggestions;
+        if (options.include_suggestions) {
+            for (const auto& suggestion : suggestions) {
+                if (suggestion.confidence < options.min_confidence) continue;
+                if (options.max_suggestions > 0 && selected_suggestions.size() >= options.max_suggestions) break;
+                selected_suggestions.push_back(&suggestion);
+            }
+
+            result = write_table("suggestions.csv", {"id", "type", "priority", "confidence", "title", "description", "rationale", "estimated_savings_ms", "estimated_savings_percent", "estimated_savings_evidence", "target_file", "target_line_start", "target_line_end", "application_mode", "is_safe", "edits_count", "secondary_files_count", "files_benefiting_count", "total_files_affected", "cumulative_savings_ms", "rebuild_files_count", "caveats_count", "verification", "documentation_link", "application_summary", "application_guidance", "auto_apply_blocked_reason"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    write_csv_row(stream, {suggestion->id, to_string(suggestion->type), to_string(suggestion->priority), csv_number(suggestion->confidence), suggestion->title, suggestion->description, suggestion->rationale, suggestion->estimated_savings_evidence == EvidenceKind::Unavailable ? "unavailable" : csv_duration(suggestion->estimated_savings, options.include_timing), csv_number(suggestion->estimated_savings_percent), to_string(suggestion->estimated_savings_evidence), suggestion->target_file.path.string(), std::to_string(suggestion->target_file.line_start), std::to_string(suggestion->target_file.line_end), to_string(resolve_application_mode(*suggestion)), suggestion->is_safe ? "true" : "false", std::to_string(suggestion->edits.size()), std::to_string(suggestion->secondary_files.size()), std::to_string(suggestion->impact.files_benefiting.size()), std::to_string(suggestion->impact.total_files_affected), csv_duration(suggestion->impact.cumulative_savings, options.include_timing), std::to_string(suggestion->impact.rebuild_files_count), std::to_string(suggestion->caveats.size()), suggestion->verification, suggestion->documentation_link.value_or("unavailable"), suggestion->application_summary.value_or("unavailable"), suggestion->application_guidance.value_or("unavailable"), suggestion->auto_apply_blocked_reason.value_or("unavailable")});
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_files.csv", {"suggestion_id", "role", "file"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    write_csv_row(stream, {suggestion->id, "target", suggestion->target_file.path.string()});
+                    for (const auto& file : suggestion->secondary_files) {
+                        write_csv_row(stream, {suggestion->id, "secondary", file.path.string()});
+                    }
+                    for (const auto& file : suggestion->impact.files_benefiting) {
+                        write_csv_row(stream, {suggestion->id, "benefiting", file.string()});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_steps.csv", {"suggestion_id", "step_index", "step"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    for (std::size_t index = 0; index < suggestion->implementation_steps.size(); ++index) {
+                        write_csv_row(stream, {suggestion->id, std::to_string(index), suggestion->implementation_steps[index]});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_examples.csv", {"suggestion_id", "kind", "file", "line", "code"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    if (!suggestion->before_code.code.empty()) {
+                        write_csv_row(stream, {suggestion->id, "before", suggestion->before_code.file.string(), std::to_string(suggestion->before_code.line), suggestion->before_code.code});
+                    }
+                    if (!suggestion->after_code.code.empty()) {
+                        write_csv_row(stream, {suggestion->id, "after", suggestion->after_code.file.string(), std::to_string(suggestion->after_code.line), suggestion->after_code.code});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_edits.csv", {"suggestion_id", "file", "start_line", "start_column", "end_line", "end_column", "byte_offset", "byte_length", "new_text"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    for (const auto& edit : suggestion->edits) {
+                        write_csv_row(stream, {suggestion->id, edit.file.string(), std::to_string(edit.start_line), std::to_string(edit.start_col), std::to_string(edit.end_line), std::to_string(edit.end_col), edit.byte_offset.has_value() ? std::to_string(*edit.byte_offset) : "unavailable", edit.byte_length.has_value() ? std::to_string(*edit.byte_length) : "unavailable", edit.new_text});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_caveats.csv", {"suggestion_id", "caveat"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    for (const auto& caveat : suggestion->caveats) {
+                        write_csv_row(stream, {suggestion->id, caveat});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+
+            result = write_table("suggestion_origins.csv", {"suggestion_id", "kind", "source", "target", "estimated_cost_ms", "chain", "note"}, [&](std::ostream& stream) {
+                for (const auto* suggestion : selected_suggestions) {
+                    for (const auto& origin : suggestion->hotspot_origins) {
+                        std::string chain;
+                        for (std::size_t index = 0; index < origin.chain.size(); ++index) {
+                            if (index != 0) chain += " -> ";
+                            chain += origin.chain[index];
+                        }
+                        write_csv_row(stream, {suggestion->id, origin.kind, origin.source.string(), origin.target.string(), csv_duration(origin.estimated_cost, options.include_timing), chain, origin.note});
+                    }
+                }
+            });
+            if (result.is_err()) return result;
+        }
+
+        return Result<void, Error>::success();
     }
 
     Result<void, Error> CsvExporter::export_to_stream(
         std::ostream& stream,
         const analyzers::AnalysisResult& analysis,
-        const std::vector<Suggestion>& suggestions,
+        const std::vector<Suggestion>& /* suggestions */,
         const ExportOptions& options,
         ExportProgressCallback
     ) const {
-        stream << "# Files\n";
-        stream << "Path,Total Time (ms),Frontend Time (ms),Backend Time (ms),Include Count\n";
+        if (options.include_suggestions) {
+            return Result<void, Error>::failure(Error(
+                ErrorCode::InvalidArgument,
+                "CSV stream export is one rectangular files table; use export_to_file with a bundle directory for suggestions"
+            ));
+        }
+
+        write_csv_row(stream, {"path", "compile_time_ms", "frontend_time_ms", "backend_time_ms", "preprocessing_ms", "parsing_ms", "semantic_analysis_ms", "template_instantiation_ms", "code_generation_ms", "optimization_ms", "unclassified_ms", "max_stack_bytes", "time_percent", "rank", "include_count", "template_count"});
 
         for (const auto& file : analysis.files) {
             if (options.min_compile_time > Duration::zero() &&
                 file.compile_time < options.min_compile_time) {
                 continue;
-                }
-
-            stream << escape_csv(file.file.string()) << ","
-                   << std::fixed << std::setprecision(3) << duration_to_ms(file.compile_time) << ","
-                   << duration_to_ms(file.frontend_time) << ","
-                   << duration_to_ms(file.backend_time) << ","
-                   << file.include_count << "\n";
-        }
-
-        if (options.include_suggestions && !suggestions.empty()) {
-            stream << "\n# Suggestions\n";
-            stream << "Type,Title,Target File,Line,Confidence,Priority,Estimated Savings (ms),Savings Evidence,Edits Count,Is Safe,Application Mode,Application Summary,Auto-Apply Blocked Reason\n";
-
-            for (const auto& sugg : suggestions) {
-                if (sugg.confidence < options.min_confidence) {
-                    continue;
-                }
-
-                stream << static_cast<int>(sugg.type) << ","
-                       << escape_csv(sugg.title) << ","
-                       << escape_csv(sugg.target_file.path.string()) << ","
-                       << sugg.target_file.line_start << ","
-                       << std::fixed << std::setprecision(2) << sugg.confidence << ","
-                       << static_cast<int>(sugg.priority) << ","
-                       << escape_csv(
-                           sugg.estimated_savings_evidence == EvidenceKind::Unavailable
-                               ? "unavailable"
-                               : std::to_string(duration_to_ms(sugg.estimated_savings))
-                       ) << ","
-                       << to_string(sugg.estimated_savings_evidence) << ","
-                       << sugg.edits.size() << ","
-                       << (sugg.is_safe ? "true" : "false") << ","
-                       << escape_csv(to_string(resolve_application_mode(sugg))) << ","
-                       << escape_csv(sugg.application_summary.value_or("")) << ","
-                       << escape_csv(sugg.auto_apply_blocked_reason.value_or("")) << "\n";
             }
+
+            write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_duration(file.breakdown.preprocessing, options.include_timing), csv_duration(file.breakdown.parsing, options.include_timing), csv_duration(file.breakdown.semantic_analysis, options.include_timing), csv_duration(file.breakdown.template_instantiation, options.include_timing), csv_duration(file.breakdown.code_generation, options.include_timing), csv_duration(file.breakdown.optimization, options.include_timing), csv_duration(file.breakdown.unclassified, options.include_timing), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
         }
 
         return Result<void, Error>::success();

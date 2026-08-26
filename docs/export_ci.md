@@ -14,18 +14,32 @@ Basic usage:
 bha export traces --format <format> -o output.<ext>
 ```
 
+CSV is a normalized bundle rather than a mixed multi-section file:
+
+```bash
+bha export traces --format csv --include-suggestions -o report-csv/
+```
+
+The bundle contains rectangular tables such as `summary.csv`, `files.csv`,
+`headers.csv`, `dependency_edges.csv`, `templates.csv`, `suggestions.csv`,
+`suggestion_edits.csv`, `build_steps.csv`, `targets.csv`, `modules.csv`, and
+`symbols.csv`. A `.csv` output path produces only the rectangular file table;
+use a directory when suggestions or relationship tables are needed.
+
 ## Format Guidance
 
 - `html`: for interactive human analysis.
 - `json`: for automation and downstream analytics ingestion.
-- `csv`: for spreadsheet and ad-hoc trend slicing.
+- `csv`: for spreadsheet and ad-hoc trend slicing through normalized tables.
 - `md`: for lightweight PR reports.
 
 ## Suggestion Payload Behavior
 
-Suggestion payload inclusion is intentionally controlled by format and flags:
-- use `--include-suggestions` for `csv` / `md`
-- HTML/JSON exports are analysis-first to reduce report noise
+Suggestion payload inclusion is opt-in and consistent across JSON, HTML, CSV,
+and Markdown:
+- use `--include-suggestions` when the explainable optimization payload is needed
+- CSV suggestions are written to `suggestions.csv` and related normalized tables
+- suggestion generation may be expensive because it requires semantic project analysis
 
 ## Snapshot-Based Regression Gates
 

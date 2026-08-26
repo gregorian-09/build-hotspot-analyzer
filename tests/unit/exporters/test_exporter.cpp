@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <sstream>
 #include <filesystem>
+#include <fstream>
 #include <nlohmann/json.hpp>
 #include "bha/exporters/exporter.hpp"
 #include "bha/analyzers/analyzer.hpp"
@@ -601,16 +602,142 @@ namespace bha::exporters::test
         EXPECT_TRUE(csv_str.find("utils.cpp") != std::string::npos);
     }
 
-    TEST_F(CsvExporterTest, IncludesSavingsEvidenceAndUnavailableValue) {
+    TEST_F(CsvExporterTest, StreamExportIsRectangular) {
+        const auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto count_fields = [](const std::string& line) {
+            bool quoted = false;
+            std::size_t fields = 1;
+            for (std::size_t index = 0; index < line.size(); ++index) {
+                if (line[index] == '"') {
+                    if (quoted && index + 1 < line.size() && line[index + 1] == '"') {
+                        ++index;
+                    } else {
+                        quoted = !quoted;
+                    }
+                } else if (line[index] == ',' && !quoted) {
+                    ++fields;
+                }
+            }
+            return fields;
+        };
+
+        std::istringstream lines(result.value());
+        std::string line;
+        ASSERT_TRUE(std::getline(lines, line));
+        const auto header_fields = count_fields(line);
+        EXPECT_EQ(header_fields, 16u);
+        while (std::getline(lines, line)) {
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
+            if (!line.empty()) {
+                EXPECT_EQ(count_fields(line), header_fields);
+            }
+        }
+        EXPECT_TRUE(result.value().find("# Files") == std::string::npos);
+        EXPECT_TRUE(result.value().find("# Suggestions") == std::string::npos);
+    }
+
+    TEST_F(CsvExporterTest, BundleNormalizesSuggestionsAndEvidence) {
+        ExportOptions options;
+        options.include_suggestions = true;
+
+        const auto count_fields = [](const std::string& line) {
+            bool quoted = false;
+            std::size_t fields = 1;
+            for (std::size_t index = 0; index < line.size(); ++index) {
+                if (line[index] == '"') {
+                    if (quoted && index + 1 < line.size() && line[index + 1] == '"') {
+                        ++index;
+                    } else {
+                        quoted = !quoted;
+                    }
+                } else if (line[index] == ',' && !quoted) {
+                    ++fields;
+                }
+            }
+            return fields;
+        };
+
+        const auto bundle = fs::temp_directory_path() / "bha-csv-bundle-export-test";
+        std::error_code error;
+        fs::remove_all(bundle, error);
+
+        const auto result = exporter_->export_to_file(bundle, analysis, suggestions, options, nullptr);
+        ASSERT_TRUE(result.is_ok());
+        ASSERT_TRUE(fs::is_directory(bundle));
+
+        EXPECT_TRUE(fs::exists(bundle / "metadata.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "summary.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "metric_capabilities.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "build_session.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "critical_path.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "linker.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "cache.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "process_resources.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "files.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "dependency_edges.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "templates.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "suggestions.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "suggestion_files.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "suggestion_steps.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "suggestion_examples.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "suggestion_edits.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "build_steps.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "targets.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "modules.csv"));
+        EXPECT_TRUE(fs::exists(bundle / "symbols.csv"));
+
+        std::ifstream suggestions_file(bundle / "suggestions.csv");
+        ASSERT_TRUE(suggestions_file.is_open());
+        const std::string suggestions_csv(
+            (std::istreambuf_iterator<char>(suggestions_file)),
+            std::istreambuf_iterator<char>()
+        );
+        EXPECT_TRUE(suggestions_csv.find("estimated_savings_evidence") != std::string::npos);
+        EXPECT_TRUE(suggestions_csv.find("unavailable") != std::string::npos);
+        EXPECT_TRUE(suggestions_csv.find("fwd-decl-001") != std::string::npos);
+        EXPECT_TRUE(suggestions_csv.find("pch-001") != std::string::npos);
+
+        std::ifstream files_file(bundle / "files.csv");
+        ASSERT_TRUE(files_file.is_open());
+        std::string header;
+        ASSERT_TRUE(std::getline(files_file, header));
+        std::string file_row;
+        ASSERT_TRUE(std::getline(files_file, file_row));
+        EXPECT_EQ(count_fields(header), count_fields(file_row));
+
+        for (const auto& entry : fs::directory_iterator(bundle)) {
+            if (!entry.is_regular_file() || entry.path().extension() != ".csv") {
+                continue;
+            }
+            std::ifstream table(entry.path());
+            ASSERT_TRUE(table.is_open());
+            std::string line;
+            ASSERT_TRUE(std::getline(table, header));
+            const auto expected_columns = count_fields(header);
+            while (std::getline(table, line)) {
+                if (!line.empty() && line.back() == '\r') {
+                    line.pop_back();
+                }
+                if (!line.empty()) {
+                    EXPECT_EQ(count_fields(line), expected_columns)
+                        << "Non-rectangular row in " << entry.path();
+                }
+            }
+        }
+
+        fs::remove_all(bundle, error);
+    }
+
+    TEST_F(CsvExporterTest, StreamRejectsSuggestionsInsteadOfDroppingThem) {
         ExportOptions options;
         options.include_suggestions = true;
 
         const auto result = exporter_->export_to_string(analysis, suggestions, options);
-        ASSERT_TRUE(result.is_ok());
-
-        const auto& csv_str = result.value();
-        EXPECT_TRUE(csv_str.find("Savings Evidence") != std::string::npos);
-        EXPECT_TRUE(csv_str.find("unavailable") != std::string::npos);
+        EXPECT_TRUE(result.is_err());
     }
 
     // ============================================================================

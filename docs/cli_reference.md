@@ -228,7 +228,7 @@ bha record --compiler msvc -o build.log -- cl /Bt+ /c file.cpp
 Export analysis to machine-readable or human-readable formats.
 
 ```bash
-bha export [OPTIONS] <trace-files...> -o <output-file>
+bha export [OPTIONS] <trace-files...> -o <output-file-or-directory>
 ```
 
 Formats:
@@ -240,7 +240,7 @@ Formats:
 Important options:
 - `-o`, `--output` (required)
 - `-f`, `--format`
-- `-s`, `--include-suggestions` (for `csv`/`md`)
+- `-s`, `--include-suggestions` (all export formats; opt-in)
 - `--dark-mode`
 - `--title`
 - `--max-files`
@@ -253,8 +253,16 @@ Important options:
   - `--no-timing`
 
 Notes:
-- HTML/JSON exports are analysis-focused.
-- Suggestion payload inclusion is intentionally constrained by format and flags.
+- JSON is the canonical complete machine-readable document.
+- HTML renders the canonical document in its interactive Build Context view.
+- CSV with a `.csv` path emits one strict rectangular files table. CSV with a
+  directory path emits a normalized bundle with separate tables for files,
+  headers, dependency edges, templates, suggestions, build steps, targets,
+  modules, symbols, and their relationships.
+- Use a CSV directory bundle when `--include-suggestions` is requested; BHA
+  rejects suggestions for single-stream CSV output instead of dropping them.
+- Suggestions remain opt-in for every format because generation may require
+  semantic project analysis and can be expensive.
 
 Examples:
 
