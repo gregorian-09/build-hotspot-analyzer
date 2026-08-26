@@ -14,7 +14,10 @@ namespace bha::suggestions {
         class ForwardDeclSuggesterTest : public ::testing::Test {
         protected:
             void SetUp() override {
-                root_ = std::filesystem::temp_directory_path() / "bha-forward-decl-suggester-test";
+                root_ = std::filesystem::temp_directory_path() / (
+                    "bha-forward-decl-suggester-test-" +
+                    std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+                );
                 std::error_code ec;
                 std::filesystem::remove_all(root_, ec);
                 std::filesystem::create_directories(root_ / "include", ec);
@@ -34,10 +37,10 @@ namespace bha::suggestions {
             const std::filesystem::path& source
         ) {
             std::ofstream(root / "compile_commands.json")
-                << "[{\"directory\":\"" << root.string() << "\","
+                << "[{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/use.cpp\","
-                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I" << (root / "include").string()
-                << "\",\"-c\",\"" << (root / "src/use.cpp").string() << "\"]}]";
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I" << (root / "include").generic_string()
+                << "\",\"-c\",\"" << (root / "src/use.cpp").generic_string() << "\"]}]";
             (void)source;
         }
 
@@ -56,16 +59,16 @@ namespace bha::suggestions {
             const std::filesystem::path& root
         ) {
             std::ofstream(root / "compile_commands.json")
-                << "[{\"directory\":\"" << root.string() << "\","
+                << "[{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/use.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
-                << (root / "include").string() << "\",\"-c\",\""
-                << (root / "src/use.cpp").string() << "\"]},"
-                << "{\"directory\":\"" << root.string() << "\","
+                << (root / "include").generic_string() << "\",\"-c\",\""
+                << (root / "src/use.cpp").generic_string() << "\"]},"
+                << "{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/other.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-DBHA_CLASS_FORM\",\"-I"
-                << (root / "include").string() << "\",\"-c\",\""
-                << (root / "src/other.cpp").string() << "\"]}]";
+                << (root / "include").generic_string() << "\",\"-c\",\""
+                << (root / "src/other.cpp").generic_string() << "\"]}]";
         }
 
         analyzers::AnalysisResult dependency_analysis(
@@ -130,6 +133,10 @@ namespace bha::suggestions {
         const auto result = ForwardDeclSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.confidence, 1.0);
@@ -175,6 +182,12 @@ namespace bha::suggestions {
         const auto first = analyze_forward_declarations(project_index, header, commands, &cache);
         const auto second = analyze_forward_declarations(project_index, header, commands, &cache);
 
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_FALSE(first.available);
+        EXPECT_FALSE(second.available);
+        EXPECT_TRUE(cache.analyses.empty());
+        return;
+#endif
         ASSERT_TRUE(first.available);
         ASSERT_TRUE(second.available);
         ASSERT_EQ(cache.analyses.size(), 1u);
@@ -351,6 +364,10 @@ namespace bha::suggestions {
         const auto result = ForwardDeclSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& text = result.value().suggestions.front().edits.front().new_text;
         EXPECT_NE(text.find("inline namespace v2"), std::string::npos);
@@ -373,6 +390,10 @@ namespace bha::suggestions {
         const auto result = ForwardDeclSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_TRUE(result.value().suggestions.front().is_safe);
     }

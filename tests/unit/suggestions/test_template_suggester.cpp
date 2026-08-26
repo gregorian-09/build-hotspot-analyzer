@@ -79,7 +79,11 @@ namespace bha::suggestions {
     }
 
     TEST_F(TemplateSuggesterTest, CorrelatesValidatedTraceWithExactAstRecord) {
-        const auto root = std::filesystem::temp_directory_path() / "bha-template-suggester-test";
+        const auto root = std::filesystem::temp_directory_path() / (
+            "bha-template-suggester-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            )
+        );
         std::error_code ec;
         std::filesystem::remove_all(root, ec);
         std::filesystem::create_directories(root / "src", ec);
@@ -92,7 +96,7 @@ namespace bha::suggestions {
             << "template struct Box<int>;\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\","
+            << "[{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/main.cpp\","
             << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/main.cpp\"]}]";
 
@@ -119,7 +123,11 @@ namespace bha::suggestions {
     }
 
     TEST_F(TemplateSuggesterTest, RejectsMalformedTraceSignatureWithoutApproximateMatching) {
-        const auto root = std::filesystem::temp_directory_path() / "bha-template-malformed-signature-test";
+        const auto root = std::filesystem::temp_directory_path() / (
+            "bha-template-malformed-signature-test-" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()
+            )
+        );
         std::error_code ec;
         std::filesystem::remove_all(root, ec);
         std::filesystem::create_directories(root / "src", ec);
@@ -131,7 +139,7 @@ namespace bha::suggestions {
             << "template struct Box<int>;\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\","
+            << "[{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/main.cpp\","
             << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/main.cpp\"]}]";
 
@@ -183,10 +191,10 @@ namespace bha::suggestions {
 
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\","
+            << "[{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/box.cpp\","
             << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\","
+            << "{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/use.cpp\","
             << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
@@ -205,6 +213,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
@@ -248,9 +261,9 @@ namespace bha::suggestions {
             << "std::vector<Box<int>> boxes;\n"
             << "Box<int> boxed_array[2];\n";
         std::ofstream(root / "compile_commands.json")
-            << "[{\"directory\":\"" << root.string() << "\","
+            << "[{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/box.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\","
+            << "{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
@@ -264,6 +277,13 @@ namespace bha::suggestions {
         SuggesterOptions options;
         options.compile_commands_path = root / "compile_commands.json";
         const SuggestionContext context{trace, analysis, options, root};
+#if !BHA_HAVE_CLANG_TOOLING
+        const auto unavailable_result = suggester_.suggest(context);
+        ASSERT_TRUE(unavailable_result.is_ok());
+        EXPECT_TRUE(unavailable_result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         TemplateSemanticIndex index(*context.project_index);
         index.build();
         ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
@@ -311,9 +331,9 @@ namespace bha::suggestions {
             << "int use_identity() { return identity(42); }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\","
+            << "[{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/identity.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/identity.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\","
+            << "{\"directory\":\"" << root.generic_string() << "\","
             << "\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
@@ -330,6 +350,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         ASSERT_EQ(suggestion.edits.size(), 1u);
@@ -360,8 +385,8 @@ namespace bha::suggestions {
             << "#include \"identity.hpp\"\n"
             << "int use_identity() { return identity(42); }\n";
         std::ofstream(root / "compile_commands.json")
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/identity.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/identity.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/identity.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/identity.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -403,8 +428,8 @@ namespace bha::suggestions {
             << "int use_value() { return value<int>; }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/value.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/value.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/value.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/value.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -420,6 +445,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
@@ -453,8 +483,8 @@ namespace bha::suggestions {
             << "int use_identity() { return Utility::identity(42); }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/utility.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/utility.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/utility.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/utility.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -470,6 +500,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
@@ -503,8 +538,8 @@ namespace bha::suggestions {
             << "int use_identity() { return Utility{}.identity(42); }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/utility.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/utility.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/utility.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/utility.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -520,6 +555,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
@@ -555,8 +595,8 @@ namespace bha::suggestions {
             << "int use_box() { return Box<int>{}.get(42); }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/box.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/box.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/box.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -572,6 +612,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
@@ -601,8 +646,8 @@ namespace bha::suggestions {
             << "void use_log() { log_value(1, 2); }\n";
         const auto database = root / "compile_commands.json";
         std::ofstream(database)
-            << "[{\"directory\":\"" << root.string() << "\",\"file\":\"src/logging.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/logging.cpp\"]},"
-            << "{\"directory\":\"" << root.string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
+            << "[{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/logging.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/logging.cpp\"]},"
+            << "{\"directory\":\"" << root.generic_string() << "\",\"file\":\"src/use.cpp\",\"arguments\":[\"clang++\",\"-std=c++20\",\"-Iinclude\",\"-c\",\"src/use.cpp\"]}]";
 
         BuildTrace trace;
         trace.template_evidence = TemplateEvidence::PerSpecializationTimingWithLocations;
@@ -618,6 +663,11 @@ namespace bha::suggestions {
         const auto result = suggester_.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        std::filesystem::remove_all(root, ec);
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(

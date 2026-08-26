@@ -10,7 +10,10 @@ namespace bha::suggestions {
     class IncludeSuggesterTest : public ::testing::Test {
     protected:
         static void SetUpTestSuite() {
-            fake_root_ = fs::temp_directory_path() / "bha-fake-clang-tidy";
+            fake_root_ = fs::temp_directory_path() / (
+                "bha-fake-clang-tidy-" +
+                std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+            );
             std::error_code ec;
             fs::remove_all(fake_root_, ec);
             fs::create_directories(fake_root_, ec);
@@ -132,6 +135,10 @@ namespace bha::suggestions {
 
         const auto result = suggester_->suggest(context);
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.type, SuggestionType::IncludeRemoval);

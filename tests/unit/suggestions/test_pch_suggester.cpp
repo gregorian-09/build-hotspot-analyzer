@@ -11,7 +11,10 @@ namespace bha::suggestions {
         class PCHSuggesterTest : public ::testing::Test {
         protected:
             void SetUp() override {
-                root_ = std::filesystem::temp_directory_path() / "bha-pch-evidence-test";
+                root_ = std::filesystem::temp_directory_path() / (
+                    "bha-pch-evidence-test-" +
+                    std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+                );
                 std::error_code ec;
                 std::filesystem::remove_all(root_, ec);
                 std::filesystem::create_directories(root_ / "include", ec);
@@ -31,16 +34,16 @@ namespace bha::suggestions {
 
             void write_database(const std::string& second_standard = "c++20") {
                 std::ofstream(root_ / "compile_commands.json")
-                    << "[{\"directory\":\"" << root_.string() << "\","
-                    << "\"file\":\"" << (root_ / "src" / "one.cpp").string() << "\","
+                    << "[{\"directory\":\"" << root_.generic_string() << "\","
+                    << "\"file\":\"" << (root_ / "src" / "one.cpp").generic_string() << "\","
                     << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
-                    << (root_ / "include").string() << "\",\"-c\",\""
-                    << (root_ / "src" / "one.cpp").string() << "\"]},"
-                    << "{\"directory\":\"" << root_.string() << "\","
-                    << "\"file\":\"" << (root_ / "src" / "two.cpp").string() << "\","
+                    << (root_ / "include").generic_string() << "\",\"-c\",\""
+                    << (root_ / "src" / "one.cpp").generic_string() << "\"]},"
+                    << "{\"directory\":\"" << root_.generic_string() << "\","
+                    << "\"file\":\"" << (root_ / "src" / "two.cpp").generic_string() << "\","
                     << "\"arguments\":[\"clang++\",\"-std=" << second_standard << "\",\"-I"
-                    << (root_ / "include").string() << "\",\"-c\",\""
-                    << (root_ / "src" / "two.cpp").string() << "\"]}]";
+                    << (root_ / "include").generic_string() << "\",\"-c\",\""
+                    << (root_ / "src" / "two.cpp").generic_string() << "\"]}]";
             }
 
             analyzers::AnalysisResult dependency_analysis(
@@ -165,16 +168,16 @@ namespace bha::suggestions {
         const auto one = root_ / "src" / "one.cpp";
         const auto two = root_ / "src" / "two.cpp";
         std::ofstream(root_ / "compile_commands.json")
-            << "[{\"directory\":\"" << root_.string() << "\","
-            << "\"file\":\"" << one.string() << "\","
+            << "[{\"directory\":\"" << root_.generic_string() << "\","
+            << "\"file\":\"" << one.generic_string() << "\","
             << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
-            << (root_ / "include").string() << "\",\"-c\",\""
-            << one.string() << "\"]},"
-            << "{\"directory\":\"" << root_.string() << "\","
-            << "\"file\":\"" << two.string() << "\","
+            << (root_ / "include").generic_string() << "\",\"-c\",\""
+            << one.generic_string() << "\"]},"
+            << "{\"directory\":\"" << root_.generic_string() << "\","
+            << "\"file\":\"" << two.generic_string() << "\","
             << "\"arguments\":[\"clang++\",\"-x\",\"c\",\"-I"
-            << (root_ / "include").string() << "\",\"-c\",\""
-            << two.string() << "\"]}]";
+            << (root_ / "include").generic_string() << "\",\"-c\",\""
+            << two.generic_string() << "\"]}]";
         const auto analysis = dependency_analysis(header, {one, two});
         SuggesterOptions options;
         options.compile_commands_path = root_ / "compile_commands.json";

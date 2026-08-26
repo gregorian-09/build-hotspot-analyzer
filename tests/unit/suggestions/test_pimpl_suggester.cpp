@@ -11,7 +11,10 @@ namespace bha::suggestions {
         class PimplSuggesterTest : public ::testing::Test {
         protected:
             void SetUp() override {
-                root_ = std::filesystem::temp_directory_path() / "bha-pimpl-suggester-test";
+                root_ = std::filesystem::temp_directory_path() / (
+                    "bha-pimpl-suggester-test-" +
+                    std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+                );
                 std::error_code ec;
                 std::filesystem::remove_all(root_, ec);
                 std::filesystem::create_directories(root_ / "include", ec);
@@ -25,11 +28,11 @@ namespace bha::suggestions {
 
             void write_compile_commands(const std::filesystem::path& source) {
                 std::ofstream database(root_ / "compile_commands.json");
-                database << "[{\"directory\":\"" << root_.string() << "\","
-                         << "\"file\":\"" << source.string() << "\","
+                database << "[{\"directory\":\"" << root_.generic_string() << "\","
+                         << "\"file\":\"" << source.generic_string() << "\","
                          << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
-                         << (root_ / "include").string() << "\",\"-c\",\""
-                         << source.string() << "\"]}]";
+                         << (root_ / "include").generic_string() << "\",\"-c\",\""
+                         << source.generic_string() << "\"]}]";
             }
 
             void write_measured_source(const std::filesystem::path& source) {

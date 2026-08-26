@@ -3,13 +3,17 @@
 #include "bha/build_sessions/cmake_file_api.hpp"
 #include "bha/utils/file_utils.hpp"
 
+#include <chrono>
 #include <filesystem>
 
 namespace bha::build_sessions::test {
     namespace {
 
         fs::path make_fixture_root() {
-            return fs::temp_directory_path() / "bha-cmake-file-api-fixture";
+            return fs::temp_directory_path() / (
+                "bha-cmake-file-api-fixture-" +
+                std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+            );
         }
 
         void write_fixture(const fs::path& root, const bool multiple_configurations) {

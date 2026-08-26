@@ -100,7 +100,7 @@ namespace bha::storage
         };
 
         // Overall changes
-        Duration build_time_delta;           // Positive = slower, negative = faster
+        Duration build_time_delta = Duration::zero(); // Positive = slower, negative = faster
         /// Undefined when the old build time is zero or unavailable.
         std::optional<double> build_time_percent_change;
         int64_t file_count_delta;            // Change in file count

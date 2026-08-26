@@ -10,7 +10,10 @@ namespace bha::suggestions {
         class HeaderSplitSuggesterTest : public ::testing::Test {
         protected:
             void SetUp() override {
-                root_ = std::filesystem::temp_directory_path() / "bha-header-split-suggester-test";
+                root_ = std::filesystem::temp_directory_path() / (
+                    "bha-header-split-suggester-test-" +
+                    std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+                );
                 std::error_code ec;
                 std::filesystem::remove_all(root_, ec);
                 std::filesystem::create_directories(root_ / "include", ec);
@@ -24,11 +27,11 @@ namespace bha::suggestions {
 
             void write_compile_commands() {
                 std::ofstream(root_ / "compile_commands.json")
-                    << "[{\"directory\":\"" << root_.string() << "\","
+                    << "[{\"directory\":\"" << root_.generic_string() << "\","
                     << "\"file\":\"src/use.cpp\","
                     << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I"
-                    << (root_ / "include").string() << "\",\"-c\",\""
-                    << (root_ / "src/use.cpp").string() << "\"]}]";
+                    << (root_ / "include").generic_string() << "\",\"-c\",\""
+                    << (root_ / "src/use.cpp").generic_string() << "\"]}]";
             }
 
             std::filesystem::path root_;
@@ -88,6 +91,10 @@ namespace bha::suggestions {
         const auto result = HeaderSplitSuggester{}.suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u)
             << "analyzed=" << result.value().items_analyzed
             << " skipped=" << result.value().items_skipped;

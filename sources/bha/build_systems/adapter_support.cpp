@@ -16,6 +16,8 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#elif defined(__APPLE__)
+#include <mach-o/dyld.h>
 #else
 #include <fcntl.h>
 #include <signal.h>
@@ -320,8 +322,7 @@ namespace bha::build_systems::detail {
 #elif defined(__APPLE__)
             char path[1024];
             uint32_t size = sizeof(path);
-            extern int _NSGetExecutablePath(char*, uint32_t*);
-            if (_NSGetExecutablePath(path, &size) == 0) {
+            if (::_NSGetExecutablePath(path, &size) == 0) {
                 return fs::canonical(fs::path(path)).parent_path();
             }
 #else

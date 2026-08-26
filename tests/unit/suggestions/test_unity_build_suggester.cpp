@@ -357,6 +357,10 @@ namespace bha::suggestions {
         auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_FALSE(result.value().suggestions.empty());
 
         bool found_cmake_edit = false;
@@ -416,6 +420,10 @@ namespace bha::suggestions {
         const auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_FALSE(result.value().suggestions.empty());
         EXPECT_TRUE(std::ranges::any_of(result.value().suggestions, [&](const auto& suggestion) {
             return std::ranges::any_of(suggestion.edits, [&](const auto& edit) {
@@ -697,6 +705,10 @@ namespace bha::suggestions {
         const auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_EQ(result.value().suggestions.front().secondary_files.size(), 3u);
     }
@@ -733,6 +745,10 @@ namespace bha::suggestions {
         const auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& sources = result.value().suggestions.front().secondary_files;
         ASSERT_EQ(sources.size(), 2u);
@@ -765,6 +781,10 @@ namespace bha::suggestions {
         const auto result = suggester_->suggest(context);
 
         ASSERT_TRUE(result.is_ok());
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_TRUE(result.value().suggestions.empty());
+        return;
+#endif
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& sources = result.value().suggestions.front().secondary_files;
         ASSERT_EQ(sources.size(), 2u);

@@ -274,7 +274,7 @@ namespace bha::build_sessions::test {
         ASSERT_TRUE(utils::write_file(data / "compile.json", snippet).is_ok());
         const auto index_content = std::string(R"json({
   "version": {"major": 1, "minor": 1},
-  "dataDir": ")json") + data.string() + R"json(",
+  "dataDir": ")json") + data.generic_string() + R"json(",
   "hook": "postCMakeBuild",
   "staticSystemInformation": {
     "OSName": "Linux",
@@ -350,7 +350,7 @@ namespace bha::build_sessions::test {
 })json";
         const auto index_content = std::string(R"json({
   "version": {"major": 1, "minor": 1},
-  "dataDir": ")json") + data.string() + R"json(",
+  "dataDir": ")json") + data.generic_string() + R"json(",
   "snippets": ["compile.json"]
 })json";
         ASSERT_TRUE(utils::write_file(trace_file, clang_trace).is_ok());
@@ -395,7 +395,7 @@ namespace bha::build_sessions::test {
 })json";
         const auto index_content = std::string(R"json({
   "version": {"major": 1, "minor": 1},
-  "dataDir": ")json") + data.string() + R"json(",
+  "dataDir": ")json") + data.generic_string() + R"json(",
   "snippets": ["build.json"]
 })json";
         ASSERT_TRUE(utils::write_file(build_snippet, snippet).is_ok());
@@ -433,7 +433,7 @@ namespace bha::build_sessions::test {
 })json";
         const auto index_content = std::string(R"json({
   "version": {"major": 1, "minor": 1},
-  "dataDir": ")json") + data.string() + R"json(",
+  "dataDir": ")json") + data.generic_string() + R"json(",
   "snippets": ["compile.json"]
 })json";
         ASSERT_TRUE(utils::write_file(snippet_file, snippet).is_ok());

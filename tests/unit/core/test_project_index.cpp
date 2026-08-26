@@ -1,5 +1,6 @@
 #include "bha/project_index.hpp"
 
+#include <chrono>
 #include <fstream>
 #include <gtest/gtest.h>
 
@@ -10,7 +11,10 @@ namespace bha {
             fs::path root;
 
             void SetUp() override {
-                root = fs::temp_directory_path() / "bha_project_index_test";
+                root = fs::temp_directory_path() / (
+                    "bha_project_index_test-" +
+                    std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
+                );
                 std::error_code ec;
                 fs::remove_all(root, ec);
                 fs::create_directories(root / "src", ec);
@@ -50,7 +54,7 @@ namespace bha {
         TEST_F(ProjectIndexFixture, LoadsCompileCommandsAndNormalizesSourceArguments) {
             const fs::path database = root / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root.string() << "\","
+                << "[{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/main.cpp\","
                 << "\"arguments\":[\"clang++\",\"-Iinclude\",\"-c\",\"src/main.cpp\"]}]";
 
@@ -102,7 +106,7 @@ namespace bha {
             std::error_code ec;
             fs::create_directories(database.parent_path(), ec);
             std::ofstream(database)
-                << "[{\"directory\":\"" << root.string() << "\","
+                << "[{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/main.cpp\","
                 << "\"command\":\"clang++ -I include -c src/main.cpp\"}]";
 

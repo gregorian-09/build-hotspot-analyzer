@@ -112,20 +112,26 @@ namespace bha::suggestions {
             const std::string& output,
             const fs::path& source_file
         ) {
-            const std::string prefix = source_file.string() + ":";
-            if (!output.starts_with(prefix)) {
-                return std::nullopt;
+            const std::array<std::string, 2> prefixes = {
+                source_file.string() + ":",
+                source_file.generic_string() + ":"
+            };
+            for (const auto& prefix : prefixes) {
+                if (!output.starts_with(prefix)) {
+                    continue;
+                }
+                const auto line_end = output.find(':', prefix.size());
+                if (line_end == std::string::npos || line_end == prefix.size()) {
+                    return std::nullopt;
+                }
+                try {
+                    const auto line = std::stoul(output.substr(prefix.size(), line_end - prefix.size()));
+                    return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
+                } catch (const std::exception&) {
+                    return std::nullopt;
+                }
             }
-            const auto line_end = output.find(':', prefix.size());
-            if (line_end == std::string::npos || line_end == prefix.size()) {
-                return std::nullopt;
-            }
-            try {
-                const auto line = std::stoul(output.substr(prefix.size(), line_end - prefix.size()));
-                return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
-            } catch (const std::exception&) {
-                return std::nullopt;
-            }
+            return std::nullopt;
         }
 
         FILE* open_pipe(const std::string& command_line) {
