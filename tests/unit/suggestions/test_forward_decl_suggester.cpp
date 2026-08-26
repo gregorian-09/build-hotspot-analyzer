@@ -136,7 +136,7 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.confidence, 1.0);
@@ -145,6 +145,7 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.edits.front().file, source);
         EXPECT_NE(suggestion.edits.front().new_text.find("struct Box;"), std::string::npos);
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
+#endif
     }
 
     TEST_F(ForwardDeclSuggesterTest, IgnoresDependencyHeadersOutsideProjectRoot) {
@@ -187,12 +188,13 @@ namespace bha::suggestions {
         EXPECT_FALSE(second.available);
         EXPECT_TRUE(cache.analyses.empty());
         return;
-#endif
+#else
         ASSERT_TRUE(first.available);
         ASSERT_TRUE(second.available);
         ASSERT_EQ(cache.analyses.size(), 1u);
         EXPECT_EQ(second.records.size(), first.records.size());
         EXPECT_EQ(second.includes.size(), first.includes.size());
+#endif
     }
 
     TEST_F(ForwardDeclSuggesterTest, RejectsMacroExpandedInclude) {
@@ -367,10 +369,11 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& text = result.value().suggestions.front().edits.front().new_text;
         EXPECT_NE(text.find("inline namespace v2"), std::string::npos);
+#endif
     }
 
     TEST_F(ForwardDeclSuggesterTest, ReplaysRelativeCompileArgumentsFromNestedDatabase) {
@@ -393,9 +396,10 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_TRUE(result.value().suggestions.front().is_safe);
+#endif
     }
 
     TEST_F(ForwardDeclSuggesterTest, RejectsConflictingDeclarationKindsAcrossCommands) {

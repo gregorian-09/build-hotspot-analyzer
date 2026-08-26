@@ -217,7 +217,7 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
@@ -235,6 +235,7 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.hotspot_origins.front().chain.front(), "template: Box<int>");
         EXPECT_EQ(result.value().items_analyzed, 1u);
         EXPECT_EQ(result.value().items_skipped, 0u);
+#endif
 
         std::filesystem::remove_all(root, ec);
     }
@@ -283,7 +284,7 @@ namespace bha::suggestions {
         EXPECT_TRUE(unavailable_result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         TemplateSemanticIndex index(*context.project_index);
         index.build();
         ASSERT_EQ(index.status(), TemplateSemanticStatus::Parsed) << index.diagnostic();
@@ -305,6 +306,7 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -354,7 +356,7 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         ASSERT_EQ(suggestion.edits.size(), 1u);
@@ -364,6 +366,7 @@ namespace bha::suggestions {
             "extern template int identity<int>(int);\n"
         );
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -449,13 +452,14 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
             "extern template int value<int>;\n"
         );
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -504,13 +508,14 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Utility::identity<int>(int);\n"
         );
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -559,13 +564,14 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Utility::identity<int>(int) const & noexcept(false);\n"
         );
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -616,13 +622,14 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Box<int>::get<int>(int) const &;\n"
         );
+#endif
         std::filesystem::remove_all(root, ec);
     }
 
@@ -667,13 +674,14 @@ namespace bha::suggestions {
         EXPECT_TRUE(result.value().suggestions.empty());
         std::filesystem::remove_all(root, ec);
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(
             result.value().suggestions.front().edits.front().new_text,
             "extern template void log_value<int>(int, ...);\n"
         );
+#endif
         std::filesystem::remove_all(root, ec);
     }
 

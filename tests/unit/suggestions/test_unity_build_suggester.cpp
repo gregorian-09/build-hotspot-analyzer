@@ -360,7 +360,7 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_FALSE(result.value().suggestions.empty());
 
         bool found_cmake_edit = false;
@@ -385,6 +385,7 @@ namespace bha::suggestions {
         EXPECT_FALSE(found_global_edit);
         EXPECT_FALSE(found_manual_unity_file);
         EXPECT_EQ(result.value().suggestions.front().estimated_savings, Duration::zero());
+#endif
     }
 
     TEST_F(UnityBuildSuggesterTest, ParsesBracketCommentsAndMultilineCommands) {
@@ -423,15 +424,16 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_FALSE(result.value().suggestions.empty());
         EXPECT_TRUE(std::ranges::any_of(result.value().suggestions, [&](const auto& suggestion) {
             return std::ranges::any_of(suggestion.edits, [&](const auto& edit) {
                 return edit.file == temp.root / "CMakeLists.txt" &&
                        edit.new_text.find("set_property(TARGET core PROPERTY UNITY_BUILD ON)") !=
-                           std::string::npos;
+                std::string::npos;
             });
         }));
+#endif
     }
 
     TEST_F(UnityBuildSuggesterTest, SkipsWhenTargetAlreadyHasUnityEnabled) {
@@ -708,9 +710,10 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         EXPECT_EQ(result.value().suggestions.front().secondary_files.size(), 3u);
+#endif
     }
 
     TEST_F(UnityBuildSuggesterTest, IgnoresInterfaceSourcesWhenResolvingTargetSources) {
@@ -748,12 +751,13 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& sources = result.value().suggestions.front().secondary_files;
         ASSERT_EQ(sources.size(), 2u);
         EXPECT_EQ(sources[0].path, temp.root / "src" / "a.cpp");
         EXPECT_EQ(sources[1].path, temp.root / "src" / "b.cpp");
+#endif
     }
 
     TEST_F(UnityBuildSuggesterTest, PreservesCMakeSourceOrderInValidatedTarget) {
@@ -784,12 +788,13 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& sources = result.value().suggestions.front().secondary_files;
         ASSERT_EQ(sources.size(), 2u);
         EXPECT_EQ(sources[0].path, temp.root / "src" / "z.cpp");
         EXPECT_EQ(sources[1].path, temp.root / "src" / "a.cpp");
+#endif
     }
 
     TEST_F(UnityBuildSuggesterTest, SkipsCrossTargetGroupsWhenNoSingleTargetOwnsAllFiles) {

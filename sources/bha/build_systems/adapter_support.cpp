@@ -16,13 +16,14 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
-#elif defined(__APPLE__)
-#include <mach-o/dyld.h>
 #else
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
 #endif
 
 #include "bha/build_systems/adapter_support.hpp"

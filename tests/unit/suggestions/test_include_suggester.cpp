@@ -138,7 +138,7 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         const auto& suggestion = result.value().suggestions.front();
         EXPECT_EQ(suggestion.type, SuggestionType::IncludeRemoval);
@@ -148,6 +148,7 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.edits.front().file, source);
         EXPECT_EQ(suggestion.edits.front().start_line, 1u);
         EXPECT_EQ(suggestion.edits.front().end_line, 2u);
+#endif
     }
 
     TEST_F(IncludeSuggesterTest, IgnoresDiagnosticsThatDoNotPointToIncludes) {

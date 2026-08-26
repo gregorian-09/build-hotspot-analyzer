@@ -94,7 +94,7 @@ namespace bha::suggestions {
 #if !BHA_HAVE_CLANG_TOOLING
         EXPECT_TRUE(result.value().suggestions.empty());
         return;
-#endif
+#else
         ASSERT_EQ(result.value().suggestions.size(), 1u)
             << "analyzed=" << result.value().items_analyzed
             << " skipped=" << result.value().items_skipped;
@@ -107,6 +107,7 @@ namespace bha::suggestions {
         ASSERT_TRUE(suggestion.edits.back().has_byte_range());
         EXPECT_GT(*suggestion.edits.back().byte_length, 0u);
         EXPECT_EQ(suggestion.estimated_savings, Duration::zero());
+#endif
     }
 
     TEST_F(HeaderSplitSuggesterTest, IgnoresDependencyHeadersOutsideProjectRoot) {
