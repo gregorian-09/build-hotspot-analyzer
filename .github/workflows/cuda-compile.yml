@@ -1,0 +1,79 @@
+name: BHA CUDA Compiler Probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nvcc-compile:
+    name: NVCC compile-only contract
+    runs-on: ubuntu-24.04
+    container: nvidia/cuda:12.6.3-devel-ubuntu24.04
+    steps:
+      - name: Install checkout prerequisites
+        run: |
+          set -euxo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install --yes ca-certificates git
+
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install host build dependencies
+        run: |
+          set -euxo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+            cmake \
+            g++ \
+            git \
+            ninja-build \
+            python3
+          mkdir -p ci/cuda
+          {
+            nvcc --version
+            cmake --version
+          } | tee ci/cuda/toolchain.txt
+
+      - name: Build BHA parser and test targets
+        run: |
+          set -euxo pipefail
+          cmake -S . -B build-cuda-host -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DBHA_BUILD_TESTS=ON \
+            -DBHA_BUILD_CLI=ON \
+            -DBHA_BUILD_REFACTOR_TOOLS=OFF \
+            -DBHA_ENABLE_LSP=OFF \
+            -DBHA_ENABLE_TEMPLATE_AST=OFF \
+            2>&1 | tee ci/cuda/configure.log
+          cmake --build build-cuda-host --target bha_tests --parallel 2 \
+            2>&1 | tee ci/cuda/build.log
+          ctest --test-dir build-cuda-host --output-on-failure --parallel 2 \
+            2>&1 | tee ci/cuda/ctest.log
+
+      - name: Compile a CUDA translation unit
+        run: |
+          set -euxo pipefail
+          cat > ci/cuda/trace_fixture.cu <<'EOF'
+          __global__ void bha_probe_kernel(int* value) {
+              *value += 1;
+          }
+
+          int main() {
+              return 0;
+          }
+          EOF
+          nvcc -std=c++17 -c ci/cuda/trace_fixture.cu \
+            -o ci/cuda/trace_fixture.o 2>&1 | tee ci/cuda/nvcc-compile.log
+          test -s ci/cuda/trace_fixture.o
+
+      - name: Upload CUDA diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bha-cuda-nvcc-${{ github.sha }}
+          if-no-files-found: warn
+          path: ci/cuda/

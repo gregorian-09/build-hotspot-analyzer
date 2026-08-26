@@ -1,0 +1,307 @@
+name: BHA Cross-Platform Verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bha-cross-platform-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    name: Linux / ${{ matrix.compiler_name }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler_id: clang
+            compiler_name: Clang 18
+            c_compiler: clang-18
+            cxx_compiler: clang++-18
+          - compiler_id: gcc
+            compiler_name: GCC
+            c_compiler: gcc
+            cxx_compiler: g++
+    env:
+      BUILD_DIR: build-${{ matrix.compiler_id }}
+      TRACE_DIR: ci/traces/${{ matrix.compiler_id }}
+      CC: ${{ matrix.c_compiler }}
+      CXX: ${{ matrix.cxx_compiler }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install compiler and build dependencies
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes \
+            clang-18 \
+            clang-tools-18 \
+            cmake \
+            g++ \
+            googletest \
+            libclang-18-dev \
+            libgtest-dev \
+            llvm-18-dev \
+            ninja-build \
+            nlohmann-json3-dev \
+            python3 \
+            python3-jsonschema
+          mkdir -p "$TRACE_DIR" ci
+          {
+            cmake --version
+            "$CXX" --version
+            clang-scan-deps-18 --version
+          } | tee ci/toolchain.txt
+
+      - name: Configure
+        run: |
+          set -euxo pipefail
+          cmake -S . -B "$BUILD_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER="${{ matrix.c_compiler }}" \
+            -DCMAKE_CXX_COMPILER="${{ matrix.cxx_compiler }}" \
+            -DBHA_BUILD_TESTS=ON \
+            -DBHA_BUILD_CLI=ON \
+            -DBHA_BUILD_REFACTOR_TOOLS=ON \
+            -DBHA_ENABLE_LSP=ON \
+            -DBHA_ENABLE_TEMPLATE_AST=ON \
+            2>&1 | tee ci/configure.log
+
+      - name: Build
+        run: |
+          set -euxo pipefail
+          cmake --build "$BUILD_DIR" --parallel 2 2>&1 | tee ci/build.log
+
+      - name: Run CTest
+        run: |
+          set -euxo pipefail
+          ctest --test-dir "$BUILD_DIR" --output-on-failure --parallel 2 \
+            2>&1 | tee ci/ctest.log
+
+      - name: Generate and analyze a compiler trace
+        run: |
+          set -euxo pipefail
+          source_file="$TRACE_DIR/trace_fixture.cpp"
+          cat > "$source_file" <<'EOF'
+          #include <array>
+          #include <string>
+
+          int main() {
+              const std::array<std::string, 2> values{"bha", "trace"};
+              return static_cast<int>(values[0].size() + values[1].size());
+          }
+          EOF
+
+          if [[ "${{ matrix.compiler_id }}" == "clang" ]]; then
+            "$CXX" -std=c++20 -ftime-trace -c "$source_file" \
+              -o "$TRACE_DIR/trace_fixture.o" 2>&1 | tee ci/trace-compile.log
+            trace_file=$(find "$TRACE_DIR" -maxdepth 1 -type f -name '*.json' -print -quit)
+          else
+            "$BUILD_DIR/bha" record \
+              --compiler gcc \
+              --output "$TRACE_DIR/gcc-timing.txt" \
+              -- "$CXX" -std=c++20 -ftime-report -c "$source_file" \
+              -o "$TRACE_DIR/trace_fixture.o" 2>&1 | tee ci/trace-compile.log
+            trace_file="$TRACE_DIR/gcc-timing.txt"
+          fi
+
+          test -n "$trace_file"
+          test -s "$trace_file"
+          "$BUILD_DIR/bha" analyze "$trace_file" --format json \
+            --output "$TRACE_DIR/analysis.json" 2>&1 | tee ci/trace-analysis.log
+          "$BUILD_DIR/bha" export "$trace_file" --format json \
+            --output "$TRACE_DIR/export.json" 2>&1 | tee ci/trace-export.log
+          test -s "$TRACE_DIR/analysis.json"
+          test -s "$TRACE_DIR/export.json"
+
+      - name: Upload Linux diagnostics and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bha-linux-${{ matrix.compiler_id }}-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            ci/
+            ${{ env.TRACE_DIR }}/
+            ${{ env.BUILD_DIR }}/Testing/Temporary/LastTest.log
+
+  windows-msvc:
+    name: Windows / MSVC Visual Studio 2022
+    runs-on: windows-2022
+    env:
+      BUILD_DIR: build-msvc
+      TRACE_DIR: ci\traces\msvc
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure, build, test, and analyze an MSVC trace
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path 'ci', $env:TRACE_DIR | Out-Null
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) {
+            throw "vswhere.exe was not found"
+          }
+
+          $vsPath = (& $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath | Select-Object -First 1).Trim()
+          if ([string]::IsNullOrWhiteSpace($vsPath)) {
+            throw "No Visual Studio installation with the x64 MSVC toolset was found"
+          }
+
+          $vsDevCmd = Join-Path $vsPath 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path $vsDevCmd)) {
+            throw "VsDevCmd.bat was not found under the discovered Visual Studio installation"
+          }
+
+          cmd.exe /s /c "`"$vsDevCmd`" -arch=x64 && set" | ForEach-Object {
+            if ($_ -match '^([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
+              Set-Item -Path "env:$($matches[1])" -Value $matches[2]
+            }
+          }
+
+          @'
+          #include <array>
+          #include <string>
+
+          int main() {
+              const std::array<std::string, 2> values{"bha", "trace"};
+              return static_cast<int>(values[0].size() + values[1].size());
+          }
+          '@ | Set-Content -Encoding utf8NoBOM "$env:TRACE_DIR\trace_fixture.cpp"
+
+          cmake -S . -B $env:BUILD_DIR -G 'Visual Studio 17 2022' -A x64 `
+            -DBHA_BUILD_TESTS=ON `
+            -DBHA_BUILD_CLI=ON `
+            -DBHA_BUILD_REFACTOR_TOOLS=OFF `
+            -DBHA_ENABLE_LSP=ON `
+            -DBHA_ENABLE_TEMPLATE_AST=OFF 2>&1 | Tee-Object 'ci\configure.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          cmake --build $env:BUILD_DIR --config Debug --parallel 2 2>&1 |
+            Tee-Object 'ci\build.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          ctest --test-dir $env:BUILD_DIR -C Debug --output-on-failure --parallel 2 2>&1 |
+            Tee-Object 'ci\ctest.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $bha = Join-Path $env:BUILD_DIR 'Debug\bha.exe'
+          $source = Join-Path $env:TRACE_DIR 'trace_fixture.cpp'
+          $object = Join-Path $env:TRACE_DIR 'trace_fixture.obj'
+          $timing = Join-Path $env:TRACE_DIR 'msvc-timing.log'
+
+          & $bha record --compiler msvc --output $timing -- `
+            cl /nologo /std:c++20 /EHsc /Bt+ /c $source /Fo$object 2>&1 |
+            Tee-Object 'ci\trace-compile.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path $timing)) { throw "MSVC timing artifact was not generated" }
+
+          & $bha analyze $timing --format json --output "$env:TRACE_DIR\analysis.json" 2>&1 |
+            Tee-Object 'ci\trace-analysis.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $bha export $timing --format json --output "$env:TRACE_DIR\export.json" 2>&1 |
+            Tee-Object 'ci\trace-export.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload Windows diagnostics and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bha-windows-msvc-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            ci/
+            ci/traces/msvc/
+            build-msvc/Testing/Temporary/LastTest.log
+
+  macos-appleclang:
+    name: macOS / AppleClang
+    runs-on: macos-15-intel
+    env:
+      BUILD_DIR: build-macos
+      TRACE_DIR: ci/traces/macos
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure toolchain
+        run: |
+          set -euxo pipefail
+          mkdir -p "$TRACE_DIR" ci
+          if ! command -v ninja >/dev/null 2>&1; then
+            brew install ninja
+          fi
+          {
+            cmake --version
+            clang++ --version
+            sw_vers
+          } | tee ci/toolchain.txt
+          cmake -S . -B "$BUILD_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DBHA_BUILD_TESTS=ON \
+            -DBHA_BUILD_CLI=ON \
+            -DBHA_BUILD_REFACTOR_TOOLS=OFF \
+            -DBHA_ENABLE_LSP=ON \
+            -DBHA_ENABLE_TEMPLATE_AST=OFF \
+            2>&1 | tee ci/configure.log
+
+      - name: Build and test
+        run: |
+          set -euxo pipefail
+          cmake --build "$BUILD_DIR" --parallel 2 2>&1 | tee ci/build.log
+          ctest --test-dir "$BUILD_DIR" --output-on-failure --parallel 2 \
+            2>&1 | tee ci/ctest.log
+
+      - name: Generate and analyze an AppleClang trace
+        run: |
+          set -euxo pipefail
+          source_file="$TRACE_DIR/trace_fixture.cpp"
+          cat > "$source_file" <<'EOF'
+          #include <array>
+          #include <string>
+
+          int main() {
+              const std::array<std::string, 2> values{"bha", "trace"};
+              return static_cast<int>(values[0].size() + values[1].size());
+          }
+          EOF
+          clang++ -std=c++20 -ftime-trace -c "$source_file" \
+            -o "$TRACE_DIR/trace_fixture.o" 2>&1 | tee ci/trace-compile.log
+          trace_file=$(find "$TRACE_DIR" -maxdepth 1 -type f -name '*.json' -print -quit)
+          test -n "$trace_file"
+          test -s "$trace_file"
+          "$BUILD_DIR/bha" analyze "$trace_file" --format json \
+            --output "$TRACE_DIR/analysis.json" 2>&1 | tee ci/trace-analysis.log
+          "$BUILD_DIR/bha" export "$trace_file" --format json \
+            --output "$TRACE_DIR/export.json" 2>&1 | tee ci/trace-export.log
+          test -s "$TRACE_DIR/analysis.json"
+          test -s "$TRACE_DIR/export.json"
+
+      - name: Upload macOS diagnostics and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bha-macos-appleclang-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            ci/
+            ci/traces/macos/
+            build-macos/Testing/Temporary/LastTest.log
