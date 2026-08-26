@@ -66,8 +66,9 @@ namespace bha::exporters
         bool include_templates = true;
         /// Include symbol-analysis sections.
         bool include_symbols = true;
-        /// Include optimization suggestion sections.
-        bool include_suggestions = true;
+        /// Include optimization suggestion sections. Suggestions are opt-in
+        /// because generation may require semantic indexing and rebuilds.
+        bool include_suggestions = false;
         /// Include timing breakdown sections.
         bool include_timing = true;
 

@@ -53,7 +53,7 @@ namespace bha::cli
             return {
                 {"output", 'o', "Output file (required)", true, true, "", "FILE"},
                 {"format", 'f', "Output format (json, html, csv, md)", false, true, "", "FORMAT"},
-                {"include-suggestions", 's', "Include optimization suggestions (csv/md)", false, false, "", ""},
+                {"include-suggestions", 's', "Include optimization suggestions", false, false, "", ""},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
                 {"compress", 'z', "Compress output (gzip)", false, false, "", ""},
                 {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
@@ -265,17 +265,11 @@ namespace bha::cli
                 return 1;
             }
 
-            const bool supports_suggestions_payload =
-                format == exporters::ExportFormat::CSV ||
-                format == exporters::ExportFormat::Markdown;
-            const bool include_suggestions =
-                (args.get_flag("include-suggestions") && supports_suggestions_payload);
-            if (args.get_flag("include-suggestions") && !supports_suggestions_payload) {
-                print_verbose("Suggestions payload is disabled for JSON/HTML exports");
-            }
+            const bool include_suggestions = args.get_flag("include-suggestions");
             const bool needs_suggestions = include_suggestions;
 
-            // Generate suggestions if requested and supported by target payload
+            // Generate suggestions only when explicitly requested. This keeps
+            // ordinary exports focused on observed analysis data.
             std::vector<Suggestion> suggestions;
             fs::path project_root;
             if (needs_suggestions) {

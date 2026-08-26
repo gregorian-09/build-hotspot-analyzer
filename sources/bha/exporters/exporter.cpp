@@ -3,6 +3,7 @@
 //
 
 #include "bha/exporters/exporter.hpp"
+#include "bha/exporters/analysis_document.hpp"
 #include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/time_utils.hpp"
 
@@ -27,7 +28,6 @@
 #include <map>
 #include <numeric>
 #include <sstream>
-#include <unordered_set>
 
 namespace bha::exporters
 {
@@ -78,53 +78,6 @@ namespace bha::exporters
             return format_duration_human(suggestion.estimated_savings);
         }
 
-        nlohmann::json serialize_metric_capability(const MetricCapability& capability) {
-            const auto& provenance = capability.provenance;
-            return {
-                {"metric", capability.metric},
-                {"evidence", to_string(provenance.evidence)},
-                {"producer", provenance.producer},
-                {"producer_version", provenance.producer_version},
-                {"capture_mode", provenance.capture_mode},
-                {"scope", provenance.scope},
-                {"timing_domain", to_string(provenance.timing_domain)},
-                {"timing_aggregation", to_string(provenance.timing_aggregation)},
-                {"limitation", provenance.limitation}
-            };
-        }
-
-        nlohmann::json serialize_cache_distribution(
-            const analyzers::CacheDistributionAnalysisResult& cache
-        ) {
-            nlohmann::json result = {
-                {"compile_requests", cache.compile_requests},
-                {"executed_compilations", cache.executed_compilations},
-                {"non_compilation_requests", cache.non_compilation_requests},
-                {"unsupported_compiler_requests", cache.unsupported_compiler_requests},
-                {"non_cacheable_requests", cache.non_cacheable_requests},
-                {"compilations", cache.compilations},
-                {"cache_hits", cache.cache_hits},
-                {"cache_misses", cache.cache_misses},
-                {"cache_errors", cache.cache_errors},
-                {"cache_timeouts", cache.cache_timeouts},
-                {"cache_read_errors", cache.cache_read_errors},
-                {"non_cacheable_compilations", cache.non_cacheable_compilations},
-                {"forced_recaches", cache.forced_recaches},
-                {"cache_write_errors", cache.cache_write_errors},
-                {"cache_writes", cache.cache_writes},
-                {"compilation_failures", cache.compilation_failures},
-                {"hit_rate_percent", nullptr},
-                {"metric_capabilities", nlohmann::json::array()}
-            };
-            if (cache.hit_rate_percent.has_value()) {
-                result["hit_rate_percent"] = *cache.hit_rate_percent;
-            }
-            for (const auto& capability : cache.metric_capabilities) {
-                result["metric_capabilities"].push_back(serialize_metric_capability(capability));
-            }
-            return result;
-        }
-
         bool has_cache_data(const analyzers::CacheDistributionAnalysisResult& cache) {
             return cache.compile_requests > 0 ||
                 cache.executed_compilations > 0 ||
@@ -132,21 +85,6 @@ namespace bha::exporters
                 cache.cache_hits > 0 ||
                 cache.cache_misses > 0 ||
                 !cache.metric_capabilities.empty();
-        }
-
-        /**
-         * Normalizes path separators to forward slashes for consistent graph IDs.
-         * Uses generic_string() for fs::path which is cross-platform portable.
-         * For string input, manually converts backslashes (for paths from external sources).
-         */
-        std::string normalize_path(const fs::path& path) {
-            return path.generic_string();
-        }
-
-        std::string normalize_path(const std::string& path) {
-            // For string paths (e.g., from included_by), convert to fs::path first
-            // to leverage generic_string() for cross-platform normalization
-            return fs::path(path).generic_string();
         }
 
         /**
@@ -455,404 +393,28 @@ namespace bha::exporters
     Result<void, Error> JsonExporter::export_to_stream(
         std::ostream& stream,
         const analyzers::AnalysisResult& analysis,
-        [[maybe_unused]] const std::vector<Suggestion>& suggestions,
+        const std::vector<Suggestion>& suggestions,
         const ExportOptions& options,
-        ExportProgressCallback progress
+        ExportProgressCallback
     ) const {
-        using json = nlohmann::json;
+        AnalysisDocumentOptions document_options;
+        document_options.include_metadata = options.include_metadata;
+        document_options.include_file_details = options.include_file_details;
+        document_options.include_dependencies = options.include_dependencies;
+        document_options.include_templates = options.include_templates;
+        document_options.include_symbols = options.include_symbols;
+        document_options.include_suggestions = options.include_suggestions;
+        document_options.max_files = options.max_files;
+        document_options.max_suggestions = options.max_suggestions;
+        document_options.min_compile_time = options.min_compile_time;
+        document_options.schema_version = options.json_schema_version;
 
-        json output;
-
-        // Metadata
-        if (options.include_metadata) {
-            output["$schema"] = "https://bha.dev/schemas/analysis-v" + options.json_schema_version + ".json";
-            output["schema_version"] = options.json_schema_version;
-            output["bha_version"] = "0.1.0";
-            output["generated_at"] = utils::format_timestamp_iso8601(std::chrono::system_clock::now());
-        }
-
-        json summary;
-        summary["total_files"] = analysis.files.size();
-        summary["total_compile_time_ms"] = duration_to_ms(analysis.performance.total_build_time);
-        summary["analysis_duration_ms"] = duration_to_ms(analysis.analysis_duration);
-        if (has_cache_data(analysis.cache_distribution)) {
-            summary["cache"] = serialize_cache_distribution(analysis.cache_distribution);
-        }
-
-        if (analysis.build_session.total_commands > 0 ||
-            analysis.build_session.host_system.has_value()) {
-            summary["build_session"] = {
-                {"timed_commands", analysis.build_session.timed_commands},
-                {"total_commands", analysis.build_session.total_commands},
-                {"wall_clock_time_ms", duration_to_ms(analysis.build_session.wall_clock_time)},
-                {"serial_time_ms", duration_to_ms(analysis.build_session.serial_time)},
-                {"peak_parallelism", analysis.build_session.peak_parallelism},
-                {"average_parallelism", analysis.build_session.average_parallelism},
-                {"critical_path_time_ms", duration_to_ms(analysis.build_session.critical_path_time)},
-                {"critical_path", analysis.build_session.critical_path},
-                {"compile_trace_references", analysis.build_session.compile_trace_references},
-                {"step_metrics", json::array()},
-                {"host_telemetry", {
-                    {"memory_samples", analysis.build_session.host_telemetry.memory_samples},
-                    {"peak_memory_used_kib", nullptr},
-                    {"cpu_load_samples", analysis.build_session.host_telemetry.cpu_load_samples},
-                    {"peak_before_cpu_load_average", nullptr},
-                    {"peak_after_cpu_load_average", nullptr},
-                    {"metric_capabilities", json::array()}
-                }},
-                {"host_system", nullptr},
-                {"metric_capabilities", json::array()}
-            };
-            for (const auto& step : analysis.build_session.step_metrics) {
-                summary["build_session"]["step_metrics"].push_back({
-                    {"role", to_string(step.role)},
-                    {"total_commands", step.total_commands},
-                    {"timed_commands", step.timed_commands},
-                    {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
-                    {"result_observations", step.result_observations},
-                    {"successful_commands", step.successful_commands},
-                    {"failed_commands", step.failed_commands},
-                    {"output_observations", step.output_observations},
-                    {"stdout_bytes", nullptr},
-                    {"stderr_bytes", nullptr}
-                });
-                if (step.stdout_bytes.has_value()) {
-                    summary["build_session"]["step_metrics"].back()["stdout_bytes"] =
-                        *step.stdout_bytes;
-                }
-                if (step.stderr_bytes.has_value()) {
-                    summary["build_session"]["step_metrics"].back()["stderr_bytes"] =
-                        *step.stderr_bytes;
-                }
-            }
-            if (analysis.build_session.host_telemetry.peak_memory_used_kib.has_value()) {
-                summary["build_session"]["host_telemetry"]["peak_memory_used_kib"] =
-                    *analysis.build_session.host_telemetry.peak_memory_used_kib;
-            }
-            if (analysis.build_session.host_telemetry.peak_before_cpu_load_average.has_value()) {
-                summary["build_session"]["host_telemetry"]["peak_before_cpu_load_average"] =
-                    *analysis.build_session.host_telemetry.peak_before_cpu_load_average;
-            }
-            if (analysis.build_session.host_telemetry.peak_after_cpu_load_average.has_value()) {
-                summary["build_session"]["host_telemetry"]["peak_after_cpu_load_average"] =
-                    *analysis.build_session.host_telemetry.peak_after_cpu_load_average;
-            }
-            for (const auto& capability : analysis.build_session.host_telemetry.metric_capabilities) {
-                summary["build_session"]["host_telemetry"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-            if (analysis.build_session.host_system.has_value()) {
-                const auto& host = *analysis.build_session.host_system;
-                summary["build_session"]["host_system"] = {
-                    {"os_name", host.os_name.has_value() ? json(*host.os_name) : json(nullptr)},
-                    {"os_platform", host.os_platform.has_value() ? json(*host.os_platform) : json(nullptr)},
-                    {"os_release", host.os_release.has_value() ? json(*host.os_release) : json(nullptr)},
-                    {"os_version", host.os_version.has_value() ? json(*host.os_version) : json(nullptr)},
-                    {"is_64_bits", host.is_64_bits.has_value()
-                        ? json(*host.is_64_bits)
-                        : json(nullptr)},
-                    {"logical_cpu_count", host.logical_cpu_count.has_value()
-                        ? json(*host.logical_cpu_count)
-                        : json(nullptr)},
-                    {"physical_cpu_count", host.physical_cpu_count.has_value()
-                        ? json(*host.physical_cpu_count)
-                        : json(nullptr)},
-                    {"total_physical_memory_mib", host.total_physical_memory_mib.has_value()
-                        ? json(*host.total_physical_memory_mib)
-                        : json(nullptr)},
-                    {"total_virtual_memory_mib", host.total_virtual_memory_mib.has_value()
-                        ? json(*host.total_virtual_memory_mib)
-                        : json(nullptr)},
-                    {"processor_name", host.processor_name.has_value()
-                        ? json(*host.processor_name)
-                        : json(nullptr)},
-                    {"vendor_string", host.vendor_string.has_value()
-                        ? json(*host.vendor_string)
-                        : json(nullptr)}
-                };
-            }
-            for (const auto& capability : analysis.build_session.metric_capabilities) {
-                summary["build_session"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-        }
-
-        if (analysis.linker.invocations > 0) {
-            summary["linker"] = {
-                {"invocations", analysis.linker.invocations},
-                {"timed_invocations", analysis.linker.timed_invocations},
-                {"output_size_observations", analysis.linker.output_size_observations},
-                {"wall_clock_time_ms", duration_to_ms(analysis.linker.wall_clock_time)},
-                {"output_bytes", analysis.linker.output_bytes},
-                {"trace_wall_clock_time_ms", nullptr},
-                {"lto_time_ms", nullptr},
-                {"metric_capabilities", json::array()}
-            };
-            if (analysis.linker.trace_wall_clock_time.has_value()) {
-                summary["linker"]["trace_wall_clock_time_ms"] =
-                    duration_to_ms(*analysis.linker.trace_wall_clock_time);
-            }
-            if (analysis.linker.lto_time.has_value()) {
-                summary["linker"]["lto_time_ms"] = duration_to_ms(*analysis.linker.lto_time);
-            }
-            for (const auto& capability : analysis.linker.metric_capabilities) {
-                summary["linker"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-        }
-
-        if (!analysis.targets.targets.empty()) {
-            summary["targets"] = {
-                {"target_commands", analysis.targets.target_commands},
-                {"matched_commands", analysis.targets.matched_commands},
-                {"unmatched_commands", analysis.targets.unmatched_commands},
-                {"targets", json::array()},
-                {"metric_capabilities", json::array()}
-            };
-            for (const auto& target : analysis.targets.targets) {
-                summary["targets"]["targets"].push_back({
-                    {"id", target.id},
-                    {"name", target.name},
-                    {"type", target.type},
-                    {"dependencies", target.dependencies},
-                    {"compile_commands", target.compile_commands},
-                    {"timed_compile_commands", target.timed_compile_commands},
-                    {"compile_wall_clock_time_ms", duration_to_ms(target.compile_wall_clock_time)},
-                    {"link_commands", target.link_commands},
-                    {"timed_link_commands", target.timed_link_commands},
-                    {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
-                    {"output_size_observations", target.output_size_observations},
-                    {"output_bytes", target.output_bytes},
-                    {"precompile_headers", target.precompile_headers}
-                });
-            }
-            summary["targets"]["pch_targets"] = analysis.targets.pch_targets;
-            summary["targets"]["pch_headers"] = analysis.targets.pch_headers;
-            for (const auto& capability : analysis.targets.metric_capabilities) {
-                summary["targets"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-        }
-
-        if (analysis.modules.rules > 0 || !analysis.modules.metric_capabilities.empty()) {
-            summary["modules"] = {
-                {"rules", analysis.modules.rules},
-                {"provided_modules", analysis.modules.provided_modules},
-                {"required_modules", analysis.modules.required_modules},
-                {"resolved_dependencies", analysis.modules.resolved_dependencies},
-                {"unresolved_dependencies", analysis.modules.unresolved_dependencies},
-                {"unowned_dependencies", analysis.modules.unowned_dependencies},
-                {"dependencies", json::array()},
-                {"metric_capabilities", json::array()}
-            };
-            for (const auto& [required, owner] : analysis.modules.dependencies) {
-                summary["modules"]["dependencies"].push_back({
-                    {"required", required},
-                    {"owner", owner}
-                });
-            }
-            for (const auto& capability : analysis.modules.metric_capabilities) {
-                summary["modules"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-        }
-
-        if (analysis.process_resources.observations > 0 ||
-            !analysis.process_resources.metric_capabilities.empty()) {
-            summary["process_resources"] = {
-                {"observations", analysis.process_resources.observations},
-                {"total_process_time_ms", duration_to_ms(
-                    analysis.process_resources.total_process_time
-                )},
-                {"total_user_time_ms", duration_to_ms(
-                    analysis.process_resources.total_user_time
-                )},
-                {"peak_memory_kib", analysis.process_resources.peak_memory_kib},
-                {"metric_capabilities", json::array()}
-            };
-            for (const auto& capability : analysis.process_resources.metric_capabilities) {
-                summary["process_resources"]["metric_capabilities"].push_back(
-                    serialize_metric_capability(capability)
-                );
-            }
-        }
-
-        json capabilities = json::array();
-        for (const auto& capability : analysis.metric_capabilities) {
-            capabilities.push_back(serialize_metric_capability(capability));
-        }
-        summary["metric_capabilities"] = std::move(capabilities);
-
-        if (analysis.performance.total_memory.has_data()) {
-            json memory_summary;
-            memory_summary["max_stack_bytes"] = analysis.performance.peak_memory.max_stack_bytes;
-            summary["memory"] = memory_summary;
-        }
-
-        output["summary"] = summary;
-
-        if (options.include_file_details) {
-            json files = json::array();
-            std::size_t file_count = 0;
-            const std::size_t total_files = analysis.files.size();
-
-            for (const auto& file : analysis.files) {
-                if (options.min_compile_time > Duration::zero() &&
-                    file.compile_time < options.min_compile_time) {
-                    continue;
-                    }
-
-                if (options.max_files > 0 && file_count >= options.max_files) {
-                    break;
-                }
-
-                json file_entry;
-                file_entry["path"] = file.file.string();
-                file_entry["total_time_ms"] = duration_to_ms(file.compile_time);
-                file_entry["frontend_time_ms"] = duration_to_ms(file.frontend_time);
-                file_entry["backend_time_ms"] = duration_to_ms(file.backend_time);
-                file_entry["include_count"] = file.include_count;
-
-                if (file.memory.has_data()) {
-                    json memory;
-                    memory["max_stack_bytes"] = file.memory.max_stack_bytes;
-                    file_entry["memory"] = memory;
-                }
-
-                files.push_back(file_entry);
-                file_count++;
-
-                if (progress) {
-                    progress(file_count, total_files, "Exporting files");
-                }
-            }
-            output["files"] = files;
-        }
-
-        if (options.include_dependencies && !analysis.dependencies.headers.empty()) {
-            json deps;
-            deps["total_includes"] = analysis.dependencies.total_includes;
-            deps["unique_headers"] = analysis.dependencies.unique_headers;
-            deps["max_depth"] = analysis.dependencies.max_include_depth;
-            deps["metric_capabilities"] = json::array();
-            for (const auto& capability : analysis.dependencies.metric_capabilities) {
-                deps["metric_capabilities"].push_back(serialize_metric_capability(capability));
-            }
-
-            json headers_array = json::array();
-            for (const auto& header : analysis.dependencies.headers) {
-                json h;
-                h["path"] = header.path.string();
-                h["inclusion_count"] = header.inclusion_count;
-                h["including_files"] = header.including_files;
-                h["parse_time_ms"] = duration_to_ms(header.total_parse_time);
-                h["self_parse_time_ms"] = nullptr;
-                if (header.self_parse_time.has_value()) {
-                    h["self_parse_time_ms"] = duration_to_ms(*header.self_parse_time);
-                }
-                h["included_by"] = header.included_by;
-                headers_array.push_back(h);
-            }
-            deps["headers"] = headers_array;
-
-            json nodes = json::array();
-            json links = json::array();
-            std::unordered_set<std::string> seen;
-
-            for (const auto& file : analysis.files) {
-                if (std::string file_id = normalize_path(file.file.string()); seen.insert(file_id).second) {
-                    nodes.push_back({
-                        {"id", file_id},
-                        {"type", "source"}
-                    });
-                }
-            }
-
-            for (const auto& hinfo : analysis.dependencies.headers) {
-                if (std::string hdr_id = normalize_path(hinfo.path.string()); seen.insert(hdr_id).second) {
-                    nodes.push_back({
-                        {"id", hdr_id},
-                        {"type", "header"}
-                    });
-                }
-            }
-
-            for (const auto& hinfo : analysis.dependencies.headers) {
-                std::string hdr_id = normalize_path(hinfo.path.string());
-                for (const auto& incl_by : hinfo.included_by) {
-                    links.push_back({
-                        {"source", normalize_path(incl_by)},
-                        {"target", hdr_id},
-                        {"type", "include"}
-                    });
-                }
-            }
-
-            deps["graph"] = {
-                {"nodes", nodes},
-                {"links", links}
-            };
-
-            output["dependencies"] = deps;
-        }
-
-        if (options.include_templates && !analysis.templates.templates.empty()) {
-            json templates;
-            templates["total_instantiations"] = analysis.templates.total_instantiations;
-            templates["total_time_ms"] = duration_to_ms(analysis.templates.total_template_time);
-
-            json tmpl_array = json::array();
-            for (const auto& tmpl : analysis.templates.templates) {
-                json t;
-                t["name"] = !tmpl.full_signature.empty() ? tmpl.full_signature : tmpl.name;
-                t["type"] = tmpl.name;  // Keep original event type (InstantiateClass, etc.)
-                t["count"] = tmpl.instantiation_count;
-                t["time_ms"] = duration_to_ms(tmpl.total_time);
-                t["time_percent"] = tmpl.time_percent;
-                tmpl_array.push_back(t);
-            }
-            templates["templates"] = tmpl_array;
-
-            output["templates"] = templates;
-        }
-
-        const auto& cache = analysis.cache_distribution;
-        if (has_cache_data(cache)) {
-            output["cache_distribution"] = serialize_cache_distribution(cache);
-        }
-
-        if (options.include_symbols && !analysis.symbols.symbols.empty()) {
-            json symbols;
-            symbols["total_symbols"] = analysis.symbols.total_symbols;
-            symbols["unused_symbols"] = analysis.symbols.unused_symbols;
-
-            json sym_array = json::array();
-            for (const auto& sym : analysis.symbols.symbols) {
-                json s;
-                s["name"] = sym.name;
-                if (!sym.type.empty()) {
-                    s["type"] = sym.type;
-                }
-                s["defined_in"] = sym.defined_in.string();
-                s["usage_count"] = sym.usage_count;
-                sym_array.push_back(s);
-            }
-            symbols["symbols"] = sym_array;
-
-            output["symbols"] = symbols;
-        }
-
+        const auto output = make_analysis_document(analysis, suggestions, document_options);
         if (options.pretty_print) {
-            stream << std::setw(2) << output << '\n';
+            stream << std::setw(2) << output << "\n";
         } else {
-            stream << output << '\n';
+            stream << output << "\n";
         }
-
         return Result<void, Error>::success();
     }
 
@@ -900,7 +462,7 @@ namespace bha::exporters
         // Generate embedded JSON data for JavaScript
         ExportOptions json_opts = options;
         json_opts.pretty_print = false;
-        json_opts.include_suggestions = false;
+        json_opts.include_suggestions = options.include_suggestions;
 
         const JsonExporter json_exporter;
         auto json_result = json_exporter.export_to_string(analysis, suggestions, json_opts);

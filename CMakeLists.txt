@@ -270,6 +270,7 @@ target_sources(bha_lib PRIVATE
         sources/bha/analyzers/symbol_analyzer.cpp
         sources/bha/analyzers/template_analyzer.cpp
         sources/bha/exporters/exporter.cpp
+        sources/bha/exporters/analysis_document.cpp
         sources/bha/storage/storage.cpp
 )
 

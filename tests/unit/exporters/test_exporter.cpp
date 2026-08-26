@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <sstream>
 #include <filesystem>
+#include <nlohmann/json.hpp>
 #include "bha/exporters/exporter.hpp"
 #include "bha/analyzers/analyzer.hpp"
 
@@ -433,6 +434,47 @@ namespace bha::exporters::test
         // Without pretty print, there should be fewer newlines
         // Without suggestions, there shouldn't be suggestion data
         EXPECT_FALSE(json_str.empty());
+    }
+
+    TEST_F(JsonExporterTest, EmitsCanonicalAnalysisDomains) {
+        const auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto document = nlohmann::json::parse(result.value());
+        EXPECT_EQ(document["document_type"], "bha-analysis");
+        EXPECT_EQ(document["$schema"], "https://json-schema.org/draft/2020-12/schema");
+        EXPECT_TRUE(document.contains("$id"));
+        EXPECT_TRUE(document["performance"].contains("sequential_time_ms"));
+        EXPECT_TRUE(document["performance"].contains("median_file_time_ms"));
+        EXPECT_TRUE(document["performance"].contains("p90_file_time_ms"));
+        EXPECT_TRUE(document["performance"].contains("p99_file_time_ms"));
+        EXPECT_TRUE(document["files"][0].contains("breakdown"));
+        EXPECT_TRUE(document["dependencies"].contains("total_include_time_ms"));
+        EXPECT_TRUE(document["templates"].contains("template_time_percent"));
+        EXPECT_TRUE(document.contains("symbols"));
+        EXPECT_TRUE(document.contains("build_session"));
+        EXPECT_TRUE(document.contains("linker"));
+        EXPECT_TRUE(document.contains("targets"));
+        EXPECT_TRUE(document.contains("modules"));
+        EXPECT_TRUE(document.contains("process_resources"));
+        EXPECT_TRUE(document["summary"].contains("metric_capabilities"));
+    }
+
+    TEST_F(JsonExporterTest, IncludesSuggestionsOnlyWhenRequested) {
+        const auto without_suggestions = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(without_suggestions.is_ok());
+        const auto without_document = nlohmann::json::parse(without_suggestions.value());
+        EXPECT_FALSE(without_document.contains("suggestions"));
+
+        ExportOptions options;
+        options.include_suggestions = true;
+        const auto with_suggestions = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(with_suggestions.is_ok());
+        const auto with_document = nlohmann::json::parse(with_suggestions.value());
+        ASSERT_TRUE(with_document.contains("suggestions"));
+        ASSERT_EQ(with_document["suggestions"].size(), suggestions.size());
+        EXPECT_EQ(with_document["suggestions"][0]["id"], suggestions[0].id);
+        EXPECT_TRUE(with_document["suggestions"][0].contains("edits"));
     }
 
     // ============================================================================

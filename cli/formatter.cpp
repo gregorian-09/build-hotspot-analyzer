@@ -4,6 +4,7 @@
 
 #include "bha/cli/formatter.hpp"
 #include "bha/cli/progress.hpp"
+#include "bha/exporters/analysis_document.hpp"
 #include "bha/utils/format_utils.hpp"
 
 #include <iostream>
@@ -821,20 +822,15 @@ namespace bha::cli
         }
 
         std::string to_json(const analyzers::AnalysisResult& result, const bool pretty) {
-            using json_detail::json;
-            json j;
-            j["bha_version"] = "0.1.0";
-            j["performance"] = json_detail::perf_to_json(result.performance);
-            j["dependencies"] = json_detail::deps_to_json(result.dependencies);
-            j["templates"] = json_detail::tmpl_to_json(result.templates);
-            j["cache_distribution"] = json_detail::cache_to_json(result.cache_distribution);
-            j["process_resources"] = json_detail::process_resources_to_json(result.process_resources);
-            if (result.build_session.total_commands > 0 ||
-                !result.build_session.step_metrics.empty() ||
-                result.build_session.host_system.has_value()) {
-                j["build_session"] = json_detail::build_session_to_json(result.build_session);
-            }
-            return j.dump(pretty ? 2 : -1);
+            exporters::AnalysisDocumentOptions options;
+            options.include_metadata = true;
+            options.include_file_details = true;
+            options.include_dependencies = true;
+            options.include_templates = true;
+            options.include_symbols = true;
+            options.include_suggestions = false;
+            const auto document = exporters::make_analysis_document(result, {}, options);
+            return document.dump(pretty ? 2 : -1);
         }
 
         std::string to_json(const std::vector<Suggestion>& suggestions, const bool pretty) {
