@@ -84,3 +84,15 @@ if(BHA_ENABLE_LSP)
 endif()
 
 gtest_discover_tests(bha_tests)
+
+find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI)
+    add_test(
+            NAME ExportCrossFormatFixture
+            COMMAND ${Python3_EXECUTABLE}
+                    ${PROJECT_SOURCE_DIR}/tests/validate_export_fixture.py
+                    --binary $<TARGET_FILE:bha>
+                    --schema ${PROJECT_SOURCE_DIR}/docs/schemas/analysis-v0.1.0.schema.json
+                    --trace ${PROJECT_SOURCE_DIR}/tests/fixtures/sample_clang_trace.json
+    )
+endif()
