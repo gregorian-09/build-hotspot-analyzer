@@ -3013,7 +3013,7 @@ namespace bha::lsp
             emit_log(buffer.data());
         }
 
-        int const raw_status = pclose(pipe);
+        int raw_status = pclose(pipe);
         const auto end = std::chrono::steady_clock::now();
         measured_duration_ms = static_cast<int>(
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()

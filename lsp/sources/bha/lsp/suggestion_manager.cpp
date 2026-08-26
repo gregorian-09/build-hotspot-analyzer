@@ -1223,7 +1223,9 @@ namespace bha::lsp
         }
 
         std::string prio_lower = *min_priority;
-        std::ranges::transform(prio_lower, prio_lower.begin(), ::tolower);
+        std::ranges::transform(prio_lower, prio_lower.begin(), [](const unsigned char character) {
+            return static_cast<char>(std::tolower(character));
+        });
         if (prio_lower == "critical") {
             return bha::Priority::Critical;
         }

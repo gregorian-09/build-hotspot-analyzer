@@ -49,6 +49,7 @@ jobs:
             g++ \
             googletest \
             libclang-18-dev \
+            libclang-cpp18-dev \
             libgtest-dev \
             llvm-18-dev \
             ninja-build \
