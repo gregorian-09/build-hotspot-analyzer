@@ -175,7 +175,7 @@ namespace bha::analyzers {
             if (!output.has_value() || overflowed_roles.contains(role)) {
                 return;
             }
-            const auto size = static_cast<std::uint64_t>(output->size());
+            const std::uint64_t size = output->size();
             const auto sum = utils::checked_add(total.value_or(0), size);
             if (!sum.has_value()) {
                 total.reset();
