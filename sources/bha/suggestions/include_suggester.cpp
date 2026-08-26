@@ -128,6 +128,22 @@ namespace bha::suggestions {
             }
         }
 
+        FILE* open_pipe(const std::string& command_line) {
+#ifdef _WIN32
+            return _popen(command_line.c_str(), "r");
+#else
+            return popen(command_line.c_str(), "r");
+#endif
+        }
+
+        int close_pipe(FILE* pipe) {
+#ifdef _WIN32
+            return _pclose(pipe);
+#else
+            return pclose(pipe);
+#endif
+        }
+
         std::vector<IncludeDiagnostic> run_include_cleaner(
             const fs::path& build_dir,
             const CompilationUnit& command
@@ -154,7 +170,7 @@ namespace bha::suggestions {
                 " -checks=" + shell_quote("-*,misc-include-cleaner") +
                 " -p " + shell_quote(build_dir.string()) +
                 " " + shell_quote(source_file.string()) + " --quiet 2>&1";
-            FILE* pipe = popen(command_line.c_str(), "r");
+            FILE* pipe = open_pipe(command_line);
             if (pipe == nullptr) {
                 return diagnostics;
             }
@@ -164,7 +180,7 @@ namespace bha::suggestions {
             while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
                 output += buffer.data();
             }
-            pclose(pipe);
+            close_pipe(pipe);
 
             constexpr std::string_view diagnostic_tag = "[misc-include-cleaner]";
             constexpr std::string_view header_prefix = "included header ";

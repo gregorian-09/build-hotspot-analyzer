@@ -283,7 +283,7 @@ namespace bha::cli
                 }
             }
 
-            const int status = pclose(pipe);
+            int status = pclose(pipe);
             return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
 #endif
         }

@@ -22,6 +22,11 @@ namespace {
         const bha::suggestions::TemplateSemanticRecord& record,
         bha::ProjectIndex& project_index
     ) {
+#if !BHA_HAVE_CLANG_TOOLING
+        (void)record;
+        (void)project_index;
+        return std::nullopt;
+#else
         if ((record.declaration_kind != "class" && record.declaration_kind != "function" &&
              record.declaration_kind != "variable") ||
             record.has_explicit_instantiation_declaration ||
@@ -63,7 +68,6 @@ namespace {
             return std::nullopt;
         }
 
-#if BHA_HAVE_CLANG_TOOLING
         const clang::tooling::Replacement typed_replacement(
             record.declaration_file.string(),
             static_cast<unsigned>(record.declaration_end_offset),
@@ -76,9 +80,6 @@ namespace {
             !typed_replacement.isApplicable()) {
             return std::nullopt;
         }
-#else
-        return std::nullopt;
-#endif
 
         bha::TextEdit edit;
         edit.file = record.declaration_file;
@@ -90,6 +91,7 @@ namespace {
         edit.byte_offset = record.declaration_end_offset;
         edit.byte_length = 0;
         return edit;
+#endif
     }
 
 }  // namespace
