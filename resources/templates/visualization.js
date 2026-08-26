@@ -21,6 +21,7 @@
             if (tabId === 'templates') renderTemplates();
             if (tabId === 'memory') renderMemoryChart();
             if (tabId === 'dependencies') renderDependencyGraph();
+            if (tabId === 'build-context') renderBuildContext();
         }
 
         function updateFileStats() {
@@ -954,6 +955,158 @@
             `).join('');
         }
 
+        function formatMetric(value, suffix = '', digits = 1) {
+            if (value === null || value === undefined || !Number.isFinite(Number(value))) {
+                return '<span style="color: var(--text-muted);">unavailable</span>';
+            }
+            return Number(value).toFixed(digits) + suffix;
+        }
+
+        function formatCount(value) {
+            if (value === null || value === undefined) {
+                return '<span style="color: var(--text-muted);">unavailable</span>';
+            }
+            return Number(value).toLocaleString();
+        }
+
+        function renderMetricCards(metrics) {
+            return `<div class="summary-grid" style="margin-bottom: 24px;">
+                ${metrics.map(metric => `<div class="summary-card">
+                    <h3>${metric.label}</h3>
+                    <div class="value">${metric.value}</div>
+                    ${metric.unit ? `<div class="unit">${metric.unit}</div>` : ''}
+                </div>`).join('')}
+            </div>`;
+        }
+
+        function renderBuildContext() {
+            const container = document.getElementById('build-context-container');
+            if (!container) return;
+
+            const performance = analysisData.performance || {};
+            const session = analysisData.build_session || {};
+            const telemetry = session.host_telemetry || {};
+            const host = session.host_system || {};
+            const linker = analysisData.linker || {};
+            const targets = analysisData.targets || {};
+            const modules = analysisData.modules || {};
+            const resources = analysisData.process_resources || {};
+            const symbols = analysisData.symbols || {};
+            const suggestions = analysisData.suggestions || [];
+            const capabilities = (analysisData.summary || {}).metric_capabilities || [];
+
+            let html = renderMetricCards([
+                {label: 'Sequential Time', value: formatMetric(performance.sequential_time_ms, ' ms'), unit: 'sum of timed work'},
+                {label: 'Parallel Time', value: formatMetric(performance.parallel_time_ms, ' ms'), unit: 'overlap duration'},
+                {label: 'Parallelism', value: formatMetric(performance.parallelism_efficiency, 'x'), unit: 'serial / wall time'},
+                {label: 'Median File', value: formatMetric(performance.median_file_time_ms, ' ms'), unit: 'translation unit'},
+                {label: 'P90 File', value: formatMetric(performance.p90_file_time_ms, ' ms'), unit: 'translation unit'},
+                {label: 'P99 File', value: formatMetric(performance.p99_file_time_ms, ' ms'), unit: 'translation unit'}
+            ]);
+
+            const criticalPath = Array.isArray(session.critical_path) && session.critical_path.length
+                ? session.critical_path.map(escapeHtml).join(' &rarr; ')
+                : '<span style="color: var(--text-muted);">unavailable</span>';
+            html += `<h3 style="margin: 12px 0 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Build Session</h3>
+                <table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>
+                    <tr><td>Total commands</td><td>${formatCount(session.total_commands)}</td></tr>
+                    <tr><td>Timed commands</td><td>${formatCount(session.timed_commands)}</td></tr>
+                    <tr><td>Wall-clock time</td><td>${formatMetric(session.wall_clock_time_ms, ' ms')}</td></tr>
+                    <tr><td>Serial time</td><td>${formatMetric(session.serial_time_ms, ' ms')}</td></tr>
+                    <tr><td>Peak parallelism</td><td>${formatCount(session.peak_parallelism)}</td></tr>
+                    <tr><td>Average parallelism</td><td>${formatMetric(session.average_parallelism, 'x')}</td></tr>
+                    <tr><td>Critical path</td><td>${formatMetric(session.critical_path_time_ms, ' ms')}<br>${criticalPath}</td></tr>
+                    <tr><td>Compile trace references</td><td>${formatCount(session.compile_trace_references)}</td></tr>
+                </tbody></table>`;
+
+            const steps = Array.isArray(session.step_metrics) ? session.step_metrics : [];
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-list-ol"></i> Build Steps</h3>`;
+            html += steps.length
+                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Role</th><th>Commands</th><th>Timed</th><th>Wall Time</th><th>Results</th><th>Failures</th></tr></thead><tbody>${steps.map(step => `<tr>
+                    <td>${escapeHtml(step.role || 'unknown')}</td>
+                    <td>${formatCount(step.total_commands)}</td>
+                    <td>${formatCount(step.timed_commands)}</td>
+                    <td>${formatMetric(step.wall_clock_time_ms, ' ms')}</td>
+                    <td>${formatCount(step.result_observations)}</td>
+                    <td>${formatCount(step.failed_commands)}</td>
+                </tr>`).join('')}</tbody></table></div>`
+                : '<div class="info-badge">No build-step metrics were supplied.</div>';
+
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-server"></i> Host and Process Resources</h3>
+                <table><thead><tr><th>Domain</th><th>Metric</th><th>Value</th></tr></thead><tbody>
+                    <tr><td>Host</td><td>Operating system</td><td>${escapeHtml(host.os_name || 'unavailable')}</td></tr>
+                    <tr><td>Host</td><td>Logical CPUs</td><td>${formatCount(host.logical_cpu_count)}</td></tr>
+                    <tr><td>Host</td><td>Physical memory</td><td>${formatMetric(host.total_physical_memory_mib, ' MiB')}</td></tr>
+                    <tr><td>Telemetry</td><td>Peak memory used</td><td>${formatMetric(telemetry.peak_memory_used_kib, ' KiB')}</td></tr>
+                    <tr><td>Telemetry</td><td>Peak CPU load before</td><td>${formatMetric(telemetry.peak_before_cpu_load_average)}</td></tr>
+                    <tr><td>Process</td><td>Observations</td><td>${formatCount(resources.observations)}</td></tr>
+                    <tr><td>Process</td><td>Total process time</td><td>${formatMetric(resources.total_process_time_ms, ' ms')}</td></tr>
+                    <tr><td>Process</td><td>Peak memory</td><td>${formatCount(resources.peak_memory_kib)} KiB</td></tr>
+                </tbody></table>`;
+
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-link"></i> Linker, Targets, and Modules</h3>
+                <table><thead><tr><th>Domain</th><th>Metric</th><th>Value</th></tr></thead><tbody>
+                    <tr><td>Linker</td><td>Invocations</td><td>${formatCount(linker.invocations)}</td></tr>
+                    <tr><td>Linker</td><td>Wall-clock time</td><td>${formatMetric(linker.wall_clock_time_ms, ' ms')}</td></tr>
+                    <tr><td>Linker</td><td>Output size</td><td>${formatCount(linker.output_bytes)} bytes</td></tr>
+                    <tr><td>Targets</td><td>Matched commands</td><td>${formatCount(targets.matched_commands)} / ${formatCount(targets.target_commands)}</td></tr>
+                    <tr><td>Targets</td><td>PCH headers</td><td>${formatCount(targets.pch_headers)}</td></tr>
+                    <tr><td>Modules</td><td>Resolved dependencies</td><td>${formatCount(modules.resolved_dependencies)}</td></tr>
+                    <tr><td>Modules</td><td>Unresolved dependencies</td><td>${formatCount(modules.unresolved_dependencies)}</td></tr>
+                </tbody></table>`;
+
+            const targetRows = Array.isArray(targets.targets) ? targets.targets : [];
+            if (targetRows.length) {
+                html += `<h4 style="margin: 24px 0 12px;">Target Ownership</h4><div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>Name</th><th>Type</th><th>Compile Commands</th><th>Compile Time</th><th>Output</th></tr></thead><tbody>${targetRows.map(target => `<tr>
+                    <td>${escapeHtml(target.name || target.id || 'unnamed')}</td>
+                    <td>${escapeHtml(target.type || 'unknown')}</td>
+                    <td>${formatCount(target.compile_commands)}</td>
+                    <td>${formatMetric(target.compile_wall_clock_time_ms, ' ms')}</td>
+                    <td>${formatCount(target.output_bytes)} bytes</td>
+                </tr>`).join('')}</tbody></table></div>`;
+            }
+
+            const symbolRows = Array.isArray(symbols.symbols) ? symbols.symbols.slice(0, 100) : [];
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-shapes"></i> Symbols</h3>`;
+            html += symbolRows.length
+                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Symbol</th><th>Type</th><th>Defined In</th><th>Usages</th></tr></thead><tbody>${symbolRows.map(symbol => `<tr>
+                    <td>${escapeHtml(symbol.name || 'unnamed')}</td>
+                    <td>${escapeHtml(symbol.type || 'unavailable')}</td>
+                    <td>${escapeHtml(symbol.defined_in || 'unavailable')}</td>
+                    <td>${formatCount(symbol.usage_count)}</td>
+                </tr>`).join('')}</tbody></table></div>`
+                : '<div class="info-badge">No symbol records were supplied.</div>';
+
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-shield-alt"></i> Metric Evidence</h3>`;
+            html += capabilities.length
+                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Metric</th><th>Evidence</th><th>Producer</th><th>Scope</th><th>Limitation</th></tr></thead><tbody>${capabilities.map(capability => `<tr>
+                    <td>${escapeHtml(capability.metric || 'unnamed')}</td>
+                    <td>${escapeHtml(capability.evidence || 'unavailable')}</td>
+                    <td>${escapeHtml(capability.producer || 'unavailable')}</td>
+                    <td>${escapeHtml(capability.scope || 'unavailable')}</td>
+                    <td>${escapeHtml(capability.limitation || 'none recorded')}</td>
+                </tr>`).join('')}</tbody></table></div>`
+                : '<div class="info-badge">No metric capability records were supplied.</div>';
+
+            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-lightbulb"></i> Suggestion Evidence</h3>`;
+            html += suggestions.length
+                ? `<div style="display: grid; gap: 12px;">${suggestions.map(suggestion => `<details class="suggestion-card">
+                    <summary><strong>${escapeHtml(suggestion.title || suggestion.id || 'Suggestion')}</strong> <span class="meta-pill">${escapeHtml(suggestion.type || 'unknown')}</span></summary>
+                    <div class="suggestion-description">${escapeHtml(suggestion.description || 'No description supplied.')}</div>
+                    <table><tbody>
+                        <tr><td>Priority</td><td>${escapeHtml(suggestion.priority || 'unavailable')}</td></tr>
+                        <tr><td>Confidence</td><td>${formatMetric(Number(suggestion.confidence) * 100, '%')}</td></tr>
+                        <tr><td>Estimated savings</td><td>${formatMetric(suggestion.estimated_savings_ms, ' ms')} (${escapeHtml(suggestion.estimated_savings_evidence || 'unavailable')})</td></tr>
+                        <tr><td>Target</td><td>${escapeHtml((suggestion.target_file || {}).path || 'unavailable')}</td></tr>
+                        <tr><td>Application</td><td>${escapeHtml(suggestion.application_mode || 'advisory')}</td></tr>
+                        <tr><td>Edits</td><td>${formatCount((suggestion.edits || []).length)}</td></tr>
+                    </tbody></table>
+                </details>`).join('')}</div>`
+                : '<div class="info-badge">Suggestions were not requested for this report.</div>';
+
+            container.innerHTML = html;
+        }
+
         function formatBytes(bytes) {
             if (!bytes || bytes === 0) return '-';
             if (bytes < 1024) return Number(bytes).toFixed(2) + ' B';
@@ -979,3 +1132,4 @@
         window.renderTemplates = renderTemplates;
         window.renderDependencyGraph = renderDependencyGraph;
         window.renderMemoryChart = renderMemoryChart;
+        window.renderBuildContext = renderBuildContext;

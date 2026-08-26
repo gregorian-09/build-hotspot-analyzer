@@ -523,9 +523,35 @@ namespace bha::exporters::test
         ASSERT_TRUE(result.is_ok());
 
         const auto& html_str = result.value();
-        EXPECT_TRUE(html_str.find("Optimization Suggestions") == std::string::npos);
-        EXPECT_TRUE(html_str.find("Suggestions") == std::string::npos);
+        EXPECT_TRUE(html_str.find("fwd-decl-001") == std::string::npos);
         EXPECT_TRUE(html_str.find("forward declaration") == std::string::npos);
+    }
+
+    TEST_F(HtmlExporterTest, ExposesCanonicalBuildContext) {
+        auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& html_str = result.value();
+        EXPECT_TRUE(html_str.find("build-context") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Sequential Time") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Build Session") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Metric Evidence") != std::string::npos);
+        EXPECT_TRUE(html_str.find("unavailable") != std::string::npos);
+        EXPECT_TRUE(html_str.find("sequential_time_ms") != std::string::npos);
+        EXPECT_TRUE(html_str.find("linker") != std::string::npos);
+    }
+
+    TEST_F(HtmlExporterTest, IncludesCanonicalSuggestionPayloadWhenRequested) {
+        ExportOptions options;
+        options.include_suggestions = true;
+
+        auto result = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& html_str = result.value();
+        EXPECT_TRUE(html_str.find("fwd-decl-001") != std::string::npos);
+        EXPECT_TRUE(html_str.find("estimated_savings_evidence") != std::string::npos);
+        EXPECT_TRUE(html_str.find("Suggestion Evidence") != std::string::npos);
     }
 
     TEST_F(HtmlExporterTest, FormatsSavingsUsingSecondsForLargeValues) {
