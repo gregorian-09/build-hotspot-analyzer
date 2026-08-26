@@ -281,7 +281,9 @@ namespace bha::exporters
                 }
                 stream << escape_csv(fields[index]);
             }
-            stream << "\r\n";
+            // Text streams translate this newline to CRLF on Windows. Writing
+            // both characters here would produce CRCRLF in native text mode.
+            stream << '\n';
         }
 
         std::string escape_markdown_cell(const std::string& value) {

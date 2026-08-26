@@ -608,6 +608,7 @@ namespace bha::exporters::test
         EXPECT_FALSE(csv_str.empty());
         // CSV should have header row with commas
         EXPECT_TRUE(csv_str.find(",") != std::string::npos);
+        EXPECT_EQ(csv_str.find("\r\r\n"), std::string::npos);
     }
 
     TEST_F(CsvExporterTest, ContainsFileData) {
