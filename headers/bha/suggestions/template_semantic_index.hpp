@@ -7,6 +7,10 @@
 #include <string_view>
 #include <vector>
 
+#ifndef BHA_HAVE_CLANG_TOOLING
+#define BHA_HAVE_CLANG_TOOLING 0
+#endif
+
 namespace bha::suggestions {
 
     struct TemplateSemanticUse {
@@ -71,7 +75,9 @@ namespace bha::suggestions {
         ) const noexcept;
 
     private:
+#if BHA_HAVE_CLANG_TOOLING
         ProjectIndex& project_index_;
+#endif
         TemplateSemanticStatus status_ = TemplateSemanticStatus::Unavailable;
         std::string diagnostic_;
         std::vector<TemplateSemanticRecord> records_;

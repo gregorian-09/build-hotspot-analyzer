@@ -1105,7 +1105,13 @@ namespace bha::suggestions {
     }  // namespace
 
     TemplateSemanticIndex::TemplateSemanticIndex(ProjectIndex& project_index)
+#if BHA_HAVE_CLANG_TOOLING
         : project_index_(project_index) {}
+#else
+    {
+        (void)project_index;
+    }
+#endif
 
     void TemplateSemanticIndex::build() {
         records_.clear();

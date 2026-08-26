@@ -82,7 +82,7 @@ namespace bha::build_systems {
             while (std::getline(stream, line)) {
                 std::string lower = line;
                 std::ranges::transform(lower, lower.begin(),
-                    [](unsigned char c) { return std::tolower(c); });
+                    [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
                 if (lower.find("pkg-config") != std::string::npos &&
                     (lower.find("not found") != std::string::npos ||

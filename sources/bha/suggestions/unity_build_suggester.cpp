@@ -695,6 +695,7 @@ namespace bha::suggestions {
             return arguments;
         }
 
+#if BHA_HAVE_CLANG_TOOLING
         std::string escape_include_path(const fs::path& path) {
             std::string escaped = path.generic_string();
             std::string result;
@@ -707,6 +708,7 @@ namespace bha::suggestions {
             }
             return result;
         }
+#endif
 
 #if BHA_HAVE_CLANG_TOOLING
         bool validate_unity_translation_unit(const std::vector<CompileEvidence>& evidence, std::string& diagnostic) {
