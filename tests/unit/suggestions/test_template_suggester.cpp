@@ -235,9 +235,8 @@ namespace bha::suggestions {
         EXPECT_EQ(suggestion.hotspot_origins.front().chain.front(), "template: Box<int>");
         EXPECT_EQ(result.value().items_analyzed, 1u);
         EXPECT_EQ(result.value().items_skipped, 0u);
-#endif
-
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, RejectsCompleteTypeUseEvenWithUniqueOwner) {
@@ -306,8 +305,8 @@ namespace bha::suggestions {
         ASSERT_TRUE(result.is_ok());
         EXPECT_TRUE(result.value().suggestions.empty());
         EXPECT_EQ(result.value().items_skipped, 1u);
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForFunctionTemplate) {
@@ -366,8 +365,8 @@ namespace bha::suggestions {
             "extern template int identity<int>(int);\n"
         );
         EXPECT_EQ(suggestion.application_mode, SuggestionApplicationMode::DirectEdits);
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, RejectsInlineFunctionTemplate) {
@@ -459,8 +458,8 @@ namespace bha::suggestions {
             result.value().suggestions.front().edits.front().new_text,
             "extern template int value<int>;\n"
         );
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForStaticMemberTemplate) {
@@ -515,8 +514,8 @@ namespace bha::suggestions {
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Utility::identity<int>(int);\n"
         );
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForConstRefMemberTemplate) {
@@ -571,8 +570,8 @@ namespace bha::suggestions {
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Utility::identity<int>(int) const & noexcept(false);\n"
         );
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForClassTemplateMember) {
@@ -629,8 +628,8 @@ namespace bha::suggestions {
             result.value().suggestions.front().edits.front().new_text,
             "extern template int Box<int>::get<int>(int) const &;\n"
         );
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
     TEST_F(TemplateSuggesterTest, EmitsCanonicalExternEditForVariadicFunctionTemplate) {
@@ -681,8 +680,8 @@ namespace bha::suggestions {
             result.value().suggestions.front().edits.front().new_text,
             "extern template void log_value<int>(int, ...);\n"
         );
-#endif
         std::filesystem::remove_all(root, ec);
+#endif
     }
 
 }  // namespace bha::suggestions
