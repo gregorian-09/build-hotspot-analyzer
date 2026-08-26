@@ -55,9 +55,6 @@ namespace bha::exporters
         bool pretty_print = true;
         /// Include metadata block (version, timestamps, provenance).
         bool include_metadata = true;
-        /// Compress output payload when sink supports compression.
-        bool compress = false;
-
         /// Include per-file analysis sections.
         bool include_file_details = true;
         /// Include dependency graph sections.
@@ -81,10 +78,6 @@ namespace bha::exporters
         /// Maximum number of suggestions to emit (`0` = unlimited).
         std::size_t max_suggestions = 0;
 
-        /// Include interactive visualizations when exporting HTML.
-        bool html_interactive = true;
-        /// Bundle assets for offline HTML viewing.
-        bool html_offline = true;
         /// Use dark mode defaults in HTML output.
         bool html_dark_mode = true;
         /// HTML document title.
@@ -92,8 +85,6 @@ namespace bha::exporters
 
         /// Declared schema version for JSON output.
         std::string json_schema_version = "0.1.0";
-        /// Stream large JSON arrays progressively.
-        bool json_streaming = false;
     };
 
     /**

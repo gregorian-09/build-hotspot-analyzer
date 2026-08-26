@@ -20,6 +20,10 @@ namespace bha::exporters {
             ) / 1000.0;
         }
 
+        json serialize_duration(const Duration duration, const bool include_timing) {
+            return include_timing ? json(duration_to_ms(duration)) : json(nullptr);
+        }
+
         json serialize_metric_capability(const MetricCapability& capability) {
             const auto& provenance = capability.provenance;
             return {
@@ -59,7 +63,10 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_time_breakdown(const TimeBreakdown& breakdown) {
+        json serialize_time_breakdown(const TimeBreakdown& breakdown, const bool include_timing) {
+            if (!include_timing) {
+                return nullptr;
+            }
             return {
                 {"preprocessing_ms", duration_to_ms(breakdown.preprocessing)},
                 {"parsing_ms", duration_to_ms(breakdown.parsing)},
@@ -71,13 +78,13 @@ namespace bha::exporters {
             };
         }
 
-        json serialize_file(const analyzers::FileAnalysisResult& file) {
+        json serialize_file(const analyzers::FileAnalysisResult& file, const bool include_timing) {
             return {
                 {"path", file.file.string()},
-                {"compile_time_ms", duration_to_ms(file.compile_time)},
-                {"frontend_time_ms", duration_to_ms(file.frontend_time)},
-                {"backend_time_ms", duration_to_ms(file.backend_time)},
-                {"breakdown", serialize_time_breakdown(file.breakdown)},
+                {"compile_time_ms", serialize_duration(file.compile_time, include_timing)},
+                {"frontend_time_ms", serialize_duration(file.frontend_time, include_timing)},
+                {"backend_time_ms", serialize_duration(file.backend_time, include_timing)},
+                {"breakdown", serialize_time_breakdown(file.breakdown, include_timing)},
                 {"memory", {{"max_stack_bytes", file.memory.max_stack_bytes}}},
                 {"time_percent", file.time_percent},
                 {"rank", file.rank},
@@ -86,18 +93,18 @@ namespace bha::exporters {
             };
         }
 
-        json serialize_performance(const analyzers::PerformanceAnalysisResult& performance) {
+        json serialize_performance(const analyzers::PerformanceAnalysisResult& performance, const bool include_timing) {
             json result = {
-                {"total_build_time_ms", duration_to_ms(performance.total_build_time)},
-                {"sequential_time_ms", duration_to_ms(performance.sequential_time)},
-                {"parallel_time_ms", duration_to_ms(performance.parallel_time)},
+                {"total_build_time_ms", serialize_duration(performance.total_build_time, include_timing)},
+                {"sequential_time_ms", serialize_duration(performance.sequential_time, include_timing)},
+                {"parallel_time_ms", serialize_duration(performance.parallel_time, include_timing)},
                 {"parallelism_efficiency", performance.parallelism_efficiency},
                 {"total_files", performance.total_files},
                 {"slowest_file_count", performance.slowest_file_count},
-                {"avg_file_time_ms", duration_to_ms(performance.avg_file_time)},
-                {"median_file_time_ms", duration_to_ms(performance.median_file_time)},
-                {"p90_file_time_ms", duration_to_ms(performance.p90_file_time)},
-                {"p99_file_time_ms", duration_to_ms(performance.p99_file_time)},
+                {"avg_file_time_ms", serialize_duration(performance.avg_file_time, include_timing)},
+                {"median_file_time_ms", serialize_duration(performance.median_file_time, include_timing)},
+                {"p90_file_time_ms", serialize_duration(performance.p90_file_time, include_timing)},
+                {"p99_file_time_ms", serialize_duration(performance.p99_file_time, include_timing)},
                 {"memory", {
                     {"total_max_stack_bytes", performance.total_memory.max_stack_bytes},
                     {"peak_max_stack_bytes", performance.peak_memory.max_stack_bytes},
@@ -106,7 +113,7 @@ namespace bha::exporters {
                 {"slowest_files", json::array()}
             };
             for (const auto& file : performance.slowest_files) {
-                result["slowest_files"].push_back(serialize_file(file));
+                result["slowest_files"].push_back(serialize_file(file, include_timing));
             }
             return result;
         }
@@ -136,15 +143,15 @@ namespace bha::exporters {
             };
         }
 
-        json serialize_build_session(const analyzers::BuildSessionAnalysisResult& session) {
+        json serialize_build_session(const analyzers::BuildSessionAnalysisResult& session, const bool include_timing) {
             json result = {
                 {"timed_commands", session.timed_commands},
                 {"total_commands", session.total_commands},
-                {"wall_clock_time_ms", duration_to_ms(session.wall_clock_time)},
-                {"serial_time_ms", duration_to_ms(session.serial_time)},
+                {"wall_clock_time_ms", serialize_duration(session.wall_clock_time, include_timing)},
+                {"serial_time_ms", serialize_duration(session.serial_time, include_timing)},
                 {"peak_parallelism", session.peak_parallelism},
                 {"average_parallelism", session.average_parallelism},
-                {"critical_path_time_ms", duration_to_ms(session.critical_path_time)},
+                {"critical_path_time_ms", serialize_duration(session.critical_path_time, include_timing)},
                 {"critical_path", session.critical_path},
                 {"compile_trace_references", session.compile_trace_references},
                 {"step_metrics", json::array()},
@@ -172,7 +179,7 @@ namespace bha::exporters {
                     {"role", to_string(step.role)},
                     {"total_commands", step.total_commands},
                     {"timed_commands", step.timed_commands},
-                    {"wall_clock_time_ms", duration_to_ms(step.wall_clock_time)},
+                    {"wall_clock_time_ms", serialize_duration(step.wall_clock_time, include_timing)},
                     {"result_observations", step.result_observations},
                     {"successful_commands", step.successful_commands},
                     {"failed_commands", step.failed_commands},
@@ -206,22 +213,22 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_linker(const analyzers::LinkerAnalysisResult& linker) {
+        json serialize_linker(const analyzers::LinkerAnalysisResult& linker, const bool include_timing) {
             return {
                 {"invocations", linker.invocations},
                 {"timed_invocations", linker.timed_invocations},
                 {"output_size_observations", linker.output_size_observations},
-                {"wall_clock_time_ms", duration_to_ms(linker.wall_clock_time)},
+                {"wall_clock_time_ms", serialize_duration(linker.wall_clock_time, include_timing)},
                 {"output_bytes", linker.output_bytes},
                 {"trace_wall_clock_time_ms", linker.trace_wall_clock_time.has_value()
-                    ? json(duration_to_ms(*linker.trace_wall_clock_time)) : json(nullptr)},
+                    ? serialize_duration(*linker.trace_wall_clock_time, include_timing) : json(nullptr)},
                 {"lto_time_ms", linker.lto_time.has_value()
-                    ? json(duration_to_ms(*linker.lto_time)) : json(nullptr)},
+                    ? serialize_duration(*linker.lto_time, include_timing) : json(nullptr)},
                 {"metric_capabilities", serialize_metric_capabilities(linker.metric_capabilities)}
             };
         }
 
-        json serialize_targets(const analyzers::BuildTargetAnalysisResult& targets) {
+        json serialize_targets(const analyzers::BuildTargetAnalysisResult& targets, const bool include_timing) {
             json result = {
                 {"target_commands", targets.target_commands},
                 {"matched_commands", targets.matched_commands},
@@ -239,10 +246,10 @@ namespace bha::exporters {
                     {"dependencies", target.dependencies},
                     {"compile_commands", target.compile_commands},
                     {"timed_compile_commands", target.timed_compile_commands},
-                    {"compile_wall_clock_time_ms", duration_to_ms(target.compile_wall_clock_time)},
+                    {"compile_wall_clock_time_ms", serialize_duration(target.compile_wall_clock_time, include_timing)},
                     {"link_commands", target.link_commands},
                     {"timed_link_commands", target.timed_link_commands},
-                    {"link_wall_clock_time_ms", duration_to_ms(target.link_wall_clock_time)},
+                    {"link_wall_clock_time_ms", serialize_duration(target.link_wall_clock_time, include_timing)},
                     {"output_size_observations", target.output_size_observations},
                     {"output_bytes", target.output_bytes},
                     {"precompile_headers", serialize_paths(target.precompile_headers)}
@@ -268,11 +275,11 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_process_resources(const analyzers::ProcessResourceAnalysisResult& resources) {
+        json serialize_process_resources(const analyzers::ProcessResourceAnalysisResult& resources, const bool include_timing) {
             return {
                 {"observations", resources.observations},
-                {"total_process_time_ms", duration_to_ms(resources.total_process_time)},
-                {"total_user_time_ms", duration_to_ms(resources.total_user_time)},
+                {"total_process_time_ms", serialize_duration(resources.total_process_time, include_timing)},
+                {"total_user_time_ms", serialize_duration(resources.total_user_time, include_timing)},
                 {"peak_memory_kib", resources.peak_memory_kib},
                 {"metric_capabilities", serialize_metric_capabilities(resources.metric_capabilities)}
             };
@@ -291,7 +298,7 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_suggestion(const Suggestion& suggestion) {
+        json serialize_suggestion(const Suggestion& suggestion, const bool include_timing) {
             json result = {
                 {"id", suggestion.id},
                 {"type", to_string(suggestion.type)},
@@ -300,8 +307,10 @@ namespace bha::exporters {
                 {"title", suggestion.title},
                 {"description", suggestion.description},
                 {"rationale", suggestion.rationale},
-                {"estimated_savings_ms", duration_to_ms(suggestion.estimated_savings)},
-                {"estimated_savings_percent", suggestion.estimated_savings_percent},
+                {"estimated_savings_ms", suggestion.estimated_savings_evidence == EvidenceKind::Unavailable
+                    ? json(nullptr) : serialize_duration(suggestion.estimated_savings, include_timing)},
+                {"estimated_savings_percent", suggestion.estimated_savings_evidence == EvidenceKind::Unavailable || !include_timing
+                    ? json(nullptr) : json(suggestion.estimated_savings_percent)},
                 {"estimated_savings_evidence", to_string(suggestion.estimated_savings_evidence)},
                 {"target_file", serialize_file_target(suggestion.target_file)},
                 {"secondary_files", json::array()},
@@ -310,7 +319,7 @@ namespace bha::exporters {
                 {"impact", {
                     {"files_benefiting", json::array()},
                     {"total_files_affected", suggestion.impact.total_files_affected},
-                    {"cumulative_savings_ms", duration_to_ms(suggestion.impact.cumulative_savings)},
+                    {"cumulative_savings_ms", serialize_duration(suggestion.impact.cumulative_savings, include_timing)},
                     {"rebuild_files_count", suggestion.impact.rebuild_files_count}
                 }},
                 {"caveats", suggestion.caveats},
@@ -375,7 +384,7 @@ namespace bha::exporters {
                         {"kind", origin.kind},
                         {"source", origin.source.string()},
                         {"target", origin.target.string()},
-                        {"estimated_cost_ms", duration_to_ms(origin.estimated_cost)},
+                        {"estimated_cost_ms", serialize_duration(origin.estimated_cost, include_timing)},
                         {"chain", origin.chain},
                         {"note", origin.note}
                     });
@@ -384,12 +393,12 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_dependencies(const analyzers::DependencyAnalysisResult& dependencies) {
+        json serialize_dependencies(const analyzers::DependencyAnalysisResult& dependencies, const bool include_timing) {
             json result = {
                 {"total_includes", dependencies.total_includes},
                 {"unique_headers", dependencies.unique_headers},
                 {"max_include_depth", dependencies.max_include_depth},
-                {"total_include_time_ms", duration_to_ms(dependencies.total_include_time)},
+                {"total_include_time_ms", serialize_duration(dependencies.total_include_time, include_timing)},
                 {"metric_capabilities", serialize_metric_capabilities(dependencies.metric_capabilities)},
                 {"headers", json::array()},
                 {"graph", {{"nodes", json::array()}, {"links", json::array()}}}
@@ -398,9 +407,9 @@ namespace bha::exporters {
             for (const auto& header : dependencies.headers) {
                 result["headers"].push_back({
                     {"path", header.path.string()},
-                    {"total_parse_time_ms", duration_to_ms(header.total_parse_time)},
+                    {"total_parse_time_ms", serialize_duration(header.total_parse_time, include_timing)},
                     {"self_parse_time_ms", header.self_parse_time.has_value()
-                        ? json(duration_to_ms(*header.self_parse_time)) : json(nullptr)},
+                        ? serialize_duration(*header.self_parse_time, include_timing) : json(nullptr)},
                     {"inclusion_count", header.inclusion_count},
                     {"including_files", header.including_files},
                     {"included_by", serialize_paths(header.included_by)}
@@ -421,9 +430,9 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_templates(const analyzers::TemplateAnalysisResult& templates) {
+        json serialize_templates(const analyzers::TemplateAnalysisResult& templates, const bool include_timing) {
             json result = {
-                {"total_template_time_ms", duration_to_ms(templates.total_template_time)},
+                {"total_template_time_ms", serialize_duration(templates.total_template_time, include_timing)},
                 {"template_time_percent", templates.template_time_percent},
                 {"total_instantiations", templates.total_instantiations},
                 {"templates", json::array()}
@@ -432,7 +441,7 @@ namespace bha::exporters {
                 json item = {
                     {"name", info.name},
                     {"full_signature", info.full_signature},
-                    {"total_time_ms", duration_to_ms(info.total_time)},
+                    {"total_time_ms", serialize_duration(info.total_time, include_timing)},
                     {"instantiation_count", info.instantiation_count},
                     {"time_percent", info.time_percent},
                     {"locations", json::array()},
@@ -481,11 +490,11 @@ namespace bha::exporters {
             output["analysis_time"] = utils::format_timestamp_iso8601(analysis.analysis_time);
         }
 
-        output["performance"] = serialize_performance(analysis.performance);
+        output["performance"] = serialize_performance(analysis.performance, options.include_timing);
         output["summary"] = {
             {"total_files", analysis.files.size()},
-            {"total_compile_time_ms", duration_to_ms(analysis.performance.total_build_time)},
-            {"analysis_duration_ms", duration_to_ms(analysis.analysis_duration)},
+            {"total_compile_time_ms", serialize_duration(analysis.performance.total_build_time, options.include_timing)},
+            {"analysis_duration_ms", serialize_duration(analysis.analysis_duration, options.include_timing)},
             {"metric_capabilities", serialize_metric_capabilities(analysis.metric_capabilities)}
         };
 
@@ -499,34 +508,37 @@ namespace bha::exporters {
                 if (options.max_files > 0 && output["files"].size() >= options.max_files) {
                     break;
                 }
-                output["files"].push_back(serialize_file(file));
+                output["files"].push_back(serialize_file(file, options.include_timing));
             }
         }
         if (options.include_dependencies) {
-            output["dependencies"] = serialize_dependencies(analysis.dependencies);
+            output["dependencies"] = serialize_dependencies(analysis.dependencies, options.include_timing);
         }
         if (options.include_templates) {
-            output["templates"] = serialize_templates(analysis.templates);
+            output["templates"] = serialize_templates(analysis.templates, options.include_timing);
         }
         if (options.include_symbols) {
             output["symbols"] = serialize_symbols(analysis.symbols);
         }
 
         output["cache_distribution"] = serialize_cache(analysis.cache_distribution);
-        output["build_session"] = serialize_build_session(analysis.build_session);
-        output["linker"] = serialize_linker(analysis.linker);
-        output["targets"] = serialize_targets(analysis.targets);
+        output["build_session"] = serialize_build_session(analysis.build_session, options.include_timing);
+        output["linker"] = serialize_linker(analysis.linker, options.include_timing);
+        output["targets"] = serialize_targets(analysis.targets, options.include_timing);
         output["modules"] = serialize_modules(analysis.modules);
-        output["process_resources"] = serialize_process_resources(analysis.process_resources);
+        output["process_resources"] = serialize_process_resources(analysis.process_resources, options.include_timing);
 
         if (options.include_suggestions) {
             output["suggestions"] = json::array();
             for (const auto& suggestion : suggestions) {
+                if (suggestion.confidence < options.min_confidence) {
+                    continue;
+                }
                 if (options.max_suggestions > 0 &&
                     output["suggestions"].size() >= options.max_suggestions) {
                     break;
                 }
-                output["suggestions"].push_back(serialize_suggestion(suggestion));
+                output["suggestions"].push_back(serialize_suggestion(suggestion, options.include_timing));
             }
         }
         return output;

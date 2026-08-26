@@ -478,6 +478,23 @@ namespace bha::exporters::test
         EXPECT_TRUE(with_document["suggestions"][0].contains("edits"));
     }
 
+    TEST_F(JsonExporterTest, AppliesTimingAndConfidenceOptions) {
+        ExportOptions options;
+        options.include_timing = false;
+        options.include_suggestions = true;
+        options.min_confidence = 0.9;
+
+        const auto result = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(result.is_ok());
+
+        const auto document = nlohmann::json::parse(result.value());
+        EXPECT_TRUE(document["performance"]["total_build_time_ms"].is_null());
+        EXPECT_TRUE(document["files"][0]["breakdown"].is_null());
+        ASSERT_TRUE(document.contains("suggestions"));
+        ASSERT_EQ(document["suggestions"].size(), 1u);
+        EXPECT_EQ(document["suggestions"][0]["id"], "fwd-decl-001");
+    }
+
     // ============================================================================
     // HTML Exporter Tests
     // ============================================================================
@@ -785,6 +802,33 @@ namespace bha::exporters::test
         ASSERT_TRUE(result.is_ok());
 
         EXPECT_TRUE(result.value().find("**Est. Savings:** unavailable") != std::string::npos);
+    }
+
+    TEST_F(MarkdownExporterTest, ContainsCanonicalAnalysisDomains) {
+        const auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& markdown = result.value();
+        EXPECT_TRUE(markdown.find("P90 File Time") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Dependency Analysis") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Template Instantiation Analysis") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Build Session") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Linker, Targets, Modules, and Resources") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Evidence and Limitations") != std::string::npos);
+        EXPECT_TRUE(markdown.find("compile.translation_unit.wall_time") != std::string::npos);
+    }
+
+    TEST_F(MarkdownExporterTest, AppliesSuggestionLimit) {
+        ExportOptions options;
+        options.include_suggestions = true;
+        options.max_suggestions = 1;
+
+        const auto result = exporter_->export_to_string(analysis, suggestions, options);
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& markdown = result.value();
+        EXPECT_TRUE(markdown.find("Use forward declaration for Config class") != std::string::npos);
+        EXPECT_TRUE(markdown.find("Add frequently used headers to PCH") == std::string::npos);
     }
 
     // ============================================================================

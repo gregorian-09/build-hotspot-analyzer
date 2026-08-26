@@ -26,9 +26,11 @@ namespace bha::exporters {
         bool include_templates = true;
         bool include_symbols = true;
         bool include_suggestions = false;
+        bool include_timing = true;
         std::size_t max_files = 0;
         std::size_t max_suggestions = 0;
         Duration min_compile_time = Duration::zero();
+        double min_confidence = 0.0;
         std::string schema_version = "0.1.0";
     };
 
