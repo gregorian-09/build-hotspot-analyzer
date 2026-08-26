@@ -119,7 +119,7 @@ namespace bha::build_systems::detail {
 
             std::string lower = compiler;
             std::ranges::transform(lower, lower.begin(),
-                [](const unsigned char c) { return std::tolower(c); });
+                [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
             if (lower.find("apple") != std::string::npos && lower.find("clang") != std::string::npos) {
                 return CompilerType::AppleClang;
@@ -386,7 +386,9 @@ namespace bha::build_systems::detail {
                 all_lines.push_back(line);
                 std::string lower_line = line;
                 std::ranges::transform(lower_line, lower_line.begin(),
-                                      [](const unsigned char c) { return std::tolower(c); });
+                                      [](const unsigned char c) {
+                                          return static_cast<char>(std::tolower(c));
+                                      });
 
                 if (lower_line.find("error") != std::string::npos ||
                     lower_line.find("fatal") != std::string::npos ||

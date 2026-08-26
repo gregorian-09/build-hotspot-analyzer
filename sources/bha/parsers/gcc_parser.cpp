@@ -26,7 +26,6 @@
 #include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
-#include <charconv>
 #include <array>
 #include <cmath>
 #include <cctype>
@@ -133,18 +132,13 @@ namespace bha::parsers {
                 return std::nullopt;
             }
 
-            double seconds = 0.0;
             const auto number = text.substr(number_start, position - number_start);
-            const auto [number_end, number_error] = std::from_chars(
-                number.data(), number.data() + number.size(), seconds
-            );
-            if (number_error != std::errc() ||
-                number_end != number.data() + number.size() ||
-                !std::isfinite(seconds) || seconds < 0.0) {
+            const auto seconds = utils::parse_double(number);
+            if (!seconds.has_value() || *seconds < 0.0) {
                 return std::nullopt;
             }
             const auto duration = utils::checked_duration_cast<Duration>(
-                std::chrono::duration<double>(seconds)
+                std::chrono::duration<double>(*seconds)
             );
             if (!duration.has_value()) {
                 return std::nullopt;
@@ -165,16 +159,9 @@ namespace bha::parsers {
             if (percentage.empty() || percentage.back() != '%') {
                 return std::nullopt;
             }
-            double ignored_percentage = 0.0;
             const auto percentage_number = percentage.substr(0, percentage.size() - 1);
-            const auto [percentage_end, percentage_error] = std::from_chars(
-                percentage_number.data(),
-                percentage_number.data() + percentage_number.size(),
-                ignored_percentage
-            );
-            if (percentage_error != std::errc() ||
-                percentage_end != percentage_number.data() + percentage_number.size() ||
-                !std::isfinite(ignored_percentage) || ignored_percentage < 0.0) {
+            const auto parsed_percentage = utils::parse_double(percentage_number);
+            if (!parsed_percentage.has_value() || *parsed_percentage < 0.0) {
                 return std::nullopt;
             }
 
@@ -198,18 +185,13 @@ namespace bha::parsers {
                 return std::nullopt;
             }
 
-            double seconds = 0.0;
             const auto number = text.substr(number_start, position - number_start);
-            const auto [number_end, number_error] = std::from_chars(
-                number.data(), number.data() + number.size(), seconds
-            );
-            if (number_error != std::errc() ||
-                number_end != number.data() + number.size() ||
-                !std::isfinite(seconds) || seconds < 0.0) {
+            const auto seconds = utils::parse_double(number);
+            if (!seconds.has_value() || *seconds < 0.0) {
                 return std::nullopt;
             }
             const auto duration = utils::checked_duration_cast<Duration>(
-                std::chrono::duration<double>(seconds)
+                std::chrono::duration<double>(*seconds)
             );
             if (!duration.has_value()) {
                 return std::nullopt;

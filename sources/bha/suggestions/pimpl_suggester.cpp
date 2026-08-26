@@ -27,6 +27,7 @@
 namespace bha::suggestions {
     namespace {
 
+#if BHA_HAVE_CLANG_TOOLING
         fs::path normalize_path(const ProjectIndex& project_index, const fs::path& path) {
             return project_index.resolve(path).lexically_normal();
         }
@@ -48,13 +49,9 @@ namespace bha::suggestions {
             if (candidate.is_relative()) {
                 candidate = command.working_directory / candidate;
             }
-            if (same_path(project_index, candidate, command.source_file)) {
-                return true;
-            }
-            return false;
+            return same_path(project_index, candidate, command.source_file);
         }
 
-#if BHA_HAVE_CLANG_TOOLING
         std::vector<std::string> tooling_arguments(
             const ProjectIndex& project_index,
             const CompilationUnit& command

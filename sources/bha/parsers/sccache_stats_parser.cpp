@@ -142,8 +142,8 @@ namespace bha::parsers {
                     &cache_writes,
                     &compilation_failures
                 };
-                for (const auto* result : results) {
-                    if (result->is_err()) return &result->error();
+                for (const auto* parse_result : results) {
+                    if (parse_result->is_err()) return &parse_result->error();
                 }
                 return nullptr;
             }();

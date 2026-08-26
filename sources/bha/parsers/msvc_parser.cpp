@@ -26,7 +26,6 @@
 #include "bha/utils/numeric_utils.hpp"
 #include "bha/utils/string_utils.hpp"
 
-#include <charconv>
 #include <cmath>
 
 namespace bha::parsers {
@@ -38,7 +37,6 @@ namespace bha::parsers {
         constexpr std::string_view MSVC_C2 = "c2.dll";
 
         std::optional<Duration> parse_msvc_time(const std::string_view time_str) {
-            double seconds = 0.0;
             auto trimmed = utils::trim(time_str);
 
             if (!utils::ends_with(trimmed, "s")) {
@@ -49,15 +47,12 @@ namespace bha::parsers {
                 return std::nullopt;
             }
 
-            const auto [end, error] = std::from_chars(
-                trimmed.data(), trimmed.data() + trimmed.size(), seconds
-            );
-            if (error != std::errc() || end != trimmed.data() + trimmed.size() ||
-                !std::isfinite(seconds) || seconds < 0.0) {
+            const auto seconds = utils::parse_double(trimmed);
+            if (!seconds.has_value() || *seconds < 0.0) {
                 return std::nullopt;
             }
             return utils::checked_duration_cast<Duration>(
-                std::chrono::duration<double>(seconds)
+                std::chrono::duration<double>(*seconds)
             );
         }
 

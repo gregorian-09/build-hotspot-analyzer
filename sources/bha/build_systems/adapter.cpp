@@ -79,12 +79,16 @@ namespace bha::build_systems
     IBuildSystemAdapter* BuildSystemRegistry::get(const std::string& name) const {
         std::string name_lower = name;
         std::ranges::transform(name_lower, name_lower.begin(),
-                               [](const unsigned char c) { return std::tolower(c); });
+                               [](const unsigned char c) {
+                                   return static_cast<char>(std::tolower(c));
+                               });
 
         for (const auto& adapter : adapters_) {
             std::string adapter_name = adapter->name();
             std::ranges::transform(adapter_name, adapter_name.begin(),
-                                   [](const unsigned char c) { return std::tolower(c); });
+                                   [](const unsigned char c) {
+                                       return static_cast<char>(std::tolower(c));
+                                   });
 
             if (adapter_name == name_lower) {
                 return adapter.get();

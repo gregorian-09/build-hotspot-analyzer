@@ -1,13 +1,36 @@
 #pragma once
 
 #include <chrono>
+#include <cerrno>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <optional>
 #include <ratio>
+#include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace bha::utils {
+
+    /// Parses one complete finite floating-point token.
+    /// This avoids the unavailable floating-point from_chars overload in libc++ versions
+    /// shipped with some AppleClang toolchains while rejecting partial or non-finite input.
+    [[nodiscard]] inline std::optional<double> parse_double(const std::string_view text) {
+        if (text.empty()) {
+            return std::nullopt;
+        }
+
+        const std::string token(text);
+        char* end = nullptr;
+        errno = 0;
+        const double value = std::strtod(token.c_str(), &end);
+        if (errno == ERANGE || end != token.c_str() + token.size() ||
+            !std::isfinite(value)) {
+            return std::nullopt;
+        }
+        return value;
+    }
 
     template <typename T>
     [[nodiscard]] constexpr std::optional<T> checked_add(
