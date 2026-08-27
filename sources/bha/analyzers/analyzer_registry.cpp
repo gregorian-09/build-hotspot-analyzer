@@ -159,6 +159,10 @@ namespace bha::analyzers
 
             auto& partial = result.value();
 
+            for (const auto& capability : partial.metric_capabilities) {
+                add_capability(combined_result.metric_capabilities, capability);
+            }
+
             if (!partial.files.empty()) {
                 for (auto& file : partial.files) {
                     const std::string key = file.file.string();

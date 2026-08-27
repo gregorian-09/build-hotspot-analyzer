@@ -8,6 +8,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <chrono>
 #include <limits>
@@ -707,7 +708,14 @@ namespace bha::build_sessions {
                 )
             );
         }
-        if (trace.compiler != CompilerType::Unknown && trace.compiler != CompilerType::Clang) {
+        const bool has_compile_trace_references = std::ranges::any_of(
+            session.commands,
+            [](const BuildCommandEvent& command) {
+                return command.role == BuildStepRole::Compile && command.trace_file.has_value();
+            }
+        );
+        if (has_compile_trace_references &&
+            trace.compiler != CompilerType::Unknown && trace.compiler != CompilerType::Clang) {
             return Result<void, Error>::failure(
                 Error::invalid_argument(
                     "CMake compileTrace references are Clang traces, but another compiler is already attached",
@@ -757,7 +765,9 @@ namespace bha::build_sessions {
 
         trace.build_session = session;
         trace.build_system = BuildSystemType::CMake;
-        trace.compiler = CompilerType::Clang;
+        if (has_compile_trace_references) {
+            trace.compiler = CompilerType::Clang;
+        }
         trace.id = path.generic_string();
         if (trace.total_time == Duration::zero() &&
             whole_build_event_count == 1 &&

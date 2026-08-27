@@ -6,6 +6,7 @@
 #include "bha/utils/numeric_utils.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 #include <utility>
 
@@ -47,6 +48,59 @@ namespace bha::analyzers {
             return false;
         }
 
+        std::optional<Duration> exact_build_wall_time(const BuildTrace& trace) {
+            if (!trace.build_session.has_value()) {
+                return std::nullopt;
+            }
+
+            const BuildCommandEvent* build_event = nullptr;
+            for (const auto& command : trace.build_session->commands) {
+                if (command.role != BuildStepRole::Build || !command.has_exact_timing()) {
+                    continue;
+                }
+                if (build_event != nullptr) {
+                    return std::nullopt;
+                }
+                build_event = &command;
+            }
+            if (build_event == nullptr) {
+                return std::nullopt;
+            }
+            return build_event->duration;
+        }
+
+        MetricCapability wall_time_capability(const BuildTrace& trace) {
+            MetricCapability capability;
+            capability.metric = "build.wall_time";
+            capability.provenance.producer = "PerformanceAnalyzer";
+            capability.provenance.capture_mode = "build-session-command-event";
+            capability.provenance.scope = "build";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            if (exact_build_wall_time(trace).has_value()) {
+                capability.provenance.evidence = EvidenceKind::Observed;
+            } else {
+                capability.provenance.evidence = EvidenceKind::Unavailable;
+                capability.provenance.limitation =
+                    "Per-translation-unit compiler traces provide aggregate durations, not build scheduler wall time";
+            }
+            return capability;
+        }
+
+        MetricCapability parallelism_capability() {
+            MetricCapability capability;
+            capability.metric = "build.parallelism";
+            capability.provenance.evidence = EvidenceKind::Unavailable;
+            capability.provenance.producer = "PerformanceAnalyzer";
+            capability.provenance.capture_mode = "translation-unit-traces";
+            capability.provenance.scope = "build";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            capability.provenance.limitation =
+                "Per-translation-unit traces do not provide command start times; use producer scheduler events for parallelism";
+            return capability;
+        }
+
     }  // namespace
 
     Result<AnalysisResult, Error> PerformanceAnalyzer::analyze(
@@ -54,6 +108,12 @@ namespace bha::analyzers {
         const AnalysisOptions& options
     ) const {
         AnalysisResult result;
+
+        result.metric_capabilities.push_back(wall_time_capability(trace));
+        result.metric_capabilities.push_back(parallelism_capability());
+        if (const auto wall_time = exact_build_wall_time(trace); wall_time.has_value()) {
+            result.performance.total_build_time = *wall_time;
+        }
 
         if (trace.units.empty()) {
             return Result<AnalysisResult, Error>::success(std::move(result));
@@ -65,7 +125,6 @@ namespace bha::analyzers {
             );
         }
 
-        result.performance.total_build_time = trace.total_time;
         result.performance.total_files = trace.units.size();
 
         std::vector<Duration> compile_times;
@@ -107,16 +166,10 @@ namespace bha::analyzers {
         }
 
         result.performance.sequential_time = sequential_total;
-        result.performance.parallel_time = trace.total_time;
-
-        // A parallelism ratio requires both exact serial observations and an
-        // exact build wall time. Zero remains the unavailable sentinel when
-        // the producer did not provide the latter.
-        if (trace.total_time > Duration::zero()) {
-            result.performance.parallelism_efficiency =
-                static_cast<double>(sequential_total.count()) /
-                static_cast<double>(trace.total_time.count());
-        }
+        // Compiler traces do not contain command start times. Do not infer
+        // overlap or scheduler efficiency from their aggregate durations.
+        result.performance.parallel_time = Duration::zero();
+        result.performance.parallelism_efficiency = 0.0;
 
         if (!compile_times.empty()) {
             result.performance.avg_file_time = sequential_total / compile_times.size();
@@ -176,16 +229,31 @@ namespace bha::analyzers {
         }
         result.performance.slowest_file_count = slowest_count;
 
-        if (trace.total_time > Duration::zero()) {
+        const Duration aggregate_time = trace.total_time > Duration::zero()
+            ? trace.total_time
+            : sequential_total;
+        if (aggregate_time > Duration::zero()) {
             for (auto& file : result.files) {
                 file.time_percent = 100.0 *
                     static_cast<double>(file.compile_time.count()) /
-                    static_cast<double>(trace.total_time.count());
+                    static_cast<double>(aggregate_time.count());
             }
         }
 
         for (std::size_t index = 0; index < result.files.size(); ++index) {
             result.files[index].rank = index + 1;
+        }
+
+        for (auto& file : result.performance.slowest_files) {
+            const auto source = std::ranges::find(
+                result.files,
+                file.file,
+                &FileAnalysisResult::file
+            );
+            if (source != result.files.end()) {
+                file.time_percent = source->time_percent;
+                file.rank = source->rank;
+            }
         }
 
         return Result<AnalysisResult, Error>::success(std::move(result));

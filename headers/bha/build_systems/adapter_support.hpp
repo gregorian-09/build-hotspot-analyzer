@@ -96,6 +96,9 @@ namespace bha::build_systems::detail {
     std::string extract_error_summary(const std::string& output, std::size_t max_lines = 50);
     std::vector<fs::path> find_trace_files(const fs::path& directory);
     std::vector<fs::path> find_memory_files(const fs::path& directory);
+    std::optional<fs::path> find_cmake_instrumentation_index(const fs::path& build_directory);
+    std::optional<fs::path> find_cmake_file_api_index(const fs::path& build_directory);
+    bool ensure_cmake_analysis_queries(const fs::path& build_directory);
     void copy_trace_files(
         const fs::path& source_directory,
         const fs::path& destination_directory,

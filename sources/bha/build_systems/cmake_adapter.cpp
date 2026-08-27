@@ -42,6 +42,7 @@ namespace bha::build_systems {
 
             const fs::path build_dir = options.build_dir.empty() ? project_path / "build" : options.build_dir;
             fs::create_directories(build_dir);
+            ensure_cmake_analysis_queries(build_dir);
 
             const auto [type, c_compiler, cxx_compiler] = get_compiler_info(options);
             auto flags = CompilerFlags::for_compiler(type, options.enable_tracing, options.enable_memory_profiling);
@@ -105,7 +106,11 @@ namespace bha::build_systems {
                 fs::remove_all(build_dir, ec);
             }
 
-            if (!fs::exists(build_dir / "CMakeCache.txt")) {
+            const bool analysis_queries_created = ensure_cmake_analysis_queries(build_dir);
+            const auto previous_instrumentation_index =
+                find_cmake_instrumentation_index(build_dir);
+
+            if (!fs::exists(build_dir / "CMakeCache.txt") || analysis_queries_created) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
                     result.error_message = config_result.error().message();
                     return Result<BuildResult, Error>::success(result);
@@ -157,6 +162,14 @@ namespace bha::build_systems {
             }
 
             copy_trace_files(build_dir, trace_output_dir, result.trace_files, result.memory_files);
+
+            if (const auto instrumentation_index = find_cmake_instrumentation_index(build_dir);
+                instrumentation_index.has_value() &&
+                (!previous_instrumentation_index.has_value() ||
+                 *instrumentation_index != *previous_instrumentation_index)) {
+                result.cmake_instrumentation_index = instrumentation_index;
+            }
+            result.cmake_file_api_index = find_cmake_file_api_index(build_dir);
 
             result.build_time = std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - start);
             return Result<BuildResult, Error>::success(result);

@@ -559,6 +559,7 @@ namespace bha {
      */
     struct FileMetrics {
         fs::path path{};
+        /// Aggregate compiler time for this translation unit.
         Duration total_time = Duration::zero();
         Duration frontend_time = Duration::zero();
         Duration backend_time = Duration::zero();
@@ -828,6 +829,8 @@ namespace bha {
     struct BuildTrace {
         std::string id;
         Timestamp timestamp;
+        /// Aggregate compiler time across parsed translation-unit traces.
+        /// This is not a scheduler wall-clock measurement.
         Duration total_time = Duration::zero();
 
         CompilerType compiler = CompilerType::Unknown;

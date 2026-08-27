@@ -493,7 +493,7 @@ namespace bha::exporters {
         output["performance"] = serialize_performance(analysis.performance, options.include_timing);
         output["summary"] = {
             {"total_files", analysis.files.size()},
-            {"total_compile_time_ms", serialize_duration(analysis.performance.total_build_time, options.include_timing)},
+            {"total_compile_time_ms", serialize_duration(analysis.performance.sequential_time, options.include_timing)},
             {"analysis_duration_ms", serialize_duration(analysis.analysis_duration, options.include_timing)},
             {"metric_capabilities", serialize_metric_capabilities(analysis.metric_capabilities)}
         };

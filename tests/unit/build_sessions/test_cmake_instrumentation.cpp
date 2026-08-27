@@ -402,11 +402,13 @@ namespace bha::build_sessions::test {
         ASSERT_TRUE(utils::write_file(index, index_content).is_ok());
 
         BuildTrace trace;
+        trace.compiler = CompilerType::MSVC;
         CMakeInstrumentationParser parser;
         const auto result = parser.attach_to_trace(trace, index);
 
         ASSERT_TRUE(result.is_ok());
         EXPECT_EQ(trace.total_time, std::chrono::milliseconds(125));
+        EXPECT_EQ(trace.compiler, CompilerType::MSVC);
 
         std::error_code ec;
         fs::remove_all(root, ec);

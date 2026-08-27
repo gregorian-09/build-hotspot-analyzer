@@ -35,7 +35,7 @@ namespace bha::analyzers {
         EXPECT_EQ(result.value().performance.total_files, 0u);
     }
 
-    TEST_F(PerformanceAnalyzerTest, CalculatesTotalBuildTime) {
+    TEST_F(PerformanceAnalyzerTest, LeavesBuildWallTimeUnavailableForCompilerTraces) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(60);
 
@@ -48,8 +48,23 @@ namespace bha::analyzers {
         auto result = analyzer_->analyze(trace, options);
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_TRUE(result.value().performance.total_build_time == std::chrono::seconds(60));
+        EXPECT_EQ(result.value().performance.total_build_time, Duration::zero());
         EXPECT_EQ(result.value().performance.total_files, 1u);
+        const auto capability = std::ranges::find(
+            result.value().metric_capabilities,
+            "build.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, result.value().metric_capabilities.end());
+        EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Unavailable);
+        const auto parallelism = std::ranges::find(
+            result.value().metric_capabilities,
+            "build.parallelism",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(parallelism, result.value().metric_capabilities.end());
+        EXPECT_EQ(parallelism->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_FALSE(parallelism->provenance.limitation.empty());
     }
 
     TEST_F(PerformanceAnalyzerTest, CalculatesSequentialTime) {
@@ -69,7 +84,7 @@ namespace bha::analyzers {
         ASSERT_TRUE(result.is_ok());
         // Sequential time = 3 * 20s = 60s
         EXPECT_TRUE(result.value().performance.sequential_time == std::chrono::seconds(60));
-        EXPECT_TRUE(result.value().performance.parallel_time == std::chrono::seconds(30));
+        EXPECT_EQ(result.value().performance.parallel_time, Duration::zero());
     }
 
     TEST_F(PerformanceAnalyzerTest, RejectsOverflowingSequentialTime) {
@@ -100,7 +115,7 @@ namespace bha::analyzers {
         EXPECT_EQ(result.error().code(), ErrorCode::AnalysisError);
     }
 
-    TEST_F(PerformanceAnalyzerTest, CalculatesParallelismEfficiency) {
+    TEST_F(PerformanceAnalyzerTest, DoesNotInferParallelismFromAggregateCompilerTime) {
         BuildTrace trace;
         trace.total_time = std::chrono::seconds(30);
 
@@ -115,8 +130,39 @@ namespace bha::analyzers {
         auto result = analyzer_->analyze(trace, options);
 
         ASSERT_TRUE(result.is_ok());
-        // Efficiency = sequential (60s) / parallel (30s) = 2.0
-        EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 2.0);
+        EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.0);
+    }
+
+    TEST_F(PerformanceAnalyzerTest, UsesExplicitBuildSessionWallTime) {
+        BuildTrace trace;
+        trace.total_time = std::chrono::seconds(30);
+
+        CompilationUnit unit;
+        unit.source_file = "file.cpp";
+        unit.metrics.total_time = std::chrono::seconds(20);
+        trace.units.push_back(unit);
+
+        BuildCommandEvent build;
+        build.role = BuildStepRole::Build;
+        build.start_time = Timestamp(std::chrono::system_clock::duration(std::chrono::seconds(10)));
+        build.duration = std::chrono::seconds(25);
+        build.timing_provenance.evidence = EvidenceKind::Observed;
+        build.timing_provenance.producer = "cmake-instrumentation";
+        trace.build_session = BuildSession{};
+        trace.build_session->commands.push_back(build);
+
+        constexpr AnalysisOptions options;
+        const auto result = analyzer_->analyze(trace, options);
+
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result.value().performance.total_build_time, std::chrono::seconds(25));
+        const auto capability = std::ranges::find(
+            result.value().metric_capabilities,
+            "build.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(capability, result.value().metric_capabilities.end());
+        EXPECT_EQ(capability->provenance.evidence, EvidenceKind::Observed);
     }
 
     TEST_F(PerformanceAnalyzerTest, CalculatesAverageFileTime) {

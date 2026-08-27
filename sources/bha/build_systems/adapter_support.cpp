@@ -27,6 +27,7 @@
 #endif
 
 #include "bha/build_systems/adapter_support.hpp"
+#include "bha/utils/file_utils.hpp"
 
 namespace bha::build_systems::detail {
 #ifndef _WIN32
@@ -711,6 +712,92 @@ namespace bha::build_systems::detail {
             }
 
             return memory_files;
+        }
+
+        namespace {
+            std::optional<fs::path> latest_json_file(
+                const fs::path& directory,
+                const std::string_view prefix
+            ) {
+                std::error_code ec;
+                if (!fs::is_directory(directory, ec)) {
+                    return std::nullopt;
+                }
+
+                std::optional<fs::path> latest;
+                std::optional<fs::file_time_type> latest_time;
+                for (const auto& entry : fs::directory_iterator(directory, ec)) {
+                    if (ec) {
+                        break;
+                    }
+                    if (!entry.is_regular_file(ec) || ec || entry.path().extension() != ".json" ||
+                        !entry.path().filename().string().starts_with(prefix)) {
+                        ec.clear();
+                        continue;
+                    }
+
+                    const auto modified = fs::last_write_time(entry.path(), ec);
+                    if (ec) {
+                        ec.clear();
+                        continue;
+                    }
+                    if (!latest_time.has_value() || modified > *latest_time ||
+                        (modified == *latest_time && entry.path() > *latest)) {
+                        latest = entry.path();
+                        latest_time = modified;
+                    }
+                }
+                return latest;
+            }
+        }
+
+        std::optional<fs::path> find_cmake_instrumentation_index(
+            const fs::path& build_directory
+        ) {
+            return latest_json_file(
+                build_directory / ".cmake" / "instrumentation" / "v1" / "data" / "index",
+                "index-"
+            );
+        }
+
+        std::optional<fs::path> find_cmake_file_api_index(
+            const fs::path& build_directory
+        ) {
+            return latest_json_file(
+                build_directory / ".cmake" / "api" / "v1" / "reply",
+                "index-"
+            );
+        }
+
+        bool ensure_cmake_analysis_queries(const fs::path& build_directory) {
+            bool created = false;
+            const fs::path file_api_query =
+                build_directory / ".cmake" / "api" / "v1" / "query" / "client-bha" /
+                "codemodel-v2";
+            if (!fs::exists(file_api_query)) {
+                const auto result = utils::write_file(file_api_query, "");
+                if (!result.is_ok()) {
+                    return false;
+                }
+                created = true;
+            }
+
+            const fs::path instrumentation_query =
+                build_directory / ".cmake" / "instrumentation" / "v1" / "query" /
+                "client-bha.json";
+            if (!fs::exists(instrumentation_query)) {
+                constexpr std::string_view content = R"json({
+  "version": 1,
+  "hooks": ["postCMakeBuild"],
+  "options": ["staticSystemInformation", "dynamicSystemInformation"]
+})json";
+                const auto result = utils::write_file(instrumentation_query, content);
+                if (!result.is_ok()) {
+                    return false;
+                }
+                created = true;
+            }
+            return created;
         }
 
         void copy_trace_files(const fs::path& source_dir, const fs::path& dest_dir,

@@ -50,6 +50,8 @@ Important options:
 - `--min-time`
 - `-j`, `--parallel`
 - `--cmake-index FILE`
+- `--cmake-file-api FILE`
+- `--config CONFIG`
 
 Examples:
 
@@ -97,6 +99,18 @@ roles also report exact captured-output observations and producer-byte totals fo
 stdout and stderr. Raw output text is not copied into aggregate reports or
 snapshots; absent streams remain unavailable and no output text is classified.
 
+`bha build` also writes an exact `bha-build-session.json` sidecar beside the
+captured traces. It contains the adapter-observed build wall time and, when the
+build system exposes them, producer command events. `analyze`, `suggest`, and
+`export` load this sidecar automatically when it is beside the supplied trace
+directory or file; it can also be supplied explicitly by passing the sidecar's
+directory or file. The sidecar is portable across Linux, Windows, and macOS and
+does not infer scheduler overlap from per-translation-unit compiler durations.
+Use `--cmake-file-api FILE` with optional `--config CONFIG` to attach an exact
+CMake codemodel target graph. The File API is used only for producer-declared
+target and dependency relationships; BHA does not reconstruct them from paths or
+command-line text.
+
 ---
 
 ## `suggest`
@@ -120,6 +134,8 @@ Important options:
 - `--explain`
 - `--include-unsafe`
 - `--disable-consolidation`
+- `--cmake-file-api FILE`
+- `--config CONFIG`
 - timeout controls:
   - `--max-suggest-time`
   - `--max-suggester-time`
@@ -245,6 +261,8 @@ Important options:
 - `--title`
 - `--max-files`
 - `--max-suggestions`
+- `--cmake-file-api FILE`
+- `--config CONFIG`
 - content toggles:
   - `--no-file-details`
   - `--no-dependencies`

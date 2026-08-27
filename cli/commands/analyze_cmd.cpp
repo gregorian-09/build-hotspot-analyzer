@@ -8,6 +8,8 @@
 
 #include "bha/bha.hpp"
 #include "bha/build_sessions/cmake_instrumentation.hpp"
+#include "bha/build_sessions/cmake_file_api.hpp"
+#include "bha/build_sessions/session_file.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/memory_parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
@@ -66,6 +68,8 @@ namespace bha::cli
                 {"module-deps", 0, "Clang P1689 module dependency JSON file", false, true, "", "FILE"},
                 {"resource-stats", 0, "Clang -fproc-stat-report CSV file", false, true, "", "FILE"},
                 {"cmake-index", 0, "CMake Instrumentation API v1 index file", false, true, "", "FILE"},
+                {"cmake-file-api", 0, "CMake File API reply index file", false, true, "", "FILE"},
+                {"config", 0, "CMake configuration to select from the File API model", false, true, "", "CONFIG"},
             };
         }
 
@@ -94,6 +98,7 @@ namespace bha::cli
             const Duration min_time = std::chrono::milliseconds(args.get_int("min-time").value_or(10));
 
             std::vector<fs::path> trace_files;
+            std::optional<fs::path> session_file_path;
             std::vector<fs::path> memory_files;
 
             std::vector<std::string> paths_to_analyze;
@@ -136,7 +141,21 @@ namespace bha::cli
                 }
             }
 
-            if (trace_files.empty() && !args.get("cmake-index").has_value()) {
+            for (const auto& path_str : paths_to_analyze) {
+                const fs::path path(path_str);
+                const fs::path candidate = fs::is_directory(path)
+                    ? path / std::string(build_sessions::kBuildSessionFileName)
+                    : path.filename() == build_sessions::kBuildSessionFileName
+                        ? path
+                        : path.parent_path() / std::string(build_sessions::kBuildSessionFileName);
+                if (fs::is_regular_file(candidate)) {
+                    session_file_path = candidate;
+                    break;
+                }
+            }
+
+            if (trace_files.empty() && !args.get("cmake-index").has_value() &&
+                !session_file_path.has_value()) {
                 print_error("No trace files found");
                 return 1;
             }
@@ -184,6 +203,27 @@ namespace bha::cli
                     return 1;
                 }
                 print_verbose("Attached CMake instrumentation index: " + *cmake_index_path);
+            }
+
+            if (!build_trace.build_session.has_value() && session_file_path.has_value()) {
+                build_sessions::BuildSessionFileParser parser;
+                if (const auto result = parser.attach_to_trace(build_trace, *session_file_path);
+                    result.is_err()) {
+                    print_error("Failed to attach BHA build session: " + result.error().message());
+                    return 1;
+                }
+                print_verbose("Attached BHA build session: " + session_file_path->string());
+            }
+
+            if (const auto file_api_path = args.get("cmake-file-api")) {
+                build_sessions::CMakeFileApiParser parser;
+                const auto result = parser.parse_reply_index(*file_api_path, args.get_or("config", ""));
+                if (result.is_err()) {
+                    print_error("Failed to attach CMake File API target graph: " + result.error().message());
+                    return 1;
+                }
+                build_trace.target_graph = result.value();
+                print_verbose("Attached CMake File API target graph: " + *file_api_path);
             }
 
             if (!memory_files.empty()) {

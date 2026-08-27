@@ -168,7 +168,7 @@ namespace bha::analyzers {
      * @brief Build-level performance summary statistics.
      */
     struct PerformanceAnalysisResult {
-        /// Wall-clock total build duration from trace.
+        /// Producer-observed wall-clock build duration. Zero means unavailable.
         Duration total_build_time = Duration::zero();
         /// Sum of compile durations as if executed serially.
         Duration sequential_time = Duration::zero();

@@ -44,7 +44,14 @@ namespace bha::analyzers::test {
         const auto result = run_full_analysis(trace, {});
 
         ASSERT_TRUE(result.is_ok());
-        EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.3);
+        EXPECT_DOUBLE_EQ(result.value().performance.parallelism_efficiency, 0.0);
+        const auto wall_time = std::ranges::find(
+            result.value().metric_capabilities,
+            "build.wall_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(wall_time, result.value().metric_capabilities.end());
+        EXPECT_EQ(wall_time->provenance.evidence, EvidenceKind::Unavailable);
     }
 
     TEST_F(AnalyzerRegistryTest, SaturatesUnrepresentableAnalysisDeadline) {

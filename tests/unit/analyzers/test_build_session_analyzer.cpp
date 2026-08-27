@@ -82,6 +82,36 @@ namespace bha::analyzers::test {
         EXPECT_DOUBLE_EQ(analysis.average_parallelism, 1.0);
     }
 
+    TEST(BuildSessionAnalyzerTest, DoesNotTreatOuterBuildEventAsSchedulerWork) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        BuildCommandEvent build;
+        build.id = "build";
+        build.role = BuildStepRole::Build;
+        build.start_time = at_seconds(10);
+        build.duration = std::chrono::seconds(5);
+        build.timing_provenance.evidence = EvidenceKind::Observed;
+        build.timing_provenance.producer = "bha-adapter";
+        trace.build_session->commands = {build};
+
+        BuildSessionAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().build_session;
+        EXPECT_EQ(analysis.wall_clock_time, std::chrono::seconds(5));
+        EXPECT_EQ(analysis.serial_time, Duration::zero());
+        EXPECT_EQ(analysis.peak_parallelism, 0u);
+        EXPECT_DOUBLE_EQ(analysis.average_parallelism, 0.0);
+        const auto scheduler = std::ranges::find(
+            analysis.metric_capabilities,
+            "build.scheduler",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(scheduler, analysis.metric_capabilities.end());
+        EXPECT_EQ(scheduler->provenance.evidence, EvidenceKind::Unavailable);
+    }
+
     TEST(BuildSessionAnalyzerTest, FailsClosedWhenSerialTimeAggregationOverflows) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

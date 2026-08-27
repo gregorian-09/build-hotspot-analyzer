@@ -2,6 +2,8 @@
 #include "bha/cli/formatter.hpp"
 #include "bha/build_systems/adapter.hpp"
 #include "bha/build_sessions/cmake_instrumentation.hpp"
+#include "bha/build_sessions/cmake_file_api.hpp"
+#include "bha/build_sessions/session_file.hpp"
 #include "bha/parsers/parser.hpp"
 #include "bha/parsers/sccache_stats_parser.hpp"
 #include "bha/parsers/p1689_module_parser.hpp"
@@ -16,6 +18,63 @@
 namespace bha::cli
 {
     namespace fs = std::filesystem;
+
+    namespace {
+        BuildSystemType build_system_type(const std::string_view name) {
+            if (name == "CMake") return BuildSystemType::CMake;
+            if (name == "Ninja") return BuildSystemType::Ninja;
+            if (name == "Make") return BuildSystemType::Make;
+            if (name == "MSBuild") return BuildSystemType::MSBuild;
+            if (name == "Bazel") return BuildSystemType::Bazel;
+            if (name == "Buck2") return BuildSystemType::Buck2;
+            if (name == "Meson") return BuildSystemType::Meson;
+            if (name == "SCons") return BuildSystemType::SCons;
+            if (name == "XCode") return BuildSystemType::XCode;
+            return BuildSystemType::Unknown;
+        }
+
+        BuildSession make_adapter_session(
+            const build_systems::IBuildSystemAdapter& adapter,
+            const fs::path& project_path,
+            const build_systems::BuildOptions& options,
+            const Duration duration
+        ) {
+            BuildSession session;
+            session.id = (project_path / "bha-adapter-build").generic_string();
+            session.build_system = build_system_type(adapter.name());
+            session.configuration = options.build_type;
+            session.instrumentation_hook = "bha-adapter-wall-clock";
+
+            BuildCommandEvent event;
+            event.id = session.id;
+            event.role = BuildStepRole::Build;
+            event.command = adapter.name();
+            event.working_directory = project_path;
+            event.configuration = options.build_type;
+            event.start_time = std::chrono::system_clock::now() -
+                std::chrono::duration_cast<Timestamp::duration>(duration);
+            event.duration = duration;
+            event.result = 0;
+            event.timing_provenance.evidence = EvidenceKind::Observed;
+            event.timing_provenance.producer = "bha-adapter";
+            event.timing_provenance.capture_mode = "adapter-wall-clock";
+            event.timing_provenance.scope = "build";
+            event.timing_provenance.timing_domain = TimingDomain::WallClock;
+            event.timing_provenance.timing_aggregation = TimingAggregation::Exclusive;
+            session.commands.push_back(std::move(event));
+
+            MetricCapability capability;
+            capability.metric = "build.adapter.wall_time";
+            capability.provenance.evidence = EvidenceKind::Observed;
+            capability.provenance.producer = "bha-adapter";
+            capability.provenance.capture_mode = "steady-clock-around-build-command";
+            capability.provenance.scope = "build";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
+            session.metric_capabilities.push_back(std::move(capability));
+            return session;
+        }
+    }
 
     class BuildCommand final : public Command {
     public:
@@ -178,8 +237,45 @@ namespace bha::cli
                 }
             }
 
+            BuildSession persisted_session = make_adapter_session(
+                *adapter,
+                project_path,
+                options,
+                result.build_time
+            );
+            if (result.cmake_instrumentation_index.has_value()) {
+                build_sessions::CMakeInstrumentationParser parser;
+                if (const auto parsed = parser.parse_index_file(*result.cmake_instrumentation_index);
+                    parsed.is_ok()) {
+                    persisted_session = parsed.value();
+                } else {
+                    print_warning(
+                        "Failed to persist CMake instrumentation session: " + parsed.error().message()
+                    );
+                }
+            }
+            fs::path session_directory = options.trace_output_dir;
+            if (session_directory.empty() && !result.trace_files.empty()) {
+                session_directory = result.trace_files.front().parent_path();
+            }
+            if (session_directory.empty()) {
+                session_directory = options.build_dir.empty()
+                    ? project_path / "build" / "traces"
+                    : options.build_dir / "traces";
+            }
+            const fs::path session_path =
+                session_directory / std::string(build_sessions::kBuildSessionFileName);
+            build_sessions::BuildSessionFileParser session_parser;
+            if (const auto write_result = session_parser.write_file(persisted_session, session_path);
+                write_result.is_err()) {
+                print_warning("Failed to persist build session: " + write_result.error().message());
+            } else {
+                print_verbose("Persisted build session: " + session_path.string());
+            }
+
             if (args.get_flag("analyze") &&
-                (!result.trace_files.empty() || args.get("cmake-index").has_value())) {
+                (!result.trace_files.empty() || result.build_time > Duration::zero() ||
+                 args.get("cmake-index").has_value())) {
                 std::cout << "\nRunning analysis...\n";
 
                 BuildTrace build_trace;
@@ -194,7 +290,11 @@ namespace bha::cli
                     }
                 }
 
-                if (const auto cmake_index_path = args.get("cmake-index")) {
+                const auto requested_cmake_index = args.get("cmake-index");
+                const auto cmake_index_path = requested_cmake_index.has_value()
+                    ? std::optional<fs::path>(fs::path(*requested_cmake_index))
+                    : result.cmake_instrumentation_index;
+                if (cmake_index_path.has_value()) {
                     build_sessions::CMakeInstrumentationParser parser;
                     if (const auto attach_result = parser.attach_to_trace(build_trace, *cmake_index_path);
                         attach_result.is_err()) {
@@ -204,7 +304,37 @@ namespace bha::cli
                         );
                         return 1;
                     }
-                    print_verbose("Attached CMake instrumentation index: " + *cmake_index_path);
+                    print_verbose(
+                        "Attached CMake instrumentation index: " + cmake_index_path->string()
+                    );
+                }
+
+                if (result.cmake_file_api_index.has_value()) {
+                    build_sessions::CMakeFileApiParser parser;
+                    const auto graph = parser.parse_reply_index(
+                        *result.cmake_file_api_index,
+                        options.build_type
+                    );
+                    if (graph.is_err()) {
+                        print_warning(
+                            "Failed to attach CMake File API target graph: " + graph.error().message()
+                        );
+                    } else {
+                        build_trace.target_graph = graph.value();
+                        print_verbose(
+                            "Attached CMake File API target graph: " +
+                            result.cmake_file_api_index->string()
+                        );
+                    }
+                }
+
+                if (!build_trace.build_session.has_value()) {
+                    build_trace.build_session = make_adapter_session(
+                        *adapter,
+                        project_path,
+                        options,
+                        result.build_time
+                    );
                 }
 
                 if (build_trace.units.empty() && !build_trace.build_session.has_value()) {

@@ -3,6 +3,7 @@
 //
 
 #include "bha/parsers/parser.hpp"
+#include "bha/build_sessions/session_file.hpp"
 #include "bha/utils/file_utils.hpp"
 #include "bha/utils/parallel.hpp"
 #include <algorithm>
@@ -137,6 +138,9 @@ namespace bha::parsers {
         }
 
         if (fs::is_regular_file(path)) {
+            if (path.filename() == build_sessions::kBuildSessionFileName) {
+                return result;
+            }
             const auto ext = path.extension().string();
             if (is_supported_trace_extension(ext)) {
                 result.push_back(path);
@@ -148,6 +152,9 @@ namespace bha::parsers {
             auto iterate = [&result](const auto& iterator) {
                 for (const auto& entry : iterator) {
                     if (entry.is_regular_file()) {
+                        if (entry.path().filename() == build_sessions::kBuildSessionFileName) {
+                            continue;
+                        }
                         if (auto ext = entry.path().extension().string(); is_supported_trace_extension(ext)) {
                             result.push_back(entry.path());
                         }

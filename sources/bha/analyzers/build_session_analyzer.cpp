@@ -435,10 +435,23 @@ namespace bha::analyzers {
         }
 
         std::vector<TimedEvent> timed_events;
+        std::vector<TimedEvent> scheduler_events;
         timed_events.reserve(session.commands.size());
+        scheduler_events.reserve(session.commands.size());
+        std::size_t scheduler_command_count = 0;
+        bool unknown_command_role = false;
         std::size_t exact_timed_commands = 0;
         bool end_time_overflow = false;
         for (const auto& command : session.commands) {
+            if (command.role == BuildStepRole::Unknown) {
+                unknown_command_role = true;
+            }
+            const bool scheduler_role = command.role == BuildStepRole::Compile ||
+                command.role == BuildStepRole::Link ||
+                command.role == BuildStepRole::Custom;
+            if (scheduler_role) {
+                ++scheduler_command_count;
+            }
             if (command.start_time.has_value() &&
                 command.timing_provenance.evidence == EvidenceKind::Observed &&
                 command.duration < Duration::zero()) {
@@ -467,6 +480,12 @@ namespace bha::analyzers {
                 &command,
                 Timestamp(*end)
             });
+            if (scheduler_role) {
+                scheduler_events.push_back({
+                    &command,
+                    Timestamp(*end)
+                });
+            }
         }
 
         analysis.timed_commands = exact_timed_commands;
@@ -528,7 +547,7 @@ namespace bha::analyzers {
         } else {
             analysis.wall_clock_time = Duration::zero();
         }
-        for (const auto& event : timed_events) {
+        for (const auto& event : scheduler_events) {
             if (serial_time_overflow) {
                 break;
             }
@@ -545,8 +564,8 @@ namespace bha::analyzers {
         }
 
         std::vector<Boundary> boundaries;
-        boundaries.reserve(timed_events.size() * 2);
-        for (const auto& event : timed_events) {
+        boundaries.reserve(scheduler_events.size() * 2);
+        for (const auto& event : scheduler_events) {
             // A zero-length event contributes no occupied interval. Adding an
             // end boundary before its start boundary would underflow `active`
             // during the half-open interval sweep.
@@ -579,9 +598,37 @@ namespace bha::analyzers {
                 static_cast<double>(analysis.wall_clock_time.count());
         }
 
+        if (scheduler_command_count == 0) {
+            analysis.serial_time = Duration::zero();
+            analysis.peak_parallelism = 0;
+            analysis.average_parallelism = 0.0;
+            add_capability(
+                analysis.metric_capabilities,
+                capability(
+                    "build.scheduler",
+                    EvidenceKind::Unavailable,
+                    "build-session",
+                    "session",
+                    "A build-level event does not expose schedulable compile, link, or custom command events"
+                )
+            );
+            add_capability(
+                analysis.metric_capabilities,
+                capability(
+                    "build.scheduler.critical_path",
+                    EvidenceKind::Unavailable,
+                    "build-session",
+                    "session",
+                    "Schedulable command events and a complete acyclic dependency graph are required"
+                )
+            );
+            return Result<AnalysisResult, Error>::success(std::move(result));
+        }
+
         const bool all_commands_timed = !serial_time_overflow && !end_time_overflow &&
             !wall_clock_overflow &&
-            analysis.timed_commands == analysis.total_commands;
+            !unknown_command_role &&
+            scheduler_events.size() == scheduler_command_count;
         add_capability(
             analysis.metric_capabilities,
             capability(
@@ -598,7 +645,7 @@ namespace bha::analyzers {
         );
 
         if (all_commands_timed && compute_critical_path(
-                timed_events,
+                scheduler_events,
                 session.dependency_graph_complete,
                 analysis.critical_path_time,
                 analysis.critical_path)) {

@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -78,6 +79,12 @@ namespace bha::build_systems
 
         /** Path to memory output file(s) (.su, .map) */
         std::vector<fs::path> memory_files;
+
+        /** CMake Instrumentation API v1 index, when the generator supports it. */
+        std::optional<fs::path> cmake_instrumentation_index;
+
+        /** CMake File API reply index, when CMake produced one. */
+        std::optional<fs::path> cmake_file_api_index;
 
         /** Build duration */
         Duration build_time = Duration::zero();

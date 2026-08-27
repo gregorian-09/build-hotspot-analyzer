@@ -252,6 +252,13 @@ TEST(CMakeAdapterTest, DerivesCompanionCompilerFromExplicitCxxOverride) {
     const auto result = adapter->configure(temp.root, options);
     ASSERT_TRUE(result.is_ok()) << result.error().message();
 
+    EXPECT_TRUE(fs::exists(
+        options.build_dir / ".cmake" / "api" / "v1" / "query" / "client-bha" / "codemodel-v2"
+    ));
+    EXPECT_TRUE(fs::exists(
+        options.build_dir / ".cmake" / "instrumentation" / "v1" / "query" / "client-bha.json"
+    ));
+
     const std::string logged = read_file_text(log_path);
     expect_logged_cmake_define(logged, "-DCMAKE_C_COMPILER=", bin_dir / "clang");
     expect_logged_cmake_define(logged, "-DCMAKE_CXX_COMPILER=", bin_dir / "clang++");
