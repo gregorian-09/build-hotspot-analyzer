@@ -525,6 +525,15 @@ namespace bha::exporters::test
         EXPECT_TRUE(html_str.find("</html>") != std::string::npos);
     }
 
+    TEST_F(HtmlExporterTest, AlwaysUsesDarkTheme) {
+        auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& html_str = result.value();
+        EXPECT_TRUE(html_str.find("<body class=\"dark-theme\">") != std::string::npos);
+        EXPECT_EQ(html_str.find("light-theme"), std::string::npos);
+    }
+
     TEST_F(HtmlExporterTest, ContainsAnalysisData) {
         auto result = exporter_->export_to_string(analysis, suggestions, {});
         ASSERT_TRUE(result.is_ok());

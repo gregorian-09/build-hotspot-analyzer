@@ -545,7 +545,6 @@ namespace bha::exporters
             return Result<void, Error>::failure(json_result.error());
         }
 
-        std::string theme_class = options.html_dark_mode ? "dark-theme" : "light-theme";
         std::string timestamp = utils::format_timestamp_iso8601(std::chrono::system_clock::now());
 
         // ==================================================================
@@ -587,7 +586,6 @@ namespace bha::exporters
         const std::string cache_error_count_str = summary_stats.str();
 
         const std::string body_start = replace_placeholders(REPORT_BODY_START_HTML, {
-            {"{{THEME_CLASS}}", theme_class},
             {"{{TITLE}}", escape_html(options.html_title)},
             {"{{TIMESTAMP}}", timestamp},
             {"{{TOTAL_FILES}}", std::to_string(analysis.files.size())},

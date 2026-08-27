@@ -57,7 +57,7 @@ bha suggest --list-suggesters
 Interactive HTML:
 
 ```bash
-bha export traces --format html --dark-mode -o report.html
+bha export traces --format html -o report.html
 ```
 
 Markdown summary:

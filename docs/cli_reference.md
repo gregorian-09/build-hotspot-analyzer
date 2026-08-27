@@ -257,7 +257,6 @@ Important options:
 - `-o`, `--output` (required)
 - `-f`, `--format`
 - `-s`, `--include-suggestions` (all export formats; opt-in)
-- `--dark-mode`
 - `--title`
 - `--max-files`
 - `--max-suggestions`
@@ -285,7 +284,7 @@ Notes:
 Examples:
 
 ```bash
-bha export traces --format html --dark-mode -o report.html
+bha export traces --format html -o report.html
 bha export traces --format json -o report.json
 ```
 

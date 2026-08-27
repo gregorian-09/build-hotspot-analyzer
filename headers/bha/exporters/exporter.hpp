@@ -78,8 +78,6 @@ namespace bha::exporters
         /// Maximum number of suggestions to emit (`0` = unlimited).
         std::size_t max_suggestions = 0;
 
-        /// Use dark mode defaults in HTML output.
-        bool html_dark_mode = true;
         /// HTML document title.
         std::string html_title = "Build Hotspot Analysis Report";
 

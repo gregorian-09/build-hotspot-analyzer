@@ -125,7 +125,7 @@ ctest --test-dir build --output-on-failure
 ```bash
 ./build/bha build --clean --output traces --analyze
 ./build/bha suggest traces --detailed -o suggestions.json --format json
-./build/bha export traces --format html --dark-mode -o report.html
+./build/bha export traces --format html -o report.html
 ```
 
 ### Save and compare snapshots

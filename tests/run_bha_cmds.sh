@@ -110,7 +110,7 @@ run_bha_commands() {
 
     log_subsection "Command: EXPORT"
     run_bha_cmd "export" "bha export --format json" "\"$BHA_BINARY\" export \"$trace_dir\" --format json --pretty --include-suggestions -o \"$output_base/export/report.json\"" || true
-    run_bha_cmd "export" "bha export --format html" "\"$BHA_BINARY\" export \"$trace_dir\" --format html --include-suggestions --dark-mode --title 'Build Hotspot Analyzer Report: $project_name ($compiler)' -o \"$output_base/export/report.html\"" || true
+    run_bha_cmd "export" "bha export --format html" "\"$BHA_BINARY\" export \"$trace_dir\" --format html --include-suggestions --title 'Build Hotspot Analyzer Report: $project_name ($compiler)' -o \"$output_base/export/report.html\"" || true
 
     local total_files
     total_files=$(find "$output_base" -type f 2>/dev/null | wc -l)

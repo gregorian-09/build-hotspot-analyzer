@@ -14,20 +14,6 @@
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     --glow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
-.light-theme {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
-    --border-color: #e2e8f0;
-    --accent-color: #3b82f6;
-    --accent-hover: #2563eb;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --glow: 0 0 20px rgba(59, 130, 246, 0.2);
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -35,7 +21,6 @@ body {
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
-    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .container { max-width: 1600px; margin: 0 auto; padding: 20px; }

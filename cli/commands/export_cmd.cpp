@@ -57,7 +57,6 @@ namespace bha::cli
                 {"format", 'f', "Output format (json, html, csv, md)", false, true, "", "FORMAT"},
                 {"include-suggestions", 's', "Include optimization suggestions", false, false, "", ""},
                 {"pretty", 0, "Pretty-print output", false, false, "", ""},
-                {"dark-mode", 0, "Use dark mode for HTML", false, false, "", ""},
                 {"title", 0, "Report title for HTML", false, true, "Build Analysis Report", "TITLE"},
                 {"max-files", 0, "Maximum files to include (0=unlimited)", false, true, "0", "N"},
                 {"max-suggestions", 0, "Maximum suggestions to include (0=unlimited)", false, true, "0", "N"},
@@ -342,7 +341,6 @@ namespace bha::cli
             auto& exporter = exporter_result.value();
             exporters::ExportOptions export_opts;
             export_opts.pretty_print = args.get_flag("pretty") || format == exporters::ExportFormat::JSON;
-            export_opts.html_dark_mode = args.get_flag("dark-mode");
             export_opts.html_title = args.get_or("title", "Build Analysis Report");
             export_opts.max_files = static_cast<std::size_t>(args.get_int("max-files").value_or(0));
             export_opts.max_suggestions = static_cast<std::size_t>(args.get_int("max-suggestions").value_or(0));
