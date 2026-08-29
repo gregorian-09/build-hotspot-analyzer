@@ -1,279 +1,229 @@
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('files')">
-                <i class="fas fa-list"></i> Files
-            </div>
-            <div class="tab" onclick="showTab('include-tree')">
-                <i class="fas fa-sitemap"></i> Include Tree
-            </div>
-            <div class="tab" onclick="showTab('timeline')">
-                <i class="fas fa-stream"></i> Timeline
-            </div>
-            <div class="tab" onclick="showTab('treemap')">
-                <i class="fas fa-th"></i> Treemap
-            </div>
-            <div class="tab" onclick="showTab('templates')">
-                <i class="fas fa-code"></i> Templates
-            </div>
-            <div class="tab" onclick="showTab('memory')">
-                <i class="fas fa-memory"></i> Memory
-            </div>
-            <div class="tab" onclick="showTab('dependencies')">
-                <i class="fas fa-project-diagram"></i> Dependencies
-            </div>
-            <div class="tab" onclick="showTab('build-context')">
-                <i class="fas fa-layer-group"></i> Build Context
-            </div>
-        </div>
+        <nav class="tabs" role="tablist" aria-label="Report sections">
+            <button id="files-tab" class="tab active" type="button" role="tab" data-tab="files" aria-controls="files" aria-selected="true">
+                <i class="fas fa-list" aria-hidden="true"></i> Files
+            </button>
+            <button id="include-tree-tab" class="tab" type="button" role="tab" data-tab="include-tree" aria-controls="include-tree" aria-selected="false">
+                <i class="fas fa-sitemap" aria-hidden="true"></i> Include tree
+            </button>
+            <button id="timeline-tab" class="tab" type="button" role="tab" data-tab="timeline" aria-controls="timeline" aria-selected="false">
+                <i class="fas fa-stream" aria-hidden="true"></i> Timeline
+            </button>
+            <button id="treemap-tab" class="tab" type="button" role="tab" data-tab="treemap" aria-controls="treemap" aria-selected="false">
+                <i class="fas fa-th" aria-hidden="true"></i> Treemap
+            </button>
+            <button id="templates-tab" class="tab" type="button" role="tab" data-tab="templates" aria-controls="templates" aria-selected="false">
+                <i class="fas fa-code" aria-hidden="true"></i> Templates
+            </button>
+            <button id="memory-tab" class="tab" type="button" role="tab" data-tab="memory" aria-controls="memory" aria-selected="false">
+                <i class="fas fa-memory" aria-hidden="true"></i> Memory
+            </button>
+            <button id="dependencies-tab" class="tab" type="button" role="tab" data-tab="dependencies" aria-controls="dependencies" aria-selected="false">
+                <i class="fas fa-project-diagram" aria-hidden="true"></i> Dependencies
+            </button>
+            <button id="build-context-tab" class="tab" type="button" role="tab" data-tab="build-context" aria-controls="build-context" aria-selected="false">
+                <i class="fas fa-layer-group" aria-hidden="true"></i> Build context
+            </button>
+        </nav>
 
-        <div id="files" class="tab-content active">
+        <section id="files" class="tab-content active" role="tabpanel" aria-labelledby="files-tab">
             <div class="section">
-                <h2><i class="fas fa-folder-open"></i> File Analysis</h2>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">TRANSLATION UNITS</p>
+                        <h2><i class="fas fa-folder-open" aria-hidden="true"></i> File analysis</h2>
+                        <p class="section-description">Ranked compile-time evidence for each recorded translation unit.</p>
+                    </div>
+                    <span class="section-status">Trace evidence</span>
+                </div>
                 <div class="controls">
-                    <input type="text" id="file-search" placeholder="🔍 Search files..." onkeyup="filterFiles()">
-                    <select id="files-sort" onchange="sortFiles()">
-                        <option value="time-desc">Time (High to Low)</option>
-                        <option value="time-asc">Time (Low to High)</option>
-                        <option value="name-asc">Name (A-Z)</option>
-                    </select>
-                    <input type="number" id="files-limit" value="100" min="10" max="10000"
-                           placeholder="Show top N" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="applyFileLimit()">Apply</button>
+                    <label class="field field-search"><span>Filter files</span><input type="text" id="file-search" placeholder="Search by path" data-action="filter-files"></label>
+                    <label class="field"><span>Sort</span><select id="files-sort" data-action="sort-files">
+                        <option value="time-desc">Compile time, high to low</option>
+                        <option value="time-asc">Compile time, low to high</option>
+                        <option value="name-asc">Path, A-Z</option>
+                    </select></label>
+                    <label class="field field-limit"><span>Rows</span><input type="number" id="files-limit" value="100" min="10" max="10000" placeholder="Show top N"></label>
+                    <button class="btn btn-small" type="button" data-action="apply-file-limit">Apply</button>
                 </div>
-                <div class="info-badge" style="margin-bottom: 16px;">
-                    <i class="fas fa-info-circle"></i>
-                    Showing <strong id="files-shown">0</strong> of <strong id="files-total">0</strong> files
-                </div>
-                <div style="max-height: 600px; overflow-y: auto;">
+                <div class="info-badge"><i class="fas fa-info-circle" aria-hidden="true"></i> Showing <strong id="files-shown">0</strong> of <strong id="files-total">0</strong> files</div>
+                <div class="table-wrap">
                     <table id="files-table">
                         <thead>
                             <tr>
                                 <th>File</th>
-                                <th>Total Time</th>
+                                <th>Compile time</th>
                                 <th>Frontend</th>
                                 <th>Backend</th>
-                                <th>Stack Usage</th>
-                                <th style="width: 200px;">Distribution</th>
+                                <th>Stack usage</th>
+                                <th>Distribution</th>
                             </tr>
                         </thead>
                         <tbody>{{FILE_TABLE_ROWS}}</tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="include-tree" class="tab-content">
+        <section id="include-tree" class="tab-content" role="tabpanel" aria-labelledby="include-tree-tab">
             <div class="section">
-                <h2><i class="fas fa-sitemap"></i> Include Dependency Tree</h2>
-                <div class="controls">
-                    <input type="number" id="tree-depth" value="3" min="1" max="10"
-                           placeholder="Max depth" style="max-width: 150px;">
-                    <input type="number" id="tree-limit" value="50" min="10" max="500"
-                           placeholder="Max nodes" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="renderIncludeTree()">Refresh</button>
-                </div>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    Click nodes to expand/collapse. Limited to top nodes by impact to prevent overload.
-                    <span style="color: var(--success-color);">●</span> Source files,
-                    <span style="color: var(--warning-color);">●</span> Header files
-                </p>
-                <div id="include-tree-container">
-                    <div class="zoom-controls">
-                        <button class="zoom-btn" onclick="resetIncludeTree()" title="Reset View">
-                            <i class="fas fa-compress"></i>
-                        </button>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">INCLUDE GRAPH</p>
+                        <h2><i class="fas fa-sitemap" aria-hidden="true"></i> Include dependency tree</h2>
+                        <p class="section-description">Explore recorded include edges. Limits keep large graphs usable without inventing relationships.</p>
                     </div>
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                    <span class="section-status">Interactive</span>
                 </div>
-            </div>
-        </div>
-
-        <div id="timeline" class="tab-content">
-            <div class="section">
-                <h2><i class="fas fa-stream"></i> Compilation Timeline</h2>
                 <div class="controls">
-                    <input type="number" id="timeline-limit" value="100" min="10" max="1000"
-                           placeholder="Max files" style="max-width: 150px;">
-                    <select id="timeline-sort">
-                        <option value="time">Sort by Time</option>
-                        <option value="name">Sort by Name</option>
-                    </select>
-                    <button class="btn btn-small" onclick="renderTimeline()">Refresh</button>
+                    <label class="field"><span>Depth</span><input type="number" id="tree-depth" value="3" min="1" max="10" placeholder="Max depth"></label>
+                    <label class="field"><span>Nodes</span><input type="number" id="tree-limit" value="50" min="10" max="500" placeholder="Max nodes"></label>
+                    <button class="btn btn-small" type="button" data-action="render-include-tree">Refresh</button>
                 </div>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    Shows top N slowest files. Bar length = compile time. Hover for details.
-                </p>
                 <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--accent-color);"></div>
-                        <span>Frontend</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--warning-color);"></div>
-                        <span>Backend</span>
-                    </div>
+                    <div class="legend-item"><span class="legend-color legend-source"></span><span>Source files</span></div>
+                    <div class="legend-item"><span class="legend-color legend-header"></span><span>Headers</span></div>
                 </div>
-                <div id="timeline-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
+                <div class="viz-frame">
+                    <div class="viz-toolbar"><button class="zoom-btn" type="button" data-action="reset-include-tree" title="Reset view"><i class="fas fa-compress" aria-hidden="true"></i><span class="sr-only">Reset view</span></button></div>
+                    <div id="include-tree-container" class="visualization-container">
+                        <div class="loading"><div class="spinner"></div></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="treemap" class="tab-content">
+        <section id="timeline" class="tab-content" role="tabpanel" aria-labelledby="timeline-tab">
             <div class="section">
-                <h2><i class="fas fa-th"></i> Compile Time Treemap</h2>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">PHASE BREAKDOWN</p>
+                        <h2><i class="fas fa-stream" aria-hidden="true"></i> Compilation timeline</h2>
+                        <p class="section-description">Frontend and backend portions of recorded compile time for the slowest translation units.</p>
+                    </div>
+                    <span class="section-status">Interactive</span>
+                </div>
                 <div class="controls">
-                    <input type="number" id="treemap-limit" value="100" min="10" max="500"
-                           placeholder="Max files" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="renderTreemap()">Refresh</button>
+                    <label class="field"><span>Rows</span><input type="number" id="timeline-limit" value="100" min="10" max="1000" placeholder="Max files"></label>
+                    <label class="field"><span>Sort</span><select id="timeline-sort" data-action="render-timeline">
+                        <option value="time">Compile time, high to low</option>
+                        <option value="name">Path, A-Z</option>
+                    </select></label>
+                    <button class="btn btn-small" type="button" data-action="render-timeline">Refresh</button>
                 </div>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    Rectangle size = compile time. Color intensity = compile time.
-                    Limited to top N files for readability.
-                </p>
-                <div id="treemap-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                <div class="legend">
+                    <div class="legend-item"><span class="legend-color legend-frontend"></span><span>Frontend</span></div>
+                    <div class="legend-item"><span class="legend-color legend-backend"></span><span>Backend</span></div>
                 </div>
+                <div id="timeline-container" class="visualization-container"><div class="loading"><div class="spinner"></div></div></div>
             </div>
-        </div>
+        </section>
 
-        <div id="templates" class="tab-content">
+        <section id="treemap" class="tab-content" role="tabpanel" aria-labelledby="treemap-tab">
             <div class="section">
-                <h2><i class="fas fa-code"></i> Template Instantiation Analysis</h2>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">HOTSPOT DISTRIBUTION</p>
+                        <h2><i class="fas fa-th" aria-hidden="true"></i> Compile-time treemap</h2>
+                        <p class="section-description">Area represents recorded compile time. Use the ranked file view for exact comparisons.</p>
+                    </div>
+                    <span class="section-status">Interactive</span>
+                </div>
                 <div class="controls">
-                    <input type="number" id="template-limit" value="50" min="5" max="200"
-                           placeholder="Max templates" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="renderTemplates()">Refresh</button>
+                    <label class="field"><span>Files</span><input type="number" id="treemap-limit" value="100" min="10" max="500" placeholder="Max files"></label>
+                    <button class="btn btn-small" type="button" data-action="render-treemap">Refresh</button>
                 </div>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    Click segments to see details. Shows top N most expensive templates.
-                </p>
-                <div id="template-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
+                <div id="treemap-container" class="visualization-container"><div class="loading"><div class="spinner"></div></div></div>
             </div>
-        </div>
+        </section>
 
-        <div id="memory" class="tab-content">
+        <section id="templates" class="tab-content" role="tabpanel" aria-labelledby="templates-tab">
             <div class="section">
-                <h2><i class="fas fa-memory"></i> Stack Usage Analysis</h2>
-
-                <div class="dep-stats" style="margin-bottom: 32px;">
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="max-stack-usage">-</div>
-                        <div class="dep-stat-label">Max Stack Usage</div>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">TEMPLATE WORK</p>
+                        <h2><i class="fas fa-code" aria-hidden="true"></i> Template instantiation analysis</h2>
+                        <p class="section-description">Ranked specializations backed by compiler trace records. Savings are not inferred here.</p>
                     </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="total-stack-usage">-</div>
-                        <div class="dep-stat-label">Total Stack Usage</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="avg-stack-usage">-</div>
-                        <div class="dep-stat-label">Avg Stack Usage</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value" id="files-with-stack">-</div>
-                        <div class="dep-stat-label">Files with Data</div>
-                    </div>
+                    <span class="section-status">Evidence-backed</span>
                 </div>
-
-                <h3 style="margin-bottom: 16px; color: var(--text-primary);">
-                    <i class="fas fa-chart-bar"></i> Top Stack Consumers
-                </h3>
                 <div class="controls">
-                    <select id="memory-sort">
-                        <option value="stack">Sort by Stack Usage</option>
-                        <option value="name">Sort by Name</option>
-                    </select>
-                    <input type="number" id="memory-limit" value="50" min="10" max="200"
-                           placeholder="Show top N" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="renderMemoryChart()">Refresh</button>
+                    <label class="field"><span>Templates</span><input type="number" id="template-limit" value="50" min="5" max="200" placeholder="Max templates"></label>
+                    <button class="btn btn-small" type="button" data-action="render-templates">Refresh</button>
                 </div>
-                <div id="memory-chart-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-
-                <h3 style="margin: 32px 0 16px; color: var(--text-primary);">
-                    <i class="fas fa-table"></i> Detailed Stack Usage
-                </h3>
-                <div style="max-height: 500px; overflow-y: auto;">
-                    <table id="memory-table">
-                        <thead>
-                            <tr>
-                                <th>File</th>
-                                <th>Stack Usage</th>
-                            </tr>
-                        </thead>
-                        <tbody id="memory-table-body"></tbody>
-                    </table>
-                </div>
+                <div id="template-container" class="visualization-container"><div class="loading"><div class="spinner"></div></div></div>
             </div>
-        </div>
+        </section>
 
-        <div id="dependencies" class="tab-content">
+        <section id="memory" class="tab-content" role="tabpanel" aria-labelledby="memory-tab">
             <div class="section">
-                <h2><i class="fas fa-project-diagram"></i> Dependency Analysis</h2>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">STACK TELEMETRY</p>
+                        <h2><i class="fas fa-memory" aria-hidden="true"></i> Stack usage analysis</h2>
+                        <p class="section-description">Compiler-emitted stack usage records, when available. Missing telemetry remains unavailable.</p>
+                    </div>
+                    <span class="section-status">Optional evidence</span>
+                </div>
+                <div class="dep-stats memory-stats">
+                    <div class="dep-stat"><div class="dep-stat-value" id="max-stack-usage">-</div><div class="dep-stat-label">Max stack</div></div>
+                    <div class="dep-stat"><div class="dep-stat-value" id="total-stack-usage">-</div><div class="dep-stat-label">Total stack</div></div>
+                    <div class="dep-stat"><div class="dep-stat-value" id="avg-stack-usage">-</div><div class="dep-stat-label">Average stack</div></div>
+                    <div class="dep-stat"><div class="dep-stat-value" id="files-with-stack">-</div><div class="dep-stat-label">Files with data</div></div>
+                </div>
+                <div class="subsection-heading"><h3><i class="fas fa-chart-bar" aria-hidden="true"></i> Top stack consumers</h3></div>
+                <div class="controls">
+                    <label class="field"><span>Sort</span><select id="memory-sort" data-action="render-memory"><option value="stack">Stack usage, high to low</option><option value="name">Path, A-Z</option></select></label>
+                    <label class="field"><span>Rows</span><input type="number" id="memory-limit" value="50" min="10" max="200" placeholder="Show top N"></label>
+                    <button class="btn btn-small" type="button" data-action="render-memory">Refresh</button>
+                </div>
+                <div id="memory-chart-container" class="visualization-container"><div class="loading"><div class="spinner"></div></div></div>
+                <div class="subsection-heading"><h3><i class="fas fa-table" aria-hidden="true"></i> Detailed stack usage</h3></div>
+                <div class="table-wrap"><table id="memory-table"><thead><tr><th>File</th><th>Stack usage</th></tr></thead><tbody id="memory-table-body"></tbody></table></div>
+            </div>
+        </section>
 
+        <section id="dependencies" class="tab-content" role="tabpanel" aria-labelledby="dependencies-tab">
+            <div class="section">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">DEPENDENCY TOPOLOGY</p>
+                        <h2><i class="fas fa-project-diagram" aria-hidden="true"></i> Dependency analysis</h2>
+                        <p class="section-description">Recorded include relationships, shown as a bounded interactive graph.</p>
+                    </div>
+                    <span class="section-status">Interactive</span>
+                </div>
                 <div class="dep-stats">
-                    <div class="dep-stat">
-                        <div class="dep-stat-value">{{TOTAL_INCLUDES}}</div>
-                        <div class="dep-stat-label">Total Includes</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value">{{UNIQUE_HEADERS}}</div>
-                        <div class="dep-stat-label">Unique Headers</div>
-                    </div>
-                    <div class="dep-stat">
-                        <div class="dep-stat-value">{{MAX_INCLUDE_DEPTH}}</div>
-                        <div class="dep-stat-label">Max Depth</div>
-                    </div>
+                    <div class="dep-stat"><div class="dep-stat-value">{{TOTAL_INCLUDES}}</div><div class="dep-stat-label">Total includes</div></div>
+                    <div class="dep-stat"><div class="dep-stat-value">{{UNIQUE_HEADERS}}</div><div class="dep-stat-label">Unique headers</div></div>
+                    <div class="dep-stat"><div class="dep-stat-value">{{MAX_INCLUDE_DEPTH}}</div><div class="dep-stat-label">Maximum depth</div></div>
                 </div>
-
-                <h3 style="margin: 30px 0 16px; color: var(--text-primary);">
-                    <i class="fas fa-network-wired"></i> Dependency Graph
-                </h3>
+                <div class="subsection-heading"><h3><i class="fas fa-network-wired" aria-hidden="true"></i> Dependency graph</h3></div>
                 <div class="controls">
-                    <input type="number" id="dep-limit" value="50" min="10" max="200"
-                           placeholder="Max nodes" style="max-width: 150px;">
-                    <button class="btn btn-small" onclick="renderDependencyGraph()">Refresh</button>
+                    <label class="field"><span>Nodes</span><input type="number" id="dep-limit" value="50" min="10" max="200" placeholder="Max nodes"></label>
+                    <button class="btn btn-small" type="button" data-action="render-dependencies">Refresh</button>
                 </div>
-                <p style="color: var(--text-secondary); margin-bottom: 16px;">
-                    Drag nodes to rearrange. Scroll to zoom. Limited to most connected nodes.
-                    Blue = headers, Green = source files.
-                </p>
-                <div id="dependency-graph-container">
-                    <div class="zoom-controls">
-                        <button class="zoom-btn" onclick="resetZoom()" title="Reset View">
-                            <i class="fas fa-compress"></i>
-                        </button>
-                    </div>
-                    <svg id="dependency-graph"></svg>
+                <div class="legend">
+                    <div class="legend-item"><span class="legend-color legend-header"></span><span>Headers</span></div>
+                    <div class="legend-item"><span class="legend-color legend-source"></span><span>Source files</span></div>
+                </div>
+                <div class="viz-frame">
+                    <div class="viz-toolbar"><button class="zoom-btn" type="button" data-action="reset-zoom" title="Reset view"><i class="fas fa-compress" aria-hidden="true"></i><span class="sr-only">Reset view</span></button></div>
+                    <div id="dependency-graph-container" class="visualization-container"><svg id="dependency-graph" role="img" aria-label="Dependency graph"></svg></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="build-context" class="tab-content">
+        <section id="build-context" class="tab-content" role="tabpanel" aria-labelledby="build-context-tab">
             <div class="section">
-                <h2><i class="fas fa-layer-group"></i> Build Context and Evidence</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                    This view is rendered from the canonical analysis document. Values marked
-                    <strong>unavailable</strong> were not supplied by the build producer and
-                    are not inferred.
-                </p>
-                <div id="build-context-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">PROVENANCE AND COVERAGE</p>
+                        <h2><i class="fas fa-layer-group" aria-hidden="true"></i> Build Context and Evidence</h2>
+                        <p class="section-description">Canonical producer metadata, resource observations, and metric coverage. Values marked unavailable were not supplied.</p>
                     </div>
+                    <span class="section-status">Canonical document</span>
                 </div>
+                <div id="build-context-container"><div class="loading"><div class="spinner"></div></div></div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>

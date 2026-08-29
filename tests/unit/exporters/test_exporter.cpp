@@ -534,6 +534,18 @@ namespace bha::exporters::test
         EXPECT_EQ(html_str.find("light-theme"), std::string::npos);
     }
 
+    TEST_F(HtmlExporterTest, VisualizationsUseCanonicalMetricFields) {
+        auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto& html_str = result.value();
+        EXPECT_TRUE(html_str.find("file.compile_time_ms") != std::string::npos);
+        EXPECT_TRUE(html_str.find("template.total_time_ms") != std::string::npos);
+        EXPECT_TRUE(html_str.find("template.instantiation_count") != std::string::npos);
+        EXPECT_EQ(html_str.find("b.total_time_ms - a.total_time_ms"), std::string::npos);
+        EXPECT_EQ(html_str.find("b.time_ms - a.time_ms"), std::string::npos);
+    }
+
     TEST_F(HtmlExporterTest, ContainsAnalysisData) {
         auto result = exporter_->export_to_string(analysis, suggestions, {});
         ASSERT_TRUE(result.is_ok());

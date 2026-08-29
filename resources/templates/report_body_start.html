@@ -1,37 +1,44 @@
 <body class="dark-theme">
-    <header>
-        <div class="container">
-            <h1><i class="fas fa-chart-line"></i> {{TITLE}}</h1>
-            <p style="color: var(--text-secondary); margin-top: 5px;">
-                <i class="far fa-clock"></i> Generated on {{TIMESTAMP}}
-            </p>
+    <header class="report-header">
+        <div class="container report-header-inner">
+            <div>
+                <p class="eyebrow">BUILD HOTSPOT ANALYZER / TRACE REVIEW</p>
+                <h1><i class="fas fa-chart-line" aria-hidden="true"></i> {{TITLE}}</h1>
+                <p class="report-subtitle">Evidence-backed build analysis. Values are reported only when supplied by the build producer.</p>
+            </div>
+            <div class="report-generated">
+                <span class="report-generated-label">Generated</span>
+                <time>{{TIMESTAMP}}</time>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="summary-grid">
-            <div class="summary-card">
-                <h3><i class="fas fa-file-code"></i> Total Files</h3>
+    <main class="container report-main">
+        <section class="summary-grid" aria-label="Build summary">
+            <article class="summary-card">
+                <p class="summary-label"><i class="fas fa-file-code" aria-hidden="true"></i> Translation units</p>
                 <div class="value">{{TOTAL_FILES}}</div>
-            </div>
-            <div class="summary-card">
-                <h3><i class="fas fa-stopwatch"></i> Total Build Time</h3>
+                <div class="unit">files in trace</div>
+            </article>
+            <article class="summary-card">
+                <p class="summary-label"><i class="fas fa-stopwatch" aria-hidden="true"></i> Build wall time</p>
                 <div class="value">{{TOTAL_BUILD_TIME}}</div>
                 <div class="unit">seconds</div>
-            </div>
-            <div class="summary-card">
-                <h3><i class="fas fa-tachometer-alt"></i> Avg File Time</h3>
+            </article>
+            <article class="summary-card">
+                <p class="summary-label"><i class="fas fa-tachometer-alt" aria-hidden="true"></i> Average TU time</p>
                 <div class="value">{{AVG_FILE_TIME}}</div>
-                <div class="unit">ms</div>
-            </div>
-            <div class="summary-card">
-                <h3><i class="fas fa-database"></i> Cache Hit Rate</h3>
+                <div class="unit">milliseconds</div>
+            </article>
+            <article class="summary-card">
+                <p class="summary-label"><i class="fas fa-database" aria-hidden="true"></i> Cache Hit Rate</p>
                 <div class="value">{{CACHE_HIT_RATE}}</div>
-                <div class="unit">%</div>
-            </div>
-            <div class="summary-card">
-                <h3><i class="fas fa-triangle-exclamation"></i> Cache Errors</h3>
+                <div class="unit">percent observed</div>
+            </article>
+            <article class="summary-card summary-card-warning">
+                <p class="summary-label"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Cache Errors</p>
                 <div class="value">{{CACHE_ERROR_COUNT}}</div>
                 <div class="unit">observed errors</div>
-            </div>
-        </div>
+            </article>
+        </section>
+        <p class="summary-note"><i class="fas fa-circle-info" aria-hidden="true"></i> Wall time describes elapsed build duration; file and phase totals describe recorded work and are not interchangeable.</p>

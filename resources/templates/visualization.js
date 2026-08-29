@@ -1,19 +1,26 @@
         let currentTransform = d3.zoomIdentity;
         let graphSimulation = null;
+        let graphZoom = null;
         let allFilesData = [];
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             allFilesData = (analysisData.files || []).slice();
+            bindControls();
             updateFileStats();
             applyFileLimit();
         });
 
         function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelector('.tab[onclick*="' + tabId + '"]').classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab').forEach(tab => {
+                const active = tab.dataset.tab === tabId;
+                tab.classList.toggle('active', active);
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                const active = content.id === tabId;
+                content.classList.toggle('active', active);
+                content.hidden = !active;
+            });
 
             if (tabId === 'include-tree') renderIncludeTree();
             if (tabId === 'timeline') renderTimeline();
@@ -22,6 +29,67 @@
             if (tabId === 'memory') renderMemoryChart();
             if (tabId === 'dependencies') renderDependencyGraph();
             if (tabId === 'build-context') renderBuildContext();
+        }
+
+        function bindControls() {
+            document.querySelectorAll('.tab[data-tab]').forEach(tab => {
+                tab.addEventListener('click', () => showTab(tab.dataset.tab));
+            });
+
+            const actions = {
+                'filter-files': filterFiles,
+                'sort-files': sortFiles,
+                'apply-file-limit': applyFileLimit,
+                'render-include-tree': renderIncludeTree,
+                'reset-include-tree': resetIncludeTree,
+                'render-timeline': renderTimeline,
+                'render-treemap': renderTreemap,
+                'render-templates': renderTemplates,
+                'render-memory': renderMemoryChart,
+                'render-dependencies': renderDependencyGraph,
+                'reset-zoom': resetZoom
+            };
+
+            document.querySelectorAll('[data-action]').forEach(control => {
+                const action = actions[control.dataset.action];
+                if (!action) return;
+                const eventName = control.matches('input[type="text"]') ? 'input' :
+                    control.matches('select') ? 'change' : 'click';
+                control.addEventListener(eventName, action);
+            });
+
+            document.querySelectorAll('#timeline-limit, #treemap-limit, #template-limit, #memory-limit, #dep-limit, #tree-depth, #tree-limit')
+                .forEach(control => control.addEventListener('change', () => {
+                    const tab = control.closest('.tab-content');
+                    if (tab && tab.classList.contains('active')) {
+                        const renderers = {
+                            'include-tree': renderIncludeTree,
+                            timeline: renderTimeline,
+                            treemap: renderTreemap,
+                            templates: renderTemplates,
+                            memory: renderMemoryChart,
+                            dependencies: renderDependencyGraph
+                        };
+                        renderers[tab.id]?.();
+                    }
+                }));
+        }
+
+        function numericValue(value) {
+            const number = Number(value);
+            return Number.isFinite(number) && number > 0 ? number : 0;
+        }
+
+        function fileCompileTime(file) {
+            return numericValue(file.compile_time_ms);
+        }
+
+        function templateCompileTime(template) {
+            return numericValue(template.total_time_ms);
+        }
+
+        function templateLabel(template) {
+            return template.full_signature || template.name || 'Unnamed specialization';
         }
 
         function updateFileStats() {
@@ -89,7 +157,7 @@
             const maxDepth = parseInt(document.getElementById('tree-depth').value) || 3;
             const maxNodes = parseInt(document.getElementById('tree-limit').value) || 50;
 
-            const width = container.node().getBoundingClientRect().width;
+            const width = Math.max(320, container.node().getBoundingClientRect().width);
             const height = 800;
 
             const svg = container.append('svg')
@@ -116,7 +184,8 @@
                 return;
             }
 
-            const allNodeMap = new Map(allNodes.map(n => [n.id, {...n, children: []}]));
+            const allNodeMap = new Map(allNodes.map(n => [n.id, n]));
+            const childrenById = new Map(allNodes.map(n => [n.id, []]));
 
             // Build parent-child relationships
             const hasIncoming = new Set();
@@ -126,10 +195,9 @@
 
                 if (allNodeMap.has(sourceId) && allNodeMap.has(targetId)) {
                     hasIncoming.add(targetId);
-                    const source = allNodeMap.get(sourceId);
-                    const target = allNodeMap.get(targetId);
-                    if (source && target && !source.children.find(c => c.id === target.id)) {
-                        source.children.push(target);
+                    const children = childrenById.get(sourceId);
+                    if (children && !children.includes(targetId)) {
+                        children.push(targetId);
                     }
                 }
             });
@@ -158,56 +226,35 @@
                 return;
             }
 
-            function countDescendants(node, depth = 0) {
-                if (depth >= maxDepth || !node.children || node.children.length === 0) {
-                    return 1;
+            function cloneTree(nodeId, path, depth, budget) {
+                const source = allNodeMap.get(nodeId);
+                if (!source || budget.remaining <= 0) return null;
+
+                const node = {...source, children: []};
+                budget.remaining -= 1;
+                if (depth >= maxDepth) return node;
+
+                const nextPath = new Set(path);
+                nextPath.add(nodeId);
+                const childIds = childrenById.get(nodeId) || [];
+                for (const childId of childIds) {
+                    if (nextPath.has(childId)) continue;
+                    const child = cloneTree(childId, nextPath, depth + 1, budget);
+                    if (child) node.children.push(child);
+                    if (budget.remaining <= 0) break;
                 }
-                return 1 + node.children.reduce((sum, child) => sum + countDescendants(child, depth + 1), 0);
-            }
-
-            function pruneTree(node, remainingNodes, depth = 0) {
-                if (remainingNodes <= 0 || depth >= maxDepth) {
-                    node._children = node.children;
-                    node.children = null;
-                    return 1;
-                }
-
-                if (!node.children || node.children.length === 0) {
-                    return 1;
-                }
-
-                let used = 1;
-                const keptChildren = [];
-
-                for (const child of node.children) {
-                    if (used >= remainingNodes) {
-                        break;
-                    }
-                    const childCount = pruneTree(child, remainingNodes - used, depth + 1);
-                    used += childCount;
-                    keptChildren.push(child);
-                }
-
-                if (keptChildren.length < node.children.length) {
-                    node._children = node.children.slice(keptChildren.length);
-                }
-                node.children = keptChildren;
-
-                return used;
+                return node;
             }
 
             // Tree layout for each root
-            const tree = d3.tree().size([height - 100, width - 200]);
+            const tree = d3.tree().size([height - 100, Math.max(120, width - 200)]);
 
             let yOffset = 50;
             let nodesPerRoot = Math.floor(maxNodes / roots.length);
 
             roots.forEach((root, idx) => {
-                const rootNode = allNodeMap.get(root.id);
+                const rootNode = cloneTree(root.id, new Set(), 0, {remaining: nodesPerRoot});
                 if (!rootNode) return;
-
-                // Prune to fit within maxNodes budget
-                pruneTree(rootNode, nodesPerRoot, 0);
 
                 const hierarchy = d3.hierarchy(rootNode);
                 const treeData = tree(hierarchy);
@@ -231,12 +278,12 @@
                     .attr('class', d => `tree-node ${d.data.type || 'header'}`)
                     .attr('transform', d => `translate(${d.y},${d.x})`)
                     .on('click', function(event, d) {
-                        if (d._children) {
-                            d.children = d._children;
-                            d._children = null;
-                        } else if (d.children) {
+                        if (d.children && d.children.length) {
                             d._children = d.children;
                             d.children = null;
+                        } else if (d._children && d._children.length) {
+                            d.children = d._children;
+                            d._children = null;
                         }
                         renderIncludeTree();
                     })
@@ -275,6 +322,7 @@
                 yOffset += Math.max(treeData.height * 80 + 100, 150);
             });
 
+            svg.attr('height', Math.max(height, yOffset + 40));
             svg.call(zoom.transform, d3.zoomIdentity);
         }
 
@@ -297,14 +345,14 @@
             let files = analysisData.files.slice();
 
             if (sortBy === 'time') {
-                files.sort((a,b) => b.total_time_ms - a.total_time_ms);
+                files.sort((a, b) => fileCompileTime(b) - fileCompileTime(a));
             } else {
-                files.sort((a,b) => a.path.localeCompare(b.path));
+                files.sort((a, b) => (a.path || '').localeCompare(b.path || ''));
             }
 
             files = files.slice(0, limit);
 
-            const width = container.node().getBoundingClientRect().width;
+            const width = Math.max(640, container.node().getBoundingClientRect().width);
             const barHeight = 20;
             const padding = 2;
             const height = Math.min(files.length * (barHeight + padding) + 60, 2000);
@@ -313,7 +361,7 @@
                 .attr('width', width)
                 .attr('height', height);
 
-            const maxTime = d3.max(files, d => d.total_time_ms);
+            const maxTime = Math.max(1, d3.max(files, fileCompileTime) || 0);
             const xScale = d3.scaleLinear()
                 .domain([0, maxTime])
                 .range([200, width - 40]);
@@ -332,20 +380,23 @@
             files.forEach((file, i) => {
                 const y = i * (barHeight + padding);
                 const fileName = file.path.split('/').pop().split('\\\\').pop();
+                const totalTime = fileCompileTime(file);
+                const frontendTime = Math.min(totalTime, numericValue(file.frontend_time_ms));
+                const backendTime = Math.max(0, totalTime - frontendTime);
 
                 // Frontend bar
                 g.append('rect')
                     .attr('class', 'timeline-bar')
                     .attr('x', 200)
                     .attr('y', y)
-                    .attr('width', Math.max(1, xScale(file.frontend_time_ms) - 200))
+                    .attr('width', Math.max(0, xScale(frontendTime) - 200))
                     .attr('height', barHeight)
                     .attr('fill', 'var(--accent-color)')
                     .on('mouseover', (event) => {
                         showTooltip(event, {
                             name: fileName,
                             fullPath: file.path,
-                            time: file.frontend_time_ms,
+                            time: frontendTime,
                             phase: 'Frontend'
                         });
                     })
@@ -354,16 +405,16 @@
                 // Backend bar
                 g.append('rect')
                     .attr('class', 'timeline-bar')
-                    .attr('x', xScale(file.frontend_time_ms))
+                    .attr('x', xScale(frontendTime))
                     .attr('y', y)
-                    .attr('width', Math.max(1, xScale(file.total_time_ms) - xScale(file.frontend_time_ms)))
+                    .attr('width', Math.max(0, xScale(totalTime) - xScale(frontendTime)))
                     .attr('height', barHeight)
                     .attr('fill', 'var(--warning-color)')
                     .on('mouseover', (event) => {
                         showTooltip(event, {
                             name: fileName,
                             fullPath: file.path,
-                            time: file.backend_time_ms,
+                            time: backendTime,
                             phase: 'Backend'
                         });
                     })
@@ -392,7 +443,7 @@
 
             const limit = parseInt(document.getElementById('treemap-limit').value) || 100;
 
-            const width = container.node().getBoundingClientRect().width;
+            const width = Math.max(640, container.node().getBoundingClientRect().width);
             const height = 600;
 
             const svg = container.append('svg')
@@ -401,7 +452,7 @@
 
             // Get top N files by time
             let files = analysisData.files.slice()
-                .sort((a, b) => b.total_time_ms - a.total_time_ms)
+                .sort((a, b) => fileCompileTime(b) - fileCompileTime(a))
                 .slice(0, limit);
 
             // Prepare data
@@ -410,8 +461,8 @@
                 children: files.map(f => ({
                     name: f.path.split('/').pop().split('\\\\').pop(),
                     fullPath: f.path,
-                    value: f.total_time_ms,
-                    time: f.total_time_ms
+                    value: fileCompileTime(f),
+                    time: fileCompileTime(f)
                 }))
             };
 
@@ -426,9 +477,9 @@
 
             treemap(hierarchy);
 
-            const maxTime = d3.max(files, f => f.total_time_ms);
-            const colorScale = d3.scaleSequential(d3.interpolateRdYlGn)
-                .domain([maxTime, 0]);
+            const maxTime = Math.max(1, d3.max(files, fileCompileTime) || 0);
+            const colorScale = d3.scaleSequential(d3.interpolateRgb('#172638', '#f0b35b'))
+                .domain([0, maxTime]);
 
             const cell = svg.selectAll('g')
                 .data(hierarchy.leaves())
@@ -473,88 +524,72 @@
             }
 
             const limit = parseInt(document.getElementById('template-limit').value) || 50;
-
-            const width = container.node().getBoundingClientRect().width;
-            const height = 600;
-            const radius = Math.min(width, height) / 2 - 40;
-
-            const svg = container.append('svg')
-                .attr('width', width)
-                .attr('height', height);
-
-            const g = svg.append('g')
-                .attr('transform', `translate(${width / 2},${height / 2})`);
-
-            // Get top N templates
             const templates = analysisData.templates.templates
                 .slice()
-                .sort((a, b) => b.time_ms - a.time_ms)
+                .sort((a, b) => templateCompileTime(b) - templateCompileTime(a))
                 .slice(0, limit);
+            const width = Math.max(720, container.node().getBoundingClientRect().width);
+            const margin = {top: 20, right: 100, bottom: 20, left: 300};
+            const rowHeight = 32;
+            const height = Math.max(280, templates.length * rowHeight + margin.top + margin.bottom);
+            const maxTime = Math.max(1, d3.max(templates, templateCompileTime) || 0);
+            const svg = container.append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('viewBox', `0 0 ${width} ${height}`)
+                .attr('role', 'img')
+                .attr('aria-label', 'Template instantiation time ranking');
+            const x = d3.scaleLinear().domain([0, maxTime]).range([margin.left, width - margin.right]);
+            const rows = svg.append('g').attr('class', 'template-ranking');
 
-            const root = {
-                name: 'Templates',
-                children: templates.map(t => ({
-                    name: t.name.length > 40 ? t.name.substring(0, 37) + '...' : t.name,
-                    fullName: t.name,
-                    value: t.time_ms,
-                    count: t.count,
-                    percentage: t.time_percent
+            rows.selectAll('.template-row')
+                .data(templates)
+                .join('g')
+                .attr('class', 'template-row')
+                .attr('transform', (_, index) => `translate(0, ${margin.top + index * rowHeight})`)
+                .on('mouseover', (event, template) => showTooltip(event, {
+                    name: templateLabel(template),
+                    time: templateCompileTime(template),
+                    count: template.instantiation_count,
+                    percentage: template.time_percent
                 }))
-            };
-
-            const hierarchy = d3.hierarchy(root)
-                .sum(d => d.value)
-                .sort((a, b) => b.value - a.value);
-
-            const partition = d3.partition()
-                .size([2 * Math.PI, radius]);
-
-            partition(hierarchy);
-
-            const arc = d3.arc()
-                .startAngle(d => d.x0)
-                .endAngle(d => d.x1)
-                .innerRadius(d => d.y0)
-                .outerRadius(d => d.y1);
-
-            const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-            g.selectAll('path')
-                .data(hierarchy.descendants().filter(d => d.depth > 0))
-                .join('path')
-                .attr('d', arc)
-                .attr('fill', d => color(d.data.name))
-                .attr('stroke', 'var(--bg-primary)')
-                .attr('stroke-width', 2)
-                .style('cursor', 'pointer')
-                .style('opacity', 0.8)
-                .on('mouseover', function(event, d) {
-                    d3.select(this).style('opacity', 1);
-                    showTooltip(event, {
-                        name: d.data.fullName || d.data.name,
-                        time: d.data.value,
-                        count: d.data.count,
-                        percentage: d.data.percentage
-                    });
-                })
-                .on('mouseout', function() {
-                    d3.select(this).style('opacity', 0.8);
-                    hideTooltip();
+                .on('mouseout', hideTooltip)
+                .call(row => {
+                    row.append('text')
+                        .attr('class', 'template-label')
+                        .attr('x', margin.left - 12)
+                        .attr('y', rowHeight / 2)
+                        .attr('text-anchor', 'end')
+                        .attr('dy', '0.35em')
+                        .text(template => truncateLabel(templateLabel(template), 52));
+                    row.append('rect')
+                        .attr('class', 'template-bar-track')
+                        .attr('x', margin.left)
+                        .attr('y', 5)
+                        .attr('width', Math.max(0, width - margin.left - margin.right))
+                        .attr('height', rowHeight - 10);
+                    row.append('rect')
+                        .attr('class', 'template-bar')
+                        .attr('x', margin.left)
+                        .attr('y', 5)
+                        .attr('width', template => Math.max(2, x(templateCompileTime(template)) - margin.left))
+                        .attr('height', rowHeight - 10);
+                    row.append('text')
+                        .attr('class', 'template-value')
+                        .attr('x', template => x(templateCompileTime(template)) + 8)
+                        .attr('y', rowHeight / 2)
+                        .attr('dy', '0.35em')
+                        .text(template => `${templateCompileTime(template).toFixed(1)} ms`);
                 });
-
-            // Center label
-            g.append('text')
-                .attr('text-anchor', 'middle')
-                .attr('dy', '0.35em')
-                .style('font-size', '16px')
-                .style('font-weight', 'bold')
-                .style('fill', 'var(--text-primary)')
-                .text(`Top ${templates.length} Templates`);
         }
 
         function renderDependencyGraph() {
             const container = d3.select('#dependency-graph-container');
             const svg = d3.select('#dependency-graph');
+            if (graphSimulation) {
+                graphSimulation.stop();
+                graphSimulation = null;
+            }
             svg.selectAll('*').remove();
 
             if (!analysisData.dependencies || !analysisData.dependencies.graph) {
@@ -627,21 +662,21 @@
                 return;
             }
 
-            const width = container.node().getBoundingClientRect().width;
+            const width = Math.max(640, container.node().getBoundingClientRect().width);
             const height = 600;
 
             svg.attr('width', width).attr('height', height);
 
             const g = svg.append('g');
 
-            const zoom = d3.zoom()
+            graphZoom = d3.zoom()
                 .scaleExtent([0.1, 10])
                 .on('zoom', (event) => {
                     g.attr('transform', event.transform);
                     currentTransform = event.transform;
                 });
 
-            svg.call(zoom);
+            svg.call(graphZoom);
 
             const simulation = d3.forceSimulation(nodes)
                 .force('link', d3.forceLink(links)
@@ -762,7 +797,7 @@
                 d.fy = null;
             }
 
-            svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8).translate(-width / 2, -height / 2));
+            svg.call(graphZoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8).translate(-width / 2, -height / 2));
         }
 
         function resetZoom() {
@@ -771,9 +806,10 @@
             const width = container.node().getBoundingClientRect().width;
             const height = 600;
 
+            if (!graphZoom) return;
             svg.transition()
-                .duration(750)
-                .call(d3.zoom().transform,
+                .duration(300)
+                .call(graphZoom.transform,
                     d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8).translate(-width / 2, -height / 2));
         }
 
@@ -789,37 +825,37 @@
 
             let html = '';
             if (data.name) {
-                html = `<strong>${data.name}</strong><br/>`;
+                html = `<strong>${escapeHtml(data.name)}</strong><br/>`;
             }
             if (data.fullPath) {
-                html += `Path: ${data.fullPath}<br/>`;
+                html += `Path: ${escapeHtml(data.fullPath)}<br/>`;
             }
-            if (data.time !== undefined) {
-                html += `Time: ${data.time.toFixed(1)} ms<br/>`;
+            if (Number.isFinite(Number(data.time))) {
+                html += `Time: ${Number(data.time).toFixed(1)} ms<br/>`;
             }
             if (data.phase) {
-                html += `Phase: ${data.phase}<br/>`;
+                html += `Phase: ${escapeHtml(data.phase)}<br/>`;
             }
-            if (data.lines !== undefined) {
-                html += `Lines: ${data.lines}<br/>`;
+            if (Number.isFinite(Number(data.lines))) {
+                html += `Lines: ${Number(data.lines).toLocaleString()}<br/>`;
             }
-            if (data.count !== undefined) {
-                html += `Instantiations: ${data.count}<br/>`;
+            if (Number.isFinite(Number(data.count))) {
+                html += `Instantiations: ${Number(data.count).toLocaleString()}<br/>`;
             }
-            if (data.percentage !== undefined) {
-                html += `Percentage: ${data.percentage.toFixed(1)}%<br/>`;
+            if (Number.isFinite(Number(data.percentage))) {
+                html += `Percentage: ${Number(data.percentage).toFixed(1)}%<br/>`;
             }
             if (data.type) {
-                html += `Type: ${data.type}<br/>`;
+                html += `Type: ${escapeHtml(data.type)}<br/>`;
             }
-            if (data.connections !== undefined) {
-                html += `Connections: ${data.connections}<br/>`;
+            if (Number.isFinite(Number(data.connections))) {
+                html += `Connections: ${Number(data.connections).toLocaleString()}<br/>`;
             }
-            if (data.depth !== undefined) {
-                html += `Depth: ${data.depth}<br/>`;
+            if (Number.isFinite(Number(data.depth))) {
+                html += `Depth: ${Number(data.depth).toLocaleString()}<br/>`;
             }
-            if (data.children !== undefined && data.children > 0) {
-                html += `Children: ${data.children}<br/>`;
+            if (Number.isFinite(Number(data.children)) && data.children > 0) {
+                html += `Children: ${Number(data.children).toLocaleString()}<br/>`;
             }
             if (data.stack !== undefined) {
                 html += `Stack Usage: ${formatBytes(data.stack)}`;
@@ -848,7 +884,7 @@
             container.innerHTML = '';
 
             if (!analysisData.files || !analysisData.files.length) {
-                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No file data available</p>';
+                container.innerHTML = '<div class="empty-state">No file data available.</div>';
                 updateMemoryStats([]);
                 return;
             }
@@ -864,7 +900,7 @@
                 }));
 
             if (filesWithMemory.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No stack usage data available</p>';
+                container.innerHTML = '<div class="empty-state">No stack usage data available in this trace.</div>';
                 updateMemoryStats([]);
                 return;
             }
@@ -879,7 +915,7 @@
             updateMemoryTable(topFiles);
 
             const margin = {top: 20, right: 40, bottom: 150, left: 80};
-            const width = container.clientWidth - margin.left - margin.right;
+            const width = Math.max(420, container.clientWidth - margin.left - margin.right);
             const height = 500 - margin.top - margin.bottom;
 
             const svg = d3.select(container)
@@ -894,7 +930,7 @@
                 .range([0, width])
                 .padding(0.2);
 
-            const maxValue = d3.max(topFiles, d => d.stack);
+            const maxValue = Math.max(1, d3.max(topFiles, d => d.stack) || 0);
             const y = d3.scaleLinear()
                 .domain([0, maxValue * 1.1])
                 .range([height, 0]);
@@ -949,7 +985,7 @@
 
             tbody.innerHTML = files.map(f => `
                 <tr>
-                    <td><i class="fas fa-file-code" style="color: var(--accent-color); margin-right: 8px;"></i>${escapeHtml(f.file)}</td>
+                    <td><i class="fas fa-file-code table-icon" aria-hidden="true"></i>${escapeHtml(f.file)}</td>
                     <td><strong>${formatBytes(f.stack)}</strong></td>
                 </tr>
             `).join('');
@@ -957,25 +993,30 @@
 
         function formatMetric(value, suffix = '', digits = 1) {
             if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-                return '<span style="color: var(--text-muted);">unavailable</span>';
+                return '<span class="unavailable">unavailable</span>';
             }
             return Number(value).toFixed(digits) + suffix;
         }
 
         function formatCount(value) {
-            if (value === null || value === undefined) {
-                return '<span style="color: var(--text-muted);">unavailable</span>';
+            if (value === null || value === undefined || !Number.isFinite(Number(value))) {
+                return '<span class="unavailable">unavailable</span>';
             }
             return Number(value).toLocaleString();
         }
 
+        function truncateLabel(value, maxLength) {
+            const text = String(value || '');
+            return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+        }
+
         function renderMetricCards(metrics) {
-            return `<div class="summary-grid" style="margin-bottom: 24px;">
-                ${metrics.map(metric => `<div class="summary-card">
-                    <h3>${metric.label}</h3>
+            return `<div class="summary-grid context-metrics">
+                ${metrics.map(metric => `<article class="summary-card">
+                    <p class="summary-label">${escapeHtml(metric.label)}</p>
                     <div class="value">${metric.value}</div>
                     ${metric.unit ? `<div class="unit">${metric.unit}</div>` : ''}
-                </div>`).join('')}
+                </article>`).join('')}
             </div>`;
         }
 
@@ -1006,8 +1047,8 @@
 
             const criticalPath = Array.isArray(session.critical_path) && session.critical_path.length
                 ? session.critical_path.map(escapeHtml).join(' &rarr; ')
-                : '<span style="color: var(--text-muted);">unavailable</span>';
-            html += `<h3 style="margin: 12px 0 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Build Session</h3>
+                : '<span class="unavailable">unavailable</span>';
+            html += `<div class="subsection-heading"><h3><i class="fas fa-clock" aria-hidden="true"></i> Build Session</h3></div>
                 <table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>
                     <tr><td>Total commands</td><td>${formatCount(session.total_commands)}</td></tr>
                     <tr><td>Timed commands</td><td>${formatCount(session.timed_commands)}</td></tr>
@@ -1020,9 +1061,9 @@
                 </tbody></table>`;
 
             const steps = Array.isArray(session.step_metrics) ? session.step_metrics : [];
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-list-ol"></i> Build Steps</h3>`;
+            html += `<div class="subsection-heading"><h3><i class="fas fa-list-ol" aria-hidden="true"></i> Build steps</h3></div>`;
             html += steps.length
-                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Role</th><th>Commands</th><th>Timed</th><th>Wall Time</th><th>Results</th><th>Failures</th></tr></thead><tbody>${steps.map(step => `<tr>
+                ? `<div class="table-wrap table-wrap-compact"><table><thead><tr><th>Role</th><th>Commands</th><th>Timed</th><th>Wall Time</th><th>Results</th><th>Failures</th></tr></thead><tbody>${steps.map(step => `<tr>
                     <td>${escapeHtml(step.role || 'unknown')}</td>
                     <td>${formatCount(step.total_commands)}</td>
                     <td>${formatCount(step.timed_commands)}</td>
@@ -1032,7 +1073,7 @@
                 </tr>`).join('')}</tbody></table></div>`
                 : '<div class="info-badge">No build-step metrics were supplied.</div>';
 
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-server"></i> Host and Process Resources</h3>
+            html += `<div class="subsection-heading"><h3><i class="fas fa-server" aria-hidden="true"></i> Host and process resources</h3></div>
                 <table><thead><tr><th>Domain</th><th>Metric</th><th>Value</th></tr></thead><tbody>
                     <tr><td>Host</td><td>Operating system</td><td>${escapeHtml(host.os_name || 'unavailable')}</td></tr>
                     <tr><td>Host</td><td>Logical CPUs</td><td>${formatCount(host.logical_cpu_count)}</td></tr>
@@ -1044,7 +1085,7 @@
                     <tr><td>Process</td><td>Peak memory</td><td>${formatCount(resources.peak_memory_kib)} KiB</td></tr>
                 </tbody></table>`;
 
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-link"></i> Linker, Targets, and Modules</h3>
+            html += `<div class="subsection-heading"><h3><i class="fas fa-link" aria-hidden="true"></i> Linker, targets, and modules</h3></div>
                 <table><thead><tr><th>Domain</th><th>Metric</th><th>Value</th></tr></thead><tbody>
                     <tr><td>Linker</td><td>Invocations</td><td>${formatCount(linker.invocations)}</td></tr>
                     <tr><td>Linker</td><td>Wall-clock time</td><td>${formatMetric(linker.wall_clock_time_ms, ' ms')}</td></tr>
@@ -1057,7 +1098,7 @@
 
             const targetRows = Array.isArray(targets.targets) ? targets.targets : [];
             if (targetRows.length) {
-                html += `<h4 style="margin: 24px 0 12px;">Target Ownership</h4><div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>Name</th><th>Type</th><th>Compile Commands</th><th>Compile Time</th><th>Output</th></tr></thead><tbody>${targetRows.map(target => `<tr>
+                html += `<h4 class="context-subheading">Target ownership</h4><div class="table-wrap table-wrap-compact"><table><thead><tr><th>Name</th><th>Type</th><th>Compile Commands</th><th>Compile Time</th><th>Output</th></tr></thead><tbody>${targetRows.map(target => `<tr>
                     <td>${escapeHtml(target.name || target.id || 'unnamed')}</td>
                     <td>${escapeHtml(target.type || 'unknown')}</td>
                     <td>${formatCount(target.compile_commands)}</td>
@@ -1067,9 +1108,9 @@
             }
 
             const symbolRows = Array.isArray(symbols.symbols) ? symbols.symbols.slice(0, 100) : [];
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-shapes"></i> Symbols</h3>`;
+            html += `<div class="subsection-heading"><h3><i class="fas fa-shapes" aria-hidden="true"></i> Symbols</h3></div>`;
             html += symbolRows.length
-                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Symbol</th><th>Type</th><th>Defined In</th><th>Usages</th></tr></thead><tbody>${symbolRows.map(symbol => `<tr>
+                ? `<div class="table-wrap table-wrap-compact"><table><thead><tr><th>Symbol</th><th>Type</th><th>Defined In</th><th>Usages</th></tr></thead><tbody>${symbolRows.map(symbol => `<tr>
                     <td>${escapeHtml(symbol.name || 'unnamed')}</td>
                     <td>${escapeHtml(symbol.type || 'unavailable')}</td>
                     <td>${escapeHtml(symbol.defined_in || 'unavailable')}</td>
@@ -1077,9 +1118,9 @@
                 </tr>`).join('')}</tbody></table></div>`
                 : '<div class="info-badge">No symbol records were supplied.</div>';
 
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-shield-alt"></i> Metric Evidence</h3>`;
+            html += `<div class="subsection-heading"><h3><i class="fas fa-shield-alt" aria-hidden="true"></i> Metric Evidence</h3></div>`;
             html += capabilities.length
-                ? `<div style="max-height: 360px; overflow-y: auto;"><table><thead><tr><th>Metric</th><th>Evidence</th><th>Producer</th><th>Scope</th><th>Limitation</th></tr></thead><tbody>${capabilities.map(capability => `<tr>
+                ? `<div class="table-wrap table-wrap-compact"><table><thead><tr><th>Metric</th><th>Evidence</th><th>Producer</th><th>Scope</th><th>Limitation</th></tr></thead><tbody>${capabilities.map(capability => `<tr>
                     <td>${escapeHtml(capability.metric || 'unnamed')}</td>
                     <td>${escapeHtml(capability.evidence || 'unavailable')}</td>
                     <td>${escapeHtml(capability.producer || 'unavailable')}</td>
@@ -1088,9 +1129,9 @@
                 </tr>`).join('')}</tbody></table></div>`
                 : '<div class="info-badge">No metric capability records were supplied.</div>';
 
-            html += `<h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-lightbulb"></i> Suggestion Evidence</h3>`;
+            html += `<div class="subsection-heading"><h3><i class="fas fa-lightbulb" aria-hidden="true"></i> Suggestion Evidence</h3></div>`;
             html += suggestions.length
-                ? `<div style="display: grid; gap: 12px;">${suggestions.map(suggestion => `<details class="suggestion-card">
+                ? `<div class="suggestion-list">${suggestions.map(suggestion => `<details class="suggestion-card">
                     <summary><strong>${escapeHtml(suggestion.title || suggestion.id || 'Suggestion')}</strong> <span class="meta-pill">${escapeHtml(suggestion.type || 'unknown')}</span></summary>
                     <div class="suggestion-description">${escapeHtml(suggestion.description || 'No description supplied.')}</div>
                     <table><tbody>
@@ -1108,7 +1149,8 @@
         }
 
         function formatBytes(bytes) {
-            if (!bytes || bytes === 0) return '-';
+            if (!Number.isFinite(Number(bytes)) || Number(bytes) <= 0) return '-';
+            bytes = Number(bytes);
             if (bytes < 1024) return Number(bytes).toFixed(2) + ' B';
             if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
             return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
