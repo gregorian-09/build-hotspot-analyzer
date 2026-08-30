@@ -106,6 +106,7 @@ namespace bha::build_systems {
                 fs::remove_all(build_dir, ec);
             }
 
+            clear_cmake_instrumentation_capture(build_dir);
             const bool analysis_queries_created = ensure_cmake_analysis_queries(build_dir);
             const auto previous_instrumentation_index =
                 find_cmake_instrumentation_index(build_dir);

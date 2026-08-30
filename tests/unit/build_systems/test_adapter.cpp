@@ -258,6 +258,14 @@ TEST(CMakeAdapterTest, DerivesCompanionCompilerFromExplicitCxxOverride) {
     EXPECT_TRUE(fs::exists(
         options.build_dir / ".cmake" / "instrumentation" / "v1" / "query" / "client-bha.json"
     ));
+    const fs::path callback_script =
+        options.build_dir / ".bha-cmake-instrumentation" / "capture-index.cmake";
+    EXPECT_TRUE(fs::exists(callback_script));
+    const std::string query = read_file_text(
+        options.build_dir / ".cmake" / "instrumentation" / "v1" / "query" / "client-bha.json"
+    );
+    EXPECT_NE(query.find("\"callbacks\""), std::string::npos);
+    EXPECT_NE(query.find("cmake -P"), std::string::npos);
 
     const std::string logged = read_file_text(log_path);
     expect_logged_cmake_define(logged, "-DCMAKE_C_COMPILER=", bin_dir / "clang");

@@ -1034,6 +1034,7 @@
             const resources = analysisData.process_resources || {};
             const symbols = analysisData.symbols || {};
             const suggestions = analysisData.suggestions || [];
+            const suggestionsRequested = Object.prototype.hasOwnProperty.call(analysisData, 'suggestions');
             const capabilities = (analysisData.summary || {}).metric_capabilities || [];
 
             let html = renderMetricCards([
@@ -1143,7 +1144,9 @@
                         <tr><td>Edits</td><td>${formatCount((suggestion.edits || []).length)}</td></tr>
                     </tbody></table>
                 </details>`).join('')}</div>`
-                : '<div class="info-badge">Suggestions were not requested for this report.</div>';
+                : `<div class="info-badge">${suggestionsRequested
+                    ? 'No suggestions were generated. Required semantic project evidence was unavailable, so the analyzer failed closed.'
+                    : 'Suggestions were not requested for this report.'}</div>`;
 
             container.innerHTML = html;
         }

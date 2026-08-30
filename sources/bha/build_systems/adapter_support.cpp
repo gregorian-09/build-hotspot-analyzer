@@ -1,6 +1,8 @@
 
 #include "bha/build_systems/adapter.hpp"
 
+#include <nlohmann/json.hpp>
+
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -30,6 +32,8 @@
 #include "bha/utils/file_utils.hpp"
 
 namespace bha::build_systems::detail {
+        using json = nlohmann::json;
+
 #ifndef _WIN32
         std::string shell_escape_posix(const std::string& input) {
             std::string escaped;
@@ -715,6 +719,12 @@ namespace bha::build_systems::detail {
         }
 
         namespace {
+            constexpr std::string_view kInstrumentationCaptureDirectory =
+                ".bha-cmake-instrumentation";
+            constexpr std::string_view kInstrumentationCallbackFile =
+                "capture-index.cmake";
+            constexpr std::string_view kInstrumentationIndexFile = "index.json";
+
             std::optional<fs::path> latest_json_file(
                 const fs::path& directory,
                 const std::string_view prefix
@@ -749,11 +759,82 @@ namespace bha::build_systems::detail {
                 }
                 return latest;
             }
+
+            std::string quote_callback_argument(const fs::path& path) {
+                std::string value = path.generic_string();
+                std::string result;
+                result.reserve(value.size() + 2);
+                result.push_back('"');
+                for (const char character : value) {
+                    if (character == '"') {
+                        result.push_back('\\');
+                    }
+                    result.push_back(character);
+                }
+                result.push_back('"');
+                return result;
+            }
+
+            constexpr std::string_view kInstrumentationCallbackScript = R"cmake(
+if(CMAKE_ARGC LESS 4)
+  message(FATAL_ERROR "BHA CMake instrumentation callback did not receive an index path")
+endif()
+
+set(index_file "${CMAKE_ARGV3}")
+set(capture_root "${CMAKE_CURRENT_LIST_DIR}")
+set(capture_data "${capture_root}/data")
+set(capture_index "${capture_root}/index.json")
+
+file(REMOVE_RECURSE "${capture_data}")
+file(REMOVE "${capture_index}")
+file(MAKE_DIRECTORY "${capture_data}")
+
+file(READ "${index_file}" index_json)
+string(JSON source_data_dir GET "${index_json}" dataDir)
+string(JSON snippet_count LENGTH "${index_json}" snippets)
+
+if(IS_ABSOLUTE "${source_data_dir}")
+  set(source_data "${source_data_dir}")
+else()
+  get_filename_component(index_directory "${index_file}" DIRECTORY)
+  get_filename_component(source_data "${index_directory}" DIRECTORY)
+  set(source_data "${source_data}/${source_data_dir}")
+endif()
+
+if(snippet_count GREATER 0)
+  math(EXPR last_snippet "${snippet_count} - 1")
+  foreach(snippet_index RANGE 0 ${last_snippet})
+    string(JSON snippet GET "${index_json}" snippets ${snippet_index})
+    if(IS_ABSOLUTE "${snippet}")
+      set(source_snippet "${snippet}")
+    else()
+      set(source_snippet "${source_data}/${snippet}")
+    endif()
+    get_filename_component(snippet_name "${snippet}" NAME)
+    if(NOT EXISTS "${source_snippet}")
+      message(FATAL_ERROR "BHA CMake instrumentation snippet is missing: ${source_snippet}")
+    endif()
+    file(COPY_FILE "${source_snippet}" "${capture_data}/${snippet_name}")
+  endforeach()
+endif()
+
+file(TO_CMAKE_PATH "${capture_data}" capture_data_json)
+string(REPLACE "\\" "\\\\" capture_data_json "${capture_data_json}")
+string(REPLACE "\"" "\\\"" capture_data_json "${capture_data_json}")
+string(JSON preserved_index SET "${index_json}" dataDir "\"${capture_data_json}\"")
+file(WRITE "${capture_index}" "${preserved_index}\n")
+)cmake";
         }
 
         std::optional<fs::path> find_cmake_instrumentation_index(
             const fs::path& build_directory
         ) {
+            const fs::path captured_index =
+                build_directory / std::string(kInstrumentationCaptureDirectory) /
+                std::string(kInstrumentationIndexFile);
+            if (fs::is_regular_file(captured_index)) {
+                return captured_index;
+            }
             return latest_json_file(
                 build_directory / ".cmake" / "instrumentation" / "v1" / "data" / "index",
                 "index-"
@@ -769,6 +850,18 @@ namespace bha::build_systems::detail {
             );
         }
 
+        fs::path cmake_instrumentation_capture_directory(const fs::path& build_directory) {
+            return build_directory / std::string(kInstrumentationCaptureDirectory);
+        }
+
+        void clear_cmake_instrumentation_capture(const fs::path& build_directory) {
+            const fs::path capture_directory = cmake_instrumentation_capture_directory(build_directory);
+            std::error_code ec;
+            fs::remove_all(capture_directory / "data", ec);
+            ec.clear();
+            fs::remove(capture_directory / std::string(kInstrumentationIndexFile), ec);
+        }
+
         bool ensure_cmake_analysis_queries(const fs::path& build_directory) {
             bool created = false;
             const fs::path file_api_query =
@@ -782,15 +875,34 @@ namespace bha::build_systems::detail {
                 created = true;
             }
 
+            const fs::path capture_directory = cmake_instrumentation_capture_directory(build_directory);
+            const fs::path callback_script =
+                capture_directory / std::string(kInstrumentationCallbackFile);
+            if (!fs::exists(callback_script)) {
+                const auto result = utils::write_file(callback_script, kInstrumentationCallbackScript);
+                if (!result.is_ok()) {
+                    return false;
+                }
+                created = true;
+            }
+
             const fs::path instrumentation_query =
                 build_directory / ".cmake" / "instrumentation" / "v1" / "query" /
                 "client-bha.json";
-            if (!fs::exists(instrumentation_query)) {
-                constexpr std::string_view content = R"json({
-  "version": 1,
-  "hooks": ["postCMakeBuild"],
-  "options": ["staticSystemInformation", "dynamicSystemInformation"]
-})json";
+            const json query = {
+                {"version", 1},
+                {"callbacks", json::array({
+                    "cmake -P " + quote_callback_argument(callback_script)
+                })},
+                {"hooks", json::array({"postCMakeBuild"})},
+                {"options", json::array({"staticSystemInformation", "dynamicSystemInformation"})}
+            };
+            const std::string content = query.dump(2) + "\n";
+            bool query_changed = true;
+            if (const auto existing = utils::read_file(instrumentation_query); existing.is_ok()) {
+                query_changed = existing.value() != content;
+            }
+            if (query_changed) {
                 const auto result = utils::write_file(instrumentation_query, content);
                 if (!result.is_ok()) {
                     return false;
