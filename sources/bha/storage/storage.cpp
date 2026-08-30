@@ -307,6 +307,7 @@ namespace bha::storage
             j["rank"] = file.rank;
             j["include_count"] = file.include_count;
             j["template_count"] = file.template_count;
+            j["metric_capabilities"] = serialize_metric_capabilities(file.metric_capabilities);
             return j;
         }
 
@@ -323,6 +324,9 @@ namespace bha::storage
             file.rank = j.value("rank", std::size_t{0});
             file.include_count = j.value("include_count", std::size_t{0});
             file.template_count = j.value("template_count", std::size_t{0});
+            if (j.contains("metric_capabilities")) {
+                file.metric_capabilities = deserialize_metric_capabilities(j["metric_capabilities"]);
+            }
             return file;
         }
 

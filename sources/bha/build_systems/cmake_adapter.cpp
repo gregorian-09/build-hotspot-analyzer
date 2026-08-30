@@ -108,8 +108,6 @@ namespace bha::build_systems {
 
             clear_cmake_instrumentation_capture(build_dir);
             const bool analysis_queries_created = ensure_cmake_analysis_queries(build_dir);
-            const auto previous_instrumentation_index =
-                find_cmake_instrumentation_index(build_dir);
 
             if (!fs::exists(build_dir / "CMakeCache.txt") || analysis_queries_created) {
                 if (auto config_result = configure(project_path, options); !config_result.is_ok()) {
@@ -165,9 +163,7 @@ namespace bha::build_systems {
             copy_trace_files(build_dir, trace_output_dir, result.trace_files, result.memory_files);
 
             if (const auto instrumentation_index = find_cmake_instrumentation_index(build_dir);
-                instrumentation_index.has_value() &&
-                (!previous_instrumentation_index.has_value() ||
-                 *instrumentation_index != *previous_instrumentation_index)) {
+                instrumentation_index.has_value()) {
                 result.cmake_instrumentation_index = instrumentation_index;
             }
             result.cmake_file_api_index = find_cmake_file_api_index(build_dir);

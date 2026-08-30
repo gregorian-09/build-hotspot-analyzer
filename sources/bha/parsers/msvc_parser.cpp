@@ -238,6 +238,60 @@ namespace bha::parsers {
             );
         }
 
+        const auto add_phase_capability = [&unit](
+            const std::string_view phase,
+            const bool observed,
+            const std::string_view limitation = {}
+        ) {
+            MetricCapability capability;
+            capability.metric = "compiler.phase." + std::string(phase);
+            capability.provenance.evidence = observed
+                ? EvidenceKind::Observed
+                : EvidenceKind::Unavailable;
+            capability.provenance.producer = "msvc";
+            capability.provenance.capture_mode = "/Bt+";
+            capability.provenance.scope = "translation-unit";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Inclusive;
+            capability.provenance.limitation = std::string(limitation);
+            unit.metric_capabilities.push_back(std::move(capability));
+        };
+        add_phase_capability(
+            "preprocessing",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone preprocessing phase"
+        );
+        add_phase_capability(
+            "parsing",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone parsing phase"
+        );
+        add_phase_capability(
+            "semantic_analysis",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone semantic-analysis phase"
+        );
+        add_phase_capability(
+            "template_instantiation",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone template phase"
+        );
+        add_phase_capability(
+            "code_generation",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone code-generation phase"
+        );
+        add_phase_capability(
+            "optimization",
+            false,
+            "MSVC /Bt+ reports frontend/backend totals, not a standalone optimization phase"
+        );
+        add_phase_capability(
+            "unclassified",
+            true,
+            "MSVC frontend/backend totals are retained as an aggregate, not assigned to a finer phase"
+        );
+
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }
 

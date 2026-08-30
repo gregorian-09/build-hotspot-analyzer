@@ -262,7 +262,8 @@ namespace bha::build_sessions {
             }
             event.configuration = object.value("configuration", "");
 
-            if (object.contains("time_start_ms") && !object["time_start_ms"].is_number_integer()) {
+            if (object.contains("time_start_ms") && !object["time_start_ms"].is_null() &&
+                !object["time_start_ms"].is_number_integer()) {
                 return Result<BuildCommandEvent, Error>::failure(
                     Error::parse_error("BHA build-session time_start_ms is not an integer", source_hint.string())
                 );
@@ -272,7 +273,7 @@ namespace bha::build_sessions {
                     Error::parse_error("BHA build-session duration_ns is not an integer", source_hint.string())
                 );
             }
-            if (object.contains("time_start_ms")) {
+            if (object.contains("time_start_ms") && !object["time_start_ms"].is_null()) {
                 event.start_time = Timestamp(std::chrono::milliseconds(
                     object["time_start_ms"].get<std::int64_t>()
                 ));
@@ -362,6 +363,7 @@ namespace bha::build_sessions {
 
             BuildSession session;
             session.id = document.value("id", "");
+            session.build_directory = document.value("build_directory", "");
             session.build_system = build_system_from_string(document.value("build_system", "Unknown"));
             session.build_system_version = document.value("build_system_version", "");
             session.configuration = document.value("configuration", "");
@@ -468,7 +470,13 @@ namespace bha::build_sessions {
             );
         }
         trace.build_system = session.value().build_system;
-        trace.build_session = session.value();
+        auto attached_session = session.value();
+        for (auto& command : attached_session.commands) {
+            if (command.trace_file.has_value() && command.trace_file->is_relative()) {
+                command.trace_file = path.parent_path() / *command.trace_file;
+            }
+        }
+        trace.build_session = std::move(attached_session);
         return Result<void, Error>::success();
     }
 
@@ -480,6 +488,7 @@ namespace bha::build_sessions {
             {"schema", "bha.build-session"},
             {"version", 1},
             {"id", session.id},
+            {"build_directory", session.build_directory.generic_string()},
             {"build_system", to_string(session.build_system)},
             {"build_system_version", session.build_system_version},
             {"configuration", session.configuration},

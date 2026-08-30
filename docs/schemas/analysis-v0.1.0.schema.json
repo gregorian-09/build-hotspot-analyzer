@@ -48,7 +48,7 @@
         "total_build_time_ms": {"type": ["number", "null"]},
         "sequential_time_ms": {"type": ["number", "null"]},
         "parallel_time_ms": {"type": ["number", "null"]},
-        "parallelism_efficiency": {"type": "number"},
+        "parallelism_efficiency": {"type": ["number", "null"]},
         "total_files": {"type": "integer", "minimum": 0},
         "slowest_file_count": {"type": "integer", "minimum": 0},
         "avg_file_time_ms": {"type": ["number", "null"]},

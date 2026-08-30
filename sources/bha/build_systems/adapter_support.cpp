@@ -675,6 +675,12 @@ namespace bha::build_systems::detail {
                         stem.ends_with(".C") || stem.ends_with(".c++") ||
                         stem.ends_with(".m") || stem.ends_with(".mm")) {
                         traces.push_back(entry.path());
+                    } else if (entry.path().parent_path().filename() == "compile-trace") {
+                        // CMake Instrumentation API v1 stores Clang -ftime-trace
+                        // artifacts under this producer-defined directory. Their
+                        // filenames include a producer identity suffix, so the
+                        // source-extension scan above cannot identify them.
+                        traces.push_back(entry.path());
                     } else {
                         if (const fs::path parent = entry.path().parent_path(); fs::exists(parent / (stem + ".o")) ||
                             fs::exists(parent / (stem + ".obj"))) {
@@ -810,11 +816,36 @@ if(snippet_count GREATER 0)
     else()
       set(source_snippet "${source_data}/${snippet}")
     endif()
-    get_filename_component(snippet_name "${snippet}" NAME)
     if(NOT EXISTS "${source_snippet}")
       message(FATAL_ERROR "BHA CMake instrumentation snippet is missing: ${source_snippet}")
     endif()
-    file(COPY_FILE "${source_snippet}" "${capture_data}/${snippet_name}")
+    get_filename_component(snippet_directory "${snippet}" DIRECTORY)
+    if(snippet_directory)
+      file(MAKE_DIRECTORY "${capture_data}/${snippet_directory}")
+    endif()
+    file(COPY_FILE "${source_snippet}" "${capture_data}/${snippet}")
+
+    file(READ "${source_snippet}" snippet_json)
+    string(JSON trace_file_type ERROR_VARIABLE trace_file_error
+      TYPE "${snippet_json}" traceFile)
+    if(NOT trace_file_error AND trace_file_type STREQUAL "STRING")
+      string(JSON trace_file GET "${snippet_json}" traceFile)
+      if(trace_file)
+        if(IS_ABSOLUTE "${trace_file}")
+          set(source_trace_file "${trace_file}")
+        else()
+          set(source_trace_file "${source_data}/${trace_file}")
+        endif()
+        if(NOT EXISTS "${source_trace_file}")
+          message(FATAL_ERROR "BHA CMake instrumentation compiler trace is missing: ${source_trace_file}")
+        endif()
+        get_filename_component(trace_directory "${trace_file}" DIRECTORY)
+        if(trace_directory)
+          file(MAKE_DIRECTORY "${capture_data}/${trace_directory}")
+        endif()
+        file(COPY_FILE "${source_trace_file}" "${capture_data}/${trace_file}")
+      endif()
+    endif()
   endforeach()
 endif()
 
@@ -878,7 +909,11 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
             const fs::path capture_directory = cmake_instrumentation_capture_directory(build_directory);
             const fs::path callback_script =
                 capture_directory / std::string(kInstrumentationCallbackFile);
-            if (!fs::exists(callback_script)) {
+            bool callback_changed = true;
+            if (const auto existing = utils::read_file(callback_script); existing.is_ok()) {
+                callback_changed = existing.value() != kInstrumentationCallbackScript;
+            }
+            if (callback_changed) {
                 const auto result = utils::write_file(callback_script, kInstrumentationCallbackScript);
                 if (!result.is_ok()) {
                     return false;
@@ -895,7 +930,12 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
                     "cmake -P " + quote_callback_argument(callback_script)
                 })},
                 {"hooks", json::array({"postCMakeBuild"})},
-                {"options", json::array({"staticSystemInformation", "dynamicSystemInformation"})}
+                {"options", json::array({
+                    "staticSystemInformation",
+                    "dynamicSystemInformation",
+                    "captureOutput",
+                    "compileTrace"
+                })}
             };
             const std::string content = query.dump(2) + "\n";
             bool query_changed = true;

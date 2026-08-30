@@ -366,7 +366,7 @@ namespace bha::build_sessions::test {
         EXPECT_EQ(trace.build_system, BuildSystemType::CMake);
         EXPECT_EQ(trace.compiler, CompilerType::Clang);
         ASSERT_EQ(trace.units.size(), 1u);
-        EXPECT_EQ(trace.units.front().source_file, fs::path("/src/main.cpp"));
+        EXPECT_EQ(trace.units.front().source_file, fs::path("src/main.cpp"));
         EXPECT_EQ(trace.units.front().metrics.total_time, std::chrono::microseconds(250));
         EXPECT_EQ(trace.total_time, Duration::zero());
 

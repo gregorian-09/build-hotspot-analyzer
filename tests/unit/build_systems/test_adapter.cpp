@@ -266,6 +266,8 @@ TEST(CMakeAdapterTest, DerivesCompanionCompilerFromExplicitCxxOverride) {
     );
     EXPECT_NE(query.find("\"callbacks\""), std::string::npos);
     EXPECT_NE(query.find("cmake -P"), std::string::npos);
+    EXPECT_NE(query.find("captureOutput"), std::string::npos);
+    EXPECT_NE(query.find("compileTrace"), std::string::npos);
 
     const std::string logged = read_file_text(log_path);
     expect_logged_cmake_define(logged, "-DCMAKE_C_COMPILER=", bin_dir / "clang");

@@ -159,6 +159,7 @@ namespace bha::analyzers {
             file_result.backend_time = unit.metrics.backend_time;
             file_result.breakdown = unit.metrics.breakdown;
             file_result.memory = unit.metrics.memory;
+            file_result.metric_capabilities = unit.metric_capabilities;
             file_result.include_count = unit.includes.size();
             file_result.template_count = unit.templates.size();
 

@@ -260,6 +260,27 @@ namespace bha::exporters
             return include_timing ? csv_number(duration_to_ms(duration)) : "excluded";
         }
 
+        std::string csv_metric_duration(
+            const Duration duration,
+            const bool include_timing,
+            const std::vector<MetricCapability>& capabilities,
+            const std::string_view metric
+        ) {
+            return has_metric_evidence(capabilities, metric)
+                ? csv_duration(duration, include_timing)
+                : "unavailable";
+        }
+
+        std::string csv_metric_number(
+            const double value,
+            const std::vector<MetricCapability>& capabilities,
+            const std::string_view metric
+        ) {
+            return has_metric_evidence(capabilities, metric)
+                ? csv_number(value)
+                : "unavailable";
+        }
+
         std::string csv_optional_duration(
             const std::optional<Duration>& duration,
             const bool include_timing
@@ -1170,8 +1191,8 @@ namespace bha::exporters
             [&](std::ostream& stream) {
                 write_summary_metric(stream, "performance", "total_build_time", csv_duration(analysis.performance.total_build_time, options.include_timing), "ms", "observed", "analysis", "build", "");
                 write_summary_metric(stream, "performance", "sequential_time", csv_duration(analysis.performance.sequential_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "build", "");
-                write_summary_metric(stream, "performance", "parallel_time", csv_duration(analysis.performance.parallel_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "build", "");
-                write_summary_metric(stream, "performance", "parallelism_efficiency", csv_number(analysis.performance.parallelism_efficiency), "ratio", "derived", "PerformanceAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "parallel_time", csv_metric_duration(analysis.performance.parallel_time, options.include_timing, analysis.metric_capabilities, "build.scheduler.parallelism"), "ms", "derived", "BuildSessionAnalyzer", "build", "");
+                write_summary_metric(stream, "performance", "parallelism_efficiency", csv_metric_number(analysis.performance.parallelism_efficiency, analysis.metric_capabilities, "build.scheduler.parallelism"), "ratio", "derived", "BuildSessionAnalyzer", "build", "");
                 write_summary_metric(stream, "performance", "total_files", std::to_string(analysis.performance.total_files), "count", "observed", "FileAnalyzer", "build", "");
                 write_summary_metric(stream, "performance", "avg_file_time", csv_duration(analysis.performance.avg_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
                 write_summary_metric(stream, "performance", "median_file_time", csv_duration(analysis.performance.median_file_time, options.include_timing), "ms", "derived", "PerformanceAnalyzer", "translation-unit", "");
@@ -1193,7 +1214,7 @@ namespace bha::exporters
                 write_summary_metric(stream, "cache", "hit_rate_percent", analysis.cache_distribution.hit_rate_percent.has_value() ? csv_number(*analysis.cache_distribution.hit_rate_percent) : "unavailable", "%", analysis.cache_distribution.hit_rate_percent.has_value() ? "derived" : "unavailable", "cache producer", "build", "");
                 write_summary_metric(stream, "build_session", "wall_clock_time", csv_duration(analysis.build_session.wall_clock_time, options.include_timing), "ms", "observed", "BuildSessionAnalyzer", "build", "");
                 write_summary_metric(stream, "build_session", "serial_time", csv_duration(analysis.build_session.serial_time, options.include_timing), "ms", "derived", "BuildSessionAnalyzer", "build", "");
-                write_summary_metric(stream, "build_session", "critical_path_time", csv_duration(analysis.build_session.critical_path_time, options.include_timing), "ms", "derived", "BuildSessionAnalyzer", "build", "requires complete dependency edges");
+                write_summary_metric(stream, "build_session", "critical_path_time", csv_metric_duration(analysis.build_session.critical_path_time, options.include_timing, analysis.build_session.metric_capabilities, "build.scheduler.critical_path"), "ms", "derived", "BuildSessionAnalyzer", "build", "requires complete dependency edges");
                 write_summary_metric(stream, "build_session", "peak_parallelism", std::to_string(analysis.build_session.peak_parallelism), "count", "derived", "BuildSessionAnalyzer", "build", "");
                 write_summary_metric(stream, "build_session", "compile_trace_references", std::to_string(analysis.build_session.compile_trace_references), "count", "observed", "BuildSessionAnalyzer", "build", "");
                 write_summary_metric(stream, "targets", "matched_commands", std::to_string(analysis.targets.matched_commands), "count", "derived", "BuildTargetAnalyzer", "target", "");
@@ -1204,7 +1225,7 @@ namespace bha::exporters
                 write_summary_metric(stream, "modules", "resolved_dependencies", std::to_string(analysis.modules.resolved_dependencies), "count", "derived", "ModuleAnalyzer", "build", "");
                 write_summary_metric(stream, "modules", "unresolved_dependencies", std::to_string(analysis.modules.unresolved_dependencies), "count", "derived", "ModuleAnalyzer", "build", "");
                 write_summary_metric(stream, "linker", "wall_clock_time", csv_duration(analysis.linker.wall_clock_time, options.include_timing), "ms", "observed", "LinkerAnalyzer", "link", "");
-                write_summary_metric(stream, "linker", "output_bytes", std::to_string(analysis.linker.output_bytes), "bytes", "observed", "LinkerAnalyzer", "link", "");
+                write_summary_metric(stream, "linker", "output_bytes", has_metric_evidence(analysis.linker.metric_capabilities, "link.output_bytes") ? std::to_string(analysis.linker.output_bytes) : "unavailable", "bytes", "observed", "LinkerAnalyzer", "link", "");
                 write_summary_metric(stream, "process", "observations", std::to_string(analysis.process_resources.observations), "count", "observed", "ProcessResourceAnalyzer", "build", "");
                 write_summary_metric(stream, "process", "total_process_time", csv_duration(analysis.process_resources.total_process_time, options.include_timing), "ms", "observed", "ProcessResourceAnalyzer", "build", "");
                 write_summary_metric(stream, "process", "total_user_time", csv_duration(analysis.process_resources.total_user_time, options.include_timing), "ms", "observed", "ProcessResourceAnalyzer", "build", "");
@@ -1237,7 +1258,7 @@ namespace bha::exporters
             write_csv_row(stream, {"serial_time", csv_duration(analysis.build_session.serial_time, options.include_timing), "ms"});
             write_csv_row(stream, {"peak_parallelism", std::to_string(analysis.build_session.peak_parallelism), "count"});
             write_csv_row(stream, {"average_parallelism", csv_number(analysis.build_session.average_parallelism), "ratio"});
-            write_csv_row(stream, {"critical_path_time", csv_duration(analysis.build_session.critical_path_time, options.include_timing), "ms"});
+            write_csv_row(stream, {"critical_path_time", csv_metric_duration(analysis.build_session.critical_path_time, options.include_timing, analysis.build_session.metric_capabilities, "build.scheduler.critical_path"), "ms"});
             write_csv_row(stream, {"compile_trace_references", std::to_string(analysis.build_session.compile_trace_references), "count"});
         });
         if (result.is_err()) return result;
@@ -1255,7 +1276,7 @@ namespace bha::exporters
             write_csv_row(stream, {"wall_clock_time", csv_duration(analysis.linker.wall_clock_time, options.include_timing), "ms"});
             write_csv_row(stream, {"trace_wall_clock_time", csv_optional_duration(analysis.linker.trace_wall_clock_time, options.include_timing), "ms"});
             write_csv_row(stream, {"lto_time", csv_optional_duration(analysis.linker.lto_time, options.include_timing), "ms"});
-            write_csv_row(stream, {"output_bytes", std::to_string(analysis.linker.output_bytes), "bytes"});
+            write_csv_row(stream, {"output_bytes", has_metric_evidence(analysis.linker.metric_capabilities, "link.output_bytes") ? std::to_string(analysis.linker.output_bytes) : "unavailable", "bytes"});
         });
         if (result.is_err()) return result;
 
@@ -1284,7 +1305,7 @@ namespace bha::exporters
                 for (const auto& file : analysis.files) {
                     if (options.min_compile_time > Duration::zero() && file.compile_time < options.min_compile_time) continue;
                     if (options.max_files > 0 && count >= options.max_files) break;
-                    write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_duration(file.breakdown.preprocessing, options.include_timing), csv_duration(file.breakdown.parsing, options.include_timing), csv_duration(file.breakdown.semantic_analysis, options.include_timing), csv_duration(file.breakdown.template_instantiation, options.include_timing), csv_duration(file.breakdown.code_generation, options.include_timing), csv_duration(file.breakdown.optimization, options.include_timing), csv_duration(file.breakdown.unclassified, options.include_timing), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
+                    write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_metric_duration(file.breakdown.preprocessing, options.include_timing, file.metric_capabilities, "compiler.phase.preprocessing"), csv_metric_duration(file.breakdown.parsing, options.include_timing, file.metric_capabilities, "compiler.phase.parsing"), csv_metric_duration(file.breakdown.semantic_analysis, options.include_timing, file.metric_capabilities, "compiler.phase.semantic_analysis"), csv_metric_duration(file.breakdown.template_instantiation, options.include_timing, file.metric_capabilities, "compiler.phase.template_instantiation"), csv_metric_duration(file.breakdown.code_generation, options.include_timing, file.metric_capabilities, "compiler.phase.code_generation"), csv_metric_duration(file.breakdown.optimization, options.include_timing, file.metric_capabilities, "compiler.phase.optimization"), csv_metric_duration(file.breakdown.unclassified, options.include_timing, file.metric_capabilities, "compiler.phase.unclassified"), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
                     ++count;
                 }
             });
@@ -1500,7 +1521,7 @@ namespace bha::exporters
                 continue;
             }
 
-            write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_duration(file.breakdown.preprocessing, options.include_timing), csv_duration(file.breakdown.parsing, options.include_timing), csv_duration(file.breakdown.semantic_analysis, options.include_timing), csv_duration(file.breakdown.template_instantiation, options.include_timing), csv_duration(file.breakdown.code_generation, options.include_timing), csv_duration(file.breakdown.optimization, options.include_timing), csv_duration(file.breakdown.unclassified, options.include_timing), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
+                    write_csv_row(stream, {file.file.string(), csv_duration(file.compile_time, options.include_timing), csv_duration(file.frontend_time, options.include_timing), csv_duration(file.backend_time, options.include_timing), csv_metric_duration(file.breakdown.preprocessing, options.include_timing, file.metric_capabilities, "compiler.phase.preprocessing"), csv_metric_duration(file.breakdown.parsing, options.include_timing, file.metric_capabilities, "compiler.phase.parsing"), csv_metric_duration(file.breakdown.semantic_analysis, options.include_timing, file.metric_capabilities, "compiler.phase.semantic_analysis"), csv_metric_duration(file.breakdown.template_instantiation, options.include_timing, file.metric_capabilities, "compiler.phase.template_instantiation"), csv_metric_duration(file.breakdown.code_generation, options.include_timing, file.metric_capabilities, "compiler.phase.code_generation"), csv_metric_duration(file.breakdown.optimization, options.include_timing, file.metric_capabilities, "compiler.phase.optimization"), csv_metric_duration(file.breakdown.unclassified, options.include_timing, file.metric_capabilities, "compiler.phase.unclassified"), std::to_string(file.memory.max_stack_bytes), csv_number(file.time_percent), std::to_string(file.rank), std::to_string(file.include_count), std::to_string(file.template_count)});
         }
 
         return Result<void, Error>::success();
@@ -1552,6 +1573,24 @@ namespace bha::exporters
             if (!duration.has_value()) return std::string("unavailable");
             return format_timing(*duration);
         };
+        const auto format_metric_timing = [&](
+            const Duration duration,
+            const std::vector<MetricCapability>& capabilities,
+            const std::string_view metric
+        ) {
+            return has_metric_evidence(capabilities, metric)
+                ? format_timing(duration)
+                : std::string("unavailable");
+        };
+        const auto format_metric_count = [&](
+            const std::uintmax_t value,
+            const std::vector<MetricCapability>& capabilities,
+            const std::string_view metric
+        ) {
+            return has_metric_evidence(capabilities, metric)
+                ? std::to_string(value)
+                : std::string("unavailable");
+        };
 
         std::vector<const Suggestion*> selected_suggestions;
         if (options.include_suggestions) {
@@ -1576,8 +1615,17 @@ namespace bha::exporters
         summary_row("Total Files", std::to_string(analysis.files.size()));
         summary_row("Total Build Time", format_timing(analysis.performance.total_build_time));
         summary_row("Sequential Time", format_timing(analysis.performance.sequential_time));
-        summary_row("Parallel Time", format_timing(analysis.performance.parallel_time));
-        summary_row("Parallelism Efficiency", csv_number(analysis.performance.parallelism_efficiency, 2) + "x");
+        summary_row("Parallel Time", format_metric_timing(
+            analysis.performance.parallel_time,
+            analysis.metric_capabilities,
+            "build.scheduler.parallelism"
+        ));
+        summary_row(
+            "Parallelism Efficiency",
+            has_metric_evidence(analysis.metric_capabilities, "build.scheduler.parallelism")
+                ? csv_number(analysis.performance.parallelism_efficiency, 2) + "x"
+                : "unavailable"
+        );
         summary_row("Average File Time", format_timing(analysis.performance.avg_file_time));
         summary_row("Median File Time", format_timing(analysis.performance.median_file_time));
         summary_row("P90 File Time", format_timing(analysis.performance.p90_file_time));
@@ -1656,7 +1704,11 @@ namespace bha::exporters
         summary_row("Serial Time", format_timing(analysis.build_session.serial_time));
         summary_row("Peak Parallelism", std::to_string(analysis.build_session.peak_parallelism));
         summary_row("Average Parallelism", csv_number(analysis.build_session.average_parallelism, 2) + "x");
-        summary_row("Critical Path Time", format_timing(analysis.build_session.critical_path_time));
+        summary_row("Critical Path Time", format_metric_timing(
+            analysis.build_session.critical_path_time,
+            analysis.build_session.metric_capabilities,
+            "build.scheduler.critical_path"
+        ));
         summary_row("Compile Trace References", std::to_string(analysis.build_session.compile_trace_references));
         if (!analysis.build_session.critical_path.empty()) {
             stream << "\n**Critical path:** ";
@@ -1683,7 +1735,11 @@ namespace bha::exporters
         stream << "| Metric | Value |\n|--------|-------|\n";
         summary_row("Linker Invocations", std::to_string(analysis.linker.invocations));
         summary_row("Linker Time", format_timing(analysis.linker.wall_clock_time));
-        summary_row("Linker Output", std::to_string(analysis.linker.output_bytes) + " bytes");
+        summary_row("Linker Output", format_metric_count(
+            analysis.linker.output_bytes,
+            analysis.linker.metric_capabilities,
+            "link.output_bytes"
+        ) + " bytes");
         summary_row("Matched Target Commands", std::to_string(analysis.targets.matched_commands));
         summary_row("Unmatched Target Commands", std::to_string(analysis.targets.unmatched_commands));
         summary_row("PCH Headers", std::to_string(analysis.targets.pch_headers));
@@ -1702,7 +1758,11 @@ namespace bha::exporters
                        << " | " << target.compile_commands
                        << " | " << format_timing(target.compile_wall_clock_time)
                        << " | " << format_timing(target.link_wall_clock_time)
-                       << " | " << target.output_bytes << " bytes |\n";
+                       << " | " << format_metric_count(
+                           target.output_bytes,
+                           analysis.targets.metric_capabilities,
+                           "build.target.output_bytes"
+                       ) << " bytes |\n";
             }
             stream << "\n";
         }

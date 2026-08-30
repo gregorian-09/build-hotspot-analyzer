@@ -63,18 +63,29 @@ namespace bha::exporters {
             return result;
         }
 
-        json serialize_time_breakdown(const TimeBreakdown& breakdown, const bool include_timing) {
+        json serialize_time_breakdown(
+            const TimeBreakdown& breakdown,
+            const std::vector<MetricCapability>& capabilities,
+            const bool include_timing
+        ) {
             if (!include_timing) {
                 return nullptr;
             }
             return {
-                {"preprocessing_ms", duration_to_ms(breakdown.preprocessing)},
-                {"parsing_ms", duration_to_ms(breakdown.parsing)},
-                {"semantic_analysis_ms", duration_to_ms(breakdown.semantic_analysis)},
-                {"template_instantiation_ms", duration_to_ms(breakdown.template_instantiation)},
-                {"code_generation_ms", duration_to_ms(breakdown.code_generation)},
-                {"optimization_ms", duration_to_ms(breakdown.optimization)},
-                {"unclassified_ms", duration_to_ms(breakdown.unclassified)}
+                {"preprocessing_ms", has_metric_evidence(capabilities, "compiler.phase.preprocessing")
+                    ? json(duration_to_ms(breakdown.preprocessing)) : json(nullptr)},
+                {"parsing_ms", has_metric_evidence(capabilities, "compiler.phase.parsing")
+                    ? json(duration_to_ms(breakdown.parsing)) : json(nullptr)},
+                {"semantic_analysis_ms", has_metric_evidence(capabilities, "compiler.phase.semantic_analysis")
+                    ? json(duration_to_ms(breakdown.semantic_analysis)) : json(nullptr)},
+                {"template_instantiation_ms", has_metric_evidence(capabilities, "compiler.phase.template_instantiation")
+                    ? json(duration_to_ms(breakdown.template_instantiation)) : json(nullptr)},
+                {"code_generation_ms", has_metric_evidence(capabilities, "compiler.phase.code_generation")
+                    ? json(duration_to_ms(breakdown.code_generation)) : json(nullptr)},
+                {"optimization_ms", has_metric_evidence(capabilities, "compiler.phase.optimization")
+                    ? json(duration_to_ms(breakdown.optimization)) : json(nullptr)},
+                {"unclassified_ms", has_metric_evidence(capabilities, "compiler.phase.unclassified")
+                    ? json(duration_to_ms(breakdown.unclassified)) : json(nullptr)}
             };
         }
 
@@ -84,7 +95,12 @@ namespace bha::exporters {
                 {"compile_time_ms", serialize_duration(file.compile_time, include_timing)},
                 {"frontend_time_ms", serialize_duration(file.frontend_time, include_timing)},
                 {"backend_time_ms", serialize_duration(file.backend_time, include_timing)},
-                {"breakdown", serialize_time_breakdown(file.breakdown, include_timing)},
+                {"breakdown", serialize_time_breakdown(
+                    file.breakdown,
+                    file.metric_capabilities,
+                    include_timing
+                )},
+                {"metric_capabilities", serialize_metric_capabilities(file.metric_capabilities)},
                 {"memory", {{"max_stack_bytes", file.memory.max_stack_bytes}}},
                 {"time_percent", file.time_percent},
                 {"rank", file.rank},
@@ -93,12 +109,18 @@ namespace bha::exporters {
             };
         }
 
-        json serialize_performance(const analyzers::PerformanceAnalysisResult& performance, const bool include_timing) {
+        json serialize_performance(
+            const analyzers::PerformanceAnalysisResult& performance,
+            const std::vector<MetricCapability>& capabilities,
+            const bool include_timing
+        ) {
             json result = {
                 {"total_build_time_ms", serialize_duration(performance.total_build_time, include_timing)},
                 {"sequential_time_ms", serialize_duration(performance.sequential_time, include_timing)},
-                {"parallel_time_ms", serialize_duration(performance.parallel_time, include_timing)},
-                {"parallelism_efficiency", performance.parallelism_efficiency},
+                {"parallel_time_ms", has_metric_evidence(capabilities, "build.scheduler.parallelism")
+                    ? serialize_duration(performance.parallel_time, include_timing) : json(nullptr)},
+                {"parallelism_efficiency", has_metric_evidence(capabilities, "build.scheduler.parallelism")
+                    ? json(performance.parallelism_efficiency) : json(nullptr)},
                 {"total_files", performance.total_files},
                 {"slowest_file_count", performance.slowest_file_count},
                 {"avg_file_time_ms", serialize_duration(performance.avg_file_time, include_timing)},
@@ -151,7 +173,10 @@ namespace bha::exporters {
                 {"serial_time_ms", serialize_duration(session.serial_time, include_timing)},
                 {"peak_parallelism", session.peak_parallelism},
                 {"average_parallelism", session.average_parallelism},
-                {"critical_path_time_ms", serialize_duration(session.critical_path_time, include_timing)},
+                {"critical_path_time_ms", has_metric_evidence(
+                    session.metric_capabilities,
+                    "build.scheduler.critical_path"
+                ) ? serialize_duration(session.critical_path_time, include_timing) : json(nullptr)},
                 {"critical_path", session.critical_path},
                 {"compile_trace_references", session.compile_trace_references},
                 {"step_metrics", json::array()},
@@ -219,7 +244,8 @@ namespace bha::exporters {
                 {"timed_invocations", linker.timed_invocations},
                 {"output_size_observations", linker.output_size_observations},
                 {"wall_clock_time_ms", serialize_duration(linker.wall_clock_time, include_timing)},
-                {"output_bytes", linker.output_bytes},
+                {"output_bytes", has_metric_evidence(linker.metric_capabilities, "link.output_bytes")
+                    ? json(linker.output_bytes) : json(nullptr)},
                 {"trace_wall_clock_time_ms", linker.trace_wall_clock_time.has_value()
                     ? serialize_duration(*linker.trace_wall_clock_time, include_timing) : json(nullptr)},
                 {"lto_time_ms", linker.lto_time.has_value()
@@ -251,7 +277,8 @@ namespace bha::exporters {
                     {"timed_link_commands", target.timed_link_commands},
                     {"link_wall_clock_time_ms", serialize_duration(target.link_wall_clock_time, include_timing)},
                     {"output_size_observations", target.output_size_observations},
-                    {"output_bytes", target.output_bytes},
+                    {"output_bytes", has_metric_evidence(targets.metric_capabilities, "build.target.output_bytes")
+                        ? json(target.output_bytes) : json(nullptr)},
                     {"precompile_headers", serialize_paths(target.precompile_headers)}
                 });
             }
@@ -490,7 +517,11 @@ namespace bha::exporters {
             output["analysis_time"] = utils::format_timestamp_iso8601(analysis.analysis_time);
         }
 
-        output["performance"] = serialize_performance(analysis.performance, options.include_timing);
+        output["performance"] = serialize_performance(
+            analysis.performance,
+            analysis.metric_capabilities,
+            options.include_timing
+        );
         output["summary"] = {
             {"total_files", analysis.files.size()},
             {"total_compile_time_ms", serialize_duration(analysis.performance.sequential_time, options.include_timing)},

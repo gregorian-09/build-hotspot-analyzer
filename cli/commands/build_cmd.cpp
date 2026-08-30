@@ -41,6 +41,9 @@ namespace bha::cli
         ) {
             BuildSession session;
             session.id = (project_path / "bha-adapter-build").generic_string();
+            session.build_directory = options.build_dir.empty()
+                ? project_path / "build"
+                : options.build_dir;
             session.build_system = build_system_type(adapter.name());
             session.configuration = options.build_type;
             session.instrumentation_hook = "bha-adapter-wall-clock";
@@ -73,6 +76,48 @@ namespace bha::cli
             capability.provenance.timing_aggregation = TimingAggregation::Exclusive;
             session.metric_capabilities.push_back(std::move(capability));
             return session;
+        }
+
+        bool materialize_cmake_trace_references(
+            BuildSession& session,
+            const fs::path& session_directory
+        ) {
+            if (session_directory.empty()) {
+                return false;
+            }
+
+            const fs::path trace_directory = session_directory / "compile-trace";
+            std::error_code ec;
+            fs::create_directories(trace_directory, ec);
+            if (ec) {
+                return false;
+            }
+
+            std::vector<std::pair<BuildCommandEvent*, fs::path>> materialized;
+            materialized.reserve(session.commands.size());
+            for (auto& command : session.commands) {
+                if (!command.trace_file.has_value()) {
+                    continue;
+                }
+
+                const fs::path source = *command.trace_file;
+                const fs::path destination = trace_directory / source.filename();
+                if (source != destination) {
+                    fs::copy_file(source, destination, fs::copy_options::overwrite_existing, ec);
+                    if (ec) {
+                        return false;
+                    }
+                }
+                const auto relative_path = fs::relative(destination, session_directory, ec);
+                if (ec) {
+                    return false;
+                }
+                materialized.emplace_back(&command, relative_path);
+            }
+            for (const auto& [command, relative_path] : materialized) {
+                command->trace_file = relative_path;
+            }
+            return true;
         }
     }
 
@@ -265,6 +310,13 @@ namespace bha::cli
             }
             const fs::path session_path =
                 session_directory / std::string(build_sessions::kBuildSessionFileName);
+            if (result.cmake_instrumentation_index.has_value() &&
+                !materialize_cmake_trace_references(persisted_session, session_directory)) {
+                print_warning(
+                    "Failed to materialize CMake compile traces beside the build session; "
+                    "the session will retain producer paths"
+                );
+            }
             build_sessions::BuildSessionFileParser session_parser;
             if (const auto write_result = session_parser.write_file(persisted_session, session_path);
                 write_result.is_err()) {

@@ -8,6 +8,7 @@
 #include "bha/utils/suggestion_path_utils.hpp"
 
 #include "bha/bha.hpp"
+#include "bha/build_systems/adapter_support.hpp"
 #include "bha/build_sessions/cmake_instrumentation.hpp"
 #include "bha/build_sessions/cmake_file_api.hpp"
 #include "bha/build_sessions/session_file.hpp"
@@ -179,6 +180,30 @@ namespace bha::cli
             BuildTrace build_trace;
             build_trace.timestamp = std::chrono::system_clock::now();
 
+            std::optional<fs::path> cmake_instrumentation_index;
+            if (const auto requested_cmake_index = args.get("cmake-index")) {
+                cmake_instrumentation_index = fs::path(*requested_cmake_index);
+            } else if (session_file_path.has_value()) {
+                // A persisted CMake session records the build tree that owns
+                // the producer index. Prefer that exact session boundary over
+                // scanning unrelated JSON files in the trace directory.
+                build_sessions::BuildSessionFileParser session_parser;
+                if (const auto session = session_parser.parse_file(*session_file_path);
+                    session.is_ok() &&
+                    session.value().build_system == BuildSystemType::CMake &&
+                    !session.value().build_directory.empty()) {
+                    cmake_instrumentation_index = build_systems::detail::find_cmake_instrumentation_index(
+                        session.value().build_directory
+                    );
+                }
+            }
+            if (cmake_instrumentation_index.has_value()) {
+                // The CMake index owns the command-to-trace relationship. Do
+                // not parse a second, potentially stale scan of the same build
+                // tree before the authoritative references are attached.
+                trace_files.clear();
+            }
+
             {
                 ScopedProgress progress(trace_files.size(), "Parsing traces");
 
@@ -191,14 +216,14 @@ namespace bha::cli
                 }
             }
 
-            if (const auto cmake_index_path = args.get("cmake-index")) {
+            if (cmake_instrumentation_index.has_value()) {
                 build_sessions::CMakeInstrumentationParser parser;
-                if (const auto result = parser.attach_to_trace(build_trace, *cmake_index_path);
+                if (const auto result = parser.attach_to_trace(build_trace, *cmake_instrumentation_index);
                     result.is_err()) {
                     print_error("Failed to attach CMake instrumentation index: " + result.error().message());
                     return 1;
                 }
-                print_verbose("Attached CMake instrumentation index: " + *cmake_index_path);
+                print_verbose("Attached CMake instrumentation index: " + cmake_instrumentation_index->string());
             }
 
             if (!build_trace.build_session.has_value() && session_file_path.has_value()) {
@@ -211,15 +236,28 @@ namespace bha::cli
                 print_verbose("Attached BHA build session: " + session_file_path->string());
             }
 
-            if (const auto file_api_path = args.get("cmake-file-api")) {
+            std::optional<fs::path> cmake_file_api_path;
+            if (const auto requested_file_api = args.get("cmake-file-api")) {
+                cmake_file_api_path = fs::path(*requested_file_api);
+            } else if (build_trace.build_session.has_value() &&
+                       build_trace.build_session->build_system == BuildSystemType::CMake &&
+                       !build_trace.build_session->build_directory.empty()) {
+                cmake_file_api_path = build_systems::detail::find_cmake_file_api_index(
+                    build_trace.build_session->build_directory
+                );
+            }
+            if (cmake_file_api_path.has_value()) {
                 build_sessions::CMakeFileApiParser parser;
-                const auto result = parser.parse_reply_index(*file_api_path, args.get_or("config", ""));
+                const auto result = parser.parse_reply_index(
+                    *cmake_file_api_path,
+                    args.get_or("config", "")
+                );
                 if (result.is_err()) {
                     print_error("Failed to attach CMake File API target graph: " + result.error().message());
                     return 1;
                 }
                 build_trace.target_graph = result.value();
-                print_verbose("Attached CMake File API target graph: " + *file_api_path);
+                print_verbose("Attached CMake File API target graph: " + cmake_file_api_path->string());
             }
 
             if (!memory_files.empty()) {
@@ -322,6 +360,19 @@ namespace bha::cli
                     build_trace,
                     analysis_result.value()
                 );
+                if (build_trace.build_session.has_value() &&
+                    !build_trace.build_session->build_directory.empty()) {
+                    const fs::path compile_commands =
+                        build_trace.build_session->build_directory / "compile_commands.json";
+                    if (fs::is_regular_file(compile_commands)) {
+                        suggester_opts.compile_commands_path = compile_commands;
+                    }
+                }
+                if (!suggester_opts.compile_commands_path.has_value()) {
+                    if (const auto compile_commands_path = utils::find_compile_commands_path(project_root)) {
+                        suggester_opts.compile_commands_path = *compile_commands_path;
+                    }
+                }
                 print_verbose("Resolved project root: " + project_root.generic_string());
                 auto suggestions_result = suggestions::generate_all_suggestions(
                     build_trace, analysis_result.value(), suggester_opts, project_root

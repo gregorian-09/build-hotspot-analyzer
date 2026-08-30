@@ -107,6 +107,7 @@ namespace bha::analyzers {
         std::unordered_set<std::size_t> compile_time_overflow_targets;
         std::unordered_set<std::size_t> link_time_overflow_targets;
         std::unordered_set<std::size_t> output_size_overflow_targets;
+        bool has_nonzero_output_size = false;
         for (const auto& target : trace.target_graph->targets) {
             BuildTargetAnalysisResult::TargetInfo info;
             info.id = target.id;
@@ -163,6 +164,13 @@ namespace bha::analyzers {
                     Error::analysis_error("Matched target command count overflowed")
                 );
             }
+            has_nonzero_output_size = has_nonzero_output_size || (
+                has_exact_output_sizes(event) &&
+                std::ranges::any_of(
+                    event.output_sizes,
+                    [](const std::uintmax_t size) { return size > 0; }
+                )
+            );
             const auto target_index = target_it->second.front();
             auto& target = analysis.targets[target_index];
             if (event.role == BuildStepRole::Compile) {
@@ -345,11 +353,14 @@ namespace bha::analyzers {
             analysis,
             capability(
                 "build.target.output_bytes",
-                output_size_overflow_targets.empty() && output_observations > 0
-                    ? EvidenceKind::Derived
-                    : EvidenceKind::Unavailable,
+                output_size_overflow_targets.empty() && output_observations > 0 &&
+                    has_nonzero_output_size
+                ? EvidenceKind::Derived
+                : EvidenceKind::Unavailable,
                 !output_size_overflow_targets.empty()
                     ? "Producer-reported output sizes overflowed the aggregate representation"
+                    : output_observations > 0 && !has_nonzero_output_size
+                        ? "The producer reported zero for every target output; output bytes are unavailable"
                     : "No matched compile or link event has aligned producer output-size arrays",
                 TimingDomain::None,
                 TimingAggregation::None

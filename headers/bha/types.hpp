@@ -22,6 +22,7 @@
  * - Suitable for parallel processing
  */
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <optional>
@@ -198,6 +199,18 @@ namespace bha {
         std::string metric;
         MetricProvenance provenance;
     };
+
+    [[nodiscard]] inline bool has_metric_evidence(
+        const std::vector<MetricCapability>& capabilities,
+        const std::string_view metric
+    ) noexcept {
+        return std::ranges::any_of(
+            capabilities,
+            [metric](const MetricCapability& capability) {
+                return capability.metric == metric && capability.provenance.has_evidence();
+            }
+        );
+    }
 
     /**
      * Coarse compiler families used for support-matrix decisions.
@@ -679,6 +692,8 @@ namespace bha {
      */
     struct BuildSession {
         std::string id;
+        /// CMake build tree associated with this session, when the producer reports it.
+        fs::path build_directory;
         BuildSystemType build_system = BuildSystemType::Unknown;
         std::string build_system_version;
         std::string configuration;

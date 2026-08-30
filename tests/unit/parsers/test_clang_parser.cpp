@@ -78,6 +78,33 @@ namespace bha::parsers
         EXPECT_TRUE(unit.metrics.backend_time == std::chrono::milliseconds(200));
     }
 
+    TEST_F(ClangParserTest, RecordsUnavailablePhasesWithoutInventingTotals) {
+        constexpr std::string_view content = R"json({
+            "traceEvents": [
+                {"ph":"X","ts":0,"dur":100,"name":"Total Source"},
+                {"ph":"X","ts":100,"dur":50,"name":"Total ParseClass"},
+                {"ph":"X","ts":150,"dur":25,"name":"Total OptFunction"}
+            ]
+        })json";
+
+        const auto result = parser_->parse_content(content, "/test/source.cpp");
+
+        ASSERT_TRUE(result.is_ok());
+        const auto find_capability = [&result](const std::string_view metric) {
+            return std::ranges::find(result.value().metric_capabilities, metric, &MetricCapability::metric);
+        };
+        const auto parsing = find_capability("compiler.phase.parsing");
+        ASSERT_NE(parsing, result.value().metric_capabilities.end());
+        EXPECT_EQ(parsing->provenance.evidence, EvidenceKind::Observed);
+        EXPECT_EQ(result.value().metrics.breakdown.parsing, std::chrono::microseconds(50));
+
+        const auto semantic = find_capability("compiler.phase.semantic_analysis");
+        ASSERT_NE(semantic, result.value().metric_capabilities.end());
+        EXPECT_EQ(semantic->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_TRUE(semantic->provenance.limitation.find("standalone") != std::string::npos);
+        EXPECT_EQ(result.value().metrics.breakdown.semantic_analysis, Duration::zero());
+    }
+
     TEST_F(ClangParserTest, DoesNotInferTotalTimeFromFrontendAndBackendPhases) {
         const std::string content = R"({
             "traceEvents": [
@@ -214,10 +241,14 @@ namespace bha::parsers
         EXPECT_EQ(*nested->self_parse_time, std::chrono::microseconds(300));
         EXPECT_EQ(*leaf->self_parse_time, std::chrono::microseconds(100));
 
-        ASSERT_EQ(result.value().metric_capabilities.size(), 1u);
-        EXPECT_EQ(result.value().metric_capabilities.front().metric, "frontend.source_self_time");
+        const auto source_capability = std::ranges::find(
+            result.value().metric_capabilities,
+            "frontend.source_self_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(source_capability, result.value().metric_capabilities.end());
         EXPECT_EQ(
-            result.value().metric_capabilities.front().provenance.timing_aggregation,
+            source_capability->provenance.timing_aggregation,
             TimingAggregation::Exclusive
         );
     }
@@ -233,8 +264,13 @@ namespace bha::parsers
         ASSERT_TRUE(result.is_ok());
         ASSERT_EQ(result.value().includes.size(), 1u);
         EXPECT_FALSE(result.value().includes.front().self_parse_time.has_value());
-        ASSERT_EQ(result.value().metric_capabilities.size(), 1u);
-        EXPECT_FALSE(result.value().metric_capabilities.front().provenance.limitation.empty());
+        const auto source_capability = std::ranges::find(
+            result.value().metric_capabilities,
+            "frontend.source_self_time",
+            &MetricCapability::metric
+        );
+        ASSERT_NE(source_capability, result.value().metric_capabilities.end());
+        EXPECT_FALSE(source_capability->provenance.limitation.empty());
     }
 
     TEST_F(ClangParserTest, IncludeDepthSiblings) {

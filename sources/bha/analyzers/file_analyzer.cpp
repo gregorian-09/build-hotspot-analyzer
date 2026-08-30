@@ -41,6 +41,7 @@ namespace bha::analyzers
             result.backend_time = unit.metrics.backend_time;
             result.breakdown = unit.metrics.breakdown;
             result.memory = unit.metrics.memory;
+            result.metric_capabilities = unit.metric_capabilities;
 
             if (total_time.count() > 0) {
                 result.time_percent = 100.0 * static_cast<double>(unit.metrics.total_time.count()) /

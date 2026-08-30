@@ -11,6 +11,7 @@ namespace bha::build_sessions::test {
     TEST(BuildSessionFileParserTest, RoundTripsObservedCommandTiming) {
         BuildSession session;
         session.id = "build-1";
+        session.build_directory = "C:/build/project";
         session.build_system = BuildSystemType::MSBuild;
         session.build_system_version = "17.0";
         session.configuration = "Release";
@@ -67,6 +68,7 @@ namespace bha::build_sessions::test {
         ASSERT_TRUE(parsed.is_ok()) << parsed.error().message();
         ASSERT_EQ(parsed.value().commands.size(), 1u);
         EXPECT_EQ(parsed.value().build_system, BuildSystemType::MSBuild);
+        EXPECT_EQ(parsed.value().build_directory, fs::path("C:/build/project"));
         EXPECT_EQ(parsed.value().build_system_version, "17.0");
         ASSERT_TRUE(parsed.value().host_system.has_value());
         EXPECT_EQ(parsed.value().host_system->logical_cpu_count, 16u);
@@ -80,6 +82,47 @@ namespace bha::build_sessions::test {
 
         std::error_code ec;
         fs::remove(path, ec);
+    }
+
+    TEST(BuildSessionFileParserTest, ResolvesPortableTraceReferencesRelativeToSession) {
+        const auto root = fs::temp_directory_path() / "bha-session-relative-trace-test";
+        const auto trace_directory = root / "compile-trace";
+        std::error_code ec;
+        fs::remove_all(root, ec);
+        ASSERT_TRUE(fs::create_directories(trace_directory));
+
+        constexpr std::string_view trace = R"json({
+  "traceEvents": [
+    {"name":"ExecuteCompiler","ph":"X","ts":0,"dur":1000,"args":{"detail":"/src/main.cpp"}}
+  ]
+})json";
+        ASSERT_TRUE(utils::write_file(trace_directory / "main.json", trace).is_ok());
+
+        BuildSession session;
+        session.id = "portable-session";
+        session.build_system = BuildSystemType::CMake;
+        BuildCommandEvent command;
+        command.id = "compile-main";
+        command.role = BuildStepRole::Compile;
+        command.trace_file = fs::path("compile-trace/main.json");
+        command.timing_provenance.evidence = EvidenceKind::Observed;
+        session.commands.push_back(command);
+
+        BuildSessionFileParser parser;
+        const auto session_path = root / std::string(kBuildSessionFileName);
+        ASSERT_TRUE(parser.write_file(session, session_path).is_ok());
+
+        BuildTrace build_trace;
+        const auto attach_result = parser.attach_to_trace(build_trace, session_path);
+        ASSERT_TRUE(attach_result.is_ok()) << attach_result.error().message();
+        ASSERT_TRUE(build_trace.build_session.has_value());
+        ASSERT_TRUE(build_trace.build_session->commands.front().trace_file.has_value());
+        EXPECT_EQ(
+            build_trace.build_session->commands.front().trace_file,
+            trace_directory / "main.json"
+        );
+
+        fs::remove_all(root, ec);
     }
 
     TEST(BuildSessionFileParserTest, RejectsMalformedSchema) {

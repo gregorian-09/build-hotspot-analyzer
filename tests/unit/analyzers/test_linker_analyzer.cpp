@@ -100,6 +100,28 @@ namespace bha::analyzers::test {
         EXPECT_EQ(output_bytes->provenance.evidence, EvidenceKind::Unavailable);
     }
 
+    TEST(LinkerAnalyzerTest, FailsClosedWhenProducerReportsOnlyZeroOutputSizes) {
+        BuildTrace trace;
+        trace.build_session = BuildSession{};
+        auto event = link_command("link-app", 0, 4);
+        event.outputs = {"app", "app.map"};
+        event.output_sizes = {0, 0};
+        trace.build_session->commands = {event};
+
+        LinkerAnalyzer analyzer;
+        const auto result = analyzer.analyze(trace, {});
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& analysis = result.value().linker;
+        EXPECT_EQ(analysis.output_size_observations, 1u);
+        EXPECT_EQ(analysis.output_bytes, 0u);
+
+        const auto* output_bytes = find_capability(analysis, "link.output_bytes");
+        ASSERT_NE(output_bytes, nullptr);
+        EXPECT_EQ(output_bytes->provenance.evidence, EvidenceKind::Unavailable);
+        EXPECT_TRUE(output_bytes->provenance.limitation.find("zero") != std::string::npos);
+    }
+
     TEST(LinkerAnalyzerTest, IgnoresNonLinkCommands) {
         BuildTrace trace;
         trace.build_session = BuildSession{};

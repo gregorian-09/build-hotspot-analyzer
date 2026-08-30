@@ -369,6 +369,8 @@ namespace bha::parsers {
         Duration backend_time = Duration::zero();
         bool saw_template_phase = false;
         bool saw_timing_row = false;
+        bool saw_parsing_phase = false;
+        bool saw_unclassified_phase = false;
         std::optional<Duration> reported_total;
 
         for (const auto& line : lines) {
@@ -390,6 +392,13 @@ namespace bha::parsers {
             }
 
             saw_template_phase = saw_template_phase || timing.phase_name == "phase lang. deferred";
+            saw_parsing_phase = saw_parsing_phase ||
+                timing.phase_name == "phase parsing" ||
+                timing.phase_name == "phase late parsing cleanups";
+            saw_unclassified_phase = saw_unclassified_phase || !(
+                timing.phase_name == "phase parsing" ||
+                timing.phase_name == "phase late parsing cleanups"
+            );
             if (!map_phase_to_breakdown(timing, unit.metrics.breakdown)) {
                 return Result<CompilationUnit, Error>::failure(
                     Error::parse_error(
@@ -443,6 +452,56 @@ namespace bha::parsers {
         if (saw_template_phase || unit.metrics.breakdown.template_instantiation != Duration::zero()) {
             unit.template_evidence = TemplateEvidence::AggregateTiming;
         }
+
+        const auto add_phase_capability = [&unit](
+            const std::string_view phase,
+            const bool observed,
+            const std::string_view limitation = {}
+        ) {
+            MetricCapability capability;
+            capability.metric = "compiler.phase." + std::string(phase);
+            capability.provenance.evidence = observed
+                ? EvidenceKind::Observed
+                : EvidenceKind::Unavailable;
+            capability.provenance.producer = "gcc";
+            capability.provenance.capture_mode = "-ftime-report";
+            capability.provenance.scope = "translation-unit";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Inclusive;
+            capability.provenance.limitation = std::string(limitation);
+            unit.metric_capabilities.push_back(std::move(capability));
+        };
+        add_phase_capability(
+            "preprocessing",
+            false,
+            "GCC -ftime-report does not provide a standalone preprocessing total"
+        );
+        add_phase_capability("parsing", saw_parsing_phase);
+        add_phase_capability(
+            "semantic_analysis",
+            false,
+            "GCC reports deferred language work as an aggregate phase"
+        );
+        add_phase_capability(
+            "template_instantiation",
+            false,
+            "GCC -ftime-report does not separate template instantiation from deferred language work"
+        );
+        add_phase_capability(
+            "code_generation",
+            false,
+            "GCC combines optimization and code generation in phase opt and generate"
+        );
+        add_phase_capability(
+            "optimization",
+            false,
+            "GCC combines optimization and code generation in phase opt and generate"
+        );
+        add_phase_capability(
+            "unclassified",
+            saw_unclassified_phase,
+            saw_unclassified_phase ? "Producer phase is not a safe normalized compiler category" : ""
+        );
 
         return Result<CompilationUnit, Error>::success(std::move(unit));
     }

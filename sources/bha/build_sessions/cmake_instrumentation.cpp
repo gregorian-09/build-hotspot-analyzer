@@ -613,6 +613,9 @@ namespace bha::build_sessions {
             BuildSession session;
             session.id = path.generic_string();
             session.build_system = BuildSystemType::CMake;
+            if (index.contains("buildDir") && index["buildDir"].is_string()) {
+                session.build_directory = index["buildDir"].get<std::string>();
+            }
             if (index.contains("hook") && index["hook"].is_string()) {
                 session.instrumentation_hook = index["hook"].get<std::string>();
             }
@@ -724,6 +727,15 @@ namespace bha::build_sessions {
             );
         }
 
+        // CMake compileTrace is the authoritative producer-to-command join.
+        // Discard unowned launcher traces before attaching the referenced set
+        // so one compilation cannot be counted twice.
+        if (has_compile_trace_references) {
+            trace.units.clear();
+            trace.total_time = Duration::zero();
+            trace.template_evidence = TemplateEvidence::None;
+        }
+
         const BuildCommandEvent* whole_build_event = nullptr;
         std::size_t whole_build_event_count = 0;
         for (const auto& command : session.commands) {
@@ -760,7 +772,12 @@ namespace bha::build_sessions {
                     )
                 );
             }
-            referenced_units.push_back(unit_result.value());
+            auto unit = unit_result.value();
+            if (!command.source.empty()) {
+                unit.source_file = command.source;
+                unit.metrics.path = command.source;
+            }
+            referenced_units.push_back(std::move(unit));
         }
 
         trace.build_session = session;

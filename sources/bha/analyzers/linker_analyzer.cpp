@@ -102,6 +102,8 @@ namespace bha::analyzers {
         }
 
         bool output_size_overflow = false;
+        bool has_output_size_observation = false;
+        bool has_nonzero_output_size = false;
         bool wall_time_overflow = false;
         if (trace.build_session.has_value()) {
             for (const auto& event : trace.build_session->commands) {
@@ -137,6 +139,11 @@ namespace bha::analyzers {
                 if (event.outputs.empty() || event.outputs.size() != event.output_sizes.size()) {
                     continue;
                 }
+                has_output_size_observation = true;
+                has_nonzero_output_size = has_nonzero_output_size || std::ranges::any_of(
+                    event.output_sizes,
+                    [](const std::uintmax_t size) { return size > 0; }
+                );
 
                 std::uintmax_t event_output_bytes = 0;
                 for (const auto size : event.output_sizes) {
@@ -203,7 +210,7 @@ namespace bha::analyzers {
             );
         }
 
-        if (analysis.output_size_observations > 0 && !output_size_overflow) {
+        if (analysis.output_size_observations > 0 && !output_size_overflow && has_nonzero_output_size) {
             const std::string limitation = analysis.output_size_observations == analysis.invocations
                 ? std::string{}
                 : "Some link commands lack aligned producer output-size arrays";
@@ -220,6 +227,8 @@ namespace bha::analyzers {
         } else {
             const std::string limitation = output_size_overflow
                 ? "Producer-reported output sizes overflowed the aggregate representation"
+                : has_output_size_observation && !has_nonzero_output_size
+                    ? "The producer reported zero for every linked output; output bytes are unavailable"
                 : "No link command has aligned producer output-size arrays";
             add_capability(
                 analysis,

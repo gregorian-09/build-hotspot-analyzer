@@ -50,6 +50,14 @@ namespace bha::parsers {
             bool all_self_times_available = false;
         };
 
+        struct PhaseObservations {
+            bool preprocessing = false;
+            bool parsing = false;
+            bool template_instantiation = false;
+            bool code_generation = false;
+            bool optimization = false;
+        };
+
         Result<TraceEvent, Error> parse_event(
             const json& event_json,
             const fs::path& source_hint
@@ -613,7 +621,8 @@ namespace bha::parsers {
 
         bool calculate_metrics(
             const std::vector<TraceEvent>& events,
-            FileMetrics& metrics
+            FileMetrics& metrics,
+            PhaseObservations& observations
         ) {
             Duration frontend_time = Duration::zero();
             Duration backend_time = Duration::zero();
@@ -644,11 +653,13 @@ namespace bha::parsers {
                     backend_time = *dur;
                 }
                 else if (event.name == "Total Source") {
+                    observations.preprocessing = true;
                     if (!add_duration(metrics.breakdown.preprocessing, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total ParseClass" || event.name == "ParseClass") {
+                    observations.parsing = true;
                     if (!add_duration(metrics.breakdown.parsing, *dur)) {
                         return false;
                     }
@@ -656,12 +667,14 @@ namespace bha::parsers {
                 else if (event.name == "Total PerformPendingInstantiations" ||
                          event.name == "Total InstantiateClass" ||
                          event.name == "Total InstantiateFunction") {
+                    observations.template_instantiation = true;
                     if (!add_duration(metrics.breakdown.template_instantiation, *dur)) {
                         return false;
                     }
                 }
                 else if (event.name == "Total CodeGen Function" ||
                          event.name == "Total PerFunctionPasses") {
+                    observations.code_generation = true;
                     if (!add_duration(metrics.breakdown.code_generation, *dur)) {
                         return false;
                     }
@@ -669,6 +682,7 @@ namespace bha::parsers {
                 else if (event.name == "Total OptModule" ||
                          event.name == "Total RunLoopPass" ||
                          event.name == "Total OptFunction") {
+                    observations.optimization = true;
                     if (!add_duration(metrics.breakdown.optimization, *dur)) {
                         return false;
                     }
@@ -807,7 +821,8 @@ namespace bha::parsers {
             }
             unit.metric_capabilities.push_back(std::move(capability));
         }
-        if (!calculate_metrics(events, unit.metrics)) {
+        PhaseObservations phase_observations;
+        if (!calculate_metrics(events, unit.metrics, phase_observations)) {
             return Result<CompilationUnit, Error>::failure(
                 Error::parse_error(
                     "Clang phase timing exceeded the supported aggregate duration range",
@@ -815,6 +830,43 @@ namespace bha::parsers {
                 )
             );
         }
+
+        const auto add_phase_capability = [&unit](
+            const std::string_view phase,
+            const bool observed,
+            const std::string_view limitation = {}
+        ) {
+            MetricCapability capability;
+            capability.metric = "compiler.phase." + std::string(phase);
+            capability.provenance.evidence = observed
+                ? EvidenceKind::Observed
+                : EvidenceKind::Unavailable;
+            capability.provenance.producer = "clang";
+            capability.provenance.capture_mode = "-ftime-trace";
+            capability.provenance.scope = "translation-unit";
+            capability.provenance.timing_domain = TimingDomain::WallClock;
+            capability.provenance.timing_aggregation = TimingAggregation::Inclusive;
+            capability.provenance.limitation = std::string(limitation);
+            unit.metric_capabilities.push_back(std::move(capability));
+        };
+        add_phase_capability("preprocessing", phase_observations.preprocessing);
+        add_phase_capability("parsing", phase_observations.parsing);
+        add_phase_capability(
+            "semantic_analysis",
+            false,
+            "Clang -ftime-trace does not provide a standalone semantic-analysis total"
+        );
+        add_phase_capability(
+            "template_instantiation",
+            phase_observations.template_instantiation
+        );
+        add_phase_capability("code_generation", phase_observations.code_generation);
+        add_phase_capability("optimization", phase_observations.optimization);
+        add_phase_capability(
+            "unclassified",
+            false,
+            "Clang trace events without a safe normalized phase are not aggregated"
+        );
 
         unit.metrics.direct_includes = unit.includes.size();
 

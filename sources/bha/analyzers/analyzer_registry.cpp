@@ -217,6 +217,21 @@ namespace bha::analyzers
                         if (file.memory.max_stack_bytes > 0) {
                             existing.memory.max_stack_bytes = file.memory.max_stack_bytes;
                         }
+
+                        for (const auto& capability : file.metric_capabilities) {
+                            const auto existing_capability = std::ranges::find_if(
+                                existing.metric_capabilities,
+                                [&capability](const MetricCapability& candidate) {
+                                    return same_capability_identity(candidate, capability);
+                                }
+                            );
+                            if (existing_capability == existing.metric_capabilities.end()) {
+                                existing.metric_capabilities.push_back(capability);
+                            } else if (!existing_capability->provenance.has_evidence() &&
+                                       capability.provenance.has_evidence()) {
+                                *existing_capability = capability;
+                            }
+                        }
                     } else {
                         file_map[key] = std::move(file);
                     }
@@ -303,6 +318,17 @@ namespace bha::analyzers
                     add_capability(combined_result.metric_capabilities, capability);
                 }
                 combined_result.build_session = std::move(partial.build_session);
+                if (has_metric_evidence(
+                        combined_result.build_session.metric_capabilities,
+                        "build.scheduler.parallelism") &&
+                    combined_result.build_session.serial_time >=
+                        combined_result.build_session.wall_clock_time) {
+                    combined_result.performance.parallel_time =
+                        combined_result.build_session.serial_time -
+                        combined_result.build_session.wall_clock_time;
+                    combined_result.performance.parallelism_efficiency =
+                        combined_result.build_session.average_parallelism;
+                }
             }
 
             if (partial.linker.invocations > 0) {

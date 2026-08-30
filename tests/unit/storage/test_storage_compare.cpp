@@ -142,14 +142,20 @@ TEST(StorageCompareTest, ReportsObservedTranslationUnitRegressionDistribution) {
 TEST(StorageCompareTest, MarksRegressionTotalUnavailableAfterOverflow) {
     analyzers::AnalysisResult old_analysis;
     analyzers::AnalysisResult new_analysis;
-    old_analysis.files = {
-        analyzers::FileAnalysisResult{"a.cpp"},
-        analyzers::FileAnalysisResult{"b.cpp"}
-    };
-    new_analysis.files = {
-        analyzers::FileAnalysisResult{"a.cpp", Duration::max()},
-        analyzers::FileAnalysisResult{"b.cpp", Duration::max()}
-    };
+    analyzers::FileAnalysisResult old_a;
+    old_a.file = "a.cpp";
+    old_analysis.files.push_back(old_a);
+    analyzers::FileAnalysisResult old_b;
+    old_b.file = "b.cpp";
+    old_analysis.files.push_back(old_b);
+    analyzers::FileAnalysisResult new_a;
+    new_a.file = "a.cpp";
+    new_a.compile_time = Duration::max();
+    new_analysis.files.push_back(new_a);
+    analyzers::FileAnalysisResult new_b;
+    new_b.file = "b.cpp";
+    new_b.compile_time = Duration::max();
+    new_analysis.files.push_back(new_b);
 
     const auto comparison = compare_analyses(old_analysis, new_analysis, 0.05);
 

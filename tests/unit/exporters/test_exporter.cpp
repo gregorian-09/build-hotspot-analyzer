@@ -461,6 +461,16 @@ namespace bha::exporters::test
         EXPECT_TRUE(document["summary"].contains("metric_capabilities"));
     }
 
+    TEST_F(JsonExporterTest, RepresentsUnsupportedMetricsAsNullInsteadOfZero) {
+        const auto result = exporter_->export_to_string(analysis, suggestions, {});
+        ASSERT_TRUE(result.is_ok());
+
+        const auto document = nlohmann::json::parse(result.value());
+        EXPECT_TRUE(document["files"][0]["breakdown"]["semantic_analysis_ms"].is_null());
+        EXPECT_TRUE(document["performance"]["parallel_time_ms"].is_null());
+        EXPECT_TRUE(document["build_session"]["critical_path_time_ms"].is_null());
+    }
+
     TEST_F(JsonExporterTest, IncludesSuggestionsOnlyWhenRequested) {
         const auto without_suggestions = exporter_->export_to_string(analysis, suggestions, {});
         ASSERT_TRUE(without_suggestions.is_ok());

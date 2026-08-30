@@ -49,6 +49,8 @@ namespace bha::analyzers {
         TimeBreakdown breakdown{};
         /// Memory telemetry captured for the compile.
         MemoryMetrics memory{};
+        /// Evidence for compiler metrics copied from the source trace.
+        std::vector<MetricCapability> metric_capabilities;
 
         /// Percentage contribution to total build time.
         double time_percent = 0.0;
