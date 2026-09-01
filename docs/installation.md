@@ -72,6 +72,10 @@ with Clang or GCC. With the MSVC generator it enables the MSVC-supported
 AddressSanitizer configuration only; MSVC does not provide the UBSan or
 LeakSanitizer runtimes used by the Unix-like toolchains.
 
+The AppleClang CI configuration also omits leak detection because Xcode's
+Address Sanitizer does not provide leak detection; use Instruments for that
+analysis on macOS.
+
 ## Build Options
 
 Top-level CMake options:

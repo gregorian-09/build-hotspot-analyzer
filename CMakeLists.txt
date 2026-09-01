@@ -89,10 +89,9 @@ add_library(bha::sanitizers ALIAS bha_sanitizers)
 
 if(BHA_ENABLE_SANITIZERS)
     if(MSVC)
-        # MSVC supports AddressSanitizer, but not the Clang/GCC UBSan and
-        # LeakSanitizer runtimes used by the non-MSVC configuration.
+        # MSVC's compiler infers the AddressSanitizer runtime libraries from
+        # object metadata; /fsanitize=address is not a linker option.
         target_compile_options(bha_sanitizers INTERFACE /fsanitize=address)
-        target_link_options(bha_sanitizers INTERFACE /fsanitize=address)
     else()
         target_compile_options(bha_sanitizers INTERFACE
                 -fsanitize=address,undefined
@@ -377,7 +376,12 @@ endif()
 if(BHA_BUILD_TESTS)
     enable_testing()
 
-    find_package(GTest CONFIG QUIET)
+    # A prebuilt GoogleTest package may have incompatible MSVC STL
+    # AddressSanitizer annotations. Build it from source for the sanitizer
+    # configuration so every object linked into the test executable agrees.
+    if(NOT (MSVC AND BHA_ENABLE_SANITIZERS))
+        find_package(GTest CONFIG QUIET)
+    endif()
 
     if(NOT GTest_FOUND)
         include(FetchContent)
@@ -394,6 +398,11 @@ if(BHA_BUILD_TESTS)
 
     if(NOT TARGET GTest::gtest)
         message(FATAL_ERROR "GoogleTest not found")
+    endif()
+
+    if(BHA_ENABLE_SANITIZERS AND TARGET gtest AND TARGET gtest_main)
+        target_link_libraries(gtest PRIVATE bha::sanitizers)
+        target_link_libraries(gtest_main PRIVATE bha::sanitizers)
     endif()
 
     include(GoogleTest)

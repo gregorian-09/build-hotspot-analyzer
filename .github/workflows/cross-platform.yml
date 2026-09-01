@@ -418,9 +418,9 @@ jobs:
           cmake --build "$BUILD_DIR" --parallel 2 2>&1 |
             tee ci/sanitizer-build-macos.log
 
-      - name: Run CTest with ASan, UBSan, and leak detection
+      - name: Run CTest with ASan and UBSan
         env:
-          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1:abort_on_error=1
+          ASAN_OPTIONS: halt_on_error=1:abort_on_error=1
           UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
         run: |
           set -euxo pipefail
