@@ -86,17 +86,22 @@ endif()
 
 add_library(bha_sanitizers INTERFACE)
 add_library(bha::sanitizers ALIAS bha_sanitizers)
+set(BHA_SANITIZER_COMPILE_OPTIONS)
 
 if(BHA_ENABLE_SANITIZERS)
     if(MSVC)
         # MSVC's compiler infers the AddressSanitizer runtime libraries from
         # object metadata; /fsanitize=address is not a linker option.
-        target_compile_options(bha_sanitizers INTERFACE /fsanitize=address)
+        set(BHA_SANITIZER_COMPILE_OPTIONS /fsanitize=address)
     else()
-        target_compile_options(bha_sanitizers INTERFACE
+        set(BHA_SANITIZER_COMPILE_OPTIONS
                 -fsanitize=address,undefined
-                -fno-omit-frame-pointer
-        )
+                -fno-omit-frame-pointer)
+    endif()
+
+    target_compile_options(bha_sanitizers INTERFACE
+            ${BHA_SANITIZER_COMPILE_OPTIONS})
+    if(NOT MSVC)
         target_link_options(bha_sanitizers INTERFACE
                 -fsanitize=address,undefined
         )
@@ -379,12 +384,14 @@ if(BHA_BUILD_TESTS)
     # A prebuilt GoogleTest package may have incompatible MSVC STL
     # AddressSanitizer annotations. Build it from source for the sanitizer
     # configuration so every object linked into the test executable agrees.
+    set(BHA_GOOGLETEST_BUILT_FROM_SOURCE OFF)
     if(NOT (MSVC AND BHA_ENABLE_SANITIZERS))
         find_package(GTest CONFIG QUIET)
     endif()
 
     if(NOT GTest_FOUND)
         include(FetchContent)
+        set(BHA_GOOGLETEST_BUILT_FROM_SOURCE ON)
 
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -400,9 +407,12 @@ if(BHA_BUILD_TESTS)
         message(FATAL_ERROR "GoogleTest not found")
     endif()
 
-    if(BHA_ENABLE_SANITIZERS AND TARGET gtest AND TARGET gtest_main)
-        target_link_libraries(gtest PRIVATE bha::sanitizers)
-        target_link_libraries(gtest_main PRIVATE bha::sanitizers)
+    if(BHA_ENABLE_SANITIZERS AND BHA_GOOGLETEST_BUILT_FROM_SOURCE
+            AND TARGET gtest AND TARGET gtest_main)
+        # Apply options directly instead of linking the non-exported BHA
+        # interface target into GoogleTest's install export set.
+        target_compile_options(gtest PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
+        target_compile_options(gtest_main PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
     endif()
 
     include(GoogleTest)
