@@ -67,6 +67,11 @@ cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
 
+`BHA_ENABLE_SANITIZERS=ON` enables AddressSanitizer and UndefinedBehaviorSanitizer
+with Clang or GCC. With the MSVC generator it enables the MSVC-supported
+AddressSanitizer configuration only; MSVC does not provide the UBSan or
+LeakSanitizer runtimes used by the Unix-like toolchains.
+
 ## Build Options
 
 Top-level CMake options:
@@ -76,7 +81,7 @@ Top-level CMake options:
 - `BHA_ENABLE_LSP` (default `OFF`)
 - `BHA_BUILD_DOCS` (default `OFF`)
 - `BHA_ENABLE_COVERAGE` (default `OFF`)
-- `BHA_ENABLE_SANITIZERS` (default `OFF`)
+- `BHA_ENABLE_SANITIZERS` (default `OFF`; ASan+UBSan for Clang/GCC, ASan for MSVC)
 - `BHA_BUILD_SHARED` (default `OFF`)
 
 ## Verify Binaries

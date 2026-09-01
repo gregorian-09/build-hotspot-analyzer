@@ -15,7 +15,9 @@ option(BHA_BUILD_REFACTOR_TOOLS "Build optional semantic refactor tools" OFF)
 option(BHA_ENABLE_TEMPLATE_AST "Enable Clang AST-backed template indexing when LibTooling is available" ON)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
-option(BHA_ENABLE_SANITIZERS "Enable sanitizers (address, undefined)" OFF)
+option(BHA_ENABLE_SANITIZERS
+       "Enable supported sanitizers (ASan+UBSan for Clang/GCC, ASan for MSVC)"
+       OFF)
 option(BHA_BUILD_SHARED "Build shared library" OFF)
 
 # =============================================================================
@@ -85,14 +87,21 @@ endif()
 add_library(bha_sanitizers INTERFACE)
 add_library(bha::sanitizers ALIAS bha_sanitizers)
 
-if(BHA_ENABLE_SANITIZERS AND NOT MSVC)
-    target_compile_options(bha_sanitizers INTERFACE
-            -fsanitize=address,undefined
-            -fno-omit-frame-pointer
-    )
-    target_link_options(bha_sanitizers INTERFACE
-            -fsanitize=address,undefined
-    )
+if(BHA_ENABLE_SANITIZERS)
+    if(MSVC)
+        # MSVC supports AddressSanitizer, but not the Clang/GCC UBSan and
+        # LeakSanitizer runtimes used by the non-MSVC configuration.
+        target_compile_options(bha_sanitizers INTERFACE /fsanitize=address)
+        target_link_options(bha_sanitizers INTERFACE /fsanitize=address)
+    else()
+        target_compile_options(bha_sanitizers INTERFACE
+                -fsanitize=address,undefined
+                -fno-omit-frame-pointer
+        )
+        target_link_options(bha_sanitizers INTERFACE
+                -fsanitize=address,undefined
+        )
+    endif()
 endif()
 
 # =============================================================================
