@@ -62,11 +62,11 @@ namespace bha::analyzers {
 
         struct TimedEvent {
             const BuildCommandEvent* event = nullptr;
-            Timestamp end_time{};
+            Timestamp end_time;
         };
 
         struct Boundary {
-            Timestamp time{};
+            Timestamp time;
             int delta = 0;
         };
 
@@ -182,7 +182,7 @@ namespace bha::analyzers {
                 overflowed_roles.insert(role);
                 return;
             }
-            total = *sum;
+            total = sum;
         };
 
         std::unordered_set<std::underlying_type_t<BuildStepRole>> stdout_overflowed_roles;

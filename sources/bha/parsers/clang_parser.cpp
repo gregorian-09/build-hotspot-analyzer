@@ -766,7 +766,7 @@ namespace bha::parsers {
         events.reserve(trace_json["traceEvents"].size());
 
         for (const auto& event_json : trace_json["traceEvents"]) {
-            const auto event = parse_event(event_json, source_hint);
+            auto event = parse_event(event_json, source_hint);
             if (event.is_err()) {
                 return Result<CompilationUnit, Error>::failure(event.error());
             }

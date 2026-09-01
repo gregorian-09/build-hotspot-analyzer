@@ -272,6 +272,10 @@ namespace bha::analyzers
                 }
             }
 
+            for (const auto& capability : partial.dependencies.metric_capabilities) {
+                add_capability(combined_result.metric_capabilities, capability);
+            }
+
             if (!partial.dependencies.headers.empty()) {
                 if (combined_result.dependencies.total_includes > 0 ||
                     combined_result.dependencies.unique_headers > 0) {
@@ -284,10 +288,6 @@ namespace bha::analyzers
                 } else {
                     combined_result.dependencies.headers = std::move(partial.dependencies.headers);
                 }
-            }
-
-            for (const auto& capability : partial.dependencies.metric_capabilities) {
-                add_capability(combined_result.metric_capabilities, capability);
             }
 
             if (!partial.templates.templates.empty()) {

@@ -153,7 +153,7 @@ namespace bha {
         if (path.empty()) {
             return std::nullopt;
         }
-        const fs::path resolved = resolve(path);
+        fs::path resolved = resolve(path);
         std::error_code ec;
         if (fs::is_regular_file(resolved, ec)) {
             return resolved;
@@ -310,7 +310,8 @@ namespace bha {
                 std::ranges::sort(candidates, [](const fs::path& lhs, const fs::path& rhs) {
                     return lhs.generic_string() < rhs.generic_string();
                 });
-                candidates.erase(std::ranges::unique(candidates).begin(), candidates.end());
+                const auto unique_end = std::unique(candidates.begin(), candidates.end());
+                candidates.erase(unique_end, candidates.end());
                 for (const auto& candidate : candidates) {
                     std::error_code ec;
                     if (fs::is_regular_file(candidate, ec)) {
@@ -435,7 +436,7 @@ namespace bha {
     bool ProjectIndex::should_skip_directory(const fs::path& path) {
         const std::string name = path.filename().string();
         return name == ".git" || name == ".lsp-optimization-backup" || name == "build" ||
-               name == "out" || name.rfind("cmake-build-", 0) == 0 || name == "node_modules";
+               name == "out" || name.starts_with("cmake-build-") || name == "node_modules";
     }
 
 }  // namespace bha

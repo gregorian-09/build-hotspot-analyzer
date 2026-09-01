@@ -11,7 +11,7 @@ namespace bha::analyzers
     namespace {
 
         bool has_negative_timing(const CompilationUnit& unit) {
-            for (const auto value : {
+            const auto timings = {
                 unit.metrics.total_time,
                 unit.metrics.frontend_time,
                 unit.metrics.backend_time,
@@ -22,12 +22,11 @@ namespace bha::analyzers
                 unit.metrics.breakdown.code_generation,
                 unit.metrics.breakdown.optimization,
                 unit.metrics.breakdown.unclassified
-            }) {
-                if (value < Duration::zero()) {
-                    return true;
-                }
-            }
-            return false;
+            };
+            return std::ranges::any_of(
+                timings,
+                [](const auto value) { return value < Duration::zero(); }
+            );
         }
 
         FileAnalysisResult analyze_compilation_unit(

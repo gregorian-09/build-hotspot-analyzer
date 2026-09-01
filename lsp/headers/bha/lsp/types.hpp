@@ -147,31 +147,31 @@ namespace bha::lsp
 
     /// Build metrics surfaced to LSP clients.
     struct BuildMetrics {
-        int total_duration_ms;
-        int files_compiled;
-        int files_up_to_date;
+        int total_duration_ms = 0;
+        int files_compiled = 0;
+        int files_up_to_date = 0;
         /// Per-file timing metric entry.
         struct FileMetric {
             std::string file;
-            int duration_ms;
-            double percentage;
+            int duration_ms = 0;
+            double percentage = 0.0;
         };
         std::vector<FileMetric> slowest_files;
     };
 
     /// Validation status payload for apply/build verification.
     struct ValidationResult {
-        bool valid;
-        bool syntax_valid;
-        bool semantics_valid;
-        bool build_system_valid;
+        bool valid = false;
+        bool syntax_valid = false;
+        bool semantics_valid = false;
+        bool build_system_valid = false;
         std::vector<Diagnostic> errors;
         std::vector<Diagnostic> warnings;
     };
 
     /// Build execution result payload.
     struct BuildResult {
-        bool success;
+        bool success = false;
         BuildMetrics metrics;
         std::optional<std::string> output;
         std::vector<Diagnostic> errors;

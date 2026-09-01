@@ -45,7 +45,7 @@ namespace bha::suggestions {
 #endif
         }
 
-        std::string trim(std::string value) {
+        std::string trim(const std::string& value) {
             const auto first = value.find_first_not_of(" \t\r");
             if (first == std::string::npos) {
                 return {};

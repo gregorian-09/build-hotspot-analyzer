@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <filesystem>
 #include <optional>
 #include <ranges>
 #include <sstream>
@@ -17,8 +16,6 @@
 namespace bha::suggestions
 {
     namespace {
-        namespace fs = std::filesystem;
-
         std::vector<Suggestion> group_by_type(
             const std::vector<Suggestion>& suggestions,
             SuggestionType type
@@ -265,7 +262,7 @@ namespace bha::suggestions
         consolidated.impact = *impact;
 
         consolidated.edits = *edits;
-        consolidated.caveats.push_back(
+        consolidated.caveats.emplace_back(
             "Savings remain unavailable until a post-edit trace is captured"
         );
 
@@ -321,7 +318,7 @@ namespace bha::suggestions
         consolidated.target_file = suggestions.front().target_file;
 
         consolidated.edits = *edits;
-        consolidated.caveats.push_back(
+        consolidated.caveats.emplace_back(
             "Savings remain unavailable until a post-edit trace is captured"
         );
 
@@ -362,7 +359,7 @@ namespace bha::suggestions
         consolidated.confidence = *confidence;
 
         consolidated.edits = *edits;
-        consolidated.caveats.push_back(
+        consolidated.caveats.emplace_back(
             "Savings remain unavailable until a post-edit trace is captured"
         );
 
@@ -403,8 +400,9 @@ namespace bha::suggestions
         }
 
         std::ranges::sort(merged.files_benefiting);
-        auto unique_end = std::ranges::unique(merged.files_benefiting);
-        merged.files_benefiting.erase(unique_end.begin(), merged.files_benefiting.end());
+        const auto unique_end = std::unique(
+            merged.files_benefiting.begin(), merged.files_benefiting.end());
+        merged.files_benefiting.erase(unique_end, merged.files_benefiting.end());
 
         return merged;
     }
@@ -621,7 +619,7 @@ namespace bha::suggestions
         consolidated.is_safe = false;
         consolidated.confidence = *confidence;
         consolidated.estimated_savings_evidence = EvidenceKind::Unavailable;
-        consolidated.caveats.push_back(
+        consolidated.caveats.emplace_back(
             "Savings remain unavailable until a post-edit trace is captured"
         );
 

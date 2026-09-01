@@ -53,10 +53,7 @@
         [[nodiscard]] std::string str() const {
             std::ostringstream out;
             for (std::size_t i = 0; i < lines_.size(); ++i) {
-                out << lines_[i];
-                if (i + 1 < lines_.size() || !lines_.empty()) {
-                    out << '\n';
-                }
+                out << lines_[i] << '\n';
             }
             return out.str();
         }

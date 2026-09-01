@@ -118,7 +118,7 @@ namespace bha::suggestions {
                 }
                 if (const auto equals = utils::detail::cmake_bracket_equals(cleaned, index);
                     equals.has_value()) {
-                    bracket_equals = *equals;
+                    bracket_equals = equals;
                     index += *equals + 1;
                     continue;
                 }
@@ -132,7 +132,7 @@ namespace bha::suggestions {
                         for (std::size_t offset = 1; offset <= *equals + 2; ++offset) {
                             cleaned[index + offset] = ' ';
                         }
-                        bracket_comment_equals = *equals;
+                        bracket_comment_equals = equals;
                         index = opening_end;
                         continue;
                     }
@@ -172,7 +172,6 @@ namespace bha::suggestions {
                     }
                     pending = trimmed;
                     pending_line = line_number;
-                    parenthesis_depth = 0;
                     collecting = true;
                 } else {
                     pending += " ";

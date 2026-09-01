@@ -32,7 +32,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #if defined(__linux__)
-#include <limits.h>
+#include <climits>
 #endif
 #endif
 
@@ -138,17 +138,17 @@ namespace bha::lsp
 
     fs::path resolve_trace_root(const fs::path& project_root, const std::optional<fs::path>& build_dir) {
         if (!build_dir.has_value()) {
-            const fs::path default_build_traces = project_root / "build" / "traces";
+            fs::path default_build_traces = project_root / "build" / "traces";
             if (fs::exists(default_build_traces)) {
                 return default_build_traces;
             }
 
-            const fs::path sibling_traces = project_root / "traces";
+            fs::path sibling_traces = project_root / "traces";
             if (fs::exists(sibling_traces)) {
                 return sibling_traces;
             }
 
-            const fs::path default_build_dir = project_root / "build";
+            fs::path default_build_dir = project_root / "build";
             if (fs::exists(default_build_dir)) {
                 return default_build_dir;
             }
@@ -156,12 +156,12 @@ namespace bha::lsp
             return default_build_traces;
         }
 
-        const fs::path direct_traces = *build_dir / "traces";
+        fs::path direct_traces = *build_dir / "traces";
         if (fs::exists(direct_traces)) {
             return direct_traces;
         }
 
-        const fs::path sibling_traces = build_dir->parent_path() / "traces";
+        fs::path sibling_traces = build_dir->parent_path() / "traces";
         if (fs::exists(sibling_traces)) {
             return sibling_traces;
         }
@@ -200,7 +200,7 @@ namespace bha::lsp
         }
 
         if (!project_root.empty()) {
-            const fs::path candidate = (project_root / raw_source).lexically_normal();
+            fs::path candidate = (project_root / raw_source).lexically_normal();
             if (fs::exists(candidate)) {
                 return candidate;
             }
@@ -275,7 +275,7 @@ namespace bha::lsp
         const std::unordered_set<std::string>& compile_command_sources,
         const std::unordered_map<std::string, std::vector<fs::path>>& compile_sources_by_filename
     ) {
-        const fs::path normalized = normalize_path_for_match(raw_source, project_root.empty()
+        fs::path normalized = normalize_path_for_match(raw_source, project_root.empty()
             ? std::nullopt
             : std::make_optional(project_root));
         if (!normalized.empty() && compile_command_sources.contains(normalized.generic_string())) {
@@ -287,7 +287,7 @@ namespace bha::lsp
             return std::nullopt;
         }
 
-        const fs::path normalized_resolved = normalize_path_for_match(*resolved, std::nullopt);
+        fs::path normalized_resolved = normalize_path_for_match(*resolved, std::nullopt);
         if (normalized_resolved.empty() ||
             !compile_command_sources.contains(normalized_resolved.generic_string())) {
             return std::nullopt;
@@ -353,7 +353,7 @@ namespace bha::lsp
         };
 
         while (std::getline(in, line)) {
-            if (line.rfind("#include", 0) == 0) {
+            if (line.starts_with("#include")) {
                 in_includes = true;
                 auto pos = line.find_first_of("<\"");
                 if (pos != std::string::npos) {
@@ -437,7 +437,7 @@ namespace bha::lsp
         if (path_utils::is_under(path, project_root)) {
             return path;
         }
-        const fs::path candidate = project_root / path.filename();
+        fs::path candidate = project_root / path.filename();
         if (fs::exists(candidate)) {
             return candidate;
         }
@@ -555,9 +555,9 @@ namespace bha::lsp
         if (args.empty()) {
             return {};
         }
-        for (std::size_t i = 0; i < args.size(); ++i) {
-            if (!is_compiler_wrapper(args[i])) {
-                return args[i];
+        for (const auto& arg : args) {
+            if (!is_compiler_wrapper(arg)) {
+                return arg;
             }
         }
         return args.front();
@@ -737,9 +737,9 @@ namespace bha::lsp
         }
 
         if (is_msvc_driver(compiler_token)) {
-            command_args.push_back("/Zs");
+            command_args.emplace_back("/Zs");
         } else {
-            command_args.push_back("-fsyntax-only");
+            command_args.emplace_back("-fsyntax-only");
         }
         command_args.push_back(normalize_path_for_match(source_file).string());
 
@@ -773,19 +773,19 @@ namespace bha::lsp
         }
 
         if (is_msvc_driver(compiler_token)) {
-            command_args.push_back("/Zs");
+            command_args.emplace_back("/Zs");
             const bool has_language_mode = std::ranges::any_of(command_args, [](const std::string& token) {
                 return token == "/TP" || token == "/TC" ||
                        token.starts_with("/Tp") || token.starts_with("/Tc");
             });
             if (!has_language_mode) {
-                command_args.push_back("/TP");
+                command_args.emplace_back("/TP");
             }
         } else {
-            command_args.push_back("-Winvalid-pch");
-            command_args.push_back("-fsyntax-only");
-            command_args.push_back("-x");
-            command_args.push_back("c++-header");
+            command_args.emplace_back("-Winvalid-pch");
+            command_args.emplace_back("-fsyntax-only");
+            command_args.emplace_back("-x");
+            command_args.emplace_back("c++-header");
         }
         command_args.push_back(normalize_path_for_match(header_file).string());
 
@@ -823,7 +823,7 @@ namespace bha::lsp
         std::array<char, 4096> buffer{};
         while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
             output += buffer.data();
-            if (output.size() > 1024 * 1024) {
+            if (output.size() > std::size_t{1024} * 1024) {
                 break;
             }
         }
@@ -942,10 +942,7 @@ namespace bha::lsp
         }
 
         const fs::path parent = dest.parent_path();
-        if (!parent.empty() && !sync_directory_to_disk(parent)) {
-            return false;
-        }
-        return true;
+        return parent.empty() || sync_directory_to_disk(parent);
     }
 
     std::string resolve_bha_cli_binary() {

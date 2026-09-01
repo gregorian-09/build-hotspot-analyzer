@@ -20,7 +20,7 @@
 #include <windows.h>
 #else
 #include <fcntl.h>
-#include <signal.h>
+#include <csignal>
 #include <unistd.h>
 #include <sys/wait.h>
 #if defined(__APPLE__)
@@ -651,14 +651,14 @@ namespace bha::build_systems::detail {
             return std::pair{exit_code, std::move(output)};
         }
 
-        std::vector<fs::path> find_trace_files(const fs::path& dir) {
+        std::vector<fs::path> find_trace_files(const fs::path& directory) {
             std::vector<fs::path> traces;
 
-            if (!fs::exists(dir)) {
+            if (!fs::exists(directory)) {
                 return traces;
             }
 
-            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
+            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(directory, ec)) {
                 if (ec) {
                     break;
                 }
@@ -670,16 +670,13 @@ namespace bha::build_systems::detail {
                 const std::string ext = entry.path().extension().string();
 
                 if (ext == ".json") {
-                    if (const std::string stem = entry.path().stem().string(); stem.ends_with(".c") || stem.ends_with(".cc") ||
+                    const std::string stem = entry.path().stem().string();
+                    const bool source_trace =
+                        stem.ends_with(".c") || stem.ends_with(".cc") ||
                         stem.ends_with(".cpp") || stem.ends_with(".cxx") ||
                         stem.ends_with(".C") || stem.ends_with(".c++") ||
-                        stem.ends_with(".m") || stem.ends_with(".mm")) {
-                        traces.push_back(entry.path());
-                    } else if (entry.path().parent_path().filename() == "compile-trace") {
-                        // CMake Instrumentation API v1 stores Clang -ftime-trace
-                        // artifacts under this producer-defined directory. Their
-                        // filenames include a producer identity suffix, so the
-                        // source-extension scan above cannot identify them.
+                        stem.ends_with(".m") || stem.ends_with(".mm");
+                    if (source_trace || entry.path().parent_path().filename() == "compile-trace") {
                         traces.push_back(entry.path());
                     } else {
                         if (const fs::path parent = entry.path().parent_path(); fs::exists(parent / (stem + ".o")) ||
@@ -701,14 +698,14 @@ namespace bha::build_systems::detail {
             return traces;
         }
 
-        std::vector<fs::path> find_memory_files(const fs::path& dir) {
+        std::vector<fs::path> find_memory_files(const fs::path& directory) {
             std::vector<fs::path> memory_files;
 
-            if (!fs::exists(dir)) {
+            if (!fs::exists(directory)) {
                 return memory_files;
             }
 
-            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(dir, ec)) {
+            for (std::error_code ec; const auto& entry : fs::recursive_directory_iterator(directory, ec)) {
                 if (ec) {
                     break;
                 }
@@ -767,7 +764,7 @@ namespace bha::build_systems::detail {
             }
 
             std::string quote_callback_argument(const fs::path& path) {
-                std::string value = path.generic_string();
+                const std::string value = path.generic_string();
                 std::string result;
                 result.reserve(value.size() + 2);
                 result.push_back('"');
@@ -860,7 +857,7 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
         std::optional<fs::path> find_cmake_instrumentation_index(
             const fs::path& build_directory
         ) {
-            const fs::path captured_index =
+            fs::path captured_index =
                 build_directory / std::string(kInstrumentationCaptureDirectory) /
                 std::string(kInstrumentationIndexFile);
             if (fs::is_regular_file(captured_index)) {
@@ -952,14 +949,14 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
             return created;
         }
 
-        void copy_trace_files(const fs::path& source_dir, const fs::path& dest_dir,
+        void copy_trace_files(const fs::path& source_directory, const fs::path& destination_directory,
                             std::vector<fs::path>& trace_files, std::vector<fs::path>& memory_files) {
-            if (source_dir == dest_dir || dest_dir.empty()) {
+            if (source_directory == destination_directory || destination_directory.empty()) {
                 return;
             }
 
             std::error_code ec;
-            fs::create_directories(dest_dir, ec);
+            fs::create_directories(destination_directory, ec);
             if (ec) {
                 return;
             }
@@ -967,7 +964,7 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
             std::vector<fs::path> new_trace_files;
             std::vector<fs::path> new_memory_files;
 
-            const auto normalized_dest = fs::absolute(dest_dir, ec).lexically_normal();
+            const auto normalized_dest = fs::absolute(destination_directory, ec).lexically_normal();
             if (ec) {
                 return;
             }
@@ -983,7 +980,7 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
                 if (normalized_file.parent_path() == normalized_dest) {
                     new_trace_files.push_back(trace_file);
                 } else {
-                    const fs::path dest_file = dest_dir / trace_file.filename();
+                    const fs::path dest_file = destination_directory / trace_file.filename();
                     fs::copy_file(trace_file, dest_file, fs::copy_options::overwrite_existing, ec);
                     new_trace_files.push_back(ec ? trace_file : dest_file);
                     ec.clear();
@@ -1001,7 +998,7 @@ file(WRITE "${capture_index}" "${preserved_index}\n")
                 if (normalized_file.parent_path() == normalized_dest) {
                     new_memory_files.push_back(memory_file);
                 } else {
-                    const fs::path dest_file = dest_dir / memory_file.filename();
+                    const fs::path dest_file = destination_directory / memory_file.filename();
                     fs::copy_file(memory_file, dest_file, fs::copy_options::overwrite_existing, ec);
                     new_memory_files.push_back(ec ? memory_file : dest_file);
                     ec.clear();
