@@ -282,14 +282,12 @@ namespace bha::lsp
          * @brief Apply one suggestion by identifier.
          *
          * @param suggestion_id Suggestion identifier.
-         * @param skip_validation Skip syntax/rebuild validation checks.
          * @param skip_rebuild Skip rebuild even when policy requests it.
          * @param create_backup Create rollback backup before editing files.
          * @return Apply result including diagnostics.
          */
         ApplySuggestionResult apply_suggestion(
             const std::string& suggestion_id,
-            bool skip_validation = false,
             bool skip_rebuild = false,
             bool create_backup = true
         );

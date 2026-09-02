@@ -115,9 +115,12 @@ Output:
 
 Input:
 - `suggestionId` (required)
-- `skipValidation` (optional)
 - `skipRebuild` (optional)
 - `skipConsent` (optional)
+
+Suggestion validation cannot be disabled by the client. The manager always
+enforces the configured source-state, semantic/syntax, and post-apply build
+gates; `skipRebuild` only controls whether the configured rebuild is requested.
 
 Output includes:
 - `success`

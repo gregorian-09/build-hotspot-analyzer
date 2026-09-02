@@ -491,7 +491,7 @@
             const std::string selected_key = best_it->key;
             pending.erase(best_it);
 
-            auto apply_result = apply_suggestion(best_id, false, true, false);
+            auto apply_result = apply_suggestion(best_id, true, false);
             if (apply_result.success) {
                 merge_apply_all_success(result, best_id, apply_result, changed_file_set);
 

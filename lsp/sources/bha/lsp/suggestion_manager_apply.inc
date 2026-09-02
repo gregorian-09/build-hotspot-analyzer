@@ -1142,7 +1142,6 @@
 
     ApplySuggestionResult SuggestionManager::apply_suggestion(
         const std::string& suggestion_id,
-        bool /*skip_validation*/,
         bool skip_rebuild,
         bool create_backup_flag
     ) {
@@ -1359,7 +1358,7 @@
         };
 
         for (const auto& id : suggestion_ids) {
-            if (auto result = apply_suggestion(id, false, false, false); !result.success) {
+            if (auto result = apply_suggestion(id, false, false); !result.success) {
                 combined_result.success = false;
                 combined_result.errors.insert(combined_result.errors.end(),
                                             result.errors.begin(),

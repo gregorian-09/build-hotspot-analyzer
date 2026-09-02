@@ -1914,7 +1914,6 @@ namespace bha::lsp
             args["buildProfile"].is_object()) {
             update_build_profile_from_json(*workspace_path, args["buildProfile"]);
         }
-        bool const skip_validation = args.contains("skipValidation") && args["skipValidation"].get<bool>();
         bool skip_rebuild = !config_.rebuild_after_apply;
         if (args.contains("skipRebuild")) {
             skip_rebuild = args["skipRebuild"].get<bool>();
@@ -1977,7 +1976,6 @@ namespace bha::lsp
             std::lock_guard const lock(suggestion_manager_mutex_);
             result = suggestion_manager_->apply_suggestion(
                 suggestion_id,
-                skip_validation,
                 skip_rebuild,
                 true
             );
