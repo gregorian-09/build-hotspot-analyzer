@@ -13,6 +13,11 @@ Build Hotspot Analyzer integrates `bha-lsp` into VS Code to analyze C and C++ bu
 - Revert applied changes through the language server workflow
 - Inspect LSP traffic when debugging extension behavior
 
+Evidence-backed suggestions are applied against the saved workspace files.
+The extension refuses to apply a suggestion when an affected file has unsaved
+editor changes or when the suggestion's affected-file metadata is incomplete;
+save or discard the changes and run analysis again before applying.
+
 ## Requirements
 
 - A working `bha-lsp` binary on your `PATH`, or configure `buildHotspotAnalyzer.serverPath`

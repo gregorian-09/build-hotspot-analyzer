@@ -167,6 +167,11 @@ Apply-all is always one transactional operation. The server ignores no
 caller-selected atomicity mode because partial retention is not part of the
 apply contract.
 
+The evidence-backed apply commands operate on the saved workspace files. A
+client with unsaved editor buffers must either save or discard changes and
+re-run analysis before applying; the VS Code client refuses to apply when any
+affected file is dirty rather than silently overwriting the buffer.
+
 Output:
 - `success`
 - `appliedCount`

@@ -1846,6 +1846,23 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
         return;
     }
 
+    const workspaceRoot = getWorkspaceRootPath();
+    if (!workspaceRoot) {
+        vscode.window.showErrorMessage('BHA: A workspace is required to apply a suggestion.');
+        return;
+    }
+    const suggestionDetails = await fetchSuggestionDetails(suggestionId);
+    if (!suggestionDetails) {
+        logLine(`Apply blocked: details unavailable for suggestion ${suggestionId}`);
+        vscode.window.showErrorMessage(
+            `Cannot apply suggestion ${suggestionId}: details are unavailable. Re-run analysis before applying.`
+        );
+        return;
+    }
+    if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails]))) {
+        return;
+    }
+
     const confirm = await vscode.window.showWarningMessage(
         'Apply this suggestion? This will modify your code.',
         { modal: true },
@@ -1853,12 +1870,14 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
     );
 
     if (confirm !== 'Apply') return;
+    if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails]))) {
+        return;
+    }
 
     try {
         logLine(`Applying suggestion: id=${suggestionId}`);
         bhaViewProvider?.setState('applying', 'Applying the selected suggestion...');
-        const workspaceRoot = getWorkspaceRootPath();
-        const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
+        const buildProfile = getReusableBuildProfile(workspaceRoot);
         const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestion',
             'bha.applySuggestion',
@@ -1979,15 +1998,36 @@ async function cmdApplyAllSuggestions(): Promise<void> {
     }
 
     // Count affected suggestions
-    const affectedCount = validSuggestions.filter(s => {
+    const selectedSuggestions = validSuggestions.filter(s => {
         if (!hasBulkApplyPath(s)) return false;
         if (safeOnly && !s.autoApplicable) return false;
         return s.priority <= minPriority;
-    }).length;
+    });
+    const affectedCount = selectedSuggestions.length;
 
     if (affectedCount === 0) {
         logLine('Apply all aborted: no suggestions matched selected criteria');
         vscode.window.showInformationMessage('No suggestions match the selected criteria');
+        return;
+    }
+
+    const workspaceRoot = getWorkspaceRootPath();
+    if (!workspaceRoot) {
+        vscode.window.showErrorMessage('BHA: A workspace is required to apply suggestions.');
+        return;
+    }
+    const selectedDetails = await Promise.all(
+        selectedSuggestions.map((suggestion) => fetchSuggestionDetails(suggestion.id))
+    );
+    if (selectedDetails.some((details): details is undefined => details === undefined)) {
+        logLine('Apply all blocked: details unavailable for one or more selected suggestions');
+        vscode.window.showErrorMessage(
+            'Cannot apply all suggestions: details are unavailable for one or more selections. Re-run analysis before applying.'
+        );
+        return;
+    }
+    const completeSelectedDetails = selectedDetails as SuggestionDetails[];
+    if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, completeSelectedDetails))) {
         return;
     }
 
@@ -2002,6 +2042,9 @@ async function cmdApplyAllSuggestions(): Promise<void> {
     );
 
     if (confirmation !== 'Apply All') return;
+    if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, completeSelectedDetails))) {
+        return;
+    }
 
     try {
         logLine(
@@ -2017,8 +2060,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                 'Validation mode: transactional rollback'
             ]
         );
-        const workspaceRoot = getWorkspaceRootPath();
-        const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : undefined;
+        const buildProfile = getReusableBuildProfile(workspaceRoot);
         const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestions',
             'bha.applyAllSuggestions',
@@ -2260,6 +2302,88 @@ function resolveSuggestionFilePath(workspaceRoot: string, candidate: string): st
         }
     }
     return normalizeWorkspaceRelativePath(workspaceRoot, trimmed);
+}
+
+function normalizeLocalPath(filePath: string): string {
+    const normalized = path.normalize(path.resolve(filePath));
+    return process.platform === 'win32' ? normalized.toLowerCase() : normalized;
+}
+
+function collectSuggestionFiles(
+    workspaceRoot: string,
+    details: SuggestionDetails
+): string[] | undefined {
+    const candidates: unknown[] = [];
+    for (const files of [details.filesToModify, details.filesToCreate]) {
+        if (files !== undefined) {
+            if (!Array.isArray(files)) {
+                return undefined;
+            }
+            candidates.push(...files);
+        }
+    }
+    if (details.textEdits !== undefined) {
+        if (!Array.isArray(details.textEdits)) {
+            return undefined;
+        }
+        candidates.push(...details.textEdits.map((edit) => edit?.file));
+    }
+
+    if (candidates.length === 0) {
+        return undefined;
+    }
+
+    const files = new Set<string>();
+    for (const candidate of candidates) {
+        if (typeof candidate !== 'string') {
+            return undefined;
+        }
+        const resolved = resolveSuggestionFilePath(workspaceRoot, candidate);
+        if (!resolved) {
+            return undefined;
+        }
+        files.add(normalizeLocalPath(resolved));
+    }
+    return [...files].sort();
+}
+
+async function ensureNoDirtyAffectedDocuments(
+    workspaceRoot: string,
+    suggestionDetails: SuggestionDetails[]
+): Promise<boolean> {
+    const affectedFiles = new Set<string>();
+    for (const details of suggestionDetails) {
+        const files = collectSuggestionFiles(workspaceRoot, details);
+        if (!files) {
+            logLine(`Apply blocked: suggestion ${details.id} has incomplete affected-file metadata`);
+            await vscode.window.showErrorMessage(
+                `Cannot apply suggestion ${details.id}: affected files could not be determined. Re-run analysis before applying.`
+            );
+            return false;
+        }
+        for (const file of files) {
+            affectedFiles.add(file);
+        }
+    }
+
+    const dirtyDocuments = vscode.workspace.textDocuments.filter((document) =>
+        document.uri.scheme === 'file' &&
+        document.isDirty &&
+        affectedFiles.has(normalizeLocalPath(document.uri.fsPath))
+    );
+    if (dirtyDocuments.length === 0) {
+        return true;
+    }
+
+    const dirtyFiles = dirtyDocuments
+        .map((document) => vscode.workspace.asRelativePath(document.uri, false))
+        .sort();
+    const fileList = dirtyFiles.join(', ');
+    logLine(`Apply blocked: affected files have unsaved editor changes: ${fileList}`);
+    await vscode.window.showErrorMessage(
+        `Cannot apply while affected files have unsaved changes: ${fileList}. Save or discard those changes, then re-run analysis.`
+    );
+    return false;
 }
 
 function lineColumnToOffset(content: string, line: number, column: number): number | undefined {
