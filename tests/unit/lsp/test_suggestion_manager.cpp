@@ -123,6 +123,13 @@ namespace bha::lsp
             return manager.validate_suggestion_source_state(suggestion, errors);
         }
 
+        static bool apply_file_changes(
+            const bha::Suggestion& suggestion,
+            std::vector<fs::path>& changed_files
+        ) {
+            return SuggestionManager::apply_file_changes(suggestion, changed_files);
+        }
+
         static void seed_source_state(
             SuggestionManager& manager,
             const fs::path& project_root,
@@ -285,6 +292,58 @@ namespace bha::lsp
             std::istreambuf_iterator<char>()
         );
         EXPECT_EQ(content, "alpha\nbeta\n");
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, AppliesDifferentFilesInCanonicalPathOrder) {
+        const fs::path z_file = temp_root_ / "z.hpp";
+        const fs::path a_file = temp_root_ / "a.hpp";
+        {
+            std::ofstream out(z_file);
+            ASSERT_TRUE(out.good());
+            out << "z\n";
+        }
+        {
+            std::ofstream out(a_file);
+            ASSERT_TRUE(out.good());
+            out << "a\n";
+        }
+
+        bha::Suggestion suggestion;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = z_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "z-header\n"
+        });
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = a_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "a-header\n"
+        });
+
+        std::vector<fs::path> changed_files;
+        ASSERT_TRUE(SuggestionManagerTestAccess::apply_file_changes(suggestion, changed_files));
+        ASSERT_EQ(changed_files.size(), 2u);
+        EXPECT_EQ(changed_files[0], a_file.lexically_normal());
+        EXPECT_EQ(changed_files[1], z_file.lexically_normal());
+
+        std::ifstream a_in(a_file);
+        ASSERT_TRUE(a_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(a_in)), std::istreambuf_iterator<char>()),
+            "a-header\na\n"
+        );
+        std::ifstream z_in(z_file);
+        ASSERT_TRUE(z_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(z_in)), std::istreambuf_iterator<char>()),
+            "z-header\nz\n"
+        );
     }
 
     TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionAcceptsUnchangedSourceState) {

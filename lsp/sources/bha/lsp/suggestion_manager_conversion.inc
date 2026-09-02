@@ -1,12 +1,12 @@
     bool SuggestionManager::apply_file_changes(const bha::Suggestion& suggestion, std::vector<fs::path>& changed_files) {
         if (!suggestion.edits.empty()) {
-            std::unordered_map<std::string, std::vector<bha::TextEdit>> edits_by_file;
+            std::map<std::string, std::vector<bha::TextEdit>> edits_by_file;
             for (const auto& edit : suggestion.edits) {
                 bha::TextEdit normalized = edit;
                 if (edit.file.filename() == "pch.h" && !edit.new_text.empty()) {
                     normalized.new_text = normalize_pch_text(edit.new_text);
                 }
-                edits_by_file[normalized.file.string()].push_back(std::move(normalized));
+                edits_by_file[normalized.file.lexically_normal().generic_string()].push_back(std::move(normalized));
             }
 
             for (auto& [file_path_str, file_edits] : edits_by_file) {

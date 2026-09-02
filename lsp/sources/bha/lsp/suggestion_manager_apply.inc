@@ -322,7 +322,7 @@
             return false;
         }
 
-        std::unordered_map<std::string, std::vector<ExternalReplacement>> replacements_by_file;
+        std::map<std::string, std::vector<ExternalReplacement>> replacements_by_file;
         std::vector<fs::path> files_to_backup;
         if (refactor_json.contains("replacements") && refactor_json["replacements"].is_array()) {
             for (const auto& item : refactor_json["replacements"]) {
@@ -337,10 +337,11 @@
                 if (replacement.file.empty()) {
                     continue;
                 }
-                if (!replacements_by_file.contains(replacement.file.string())) {
+                const std::string file_key = replacement.file.lexically_normal().generic_string();
+                if (!replacements_by_file.contains(file_key)) {
                     files_to_backup.push_back(replacement.file);
                 }
-                replacements_by_file[replacement.file.string()].push_back(std::move(replacement));
+                replacements_by_file[file_key].push_back(std::move(replacement));
             }
         }
 
@@ -615,7 +616,9 @@
                 }
             }
         } else {
-            for (const auto& touched : touched_paths) {
+            std::vector<std::string> ordered_touched_paths(touched_paths.begin(), touched_paths.end());
+            std::ranges::sort(ordered_touched_paths);
+            for (const auto& touched : ordered_touched_paths) {
                 add_candidate_source(fs::path(touched));
             }
 
