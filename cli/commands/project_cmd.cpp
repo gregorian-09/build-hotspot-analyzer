@@ -1,6 +1,7 @@
 #include "bha/cli/commands/command.hpp"
 #include "bha/cli/formatter.hpp"
 #include "bha/build_systems/adapter.hpp"
+#include "bha/lsp/diagnostic_parser.hpp"
 #include "bha/lsp/suggestion_manager.hpp"
 #include "bha/suggestions/suggester_catalog.hpp"
 
@@ -12,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <cmath>
+#include <limits>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -758,7 +760,67 @@ namespace bha::cli
             const std::optional<fs::path>& build_dir,
             const std::optional<fs::path>& trace_dir
         ) {
-            auto manager = lsp::SuggestionManager(make_manager_config(project_root, args));
+            auto manager_config = make_manager_config(project_root, args);
+            const auto validation_adapter = resolve_build_adapter(args, project_root);
+            const auto validation_options = make_validation_build_options(args);
+            manager_config.build_validation_callback = [this, validation_adapter, validation_options](
+                const fs::path& validation_root
+            ) {
+                lsp::BuildValidationResult validation;
+                if (validation_adapter == nullptr) {
+                    lsp::Diagnostic diag;
+                    diag.severity = lsp::DiagnosticSeverity::Error;
+                    diag.source = "bha-cli";
+                    diag.message = "Could not resolve a build adapter for post-apply validation";
+                    validation.errors.push_back(std::move(diag));
+                    return validation;
+                }
+
+                auto options = validation_options;
+                options.on_output_line = [this](const std::string& line) {
+                    if (is_verbose()) {
+                        if (is_json()) {
+                            std::cerr << "[build] " << line << "\n";
+                        } else {
+                            print("[build] " + line);
+                        }
+                    }
+                };
+                const auto started = std::chrono::steady_clock::now();
+                const auto build_result = validation_adapter->build(validation_root, options);
+                const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - started
+                ).count();
+                validation.duration_ms = elapsed_ms > std::numeric_limits<int>::max()
+                    ? std::numeric_limits<int>::max()
+                    : static_cast<int>(elapsed_ms);
+
+                if (build_result.is_err()) {
+                    lsp::Diagnostic diag;
+                    diag.severity = lsp::DiagnosticSeverity::Error;
+                    diag.source = "bha-cli";
+                    diag.message = "Build adapter failed: " + build_result.error().message();
+                    validation.errors.push_back(std::move(diag));
+                    return validation;
+                }
+
+                const auto& build = build_result.value();
+                validation.success = build.success;
+                if (!validation.success) {
+                    validation.errors = lsp::parse_compiler_diagnostics(build.output);
+                    if (validation.errors.empty()) {
+                        lsp::Diagnostic diag;
+                        diag.severity = lsp::DiagnosticSeverity::Error;
+                        diag.source = "bha-cli";
+                        diag.message = build.error_message.empty()
+                            ? "Build validation failed"
+                            : build.error_message;
+                        validation.errors.push_back(std::move(diag));
+                    }
+                }
+                return validation;
+            };
+            auto manager = lsp::SuggestionManager(manager_config);
             auto emit_analysis_progress = [this](const std::string& phase, const int pct) {
                 const std::string line = "[analyze " + std::to_string(pct) + "%] " + phase;
                 if (is_json()) {

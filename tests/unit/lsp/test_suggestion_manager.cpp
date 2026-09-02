@@ -123,6 +123,28 @@ namespace bha::lsp
             return manager.validate_suggestion_source_state(suggestion, errors);
         }
 
+        static bool validate_post_apply_rebuild(
+            SuggestionManager& manager,
+            ApplySuggestionResult& result
+        ) {
+            return manager.validate_post_apply_rebuild(result);
+        }
+
+        static void seed_build_trace(
+            SuggestionManager& manager,
+            const fs::path& project_root,
+            const fs::path& source
+        ) {
+            manager.last_project_root_ = project_root;
+            manager.last_analysis_id_ = "analysis-1";
+            manager.analysis_cache_.clear();
+            BuildTrace trace;
+            CompilationUnit unit;
+            unit.source_file = source;
+            trace.units.push_back(std::move(unit));
+            manager.analysis_cache_.emplace(manager.last_analysis_id_, std::move(trace));
+        }
+
         static bool apply_file_changes(
             const bha::Suggestion& suggestion,
             std::vector<fs::path>& changed_files
@@ -517,6 +539,38 @@ namespace bha::lsp
         );
     }
 
+    TEST_F(SuggestionManagerRollbackTest, UsesConfiguredBuildValidationExecutor) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        bool callback_called = false;
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.build_validation_callback = [&](const fs::path& project_root) {
+            callback_called = true;
+            EXPECT_EQ(project_root, temp_root_);
+            BuildValidationResult result;
+            result.success = true;
+            result.duration_ms = 37;
+            return result;
+        };
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_build_trace(manager, temp_root_, source);
+
+        ApplySuggestionResult result;
+        EXPECT_TRUE(SuggestionManagerTestAccess::validate_post_apply_rebuild(manager, result));
+        EXPECT_TRUE(callback_called);
+        ASSERT_TRUE(result.build_result.has_value());
+        EXPECT_TRUE(result.build_result->success);
+        ASSERT_TRUE(result.build_validation_duration_ms.has_value());
+        EXPECT_EQ(*result.build_validation_duration_ms, 37);
+        EXPECT_TRUE(result.errors.empty());
+    }
+
     TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionAcceptsUnchangedSourceState) {
         const fs::path source = temp_root_ / "source.cpp";
         {
@@ -525,7 +579,9 @@ namespace bha::lsp
             out << "int value = 1;\n";
         }
 
-        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
         SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
 
         bha::Suggestion suggestion;
@@ -555,7 +611,9 @@ namespace bha::lsp
             out << "int value = 1;\n";
         }
 
-        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
         SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
         {
             std::ofstream out(source, std::ios::binary | std::ios::trunc);
@@ -591,7 +649,9 @@ namespace bha::lsp
             out << "int value = 1;\n";
         }
 
-        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
         SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
         std::error_code ec;
         ASSERT_TRUE(fs::remove(source, ec));

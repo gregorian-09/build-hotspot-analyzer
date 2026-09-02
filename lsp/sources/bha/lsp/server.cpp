@@ -1108,6 +1108,17 @@ namespace bha::lsp
         sm_config.min_confidence = config_.min_confidence;
         sm_config.enforce_compile_command_syntax_gate = true;
         sm_config.compile_command_validation_timeout_seconds = config_.build_timeout_seconds;
+        sm_config.rollback_on_build_failure = config_.rollback_on_build_failure;
+        sm_config.build_validation_callback = [this](const fs::path&) {
+            BuildValidationResult validation;
+            validation.success = run_build_validation(
+                validation.errors,
+                validation.duration_ms,
+                {},
+                "build"
+            );
+            return validation;
+        };
         if (!workspace_root_.empty()) {
             std::string root = workspace_root_;
             if (root.starts_with("file://")) {
@@ -1967,7 +1978,7 @@ namespace bha::lsp
             result = suggestion_manager_->apply_suggestion(
                 suggestion_id,
                 skip_validation,
-                true,
+                skip_rebuild,
                 true
             );
         }
@@ -1978,24 +1989,17 @@ namespace bha::lsp
                 "Applied suggestion edits to " + std::to_string(result.changed_files.size()) + " file(s)"
             );
         } else {
-            send_job_log(job_id, "apply", "Suggestion edit application failed before build validation");
+            send_job_log(job_id, "apply", "Suggestion apply failed");
         }
 
-        auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
-            json out = json::array();
-            for (const auto& diagnostic : diagnostics) {
-                json item;
-                to_json(item, diagnostic);
-                out.push_back(std::move(item));
-            }
-            return out;
-        };
-
         const bool build_validation_requested = config_.rebuild_after_apply && !skip_rebuild;
-        bool build_validation_ran = false;
-        bool build_validation_success = true;
-        std::optional<int> measured_rebuild_duration_ms;
-        std::vector<Diagnostic> build_errors;
+        const bool build_validation_ran = result.build_result.has_value();
+        const bool build_validation_success = !build_validation_requested ||
+            (result.build_result.has_value() && result.build_result->success);
+        const std::optional<int> measured_rebuild_duration_ms = result.build_validation_duration_ms;
+        const std::vector<Diagnostic> build_errors = result.build_result.has_value()
+            ? result.build_result->errors
+            : std::vector<Diagnostic>{};
 
         json rollback_json = {
             {"attempted", false},
@@ -2005,68 +2009,19 @@ namespace bha::lsp
             {"errors", json::array()}
         };
 
-        if (result.success && build_validation_requested) {
-            send_job_log(job_id, "apply", "Starting rebuild validation");
-            build_validation_ran = true;
-            build_validation_success = run_build_validation(
-                build_errors,
-                measured_rebuild_duration_ms,
-                job_id,
-                "build"
-            );
-            if (!build_validation_success) {
-                send_job_log(job_id, "apply", "Rebuild validation failed; evaluating rollback");
-                result.success = false;
-                result.errors.insert(result.errors.end(), build_errors.begin(), build_errors.end());
-                rollback_json["reason"] = "build-failed";
-
-                if (!config_.rollback_on_build_failure) {
-                    rollback_json["reason"] = "rollback-disabled";
-                } else if (!result.backup_id.has_value() || result.backup_id->empty()) {
-                    rollback_json["reason"] = "no-backup";
-                } else {
-                    send_job_log(job_id, "apply", "Rolling back applied edits after failed rebuild");
-                    send_notification("window/showMessage", {
-                        {"type", static_cast<int>(MessageType::Warning)},
-                        {"message", "Build failed after applying suggestion. Rolling back changes..."}
-                    });
-
-                    RevertResult rollback_result;
-                    {
-                        std::lock_guard const lock(suggestion_manager_mutex_);
-                        rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
-                    }
-                    rollback_json["attempted"] = true;
-                    rollback_json["success"] = rollback_result.success;
-                    rollback_json["restoredFiles"] = rollback_result.restored_files;
-                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
-                    rollback_json["reason"] = rollback_result.success ? "rollback-succeeded" : "rollback-failed";
-
-                    if (rollback_result.success) {
-                        send_job_log(job_id, "apply", "Rollback completed successfully");
-                        Diagnostic rollback_diag;
-                        rollback_diag.severity = DiagnosticSeverity::Warning;
-                        rollback_diag.source = "bha-lsp";
-                        rollback_diag.message = "Build validation failed. Applied files were restored from backup.";
-                        result.errors.push_back(std::move(rollback_diag));
-                    } else {
-                        send_job_log(job_id, "apply", "Rollback failed after rebuild failure");
-                        result.errors.insert(
-                            result.errors.end(),
-                            rollback_result.errors.begin(),
-                            rollback_result.errors.end()
-                        );
-                        Diagnostic rollback_diag;
-                        rollback_diag.severity = DiagnosticSeverity::Error;
-                        rollback_diag.source = "bha-lsp";
-                        rollback_diag.message = "Build validation failed and automatic rollback did not complete.";
-                        result.errors.push_back(std::move(rollback_diag));
-                    }
-                }
-            }
+        if (result.rollback_attempted) {
+            rollback_json["attempted"] = true;
+            rollback_json["success"] = result.rollback_success;
+            rollback_json["restoredFiles"] = result.rollback_restored_files;
+            rollback_json["reason"] = result.rollback_success
+                ? "rollback-succeeded"
+                : "rollback-failed";
         } else if (!build_validation_requested) {
             rollback_json["reason"] = "validation-skipped";
-            send_job_log(job_id, "apply", "Rebuild validation skipped");
+        } else if (!result.success && result.build_result.has_value()) {
+            rollback_json["reason"] = config_.rollback_on_build_failure
+                ? "no-backup"
+                : "rollback-disabled";
         }
 
         json errors_json = json::array();

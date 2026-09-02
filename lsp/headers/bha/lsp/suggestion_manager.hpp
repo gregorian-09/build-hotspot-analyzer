@@ -25,6 +25,24 @@ namespace bha::lsp
     using ProgressCallback = std::function<void(const std::string& message, int percentage)>;
 
     /**
+     * @brief Result returned by the caller-owned post-apply build executor.
+     */
+    struct BuildValidationResult {
+        bool success = false;
+        std::optional<int> duration_ms;
+        std::vector<Diagnostic> errors;
+    };
+
+    /**
+     * @brief Execute the authoritative build validation for an apply operation.
+     *
+     * The caller supplies the build adapter, profile, environment, output
+     * handling, and cancellation policy. The manager owns when this callback is
+     * invoked and how its result affects the file transaction.
+     */
+    using BuildValidationCallback = std::function<BuildValidationResult(const fs::path& project_root)>;
+
+    /**
      * Configuration for SuggestionManager resource limits.
      *
      * These limits prevent unbounded memory growth in long-running LSP sessions.
@@ -62,9 +80,14 @@ namespace bha::lsp
         bool enforce_compile_command_syntax_gate = true;
         int compile_command_validation_timeout_seconds = 120;
         std::size_t max_compile_command_validation_units = 3;
+        /// Roll back edits automatically when configured build validation fails.
+        bool rollback_on_build_failure = true;
         // Fresh traces are required before applying the next candidate. Continuing
         // with estimates from the pre-edit trace would make the apply order stale.
         bool rerank_remaining_after_each_apply = true;
+
+        /// Authoritative post-apply build executor shared by CLI and LSP callers.
+        BuildValidationCallback build_validation_callback;
 
         static SuggestionManagerConfig defaults() {
             return SuggestionManagerConfig{};
@@ -119,6 +142,14 @@ namespace bha::lsp
         std::vector<Diagnostic> errors;
         /// Backup identifier created prior to apply.
         std::optional<std::string> backup_id;
+        /// Measured post-apply build validation duration.
+        std::optional<int> build_validation_duration_ms;
+        /// Whether automatic rollback was attempted after a failed apply/validation.
+        bool rollback_attempted = false;
+        /// Whether the most recent automatic rollback completed successfully.
+        bool rollback_success = false;
+        /// Files restored by the most recent automatic rollback.
+        std::vector<std::string> rollback_restored_files;
         /// Stable phase timings for profiling and regression benchmarks.
         std::map<std::string, std::int64_t> phase_timings_ms;
     };
@@ -141,6 +172,12 @@ namespace bha::lsp
         std::vector<Diagnostic> errors;
         /// Backup identifier for the batch operation.
         std::string backup_id;
+        /// Whether the batch-level build validation was executed.
+        bool build_validation_ran = false;
+        /// Result of the batch-level build validation when it ran.
+        bool build_validation_success = true;
+        /// Measured batch-level build validation duration.
+        std::optional<int> build_validation_duration_ms;
     };
 
     /**

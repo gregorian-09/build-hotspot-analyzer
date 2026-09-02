@@ -444,6 +444,7 @@
         const std::vector<FileBackup>& transactional_snapshot,
         const std::string_view rollback_failure_message
     ) {
+        result.rollback_attempted = true;
         bool rollback_success = true;
         if (result.backup_id) {
             if (auto revert = revert_changes_detailed(*result.backup_id); !revert.success) {
@@ -451,10 +452,21 @@
                 for (auto& revert_error : revert.errors) {
                     result.errors.push_back(std::move(revert_error));
                 }
+            } else {
+                result.rollback_restored_files = std::move(revert.restored_files);
+                result.backup_id.reset();
             }
         } else if (!transactional_snapshot.empty()) {
             rollback_success = restore_transactional_snapshot(transactional_snapshot, result.errors);
+            if (rollback_success) {
+                result.rollback_restored_files.reserve(transactional_snapshot.size());
+                for (const auto& backup : transactional_snapshot) {
+                    result.rollback_restored_files.push_back(backup.path.string());
+                }
+            }
         }
+
+        result.rollback_success = rollback_success;
 
         if (!rollback_success) {
             Diagnostic rollback_diag;
@@ -477,6 +489,46 @@
 
         if (analysis.units.empty()) {
             return true;
+        }
+
+        if (config_.build_validation_callback) {
+            BuildValidationResult validation;
+            try {
+                validation = config_.build_validation_callback(*last_project_root_);
+            } catch (const std::exception& error) {
+                validation.success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Build validation executor threw an exception: " + std::string(error.what());
+                validation.errors.push_back(std::move(diag));
+            } catch (...) {
+                validation.success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Build validation executor threw an unknown exception";
+                validation.errors.push_back(std::move(diag));
+            }
+
+            result.build_validation_duration_ms = validation.duration_ms;
+            BuildResult lsp_build_result;
+            lsp_build_result.success = validation.success;
+            lsp_build_result.errors = validation.errors;
+            result.build_result = std::move(lsp_build_result);
+            result.errors.insert(
+                result.errors.end(),
+                validation.errors.begin(),
+                validation.errors.end()
+            );
+            if (!validation.success && validation.errors.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Build validation failed";
+                result.errors.push_back(std::move(diag));
+            }
+            return validation.success;
         }
 
         const fs::path source_dir = analysis.units[0].source_file.parent_path();
@@ -1174,7 +1226,8 @@
         const auto rebuild_validation_start = std::chrono::steady_clock::now();
         if (!skip_rebuild && !validate_post_apply_rebuild(result)) {
             record_phase("rebuild_validation", rebuild_validation_start);
-            if (result.backup_id) {
+            if (config_.rollback_on_build_failure &&
+                (result.backup_id.has_value() || !transactional_snapshot.empty())) {
                 rollback_apply_suggestion(
                     result,
                     transactional_snapshot,
