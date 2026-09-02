@@ -174,10 +174,20 @@ namespace bha::lsp
         std::string backup_id;
         /// Whether the batch-level build validation was executed.
         bool build_validation_ran = false;
+        /// Whether policy requested batch-level build validation.
+        bool build_validation_requested = false;
         /// Result of the batch-level build validation when it ran.
         bool build_validation_success = true;
         /// Measured batch-level build validation duration.
         std::optional<int> build_validation_duration_ms;
+        /// Diagnostics produced specifically by batch build validation.
+        std::vector<Diagnostic> build_validation_errors;
+        /// Whether automatic rollback was attempted for the batch.
+        bool rollback_attempted = false;
+        /// Whether the batch rollback completed successfully.
+        bool rollback_success = false;
+        /// Files restored by the batch rollback.
+        std::vector<std::string> rollback_restored_files;
     };
 
     /**
@@ -321,7 +331,8 @@ namespace bha::lsp
         ApplyAllResult apply_all_suggestions(
             const std::optional<std::string>& min_priority = std::nullopt,
             bool safe_only = true,
-            const std::function<void(const std::string&)>& progress_log = {}
+            const std::function<void(const std::string&)>& progress_log = {},
+            bool skip_rebuild = false
         );
 
         /**

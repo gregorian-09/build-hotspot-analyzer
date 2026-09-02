@@ -2144,7 +2144,8 @@ namespace bha::lsp
                 safe_only,
                 [&](const std::string& message) {
                     send_job_log(job_id, "apply", message);
-                }
+                },
+                skip_rebuild
             );
         });
         send_job_log(
@@ -2183,6 +2184,15 @@ namespace bha::lsp
             {"restoredFiles", json::array()},
             {"errors", json::array()}
         };
+
+        if (apply_all_result.rollback_attempted) {
+            rollback_json["attempted"] = true;
+            rollback_json["success"] = apply_all_result.rollback_success;
+            rollback_json["restoredFiles"] = apply_all_result.rollback_restored_files;
+            rollback_json["reason"] = apply_all_result.rollback_success
+                ? "rollback-succeeded"
+                : "rollback-failed";
+        }
 
         auto append_unique_changed_files = [](std::vector<std::string>& dest, const std::vector<std::string>& src) {
             std::unordered_set<std::string> seen(dest.begin(), dest.end());
@@ -2227,13 +2237,13 @@ namespace bha::lsp
             success = false;
         }
 
-        bool build_validation_requested = success && config_.rebuild_after_apply && !skip_rebuild;
-        bool build_validation_ran = false;
-        bool build_validation_success = true;
-        std::optional<int> measured_rebuild_duration_ms;
-        std::vector<Diagnostic> build_errors;
+        bool build_validation_requested = apply_all_result.build_validation_requested;
+        bool build_validation_ran = apply_all_result.build_validation_ran;
+        bool build_validation_success = !build_validation_ran || apply_all_result.build_validation_success;
+        std::optional<int> measured_rebuild_duration_ms = apply_all_result.build_validation_duration_ms;
+        std::vector<Diagnostic> build_errors = apply_all_result.build_validation_errors;
 
-        if (build_validation_requested) {
+        if (build_validation_requested && !build_validation_ran && success) {
             send_job_log(job_id, "apply", "Starting rebuild validation for applied suggestions");
             build_validation_ran = true;
             build_validation_success = run_build_validation(

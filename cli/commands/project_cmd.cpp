@@ -501,6 +501,18 @@ namespace bha::cli
                 {"changedFiles", result.changed_files},
                 {"appliedSuggestionIds", result.applied_suggestion_ids},
                 {"backupId", result.backup_id},
+                {"buildValidation", {
+                    {"requested", result.build_validation_requested},
+                    {"ran", result.build_validation_ran},
+                    {"success", result.build_validation_success},
+                    {"durationMs", result.build_validation_duration_ms.value_or(0)},
+                    {"errorCount", result.build_validation_errors.size()}
+                }},
+                {"rollback", {
+                    {"attempted", result.rollback_attempted},
+                    {"success", result.rollback_success},
+                    {"restoredFiles", result.rollback_restored_files}
+                }},
                 {"errors", errors_json}
             };
             if (trust_loop.has_value()) {
@@ -876,66 +888,12 @@ namespace bha::cli
                         analysis
                     );
 
-                    auto* adapter = resolve_build_adapter(args, project_root);
-                    std::optional<int> rebuild_duration_ms;
-                    bool validation_success = false;
-                    bool validation_ran = false;
-                    if (adapter != nullptr) {
-                        auto build_options = make_validation_build_options(args);
-                        build_options.on_output_line = [this](const std::string& line) {
-                            if (is_verbose()) {
-                                if (is_json()) {
-                                    std::cerr << "[build] " << line << "\n";
-                                } else {
-                                    print("[build] " + line);
-                                }
-                            }
-                        };
-                        validation_ran = true;
-                        if (auto build_result = adapter->build(project_root, build_options); build_result.is_ok()) {
-                            const auto& rebuilt = build_result.value();
-                            rebuild_duration_ms = static_cast<int>(
-                                std::chrono::duration_cast<std::chrono::milliseconds>(
-                                    rebuilt.build_time
-                                ).count()
-                            );
-                            validation_success = rebuilt.success;
-                            if (!rebuilt.success) {
-                                if (!result.backup_id.empty()) {
-                                    const auto revert = manager.revert_changes_detailed(result.backup_id);
-                                    if (!revert.success) {
-                                        result.errors.insert(
-                                            result.errors.end(),
-                                            revert.errors.begin(),
-                                            revert.errors.end()
-                                        );
-                                    }
-                                }
-                                lsp::Diagnostic diag;
-                                diag.severity = lsp::DiagnosticSeverity::Error;
-                                diag.source = "bha-cli";
-                                diag.message = rebuilt.error_message.empty()
-                                    ? "Build validation failed"
-                                    : rebuilt.error_message;
-                                result.errors.push_back(std::move(diag));
-                                result.success = false;
-                            }
-                        } else {
-                            lsp::Diagnostic diag;
-                            diag.severity = lsp::DiagnosticSeverity::Error;
-                            diag.source = "bha-cli";
-                            diag.message = build_result.error().message();
-                            result.errors.push_back(std::move(diag));
-                            result.success = false;
-                        }
-                    }
-
                     trust_loop = build_cli_trust_loop_result(
                         std::make_optional(predicted_savings_ms),
                         baseline,
-                        rebuild_duration_ms,
-                        validation_ran,
-                        validation_success
+                        result.build_validation_duration_ms,
+                        result.build_validation_ran,
+                        result.build_validation_success
                     );
                 }
 

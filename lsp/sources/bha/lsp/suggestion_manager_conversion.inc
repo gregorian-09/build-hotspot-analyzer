@@ -337,7 +337,8 @@
     ApplyAllResult SuggestionManager::apply_all_suggestions(
         const std::optional<std::string>& min_priority,
         const bool safe_only,
-        const std::function<void(const std::string&)>& progress_log
+        const std::function<void(const std::string&)>& progress_log,
+        const bool skip_rebuild
     ) {
         struct PendingSuggestion {
             std::string key;
@@ -347,6 +348,8 @@
         result.success = true;
         result.applied_count = 0;
         result.skipped_count = 0;
+        result.build_validation_requested = !skip_rebuild &&
+            static_cast<bool>(config_.build_validation_callback);
 
         const auto priority_threshold = parse_priority_threshold(min_priority);
 
@@ -421,8 +424,10 @@
                 return true;
             }
 
+            result.rollback_attempted = true;
             const auto rollback = revert_changes_detailed(result.backup_id);
             if (!rollback.success) {
+                result.rollback_success = false;
                 result.errors.insert(
                     result.errors.end(),
                     rollback.errors.begin(),
@@ -436,6 +441,8 @@
                 return false;
             }
 
+            result.rollback_success = true;
+            result.rollback_restored_files = std::move(rollback.restored_files);
             result.backup_id.clear();
             result.applied_count = 0;
             result.applied_suggestion_ids.clear();
@@ -537,6 +544,27 @@
                 pending.clear();
                 rollback_batch();
                 break;
+            }
+        }
+
+        if (result.errors.empty() && result.applied_count > 0 &&
+            result.build_validation_requested) {
+            ApplySuggestionResult validation_result;
+            result.build_validation_ran = true;
+            result.build_validation_success = validate_post_apply_rebuild(validation_result);
+            result.build_validation_duration_ms = validation_result.build_validation_duration_ms;
+            result.build_validation_errors = validation_result.errors;
+            result.errors.insert(
+                result.errors.end(),
+                validation_result.errors.begin(),
+                validation_result.errors.end()
+            );
+
+            if (!result.build_validation_success) {
+                result.success = false;
+                if (config_.rollback_on_build_failure) {
+                    rollback_batch();
+                }
             }
         }
 
