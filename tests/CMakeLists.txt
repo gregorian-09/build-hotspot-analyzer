@@ -53,7 +53,10 @@ add_executable(bha_tests
 )
 
 if(BHA_ENABLE_LSP)
-    target_sources(bha_tests PRIVATE unit/lsp/test_suggestion_manager.cpp)
+    target_sources(bha_tests PRIVATE
+            unit/lsp/test_suggestion_manager.cpp
+            unit/lsp/test_uri.cpp
+    )
 endif()
 
 if(BHA_BUILD_REFACTOR_TOOLS)

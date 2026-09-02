@@ -34,6 +34,30 @@ namespace bha::lsp
         std::mutex g_lsp_write_mutex;
         constexpr std::size_t kMaxRetainedFinishedAsyncJobs = 128;
 
+        std::optional<fs::path> normalize_path_input(
+            const std::string& value,
+            const std::optional<fs::path>& base = std::nullopt
+        ) {
+            if (value.empty()) {
+                return std::nullopt;
+            }
+
+            fs::path path = value.starts_with("file://")
+                ? uri::uri_to_path(value)
+                : fs::path(value);
+            if (path.empty()) {
+                return std::nullopt;
+            }
+
+            if (path.is_relative() && base.has_value()) {
+                path = *base / path;
+            }
+
+            std::error_code ec;
+            const fs::path absolute = fs::absolute(path, ec);
+            return (ec ? path : absolute).lexically_normal();
+        }
+
         std::optional<std::filesystem::path> resolve_project_relative_path(
             const std::string& project_root,
             const json& args,
@@ -44,15 +68,11 @@ namespace bha::lsp
             }
 
             const std::string value = args[key].get<std::string>();
-            if (value.empty()) {
+            const auto root = normalize_path_input(project_root);
+            if (!root.has_value()) {
                 return std::nullopt;
             }
-
-            std::filesystem::path path(value);
-            if (path.is_relative()) {
-                path = (std::filesystem::path(project_root) / path).lexically_normal();
-            }
-            return path;
+            return normalize_path_input(value, root);
         }
 
         std::optional<std::filesystem::path> infer_trace_output_dir(
@@ -181,17 +201,7 @@ namespace bha::lsp
     }
 
     std::optional<std::filesystem::path> workspace_path_from_uri_or_path(const std::string& workspace_root) {
-        if (workspace_root.empty()) {
-            return std::nullopt;
-        }
-        std::string root = workspace_root;
-        if (root.starts_with("file://")) {
-            root = root.substr(7);
-        }
-        if (root.empty()) {
-            return std::nullopt;
-        }
-        return std::filesystem::path(root);
+        return normalize_path_input(workspace_root);
     }
 
     std::string utc_timestamp_iso8601() {
@@ -497,23 +507,19 @@ namespace bha::lsp
 
         build_systems::BuildOptions options;
         if (build_profile_json.contains("buildDir") && build_profile_json["buildDir"].is_string()) {
-            const std::string build_dir = build_profile_json["buildDir"].get<std::string>();
-            if (!build_dir.empty()) {
-                std::filesystem::path resolved(build_dir);
-                if (resolved.is_relative()) {
-                    resolved = (project_root / resolved).lexically_normal();
-                }
-                options.build_dir = std::move(resolved);
+            if (const auto resolved = normalize_path_input(
+                    build_profile_json["buildDir"].get<std::string>(),
+                    project_root
+                ); resolved.has_value()) {
+                options.build_dir = *resolved;
             }
         }
         if (build_profile_json.contains("traceOutputDir") && build_profile_json["traceOutputDir"].is_string()) {
-            const std::string trace_output_dir = build_profile_json["traceOutputDir"].get<std::string>();
-            if (!trace_output_dir.empty()) {
-                std::filesystem::path resolved(trace_output_dir);
-                if (resolved.is_relative()) {
-                    resolved = (project_root / resolved).lexically_normal();
-                }
-                options.trace_output_dir = std::move(resolved);
+            if (const auto resolved = normalize_path_input(
+                    build_profile_json["traceOutputDir"].get<std::string>(),
+                    project_root
+                ); resolved.has_value()) {
+                options.trace_output_dir = *resolved;
             }
         }
         if (build_profile_json.contains("buildType") && build_profile_json["buildType"].is_string()) {
@@ -1034,11 +1040,17 @@ namespace bha::lsp
     }
 
     json LSPServer::handle_initialize(const json& params) {
-        if (params.contains("rootUri")) {
-            const std::string root_uri = params["rootUri"].get<std::string>();
-            workspace_root_ = uri::uri_to_path(root_uri).string();
-        } else if (params.contains("rootPath")) {
-            workspace_root_ = params["rootPath"].get<std::string>();
+        workspace_root_.clear();
+        if (params.contains("rootUri") && params["rootUri"].is_string()) {
+            if (const auto root = normalize_path_input(params["rootUri"].get<std::string>());
+                root.has_value()) {
+                workspace_root_ = root->string();
+            }
+        } else if (params.contains("rootPath") && params["rootPath"].is_string()) {
+            if (const auto root = normalize_path_input(params["rootPath"].get<std::string>());
+                root.has_value()) {
+                workspace_root_ = root->string();
+            }
         }
 
         if (params.contains("capabilities")) {
@@ -1119,12 +1131,8 @@ namespace bha::lsp
             );
             return validation;
         };
-        if (!workspace_root_.empty()) {
-            std::string root = workspace_root_;
-            if (root.starts_with("file://")) {
-                root = root.substr(7);
-            }
-            sm_config.workspace_root = root;
+        if (const auto root = workspace_path_from_uri_or_path(workspace_root_); root.has_value()) {
+            sm_config.workspace_root = *root;
         }
         suggestion_manager_ = std::make_unique<SuggestionManager>(sm_config);
 
@@ -1276,10 +1284,10 @@ namespace bha::lsp
             project_root = args["projectRoot"].get<std::string>();
         }
 
-        if (project_root.starts_with("file://")) {
-            project_root = project_root.substr(7);
-        }
-        if (project_root.empty()) {
+        if (const auto normalized_root = normalize_path_input(project_root);
+            normalized_root.has_value()) {
+            project_root = normalized_root->string();
+        } else {
             throw std::runtime_error("Missing project root");
         }
 
@@ -1474,8 +1482,11 @@ namespace bha::lsp
             project_root = args["projectRoot"].get<std::string>();
         }
 
-        if (project_root.starts_with("file://")) {
-            project_root = project_root.substr(7);
+        if (const auto normalized_root = normalize_path_input(project_root);
+            normalized_root.has_value()) {
+            project_root = normalized_root->string();
+        } else {
+            throw std::runtime_error("Missing project root");
         }
 
         const std::optional<std::filesystem::path> build_dir =
@@ -1723,9 +1734,7 @@ namespace bha::lsp
         if (args.contains("projectRoot") && args["projectRoot"].is_string()) {
             project_root = args["projectRoot"].get<std::string>();
         }
-        const fs::path project_root_path = project_root.empty()
-            ? fs::path{}
-            : (project_root.starts_with("file://") ? uri::uri_to_path(project_root) : fs::path(project_root));
+        const auto project_root_path = normalize_path_input(project_root);
 
         auto read_size = [](const json& item, const char* snake, const char* camel, std::size_t fallback = 0) {
             if (item.contains(snake) && item[snake].is_number_unsigned()) {
@@ -1768,11 +1777,11 @@ namespace bha::lsp
                 }
 
                 bha::TextEdit edit;
-                fs::path edit_file = file.starts_with("file://") ? uri::uri_to_path(file) : fs::path(file);
-                if (edit_file.is_relative() && !project_root_path.empty()) {
-                    edit_file = (project_root_path / edit_file).lexically_normal();
+                const auto edit_file = normalize_path_input(file, project_root_path);
+                if (!edit_file.has_value()) {
+                    continue;
                 }
-                edit.file = edit_file;
+                edit.file = *edit_file;
                 edit.start_line = read_size(item, "start_line", "startLine", 0);
                 edit.start_col = read_size(item, "start_col", "startCol", 0);
                 edit.end_line = read_size(item, "end_line", "endLine", edit.start_line);
@@ -2533,16 +2542,7 @@ namespace bha::lsp
                 cached_profile = last_build_profile_;
             }
         }
-        std::optional<std::filesystem::path> workspace_path;
-        if (!workspace_root_.empty()) {
-            std::string root = workspace_root_;
-            if (root.starts_with("file://")) {
-                root = root.substr(7);
-            }
-            if (!root.empty()) {
-                workspace_path = std::filesystem::path(root);
-            }
-        }
+        const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
 
         std::string build_cmd = config_.build_command;
         if (workspace_path.has_value() &&
