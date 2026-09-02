@@ -217,7 +217,7 @@ namespace bha::lsp
         /// Apply one suggestion and optionally validate build health.
         json execute_apply_suggestion(const json& args);
         /// Apply direct edit bundle from a client-provided payload.
-        json execute_apply_edits(const json& args);
+        json execute_apply_direct_edits(const json& args);
         /// Apply all filtered suggestions in one operation.
         json execute_apply_all_suggestions(const json& args);
         /// Return async job status snapshot.

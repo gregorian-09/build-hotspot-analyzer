@@ -27,7 +27,7 @@ Standard LSP:
 Custom execute commands:
 - `bha.analyze`
 - `bha.applySuggestion`
-- `bha.applyEdits`
+- `bha.applyDirectEdits`
 - `bha.applyAllSuggestions`
 - `bha.getSuggestionDetails`
 - `bha.revertChanges`
@@ -128,7 +128,13 @@ Output includes:
 - `rollback`
 - `trustLoop`
 
-### `bha.applyEdits`
+### `bha.applyDirectEdits`
+
+This is an explicit raw-edit escape hatch for clients that already own an edit
+bundle. It is not an evidence-backed suggestion and is not used by the VS Code
+suggestion UI. Analyzed suggestions must use `bha.applySuggestion` or
+`bha.applyAllSuggestions` so the manager can enforce analysis-state preconditions,
+semantic validation, deterministic ordering, and transactional rollback.
 
 Input supports:
 - `edits`

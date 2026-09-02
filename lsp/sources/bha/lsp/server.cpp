@@ -726,8 +726,8 @@ namespace bha::lsp
                 result = execute_apply_suggestion(run_args);
             } else if (job->command == "bha.applyAllSuggestions") {
                 result = execute_apply_all_suggestions(run_args);
-            } else if (job->command == "bha.applyEdits") {
-                result = execute_apply_edits(run_args);
+            } else if (job->command == "bha.applyDirectEdits") {
+                result = execute_apply_direct_edits(run_args);
             } else if (job->command == "bha.recordBuildTraces") {
                 result = execute_record_build_traces(run_args);
             } else if (job->command == "bha.analyze") {
@@ -1056,7 +1056,7 @@ namespace bha::lsp
                     "bha.recordBuildTraces",
                     "bha.analyze",
                     "bha.applySuggestion",
-                    "bha.applyEdits",
+                    "bha.applyDirectEdits",
                     "bha.applyAllSuggestions",
                     "bha.getJobStatus",
                     "bha.cancelJob",
@@ -1162,8 +1162,8 @@ namespace bha::lsp
         if (command == "bha.applySuggestion") {
             return execute_apply_suggestion(args);
         }
-        if (command == "bha.applyEdits") {
-            return execute_apply_edits(args);
+        if (command == "bha.applyDirectEdits") {
+            return execute_apply_direct_edits(args);
         }
         if (command == "bha.applyAllSuggestions") {
             return execute_apply_all_suggestions(args);
@@ -1710,13 +1710,13 @@ namespace bha::lsp
         };
     }
 
-    json LSPServer::execute_apply_edits(const json& args) {
+    json LSPServer::execute_apply_direct_edits(const json& args) {
         if (!suggestion_manager_) {
             throw std::runtime_error("Server not fully initialized");
         }
 
         if (args.contains("async") && args["async"].is_boolean() && args["async"].get<bool>()) {
-            return queue_async_command("bha.applyEdits", args);
+            return queue_async_command("bha.applyDirectEdits", args);
         }
 
         std::string project_root = workspace_root_;

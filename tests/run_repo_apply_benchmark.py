@@ -590,7 +590,7 @@ class BenchmarkRunner:
     ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         response, timed_out = execute_command_with_timeout(
             client,
-            "bha.applyEdits",
+            "bha.applyDirectEdits",
             [{
                 "projectRoot": str(case.project_root),
                 "skipRebuild": False,
@@ -680,7 +680,7 @@ class BenchmarkRunner:
     def run_discover_case(self, case: ProjectCase, excluded_projects: Set[str]) -> Dict[str, Any]:
         start = time.time()
         record = self._base_record(case, "discover")
-        record["applyCommand"] = "bha.applyEdits(auto-direct)"
+        record["applyCommand"] = "bha.applyDirectEdits(auto-direct)"
         record["logs"] = self._project_log_paths(case, "discover")
 
         if not self._precheck_case(case, record, excluded_projects):
@@ -876,7 +876,7 @@ class BenchmarkRunner:
     def run_replay_case(self, case: ProjectCase, excluded_projects: Set[str]) -> Dict[str, Any]:
         start = time.time()
         record = self._base_record(case, "replay")
-        record["applyCommand"] = "bha.applyEdits"
+        record["applyCommand"] = "bha.applyDirectEdits"
         record["logs"] = self._project_log_paths(case, "replay")
 
         if not self._precheck_case(case, record, excluded_projects):
@@ -944,7 +944,7 @@ class BenchmarkRunner:
 
             apply_resp, apply_timeout = execute_command_with_timeout(
                 client,
-                "bha.applyEdits",
+                "bha.applyDirectEdits",
                 [{
                     "projectRoot": str(case.project_root),
                     "skipRebuild": False,

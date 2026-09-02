@@ -284,7 +284,7 @@ def scenario_build_failure_rollback(server_path: Path, workspace_root: Path):
     try:
         apply = execute_command_with_timeout(
             client,
-            "bha.applyEdits",
+            "bha.applyDirectEdits",
             [{"edits": [edit]}],
             timeout_seconds=300,
             timeout_label="scenario2 applyEdits",
@@ -330,7 +330,7 @@ def scenario_kill_mid_apply_recovery(server_path: Path, workspace_root: Path):
     try:
         queued = execute_command_with_timeout(
             client,
-            "bha.applyEdits",
+            "bha.applyDirectEdits",
             [{"edits": [edit], "async": True}],
             timeout_seconds=20,
             timeout_label="scenario3 queue async applyEdits",

@@ -86,17 +86,7 @@ Exit code:
 - `0` when gates pass
 - `1` when overall/category thresholds fail
 
-## 6. Apply Edit Bundles Directly (No Suggestion Trigger Required)
-
-If you already have `text_edits` in JSON:
-
-```bash
-bha apply --edits-file edits.json --validate-build --build-cmd "cmake --build build -j"
-```
-
-This path lets teams run controlled edit application independently from live suggester invocation.
-
-## 7. Optional LSP Workflow
+## 6. Optional LSP Workflow
 
 Run `bha-lsp`, then from client:
 - execute `bha.analyze`

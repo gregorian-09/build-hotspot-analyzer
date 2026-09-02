@@ -153,37 +153,6 @@ bha suggest --describe-suggester include
 
 ---
 
-## `apply`
-
-Apply text edits from a JSON bundle without re-running suggesters.
-
-```bash
-bha apply --edits-file <FILE> [OPTIONS]
-```
-
-Important options:
-- `-e`, `--edits-file` (required)
-- `--project-root`
-- `--validate-build`
-- `--build-cmd`
-- `--no-rollback`
-- `--no-backup`
-- `--backup-dir`
-
-Accepted payload forms:
-- top-level `edits`
-- top-level `text_edits` or `textEdits`
-- nested `suggestions[].edits` / `suggestions[].text_edits` / `suggestions[].textEdits`
-
-Examples:
-
-```bash
-bha apply --edits-file edits.json
-bha apply --edits-file details.json --validate-build --build-cmd "cmake --build build -j"
-```
-
----
-
 ## `build`
 
 Build project with trace capture.
