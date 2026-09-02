@@ -350,7 +350,7 @@
 
         const auto priority_threshold = parse_priority_threshold(min_priority);
 
-        std::vector<fs::path> all_files_to_backup;
+        std::map<std::string, fs::path> all_files_to_backup;
         std::vector<PendingSuggestion> pending;
         std::unordered_set<std::string> seen_pending_keys;
 
@@ -367,7 +367,7 @@
             pending.push_back(PendingSuggestion{key});
 
             for (const auto& file : collect_backup_files(bha_sug)) {
-                all_files_to_backup.push_back(file);
+                all_files_to_backup.emplace(file.generic_string(), file);
             }
         }
 
@@ -398,7 +398,13 @@
 
         // Single backup for all changes
         if (!all_files_to_backup.empty()) {
-            result.backup_id = create_backup(all_files_to_backup);
+            std::vector<fs::path> backup_files;
+            backup_files.reserve(all_files_to_backup.size());
+            for (const auto& [key, file] : all_files_to_backup) {
+                (void)key;
+                backup_files.push_back(file);
+            }
+            result.backup_id = create_backup(backup_files);
             if (result.backup_id.empty()) {
                 result.success = false;
                 Diagnostic diag;
@@ -409,6 +415,33 @@
                 return result;
             }
         }
+
+        const auto rollback_batch = [&]() {
+            if (result.backup_id.empty()) {
+                return true;
+            }
+
+            const auto rollback = revert_changes_detailed(result.backup_id);
+            if (!rollback.success) {
+                result.errors.insert(
+                    result.errors.end(),
+                    rollback.errors.begin(),
+                    rollback.errors.end()
+                );
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply-all rollback failed; the workspace may contain partial changes";
+                result.errors.push_back(std::move(diag));
+                return false;
+            }
+
+            result.backup_id.clear();
+            result.applied_count = 0;
+            result.applied_suggestion_ids.clear();
+            result.changed_files.clear();
+            return true;
+        };
 
         std::unordered_set<std::string> changed_file_set;
         bool rerank_remaining = config_.rerank_remaining_after_each_apply &&
@@ -487,6 +520,7 @@
                         result.skipped_count += pending.size();
                         pending.clear();
                         rerank_remaining = false;
+                        rollback_batch();
                     }
                 }
             } else {
@@ -499,6 +533,10 @@
                     continue;
                 }
                 merge_apply_all_failure(result, apply_result);
+                result.skipped_count += pending.size();
+                pending.clear();
+                rollback_batch();
+                break;
             }
         }
 

@@ -260,11 +260,14 @@ namespace bha::lsp
         );
 
         /**
-         * @brief Apply selected suggestion IDs in explicit order.
+         * @brief Apply selected suggestion IDs in explicit order as one transaction.
          *
          * @param suggestion_ids Suggestion IDs to apply.
-         * @param stop_on_error Stop batch at first failure when true.
-         * @return Aggregate apply result.
+         * @param stop_on_error Stop attempting later IDs at the first failure when true;
+         *        any failure still rolls back the complete batch.
+         * @return Aggregate apply result. A successful result retains one backup for
+         *         explicit user rollback; a failed result clears it after a successful
+         *         automatic rollback.
          */
         ApplySuggestionResult apply_all_suggestions(
             const std::vector<std::string>& suggestion_ids,
@@ -272,10 +275,11 @@ namespace bha::lsp
         );
 
         /**
-         * Apply all suggestions from the last analysis.
+         * Apply all suggestions from the last analysis as one transaction.
          * @param min_priority Optional minimum priority filter (e.g., "high", "medium")
          * @param safe_only If true, only apply suggestions that expose an automatic apply path
-         * @return Result with counts and changed files
+         * @return Result with counts and changed files. A non-skippable failure
+         *         restores the complete batch before returning.
          */
         ApplyAllResult apply_all_suggestions(
             const std::optional<std::string>& min_priority = std::nullopt,

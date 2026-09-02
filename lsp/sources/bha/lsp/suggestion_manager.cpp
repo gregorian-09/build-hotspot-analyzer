@@ -77,6 +77,13 @@ namespace bha::lsp
                 add_file(secondary.path);
             }
 
+            std::ranges::sort(
+                files,
+                [](const fs::path& lhs, const fs::path& rhs) {
+                    return lhs.generic_string() < rhs.generic_string();
+                }
+            );
+
             return files;
         }
     }

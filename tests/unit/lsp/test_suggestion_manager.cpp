@@ -141,6 +141,26 @@ namespace bha::lsp
             manager.last_file_states_.clear();
             manager.last_file_states_.emplace(file.lexically_normal().generic_string(), *state);
         }
+
+        static void add_source_state(
+            SuggestionManager& manager,
+            const fs::path& project_root,
+            const fs::path& file
+        ) {
+            manager.last_project_root_ = project_root;
+            const auto state = SuggestionManager::read_file_state(file);
+            ASSERT_TRUE(state.has_value());
+            manager.last_file_states_.emplace(file.lexically_normal().generic_string(), *state);
+        }
+
+        static void set_bha_suggestion(
+            SuggestionManager& manager,
+            const std::string& id,
+            bha::Suggestion suggestion
+        ) {
+            suggestion.id = id;
+            manager.bha_suggestions_[id] = std::move(suggestion);
+        }
     };
 
     class SuggestionManagerRollbackTest : public ::testing::Test {
@@ -343,6 +363,157 @@ namespace bha::lsp
         EXPECT_EQ(
             std::string((std::istreambuf_iterator<char>(z_in)), std::istreambuf_iterator<char>()),
             "z-header\nz\n"
+        );
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, ExplicitSuggestionBatchRollsBackEarlierEdits) {
+        const fs::path valid_file = temp_root_ / "valid.hpp";
+        const fs::path invalid_file = temp_root_ / "invalid.hpp";
+        {
+            std::ofstream out(valid_file);
+            ASSERT_TRUE(out.good());
+            out << "valid\n";
+        }
+        {
+            std::ofstream out(invalid_file);
+            ASSERT_TRUE(out.good());
+            out << "invalid\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, valid_file);
+        SuggestionManagerTestAccess::add_source_state(manager, temp_root_, invalid_file);
+
+        bha::Suggestion valid;
+        valid.type = bha::SuggestionType::UnityBuild;
+        valid.priority = bha::Priority::High;
+        valid.is_safe = true;
+        valid.edits.push_back(bha::TextEdit{
+            .file = valid_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "valid-header\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-1", std::move(valid));
+
+        bha::Suggestion invalid;
+        invalid.type = bha::SuggestionType::UnityBuild;
+        invalid.priority = bha::Priority::High;
+        invalid.is_safe = true;
+        bha::TextEdit invalid_byte_edit;
+        invalid_byte_edit.file = invalid_file;
+        invalid_byte_edit.byte_offset = 0;
+        invalid_byte_edit.byte_length = 1;
+        invalid_byte_edit.new_text = "I";
+        invalid.edits.push_back(std::move(invalid_byte_edit));
+        invalid.edits.push_back(bha::TextEdit{
+            .file = invalid_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 1,
+            .new_text = "I"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-2", std::move(invalid));
+
+        const auto result = manager.apply_all_suggestions({"ana-1", "ana-2"});
+        EXPECT_FALSE(result.success);
+        EXPECT_TRUE(result.changed_files.empty());
+        EXPECT_FALSE(result.backup_id.has_value());
+
+        std::ifstream valid_in(valid_file);
+        ASSERT_TRUE(valid_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(valid_in)), std::istreambuf_iterator<char>()),
+            "valid\n"
+        );
+        std::ifstream invalid_in(invalid_file);
+        ASSERT_TRUE(invalid_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(invalid_in)), std::istreambuf_iterator<char>()),
+            "invalid\n"
+        );
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, FilteredApplyAllRollsBackEarlierEdits) {
+        const fs::path valid_file = temp_root_ / "valid.hpp";
+        const fs::path invalid_file = temp_root_ / "invalid.hpp";
+        {
+            std::ofstream out(valid_file);
+            ASSERT_TRUE(out.good());
+            out << "valid\n";
+        }
+        {
+            std::ofstream out(invalid_file);
+            ASSERT_TRUE(out.good());
+            out << "invalid\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        config.rerank_remaining_after_each_apply = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, valid_file);
+        SuggestionManagerTestAccess::add_source_state(manager, temp_root_, invalid_file);
+
+        bha::Suggestion valid;
+        valid.type = bha::SuggestionType::UnityBuild;
+        valid.priority = bha::Priority::High;
+        valid.is_safe = true;
+        valid.edits.push_back(bha::TextEdit{
+            .file = valid_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "valid-header\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-1", std::move(valid));
+
+        bha::Suggestion invalid;
+        invalid.type = bha::SuggestionType::UnityBuild;
+        invalid.priority = bha::Priority::High;
+        invalid.is_safe = true;
+        bha::TextEdit invalid_byte_edit;
+        invalid_byte_edit.file = invalid_file;
+        invalid_byte_edit.byte_offset = 0;
+        invalid_byte_edit.byte_length = 1;
+        invalid_byte_edit.new_text = "I";
+        invalid.edits.push_back(std::move(invalid_byte_edit));
+        invalid.edits.push_back(bha::TextEdit{
+            .file = invalid_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 1,
+            .new_text = "I"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-2", std::move(invalid));
+
+        const auto result = manager.apply_all_suggestions(std::nullopt, true);
+        EXPECT_FALSE(result.success);
+        EXPECT_EQ(result.applied_count, 0u);
+        EXPECT_TRUE(result.applied_suggestion_ids.empty());
+        EXPECT_TRUE(result.changed_files.empty());
+        EXPECT_TRUE(result.backup_id.empty());
+
+        std::ifstream valid_in(valid_file);
+        ASSERT_TRUE(valid_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(valid_in)), std::istreambuf_iterator<char>()),
+            "valid\n"
+        );
+        std::ifstream invalid_in(invalid_file);
+        ASSERT_TRUE(invalid_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(invalid_in)), std::istreambuf_iterator<char>()),
+            "invalid\n"
         );
     }
 

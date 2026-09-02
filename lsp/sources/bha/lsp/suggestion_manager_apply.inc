@@ -1251,13 +1251,68 @@
         ApplySuggestionResult combined_result;
         combined_result.success = true;
 
+        std::map<std::string, fs::path> batch_files;
         for (const auto& id : suggestion_ids) {
-            if (auto result = apply_suggestion(id); !result.success) {
+            const auto it = bha_suggestions_.find(id);
+            if (it == bha_suggestions_.end()) {
+                continue;
+            }
+            for (const auto& file : collect_backup_files(it->second)) {
+                batch_files.emplace(file.generic_string(), file);
+            }
+        }
+
+        if (!batch_files.empty()) {
+            std::vector<fs::path> files;
+            files.reserve(batch_files.size());
+            for (const auto& [key, file] : batch_files) {
+                (void)key;
+                files.push_back(file);
+            }
+            combined_result.backup_id = create_backup(files);
+            if (!combined_result.backup_id.has_value()) {
+                combined_result.success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Failed to create durable backup before applying suggestion batch";
+                combined_result.errors.push_back(std::move(diag));
+                return combined_result;
+            }
+        }
+
+        const auto rollback_batch = [&]() {
+            if (!combined_result.backup_id.has_value()) {
+                return true;
+            }
+            const auto rollback = revert_changes_detailed(*combined_result.backup_id);
+            if (!rollback.success) {
+                combined_result.errors.insert(
+                    combined_result.errors.end(),
+                    rollback.errors.begin(),
+                    rollback.errors.end()
+                );
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply-suggestion batch rollback failed; the workspace may contain partial changes";
+                combined_result.errors.push_back(std::move(diag));
+                return false;
+            }
+
+            combined_result.backup_id.reset();
+            combined_result.changed_files.clear();
+            return true;
+        };
+
+        for (const auto& id : suggestion_ids) {
+            if (auto result = apply_suggestion(id, false, false, false); !result.success) {
                 combined_result.success = false;
                 combined_result.errors.insert(combined_result.errors.end(),
                                             result.errors.begin(),
                                             result.errors.end());
                 if (stop_on_error) {
+                    rollback_batch();
                     break;
                 }
             } else {
@@ -1265,6 +1320,10 @@
                                                    result.changed_files.begin(),
                                                    result.changed_files.end());
             }
+        }
+
+        if (!combined_result.success && !stop_on_error) {
+            rollback_batch();
         }
 
         return combined_result;
