@@ -100,3 +100,14 @@ if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI)
                     --trace ${PROJECT_SOURCE_DIR}/tests/fixtures/sample_clang_trace.json
     )
 endif()
+
+if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP)
+    add_test(
+            NAME ApplyCliLspParity
+            COMMAND ${Python3_EXECUTABLE}
+                    ${PROJECT_SOURCE_DIR}/tests/run_apply_parity.py
+                    --binary $<TARGET_FILE:bha>
+                    --lsp-server $<TARGET_FILE:bha-lsp>
+    )
+    set_tests_properties(ApplyCliLspParity PROPERTIES TIMEOUT 900)
+endif()

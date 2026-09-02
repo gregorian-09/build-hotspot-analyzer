@@ -2062,6 +2062,7 @@ namespace bha::lsp
                 {"requested", build_validation_requested},
                 {"ran", build_validation_ran},
                 {"success", build_validation_success},
+                {"durationMs", measured_rebuild_duration_ms.value_or(0)},
                 {"errorCount", build_errors.size()}
             }},
             {"rollback", rollback_json},

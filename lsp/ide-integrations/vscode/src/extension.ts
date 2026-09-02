@@ -124,6 +124,7 @@ interface ApplyResult {
         requested?: boolean;
         ran?: boolean;
         success?: boolean;
+        durationMs?: number;
         errorCount?: number;
     };
     rollback?: {
@@ -160,6 +161,7 @@ interface ApplyAllResult {
         requested?: boolean;
         ran?: boolean;
         success?: boolean;
+        durationMs?: number;
         errorCount?: number;
     };
     rollback?: {
@@ -1989,31 +1991,30 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         return;
     }
 
-    const modeChoice = await vscode.window.showWarningMessage(
+    const confirmation = await vscode.window.showWarningMessage(
         `Apply ${affectedCount} suggestions? This will modify your code. A backup will be created for rollback.`,
         {
             modal: true,
-            detail: 'Keep successful edits is recommended for bulk apply. Atomic apply rolls back everything if rebuild validation fails.'
+            detail: 'The operation is transactional: if rebuild validation fails, all edits are rolled back.'
         },
-        'Keep Successful Edits',
-        'Atomic Apply'
+        'Apply All',
+        'Cancel'
     );
 
-    if (!modeChoice) return;
-    const atomic = modeChoice === 'Atomic Apply';
+    if (confirmation !== 'Apply All') return;
 
     try {
         logLine(
-            `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}, atomic=${atomic}`
+            `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`
         );
         bhaViewProvider?.setState('applying', 'Applying selected suggestions and validating the result...');
         bhaViewProvider?.setOperationStatus(
             'Bulk apply planned',
-            `${affectedCount} suggestion(s) selected by the current filter; ${atomic ? 'atomic' : 'fault-isolating'} validation requested.`,
+            `${affectedCount} suggestion(s) selected by the current filter; transactional validation requested.`,
             [
                 `Selection filter: ${filterChoice.label}`,
                 `Safe-only: ${safeOnly ? 'yes' : 'no'}`,
-                `Validation mode: ${atomic ? 'atomic rollback' : 'keep valid edits with fault isolation'}`
+                'Validation mode: transactional rollback'
             ]
         );
         const workspaceRoot = getWorkspaceRootPath();
@@ -2024,13 +2025,10 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             {
                 minPriority,
                 safeOnly,
-                atomic,
                 operationId,
                 buildProfile
             },
-            atomic
-                ? 'Applying edits and validating atomically...'
-                : 'Applying edits, isolating failures, and validating survivors...'
+            'Applying edits and validating transactionally...'
         );
 
         if (!isValidApplyAllResult(applyResult)) {

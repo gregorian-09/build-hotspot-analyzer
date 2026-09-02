@@ -19,7 +19,7 @@ Global flags:
 
 - `analyze`
 - `suggest`
-- `apply`
+- `project`
 - `build`
 - `record`
 - `export`
