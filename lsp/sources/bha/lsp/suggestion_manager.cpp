@@ -1159,7 +1159,7 @@ namespace bha::lsp
             std::size_t start_col = 0;
             std::size_t end_line = 0;
             std::size_t end_col = 0;
-            std::size_t new_text_hash = 0;
+            std::string new_text;
         };
 
         struct SecondaryFileKey {
@@ -1176,7 +1176,7 @@ namespace bha::lsp
                 edit.start_col,
                 edit.end_line,
                 edit.end_col,
-                std::hash<std::string>{}(edit.new_text)
+                edit.new_text
             });
         }
         std::ranges::sort(edits, [](const EditKey& lhs, const EditKey& rhs) {
@@ -1185,7 +1185,7 @@ namespace bha::lsp
             if (lhs.start_col != rhs.start_col) return lhs.start_col < rhs.start_col;
             if (lhs.end_line != rhs.end_line) return lhs.end_line < rhs.end_line;
             if (lhs.end_col != rhs.end_col) return lhs.end_col < rhs.end_col;
-            return lhs.new_text_hash < rhs.new_text_hash;
+            return lhs.new_text < rhs.new_text;
         });
 
         std::vector<SecondaryFileKey> secondary;
@@ -1202,19 +1202,29 @@ namespace bha::lsp
         });
 
         std::ostringstream key;
-        key << static_cast<int>(suggestion.type)
-            << "|" << suggestion.target_file.path.lexically_normal().generic_string()
-            << "|" << static_cast<int>(suggestion.target_file.action);
+        const auto append_string = [&key](const std::string_view value) {
+            key << value.size() << ':';
+            key.write(value.data(), static_cast<std::streamsize>(value.size()));
+        };
+
+        key << "t:" << static_cast<int>(suggestion.type) << ';';
+        key << "target:";
+        append_string(suggestion.target_file.path.lexically_normal().generic_string());
+        key << ':' << static_cast<int>(suggestion.target_file.action);
         for (const auto& edit : edits) {
-            key << "|e:" << edit.file
-                << ":" << edit.start_line
+            key << "|e:";
+            append_string(edit.file);
+            key << ':' << edit.start_line
                 << ":" << edit.start_col
                 << ":" << edit.end_line
                 << ":" << edit.end_col
-                << ":" << edit.new_text_hash;
+                << ':';
+            append_string(edit.new_text);
         }
         for (const auto& file : secondary) {
-            key << "|s:" << file.path << ":" << file.action;
+            key << "|s:";
+            append_string(file.path);
+            key << ':' << file.action;
         }
         return key.str();
     }

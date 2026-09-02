@@ -14,6 +14,8 @@ namespace bha::lsp
 {
     namespace fs = std::filesystem;
 
+    std::string stable_suggestion_key(const bha::Suggestion& suggestion);
+
     TEST(CompilerDiagnosticParserTest, ParsesClangAndGccLocationsWithColonsInPath) {
         const auto diagnostics = parse_compiler_diagnostics(
             "C:/work:tree/source.cpp:12:7: error: expected ';'\n"
@@ -204,6 +206,36 @@ namespace bha::lsp
 
         fs::path temp_root_;
     };
+
+    TEST(SuggestionManagerIdentityTest, CanonicalizesEditOrderAndPreservesExactText) {
+        bha::Suggestion first;
+        first.type = bha::SuggestionType::IncludeRemoval;
+        first.target_file.path = fs::path("include/main.hpp");
+        first.edits.push_back(bha::TextEdit{
+            .file = fs::path("src/main.cpp"),
+            .start_line = 4,
+            .start_col = 2,
+            .end_line = 4,
+            .end_col = 8,
+            .new_text = "#include <vector>\n"
+        });
+        first.edits.push_back(bha::TextEdit{
+            .file = fs::path("include/main.hpp"),
+            .start_line = 1,
+            .start_col = 0,
+            .end_line = 1,
+            .end_col = 0,
+            .new_text = "#pragma once\n"
+        });
+
+        bha::Suggestion reordered = first;
+        std::ranges::reverse(reordered.edits);
+        EXPECT_EQ(stable_suggestion_key(first), stable_suggestion_key(reordered));
+
+        bha::Suggestion different_text = first;
+        different_text.edits.front().new_text = "#include <string>\n";
+        EXPECT_NE(stable_suggestion_key(first), stable_suggestion_key(different_text));
+    }
 
     TEST_F(SuggestionManagerRollbackTest, SnapshotCapturesMissingCreatedFileAndRestoresByRemovingIt) {
         const fs::path created_file = temp_root_ / "pch.h";
