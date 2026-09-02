@@ -333,6 +333,25 @@
             }
         }
 
+        std::map<std::string, FileState> analyzed_file_states;
+        for (const auto& suggestion : bha_suggestions) {
+            for (const auto& file : collect_backup_files(suggestion)) {
+                const fs::path normalized = normalize_path_for_match(file, project_root);
+                if (normalized.empty()) {
+                    continue;
+                }
+
+                const std::string key = normalized.generic_string();
+                if (analyzed_file_states.contains(key)) {
+                    continue;
+                }
+
+                if (const auto state = read_file_state(normalized); state.has_value()) {
+                    analyzed_file_states.emplace(key, *state);
+                }
+            }
+        }
+
         std::optional<fs::path> compile_commands_for_validation;
         if (compile_commands_path.has_value()) {
             fs::path compile_commands = *compile_commands_path;
@@ -386,6 +405,7 @@
         last_build_dir_ = build_dir;
         last_trace_dir_ = trace_dir;
         last_analyze_options_ = analyze_options;
+        last_file_states_ = std::move(analyzed_file_states);
 
         // Evict old analysis cache entries if over limit
         evict_old_analysis_cache();

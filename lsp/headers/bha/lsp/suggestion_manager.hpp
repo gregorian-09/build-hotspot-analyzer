@@ -400,6 +400,21 @@ namespace bha::lsp
             ApplySuggestionResult& result,
             const std::vector<fs::path>& changed_files
         );
+        /// Capture the exact file state used to generate an apply plan.
+        struct FileState {
+            bool exists = false;
+            std::uintmax_t size = 0;
+            std::uint64_t content_hash = 0;
+
+            [[nodiscard]] bool operator==(const FileState&) const = default;
+        };
+        /// Read a deterministic content fingerprint for one workspace file.
+        static std::optional<FileState> read_file_state(const fs::path& file);
+        /// Reject an apply plan when any input file changed after analysis.
+        bool validate_suggestion_source_state(
+            const bha::Suggestion& suggestion,
+            std::vector<Diagnostic>& errors
+        ) const;
         /// Merge one successful single-apply result into batch aggregate.
         static void merge_apply_all_success(
             ApplyAllResult& result,
@@ -490,6 +505,7 @@ namespace bha::lsp
         std::optional<fs::path> last_build_dir_;
         std::optional<fs::path> last_trace_dir_;
         AnalyzeSuggestionOptions last_analyze_options_;
+        std::map<std::string, FileState> last_file_states_;
 
         /// LRU tracking: front = oldest, back = newest
         std::list<std::string> backup_lru_;

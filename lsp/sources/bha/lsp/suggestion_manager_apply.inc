@@ -96,6 +96,91 @@
         }
     }
 
+    std::optional<SuggestionManager::FileState> SuggestionManager::read_file_state(const fs::path& file) {
+        FileState state;
+        std::error_code ec;
+        state.exists = fs::exists(file, ec);
+        if (ec) {
+            return std::nullopt;
+        }
+        if (!state.exists) {
+            return state;
+        }
+        if (!fs::is_regular_file(file, ec) || ec) {
+            return std::nullopt;
+        }
+
+        std::ifstream in(file, std::ios::binary);
+        if (!in) {
+            return std::nullopt;
+        }
+
+        constexpr std::uint64_t kFnvOffsetBasis = 14695981039346656037ull;
+        constexpr std::uint64_t kFnvPrime = 1099511628211ull;
+        std::uint64_t hash = kFnvOffsetBasis;
+        std::array<char, 8192> buffer{};
+        while (in) {
+            in.read(buffer.data(), static_cast<std::streamsize>(buffer.size()));
+            const std::streamsize count = in.gcount();
+            if (count <= 0) {
+                continue;
+            }
+            state.size += static_cast<std::uintmax_t>(count);
+            for (std::streamsize index = 0; index < count; ++index) {
+                hash ^= static_cast<unsigned char>(buffer[static_cast<std::size_t>(index)]);
+                hash *= kFnvPrime;
+            }
+        }
+
+        if (!in.eof()) {
+            return std::nullopt;
+        }
+        state.content_hash = hash;
+        return state;
+    }
+
+    bool SuggestionManager::validate_suggestion_source_state(
+        const bha::Suggestion& suggestion,
+        std::vector<Diagnostic>& errors
+    ) const {
+        const auto base = last_project_root_.has_value()
+            ? std::optional<fs::path>(*last_project_root_)
+            : std::nullopt;
+        for (const auto& file : collect_backup_files(suggestion)) {
+            const fs::path normalized = normalize_path_for_match(file, base);
+            if (normalized.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply blocked: suggestion contains an empty or invalid file path";
+                errors.push_back(std::move(diag));
+                continue;
+            }
+
+            const std::string key = normalized.generic_string();
+            const auto expected = last_file_states_.find(key);
+            if (expected == last_file_states_.end()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply blocked: no baseline file state was recorded for " + normalized.string();
+                errors.push_back(std::move(diag));
+                continue;
+            }
+
+            const auto current = read_file_state(normalized);
+            if (!current.has_value() || *current != expected->second) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply blocked: file changed since analysis; re-run analysis for " +
+                    normalized.string();
+                errors.push_back(std::move(diag));
+            }
+        }
+        return errors.empty();
+    }
+
     void SuggestionManager::merge_apply_all_success(
         ApplyAllResult& result,
         const std::string& suggestion_id,
@@ -1028,6 +1113,9 @@
         }
 
         const auto& bha_sug = bha_it->second;
+        if (!validate_suggestion_source_state(bha_sug, result.errors)) {
+            return result;
+        }
         const auto application_mode = bha::resolve_application_mode(bha_sug);
         const bool enforce_syntax_validation =
             requires_compile_command_syntax_validation(bha_sug) &&

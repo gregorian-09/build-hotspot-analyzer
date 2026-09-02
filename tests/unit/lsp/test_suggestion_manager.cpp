@@ -110,6 +110,30 @@ namespace bha::lsp
                 changed_files
             );
         }
+
+        static std::optional<SuggestionManager::FileState> read_file_state(const fs::path& file) {
+            return SuggestionManager::read_file_state(file);
+        }
+
+        static bool validate_suggestion_source_state(
+            SuggestionManager& manager,
+            const bha::Suggestion& suggestion,
+            std::vector<Diagnostic>& errors
+        ) {
+            return manager.validate_suggestion_source_state(suggestion, errors);
+        }
+
+        static void seed_source_state(
+            SuggestionManager& manager,
+            const fs::path& project_root,
+            const fs::path& file
+        ) {
+            manager.last_project_root_ = project_root;
+            const auto state = SuggestionManager::read_file_state(file);
+            ASSERT_TRUE(state.has_value());
+            manager.last_file_states_.clear();
+            manager.last_file_states_.emplace(file.lexically_normal().generic_string(), *state);
+        }
     };
 
     class SuggestionManagerRollbackTest : public ::testing::Test {
@@ -261,6 +285,106 @@ namespace bha::lsp
             std::istreambuf_iterator<char>()
         );
         EXPECT_EQ(content, "alpha\nbeta\n");
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionAcceptsUnchangedSourceState) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source, std::ios::binary);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+
+        bha::Suggestion suggestion;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// generated\n"
+        });
+
+        std::vector<Diagnostic> errors;
+        EXPECT_TRUE(SuggestionManagerTestAccess::validate_suggestion_source_state(
+            manager,
+            suggestion,
+            errors
+        ));
+        EXPECT_TRUE(errors.empty());
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionRejectsModifiedSourceState) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source, std::ios::binary);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+        {
+            std::ofstream out(source, std::ios::binary | std::ios::trunc);
+            ASSERT_TRUE(out.good());
+            out << "int value = 2;\n";
+        }
+
+        bha::Suggestion suggestion;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// generated\n"
+        });
+
+        std::vector<Diagnostic> errors;
+        EXPECT_FALSE(SuggestionManagerTestAccess::validate_suggestion_source_state(
+            manager,
+            suggestion,
+            errors
+        ));
+        ASSERT_EQ(errors.size(), 1u);
+        EXPECT_NE(errors.front().message.find("changed since analysis"), std::string::npos);
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionRejectsDeletedSourceState) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source, std::ios::binary);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManager manager(SuggestionManagerConfig{.workspace_root = temp_root_});
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+        std::error_code ec;
+        ASSERT_TRUE(fs::remove(source, ec));
+        ASSERT_FALSE(ec);
+
+        bha::Suggestion suggestion;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// generated\n"
+        });
+
+        std::vector<Diagnostic> errors;
+        EXPECT_FALSE(SuggestionManagerTestAccess::validate_suggestion_source_state(
+            manager,
+            suggestion,
+            errors
+        ));
+        ASSERT_EQ(errors.size(), 1u);
+        EXPECT_NE(errors.front().message.find("changed since analysis"), std::string::npos);
     }
 
     TEST_F(SuggestionManagerRollbackTest, PCHValidationUsesCompileBackedIncludersOfTargetHeader) {
