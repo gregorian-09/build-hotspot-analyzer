@@ -153,7 +153,10 @@ Input:
 - `safeOnly` (bool)
 - `skipRebuild` (bool)
 - `skipConsent` (bool)
-- `atomic` (bool)
+
+Apply-all is always one transactional operation. The server ignores no
+caller-selected atomicity mode because partial retention is not part of the
+apply contract.
 
 Output:
 - `success`

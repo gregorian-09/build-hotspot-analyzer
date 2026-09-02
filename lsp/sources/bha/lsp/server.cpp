@@ -2162,20 +2162,14 @@ namespace bha::lsp
         auto changed_files = apply_all_result.changed_files;
         auto errors = apply_all_result.errors;
         const std::string backup_id = apply_all_result.backup_id;
-        const bool atomic = args.contains("atomic") && args["atomic"].get<bool>();
+        bool build_validation_requested = apply_all_result.build_validation_requested;
+        bool build_validation_ran = apply_all_result.build_validation_ran;
+        bool build_validation_success = !build_validation_ran || apply_all_result.build_validation_success;
+        std::optional<int> measured_rebuild_duration_ms = apply_all_result.build_validation_duration_ms;
+        std::vector<Diagnostic> build_errors = apply_all_result.build_validation_errors;
 
         const auto workspace_path = workspace_path_from_uri_or_path(workspace_root_);
         const auto [baseline_duration_ms, baseline_source] = resolve_trust_loop_baseline(workspace_path);
-
-        auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
-            json out = json::array();
-            for (const auto& diagnostic : diagnostics) {
-                json item;
-                to_json(item, diagnostic);
-                out.push_back(std::move(item));
-            }
-            return out;
-        };
 
         json rollback_json = {
             {"attempted", false},
@@ -2194,293 +2188,32 @@ namespace bha::lsp
                 : "rollback-failed";
         }
 
-        auto append_unique_changed_files = [](std::vector<std::string>& dest, const std::vector<std::string>& src) {
-            std::unordered_set<std::string> seen(dest.begin(), dest.end());
-            for (const auto& file : src) {
-                if (seen.insert(file).second) {
-                    dest.push_back(file);
-                }
-            }
-        };
-
-        auto append_contextual_errors = [&errors](const std::vector<Diagnostic>& source,
-                                                  const std::string& suggestion_id,
-                                                  const std::string& stage) {
-            for (auto diag : source) {
-                if (diag.message.empty()) {
-                    diag.message = "[" + suggestion_id + "][" + stage + "] apply failed";
-                } else {
-                    diag.message = "[" + suggestion_id + "][" + stage + "] " + diag.message;
-                }
-                errors.push_back(std::move(diag));
-            }
-        };
-
-        if (!success && atomic && !backup_id.empty()) {
-            send_job_log(job_id, "apply", "Atomic batch failed during edit phase; rolling back immediately");
-            const auto rollback_result = with_manager([&]() {
-                return suggestion_manager_->revert_changes_detailed(backup_id);
-            });
-            rollback_json["attempted"] = true;
-            rollback_json["success"] = rollback_result.success;
-            rollback_json["restoredFiles"] = rollback_result.restored_files;
-            rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
-            rollback_json["reason"] = rollback_result.success ? "atomic-rollback-succeeded" : "atomic-rollback-failed";
-
-            if (rollback_result.success) {
-                changed_files.clear();
-                applied_suggestion_ids.clear();
-                applied_count = 0;
-            } else {
-                errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
-            }
+        if (build_validation_requested && applied_count > 0 && !build_validation_ran) {
             success = false;
+            build_validation_success = false;
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message =
+                "Apply-all invariant failed: the shared build-validation executor did not run "
+                "after edits were applied";
+            errors.push_back(std::move(diag));
+            rollback_json["reason"] = "validation-invariant-failed";
+        } else if (build_validation_ran && !build_validation_success &&
+                   rollback_json["reason"] == "not-required") {
+            rollback_json["reason"] = config_.rollback_on_build_failure
+                ? "no-backup"
+                : "rollback-disabled";
         }
 
-        bool build_validation_requested = apply_all_result.build_validation_requested;
-        bool build_validation_ran = apply_all_result.build_validation_ran;
-        bool build_validation_success = !build_validation_ran || apply_all_result.build_validation_success;
-        std::optional<int> measured_rebuild_duration_ms = apply_all_result.build_validation_duration_ms;
-        std::vector<Diagnostic> build_errors = apply_all_result.build_validation_errors;
-
-        if (build_validation_requested && !build_validation_ran && success) {
-            send_job_log(job_id, "apply", "Starting rebuild validation for applied suggestions");
-            build_validation_ran = true;
-            build_validation_success = run_build_validation(
-                build_errors,
-                measured_rebuild_duration_ms,
-                job_id,
-                "build"
-            );
-            if (!build_validation_success) {
-                send_job_log(job_id, "apply", "Rebuild validation failed; evaluating rollback or fault isolation");
-                const std::size_t error_count_before_batch_validation = errors.size();
-                success = false;
-                errors.insert(errors.end(), build_errors.begin(), build_errors.end());
-
-                if (!config_.rollback_on_build_failure) {
-                    rollback_json["reason"] = "rollback-disabled";
-                } else if (backup_id.empty()) {
-                    rollback_json["reason"] = "no-backup";
-                } else if (atomic) {
-                    send_job_log(job_id, "apply", "Atomic rollback started after failed rebuild");
-                    send_notification("window/showMessage", {
-                        {"type", static_cast<int>(MessageType::Warning)},
-                        {"message", "Build failed after applying suggestions. Rolling back all changes..."}
-                    });
-
-                    const auto rollback_result = with_manager([&]() {
-                        return suggestion_manager_->revert_changes_detailed(backup_id);
-                    });
-                    rollback_json["attempted"] = true;
-                    rollback_json["success"] = rollback_result.success;
-                    rollback_json["restoredFiles"] = rollback_result.restored_files;
-                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
-                    rollback_json["reason"] = rollback_result.success ? "rollback-succeeded" : "rollback-failed";
-
-                    if (rollback_result.success) {
-                        changed_files.clear();
-                        applied_suggestion_ids.clear();
-                        applied_count = 0;
-                    } else {
-                        errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
-                    }
-                } else {
-                    send_job_log(job_id, "apply", "Starting fault isolation over applied suggestions");
-                    // Remove the initial aggregate build-failure diagnostics before
-                    // entering fault isolation; candidate-specific failures are added back
-                    // with suggestion context.
-                    errors.resize(error_count_before_batch_validation);
-
-                    auto reset_to_fault_isolation_baseline = [&](const bool preserve_backup = true) {
-                        return with_manager([&]() {
-                            return suggestion_manager_->revert_changes_detailed(backup_id, preserve_backup);
-                        });
-                    };
-
-                    send_notification("window/showMessage", {
-                        {"type", static_cast<int>(MessageType::Warning)},
-                        {"message", "Build failed after applying suggestions. Running fault isolation to keep valid edits..."}
-                    });
-
-                    const auto rollback_result = reset_to_fault_isolation_baseline();
-                    rollback_json["attempted"] = true;
-                    rollback_json["success"] = rollback_result.success;
-                    rollback_json["restoredFiles"] = rollback_result.restored_files;
-                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
-                    rollback_json["reason"] = rollback_result.success ? "fault-isolation-started" : "rollback-failed";
-
-                    if (!rollback_result.success) {
-                        errors.insert(errors.end(), rollback_result.errors.begin(), rollback_result.errors.end());
-                    } else {
-                        std::vector<std::string> retained_ids;
-                        std::vector<std::string> retained_changed_files;
-                        bool isolation_aborted = false;
-
-                        for (const auto& suggestion_id : applied_suggestion_ids) {
-                            send_job_log(job_id, "apply", "Fault isolation: probing suggestion " + suggestion_id);
-                            bool probe_dirty = false;
-                            for (const auto& retained_id : retained_ids) {
-                                auto retained_apply = with_manager([&]() {
-                                    return suggestion_manager_->apply_suggestion(
-                                        retained_id,
-                                        false,
-                                        true,
-                                        false
-                                    );
-                                });
-                                if (!retained_apply.success) {
-                                    append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-replay");
-                                    isolation_aborted = true;
-                                    break;
-                                }
-                                probe_dirty = true;
-                            }
-
-                            if (!isolation_aborted) {
-                                const auto candidate_apply = with_manager([&]() {
-                                    return suggestion_manager_->apply_suggestion(
-                                        suggestion_id,
-                                        false,
-                                        true,
-                                        false
-                                    );
-                                });
-                                if (!candidate_apply.success) {
-                                    append_contextual_errors(candidate_apply.errors, suggestion_id, "fault-isolation-apply");
-                                } else {
-                                    probe_dirty = true;
-                                    std::vector<Diagnostic> candidate_build_errors;
-                                    std::optional<int> candidate_duration_ms;
-                                    const bool candidate_valid = run_build_validation(
-                                        candidate_build_errors,
-                                        candidate_duration_ms,
-                                        job_id,
-                                        "build"
-                                    );
-                                    if (candidate_valid) {
-                                        retained_ids.push_back(suggestion_id);
-                                        append_unique_changed_files(retained_changed_files, candidate_apply.changed_files);
-                                        measured_rebuild_duration_ms = candidate_duration_ms;
-                                    } else {
-                                        append_contextual_errors(candidate_build_errors, suggestion_id, "fault-isolation-build");
-                                    }
-                                }
-                            }
-
-                            if (probe_dirty) {
-                                const auto reset_result = reset_to_fault_isolation_baseline();
-                                if (!reset_result.success) {
-                                    rollback_json["success"] = false;
-                                    rollback_json["reason"] = "fault-isolation-reset-failed";
-                                    rollback_json["restoredFiles"] = reset_result.restored_files;
-                                    rollback_json["errors"] = diagnostics_to_json(reset_result.errors);
-                                    errors.insert(errors.end(), reset_result.errors.begin(), reset_result.errors.end());
-                                    isolation_aborted = true;
-                                }
-                            }
-
-                            if (isolation_aborted) {
-                                break;
-                            }
-                        }
-
-                        if (isolation_aborted) {
-                            success = false;
-                            changed_files.clear();
-                            applied_suggestion_ids.clear();
-                            applied_count = 0;
-                        } else {
-                            for (const auto& retained_id : retained_ids) {
-                                auto retained_apply = with_manager([&]() {
-                                    return suggestion_manager_->apply_suggestion(
-                                        retained_id,
-                                        false,
-                                        true,
-                                        false
-                                    );
-                                });
-                                if (!retained_apply.success) {
-                                    append_contextual_errors(retained_apply.errors, retained_id, "fault-isolation-final-replay");
-                                    isolation_aborted = true;
-                                    break;
-                                }
-                            }
-
-                            if (isolation_aborted) {
-                                success = false;
-                                const auto final_reset = reset_to_fault_isolation_baseline(false);
-                                rollback_json["attempted"] = true;
-                                rollback_json["success"] = final_reset.success;
-                                rollback_json["restoredFiles"] = final_reset.restored_files;
-                                rollback_json["errors"] = diagnostics_to_json(final_reset.errors);
-                                rollback_json["reason"] = final_reset.success
-                                    ? "fault-isolation-final-replay-failed-rolled-back"
-                                    : "fault-isolation-final-replay-failed-rollback-failed";
-                                if (final_reset.success) {
-                                    changed_files.clear();
-                                    applied_suggestion_ids.clear();
-                                    applied_count = 0;
-                                } else {
-                                    errors.insert(errors.end(), final_reset.errors.begin(), final_reset.errors.end());
-                                }
-                            } else {
-                                build_errors.clear();
-                                build_validation_ran = true;
-                                build_validation_success = run_build_validation(
-                                    build_errors,
-                                    measured_rebuild_duration_ms,
-                                    job_id,
-                                    "build"
-                                );
-
-                                if (!build_validation_success) {
-                                    append_contextual_errors(build_errors, "apply-all", "fault-isolation-final-build");
-                                    success = false;
-
-                                    const auto final_reset = reset_to_fault_isolation_baseline(false);
-                                    rollback_json["attempted"] = true;
-                                    rollback_json["success"] = final_reset.success;
-                                    rollback_json["restoredFiles"] = final_reset.restored_files;
-                                    rollback_json["errors"] = diagnostics_to_json(final_reset.errors);
-                                    rollback_json["reason"] = final_reset.success
-                                        ? "fault-isolation-final-build-failed-rolled-back"
-                                        : "fault-isolation-final-build-failed-rollback-failed";
-                                    if (final_reset.success) {
-                                        changed_files.clear();
-                                        applied_suggestion_ids.clear();
-                                        applied_count = 0;
-                                    } else {
-                                        errors.insert(errors.end(), final_reset.errors.begin(), final_reset.errors.end());
-                                    }
-                                } else {
-                                    send_job_log(
-                                        job_id,
-                                        "apply",
-                                        "Fault isolation retained " + std::to_string(retained_ids.size()) + " suggestion(s)"
-                                    );
-                                    const std::size_t previous_applied_count = applied_count;
-                                    applied_suggestion_ids = retained_ids;
-                                    applied_count = retained_ids.size();
-                                    skipped_count += previous_applied_count - applied_count;
-                                    changed_files = std::move(retained_changed_files);
-                                    success = applied_count > 0;
-                                    rollback_json["reason"] = applied_count > 0
-                                        ? "fault-isolation-partial-apply"
-                                        : "fault-isolation-no-survivors";
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if (rollback_json["reason"] == "not-required") {
-                rollback_json["reason"] = "build-succeeded";
-            }
-        } else if (rollback_json["reason"] == "not-required") {
+        if (!build_validation_requested && rollback_json["reason"] == "not-required") {
             rollback_json["reason"] = (config_.rebuild_after_apply && !skip_rebuild)
-                ? "validation-skipped"
+                ? "validation-unavailable"
                 : "validation-disabled";
             send_job_log(job_id, "apply", "Rebuild validation skipped");
+        } else if (build_validation_requested && build_validation_ran &&
+                   build_validation_success && rollback_json["reason"] == "not-required") {
+            rollback_json["reason"] = "build-succeeded";
         }
 
         std::optional<int> predicted_savings_ms;
