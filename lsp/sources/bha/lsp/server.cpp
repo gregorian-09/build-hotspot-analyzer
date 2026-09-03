@@ -2169,7 +2169,7 @@ namespace bha::lsp
         const std::string backup_id = apply_all_result.backup_id;
         bool build_validation_requested = apply_all_result.build_validation_requested;
         bool build_validation_ran = apply_all_result.build_validation_ran;
-        bool build_validation_success = !build_validation_ran || apply_all_result.build_validation_success;
+        bool build_validation_success = apply_all_result.build_validation_success;
         std::optional<int> measured_rebuild_duration_ms = apply_all_result.build_validation_duration_ms;
         std::vector<Diagnostic> build_errors = apply_all_result.build_validation_errors;
 

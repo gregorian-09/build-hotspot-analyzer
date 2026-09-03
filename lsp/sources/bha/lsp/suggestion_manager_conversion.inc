@@ -348,8 +348,8 @@
         result.success = true;
         result.applied_count = 0;
         result.skipped_count = 0;
-        result.build_validation_requested = !skip_rebuild &&
-            static_cast<bool>(config_.build_validation_callback);
+        result.build_validation_requested = !skip_rebuild;
+        result.build_validation_success = true;
 
         const auto priority_threshold = parse_priority_threshold(min_priority);
 
@@ -550,10 +550,22 @@
         if (result.errors.empty() && result.applied_count > 0 &&
             result.build_validation_requested) {
             ApplySuggestionResult validation_result;
-            result.build_validation_ran = true;
-            result.build_validation_success = validate_post_apply_rebuild(validation_result);
+            const bool validation_success = validate_post_apply_rebuild(validation_result);
+            result.build_validation_ran = validation_result.build_validation_ran;
+            result.build_validation_success =
+                validation_result.build_validation_ran && validation_success;
             result.build_validation_duration_ms = validation_result.build_validation_duration_ms;
-            result.build_validation_errors = validation_result.errors;
+            result.build_validation_errors = validation_result.build_validation_errors;
+            if (!result.build_validation_ran) {
+                result.build_validation_success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message =
+                    "Build validation was requested but no validation executor ran";
+                result.build_validation_errors.push_back(diag);
+                result.errors.push_back(std::move(diag));
+            }
             result.errors.insert(
                 result.errors.end(),
                 validation_result.errors.begin(),

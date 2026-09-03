@@ -716,6 +716,63 @@ namespace bha::lsp
         );
     }
 
+    TEST_F(SuggestionManagerRollbackTest, BulkValidationFailsClosedWithoutExecutor) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+        SuggestionManagerTestAccess::seed_build_trace(manager, temp_root_, source);
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::UnityBuild;
+        suggestion.is_safe = true;
+        suggestion.target_file.path = source;
+        suggestion.target_file.action = FileAction::Modify;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// generated\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-1", std::move(suggestion));
+
+        const auto result = manager.apply_all_suggestions(
+            std::nullopt,
+            true,
+            {},
+            false
+        );
+        EXPECT_FALSE(result.success);
+        EXPECT_EQ(result.applied_count, 0u);
+        EXPECT_TRUE(result.build_validation_requested);
+        EXPECT_FALSE(result.build_validation_ran);
+        EXPECT_FALSE(result.build_validation_success);
+        ASSERT_FALSE(result.errors.empty());
+        EXPECT_NE(
+            result.errors.back().message.find("no validation executor ran"),
+            std::string::npos
+        );
+        EXPECT_TRUE(result.rollback_attempted);
+        EXPECT_TRUE(result.rollback_success);
+
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            "int value = 1;\n"
+        );
+    }
+
     TEST_F(SuggestionManagerRollbackTest, ApplyPreconditionAcceptsUnchangedSourceState) {
         const fs::path source = temp_root_ / "source.cpp";
         {
