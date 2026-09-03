@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Compare the evidence-backed CLI and LSP single-apply workflows."""
+"""Compare the CLI, LSP suggestion, and LSP raw-edit apply workflows."""
 
 import argparse
 import json
@@ -261,6 +261,7 @@ def main() -> int:
                 "showPreviewBeforeApply": False,
                 "rebuildAfterApply": True,
                 "rollbackOnBuildFailure": True,
+                "buildCommand": f'cmake --build "{build_dir}"',
                 "keepBackups": False,
                 "allowMissingCompileCommands": False,
                 "minConfidence": 0.0,
@@ -313,6 +314,46 @@ def main() -> int:
                 f"LSP apply failed: {lsp_apply_response}",
             )
             lsp_apply = lsp_apply_response["result"]
+
+            lsp_bytes = source_snapshot(project_root)
+            lsp_normalized = normalized_apply_result(lsp_apply, project_root)
+            require(lsp_normalized["success"] is True, f"LSP apply was not successful: {lsp_apply}")
+            require(lsp_normalized["buildValidation"]["ran"] is True, "LSP did not run build validation")
+
+            restore_snapshot(snapshot)
+            shutil.rmtree(project_root / ".lsp-optimization-backup", ignore_errors=True)
+            raw_apply_response = execute_command_with_timeout(
+                client,
+                "bha.applyDirectEdits",
+                [{
+                    "projectRoot": project_root.as_uri(),
+                    "skipRebuild": False,
+                    "edits": [{
+                        "file": (project_root / "src" / "main.cpp").as_uri(),
+                        "startLine": 1,
+                        "startCol": 0,
+                        "endLine": 2,
+                        "endCol": 0,
+                        "newText": "",
+                    }],
+                }],
+                args.timeout,
+                "LSP raw edit apply",
+            )
+            require(
+                raw_apply_response is not None and "result" in raw_apply_response,
+                f"LSP raw edit apply failed: {raw_apply_response}",
+            )
+            raw_apply = raw_apply_response["result"]
+            raw_bytes = source_snapshot(project_root)
+            raw_normalized = normalized_apply_result(raw_apply, project_root)
+            require(raw_normalized["success"] is True, f"LSP raw edit apply was not successful: {raw_apply}")
+            require(raw_normalized["buildValidation"]["ran"] is True, "LSP raw edit did not run build validation")
+            require(raw_bytes == lsp_bytes, "LSP raw edit and suggestion apply produced different source bytes")
+            require(
+                raw_normalized == lsp_normalized,
+                f"Raw edit result mismatch:\nSuggestion: {lsp_normalized}\nRaw: {raw_normalized}",
+            )
         finally:
             try:
                 client.shutdown()
@@ -320,10 +361,6 @@ def main() -> int:
                 pass
             client.stop()
 
-        lsp_bytes = source_snapshot(project_root)
-        lsp_normalized = normalized_apply_result(lsp_apply, project_root)
-        require(lsp_normalized["success"] is True, f"LSP apply was not successful: {lsp_apply}")
-        require(lsp_normalized["buildValidation"]["ran"] is True, "LSP did not run build validation")
         require(cli_bytes == lsp_bytes, "CLI and LSP produced different source bytes")
         require(
             cli_normalized == lsp_normalized,
