@@ -770,6 +770,105 @@ namespace bha::lsp
         );
     }
 
+    TEST_F(SuggestionManagerRollbackTest, FaultIsolationRetainsValidSubsetAfterBatchFailure) {
+        const fs::path good_file = temp_root_ / "good.cpp";
+        const fs::path bad_file = temp_root_ / "bad.cpp";
+        {
+            std::ofstream out(good_file);
+            ASSERT_TRUE(out.good());
+            out << "int good() { return 1; }\n";
+        }
+        {
+            std::ofstream out(bad_file);
+            ASSERT_TRUE(out.good());
+            out << "int bad() { return 2; }\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        config.rerank_remaining_after_each_apply = false;
+        config.build_validation_callback = [&](const fs::path&) {
+            BuildValidationResult result;
+            result.duration_ms = 23;
+            std::ifstream in(bad_file);
+            const std::string content(
+                (std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>()
+            );
+            if (content.find("// rejected") != std::string::npos) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "test-build";
+                diag.message = "injected bad suggestion";
+                result.errors.push_back(std::move(diag));
+                return result;
+            }
+            result.success = true;
+            return result;
+        };
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, good_file);
+        SuggestionManagerTestAccess::add_source_state(manager, temp_root_, bad_file);
+
+        bha::Suggestion good;
+        good.type = bha::SuggestionType::UnityBuild;
+        good.priority = bha::Priority::High;
+        good.is_safe = true;
+        good.edits.push_back(bha::TextEdit{
+            .file = good_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// retained\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-good", std::move(good));
+
+        bha::Suggestion bad;
+        bad.type = bha::SuggestionType::UnityBuild;
+        bad.priority = bha::Priority::High;
+        bad.is_safe = true;
+        bad.edits.push_back(bha::TextEdit{
+            .file = bad_file,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// rejected\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-bad", std::move(bad));
+
+        const auto result = manager.apply_all_suggestions(std::nullopt, true, {}, false);
+
+        EXPECT_TRUE(result.success);
+        EXPECT_EQ(result.applied_count, 1u);
+        EXPECT_EQ(result.skipped_count, 1u);
+        EXPECT_TRUE(result.build_validation_ran);
+        EXPECT_TRUE(result.build_validation_success);
+        EXPECT_TRUE(result.fault_isolation_attempted);
+        EXPECT_TRUE(result.fault_isolation_recovered);
+        ASSERT_EQ(result.fault_isolated_suggestion_ids.size(), 1u);
+        EXPECT_EQ(result.fault_isolated_suggestion_ids.front(), "ana-bad");
+        ASSERT_EQ(result.applied_suggestion_ids.size(), 1u);
+        EXPECT_EQ(result.applied_suggestion_ids.front(), "ana-good");
+        ASSERT_EQ(result.warnings.size(), 1u);
+        EXPECT_NE(result.warnings.front().message.find("ana-bad"), std::string::npos);
+
+        std::ifstream good_in(good_file);
+        ASSERT_TRUE(good_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(good_in)), std::istreambuf_iterator<char>()),
+            "// retained\nint good() { return 1; }\n"
+        );
+        std::ifstream bad_in(bad_file);
+        ASSERT_TRUE(bad_in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(bad_in)), std::istreambuf_iterator<char>()),
+            "int bad() { return 2; }\n"
+        );
+    }
+
     TEST_F(SuggestionManagerRollbackTest, BulkValidationFailsClosedWithoutExecutor) {
         const fs::path source = temp_root_ / "source.cpp";
         {

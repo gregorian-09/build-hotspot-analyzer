@@ -511,6 +511,10 @@ namespace bha::cli
             for (const auto& diagnostic : result.errors) {
                 errors_json.push_back(diagnostic_to_json(diagnostic));
             }
+            JsonValue warnings_json = JsonValue::array();
+            for (const auto& diagnostic : result.warnings) {
+                warnings_json.push_back(diagnostic_to_json(diagnostic));
+            }
 
             JsonValue payload = JsonValue{
                 {"success", result.success},
@@ -531,6 +535,12 @@ namespace bha::cli
                     {"success", result.rollback_success},
                     {"restoredFiles", result.rollback_restored_files}
                 }},
+                {"faultIsolation", {
+                    {"attempted", result.fault_isolation_attempted},
+                    {"recovered", result.fault_isolation_recovered},
+                    {"rejectedSuggestionIds", result.fault_isolated_suggestion_ids}
+                }},
+                {"warnings", warnings_json},
                 {"errors", errors_json}
             };
             if (trust_loop.has_value()) {

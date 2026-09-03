@@ -574,7 +574,157 @@
 
             if (!result.build_validation_success) {
                 result.success = false;
-                if (config_.rollback_on_build_failure) {
+                bool recovered_after_isolation = false;
+                if (config_.rollback_on_build_failure &&
+                    !result.backup_id.empty() &&
+                    result.applied_suggestion_ids.size() > 0 &&
+                    std::ranges::all_of(
+                        result.applied_suggestion_ids,
+                        [&](const std::string& suggestion_id) {
+                            const auto it = bha_suggestions_.find(suggestion_id);
+                            return it != bha_suggestions_.end() &&
+                                bha::resolve_application_mode(it->second) ==
+                                    bha::SuggestionApplicationMode::DirectEdits &&
+                                !it->second.edits.empty();
+                        }
+                    )) {
+                    result.fault_isolation_attempted = true;
+                    if (progress_log) {
+                        progress_log(
+                            "Fault isolation: locating a failing suggestion with binary search"
+                        );
+                    }
+
+                    const auto probe_subset = [&](const std::vector<std::string>& suggestion_ids)
+                        -> std::optional<bool> {
+                        const auto restore = revert_changes_detailed(result.backup_id, true);
+                        if (!restore.success) {
+                            return std::nullopt;
+                        }
+
+                        std::vector<fs::path> probe_changed_files;
+                        for (const auto& suggestion_id : suggestion_ids) {
+                            const auto it = bha_suggestions_.find(suggestion_id);
+                            if (it == bha_suggestions_.end() ||
+                                !apply_file_changes(it->second, probe_changed_files)) {
+                                return std::nullopt;
+                            }
+                        }
+
+                        ApplySuggestionResult probe_validation;
+                        const bool validation_success = validate_post_apply_rebuild(probe_validation);
+                        if (!probe_validation.build_validation_ran) {
+                            return std::nullopt;
+                        }
+                        return validation_success && probe_validation.build_validation_success;
+                    };
+
+                    std::vector<std::string> candidates = result.applied_suggestion_ids;
+                    std::optional<std::string> rejected_suggestion_id;
+                    while (candidates.size() > 1 && !rejected_suggestion_id.has_value()) {
+                        const auto midpoint = candidates.size() / 2;
+                        std::vector<std::string> left(
+                            candidates.begin(),
+                            candidates.begin() + static_cast<std::ptrdiff_t>(midpoint)
+                        );
+                        std::vector<std::string> right(
+                            candidates.begin() + static_cast<std::ptrdiff_t>(midpoint),
+                            candidates.end()
+                        );
+                        const auto left_result = probe_subset(left);
+                        if (!left_result.has_value()) {
+                            break;
+                        }
+                        if (!*left_result) {
+                            candidates = std::move(left);
+                            continue;
+                        }
+
+                        const auto right_result = probe_subset(right);
+                        if (!right_result.has_value()) {
+                            break;
+                        }
+                        if (!*right_result) {
+                            candidates = std::move(right);
+                            continue;
+                        }
+
+                        // Both halves pass alone, so the failure is an interaction
+                        // and removing one suggestion would not be evidence-backed.
+                        candidates.clear();
+                    }
+
+                    if (candidates.size() == 1) {
+                        const auto singleton_result = probe_subset(candidates);
+                        if (singleton_result.has_value() && !*singleton_result) {
+                            rejected_suggestion_id = candidates.front();
+                        }
+                    }
+
+                    if (rejected_suggestion_id.has_value()) {
+                        const auto restore = revert_changes_detailed(result.backup_id, true);
+                        if (restore.success) {
+                            std::vector<fs::path> retained_changed_files;
+                            std::vector<std::string> retained_ids;
+                            retained_ids.reserve(result.applied_suggestion_ids.size() - 1);
+                            bool replay_success = true;
+                            for (const auto& suggestion_id : result.applied_suggestion_ids) {
+                                if (suggestion_id == *rejected_suggestion_id) {
+                                    continue;
+                                }
+                                const auto it = bha_suggestions_.find(suggestion_id);
+                                if (it == bha_suggestions_.end() ||
+                                    !apply_file_changes(it->second, retained_changed_files)) {
+                                    replay_success = false;
+                                    break;
+                                }
+                                retained_ids.push_back(suggestion_id);
+                            }
+
+                            ApplySuggestionResult retained_validation;
+                            if (replay_success) {
+                                const bool retained_validation_success =
+                                    validate_post_apply_rebuild(retained_validation);
+                                replay_success = retained_validation.build_validation_ran &&
+                                    retained_validation_success &&
+                                    retained_validation.build_validation_success;
+                            }
+
+                            if (replay_success) {
+                                result.errors.clear();
+                                result.build_validation_errors.clear();
+                                result.build_validation_ran = retained_validation.build_validation_ran;
+                                result.build_validation_success = retained_validation.build_validation_success;
+                                result.build_validation_duration_ms =
+                                    retained_validation.build_validation_duration_ms;
+                                result.applied_suggestion_ids = std::move(retained_ids);
+                                result.applied_count = result.applied_suggestion_ids.size();
+                                result.skipped_count++;
+                                result.changed_files.clear();
+                                changed_file_set.clear();
+                                for (const auto& file : retained_changed_files) {
+                                    const std::string file_string = file.string();
+                                    if (changed_file_set.insert(file_string).second) {
+                                        result.changed_files.push_back(file_string);
+                                    }
+                                }
+                                result.fault_isolation_recovered = true;
+                                result.fault_isolated_suggestion_ids.push_back(*rejected_suggestion_id);
+
+                                Diagnostic warning;
+                                warning.severity = DiagnosticSeverity::Warning;
+                                warning.source = "bha-lsp";
+                                warning.message =
+                                    "Fault isolation rejected suggestion " + *rejected_suggestion_id +
+                                    " after batch validation failed; the remaining edits passed a fresh validation";
+                                result.warnings.push_back(std::move(warning));
+                                recovered_after_isolation = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!recovered_after_isolation) {
                     rollback_batch();
                 }
             }

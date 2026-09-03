@@ -178,6 +178,8 @@ namespace bha::lsp
         std::vector<std::string> applied_suggestion_ids;
         /// Collected diagnostics across the batch.
         std::vector<Diagnostic> errors;
+        /// Non-fatal diagnostics explaining retained edits or isolation.
+        std::vector<Diagnostic> warnings;
         /// Backup identifier for the batch operation.
         std::string backup_id;
         /// Whether the batch-level build validation was executed.
@@ -196,6 +198,12 @@ namespace bha::lsp
         bool rollback_success = false;
         /// Files restored by the batch rollback.
         std::vector<std::string> rollback_restored_files;
+        /// Whether validation failure triggered binary fault isolation.
+        bool fault_isolation_attempted = false;
+        /// Whether fault isolation retained a validated subset.
+        bool fault_isolation_recovered = false;
+        /// Suggestion IDs rejected by successful fault isolation.
+        std::vector<std::string> fault_isolated_suggestion_ids;
     };
 
     /**

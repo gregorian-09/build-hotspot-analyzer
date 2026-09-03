@@ -2213,6 +2213,12 @@ namespace bha::lsp
             to_json(err_json, err);
             errors_json.push_back(err_json);
         }
+        json warnings_json = json::array();
+        for (const auto& warning : apply_all_result.warnings) {
+            json warning_json;
+            to_json(warning_json, warning);
+            warnings_json.push_back(std::move(warning_json));
+        }
 
         const json trust_loop = build_trust_loop_payload(
             predicted_savings_ms,
@@ -2249,6 +2255,12 @@ namespace bha::lsp
                 {"errorCount", build_errors.size()}
             }},
             {"rollback", rollback_json},
+            {"faultIsolation", {
+                {"attempted", apply_all_result.fault_isolation_attempted},
+                {"recovered", apply_all_result.fault_isolation_recovered},
+                {"rejectedSuggestionIds", apply_all_result.fault_isolated_suggestion_ids}
+            }},
+            {"warnings", warnings_json},
             {"trustLoop", trust_loop}
         };
     }
