@@ -172,6 +172,11 @@ client with unsaved editor buffers must either save or discard changes and
 re-run analysis before applying; the VS Code client refuses to apply when any
 affected file is dirty rather than silently overwriting the buffer.
 
+After a successful server-side write, the VS Code client reconciles affected
+clean open documents from disk. If an affected document becomes dirty during
+the transaction, it is not overwritten and the client reports that manual
+reload/reconciliation is required.
+
 Output:
 - `success`
 - `appliedCount`

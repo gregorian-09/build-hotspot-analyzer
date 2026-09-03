@@ -17,6 +17,9 @@ Evidence-backed suggestions are applied against the saved workspace files.
 The extension refuses to apply a suggestion when an affected file has unsaved
 editor changes or when the suggestion's affected-file metadata is incomplete;
 save or discard the changes and run analysis again before applying.
+After a successful apply, clean open documents are refreshed from the
+validated disk contents. A document that becomes dirty during the operation is
+left untouched and reported for manual reconciliation.
 
 ## Requirements
 

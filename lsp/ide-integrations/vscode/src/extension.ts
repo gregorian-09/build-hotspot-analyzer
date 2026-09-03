@@ -1862,6 +1862,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
     if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails]))) {
         return;
     }
+    const suggestionFiles = collectSuggestionFiles(workspaceRoot, suggestionDetails) ?? [];
 
     const confirm = await vscode.window.showWarningMessage(
         'Apply this suggestion? This will modify your code.',
@@ -1891,6 +1892,13 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             return;
         }
 
+        const editorSynchronized = applyResult.success || applyResult.rollback?.success === true
+            ? await refreshOpenDocumentsFromDisk(suggestionFiles)
+            : true;
+        if (!editorSynchronized) {
+            logLine('Suggestion applied but one or more open documents could not be synchronized with disk');
+        }
+
         if (applyResult.backupId && workspaceRoot) {
             await persistLastBackupId(workspaceRoot, applyResult.backupId);
         } else if (applyResult.backupId) {
@@ -1911,9 +1919,12 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             const message = trustLoopSummary
                 ? `Suggestion applied successfully. Modified ${numFiles} files. ${trustLoopSummary.message}`
                 : `Suggestion applied successfully. Modified ${numFiles} files.`;
+            const synchronizationSuffix = editorSynchronized
+                ? ''
+                : ' One or more open documents could not be synchronized; reload them before editing.';
             const action = await (trustLoopSummary?.regressedOrFlat
-                ? vscode.window.showWarningMessage(message, 'OK', 'Revert')
-                : vscode.window.showInformationMessage(message, 'OK', 'Revert'));
+                ? vscode.window.showWarningMessage(message + synchronizationSuffix, 'OK', 'Revert')
+                : vscode.window.showInformationMessage(message + synchronizationSuffix, 'OK', 'Revert'));
             if (action === 'Revert' && lastBackupId) {
                 await cmdRevertChanges();
             }
@@ -1936,9 +1947,12 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             const rollbackSuffix = rollback?.attempted
                 ? ` Rollback ${rollback.success ? 'succeeded' : 'failed'} (${safeGetString(rollback.reason, 'unknown')}).`
                 : '';
+            const synchronizationSuffix = editorSynchronized
+                ? ''
+                : ' Open documents could not be synchronized with disk.';
             logLine(`Apply suggestion failed: id=${suggestionId}, errors=${errorMsgs.join('; ') || 'unknown'}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, 'unknown') : 'not-attempted'}`);
             vscode.window.showErrorMessage(
-                `Failed to apply suggestion: ${errorMsgs.join(', ') || 'Unknown error'}.${rollbackSuffix}`
+                `Failed to apply suggestion: ${errorMsgs.join(', ') || 'Unknown error'}.${rollbackSuffix}${synchronizationSuffix}`
             );
         }
     } catch (error) {
@@ -2030,6 +2044,9 @@ async function cmdApplyAllSuggestions(): Promise<void> {
     if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, completeSelectedDetails))) {
         return;
     }
+    const selectedFiles = [...new Set(
+        completeSelectedDetails.flatMap((details) => collectSuggestionFiles(workspaceRoot, details) ?? [])
+    )];
 
     const confirmation = await vscode.window.showWarningMessage(
         `Apply ${affectedCount} suggestions? This will modify your code. A backup will be created for rollback.`,
@@ -2079,6 +2096,13 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             return;
         }
 
+        const editorSynchronized = applyResult.success || applyResult.rollback?.success === true
+            ? await refreshOpenDocumentsFromDisk(selectedFiles)
+            : true;
+        if (!editorSynchronized) {
+            logLine('Bulk apply completed but one or more open documents could not be synchronized with disk');
+        }
+
         if (applyResult.backupId && workspaceRoot) {
             await persistLastBackupId(workspaceRoot, applyResult.backupId);
         } else if (applyResult.backupId) {
@@ -2099,6 +2123,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                 `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${applyResult.failedCount}.`,
                 `Validation: ${validation?.ran ? (validation.success ? 'passed' : 'failed') : 'not run'}.`,
                 `Rollback: ${applyResult.rollback?.attempted ? (applyResult.rollback.success ? 'succeeded' : 'failed') : 'not required'}`,
+                `Editor synchronization: ${editorSynchronized ? 'complete' : 'incomplete; reload affected documents'}.`,
                 ...(appliedIds.length > 0 ? [`Applied IDs: ${appliedIds.join(', ')}`] : []),
                 ...errors.slice(0, 6).map((error) => safeGetString(error?.message, 'Unknown apply warning'))
             ];
@@ -2119,6 +2144,9 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             }
             if (trustLoopSummary) {
                 message += ` ${trustLoopSummary.message}`;
+            }
+            if (!editorSynchronized) {
+                message += ' One or more open documents could not be synchronized; reload them before editing.';
             }
 
             const action = await (hasWarnings
@@ -2162,6 +2190,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
                     `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${failedCount}.`,
                     `Validation: ${validation?.ran ? (validation.success ? 'passed' : 'failed') : 'not run'}.`,
                     `Rollback: ${rollback?.attempted ? (rollback.success ? 'succeeded' : 'failed') : 'not required'}`,
+                    `Editor synchronization: ${editorSynchronized ? 'complete' : 'incomplete; reload affected documents'}.`,
                     ...errors.slice(0, 8).map((error) => safeGetString(error?.message, 'Unknown apply error'))
                 ]
             );
@@ -2171,7 +2200,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             logLine(`Apply all failed: failed=${failedCount}, errors=${errorDetails || 'unknown'}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, 'unknown') : 'not-attempted'}`);
 
             vscode.window.showErrorMessage(
-                `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}`
+                `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}${editorSynchronized ? '' : ' Open documents could not be synchronized with disk.'}`
             );
         }
     } catch (error) {
@@ -2384,6 +2413,54 @@ async function ensureNoDirtyAffectedDocuments(
         `Cannot apply while affected files have unsaved changes: ${fileList}. Save or discard those changes, then re-run analysis.`
     );
     return false;
+}
+
+async function refreshOpenDocumentsFromDisk(filePaths: string[]): Promise<boolean> {
+    const affectedFiles = new Set(filePaths.map(normalizeLocalPath));
+    let synchronized = true;
+
+    for (const document of vscode.workspace.textDocuments) {
+        if (document.uri.scheme !== 'file' ||
+            !affectedFiles.has(normalizeLocalPath(document.uri.fsPath))) {
+            continue;
+        }
+        if (document.isDirty) {
+            logLine(`Editor synchronization skipped for dirty document: ${document.uri.fsPath}`);
+            synchronized = false;
+            continue;
+        }
+
+        let diskContent: string;
+        try {
+            diskContent = fs.readFileSync(document.uri.fsPath, 'utf8');
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            logLine(`Editor synchronization failed for ${document.uri.fsPath}: ${errorMessage}`);
+            synchronized = false;
+            continue;
+        }
+        if (document.getText() === diskContent) {
+            continue;
+        }
+
+        const workspaceEdit = new vscode.WorkspaceEdit();
+        const fullDocumentRange = new vscode.Range(
+            new vscode.Position(0, 0),
+            document.positionAt(document.getText().length)
+        );
+        workspaceEdit.replace(document.uri, fullDocumentRange, diskContent);
+        if (!(await vscode.workspace.applyEdit(workspaceEdit))) {
+            logLine(`Editor synchronization rejected for ${document.uri.fsPath}`);
+            synchronized = false;
+            continue;
+        }
+        if (!(await document.save())) {
+            logLine(`Editor synchronization could not save ${document.uri.fsPath}`);
+            synchronized = false;
+        }
+    }
+
+    return synchronized;
 }
 
 function lineColumnToOffset(content: string, line: number, column: number): number | undefined {
