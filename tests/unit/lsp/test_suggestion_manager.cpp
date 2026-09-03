@@ -368,6 +368,60 @@ namespace bha::lsp
         EXPECT_EQ(content, "alpha\nbeta\n");
     }
 
+    TEST_F(SuggestionManagerRollbackTest, DirectEditBundleUsesManagerValidationAndRollback) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+        const std::string original = "int value = 1;\n";
+
+        bool callback_called = false;
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        config.build_validation_callback = [&](const fs::path& project_root) {
+            callback_called = true;
+            EXPECT_EQ(project_root, temp_root_);
+            BuildValidationResult result;
+            result.duration_ms = 29;
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "test-build";
+            diag.message = "injected direct-edit build failure";
+            result.errors.push_back(std::move(diag));
+            return result;
+        };
+        SuggestionManager manager(config);
+        bha::TextEdit edit;
+        edit.file = source;
+        edit.start_line = 0;
+        edit.start_col = 0;
+        edit.end_line = 0;
+        edit.end_col = 0;
+        edit.new_text = "// changed\n";
+
+        const auto result = manager.apply_edit_bundle({edit}, true, false);
+
+        EXPECT_FALSE(result.success);
+        EXPECT_TRUE(callback_called);
+        EXPECT_TRUE(result.build_validation_requested);
+        EXPECT_TRUE(result.build_validation_ran);
+        EXPECT_FALSE(result.build_validation_success);
+        ASSERT_TRUE(result.build_validation_duration_ms.has_value());
+        EXPECT_EQ(*result.build_validation_duration_ms, 29);
+        EXPECT_TRUE(result.rollback_attempted);
+        EXPECT_TRUE(result.rollback_success);
+
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            original
+        );
+    }
+
     TEST_F(SuggestionManagerRollbackTest, AppliesDifferentFilesInCanonicalPathOrder) {
         const fs::path z_file = temp_root_ / "z.hpp";
         const fs::path a_file = temp_root_ / "a.hpp";

@@ -135,9 +135,11 @@ Output includes:
 
 This is an explicit raw-edit escape hatch for clients that already own an edit
 bundle. It is not an evidence-backed suggestion and is not used by the VS Code
-suggestion UI. Analyzed suggestions must use `bha.applySuggestion` or
-`bha.applyAllSuggestions` so the manager can enforce analysis-state preconditions,
-semantic validation, deterministic ordering, and transactional rollback.
+suggestion UI. The bundle still runs through the same manager-owned backup,
+post-apply validation, deterministic file ordering, and transactional rollback
+used by analyzed suggestion applications. Analyzed suggestions must use
+`bha.applySuggestion` or `bha.applyAllSuggestions` so the manager can also
+enforce analysis-state preconditions and semantic validation.
 
 Input supports:
 - `edits`
@@ -154,6 +156,9 @@ Output mirrors apply workflow:
 - `buildValidation`
 - `rollback`
 - `trustLoop` (manual edit path returns unavailable reason)
+
+`buildValidation` and `rollback` are authoritative manager results. The server
+does not run a second build or restore path after the manager returns.
 
 ### `bha.applyAllSuggestions`
 

@@ -303,13 +303,18 @@ namespace bha::lsp
         /**
          * @brief Apply an ad-hoc edit bundle without requiring a suggestion id.
          *
+         * Raw bundles have no analysis evidence or suggestion identity, but they
+         * still use the manager's backup, validation, and rollback transaction.
+         *
          * @param edits Text edits to apply.
          * @param create_backup Create rollback backup before editing files.
-         * @return Apply result including diagnostics.
+         * @param skip_rebuild Skip post-apply build validation.
+         * @return Apply result including authoritative validation and rollback state.
          */
         ApplySuggestionResult apply_edit_bundle(
             const std::vector<bha::TextEdit>& edits,
-            bool create_backup = true
+            bool create_backup = true,
+            bool skip_rebuild = true
         );
 
         /**

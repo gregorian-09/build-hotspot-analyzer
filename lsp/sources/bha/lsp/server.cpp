@@ -1820,23 +1820,8 @@ namespace bha::lsp
         ApplySuggestionResult result;
         {
             std::lock_guard const lock(suggestion_manager_mutex_);
-            result = suggestion_manager_->apply_edit_bundle(edits, true);
+            result = suggestion_manager_->apply_edit_bundle(edits, true, skip_rebuild);
         }
-
-        auto diagnostics_to_json = [](const std::vector<Diagnostic>& diagnostics) {
-            json out = json::array();
-            for (const auto& diagnostic : diagnostics) {
-                json item;
-                to_json(item, diagnostic);
-                out.push_back(std::move(item));
-            }
-            return out;
-        };
-
-        const bool build_validation_requested = config_.rebuild_after_apply && !skip_rebuild;
-        bool build_validation_ran = false;
-        bool build_validation_success = true;
-        std::vector<Diagnostic> build_errors;
 
         json rollback_json = {
             {"attempted", false},
@@ -1846,34 +1831,19 @@ namespace bha::lsp
             {"errors", json::array()}
         };
 
-        if (result.success && build_validation_requested) {
-            std::optional<int> measured_rebuild_duration_ms;
-            build_validation_ran = true;
-            build_validation_success = run_build_validation(build_errors, measured_rebuild_duration_ms);
-            if (!build_validation_success) {
-                result.success = false;
-                result.errors.insert(result.errors.end(), build_errors.begin(), build_errors.end());
-                rollback_json["reason"] = "build-failed";
-
-                if (!config_.rollback_on_build_failure) {
-                    rollback_json["reason"] = "rollback-disabled";
-                } else if (!result.backup_id.has_value() || result.backup_id->empty()) {
-                    rollback_json["reason"] = "no-backup";
-                } else {
-                    RevertResult rollback_result;
-                    {
-                        std::lock_guard const lock(suggestion_manager_mutex_);
-                        rollback_result = suggestion_manager_->revert_changes_detailed(*result.backup_id);
-                    }
-                    rollback_json["attempted"] = true;
-                    rollback_json["success"] = rollback_result.success;
-                    rollback_json["restoredFiles"] = rollback_result.restored_files;
-                    rollback_json["errors"] = diagnostics_to_json(rollback_result.errors);
-                    rollback_json["reason"] = rollback_result.success ? "rollback-succeeded" : "rollback-failed";
-                }
-            }
-        } else if (!build_validation_requested) {
+        if (result.rollback_attempted) {
+            rollback_json["attempted"] = true;
+            rollback_json["success"] = result.rollback_success;
+            rollback_json["restoredFiles"] = result.rollback_restored_files;
+            rollback_json["reason"] = result.rollback_success
+                ? "rollback-succeeded"
+                : "rollback-failed";
+        } else if (!result.build_validation_requested) {
             rollback_json["reason"] = "validation-skipped";
+        } else if (!result.success && !result.build_validation_success) {
+            rollback_json["reason"] = config_.rollback_on_build_failure
+                ? "no-backup"
+                : "rollback-disabled";
         }
 
         json errors_json = json::array();
@@ -1889,10 +1859,11 @@ namespace bha::lsp
             {"errors", errors_json},
             {"backupId", result.backup_id.value_or("")},
             {"buildValidation", {
-                {"requested", build_validation_requested},
-                {"ran", build_validation_ran},
-                {"success", build_validation_success},
-                {"errorCount", build_errors.size()}
+                {"requested", result.build_validation_requested},
+                {"ran", result.build_validation_ran},
+                {"success", result.build_validation_success},
+                {"durationMs", result.build_validation_duration_ms.value_or(0)},
+                {"errorCount", result.build_validation_errors.size()}
             }},
             {"rollback", rollback_json},
             {"trustLoop", {

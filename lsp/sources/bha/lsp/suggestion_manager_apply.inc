@@ -480,22 +480,23 @@
     }
 
     bool SuggestionManager::validate_post_apply_rebuild(ApplySuggestionResult& result) {
-        if (last_analysis_id_.empty()) {
-            return true;
-        }
-
-        auto& analysis = analysis_cache_[last_analysis_id_];
-        auto& registry = build_systems::BuildSystemRegistry::instance();
-
-        if (analysis.units.empty()) {
-            return true;
-        }
-
         if (config_.build_validation_callback) {
+            const fs::path validation_root = last_project_root_.value_or(config_.workspace_root);
+            if (validation_root.empty()) {
+                result.build_validation_success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Build validation could not run because no project root is configured";
+                result.build_validation_errors.push_back(diag);
+                result.errors.push_back(std::move(diag));
+                return false;
+            }
+
             BuildValidationResult validation;
             result.build_validation_ran = true;
             try {
-                validation = config_.build_validation_callback(*last_project_root_);
+                validation = config_.build_validation_callback(validation_root);
             } catch (const std::exception& error) {
                 validation.success = false;
                 Diagnostic diag;
@@ -534,37 +535,9 @@
             return validation.success;
         }
 
-        const fs::path source_dir = analysis.units[0].source_file.parent_path();
-        const auto project_root = detect_project_root_with_registered_adapters(source_dir, registry);
-        build_systems::IBuildSystemAdapter* adapter =
-            project_root.has_value() ? registry.detect(*project_root) : nullptr;
-
-        if (!project_root.has_value() || adapter == nullptr) {
-            return true;
-        }
-
-        result.build_validation_ran = true;
-        build_systems::BuildOptions options;
-        if (auto build_result = adapter->build(*project_root, options);
-            build_result.is_ok() && build_result.value().success) {
-            BuildResult lsp_build_result;
-            lsp_build_result.success = true;
-            result.build_result = lsp_build_result;
-            result.build_validation_success = true;
-            return true;
-        }
-
-        BuildResult lsp_build_result;
-        lsp_build_result.success = false;
-        result.build_result = lsp_build_result;
-        result.build_validation_success = false;
-
-        Diagnostic diag;
-        diag.severity = DiagnosticSeverity::Error;
-        diag.message = "Build failed after applying suggestion";
-        result.build_validation_errors.push_back(diag);
-        result.errors.push_back(std::move(diag));
-        return false;
+        // Build validation is deliberately fail-closed when no caller-owned
+        // executor is configured. The apply caller records the missing run.
+        return true;
     }
 
     std::optional<std::vector<fs::path>> SuggestionManager::collect_compile_command_validation_sources(
@@ -1267,10 +1240,13 @@
 
     ApplySuggestionResult SuggestionManager::apply_edit_bundle(
         const std::vector<bha::TextEdit>& edits,
-        const bool create_backup_flag
+        const bool create_backup_flag,
+        const bool skip_rebuild
     ) {
         ApplySuggestionResult result;
         result.success = false;
+        result.build_validation_requested = !skip_rebuild;
+        result.build_validation_success = skip_rebuild;
 
         if (edits.empty()) {
             Diagnostic diag;
@@ -1314,6 +1290,31 @@
         }
 
         append_changed_files(result, changed_files);
+
+        if (!skip_rebuild) {
+            const bool rebuild_validation_success = validate_post_apply_rebuild(result);
+            if (!result.build_validation_ran) {
+                result.build_validation_success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message =
+                    "Build validation was requested but no validation executor ran";
+                result.build_validation_errors.push_back(diag);
+                result.errors.push_back(std::move(diag));
+            }
+            if (!rebuild_validation_success || !result.build_validation_ran) {
+                if (config_.rollback_on_build_failure && result.backup_id.has_value()) {
+                    rollback_apply_suggestion(
+                        result,
+                        {},
+                        "Automatic rollback failed after build failure"
+                    );
+                }
+                return result;
+            }
+        }
+
         result.success = true;
         return result;
     }

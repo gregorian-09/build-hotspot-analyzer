@@ -238,31 +238,6 @@ namespace bha::lsp
         return it->second.front();
     }
 
-    std::optional<fs::path> detect_project_root_with_registered_adapters(
-        const fs::path& start_path,
-        build_systems::BuildSystemRegistry& registry
-    ) {
-        if (start_path.empty()) {
-            return std::nullopt;
-        }
-
-        fs::path current = start_path;
-        while (!current.empty()) {
-            if (registry.detect(current) != nullptr) {
-                return current;
-            }
-            if (!current.has_parent_path()) {
-                break;
-            }
-            const fs::path parent = current.parent_path();
-            if (parent == current) {
-                break;
-            }
-            current = parent;
-        }
-        return std::nullopt;
-    }
-
     std::optional<fs::path> compile_command_source_path_from_entry(const nlohmann::json& entry) {
         if (!entry.is_object() || !entry.contains("file") || !entry["file"].is_string()) {
             return std::nullopt;
@@ -1064,6 +1039,12 @@ namespace bha::lsp
             }
             files_to_backup.push_back(file);
         }
+        std::ranges::sort(
+            files_to_backup,
+            [](const fs::path& lhs, const fs::path& rhs) {
+                return lhs.lexically_normal().generic_string() < rhs.lexically_normal().generic_string();
+            }
+        );
         return files_to_backup;
     }
 
