@@ -256,7 +256,8 @@ namespace bha::lsp
             std::vector<Diagnostic>& errors,
             std::optional<int>& measured_duration_ms,
             const std::string& job_id = {},
-            const std::string& stage = {}
+            const std::string& stage = {},
+            const std::function<bool()>& is_cancelled = {}
         ) const;
         /// Infer a build command from project structure/build system markers.
         static std::string detect_build_command(const std::filesystem::path& project_root);

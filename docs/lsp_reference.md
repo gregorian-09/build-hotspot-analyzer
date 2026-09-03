@@ -111,16 +111,30 @@ Output:
 - `durationMs`
 - `unrealEnvironmentChecks` (when Unreal markers exist)
 
+`analysisId` identifies the saved analysis snapshot that later apply requests
+must reference. `bha.showMetrics` also returns the current `analysisId` so a
+client can keep the apply request bound to the same snapshot.
+
 ### `bha.applySuggestion`
 
 Input:
 - `suggestionId` (required)
+- `analysisId` (recommended; binds the request to a specific analysis snapshot)
+- `operationId` (recommended; caller correlation ID)
+- `buildProfile` (optional; profile used for validation/build reuse)
 - `skipRebuild` (optional)
 - `skipConsent` (optional)
 
 Suggestion validation cannot be disabled by the client. The manager always
 enforces the configured source-state, semantic/syntax, and post-apply build
 gates; `skipRebuild` only controls whether the configured rebuild is requested.
+The CLI and LSP both construct the same manager-owned apply request, which also
+contains normalized workspace/build/trace context, compile-database identity,
+saved-file fingerprints, validation policy, and the ordered suggestion ID.
+The manager rejects stale context, policy drift, missing operation identity,
+and missing rollback backup before writing files. Async callers propagate
+cancellation to adapter-backed validation; shell-command validation observes
+cancellation after the child command exits and then rolls back if necessary.
 
 Output includes:
 - `success`
@@ -165,6 +179,10 @@ does not run a second build or restore path after the manager returns.
 Input:
 - `minPriority` (string or numeric)
 - `safeOnly` (bool)
+- `analysisId` (recommended; binds the request to a specific analysis snapshot)
+- `operationId` (recommended; caller correlation ID)
+- `buildProfile` (optional; profile used for validation/build reuse)
+- `orderedSuggestionIds` (optional; explicit selection identity)
 - `skipRebuild` (bool)
 - `skipConsent` (bool)
 
@@ -193,6 +211,8 @@ Output:
 - `backupId`
 - `buildValidation`
 - `rollback`
+- `faultIsolation`
+- `warnings`
 - `trustLoop`
 
 ### `bha.getSuggestionDetails`

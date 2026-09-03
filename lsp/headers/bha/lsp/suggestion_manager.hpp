@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "bha/types.hpp"
 #include <string>
+#include <chrono>
 #include <cstdint>
 #include <vector>
 #include <map>
@@ -40,7 +41,67 @@ namespace bha::lsp
      * handling, and cancellation policy. The manager owns when this callback is
      * invoked and how its result affects the file transaction.
      */
-    using BuildValidationCallback = std::function<BuildValidationResult(const fs::path& project_root)>;
+    using BuildValidationCallback = std::function<BuildValidationResult(
+        const fs::path& project_root,
+        const std::function<bool()>& is_cancelled
+    )>;
+
+    /**
+     * @brief Saved disk state captured when an analysis produced an apply plan.
+     */
+    struct ApplyFileState {
+        bool exists = false;
+        std::uintmax_t size = 0;
+        std::uint64_t content_hash = 0;
+
+        [[nodiscard]] bool operator==(const ApplyFileState&) const = default;
+    };
+
+    /**
+     * @brief Immutable analysis/build context required by an apply operation.
+     */
+    struct ApplyContext {
+        fs::path workspace_root;
+        std::string analysis_id;
+        std::optional<fs::path> compile_commands_path;
+        std::optional<fs::path> build_dir;
+        std::optional<fs::path> trace_dir;
+        /// Stable identity for the build context that produced the analysis.
+        std::string build_profile_id;
+        std::map<std::string, ApplyFileState> saved_file_states;
+    };
+
+    /**
+     * @brief Caller policy for the shared apply transaction.
+     */
+    struct ApplyValidationPolicy {
+        bool skip_rebuild = false;
+        bool create_backup = true;
+        bool rollback_on_build_failure = true;
+        bool enforce_compile_command_syntax_gate = true;
+    };
+
+    /**
+     * @brief Canonical request shared by CLI and LSP suggestion application.
+     *
+     * The manager validates the context before mutating files. Callers must
+     * obtain the context from the analysis they intend to modify; a cached
+     * suggestion ID alone is not sufficient to authorize an apply.
+     */
+    struct ApplyRequest {
+        ApplyContext context;
+        ApplyValidationPolicy validation;
+        /// Explicit initial order supplied by the caller/selection model.
+        std::vector<std::string> ordered_suggestion_ids;
+        /// Optional bulk filter used to construct the ordered selection.
+        std::optional<std::string> min_priority;
+        bool safe_only = true;
+        /// Caller-visible operation correlation ID.
+        std::string operation_id;
+        /// Cancellation and deadline are checked before and after mutation.
+        std::function<bool()> is_cancelled;
+        std::optional<std::chrono::steady_clock::time_point> deadline;
+    };
 
     /**
      * Configuration for SuggestionManager resource limits.
@@ -309,6 +370,11 @@ namespace bha::lsp
         );
 
         /**
+         * @brief Apply one suggestion through the canonical context contract.
+         */
+        ApplySuggestionResult apply_suggestion(const ApplyRequest& request);
+
+        /**
          * @brief Apply an ad-hoc edit bundle without requiring a suggestion id.
          *
          * Raw bundles have no analysis evidence or suggestion identity, but they
@@ -355,6 +421,14 @@ namespace bha::lsp
         );
 
         /**
+         * @brief Apply a canonical ordered selection through the shared pipeline.
+         */
+        ApplyAllResult apply_suggestions(
+            const ApplyRequest& request,
+            const std::function<void(const std::string&)>& progress_log = {}
+        );
+
+        /**
          * @brief Revert backup contents to restore previous file states.
          *
          * @param backup_id Backup identifier from list/apply result.
@@ -377,6 +451,13 @@ namespace bha::lsp
          */
         [[nodiscard]] std::vector<Suggestion> get_all_suggestions() const;
         /**
+         * @brief Return the manager's deterministic apply order for a selection.
+         */
+        [[nodiscard]] std::vector<std::string> get_ordered_suggestion_ids(
+            const std::optional<std::string>& min_priority = std::nullopt,
+            bool safe_only = true
+        ) const;
+        /**
          * @brief Lookup one suggestion in LSP-converted cache.
          */
         [[nodiscard]] std::optional<Suggestion> get_suggestion(const std::string& id) const;
@@ -388,6 +469,8 @@ namespace bha::lsp
          * @brief Return latest baseline metrics used for trust-loop reporting.
          */
         [[nodiscard]] std::optional<BuildMetrics> get_last_baseline_metrics() const;
+        /// Return the exact context and saved-file state of the latest analysis.
+        [[nodiscard]] std::optional<ApplyContext> get_last_apply_context() const;
 
     private:
         friend class SuggestionManagerTestAccess;
@@ -534,7 +617,33 @@ namespace bha::lsp
             std::string_view rollback_failure_message
         );
         /// Run post-apply rebuild validation according to manager policy.
-        bool validate_post_apply_rebuild(ApplySuggestionResult& result);
+        bool validate_post_apply_rebuild(
+            ApplySuggestionResult& result,
+            const std::function<bool()>& is_cancelled = {}
+        );
+        /// Apply one suggestion with request cancellation propagated to validation.
+        ApplySuggestionResult apply_suggestion_impl(
+            const std::string& suggestion_id,
+            bool skip_rebuild,
+            bool create_backup_flag,
+            const std::function<bool()>& is_cancelled
+        );
+        /// Validate caller context before any apply mutation.
+        bool validate_apply_request(
+            const ApplyRequest& request,
+            std::vector<Diagnostic>& errors
+        ) const;
+        /// Return true when caller cancellation/deadline requires stopping.
+        static bool apply_request_cancelled(const ApplyRequest& request);
+        /// Apply a canonical filtered/ordered batch after context validation.
+        ApplyAllResult apply_all_suggestions_impl(
+            const std::optional<std::string>& min_priority,
+            bool safe_only,
+            const std::function<void(const std::string&)>& progress_log,
+            bool skip_rebuild,
+            const std::vector<std::string>* ordered_suggestion_ids,
+            const std::function<bool()>& is_cancelled = {}
+        );
         /// Run compile-command-backed syntax validation for a suggestion.
         bool validate_compile_command_backed_suggestion(
             const bha::Suggestion& suggestion,

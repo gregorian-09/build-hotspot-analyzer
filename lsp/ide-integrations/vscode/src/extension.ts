@@ -582,6 +582,10 @@ class BhaTreeDataProvider implements vscode.TreeDataProvider<BhaTreeItem> {
         this.changeEmitter.fire();
     }
 
+    getAnalysisId(): string | undefined {
+        return this.result?.analysisId;
+    }
+
     async refresh(): Promise<void> {
         if (this.refreshing || !client) {
             this.changeEmitter.fire();
@@ -1787,6 +1791,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
     let suggestionId = typeof suggestionIdOrItem === 'string'
         ? suggestionIdOrItem
         : suggestionIdOrItem?.suggestionId;
+    let analysisId: string | undefined;
 
     if (!suggestionId) {
         const result = await client.sendRequest<unknown>('workspace/executeCommand', {
@@ -1798,6 +1803,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             vscode.window.showInformationMessage('No suggestions available');
             return;
         }
+        analysisId = result.analysisId;
 
         const validSuggestions = result.suggestions.filter(isValidSuggestion);
         if (validSuggestions.length === 0) {
@@ -1851,6 +1857,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
         vscode.window.showErrorMessage('BHA: A workspace is required to apply a suggestion.');
         return;
     }
+    analysisId ??= bhaViewProvider?.getAnalysisId();
     const suggestionDetails = await fetchSuggestionDetails(suggestionId);
     if (!suggestionDetails) {
         logLine(`Apply blocked: details unavailable for suggestion ${suggestionId}`);
@@ -1882,7 +1889,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
         const applyResult = await runAsyncLspCommand<unknown>(
             'BHA: Applying suggestion',
             'bha.applySuggestion',
-            { suggestionId, operationId, buildProfile },
+            { suggestionId, analysisId, operationId, buildProfile },
             'Applying edits and validating result...'
         );
 
@@ -1977,6 +1984,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
         vscode.window.showInformationMessage('No suggestions available to apply');
         return;
     }
+    const analysisId = result.analysisId ?? bhaViewProvider?.getAnalysisId();
 
     const validSuggestions = result.suggestions.filter(isValidSuggestion);
     if (validSuggestions.length === 0) {
@@ -2084,6 +2092,7 @@ async function cmdApplyAllSuggestions(): Promise<void> {
             {
                 minPriority,
                 safeOnly,
+                analysisId,
                 operationId,
                 buildProfile
             },

@@ -132,6 +132,30 @@
         return result;
     }
 
+    std::vector<std::string> SuggestionManager::get_ordered_suggestion_ids(
+        const std::optional<std::string>& min_priority,
+        const bool safe_only
+    ) const {
+        const auto index = build_apply_all_candidate_index(
+            bha_suggestions_,
+            parse_priority_threshold(min_priority),
+            safe_only
+        );
+        std::vector<std::string> result;
+        result.reserve(index.size());
+        for (const auto& [key, id] : index) {
+            (void)key;
+            result.push_back(id);
+        }
+        std::ranges::sort(
+            result,
+            [&](const std::string& lhs, const std::string& rhs) {
+                return is_higher_ranked_suggestion(lhs, rhs, bha_suggestions_);
+            }
+        );
+        return result;
+    }
+
     std::optional<Suggestion> SuggestionManager::get_suggestion(const std::string& id) const {
         if (const auto it = suggestions_.find(id); it != suggestions_.end()) {
             return static_cast<const Suggestion&>(it->second);
@@ -155,6 +179,38 @@
             return std::nullopt;
         }
         return extract_build_metrics(analysis_it->second);
+    }
+
+    std::optional<ApplyContext> SuggestionManager::get_last_apply_context() const {
+        if (last_analysis_id_.empty()) {
+            return std::nullopt;
+        }
+
+        const fs::path workspace_root = last_project_root_.value_or(config_.workspace_root).lexically_normal();
+        if (workspace_root.empty()) {
+            return std::nullopt;
+        }
+
+        ApplyContext context;
+        context.workspace_root = workspace_root;
+        context.analysis_id = last_analysis_id_;
+        context.compile_commands_path = last_compile_commands_path_;
+        context.build_dir = last_build_dir_;
+        context.trace_dir = last_trace_dir_;
+        const auto profile_part = [](const std::optional<fs::path>& path) {
+            return path.has_value() ? path->lexically_normal().generic_string() : std::string("<none>");
+        };
+        context.build_profile_id =
+            "analysis-build:" + profile_part(context.compile_commands_path) +
+            "|build:" + profile_part(context.build_dir) +
+            "|trace:" + profile_part(context.trace_dir);
+        for (const auto& [path, state] : last_file_states_) {
+            context.saved_file_states.emplace(
+                path,
+                ApplyFileState{state.exists, state.size, state.content_hash}
+            );
+        }
+        return context;
     }
 
 
@@ -340,6 +396,78 @@
         const std::function<void(const std::string&)>& progress_log,
         const bool skip_rebuild
     ) {
+        return apply_all_suggestions_impl(
+            min_priority,
+            safe_only,
+            progress_log,
+            skip_rebuild,
+            nullptr
+        );
+    }
+
+    ApplyAllResult SuggestionManager::apply_suggestions(
+        const ApplyRequest& request,
+        const std::function<void(const std::string&)>& progress_log
+    ) {
+        ApplyAllResult result;
+        result.success = false;
+        if (!validate_apply_request(request, result.errors)) {
+            return result;
+        }
+        if (request.ordered_suggestion_ids.empty()) {
+            result.success = true;
+            return result;
+        }
+
+        const auto is_cancelled = [&request]() {
+            return apply_request_cancelled(request);
+        };
+        result = apply_all_suggestions_impl(
+            request.min_priority,
+            request.safe_only,
+            progress_log,
+            request.validation.skip_rebuild,
+            &request.ordered_suggestion_ids,
+            is_cancelled
+        );
+        if (!apply_request_cancelled(request)) {
+            return result;
+        }
+
+        if (result.success && !result.backup_id.empty()) {
+            const auto rollback = revert_changes_detailed(result.backup_id);
+            result.rollback_attempted = true;
+            result.rollback_success = rollback.success;
+            result.rollback_restored_files = std::move(rollback.restored_files);
+            result.backup_id.clear();
+            result.applied_count = 0;
+            result.applied_suggestion_ids.clear();
+            result.changed_files.clear();
+            if (!rollback.success) {
+                result.errors.insert(
+                    result.errors.end(),
+                    rollback.errors.begin(),
+                    rollback.errors.end()
+                );
+            }
+        }
+        Diagnostic diag;
+        diag.severity = DiagnosticSeverity::Error;
+        diag.source = "bha-lsp";
+        diag.message = "Apply request cancelled or exceeded its deadline";
+        result.errors.push_back(std::move(diag));
+        result.success = false;
+        return result;
+    }
+
+    ApplyAllResult SuggestionManager::apply_all_suggestions_impl(
+        const std::optional<std::string>& min_priority,
+        const bool safe_only,
+        const std::function<void(const std::string&)>& progress_log,
+        const bool skip_rebuild,
+        const std::vector<std::string>* ordered_suggestion_ids,
+        const std::function<bool()>& is_cancelled
+    ) {
         struct PendingSuggestion {
             std::string key;
         };
@@ -357,20 +485,33 @@
         std::vector<PendingSuggestion> pending;
         std::unordered_set<std::string> seen_pending_keys;
 
-        for (const auto& [id, bha_sug] : bha_suggestions_) {
+        const auto add_pending_suggestion = [&](const std::string& id, const bha::Suggestion& bha_sug) {
+            (void)id;
             if (!is_apply_all_candidate_enabled(bha_sug, priority_threshold, safe_only)) {
                 result.skipped_count++;
-                continue;
+                return;
             }
 
             const std::string key = stable_suggestion_key(bha_sug);
             if (!seen_pending_keys.insert(key).second) {
-                continue;
+                return;
             }
             pending.push_back(PendingSuggestion{key});
 
             for (const auto& file : collect_backup_files(bha_sug)) {
                 all_files_to_backup.emplace(file.generic_string(), file);
+            }
+        };
+
+        if (ordered_suggestion_ids != nullptr) {
+            for (const auto& id : *ordered_suggestion_ids) {
+                if (const auto it = bha_suggestions_.find(id); it != bha_suggestions_.end()) {
+                    add_pending_suggestion(id, it->second);
+                }
+            }
+        } else {
+            for (const auto& [id, bha_sug] : bha_suggestions_) {
+                add_pending_suggestion(id, bha_sug);
             }
         }
 
@@ -455,6 +596,16 @@
             last_project_root_.has_value() && !last_project_root_->empty();
 
         while (!pending.empty()) {
+            if (is_cancelled && is_cancelled()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Apply-all request cancelled before the next suggestion";
+                result.errors.push_back(std::move(diag));
+                pending.clear();
+                rollback_batch();
+                break;
+            }
             auto key_index = build_apply_all_candidate_index(
                 bha_suggestions_,
                 priority_threshold,
@@ -491,7 +642,7 @@
             const std::string selected_key = best_it->key;
             pending.erase(best_it);
 
-            auto apply_result = apply_suggestion(best_id, true, false);
+            auto apply_result = apply_suggestion_impl(best_id, true, false, is_cancelled);
             if (apply_result.success) {
                 merge_apply_all_success(result, best_id, apply_result, changed_file_set);
 
@@ -550,7 +701,7 @@
         if (result.errors.empty() && result.applied_count > 0 &&
             result.build_validation_requested) {
             ApplySuggestionResult validation_result;
-            const bool validation_success = validate_post_apply_rebuild(validation_result);
+            const bool validation_success = validate_post_apply_rebuild(validation_result, is_cancelled);
             result.build_validation_ran = validation_result.build_validation_ran;
             result.build_validation_success =
                 validation_result.build_validation_ran && validation_success;
@@ -612,7 +763,10 @@
                         }
 
                         ApplySuggestionResult probe_validation;
-                        const bool validation_success = validate_post_apply_rebuild(probe_validation);
+                        const bool validation_success = validate_post_apply_rebuild(
+                            probe_validation,
+                            is_cancelled
+                        );
                         if (!probe_validation.build_validation_ran) {
                             return std::nullopt;
                         }
@@ -684,7 +838,7 @@
                             ApplySuggestionResult retained_validation;
                             if (replay_success) {
                                 const bool retained_validation_success =
-                                    validate_post_apply_rebuild(retained_validation);
+                                    validate_post_apply_rebuild(retained_validation, is_cancelled);
                                 replay_success = retained_validation.build_validation_ran &&
                                     retained_validation_success &&
                                     retained_validation.build_validation_success;

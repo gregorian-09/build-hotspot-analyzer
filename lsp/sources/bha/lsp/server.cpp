@@ -1121,13 +1121,17 @@ namespace bha::lsp
         sm_config.enforce_compile_command_syntax_gate = true;
         sm_config.compile_command_validation_timeout_seconds = config_.build_timeout_seconds;
         sm_config.rollback_on_build_failure = config_.rollback_on_build_failure;
-        sm_config.build_validation_callback = [this](const fs::path&) {
+        sm_config.build_validation_callback = [this](
+            const fs::path&,
+            const std::function<bool()>& is_cancelled
+        ) {
             BuildValidationResult validation;
             validation.success = run_build_validation(
                 validation.errors,
                 validation.duration_ms,
                 {},
-                "build"
+                "build",
+                is_cancelled
             );
             return validation;
         };
@@ -1954,11 +1958,31 @@ namespace bha::lsp
         ApplySuggestionResult result;
         {
             std::lock_guard const lock(suggestion_manager_mutex_);
-            result = suggestion_manager_->apply_suggestion(
-                suggestion_id,
-                skip_rebuild,
-                true
+            const auto context = suggestion_manager_->get_last_apply_context();
+            if (!context.has_value()) {
+                throw std::runtime_error("No current analysis context is available for apply");
+            }
+            ApplyRequest request;
+            request.context = *context;
+            if (args.contains("analysisId") && args["analysisId"].is_string()) {
+                request.context.analysis_id = args["analysisId"].get<std::string>();
+            }
+            request.validation.skip_rebuild = skip_rebuild;
+            request.validation.rollback_on_build_failure = config_.rollback_on_build_failure;
+            request.validation.enforce_compile_command_syntax_gate = true;
+            request.ordered_suggestion_ids = {suggestion_id};
+            request.operation_id = args.value(
+                "operationId",
+                "lsp-apply:" + request.context.analysis_id + ":" + suggestion_id
             );
+            request.is_cancelled = [this, job_id]() {
+                return !job_id.empty() && is_async_job_cancel_requested(job_id);
+            };
+            if (config_.build_timeout_seconds > 0) {
+                request.deadline = std::chrono::steady_clock::now() +
+                    std::chrono::seconds(config_.build_timeout_seconds);
+            }
+            result = suggestion_manager_->apply_suggestion(request);
         }
         if (result.success) {
             send_job_log(
@@ -2115,13 +2139,55 @@ namespace bha::lsp
         }
 
         auto apply_all_result = with_manager([&]() {
-            return suggestion_manager_->apply_all_suggestions(
-                min_priority,
-                safe_only,
+            const auto context = suggestion_manager_->get_last_apply_context();
+            if (!context.has_value()) {
+                if (suggestion_manager_->get_all_suggestions().empty()) {
+                    ApplyAllResult no_op;
+                    no_op.success = true;
+                    no_op.build_validation_success = true;
+                    return no_op;
+                }
+                throw std::runtime_error("No current analysis context is available for apply-all");
+            }
+            ApplyRequest request;
+            request.context = *context;
+            if (args.contains("analysisId") && args["analysisId"].is_string()) {
+                request.context.analysis_id = args["analysisId"].get<std::string>();
+            }
+            request.validation.skip_rebuild = skip_rebuild;
+            request.validation.rollback_on_build_failure = config_.rollback_on_build_failure;
+            request.validation.enforce_compile_command_syntax_gate = true;
+            request.min_priority = min_priority;
+            request.safe_only = safe_only;
+            if (args.contains("orderedSuggestionIds") && args["orderedSuggestionIds"].is_array()) {
+                for (const auto& item : args["orderedSuggestionIds"]) {
+                    if (item.is_string()) {
+                        request.ordered_suggestion_ids.push_back(item.get<std::string>());
+                    }
+                }
+            }
+            if (request.ordered_suggestion_ids.empty()) {
+                request.ordered_suggestion_ids = suggestion_manager_->get_ordered_suggestion_ids(
+                    min_priority,
+                    safe_only
+                );
+            }
+            request.operation_id = args.value(
+                "operationId",
+                "lsp-apply-all:" + request.context.analysis_id
+            );
+            request.is_cancelled = [this, job_id]() {
+                return !job_id.empty() && is_async_job_cancel_requested(job_id);
+            };
+            if (config_.build_timeout_seconds > 0) {
+                request.deadline = std::chrono::steady_clock::now() +
+                    std::chrono::seconds(config_.build_timeout_seconds);
+            }
+            return suggestion_manager_->apply_suggestions(
+                request,
                 [&](const std::string& message) {
                     send_job_log(job_id, "apply", message);
-                },
-                skip_rebuild
+                }
             );
         });
         send_job_log(
@@ -2442,9 +2508,13 @@ namespace bha::lsp
         }
 
         std::vector<Suggestion> suggestions;
+        std::string analysis_id;
         {
             std::lock_guard const lock(suggestion_manager_mutex_);
             suggestions = suggestion_manager_->get_all_suggestions();
+            if (const auto context = suggestion_manager_->get_last_apply_context(); context.has_value()) {
+                analysis_id = context->analysis_id;
+            }
         }
 
         json suggestions_json = json::array();
@@ -2455,6 +2525,7 @@ namespace bha::lsp
         }
 
         return {
+            {"analysisId", analysis_id},
             {"suggestions", suggestions_json}
         };
     }
@@ -2509,7 +2580,8 @@ namespace bha::lsp
         std::vector<Diagnostic>& errors,
         std::optional<int>& measured_duration_ms,
         const std::string& job_id,
-        const std::string& stage
+        const std::string& stage,
+        const std::function<bool()>& is_cancelled
     ) const
     {
         const std::string log_category = stage.empty() ? "build" : stage;
@@ -2541,7 +2613,8 @@ namespace bha::lsp
                     emit_log(line);
                 };
                 options.should_cancel = [&]() {
-                    return is_async_job_cancel_requested(job_id);
+                    return (is_cancelled && is_cancelled()) ||
+                        is_async_job_cancel_requested(job_id);
                 };
 
                 const auto started = std::chrono::steady_clock::now();
@@ -2602,7 +2675,8 @@ namespace bha::lsp
                     emit_log(line);
                 };
                 options.should_cancel = [&]() {
-                    return is_async_job_cancel_requested(job_id);
+                    return (is_cancelled && is_cancelled()) ||
+                        is_async_job_cancel_requested(job_id);
                 };
 
                 emit_log("Starting build validation via " + adapter->name());
@@ -2674,6 +2748,7 @@ namespace bha::lsp
 
         std::array<char, 4096> buffer;
         std::string output;
+        bool cancellation_observed = false;
 
         const auto start = std::chrono::steady_clock::now();
         FILE* pipe = popen((effective_build_cmd + " 2>&1").c_str(), "r");
@@ -2688,6 +2763,9 @@ namespace bha::lsp
         while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
             output += buffer.data();
             emit_log(buffer.data());
+            if (is_cancelled && is_cancelled()) {
+                cancellation_observed = true;
+            }
         }
 
         int raw_status = pclose(pipe);
@@ -2702,6 +2780,16 @@ namespace bha::lsp
         }
 #endif
         bool const success = (exit_code == 0);
+
+        if (cancellation_observed) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = "Build validation cancelled or exceeded its deadline";
+            errors.push_back(std::move(diag));
+            emit_log("Build validation cancellation observed after command completion");
+            return false;
+        }
 
         if (!success) {
             const auto compiler_diagnostics = parse_compiler_diagnostics(output);

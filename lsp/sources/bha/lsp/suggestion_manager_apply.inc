@@ -479,7 +479,10 @@
         return rollback_success;
     }
 
-    bool SuggestionManager::validate_post_apply_rebuild(ApplySuggestionResult& result) {
+    bool SuggestionManager::validate_post_apply_rebuild(
+        ApplySuggestionResult& result,
+        const std::function<bool()>& is_cancelled
+    ) {
         if (config_.build_validation_callback) {
             const fs::path validation_root = last_project_root_.value_or(config_.workspace_root);
             if (validation_root.empty()) {
@@ -496,7 +499,7 @@
             BuildValidationResult validation;
             result.build_validation_ran = true;
             try {
-                validation = config_.build_validation_callback(validation_root);
+                validation = config_.build_validation_callback(validation_root, is_cancelled);
             } catch (const std::exception& error) {
                 validation.success = false;
                 Diagnostic diag;
@@ -1120,10 +1123,164 @@
         ).has_value();
     }
 
+    bool SuggestionManager::apply_request_cancelled(const ApplyRequest& request) {
+        if (request.is_cancelled && request.is_cancelled()) {
+            return true;
+        }
+        return request.deadline.has_value() &&
+            std::chrono::steady_clock::now() >= *request.deadline;
+    }
+
+    bool SuggestionManager::validate_apply_request(
+        const ApplyRequest& request,
+        std::vector<Diagnostic>& errors
+    ) const {
+        const auto add_error = [&errors](const std::string& message) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = message;
+            errors.push_back(std::move(diag));
+        };
+
+        const auto expected = get_last_apply_context();
+        if (!expected.has_value()) {
+            add_error("Apply request blocked: no current analysis context is available");
+            return false;
+        }
+
+        const fs::path requested_workspace = normalize_path_for_match(request.context.workspace_root);
+        if (requested_workspace.empty() ||
+            requested_workspace != normalize_path_for_match(expected->workspace_root)) {
+            add_error("Apply request blocked: workspace root does not match the analysis context");
+        }
+        if (request.context.analysis_id != expected->analysis_id) {
+            add_error("Apply request blocked: analysis ID is stale or belongs to another workspace state");
+        }
+        if (request.context.build_profile_id != expected->build_profile_id) {
+            add_error("Apply request blocked: build profile identity does not match the analysis context");
+        }
+
+        const auto same_optional_path = [](const std::optional<fs::path>& lhs,
+                                           const std::optional<fs::path>& rhs) {
+            if (lhs.has_value() != rhs.has_value()) {
+                return false;
+            }
+            return !lhs.has_value() ||
+                normalize_path_for_match(*lhs) == normalize_path_for_match(*rhs);
+        };
+        if (!same_optional_path(request.context.compile_commands_path, expected->compile_commands_path)) {
+            add_error("Apply request blocked: compile database identity does not match the analysis context");
+        }
+        if (!same_optional_path(request.context.build_dir, expected->build_dir)) {
+            add_error("Apply request blocked: build directory does not match the analysis context");
+        }
+        if (!same_optional_path(request.context.trace_dir, expected->trace_dir)) {
+            add_error("Apply request blocked: trace directory does not match the analysis context");
+        }
+        if (request.context.saved_file_states != expected->saved_file_states) {
+            add_error("Apply request blocked: saved document state does not match the analysis snapshot");
+        }
+        for (const auto& [path, expected_state] : request.context.saved_file_states) {
+            const auto current_state = read_file_state(fs::path(path));
+            if (!current_state.has_value() ||
+                ApplyFileState{
+                    current_state->exists,
+                    current_state->size,
+                    current_state->content_hash
+                } != expected_state) {
+                add_error("Apply request blocked: a saved document changed after analysis: " + path);
+            }
+        }
+
+        if (request.operation_id.empty()) {
+            add_error("Apply request blocked: operation ID is required");
+        }
+        if (!request.validation.create_backup) {
+            add_error("Apply request blocked: canonical applies require a rollback backup");
+        }
+        if (request.validation.rollback_on_build_failure != config_.rollback_on_build_failure) {
+            add_error("Apply request blocked: rollback policy differs from manager policy");
+        }
+        if (request.validation.enforce_compile_command_syntax_gate !=
+            config_.enforce_compile_command_syntax_gate) {
+            add_error("Apply request blocked: syntax-validation policy differs from manager policy");
+        }
+        for (const auto& id : request.ordered_suggestion_ids) {
+            if (!bha_suggestions_.contains(id)) {
+                add_error("Apply request blocked: suggestion ID is not part of the analysis: " + id);
+            }
+        }
+        if (apply_request_cancelled(request)) {
+            add_error("Apply request cancelled or exceeded its deadline before mutation");
+        }
+        return errors.empty();
+    }
+
+    ApplySuggestionResult SuggestionManager::apply_suggestion(const ApplyRequest& request) {
+        ApplySuggestionResult result;
+        result.success = false;
+        if (!validate_apply_request(request, result.errors)) {
+            return result;
+        }
+        if (request.ordered_suggestion_ids.size() != 1) {
+            Diagnostic diag;
+            diag.severity = DiagnosticSeverity::Error;
+            diag.source = "bha-lsp";
+            diag.message = "Single-suggestion apply request must contain exactly one suggestion ID";
+            result.errors.push_back(std::move(diag));
+            return result;
+        }
+
+        const auto is_cancelled = [&request]() {
+            return apply_request_cancelled(request);
+        };
+        result = apply_suggestion_impl(
+            request.ordered_suggestion_ids.front(),
+            request.validation.skip_rebuild,
+            request.validation.create_backup,
+            is_cancelled
+        );
+        if (!apply_request_cancelled(request)) {
+            return result;
+        }
+
+        if (result.success && result.backup_id.has_value()) {
+            const auto rollback = revert_changes_detailed(*result.backup_id);
+            result.rollback_attempted = true;
+            result.rollback_success = rollback.success;
+            result.rollback_restored_files = std::move(rollback.restored_files);
+            result.backup_id.reset();
+            if (!rollback.success) {
+                result.errors.insert(
+                    result.errors.end(),
+                    rollback.errors.begin(),
+                    rollback.errors.end()
+                );
+            }
+        }
+        Diagnostic diag;
+        diag.severity = DiagnosticSeverity::Error;
+        diag.source = "bha-lsp";
+        diag.message = "Apply request cancelled or exceeded its deadline";
+        result.errors.push_back(std::move(diag));
+        result.success = false;
+        return result;
+    }
+
     ApplySuggestionResult SuggestionManager::apply_suggestion(
         const std::string& suggestion_id,
+        const bool skip_rebuild,
+        const bool create_backup_flag
+    ) {
+        return apply_suggestion_impl(suggestion_id, skip_rebuild, create_backup_flag, {});
+    }
+
+    ApplySuggestionResult SuggestionManager::apply_suggestion_impl(
+        const std::string& suggestion_id,
         bool skip_rebuild,
-        bool create_backup_flag
+        bool create_backup_flag,
+        const std::function<bool()>& is_cancelled
     ) {
         ApplySuggestionResult result;
         result.success = false;
@@ -1206,7 +1363,7 @@
 
         const auto rebuild_validation_start = std::chrono::steady_clock::now();
         if (!skip_rebuild) {
-            const bool rebuild_validation_success = validate_post_apply_rebuild(result);
+            const bool rebuild_validation_success = validate_post_apply_rebuild(result, is_cancelled);
             if (!result.build_validation_ran) {
                 result.build_validation_success = false;
                 Diagnostic diag;

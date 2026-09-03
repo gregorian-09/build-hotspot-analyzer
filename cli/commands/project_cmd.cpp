@@ -804,7 +804,8 @@ namespace bha::cli
             const auto validation_adapter = resolve_build_adapter(args, project_root);
             const auto validation_options = make_validation_build_options(args);
             manager_config.build_validation_callback = [this, validation_adapter, validation_options](
-                const fs::path& validation_root
+                const fs::path& validation_root,
+                const std::function<bool()>& is_cancelled
             ) {
                 lsp::BuildValidationResult validation;
                 if (validation_adapter == nullptr) {
@@ -817,6 +818,7 @@ namespace bha::cli
                 }
 
                 auto options = validation_options;
+                options.should_cancel = is_cancelled;
                 options.on_output_line = [this](const std::string& line) {
                     if (is_verbose()) {
                         if (is_json()) {
@@ -882,6 +884,10 @@ namespace bha::cli
                 emit_analysis_progress,
                 make_analyze_options(args)
             );
+            const auto apply_context = manager.get_last_apply_context();
+            if (!apply_context.has_value()) {
+                throw std::runtime_error("Analysis did not produce an apply context");
+            }
 
             if (args.get_flag("all")) {
                 auto emit_apply_progress = [this](const std::string& message) {
@@ -897,11 +903,20 @@ namespace bha::cli
                     }
                 };
 
-                auto result = manager.apply_all_suggestions(
-                    args.get("min-priority"),
-                    args.get_flag("safe-only"),
-                    emit_apply_progress
+                lsp::ApplyRequest request;
+                request.context = *apply_context;
+                request.validation.rollback_on_build_failure = manager_config.rollback_on_build_failure;
+                request.validation.enforce_compile_command_syntax_gate =
+                    manager_config.enforce_compile_command_syntax_gate;
+                request.min_priority = args.get("min-priority");
+                request.safe_only = args.get_flag("safe-only");
+                request.ordered_suggestion_ids = manager.get_ordered_suggestion_ids(
+                    request.min_priority,
+                    request.safe_only
                 );
+                request.operation_id = "cli-project-apply-all:" + analysis.analysis_id;
+
+                auto result = manager.apply_suggestions(request, emit_apply_progress);
 
                 std::optional<CliTrustLoopResult> trust_loop;
                 if (result.success && !result.applied_suggestion_ids.empty()) {
@@ -982,7 +997,15 @@ namespace bha::cli
                 return result.success ? 0 : 1;
             }
 
-            const auto result = manager.apply_suggestion(*args.get("suggestion-id"));
+            lsp::ApplyRequest request;
+            request.context = *apply_context;
+            request.validation.rollback_on_build_failure = manager_config.rollback_on_build_failure;
+            request.validation.enforce_compile_command_syntax_gate =
+                manager_config.enforce_compile_command_syntax_gate;
+            request.ordered_suggestion_ids = {*args.get("suggestion-id")};
+            request.operation_id = "cli-project-apply:" + analysis.analysis_id + ":" +
+                request.ordered_suggestion_ids.front();
+            const auto result = manager.apply_suggestion(request);
             if (is_json()) {
                 std::cout << make_apply_result_json(result).dump(2) << "\n";
             } else {

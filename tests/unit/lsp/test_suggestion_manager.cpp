@@ -381,7 +381,10 @@ namespace bha::lsp
         SuggestionManagerConfig config;
         config.workspace_root = temp_root_;
         config.use_disk_backups = false;
-        config.build_validation_callback = [&](const fs::path& project_root) {
+        config.build_validation_callback = [&](
+            const fs::path& project_root,
+            const std::function<bool()>&
+        ) {
             callback_called = true;
             EXPECT_EQ(project_root, temp_root_);
             BuildValidationResult result;
@@ -636,7 +639,10 @@ namespace bha::lsp
         bool callback_called = false;
         SuggestionManagerConfig config;
         config.workspace_root = temp_root_;
-        config.build_validation_callback = [&](const fs::path& project_root) {
+        config.build_validation_callback = [&](
+            const fs::path& project_root,
+            const std::function<bool()>&
+        ) {
             callback_called = true;
             EXPECT_EQ(project_root, temp_root_);
             BuildValidationResult result;
@@ -722,7 +728,10 @@ namespace bha::lsp
         config.workspace_root = temp_root_;
         config.use_disk_backups = false;
         config.rerank_remaining_after_each_apply = false;
-        config.build_validation_callback = [](const fs::path&) {
+        config.build_validation_callback = [](
+            const fs::path&,
+            const std::function<bool()>&
+        ) {
             BuildValidationResult result;
             result.duration_ms = 19;
             Diagnostic diag;
@@ -788,7 +797,10 @@ namespace bha::lsp
         config.workspace_root = temp_root_;
         config.use_disk_backups = false;
         config.rerank_remaining_after_each_apply = false;
-        config.build_validation_callback = [&](const fs::path&) {
+        config.build_validation_callback = [&](
+            const fs::path&,
+            const std::function<bool()>&
+        ) {
             BuildValidationResult result;
             result.duration_ms = 23;
             std::ifstream in(bad_file);
@@ -866,6 +878,112 @@ namespace bha::lsp
         EXPECT_EQ(
             std::string((std::istreambuf_iterator<char>(bad_in)), std::istreambuf_iterator<char>()),
             "int bad() { return 2; }\n"
+        );
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, CanonicalApplyRequestRejectsStaleAnalysisContext) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_build_trace(manager, temp_root_, source);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::IncludeRemoval;
+        suggestion.is_safe = true;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// changed\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-canonical", std::move(suggestion));
+
+        const auto context = manager.get_last_apply_context();
+        ASSERT_TRUE(context.has_value());
+        ApplyRequest request;
+        request.context = *context;
+        request.context.analysis_id = "analysis-stale";
+        request.ordered_suggestion_ids = {"ana-canonical"};
+        request.operation_id = "test-stale-context";
+
+        const auto result = manager.apply_suggestion(request);
+
+        EXPECT_FALSE(result.success);
+        ASSERT_FALSE(result.errors.empty());
+        EXPECT_NE(result.errors.front().message.find("analysis ID"), std::string::npos);
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            "int value = 1;\n"
+        );
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, CanonicalApplyRequestCancelsAndRestoresMutation) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        config.enforce_compile_command_syntax_gate = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_build_trace(manager, temp_root_, source);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::IncludeRemoval;
+        suggestion.is_safe = true;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// changed\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-cancel", std::move(suggestion));
+
+        const auto context = manager.get_last_apply_context();
+        ASSERT_TRUE(context.has_value());
+        bool cancellation_requested = false;
+        ApplyRequest request;
+        request.context = *context;
+        request.validation.skip_rebuild = true;
+        request.validation.enforce_compile_command_syntax_gate = false;
+        request.ordered_suggestion_ids = {"ana-cancel"};
+        request.operation_id = "test-cancellation";
+        request.is_cancelled = [&cancellation_requested]() {
+            const bool requested = cancellation_requested;
+            cancellation_requested = true;
+            return requested;
+        };
+
+        const auto result = manager.apply_suggestion(request);
+
+        EXPECT_FALSE(result.success);
+        EXPECT_TRUE(result.rollback_attempted);
+        EXPECT_TRUE(result.rollback_success);
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            "int value = 1;\n"
         );
     }
 
