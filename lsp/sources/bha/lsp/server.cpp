@@ -1999,14 +1999,11 @@ namespace bha::lsp
             send_job_log(job_id, "apply", "Suggestion apply failed");
         }
 
-        const bool build_validation_requested = config_.rebuild_after_apply && !skip_rebuild;
-        const bool build_validation_ran = result.build_result.has_value();
-        const bool build_validation_success = !build_validation_requested ||
-            (result.build_result.has_value() && result.build_result->success);
+        const bool build_validation_requested = result.build_validation_requested;
+        const bool build_validation_ran = result.build_validation_ran;
+        const bool build_validation_success = result.build_validation_success;
         const std::optional<int> measured_rebuild_duration_ms = result.build_validation_duration_ms;
-        const std::vector<Diagnostic> build_errors = result.build_result.has_value()
-            ? result.build_result->errors
-            : std::vector<Diagnostic>{};
+        const std::vector<Diagnostic> build_errors = result.build_validation_errors;
 
         json rollback_json = {
             {"attempted", false},
@@ -2025,7 +2022,7 @@ namespace bha::lsp
                 : "rollback-failed";
         } else if (!build_validation_requested) {
             rollback_json["reason"] = "validation-skipped";
-        } else if (!result.success && result.build_result.has_value()) {
+        } else if (!result.success && build_validation_requested && !build_validation_success) {
             rollback_json["reason"] = config_.rollback_on_build_failure
                 ? "no-backup"
                 : "rollback-disabled";

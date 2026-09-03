@@ -136,6 +136,14 @@ namespace bha::lsp
         std::vector<std::string> changed_files;
         /// Optional rebuild execution result.
         std::optional<BuildResult> build_result;
+        /// Whether the caller requested post-apply rebuild validation.
+        bool build_validation_requested = false;
+        /// Whether the post-apply rebuild validation executor actually ran.
+        bool build_validation_ran = false;
+        /// Whether the requested post-apply rebuild validation succeeded.
+        bool build_validation_success = true;
+        /// Diagnostics produced specifically by post-apply rebuild validation.
+        std::vector<Diagnostic> build_validation_errors;
         /// Optional trust-loop validation summary.
         std::optional<ValidationResult> validation;
         /// Diagnostics explaining failures or advisory downgrades.

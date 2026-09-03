@@ -477,13 +477,6 @@ namespace bha::cli
                 errors_json.push_back(diagnostic_to_json(diagnostic));
             }
 
-            // Project apply always requests the manager's default rebuild validation.
-            // Keep the single-apply payload aligned with the LSP contract rather
-            // than exposing a reduced CLI-only result.
-            const bool build_validation_requested = true;
-            const bool build_validation_ran = result.build_result.has_value();
-            const bool build_validation_success = !build_validation_requested
-                || (build_validation_ran && result.build_result->success);
             JsonValue rollback = {
                 {"attempted", result.rollback_attempted},
                 {"success", result.rollback_success},
@@ -500,13 +493,11 @@ namespace bha::cli
                 {"backupId", result.backup_id.value_or("")},
                 {"errors", errors_json},
                 {"buildValidation", {
-                    {"requested", build_validation_requested},
-                    {"ran", build_validation_ran},
-                    {"success", build_validation_success},
+                    {"requested", result.build_validation_requested},
+                    {"ran", result.build_validation_ran},
+                    {"success", result.build_validation_success},
                     {"durationMs", result.build_validation_duration_ms.value_or(0)},
-                    {"errorCount", result.build_result.has_value()
-                        ? result.build_result->errors.size()
-                        : std::size_t{0}}
+                    {"errorCount", result.build_validation_errors.size()}
                 }},
                 {"rollback", rollback}
             };

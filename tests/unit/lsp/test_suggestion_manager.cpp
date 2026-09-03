@@ -598,9 +598,62 @@ namespace bha::lsp
         EXPECT_TRUE(callback_called);
         ASSERT_TRUE(result.build_result.has_value());
         EXPECT_TRUE(result.build_result->success);
+        EXPECT_TRUE(result.build_validation_ran);
+        EXPECT_TRUE(result.build_validation_success);
+        EXPECT_EQ(result.build_validation_errors.size(), 0u);
         ASSERT_TRUE(result.build_validation_duration_ms.has_value());
         EXPECT_EQ(*result.build_validation_duration_ms, 37);
         EXPECT_TRUE(result.errors.empty());
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, RequestedValidationFailsClosedWithoutExecutor) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "int value = 1;\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.workspace_root = temp_root_;
+        config.use_disk_backups = false;
+        SuggestionManager manager(config);
+        SuggestionManagerTestAccess::seed_source_state(manager, temp_root_, source);
+        SuggestionManagerTestAccess::seed_build_trace(manager, temp_root_, source);
+
+        bha::Suggestion suggestion;
+        suggestion.type = bha::SuggestionType::UnityBuild;
+        suggestion.target_file.path = source;
+        suggestion.target_file.action = FileAction::Modify;
+        suggestion.edits.push_back(bha::TextEdit{
+            .file = source,
+            .start_line = 0,
+            .start_col = 0,
+            .end_line = 0,
+            .end_col = 0,
+            .new_text = "// generated\n"
+        });
+        SuggestionManagerTestAccess::set_bha_suggestion(manager, "ana-1", std::move(suggestion));
+
+        const auto result = manager.apply_suggestion("ana-1", false, true);
+        EXPECT_FALSE(result.success);
+        EXPECT_TRUE(result.build_validation_requested);
+        EXPECT_FALSE(result.build_validation_ran);
+        EXPECT_FALSE(result.build_validation_success);
+        ASSERT_FALSE(result.errors.empty());
+        EXPECT_NE(
+            result.errors.back().message.find("no validation executor ran"),
+            std::string::npos
+        );
+        EXPECT_TRUE(result.rollback_attempted);
+        EXPECT_TRUE(result.rollback_success);
+
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            "int value = 1;\n"
+        );
     }
 
     TEST_F(SuggestionManagerRollbackTest, FilteredApplyAllBuildFailureRollsBackBatch) {

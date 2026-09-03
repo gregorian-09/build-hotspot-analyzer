@@ -493,6 +493,7 @@
 
         if (config_.build_validation_callback) {
             BuildValidationResult validation;
+            result.build_validation_ran = true;
             try {
                 validation = config_.build_validation_callback(*last_project_root_);
             } catch (const std::exception& error) {
@@ -511,7 +512,16 @@
                 validation.errors.push_back(std::move(diag));
             }
 
+            if (!validation.success && validation.errors.empty()) {
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message = "Build validation failed";
+                validation.errors.push_back(std::move(diag));
+            }
             result.build_validation_duration_ms = validation.duration_ms;
+            result.build_validation_success = validation.success;
+            result.build_validation_errors = validation.errors;
             BuildResult lsp_build_result;
             lsp_build_result.success = validation.success;
             lsp_build_result.errors = validation.errors;
@@ -521,13 +531,6 @@
                 validation.errors.begin(),
                 validation.errors.end()
             );
-            if (!validation.success && validation.errors.empty()) {
-                Diagnostic diag;
-                diag.severity = DiagnosticSeverity::Error;
-                diag.source = "bha-lsp";
-                diag.message = "Build validation failed";
-                result.errors.push_back(std::move(diag));
-            }
             return validation.success;
         }
 
@@ -540,22 +543,26 @@
             return true;
         }
 
+        result.build_validation_ran = true;
         build_systems::BuildOptions options;
         if (auto build_result = adapter->build(*project_root, options);
             build_result.is_ok() && build_result.value().success) {
             BuildResult lsp_build_result;
             lsp_build_result.success = true;
             result.build_result = lsp_build_result;
+            result.build_validation_success = true;
             return true;
         }
 
         BuildResult lsp_build_result;
         lsp_build_result.success = false;
         result.build_result = lsp_build_result;
+        result.build_validation_success = false;
 
         Diagnostic diag;
         diag.severity = DiagnosticSeverity::Error;
         diag.message = "Build failed after applying suggestion";
+        result.build_validation_errors.push_back(diag);
         result.errors.push_back(std::move(diag));
         return false;
     }
@@ -1147,6 +1154,8 @@
     ) {
         ApplySuggestionResult result;
         result.success = false;
+        result.build_validation_requested = !skip_rebuild;
+        result.build_validation_success = skip_rebuild;
         const auto apply_start = std::chrono::steady_clock::now();
         const auto record_phase = [&result](
             const std::string_view name,
@@ -1223,17 +1232,30 @@
         append_changed_files(result, changed_files);
 
         const auto rebuild_validation_start = std::chrono::steady_clock::now();
-        if (!skip_rebuild && !validate_post_apply_rebuild(result)) {
-            record_phase("rebuild_validation", rebuild_validation_start);
-            if (config_.rollback_on_build_failure &&
-                (result.backup_id.has_value() || !transactional_snapshot.empty())) {
-                rollback_apply_suggestion(
-                    result,
-                    transactional_snapshot,
-                    "Automatic rollback failed after build failure"
-                );
+        if (!skip_rebuild) {
+            const bool rebuild_validation_success = validate_post_apply_rebuild(result);
+            if (!result.build_validation_ran) {
+                result.build_validation_success = false;
+                Diagnostic diag;
+                diag.severity = DiagnosticSeverity::Error;
+                diag.source = "bha-lsp";
+                diag.message =
+                    "Build validation was requested but no validation executor ran";
+                result.build_validation_errors.push_back(diag);
+                result.errors.push_back(std::move(diag));
             }
-            return result;
+            if (!rebuild_validation_success || !result.build_validation_ran) {
+                record_phase("rebuild_validation", rebuild_validation_start);
+                if (config_.rollback_on_build_failure &&
+                    (result.backup_id.has_value() || !transactional_snapshot.empty())) {
+                    rollback_apply_suggestion(
+                        result,
+                        transactional_snapshot,
+                        "Automatic rollback failed after build failure"
+                    );
+                }
+                return result;
+            }
         }
         if (!skip_rebuild) {
             record_phase("rebuild_validation", rebuild_validation_start);
