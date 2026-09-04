@@ -113,7 +113,10 @@ function runHost(executable, fixture) {
     };
 
     return new Promise((resolve, reject) => {
-        const child = spawn(executable, args, {
+        const command = process.platform === 'win32' && /\.(?:cmd|bat)$/i.test(executable)
+            ? `"${executable}"`
+            : executable;
+        const child = spawn(command, args, {
             cwd: extensionDevelopmentPath,
             env: environment,
             stdio: 'inherit',
