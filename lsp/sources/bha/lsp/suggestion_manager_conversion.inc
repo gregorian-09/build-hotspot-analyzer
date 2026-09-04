@@ -763,14 +763,14 @@
                         }
 
                         ApplySuggestionResult probe_validation;
-                        const bool validation_success = validate_post_apply_rebuild(
+                        const bool probe_validation_success = validate_post_apply_rebuild(
                             probe_validation,
                             is_cancelled
                         );
                         if (!probe_validation.build_validation_ran) {
                             return std::nullopt;
                         }
-                        return validation_success && probe_validation.build_validation_success;
+                        return probe_validation_success && probe_validation.build_validation_success;
                     };
 
                     std::vector<std::string> candidates = result.applied_suggestion_ids;
