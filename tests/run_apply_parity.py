@@ -168,6 +168,8 @@ def main() -> int:
         compiler = "msvc" if sys.platform == "win32" else "clang"
         environment = os.environ.copy()
         environment["BHA_SCRIPT_DIR"] = str(REPO_ROOT / "cmake")
+        if sys.platform == "win32":
+            environment["CMAKE_GENERATOR"] = "Ninja"
 
         build = run_command(
             [

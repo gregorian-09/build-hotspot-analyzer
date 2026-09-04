@@ -152,6 +152,14 @@ jobs:
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci', $env:TRACE_DIR | Out-Null
 
+          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) {
+            choco install ninja --no-progress --yes
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+          }
+          $null = Get-Command ninja.exe -ErrorAction Stop
+
           if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
             choco install llvm --no-progress --yes
             $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
@@ -482,6 +490,14 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci' | Out-Null
+
+          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) {
+            choco install ninja --no-progress --yes
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+          }
+          $null = Get-Command ninja.exe -ErrorAction Stop
 
           if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
             choco install llvm --no-progress --yes
