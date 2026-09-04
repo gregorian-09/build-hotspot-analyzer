@@ -75,6 +75,7 @@ function createServerCommand(workspaceRoot) {
 
 function createFixture() {
     const workspaceRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bha-vscode-host-'));
+    const userDataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bha-vscode-user-data-'));
     const sourceDirectory = path.join(workspaceRoot, 'src');
     const vscodeDirectory = path.join(workspaceRoot, '.vscode');
     const targetPath = path.join(sourceDirectory, 'dirty.cpp');
@@ -93,7 +94,7 @@ function createFixture() {
         'utf8'
     );
 
-    return { workspaceRoot, targetPath, markerPath, originalContent };
+    return { workspaceRoot, userDataRoot, targetPath, markerPath, originalContent };
 }
 
 function runHost(executable, fixture) {
@@ -104,7 +105,7 @@ function runHost(executable, fixture) {
         '--disable-extensions',
         '--disable-gpu',
         '--user-data-dir',
-        path.join(fixture.workspaceRoot, '.user-data')
+        fixture.userDataRoot
     ];
     const environment = {
         ...process.env,
@@ -133,13 +134,26 @@ function runHost(executable, fixture) {
     });
 }
 
+function removeTree(target) {
+    fs.rmSync(target, {
+        recursive: true,
+        force: true,
+        maxRetries: 20,
+        retryDelay: 250
+    });
+}
+
 async function main() {
     const executable = findCodeExecutable();
     const fixture = createFixture();
     try {
         await runHost(executable, fixture);
     } finally {
-        fs.rmSync(fixture.workspaceRoot, { recursive: true, force: true });
+        try {
+            removeTree(fixture.userDataRoot);
+        } finally {
+            removeTree(fixture.workspaceRoot);
+        }
     }
 }
 
