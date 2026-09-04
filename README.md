@@ -38,6 +38,7 @@ BHA is built to close that gap with a single workflow:
 ## Core Capabilities
 
 ### Trace ingestion
+
 - Clang time-trace JSON
 - GCC time-trace JSON
 - MSVC traces
@@ -46,6 +47,7 @@ BHA is built to close that gap with a single workflow:
 - NVCC traces
 
 ### Analysis
+
 - translation unit hotspots
 - include/dependency cost
 - template-instantiation cost
@@ -57,6 +59,7 @@ BHA is built to close that gap with a single workflow:
 - regression comparison against saved baselines
 
 ### Suggestions
+
 - `pch`
 - `forward-decl`
 - `include-removal`
@@ -66,6 +69,7 @@ BHA is built to close that gap with a single workflow:
 - `pimpl`
 
 ### Build-system coverage
+
 - `cmake`
 - `ninja`
 - `make` and autotools flows
@@ -78,6 +82,7 @@ BHA is built to close that gap with a single workflow:
 - `unreal`
 
 ### Outputs
+
 - `html`
 - `json`
 - `csv`
