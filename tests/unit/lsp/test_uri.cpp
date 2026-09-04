@@ -14,10 +14,11 @@ namespace bha::lsp::uri {
     }
 
     TEST(UriTest, RoundTripsAbsolutePathWithReservedCharacters) {
-        const fs::path original("/tmp/project name/include#header.hpp");
+        const fs::path original = fs::absolute("bha-uri-project name/include#header.hpp").lexically_normal();
         const std::string encoded = path_to_uri(original);
 
-        EXPECT_EQ(encoded, "file:///tmp/project%20name/include%23header.hpp");
+        EXPECT_TRUE(encoded.starts_with("file://"));
+        EXPECT_NE(encoded.find("bha-uri-project%20name/include%23header.hpp"), std::string::npos);
         EXPECT_EQ(uri_to_path(encoded), original);
     }
 }

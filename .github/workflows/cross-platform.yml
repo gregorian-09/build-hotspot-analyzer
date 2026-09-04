@@ -152,6 +152,16 @@ jobs:
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci', $env:TRACE_DIR | Out-Null
 
+          if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
+            choco install llvm --no-progress --yes
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+          }
+          $clangTidy = (Get-Command clang-tidy.exe -ErrorAction Stop).Source
+          $env:BHA_CLANG_TIDY = $clangTidy
+          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
           if (-not (Test-Path $vswhere)) {
             throw "vswhere.exe was not found"
@@ -248,9 +258,19 @@ jobs:
           if ! command -v ninja >/dev/null 2>&1; then
             brew install ninja
           fi
+          clang_tidy="$(command -v clang-tidy || true)"
+          if [[ -z "$clang_tidy" ]]; then
+            brew install llvm
+            clang_tidy="$(brew --prefix llvm)/bin/clang-tidy"
+          fi
+          clang_tidy_dir="$(dirname "$clang_tidy")"
+          echo "$clang_tidy_dir" >> "$GITHUB_PATH"
+          echo "BHA_CLANG_TIDY=$clang_tidy" >> "$GITHUB_ENV"
+          export PATH="$clang_tidy_dir:$PATH"
           {
             cmake --version
             clang++ --version
+            clang-tidy --version
             sw_vers
           } | tee ci/toolchain.txt
           cmake -S . -B "$BUILD_DIR" -G Ninja \
@@ -395,9 +415,19 @@ jobs:
           if ! command -v ninja >/dev/null 2>&1; then
             brew install ninja
           fi
+          clang_tidy="$(command -v clang-tidy || true)"
+          if [[ -z "$clang_tidy" ]]; then
+            brew install llvm
+            clang_tidy="$(brew --prefix llvm)/bin/clang-tidy"
+          fi
+          clang_tidy_dir="$(dirname "$clang_tidy")"
+          echo "$clang_tidy_dir" >> "$GITHUB_PATH"
+          echo "BHA_CLANG_TIDY=$clang_tidy" >> "$GITHUB_ENV"
+          export PATH="$clang_tidy_dir:$PATH"
           {
             cmake --version
             clang++ --version
+            clang-tidy --version
             sw_vers
           } | tee ci/sanitizer-toolchain-macos.txt
           cmake -S . -B "$BUILD_DIR" -G Ninja \
@@ -452,6 +482,16 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci' | Out-Null
+
+          if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
+            choco install llvm --no-progress --yes
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+          }
+          $clangTidy = (Get-Command clang-tidy.exe -ErrorAction Stop).Source
+          $env:BHA_CLANG_TIDY = $clangTidy
+          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
           if (-not (Test-Path $vswhere)) {

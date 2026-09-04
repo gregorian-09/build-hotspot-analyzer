@@ -4,6 +4,7 @@
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -21,10 +22,16 @@ if str(LSP_TEST_DIR) not in sys.path:
 from lsp_test_client import LSPClient, execute_command_with_timeout  # noqa: E402
 
 
-def run_command(command: list[str], cwd: Path, timeout: int) -> subprocess.CompletedProcess[str]:
+def run_command(
+    command: list[str],
+    cwd: Path,
+    timeout: int,
+    env: dict[str, str],
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         cwd=str(cwd),
+        env=env,
         text=True,
         capture_output=True,
         timeout=timeout,
@@ -158,6 +165,9 @@ def main() -> int:
         write_fixture(project_root)
         build_dir = project_root / "build"
         trace_dir = project_root / "traces"
+        compiler = "msvc" if sys.platform == "win32" else "clang"
+        environment = os.environ.copy()
+        environment["BHA_SCRIPT_DIR"] = str(REPO_ROOT / "cmake")
 
         build = run_command(
             [
@@ -166,7 +176,7 @@ def main() -> int:
                 "--build-system",
                 "cmake",
                 "--compiler",
-                "clang",
+                compiler,
                 "--build-dir",
                 str(build_dir),
                 "--output",
@@ -175,6 +185,7 @@ def main() -> int:
             ],
             project_root,
             args.timeout,
+            environment,
         )
         require(
             build.returncode == 0,
@@ -199,7 +210,7 @@ def main() -> int:
             "--json",
         ]
         cli_analysis = parse_json_output(
-            run_command([str(args.binary), *analysis_args], project_root, args.timeout),
+            run_command([str(args.binary), *analysis_args], project_root, args.timeout, environment),
             "CLI analysis",
         )
         cli_suggestions = cli_analysis.get("suggestions") or []
@@ -230,6 +241,7 @@ def main() -> int:
                 ],
                 project_root,
                 args.timeout,
+                environment,
             ),
             "CLI apply",
         )
@@ -245,6 +257,7 @@ def main() -> int:
             args.lsp_server,
             cwd=project_root,
             stderr_path=project_root / "lsp.stderr.log",
+            env=environment,
         )
         profile = {
             "projectRoot": project_root.as_uri(),
@@ -252,7 +265,7 @@ def main() -> int:
             "buildDir": build_dir.as_uri(),
             "traceOutputDir": trace_dir.as_uri(),
             "buildType": "Release",
-            "compiler": "clang",
+            "compiler": compiler,
             "parallelJobs": 0,
         }
         settings = {
