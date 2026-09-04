@@ -191,6 +191,38 @@ def main() -> int:
             build.returncode == 0,
             f"Initial fixture build failed\nstdout:\n{build.stdout[-4000:]}\nstderr:\n{build.stderr[-4000:]}",
         )
+        if sys.platform == "win32":
+            source_file = project_root / "src" / "main.cpp"
+            object_file = trace_dir / "main.obj"
+            timing_file = trace_dir / "msvc-timing.log"
+            trace = run_command(
+                [
+                    str(args.binary),
+                    "record",
+                    "--compiler",
+                    "msvc",
+                    "--output",
+                    str(timing_file),
+                    "--",
+                    "cl",
+                    "/nologo",
+                    "/std:c++20",
+                    "/EHsc",
+                    "/Bt+",
+                    f"/I{project_root / 'include'}",
+                    "/c",
+                    str(source_file),
+                    f"/Fo{object_file}",
+                ],
+                project_root,
+                args.timeout,
+                environment,
+            )
+            require(
+                trace.returncode == 0,
+                f"MSVC parity trace capture failed\nstdout:\n{trace.stdout[-4000:]}\nstderr:\n{trace.stderr[-4000:]}",
+            )
+            require(timing_file.is_file(), "MSVC parity trace artifact was not generated")
         snapshot = source_snapshot(project_root)
 
         analysis_args = [
