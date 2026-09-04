@@ -1,0 +1,111 @@
+name: BHA VS Code Extension Host
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bha-vscode-extension-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  extension-host:
+    name: Extension Host / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-2022
+          - macos-15-intel
+
+    defaults:
+      run:
+        working-directory: lsp/ide-integrations/vscode
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: lsp/ide-integrations/vscode/package-lock.json
+
+      - name: Install VS Code on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes gpg xvfb
+          curl --fail --silent --show-error https://packages.microsoft.com/keys/microsoft.asc |
+            gpg --dearmor |
+            sudo tee /usr/share/keyrings/microsoft-vscode.gpg >/dev/null
+          echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-vscode.gpg] https://packages.microsoft.com/repos/code stable main" |
+            sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install --yes code
+          vscode_executable="$(command -v code)"
+          test -x "$vscode_executable"
+          printf 'VSCODE_EXECUTABLE=%s\n' "$vscode_executable" >> "$GITHUB_ENV"
+
+      - name: Install VS Code on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if ! command -v code >/dev/null 2>&1; then
+            brew install --cask visual-studio-code
+          fi
+          vscode_executable="$(command -v code || true)"
+          if [[ -z "$vscode_executable" ]]; then
+            app_path="$(mdfind 'kMDItemCFBundleIdentifier == "com.microsoft.VSCode"' | head -n 1)"
+            test -n "$app_path"
+            vscode_executable="$app_path/Contents/Resources/app/bin/code"
+          fi
+          test -x "$vscode_executable"
+          printf 'VSCODE_EXECUTABLE=%s\n' "$vscode_executable" >> "$GITHUB_ENV"
+
+      - name: Install VS Code on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $command = Get-Command code.cmd -ErrorAction SilentlyContinue
+          if (-not $command) {
+            choco install vscode --yes --no-progress
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+            $command = Get-Command code.cmd -ErrorAction SilentlyContinue
+          }
+          if (-not $command) {
+            throw 'VS Code CLI was not found after installation'
+          }
+          "VSCODE_EXECUTABLE=$($command.Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install extension dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck extension
+        run: npm run typecheck
+
+      - name: Bundle extension
+        run: npm run bundle
+
+      - name: Run command-driven Extension Development Host test on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1280x800x24' npm run test:host
+
+      - name: Run command-driven Extension Development Host test
+        if: runner.os != 'Linux'
+        run: npm run test:host
