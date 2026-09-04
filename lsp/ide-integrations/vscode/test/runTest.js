@@ -134,13 +134,21 @@ function runHost(executable, fixture) {
     });
 }
 
-function removeTree(target) {
-    fs.rmSync(target, {
-        recursive: true,
-        force: true,
-        maxRetries: 20,
-        retryDelay: 250
-    });
+function removeTree(target, required) {
+    try {
+        fs.rmSync(target, {
+            recursive: true,
+            force: true,
+            maxRetries: 4,
+            retryDelay: 250
+        });
+        return;
+    } catch (error) {
+        if (required) {
+            throw error;
+        }
+        console.warn(`Could not remove disposable VS Code profile ${target}: ${error}`);
+    }
 }
 
 async function main() {
@@ -150,9 +158,9 @@ async function main() {
         await runHost(executable, fixture);
     } finally {
         try {
-            removeTree(fixture.userDataRoot);
+            removeTree(fixture.workspaceRoot, true);
         } finally {
-            removeTree(fixture.workspaceRoot);
+            removeTree(fixture.userDataRoot, false);
         }
     }
 }
