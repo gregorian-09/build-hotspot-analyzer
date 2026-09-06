@@ -91,7 +91,8 @@ namespace bha::suggestions {
             const fs::path build = root_ / "build";
             write_file(build / "compile_commands.json",
                 "[{\"directory\":\"" + build.generic_string() +
-                "\",\"command\":\"clang++ -c " + source.generic_string() +
+                "\",\"command\":\"clang++ -I" + (root_ / "include").generic_string() +
+                " -c " + source.generic_string() +
                 "\",\"file\":\"" + source.generic_string() + "\"}]\n");
             ASSERT_EQ(set_env("BHA_FAKE_CLANG_TIDY_SOURCE", source.generic_string()), 0);
         }
@@ -122,6 +123,11 @@ namespace bha::suggestions {
 
     TEST_F(IncludeSuggesterTest, MapsClangDiagnosticToExactIncludeEdit) {
         const fs::path source = root_ / "main.cpp";
+        write_file(
+            root_ / "include" / "vector",
+            "#pragma once\n"
+            "namespace std { template <typename T> class vector {}; }\n"
+        );
         write_file(root_ / "unused.hpp", "#pragma once\n");
         write_file(source, "#include <vector>\n#include \"unused.hpp\"\nint main() { return 0; }\n");
         write_compile_database(source);

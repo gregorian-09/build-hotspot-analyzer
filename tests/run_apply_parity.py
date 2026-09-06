@@ -58,7 +58,11 @@ def parse_json_output(process: subprocess.CompletedProcess[str], label: str) -> 
 
 
 def normalized_apply_result(result: dict[str, Any], project_root: Path) -> dict[str, Any]:
-    root = str(project_root)
+    # macOS commonly exposes temporary directories through a symlink (for
+    # example, /var and /private/var). Compare the same canonical workspace
+    # path regardless of which spelling a subprocess returns.
+    canonical_root = project_root.resolve(strict=False)
+    root = str(canonical_root)
 
     def relative_paths(values: Any) -> list[str]:
         if not isinstance(values, list):
@@ -66,8 +70,11 @@ def normalized_apply_result(result: dict[str, Any], project_root: Path) -> dict[
         paths = []
         for value in values:
             path = Path(value)
+            if not path.is_absolute():
+                path = project_root / path
+            path = path.resolve(strict=False)
             try:
-                paths.append(path.relative_to(project_root).as_posix())
+                paths.append(path.relative_to(canonical_root).as_posix())
             except ValueError:
                 paths.append(path.as_posix())
         return sorted(paths)

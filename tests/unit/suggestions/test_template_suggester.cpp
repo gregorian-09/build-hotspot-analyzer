@@ -248,6 +248,9 @@ namespace bha::suggestions {
         std::filesystem::create_directories(root / "include", ec);
         std::filesystem::create_directories(root / "src", ec);
 
+        std::ofstream(root / "include" / "vector")
+            << "#pragma once\n"
+            << "namespace std { template <typename T> class vector {}; }\n";
         std::ofstream(root / "include" / "box.hpp")
             << "#pragma once\n"
             << "template <typename T> struct Box { T value{}; };\n";
