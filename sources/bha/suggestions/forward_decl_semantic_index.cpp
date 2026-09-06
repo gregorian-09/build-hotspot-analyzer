@@ -19,6 +19,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/Type.h>
 #include <clang/AST/TypeLoc.h>
+#include <clang/Basic/Version.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
@@ -544,6 +545,9 @@ namespace bha::suggestions {
                 llvm::StringRef,
                 llvm::StringRef,
                 const clang::Module*,
+#if CLANG_VERSION_MAJOR >= 19
+                bool,
+#endif
                 clang::SrcMgr::CharacteristicKind
             ) override {
                 if (!file.has_value() || hash_location.isMacroID() ||
@@ -692,6 +696,9 @@ namespace bha::suggestions {
                 llvm::StringRef,
                 llvm::StringRef,
                 const clang::Module*,
+#if CLANG_VERSION_MAJOR >= 19
+                bool,
+#endif
                 clang::SrcMgr::CharacteristicKind
             ) override {
                 if (replacement_.has_value() ||

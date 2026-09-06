@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -28,15 +29,22 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/Type.h>
 #include <clang/AST/TypeLoc.h>
+#include <clang/Basic/Version.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Tooling/Core/Replacement.h>
 #include <clang/Tooling/Tooling.h>
 #if BHA_HAVE_CLANG_DEP_SCANNING
-#if __has_include(<clang/Tooling/DependencyScanning/DependencyScanningTool.h>)
+#if __has_include(<clang/DependencyScanning/DependencyScanningService.h>)
+#define BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE 1
+#include <clang/DependencyScanning/DependencyScanningService.h>
+#include <clang/Tooling/DependencyScanningTool.h>
+#elif __has_include(<clang/Tooling/DependencyScanning/DependencyScanningTool.h>)
+#define BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE 0
 #include <clang/Tooling/DependencyScanning/DependencyScanningTool.h>
 #else
+#define BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE 0
 #include <clang/Tooling/DependencyScanningTool.h>
 #endif
 #endif
@@ -47,6 +55,16 @@ namespace bha::suggestions {
     namespace {
 
 #if BHA_HAVE_CLANG_TOOLING
+#if BHA_HAVE_CLANG_DEP_SCANNING
+#if BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE
+        namespace dependency_scanning = ::clang::dependencies;
+        using DependencyScanningTool = ::clang::tooling::DependencyScanningTool;
+#else
+        namespace dependency_scanning = ::clang::tooling::dependencies;
+        using DependencyScanningTool = ::clang::tooling::dependencies::DependencyScanningTool;
+#endif
+#endif
+
         bool supported_language_mode(const std::string_view mode) {
             static constexpr std::array<std::string_view, 18> modes = {
                 "c++98", "gnu++98", "c++03", "gnu++03", "c++11", "gnu++11",
@@ -885,9 +903,11 @@ namespace bha::suggestions {
                     hash = fnv1a_append(hash, compiler.generic_string());
                     std::error_code compiler_ec;
                     hash = fnv1a_append(hash, std::to_string(fs::file_size(compiler, compiler_ec)));
+                    const auto compiler_timestamp = fs::last_write_time(compiler, compiler_ec)
+                        .time_since_epoch().count();
                     hash = fnv1a_append(
                         hash,
-                        std::to_string(fs::last_write_time(compiler, compiler_ec).time_since_epoch().count())
+                        std::to_string(static_cast<std::intmax_t>(compiler_timestamp))
                     );
                 }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
@@ -901,11 +921,11 @@ namespace bha::suggestions {
                 }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
 #if BHA_HAVE_CLANG_DEP_SCANNING
-                clang::tooling::dependencies::DependencyScanningService service(
-                    clang::tooling::dependencies::ScanningMode::DependencyDirectivesScan,
-                    clang::tooling::dependencies::ScanningOutputFormat::Make
+                dependency_scanning::DependencyScanningService service(
+                    dependency_scanning::ScanningMode::DependencyDirectivesScan,
+                    dependency_scanning::ScanningOutputFormat::Make
                 );
-                clang::tooling::dependencies::DependencyScanningTool scanner(service);
+                DependencyScanningTool scanner(service);
                 auto dependency_result = scanner.getDependencyFile(
                     command.command_line,
                     command.working_directory.string()
