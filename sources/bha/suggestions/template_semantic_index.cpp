@@ -29,6 +29,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/AST/Type.h>
 #include <clang/AST/TypeLoc.h>
+#include <clang/Basic/Diagnostic.h>
 #include <clang/Basic/Version.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/ASTUnit.h>
@@ -36,10 +37,13 @@
 #include <clang/Tooling/Core/Replacement.h>
 #include <clang/Tooling/Tooling.h>
 #if BHA_HAVE_CLANG_DEP_SCANNING
-#if __has_include(<clang/DependencyScanning/DependencyScanningService.h>)
+#if __has_include(<clang/DependencyScanning/DependencyScanningService.h>) || \
+    __has_include(<clang/DependencyScanning/DependencyScanningUtils.h>)
 #define BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE 1
-#include <clang/DependencyScanning/DependencyScanningService.h>
 #include <clang/Tooling/DependencyScanningTool.h>
+#if __has_include(<clang/DependencyScanning/DependencyScanningService.h>)
+#include <clang/DependencyScanning/DependencyScanningService.h>
+#endif
 #elif __has_include(<clang/Tooling/DependencyScanning/DependencyScanningTool.h>)
 #define BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE 0
 #include <clang/Tooling/DependencyScanning/DependencyScanningTool.h>
@@ -926,10 +930,34 @@ namespace bha::suggestions {
                     dependency_scanning::ScanningOutputFormat::Make
                 );
                 DependencyScanningTool scanner(service);
+#if BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE
+                clang::IgnoringDiagConsumer diagnostics;
+#if CLANG_VERSION_MAJOR >= 23
+                const auto lookup_module_output = [](
+                    const dependency_scanning::ModuleID&,
+                    dependency_scanning::ModuleOutputKind
+                ) -> std::string {
+                    return {};
+                };
+                auto dependency_result = scanner.getDependencyFile(
+                    command.command_line,
+                    command.working_directory.string(),
+                    lookup_module_output,
+                    diagnostics
+                );
+#else
+                auto dependency_result = scanner.getDependencyFile(
+                    command.command_line,
+                    command.working_directory.string(),
+                    diagnostics
+                );
+#endif
+#else
                 auto dependency_result = scanner.getDependencyFile(
                     command.command_line,
                     command.working_directory.string()
                 );
+#endif
                 if (dependency_result) {
                     for (const auto& dependency : parse_dependency_files(
                         *dependency_result,
