@@ -160,16 +160,6 @@ jobs:
           }
           $null = Get-Command ninja.exe -ErrorAction Stop
 
-          if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
-            choco install llvm --no-progress --yes
-            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
-            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-            $env:Path = "$machinePath;$userPath"
-          }
-          $clangTidy = (Get-Command clang-tidy.exe -ErrorAction Stop).Source
-          $env:BHA_CLANG_TIDY = $clangTidy
-          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
           if (-not (Test-Path $vswhere)) {
             throw "vswhere.exe was not found"
@@ -193,6 +183,38 @@ jobs:
             }
           }
 
+          # The LLVM Windows installer provides clang-tidy, but the release
+          # archive is the supported package for applications linking against
+          # Clang/LLVM libraries. Keep this toolchain in the runner temp area.
+          $release = Invoke-RestMethod -Headers @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'bha-ci' } `
+            -Uri 'https://api.github.com/repos/llvm/llvm-project/releases/latest'
+          $asset = @($release.assets | Where-Object {
+            $_.name -match '^clang\+llvm-.+-x86_64-pc-windows-msvc\.tar\.xz$'
+          }) | Select-Object -First 1
+          if (-not $asset) {
+            throw 'The latest LLVM release has no Windows Clang/LLVM tooling archive'
+          }
+          $llvmRoot = Join-Path $env:RUNNER_TEMP 'bha-llvm-tooling'
+          $llvmArchive = Join-Path $env:RUNNER_TEMP $asset.name
+          New-Item -ItemType Directory -Force -Path $llvmRoot | Out-Null
+          Invoke-WebRequest -UseBasicParsing -Uri $asset.browser_download_url -OutFile $llvmArchive
+          tar -xf $llvmArchive -C $llvmRoot --strip-components=1
+          $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
+          $clangToolingHeader = Join-Path $llvmRoot 'include\clang\Tooling\Tooling.h'
+          $clangToolingLibrary = Join-Path $llvmRoot 'lib\clang-cpp.lib'
+          if (-not (Test-Path $clangTidy)) {
+            throw "LLVM archive does not contain clang-tidy: $clangTidy"
+          }
+          if (-not (Test-Path $clangToolingHeader) -or -not (Test-Path $clangToolingLibrary)) {
+            throw 'LLVM archive does not contain the Clang LibTooling headers and library'
+          }
+          $env:Path = "$llvmRoot\bin;$env:Path"
+          $env:BHA_CLANG_TIDY = $clangTidy
+          $env:BHA_CLANG_TOOLING_ROOT = $llvmRoot
+          "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "BHA_CLANG_TOOLING_ROOT=$llvmRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
           @'
           #include <array>
           #include <string>
@@ -203,23 +225,24 @@ jobs:
           }
           '@ | Set-Content -Encoding utf8NoBOM "$env:TRACE_DIR\trace_fixture.cpp"
 
-          cmake -S . -B $env:BUILD_DIR -G 'Visual Studio 17 2022' -A x64 `
+          cmake -S . -B $env:BUILD_DIR -G Ninja `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
             -DBHA_ENABLE_LSP=ON `
-            -DBHA_ENABLE_TEMPLATE_AST=OFF 2>&1 | Tee-Object 'ci\configure.log'
+            -DBHA_ENABLE_TEMPLATE_AST=ON `
+            "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" 2>&1 | Tee-Object 'ci\configure.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          cmake --build $env:BUILD_DIR --config Debug --parallel 2 2>&1 |
+          cmake --build $env:BUILD_DIR --parallel 2 2>&1 |
             Tee-Object 'ci\build.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          ctest --test-dir $env:BUILD_DIR -C Debug --output-on-failure --parallel 2 2>&1 |
+          ctest --test-dir $env:BUILD_DIR --output-on-failure --parallel 2 2>&1 |
             Tee-Object 'ci\ctest.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          $bha = Join-Path $env:BUILD_DIR 'Debug\bha.exe'
+          $bha = Join-Path $env:BUILD_DIR 'bha.exe'
           $source = Join-Path $env:TRACE_DIR 'trace_fixture.cpp'
           $object = Join-Path $env:TRACE_DIR 'trace_fixture.obj'
           $timing = Join-Path $env:TRACE_DIR 'msvc-timing.log'
@@ -266,14 +289,14 @@ jobs:
           if ! command -v ninja >/dev/null 2>&1; then
             brew install ninja
           fi
-          clang_tidy="$(command -v clang-tidy || true)"
-          if [[ -z "$clang_tidy" ]]; then
-            brew install llvm
-            clang_tidy="$(brew --prefix llvm)/bin/clang-tidy"
-          fi
+          brew install llvm
+          llvm_prefix="$(brew --prefix llvm)"
+          clang_tidy="$llvm_prefix/bin/clang-tidy"
+          test -x "$clang_tidy"
           clang_tidy_dir="$(dirname "$clang_tidy")"
           echo "$clang_tidy_dir" >> "$GITHUB_PATH"
           echo "BHA_CLANG_TIDY=$clang_tidy" >> "$GITHUB_ENV"
+          echo "BHA_CLANG_TOOLING_ROOT=$llvm_prefix" >> "$GITHUB_ENV"
           export PATH="$clang_tidy_dir:$PATH"
           {
             cmake --version
@@ -289,7 +312,8 @@ jobs:
             -DBHA_BUILD_CLI=ON \
             -DBHA_BUILD_REFACTOR_TOOLS=OFF \
             -DBHA_ENABLE_LSP=ON \
-            -DBHA_ENABLE_TEMPLATE_AST=OFF \
+            -DBHA_ENABLE_TEMPLATE_AST=ON \
+            -DBHA_CLANG_TOOLING_ROOT="$llvm_prefix" \
             2>&1 | tee ci/configure.log
 
       - name: Build and test
@@ -423,14 +447,14 @@ jobs:
           if ! command -v ninja >/dev/null 2>&1; then
             brew install ninja
           fi
-          clang_tidy="$(command -v clang-tidy || true)"
-          if [[ -z "$clang_tidy" ]]; then
-            brew install llvm
-            clang_tidy="$(brew --prefix llvm)/bin/clang-tidy"
-          fi
+          brew install llvm
+          llvm_prefix="$(brew --prefix llvm)"
+          clang_tidy="$llvm_prefix/bin/clang-tidy"
+          test -x "$clang_tidy"
           clang_tidy_dir="$(dirname "$clang_tidy")"
           echo "$clang_tidy_dir" >> "$GITHUB_PATH"
           echo "BHA_CLANG_TIDY=$clang_tidy" >> "$GITHUB_ENV"
+          echo "BHA_CLANG_TOOLING_ROOT=$llvm_prefix" >> "$GITHUB_ENV"
           export PATH="$clang_tidy_dir:$PATH"
           {
             cmake --version
@@ -446,7 +470,8 @@ jobs:
             -DBHA_BUILD_CLI=ON \
             -DBHA_BUILD_REFACTOR_TOOLS=OFF \
             -DBHA_ENABLE_LSP=ON \
-            -DBHA_ENABLE_TEMPLATE_AST=OFF \
+            -DBHA_ENABLE_TEMPLATE_AST=ON \
+            -DBHA_CLANG_TOOLING_ROOT="$llvm_prefix" \
             -DBHA_ENABLE_SANITIZERS=ON \
             2>&1 | tee ci/sanitizer-configure-macos.log
 
@@ -499,16 +524,6 @@ jobs:
           }
           $null = Get-Command ninja.exe -ErrorAction Stop
 
-          if (-not (Get-Command clang-tidy.exe -ErrorAction SilentlyContinue)) {
-            choco install llvm --no-progress --yes
-            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
-            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-            $env:Path = "$machinePath;$userPath"
-          }
-          $clangTidy = (Get-Command clang-tidy.exe -ErrorAction Stop).Source
-          $env:BHA_CLANG_TIDY = $clangTidy
-          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
           $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
           if (-not (Test-Path $vswhere)) {
             throw "vswhere.exe was not found"
@@ -532,22 +547,52 @@ jobs:
             }
           }
 
-          cmake -S . -B $env:BUILD_DIR -G 'Visual Studio 17 2022' -A x64 `
+          $release = Invoke-RestMethod -Headers @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'bha-ci' } `
+            -Uri 'https://api.github.com/repos/llvm/llvm-project/releases/latest'
+          $asset = @($release.assets | Where-Object {
+            $_.name -match '^clang\+llvm-.+-x86_64-pc-windows-msvc\.tar\.xz$'
+          }) | Select-Object -First 1
+          if (-not $asset) {
+            throw 'The latest LLVM release has no Windows Clang/LLVM tooling archive'
+          }
+          $llvmRoot = Join-Path $env:RUNNER_TEMP 'bha-llvm-tooling'
+          $llvmArchive = Join-Path $env:RUNNER_TEMP $asset.name
+          New-Item -ItemType Directory -Force -Path $llvmRoot | Out-Null
+          Invoke-WebRequest -UseBasicParsing -Uri $asset.browser_download_url -OutFile $llvmArchive
+          tar -xf $llvmArchive -C $llvmRoot --strip-components=1
+          $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
+          $clangToolingHeader = Join-Path $llvmRoot 'include\clang\Tooling\Tooling.h'
+          $clangToolingLibrary = Join-Path $llvmRoot 'lib\clang-cpp.lib'
+          if (-not (Test-Path $clangTidy)) {
+            throw "LLVM archive does not contain clang-tidy: $clangTidy"
+          }
+          if (-not (Test-Path $clangToolingHeader) -or -not (Test-Path $clangToolingLibrary)) {
+            throw 'LLVM archive does not contain the Clang LibTooling headers and library'
+          }
+          $env:Path = "$llvmRoot\bin;$env:Path"
+          $env:BHA_CLANG_TIDY = $clangTidy
+          $env:BHA_CLANG_TOOLING_ROOT = $llvmRoot
+          "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "BHA_CLANG_TOOLING_ROOT=$llvmRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          cmake -S . -B $env:BUILD_DIR -G Ninja `
             -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
             -DBHA_ENABLE_LSP=ON `
-            -DBHA_ENABLE_TEMPLATE_AST=OFF `
+            -DBHA_ENABLE_TEMPLATE_AST=ON `
+            "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" `
             -DBHA_ENABLE_SANITIZERS=ON 2>&1 |
             Tee-Object 'ci\sanitizer-configure-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          cmake --build $env:BUILD_DIR --config Debug --parallel 2 2>&1 |
+          cmake --build $env:BUILD_DIR --parallel 2 2>&1 |
             Tee-Object 'ci\sanitizer-build-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          ctest --test-dir $env:BUILD_DIR -C Debug --output-on-failure --parallel 2 2>&1 |
+          ctest --test-dir $env:BUILD_DIR --output-on-failure --parallel 2 2>&1 |
             Tee-Object 'ci\sanitizer-ctest-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

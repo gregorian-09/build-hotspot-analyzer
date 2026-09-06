@@ -159,45 +159,60 @@ add_subdirectory(resources)
 set(BHA_HAVE_CLANG_TOOLING 0)
 set(BHA_HAVE_CLANG_DEP_SCANNING 0)
 if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
+    set(BHA_CLANG_TOOLING_ROOT "" CACHE PATH
+            "LLVM/Clang installation prefix used for LibTooling and dependency scanning")
+
+    set(BHA_CLANG_TOOLING_INCLUDE_HINTS)
+    set(BHA_CLANG_TOOLING_LIBRARY_HINTS)
+    if(BHA_CLANG_TOOLING_ROOT)
+        list(APPEND BHA_CLANG_TOOLING_INCLUDE_HINTS
+                "${BHA_CLANG_TOOLING_ROOT}/include")
+        list(APPEND BHA_CLANG_TOOLING_LIBRARY_HINTS
+                "${BHA_CLANG_TOOLING_ROOT}/lib")
+    endif()
+
+    # Prefer an installed LLVM package when available. Its exported paths are
+    # portable across distribution prefixes and avoid versioned OS paths.
+    if(NOT CMAKE_C_COMPILER_LOADED)
+        # LLVMConfig probes optional C libraries while loading its exported
+        # package metadata, so make the C language available for that probe.
+        enable_language(C)
+    endif()
+    find_package(LLVM CONFIG QUIET
+            HINTS
+                "${BHA_CLANG_TOOLING_ROOT}/lib/cmake/llvm"
+                "${BHA_CLANG_TOOLING_ROOT}/cmake")
+    if(LLVM_FOUND)
+        list(APPEND BHA_CLANG_TOOLING_INCLUDE_HINTS ${LLVM_INCLUDE_DIRS})
+        list(APPEND BHA_CLANG_TOOLING_LIBRARY_HINTS ${LLVM_LIBRARY_DIRS})
+        find_package(Clang CONFIG QUIET
+                HINTS
+                    "${BHA_CLANG_TOOLING_ROOT}/lib/cmake/clang"
+                    "${BHA_CLANG_TOOLING_ROOT}/cmake/clang")
+        if(Clang_FOUND)
+            list(APPEND BHA_CLANG_TOOLING_INCLUDE_HINTS ${CLANG_INCLUDE_DIRS})
+            list(APPEND BHA_CLANG_TOOLING_LIBRARY_HINTS ${CLANG_LIBRARY_DIRS})
+        endif()
+    endif()
+
     find_path(BHA_CLANG_TOOLING_INCLUDE_DIR
             NAMES clang/Tooling/Tooling.h
-            PATHS
-                /usr/lib/llvm-18/include
-                /usr/lib/llvm-17/include
-                /usr/lib/llvm-16/include
-                /usr/lib/llvm-15/include
-                /usr/include
+            HINTS ${BHA_CLANG_TOOLING_INCLUDE_HINTS}
     )
     find_library(BHA_CLANG_CPP_LIBRARY
             NAMES clang-cpp libclang-cpp
-            PATHS
-                /usr/lib/llvm-18/lib
-                /usr/lib/llvm-17/lib
-                /usr/lib/llvm-16/lib
-                /usr/lib/llvm-15/lib
-                /usr/lib/x86_64-linux-gnu
+            HINTS ${BHA_CLANG_TOOLING_LIBRARY_HINTS}
     )
     find_library(BHA_LLVM_LIBRARY
-            NAMES LLVM-18 LLVM
-            PATHS
-                /usr/lib/llvm-18/lib
-                /usr/lib/llvm-17/lib
-                /usr/lib/llvm-16/lib
-                /usr/lib/llvm-15/lib
-                /usr/lib/x86_64-linux-gnu
-                /lib/x86_64-linux-gnu
+            NAMES LLVM LLVM-${LLVM_VERSION_MAJOR} LLVM-${LLVM_PACKAGE_VERSION}
+            HINTS ${BHA_CLANG_TOOLING_LIBRARY_HINTS}
     )
 
     find_path(BHA_CLANG_DEP_SCANNING_INCLUDE_DIR
             NAMES
                 clang/Tooling/DependencyScanning/DependencyScanningTool.h
                 clang/Tooling/DependencyScanningTool.h
-            PATHS
-                /usr/lib/llvm-18/include
-                /usr/lib/llvm-17/include
-                /usr/lib/llvm-16/include
-                /usr/lib/llvm-15/include
-                /usr/include
+            HINTS ${BHA_CLANG_TOOLING_INCLUDE_HINTS}
     )
 
     if(BHA_ENABLE_TEMPLATE_AST AND BHA_CLANG_TOOLING_INCLUDE_DIR AND
