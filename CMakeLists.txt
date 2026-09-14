@@ -13,6 +13,9 @@ option(BHA_BUILD_TESTS "Build unit and integration tests" ON)
 option(BHA_BUILD_CLI "Build command-line interface" ON)
 option(BHA_BUILD_REFACTOR_TOOLS "Build optional semantic refactor tools" OFF)
 option(BHA_ENABLE_TEMPLATE_AST "Enable Clang AST-backed template indexing when LibTooling is available" ON)
+option(BHA_REQUIRE_CLANG_TOOLING
+       "Fail configuration when requested AST indexing cannot locate Clang LibTooling"
+       OFF)
 option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS
@@ -224,6 +227,13 @@ if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
             message(STATUS "Clang dependency scanning found: enabling exact header invalidation")
         endif()
     elseif(BHA_ENABLE_TEMPLATE_AST)
+        if(BHA_REQUIRE_CLANG_TOOLING)
+            message(FATAL_ERROR
+                    "Clang LibTooling is required but unavailable. "
+                    "Header='${BHA_CLANG_TOOLING_INCLUDE_DIR}', "
+                    "clang-cpp='${BHA_CLANG_CPP_LIBRARY}', "
+                    "LLVM='${BHA_LLVM_LIBRARY}'.")
+        endif()
         message(STATUS "Clang LibTooling not found: template suggestions remain disabled")
     endif()
 endif()

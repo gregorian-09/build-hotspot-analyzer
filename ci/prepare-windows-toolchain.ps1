@@ -104,25 +104,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
-$clangToolingHeader = Join-Path $llvmRoot 'include\clang\Tooling\Tooling.h'
-$clangToolingLibraries = @(
-    Get-ChildItem -Path (Join-Path $llvmRoot 'lib') -File |
-        Where-Object { $_.Name -in @('clang-cpp.lib', 'libclang-cpp.lib') }
-)
 if (-not (Test-Path $clangTidy)) {
     throw "LLVM archive does not contain clang-tidy: $clangTidy"
 }
-if (-not (Test-Path $clangToolingHeader)) {
-    throw "LLVM archive does not contain the Clang LibTooling header: $clangToolingHeader"
-}
-if ($clangToolingLibraries.Count -ne 1) {
-    $libraryNames = @(
-        Get-ChildItem -Path (Join-Path $llvmRoot 'lib') -File -Filter '*clang-cpp*.lib' |
-            Select-Object -ExpandProperty Name
-    ) -join ', '
-    throw "LLVM archive does not contain exactly one clang-cpp import library. Found: $libraryNames"
-}
-$clangToolingLibrary = $clangToolingLibraries[0].FullName
 
 "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 Add-EnvironmentLine -Name 'BHA_CLANG_TIDY' -Value $clangTidy

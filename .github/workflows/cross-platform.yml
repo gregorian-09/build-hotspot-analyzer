@@ -177,6 +177,7 @@ jobs:
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
             -DBHA_ENABLE_LSP=ON `
             -DBHA_ENABLE_TEMPLATE_AST=ON `
+            -DBHA_REQUIRE_CLANG_TOOLING=ON `
             "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" 2>&1 | Tee-Object 'ci\configure.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -513,6 +514,7 @@ jobs:
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
             -DBHA_ENABLE_LSP=ON `
             -DBHA_ENABLE_TEMPLATE_AST=ON `
+            -DBHA_REQUIRE_CLANG_TOOLING=ON `
             "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" `
             -DBHA_ENABLE_SANITIZERS=ON 2>&1 |
             Tee-Object 'ci\sanitizer-configure-msvc.log'
