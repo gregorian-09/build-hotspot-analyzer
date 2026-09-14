@@ -92,7 +92,12 @@ if (Test-Path $llvmRoot) {
 }
 New-Item -ItemType Directory -Force -Path $llvmRoot | Out-Null
 Write-Host 'Extracting LLVM LibTooling archive'
-tar -xf $llvmArchivePath -C $llvmRoot --strip-components=1
+if (-not $LlvmArchive.EndsWith('.tar.zst', [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "Unsupported LLVM archive format: $LlvmArchive"
+}
+$zstd = Get-Command zstd.exe -ErrorAction Stop
+& $zstd.Source --decompress --stdout --quiet $llvmArchivePath |
+    tar.exe -xf - -C $llvmRoot --strip-components=1
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
