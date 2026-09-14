@@ -141,90 +141,36 @@ jobs:
     env:
       BUILD_DIR: build-msvc
       TRACE_DIR: ci\traces\msvc
+      LLVM_WINDOWS_RELEASE: llvmorg-23.1.1
+      LLVM_WINDOWS_ARCHIVE: clang+llvm-23.1.1-x86_64-pc-windows-msvc.tar.xz
+      LLVM_WINDOWS_SHA256: c54ac8146b420fe72e11e6fdd56498d6818011ad23267196b6ab37b5ac9264c3
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Configure, build, test, and analyze an MSVC trace
+      - name: Restore LLVM LibTooling archive
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\bha-llvm-cache
+          key: bha-windows-libtooling-${{ env.LLVM_WINDOWS_RELEASE }}
+
+      - name: Prepare MSVC and LLVM LibTooling
+        timeout-minutes: 45
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci', $env:TRACE_DIR | Out-Null
+          & .\ci\prepare-windows-toolchain.ps1 `
+            -LlvmRelease $env:LLVM_WINDOWS_RELEASE `
+            -LlvmArchive $env:LLVM_WINDOWS_ARCHIVE `
+            -LlvmSha256 $env:LLVM_WINDOWS_SHA256
 
-          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) {
-            choco install ninja --no-progress --yes
-            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
-            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-            $env:Path = "$machinePath;$userPath"
-          }
-          $null = Get-Command ninja.exe -ErrorAction Stop
-
-          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
-          if (-not (Test-Path $vswhere)) {
-            throw "vswhere.exe was not found"
-          }
-
-          $vsPath = (& $vswhere -latest -products * `
-            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath | Select-Object -First 1).Trim()
-          if ([string]::IsNullOrWhiteSpace($vsPath)) {
-            throw "No Visual Studio installation with the x64 MSVC toolset was found"
-          }
-
-          $vsDevCmd = Join-Path $vsPath 'Common7\Tools\VsDevCmd.bat'
-          if (-not (Test-Path $vsDevCmd)) {
-            throw "VsDevCmd.bat was not found under the discovered Visual Studio installation"
-          }
-
-          cmd.exe /s /c "`"$vsDevCmd`" -arch=x64 && set" | ForEach-Object {
-            if ($_ -match '^([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
-              Set-Item -Path "env:$($matches[1])" -Value $matches[2]
-            }
-          }
-
-          # The LLVM Windows installer provides clang-tidy, but the release
-          # archive is the supported package for applications linking against
-          # Clang/LLVM libraries. Keep this toolchain in the runner temp area.
-          $release = Invoke-RestMethod -Headers @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'bha-ci' } `
-            -Uri 'https://api.github.com/repos/llvm/llvm-project/releases/latest'
-          $asset = @($release.assets | Where-Object {
-            $_.name -match '^clang\+llvm-.+-x86_64-pc-windows-msvc\.tar\.xz$'
-          }) | Select-Object -First 1
-          if (-not $asset) {
-            throw 'The latest LLVM release has no Windows Clang/LLVM tooling archive'
-          }
-          $llvmRoot = Join-Path $env:RUNNER_TEMP 'bha-llvm-tooling'
-          $llvmArchive = Join-Path $env:RUNNER_TEMP $asset.name
-          New-Item -ItemType Directory -Force -Path $llvmRoot | Out-Null
-          Invoke-WebRequest -UseBasicParsing -Uri $asset.browser_download_url -OutFile $llvmArchive
-          tar -xf $llvmArchive -C $llvmRoot --strip-components=1
-          $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
-          $clangToolingHeader = Join-Path $llvmRoot 'include\clang\Tooling\Tooling.h'
-          $clangToolingLibrary = Join-Path $llvmRoot 'lib\clang-cpp.lib'
-          if (-not (Test-Path $clangTidy)) {
-            throw "LLVM archive does not contain clang-tidy: $clangTidy"
-          }
-          if (-not (Test-Path $clangToolingHeader) -or -not (Test-Path $clangToolingLibrary)) {
-            throw 'LLVM archive does not contain the Clang LibTooling headers and library'
-          }
-          $env:Path = "$llvmRoot\bin;$env:Path"
-          $env:BHA_CLANG_TIDY = $clangTidy
-          $env:BHA_CLANG_TOOLING_ROOT = $llvmRoot
-          "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "BHA_CLANG_TOOLING_ROOT=$llvmRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-          @'
-          #include <array>
-          #include <string>
-
-          int main() {
-              const std::array<std::string, 2> values{"bha", "trace"};
-              return static_cast<int>(values[0].size() + values[1].size());
-          }
-          '@ | Set-Content -Encoding utf8NoBOM "$env:TRACE_DIR\trace_fixture.cpp"
-
+      - name: Configure with MSVC
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
@@ -234,13 +180,38 @@ jobs:
             "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" 2>&1 | Tee-Object 'ci\configure.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Build with MSVC
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           cmake --build $env:BUILD_DIR --parallel 2 2>&1 |
             Tee-Object 'ci\build.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run MSVC CTest
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           ctest --test-dir $env:BUILD_DIR --output-on-failure --parallel 2 2>&1 |
             Tee-Object 'ci\ctest.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Generate and analyze an MSVC trace
+        timeout-minutes: 10
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          @'
+          #include <array>
+          #include <string>
+
+          int main() {
+              const std::array<std::string, 2> values{"bha", "trace"};
+              return static_cast<int>(values[0].size() + values[1].size());
+          }
+          '@ | Set-Content -Encoding utf8NoBOM "$env:TRACE_DIR\trace_fixture.cpp"
 
           $bha = Join-Path $env:BUILD_DIR 'bha.exe'
           $source = Join-Path $env:TRACE_DIR 'trace_fixture.cpp'
@@ -506,76 +477,35 @@ jobs:
     env:
       BUILD_DIR: build-sanitizer-msvc
       ASAN_OPTIONS: "halt_on_error=1:abort_on_error=1"
+      LLVM_WINDOWS_RELEASE: llvmorg-23.1.1
+      LLVM_WINDOWS_ARCHIVE: clang+llvm-23.1.1-x86_64-pc-windows-msvc.tar.xz
+      LLVM_WINDOWS_SHA256: c54ac8146b420fe72e11e6fdd56498d6818011ad23267196b6ab37b5ac9264c3
     steps:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Configure toolchain, build, and test with MSVC ASan
+      - name: Restore LLVM LibTooling archive
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\bha-llvm-cache
+          key: bha-windows-libtooling-${{ env.LLVM_WINDOWS_RELEASE }}
+
+      - name: Prepare MSVC and LLVM LibTooling
+        timeout-minutes: 45
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path 'ci' | Out-Null
+          & .\ci\prepare-windows-toolchain.ps1 `
+            -LlvmRelease $env:LLVM_WINDOWS_RELEASE `
+            -LlvmArchive $env:LLVM_WINDOWS_ARCHIVE `
+            -LlvmSha256 $env:LLVM_WINDOWS_SHA256
 
-          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) {
-            choco install ninja --no-progress --yes
-            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
-            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-            $env:Path = "$machinePath;$userPath"
-          }
-          $null = Get-Command ninja.exe -ErrorAction Stop
-
-          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
-          if (-not (Test-Path $vswhere)) {
-            throw "vswhere.exe was not found"
-          }
-
-          $vsPath = (& $vswhere -latest -products * `
-            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath | Select-Object -First 1).Trim()
-          if ([string]::IsNullOrWhiteSpace($vsPath)) {
-            throw "No Visual Studio installation with the x64 MSVC toolset was found"
-          }
-
-          $vsDevCmd = Join-Path $vsPath 'Common7\Tools\VsDevCmd.bat'
-          if (-not (Test-Path $vsDevCmd)) {
-            throw "VsDevCmd.bat was not found under the discovered Visual Studio installation"
-          }
-
-          cmd.exe /s /c "`"$vsDevCmd`" -arch=x64 && set" | ForEach-Object {
-            if ($_ -match '^([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
-              Set-Item -Path "env:$($matches[1])" -Value $matches[2]
-            }
-          }
-
-          $release = Invoke-RestMethod -Headers @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'bha-ci' } `
-            -Uri 'https://api.github.com/repos/llvm/llvm-project/releases/latest'
-          $asset = @($release.assets | Where-Object {
-            $_.name -match '^clang\+llvm-.+-x86_64-pc-windows-msvc\.tar\.xz$'
-          }) | Select-Object -First 1
-          if (-not $asset) {
-            throw 'The latest LLVM release has no Windows Clang/LLVM tooling archive'
-          }
-          $llvmRoot = Join-Path $env:RUNNER_TEMP 'bha-llvm-tooling'
-          $llvmArchive = Join-Path $env:RUNNER_TEMP $asset.name
-          New-Item -ItemType Directory -Force -Path $llvmRoot | Out-Null
-          Invoke-WebRequest -UseBasicParsing -Uri $asset.browser_download_url -OutFile $llvmArchive
-          tar -xf $llvmArchive -C $llvmRoot --strip-components=1
-          $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
-          $clangToolingHeader = Join-Path $llvmRoot 'include\clang\Tooling\Tooling.h'
-          $clangToolingLibrary = Join-Path $llvmRoot 'lib\clang-cpp.lib'
-          if (-not (Test-Path $clangTidy)) {
-            throw "LLVM archive does not contain clang-tidy: $clangTidy"
-          }
-          if (-not (Test-Path $clangToolingHeader) -or -not (Test-Path $clangToolingLibrary)) {
-            throw 'LLVM archive does not contain the Clang LibTooling headers and library'
-          }
-          $env:Path = "$llvmRoot\bin;$env:Path"
-          $env:BHA_CLANG_TIDY = $clangTidy
-          $env:BHA_CLANG_TOOLING_ROOT = $llvmRoot
-          "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "BHA_CLANG_TIDY=$clangTidy" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "BHA_CLANG_TOOLING_ROOT=$llvmRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
+      - name: Configure MSVC ASan build
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
             -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase `
             -DBHA_BUILD_TESTS=ON `
@@ -588,10 +518,20 @@ jobs:
             Tee-Object 'ci\sanitizer-configure-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Build MSVC ASan targets
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           cmake --build $env:BUILD_DIR --parallel 2 2>&1 |
             Tee-Object 'ci\sanitizer-build-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Run CTest with MSVC ASan
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           ctest --test-dir $env:BUILD_DIR --output-on-failure --parallel 2 2>&1 |
             Tee-Object 'ci\sanitizer-ctest-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
