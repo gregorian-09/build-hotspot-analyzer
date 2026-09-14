@@ -26,6 +26,7 @@ $vcpkgPath = $vcpkgCandidates |
     Where-Object { Test-Path $_ } |
     Select-Object -First 1
 if (-not $vcpkgPath) {
+    $vcpkgCandidates | Set-Content -Encoding utf8 'ci\vcpkg-install.log'
     throw 'A vcpkg installation was not discovered on the Windows runner'
 }
 
@@ -36,7 +37,8 @@ if (-not (Test-Path $toolchainFile)) {
 }
 
 Write-Host "Installing LLVM component dependencies with vcpkg: $vcpkgRoot"
-& $vcpkgPath install --classic --triplet x64-windows zlib zstd libxml2
+& $vcpkgPath install --classic --triplet x64-windows zlib zstd libxml2 2>&1 |
+    Tee-Object 'ci\vcpkg-install.log'
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
