@@ -218,8 +218,19 @@ if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
             HINTS ${BHA_CLANG_TOOLING_INCLUDE_HINTS}
     )
 
+    set(BHA_CLANG_TOOLING_LINK_LIBRARIES)
+    if(BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
+        list(APPEND BHA_CLANG_TOOLING_LINK_LIBRARIES
+                ${BHA_CLANG_CPP_LIBRARY}
+                ${BHA_LLVM_LIBRARY})
+    elseif(TARGET clangTooling)
+        # Official Windows LLVM archives export static Clang component targets
+        # rather than the Unix-style monolithic clang-cpp and LLVM libraries.
+        list(APPEND BHA_CLANG_TOOLING_LINK_LIBRARIES clangTooling)
+    endif()
+
     if(BHA_ENABLE_TEMPLATE_AST AND BHA_CLANG_TOOLING_INCLUDE_DIR AND
-            BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
+            BHA_CLANG_TOOLING_LINK_LIBRARIES)
         set(BHA_HAVE_CLANG_TOOLING 1)
         message(STATUS "Clang LibTooling found: enabling AST-backed template indexing")
         if(BHA_CLANG_DEP_SCANNING_INCLUDE_DIR)
@@ -232,7 +243,8 @@ if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
                     "Clang LibTooling is required but unavailable. "
                     "Header='${BHA_CLANG_TOOLING_INCLUDE_DIR}', "
                     "clang-cpp='${BHA_CLANG_CPP_LIBRARY}', "
-                    "LLVM='${BHA_LLVM_LIBRARY}'.")
+                    "LLVM='${BHA_LLVM_LIBRARY}', "
+                    "component-target='${BHA_CLANG_TOOLING_LINK_LIBRARIES}'.")
         endif()
         message(STATUS "Clang LibTooling not found: template suggestions remain disabled")
     endif()
@@ -332,7 +344,7 @@ target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_TOOLING=${BHA_HAVE_CLA
 target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_DEP_SCANNING=${BHA_HAVE_CLANG_DEP_SCANNING})
 if(BHA_HAVE_CLANG_TOOLING)
     target_include_directories(bha_lib SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
-    target_link_libraries(bha_lib PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
+    target_link_libraries(bha_lib PRIVATE ${BHA_CLANG_TOOLING_LINK_LIBRARIES})
 endif()
 
 # Ensure resources are generated before compiling bha_lib
@@ -368,11 +380,11 @@ if(BHA_BUILD_REFACTOR_TOOLS)
             tools/refactor/pimpl_tooling.cpp
     )
 
-    if(BHA_CLANG_TOOLING_INCLUDE_DIR AND BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
-        message(STATUS "Clang LibTooling headers and clang-cpp found: enabling LibTooling-backed bha-refactor engine")
+    if(BHA_HAVE_CLANG_TOOLING)
+        message(STATUS "Clang LibTooling found: enabling LibTooling-backed bha-refactor engine")
         target_compile_definitions(bha-refactor PRIVATE BHA_HAVE_CLANG_TOOLING=1)
         target_include_directories(bha-refactor SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
-        target_link_libraries(bha-refactor PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
+        target_link_libraries(bha-refactor PRIVATE ${BHA_CLANG_TOOLING_LINK_LIBRARIES})
     else()
         message(STATUS "Clang LibTooling headers or libraries not found: bha-refactor will reject PIMPL refactor requests")
         target_compile_definitions(bha-refactor PRIVATE BHA_HAVE_CLANG_TOOLING=0)

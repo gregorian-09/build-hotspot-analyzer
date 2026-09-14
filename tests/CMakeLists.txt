@@ -64,9 +64,9 @@ if(BHA_BUILD_REFACTOR_TOOLS)
             ../tools/refactor/pimpl_tooling.cpp
             unit/refactor/test_pimpl_tooling.cpp
     )
-    if(BHA_CLANG_TOOLING_INCLUDE_DIR AND BHA_CLANG_CPP_LIBRARY AND BHA_LLVM_LIBRARY)
+    if(BHA_HAVE_CLANG_TOOLING)
         target_include_directories(bha_tests SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
-        target_link_libraries(bha_tests PRIVATE ${BHA_CLANG_CPP_LIBRARY} ${BHA_LLVM_LIBRARY})
+        target_link_libraries(bha_tests PRIVATE ${BHA_CLANG_TOOLING_LINK_LIBRARIES})
     endif()
 endif()
 
