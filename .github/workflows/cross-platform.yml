@@ -172,6 +172,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
+            -DCMAKE_C_COMPILER=cl.exe `
+            -DCMAKE_CXX_COMPILER=cl.exe `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
@@ -508,6 +510,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
+            -DCMAKE_C_COMPILER=cl.exe `
+            -DCMAKE_CXX_COMPILER=cl.exe `
             -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
