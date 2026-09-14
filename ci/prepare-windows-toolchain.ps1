@@ -96,8 +96,9 @@ if (-not $LlvmArchive.EndsWith('.tar.zst', [System.StringComparison]::OrdinalIgn
     throw "Unsupported LLVM archive format: $LlvmArchive"
 }
 $zstd = Get-Command zstd.exe -ErrorAction Stop
-& $zstd.Source --decompress --stdout --quiet $llvmArchivePath |
-    tar.exe -xf - -C $llvmRoot --strip-components=1
+$extractCommand = "`"$($zstd.Source)`" --decompress --stdout --quiet " +
+    "`"$llvmArchivePath`" | tar.exe -xf - -C `"$llvmRoot`" --strip-components=1"
+& cmd.exe /d /s /c $extractCommand
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
