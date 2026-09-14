@@ -166,14 +166,23 @@ jobs:
             -LlvmArchive $env:LLVM_WINDOWS_ARCHIVE `
             -LlvmSha256 $env:LLVM_WINDOWS_SHA256
 
+      - name: Install LLVM component dependencies
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & .\ci\install-windows-llvm-dependencies.ps1
+
       - name: Configure with MSVC
         timeout-minutes: 15
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
-            -DCMAKE_C_COMPILER=cl.exe `
-            -DCMAKE_CXX_COMPILER=cl.exe `
+            -DCMAKE_C_COMPILER=cl `
+            -DCMAKE_CXX_COMPILER=cl `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
@@ -504,14 +513,23 @@ jobs:
             -LlvmArchive $env:LLVM_WINDOWS_ARCHIVE `
             -LlvmSha256 $env:LLVM_WINDOWS_SHA256
 
+      - name: Install LLVM component dependencies
+        timeout-minutes: 30
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & .\ci\install-windows-llvm-dependencies.ps1
+
       - name: Configure MSVC ASan build
         timeout-minutes: 15
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           cmake -S . -B $env:BUILD_DIR -G Ninja `
-            -DCMAKE_C_COMPILER=cl.exe `
-            -DCMAKE_CXX_COMPILER=cl.exe `
+            -DCMAKE_C_COMPILER=cl `
+            -DCMAKE_CXX_COMPILER=cl `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
             -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
