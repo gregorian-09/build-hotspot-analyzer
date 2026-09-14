@@ -108,6 +108,13 @@ if (-not (Test-Path $clangTidy)) {
     throw "LLVM archive does not contain clang-tidy: $clangTidy"
 }
 
+Get-ChildItem -Path (Join-Path $llvmRoot 'lib') -File |
+    Sort-Object Name |
+    Select-Object Name, Length |
+    Format-Table -AutoSize |
+    Out-String -Width 200 |
+    Set-Content -Encoding utf8 'ci\llvm-tooling-libraries.txt'
+
 "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 Add-EnvironmentLine -Name 'BHA_CLANG_TIDY' -Value $clangTidy
 Add-EnvironmentLine -Name 'BHA_CLANG_TOOLING_ROOT' -Value $llvmRoot
