@@ -600,8 +600,11 @@ namespace bha::suggestions {
                 record.use_files.push_back(source_file_);
                 const auto* instantiation_pattern = declaration.getTemplateInstantiationPattern();
                 record.complete_definition = primary.getTemplatedDecl()->doesThisDeclarationHaveABody() ||
+                    (primary.getTemplatedDecl()->getDefinition() != nullptr) ||
                     (instantiation_pattern != nullptr &&
-                     instantiation_pattern->doesThisDeclarationHaveABody());
+                     (instantiation_pattern->doesThisDeclarationHaveABody() ||
+                      instantiation_pattern->getDefinition() != nullptr)) ||
+                    declaration.getDefinition() != nullptr;
                 record.has_explicit_instantiation =
                     declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDeclaration ||
                     declaration.getTemplateSpecializationKind() == clang::TSK_ExplicitInstantiationDefinition;

@@ -108,51 +108,81 @@ namespace bha::suggestions {
             return directives;
         }
 
+        std::string diagnostic_path_key(std::string value) {
+            std::ranges::replace(value, '\\', '/');
+#ifdef _WIN32
+            std::ranges::transform(
+                value,
+                value.begin(),
+                [](const unsigned char character) { return static_cast<char>(std::tolower(character)); }
+            );
+#endif
+            return value;
+        }
+
         std::optional<std::size_t> parse_diagnostic_line(
             const std::string& output,
-            const fs::path& source_file
+            const fs::path& source_file,
+            const fs::path& working_directory
         ) {
-            const std::array<std::string, 2> prefixes = {
-                source_file.string() + ":",
-                source_file.generic_string() + ":"
+            std::vector<std::string> source_names = {
+                diagnostic_path_key(source_file.string()),
+                diagnostic_path_key(source_file.generic_string())
             };
-            for (const auto& prefix : prefixes) {
-                if (!output.starts_with(prefix)) {
-                    continue;
-                }
-                const auto line_end = output.find(':', prefix.size());
-                if (line_end == std::string::npos || line_end == prefix.size()) {
-                    return std::nullopt;
-                }
-                try {
-                    const auto line = std::stoul(output.substr(prefix.size(), line_end - prefix.size()));
-                    return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
-                } catch (const std::exception&) {
-                    return std::nullopt;
-                }
+            std::error_code relative_error;
+            const auto relative = fs::relative(source_file, working_directory, relative_error);
+            if (!relative_error && !relative.empty()) {
+                source_names.push_back(diagnostic_path_key(relative.string()));
+                source_names.push_back(diagnostic_path_key(relative.generic_string()));
             }
 
-#ifdef _WIN32
-            const std::array<std::string, 2> msvc_prefixes = {
-                source_file.string() + "(",
-                source_file.generic_string() + "("
-            };
-            for (const auto& prefix : msvc_prefixes) {
-                if (!output.starts_with(prefix)) {
+            const std::string normalized_output = diagnostic_path_key(output);
+            for (const auto& source_name : source_names) {
+                if (source_name.empty()) {
                     continue;
                 }
-                const auto comma = output.find(',', prefix.size());
-                if (comma == std::string::npos || comma == prefix.size()) {
-                    return std::nullopt;
+                const auto source_offset = normalized_output.find(source_name);
+                if (source_offset == std::string::npos) {
+                    continue;
                 }
-                try {
-                    const auto line = std::stoul(output.substr(prefix.size(), comma - prefix.size()));
-                    return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
-                } catch (const std::exception&) {
-                    return std::nullopt;
+                const auto coordinate_offset = source_offset + source_name.size();
+                if (coordinate_offset < normalized_output.size() &&
+                    normalized_output[coordinate_offset] == ':') {
+                    const auto line_start = coordinate_offset + 1;
+                    const auto line_end = normalized_output.find(':', line_start);
+                    if (line_end == std::string::npos || line_end == line_start) {
+                        continue;
+                    }
+                    try {
+                        const auto line = std::stoul(
+                            normalized_output.substr(line_start, line_end - line_start)
+                        );
+                        if (line != 0) {
+                            return line - 1;
+                        }
+                    } catch (const std::exception&) {
+                    }
                 }
-            }
+#ifdef _WIN32
+                if (coordinate_offset < normalized_output.size() &&
+                    normalized_output[coordinate_offset] == '(') {
+                    const auto line_start = coordinate_offset + 1;
+                    const auto comma = normalized_output.find(',', line_start);
+                    if (comma == std::string::npos || comma == line_start) {
+                        continue;
+                    }
+                    try {
+                        const auto line = std::stoul(
+                            normalized_output.substr(line_start, comma - line_start)
+                        );
+                        if (line != 0) {
+                            return line - 1;
+                        }
+                    } catch (const std::exception&) {
+                    }
+                }
 #endif
+            }
             return std::nullopt;
         }
 
@@ -224,7 +254,11 @@ namespace bha::suggestions {
                     line.find(unused_suffix) == std::string::npos) {
                     continue;
                 }
-                const auto line_number = parse_diagnostic_line(line, source_file);
+                const auto line_number = parse_diagnostic_line(
+                    line,
+                    source_file,
+                    command.working_directory
+                );
                 if (!line_number.has_value()) {
                     continue;
                 }
