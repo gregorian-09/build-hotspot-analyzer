@@ -1,13 +1,18 @@
 #include "bha/suggestions/include_suggester.hpp"
 #include "bha/suggestions/forward_decl_semantic_index.hpp"
 
+#if BHA_HAVE_CLANG_TOOLING
+#include <clang/Tooling/DiagnosticsYaml.h>
+#include <llvm/Support/YAMLTraits.h>
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
-#include <sstream>
 #include <string_view>
 #include <unordered_set>
 
@@ -54,19 +59,26 @@ namespace bha::suggestions {
             return value.substr(first, last - first + 1);
         }
 
-        std::vector<IncludeDirective> parse_include_directives(const fs::path& file) {
-            std::vector<IncludeDirective> directives;
-            std::ifstream input(file);
+        struct ParsedIncludeDirective {
+            IncludeDirective directive;
+            std::size_t byte_offset = 0;
+        };
+
+        std::vector<ParsedIncludeDirective> parse_include_directives(const fs::path& file) {
+            std::vector<ParsedIncludeDirective> directives;
+            std::ifstream input(file, std::ios::binary);
             if (!input) {
                 return directives;
             }
 
             std::string line;
             std::size_t line_number = 0;
+            std::size_t byte_offset = 0;
             while (std::getline(input, line)) {
                 const std::string cleaned = trim(line);
                 if (!cleaned.starts_with('#')) {
                     ++line_number;
+                    byte_offset += line.size() + 1;
                     continue;
                 }
 
@@ -77,6 +89,7 @@ namespace bha::suggestions {
                 constexpr std::string_view include = "include";
                 if (cleaned.compare(cursor, include.size(), include) != 0) {
                     ++line_number;
+                    byte_offset += line.size() + 1;
                     continue;
                 }
                 cursor += include.size();
@@ -85,6 +98,7 @@ namespace bha::suggestions {
                 }
                 if (cursor >= cleaned.size() || (cleaned[cursor] != '<' && cleaned[cursor] != '"')) {
                     ++line_number;
+                    byte_offset += line.size() + 1;
                     continue;
                 }
 
@@ -93,6 +107,7 @@ namespace bha::suggestions {
                 const auto end = cleaned.find(closer, cursor);
                 if (end == std::string::npos || end == cursor) {
                     ++line_number;
+                    byte_offset += line.size() + 1;
                     continue;
                 }
 
@@ -102,8 +117,9 @@ namespace bha::suggestions {
                 directive.col_end = line.size();
                 directive.header_name = cleaned.substr(cursor, end - cursor);
                 directive.is_system = opener == '<';
-                directives.push_back(std::move(directive));
+                directives.push_back({std::move(directive), byte_offset});
                 ++line_number;
+                byte_offset += line.size() + 1;
             }
             return directives;
         }
@@ -120,70 +136,28 @@ namespace bha::suggestions {
             return value;
         }
 
-        std::optional<std::size_t> parse_diagnostic_line(
-            const std::string& output,
-            const fs::path& source_file,
-            const fs::path& working_directory
+        bool paths_refer_to_same_file(
+            const fs::path& left,
+            const fs::path& right,
+            const fs::path& working_directory,
+            const fs::path& build_directory
         ) {
-            std::vector<std::string> source_names = {
-                diagnostic_path_key(source_file.string()),
-                diagnostic_path_key(source_file.generic_string())
+            const auto key = [](const fs::path& path) {
+                std::error_code error;
+                const auto canonical = fs::weakly_canonical(path, error);
+                return diagnostic_path_key((error ? path : canonical).generic_string());
             };
-            std::error_code relative_error;
-            const auto relative = fs::relative(source_file, working_directory, relative_error);
-            if (!relative_error && !relative.empty()) {
-                source_names.push_back(diagnostic_path_key(relative.string()));
-                source_names.push_back(diagnostic_path_key(relative.generic_string()));
-            }
 
-            const std::string normalized_output = diagnostic_path_key(output);
-            for (const auto& source_name : source_names) {
-                if (source_name.empty()) {
-                    continue;
-                }
-                const auto source_offset = normalized_output.find(source_name);
-                if (source_offset == std::string::npos) {
-                    continue;
-                }
-                const auto coordinate_offset = source_offset + source_name.size();
-                if (coordinate_offset < normalized_output.size() &&
-                    normalized_output[coordinate_offset] == ':') {
-                    const auto line_start = coordinate_offset + 1;
-                    const auto line_end = normalized_output.find(':', line_start);
-                    if (line_end == std::string::npos || line_end == line_start) {
-                        continue;
-                    }
-                    try {
-                        const auto line = std::stoul(
-                            normalized_output.substr(line_start, line_end - line_start)
-                        );
-                        if (line != 0) {
-                            return line - 1;
-                        }
-                    } catch (const std::exception&) {
-                    }
-                }
-#ifdef _WIN32
-                if (coordinate_offset < normalized_output.size() &&
-                    normalized_output[coordinate_offset] == '(') {
-                    const auto line_start = coordinate_offset + 1;
-                    const auto comma = normalized_output.find(',', line_start);
-                    if (comma == std::string::npos || comma == line_start) {
-                        continue;
-                    }
-                    try {
-                        const auto line = std::stoul(
-                            normalized_output.substr(line_start, comma - line_start)
-                        );
-                        if (line != 0) {
-                            return line - 1;
-                        }
-                    } catch (const std::exception&) {
-                    }
-                }
-#endif
+            const auto left_key = key(left);
+            const auto right_key = key(right);
+            if (left_key == right_key) {
+                return true;
             }
-            return std::nullopt;
+            if (!right.is_relative()) {
+                return false;
+            }
+            return left_key == key(working_directory / right) ||
+                   left_key == key(build_directory / right);
         }
 
         FILE* open_pipe(const std::string& command_line) {
@@ -224,65 +198,100 @@ namespace bha::suggestions {
             }
 #endif
 
+            std::error_code temp_error;
+            const fs::path fixes_directory = fs::temp_directory_path(temp_error);
+            if (temp_error) {
+                return diagnostics;
+            }
+            const auto unique_id = std::chrono::steady_clock::now().time_since_epoch().count();
+            const fs::path fixes_file = fixes_directory /
+                ("bha-include-cleaner-" + std::to_string(unique_id) + ".yaml");
+            fs::remove(fixes_file, temp_error);
+
             const std::string command_line = tidy +
                 " -checks=" + shell_quote("-*,misc-include-cleaner") +
 #ifdef _WIN32
                 " --extra-arg-before=--driver-mode=cl" +
 #endif
                 " -p " + shell_quote(build_dir.string()) +
-                " " + shell_quote(source_file.string()) + " --quiet 2>&1";
+                " " + shell_quote(source_file.string()) +
+                " --export-fixes=" + shell_quote(fixes_file.string()) +
+                " --quiet 2>&1";
             FILE* pipe = open_pipe(command_line);
             if (pipe == nullptr) {
+                fs::remove(fixes_file, temp_error);
                 return diagnostics;
             }
 
-            std::string output;
             std::array<char, 4096> buffer{};
             while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
-                output += buffer.data();
             }
-            close_pipe(pipe);
+            const int exit_code = close_pipe(pipe);
+            if (exit_code != 0) {
+                fs::remove(fixes_file, temp_error);
+                return diagnostics;
+            }
 
-            constexpr std::string_view diagnostic_tag = "[misc-include-cleaner]";
-            constexpr std::string_view header_prefix = "included header ";
-            constexpr std::string_view unused_suffix = " is not used directly";
-            std::istringstream lines(output);
-            std::string line;
-            const auto directives = parse_include_directives(source_file);
-            while (std::getline(lines, line)) {
-                if (line.find(diagnostic_tag) == std::string::npos ||
-                    line.find(unused_suffix) == std::string::npos) {
-                    continue;
-                }
-                const auto line_number = parse_diagnostic_line(
-                    line,
-                    source_file,
-                    command.working_directory
-                );
-                if (!line_number.has_value()) {
-                    continue;
-                }
-                const auto header_start = line.find(header_prefix);
-                const auto header_end = line.find(unused_suffix, header_start + header_prefix.size());
-                if (header_start == std::string::npos || header_end == std::string::npos) {
-                    continue;
-                }
-                const auto directive = std::find_if(
-                    directives.begin(),
-                    directives.end(),
-                    [&](const IncludeDirective& candidate) {
-                        return candidate.line == *line_number;
-                    }
-                );
-                if (directive == directives.end()) {
-                    continue;
-                }
-                diagnostics.push_back({
-                    source_file,
-                    *line_number,
-                    line.substr(header_start + header_prefix.size(), header_end - header_start - header_prefix.size())
-                });
+#if BHA_HAVE_CLANG_TOOLING
+            std::ifstream fixes_input(fixes_file, std::ios::binary);
+            std::string fixes(
+                (std::istreambuf_iterator<char>(fixes_input)),
+                std::istreambuf_iterator<char>()
+            );
+            fs::remove(fixes_file, temp_error);
+            if (!fixes_input || fixes.empty()) {
+                return diagnostics;
             }
+
+            clang::tooling::TranslationUnitDiagnostics exported;
+            llvm::yaml::Input yaml_input(fixes);
+            yaml_input >> exported;
+            if (yaml_input.error()) {
+                return diagnostics;
+            }
+
+            const auto directives = parse_include_directives(source_file);
+            std::unordered_set<std::size_t> seen_offsets;
+            for (const auto& diagnostic : exported.Diagnostics) {
+                if (diagnostic.DiagnosticName != "misc-include-cleaner") {
+                    continue;
+                }
+                for (const auto& [file_path, replacements] : diagnostic.Message.Fix) {
+                    (void)file_path;
+                    for (const auto& replacement : replacements) {
+                        if (replacement.getLength() == 0 ||
+                            !replacement.getReplacementText().empty() ||
+                            !paths_refer_to_same_file(
+                                source_file,
+                                fs::path(replacement.getFilePath().str()),
+                                command.working_directory,
+                                build_dir
+                            ) ||
+                            !seen_offsets.insert(replacement.getOffset()).second) {
+                            continue;
+                        }
+
+                        const auto directive = std::find_if(
+                            directives.begin(),
+                            directives.end(),
+                            [&](const ParsedIncludeDirective& candidate) {
+                                return candidate.byte_offset == replacement.getOffset();
+                            }
+                        );
+                        if (directive == directives.end()) {
+                            continue;
+                        }
+                        diagnostics.push_back({
+                            source_file,
+                            directive->directive.line,
+                            directive->directive.header_name
+                        });
+                    }
+                }
+            }
+#else
+            fs::remove(fixes_file, temp_error);
+#endif
             return diagnostics;
         }
 
