@@ -43,7 +43,7 @@ namespace bha::suggestions {
 
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/main.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/main.cpp\"]}]";
 
@@ -123,7 +123,7 @@ namespace bha::suggestions {
                 << "template struct Owner::Nested<int>;\n";
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/member.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/member.cpp\"]}]";
 
@@ -156,7 +156,7 @@ namespace bha::suggestions {
 
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/dependent.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/dependent.cpp\"]}]";
 
@@ -188,10 +188,10 @@ namespace bha::suggestions {
 
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/one.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/one.cpp\"]},"
-                << "{\"directory\":\"" << root_.string() << "\","
+                << "{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/two.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/two.cpp\"]}]";
 
@@ -230,10 +230,10 @@ namespace bha::suggestions {
 
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/class.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/class.cpp\"]},"
-                << "{\"directory\":\"" << root_.string() << "\","
+                << "{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/function.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-DBHA_FUNCTION_FORM\","
                 << "\"-c\",\"src/function.cpp\"]}]";
@@ -259,7 +259,7 @@ namespace bha::suggestions {
 
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/broken.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/broken.cpp\"]}]";
 
@@ -283,7 +283,7 @@ namespace bha::suggestions {
                 << "template struct Box<int>;\n";
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/unsupported.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++2b-invalid\",\"-c\",\"src/unsupported.cpp\"]}]";
 
@@ -311,10 +311,10 @@ namespace bha::suggestions {
                 << "template struct Second<double>;\n";
             const auto database = root_ / "compile_commands.json";
             std::ofstream(database)
-                << "[{\"directory\":\"" << root_.string() << "\","
+                << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/first.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/first.cpp\"]},"
-                << "{\"directory\":\"" << root_.string() << "\","
+                << "{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/second.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/second.cpp\"]}]";
 

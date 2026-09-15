@@ -21,6 +21,66 @@ namespace bha {
         }
 
         std::vector<std::string> split_shell_command(const std::string& command) {
+#ifdef _WIN32
+            // Compilation databases emitted by Windows build tools contain a
+            // native command line. Preserve ordinary path separators and
+            // apply the CommandLineToArgvW backslash-before-quote rules.
+            std::vector<std::string> parts;
+            std::size_t index = 0;
+            while (index < command.size()) {
+                while (index < command.size() &&
+                       std::isspace(static_cast<unsigned char>(command[index]))) {
+                    ++index;
+                }
+                if (index == command.size()) {
+                    break;
+                }
+
+                std::string current;
+                bool in_quotes = false;
+                bool argument_started = false;
+                while (index < command.size()) {
+                    const char character = command[index];
+                    if (std::isspace(static_cast<unsigned char>(character)) && !in_quotes) {
+                        break;
+                    }
+                    if (character == '\\') {
+                        const std::size_t slash_start = index;
+                        while (index < command.size() && command[index] == '\\') {
+                            ++index;
+                        }
+                        const std::size_t slash_count = index - slash_start;
+                        if (index < command.size() && command[index] == '"') {
+                            current.append(slash_count / 2, '\\');
+                            if (slash_count % 2 == 0) {
+                                in_quotes = !in_quotes;
+                            } else {
+                                current.push_back('"');
+                            }
+                            ++index;
+                            argument_started = true;
+                        } else {
+                            current.append(slash_count, '\\');
+                            argument_started = true;
+                        }
+                        continue;
+                    }
+                    if (character == '"') {
+                        in_quotes = !in_quotes;
+                        argument_started = true;
+                        ++index;
+                        continue;
+                    }
+                    current.push_back(character);
+                    argument_started = true;
+                    ++index;
+                }
+                if (argument_started) {
+                    parts.push_back(std::move(current));
+                }
+            }
+            return parts;
+#else
             std::vector<std::string> parts;
             std::string current;
             char quote = '\0';
@@ -61,6 +121,7 @@ namespace bha {
                 parts.push_back(std::move(current));
             }
             return parts;
+#endif
         }
 
         std::string path_key(const fs::path& path) {

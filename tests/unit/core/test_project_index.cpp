@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace bha {
     namespace {
@@ -117,6 +118,30 @@ namespace bha {
             EXPECT_EQ(index.compile_commands_status(), CompilationDatabaseStatus::Loaded);
             EXPECT_EQ(command->command_line[1], "-I");
             EXPECT_EQ(command->command_line[2], (root / "include").string());
+        }
+
+        TEST_F(ProjectIndexFixture, ParsesNativePathsInCommandCompilationDatabaseEntries) {
+            const fs::path database = root / "compile_commands.json";
+            const fs::path include = root / "include";
+            const fs::path source = root / "src" / "main.cpp";
+            const std::string command = "clang++ -I \"" + include.string() +
+                "\" -c \"" + source.string() + "\"";
+            nlohmann::json entry = {
+                {"directory", root.string()},
+                {"file", "src/main.cpp"},
+                {"command", command}
+            };
+            std::ofstream(database) << nlohmann::json::array({entry}).dump();
+
+            ProjectIndex index(root, database);
+            const auto parsed = index.compile_command_for("src/main.cpp");
+
+            ASSERT_TRUE(parsed.has_value());
+            ASSERT_EQ(parsed->command_line.size(), 5u);
+            EXPECT_EQ(parsed->command_line[1], "-I");
+            EXPECT_EQ(parsed->command_line[2], include.string());
+            EXPECT_EQ(parsed->command_line[3], "-c");
+            EXPECT_EQ(parsed->command_line[4], source.string());
         }
 
         TEST_F(ProjectIndexFixture, RefreshesCachedFileContentsAfterSourceChanges) {
