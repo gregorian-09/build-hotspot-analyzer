@@ -451,6 +451,9 @@ namespace bha::suggestions {
                     }
                 }
             }
+            if (diagnostics.empty()) {
+                publish_diagnostics("clang-tidy exported no actionable include replacement");
+            }
             remove_temporary_files();
             return diagnostics;
 #endif
