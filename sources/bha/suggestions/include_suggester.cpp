@@ -185,9 +185,9 @@ namespace bha::suggestions {
             arguments.front() = clang_cl.string();
 
             nlohmann::json entry = {
-                {"directory", command.working_directory.generic_string()},
+                {"directory", command.working_directory.string()},
                 {"arguments", arguments},
-                {"file", source_file.generic_string()}
+                {"file", source_file.string()}
             };
             nlohmann::json database = nlohmann::json::array();
             database.push_back(std::move(entry));
