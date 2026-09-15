@@ -5,21 +5,35 @@
 
 #include <chrono>
 #include <filesystem>
+#include <system_error>
 
 namespace bha::build_sessions::test {
     namespace {
 
         fs::path make_fixture_root() {
-            return fs::temp_directory_path() / (
+            const auto base = fs::temp_directory_path() / (
                 "bha-cmake-file-api-fixture-" +
                 std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
             );
+            for (std::size_t attempt = 0; attempt < 100; ++attempt) {
+                const auto candidate = attempt == 0
+                    ? base
+                    : fs::path(base.string() + "-" + std::to_string(attempt));
+                std::error_code ec;
+                if (fs::create_directory(candidate, ec)) {
+                    return candidate;
+                }
+                if (ec != std::errc::file_exists) {
+                    return {};
+                }
+            }
+            return {};
         }
 
         void write_fixture(const fs::path& root, const bool multiple_configurations) {
             std::error_code ec;
-            fs::remove_all(root, ec);
-            fs::create_directories(root, ec);
+            ASSERT_TRUE(!root.empty());
+            ASSERT_TRUE(fs::is_directory(root, ec) && !ec);
 
             constexpr std::string_view index = R"json({
   "cmake": {"version": {"string": "3.28.3"}},
@@ -76,7 +90,8 @@ namespace bha::build_sessions::test {
         CMakeFileApiParser parser;
         const auto result = parser.parse_reply_index(root / "index.json");
 
-        ASSERT_TRUE(result.is_ok());
+        ASSERT_TRUE(result.is_ok())
+            << (result.is_err() ? result.error().message() : "unknown parser error");
         const auto& graph = result.value();
         EXPECT_TRUE(graph.complete);
         EXPECT_EQ(graph.producer_version, "3.28.3");
