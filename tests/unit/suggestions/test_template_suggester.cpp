@@ -9,6 +9,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include <ranges>
+#include <sstream>
 
 namespace bha::suggestions {
 
@@ -625,6 +626,34 @@ namespace bha::suggestions {
         std::filesystem::remove_all(root, ec);
         return;
 #else
+        if (result.value().suggestions.size() != 1u) {
+            TemplateSemanticIndex index(*context.project_index);
+            index.build();
+            std::ostringstream details;
+            details << "semantic index status=" << static_cast<int>(index.status())
+                    << " diagnostic=" << index.diagnostic() << "\n";
+            for (const auto& record : index.records()) {
+                if (record.template_name.find("Box") == std::string::npos &&
+                    record.specialization.find("Box") == std::string::npos) {
+                    continue;
+                }
+                details << "record specialization=" << record.specialization
+                        << " declaration=" << record.canonical_extern_declaration
+                        << " source=" << record.source_file.string()
+                        << " declaration_file=" << record.declaration_file.string()
+                        << " uses=" << record.uses.size()
+                        << " explicit_definitions=" << record.explicit_definition_files.size()
+                        << " complete=" << record.complete_definition
+                        << " external=" << record.has_external_linkage
+                        << " single_definition=" << record.has_single_explicit_definition
+                        << " dependent_arguments=" << record.has_dependent_arguments
+                        << " unsupported_scope=" << record.has_unsupported_scope
+                        << " unsupported_form=" << record.has_unsupported_function_form
+                        << " identity_conflict=" << record.has_declaration_identity_conflict
+                        << "\n";
+            }
+            ADD_FAILURE() << details.str();
+        }
         ASSERT_EQ(result.value().suggestions.size(), 1u);
         ASSERT_EQ(result.value().suggestions.front().edits.size(), 1u);
         EXPECT_EQ(

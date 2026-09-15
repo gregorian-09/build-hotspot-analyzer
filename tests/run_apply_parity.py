@@ -255,7 +255,11 @@ def main() -> int:
             "CLI analysis",
         )
         cli_suggestions = cli_analysis.get("suggestions") or []
-        require(cli_suggestions, "CLI produced no evidence-backed include suggestion")
+        require(
+            cli_suggestions,
+            "CLI produced no evidence-backed include suggestion\n"
+            f"analysis:\n{json.dumps(cli_analysis, indent=2)[-4000:]}"
+        )
         suggestion_id = cli_suggestions[0].get("id")
         require(isinstance(suggestion_id, str) and suggestion_id, "CLI suggestion has no ID")
 

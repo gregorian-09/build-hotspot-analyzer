@@ -178,6 +178,10 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          # The downloaded LLVM archive is prebuilt without MSVC ASan. LLVM's
+          # allocator/poisoning configuration must match the consumer, so the
+          # sanitizer job deliberately tests BHA's fail-closed no-LibTooling
+          # configuration. The normal Windows job tests the AST backend.
           cmake -S . -B $env:BUILD_DIR -G Ninja `
             -DCMAKE_C_COMPILER=cl `
             -DCMAKE_CXX_COMPILER=cl `
@@ -535,9 +539,9 @@ jobs:
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
             -DBHA_ENABLE_LSP=ON `
-            -DBHA_ENABLE_TEMPLATE_AST=ON `
-            -DBHA_REQUIRE_CLANG_TOOLING=ON `
-            "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT" `
+            -DBHA_ENABLE_TEMPLATE_AST=OFF `
+            -DBHA_REQUIRE_CLANG_TOOLING=OFF `
+            -DBHA_CLANG_TOOLING_ROOT= `
             -DBHA_ENABLE_SANITIZERS=ON 2>&1 |
             Tee-Object 'ci\sanitizer-configure-msvc.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

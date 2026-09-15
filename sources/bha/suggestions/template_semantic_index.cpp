@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -1153,6 +1154,20 @@ namespace bha::suggestions {
             }
 
             arguments.reserve(command.command_line.size() + 1);
+#ifdef _WIN32
+            std::string compiler_name = fs::path(command.command_line.front()).filename().string();
+            std::ranges::transform(
+                compiler_name,
+                compiler_name.begin(),
+                [](const unsigned char character) { return static_cast<char>(std::tolower(character)); }
+            );
+            const bool uses_msvc_driver =
+                compiler_name == "cl" || compiler_name == "cl.exe" ||
+                compiler_name == "clang-cl" || compiler_name == "clang-cl.exe";
+            if (uses_msvc_driver) {
+                arguments.push_back("--driver-mode=cl");
+            }
+#endif
             for (std::size_t index = 1; index < command.command_line.size(); ++index) {
                 const std::string& argument = command.command_line[index];
                 if (argument == "-c" || argument == "/c") {

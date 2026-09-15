@@ -101,7 +101,7 @@ if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI)
     )
 endif()
 
-if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP)
+if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP AND BHA_HAVE_CLANG_TOOLING)
     add_test(
             NAME ApplyCliLspParity
             COMMAND ${Python3_EXECUTABLE}
