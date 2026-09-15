@@ -96,6 +96,13 @@ if(BHA_ENABLE_SANITIZERS)
         # MSVC's compiler infers the AddressSanitizer runtime libraries from
         # object metadata; /fsanitize=address is not a linker option.
         set(BHA_SANITIZER_COMPILE_OPTIONS /fsanitize=address)
+        # The prebuilt LLVM LibTooling libraries used on Windows are not
+        # compiled with MSVC STL AddressSanitizer container annotations.
+        # Keep BHA's STL ABI compatible with those libraries while retaining
+        # AddressSanitizer instrumentation for BHA itself.
+        target_compile_definitions(bha_sanitizers INTERFACE
+                _DISABLE_STRING_ANNOTATION=1
+                _DISABLE_VECTOR_ANNOTATION=1)
     else()
         set(BHA_SANITIZER_COMPILE_OPTIONS
                 -fsanitize=address,undefined

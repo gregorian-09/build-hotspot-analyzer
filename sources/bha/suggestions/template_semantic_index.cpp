@@ -129,6 +129,20 @@ namespace bha::suggestions {
             return rendered;
         }
 
+        std::string method_qualified_name(const clang::CXXMethodDecl& method) {
+            const auto declaration_name = method.getQualifiedNameAsString();
+            const auto* parent = method.getParent();
+            if (parent != nullptr &&
+                llvm::isa<clang::ClassTemplateSpecializationDecl>(parent) &&
+                !parent->isDependentContext()) {
+                const auto owner_name = parent->getQualifiedNameAsString();
+                if (owner_name.find('<') != std::string::npos) {
+                    return owner_name + "::" + method.getNameAsString();
+                }
+            }
+            return declaration_name;
+        }
+
         std::string render_function_instantiation(
             const clang::FunctionDecl& declaration,
             const clang::FunctionTemplateDecl& primary,
@@ -136,11 +150,8 @@ namespace bha::suggestions {
             const clang::ASTContext& context
         ) {
             std::string qualified_name = primary.getQualifiedNameAsString();
-            if (llvm::isa<clang::CXXMethodDecl>(&declaration)) {
-                const auto declaration_name = declaration.getQualifiedNameAsString();
-                if (declaration_name.find('<') != std::string::npos) {
-                    qualified_name = declaration_name;
-                }
+            if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
+                qualified_name = method_qualified_name(*method);
             }
             std::string rendered;
             llvm::raw_string_ostream output(rendered);
@@ -673,11 +684,8 @@ namespace bha::suggestions {
                 const clang::ASTContext& context
             ) const {
                 std::string qualified_name = primary.getQualifiedNameAsString();
-                if (llvm::isa<clang::CXXMethodDecl>(&declaration)) {
-                    const auto declaration_name = declaration.getQualifiedNameAsString();
-                    if (declaration_name.find('<') != std::string::npos) {
-                        qualified_name = declaration_name;
-                    }
+                if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
+                    qualified_name = method_qualified_name(*method);
                 }
                 return qualified_name + render_template_arguments(arguments, context);
             }

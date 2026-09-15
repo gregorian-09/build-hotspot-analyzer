@@ -174,6 +174,9 @@ namespace bha::suggestions {
 
             const std::string command_line = tidy +
                 " -checks=" + shell_quote("-*,misc-include-cleaner") +
+#ifdef _WIN32
+                " --extra-arg-before=--driver-mode=cl" +
+#endif
                 " -p " + shell_quote(build_dir.string()) +
                 " " + shell_quote(source_file.string()) + " --quiet 2>&1";
             FILE* pipe = open_pipe(command_line);
