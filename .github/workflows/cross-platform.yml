@@ -182,7 +182,7 @@ jobs:
             -DCMAKE_C_COMPILER=cl `
             -DCMAKE_CXX_COMPILER=cl `
             "-DCMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `
             -DBHA_BUILD_REFACTOR_TOOLS=OFF `
@@ -529,7 +529,7 @@ jobs:
             -DCMAKE_C_COMPILER=cl `
             -DCMAKE_CXX_COMPILER=cl `
             "-DCMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
             -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase `
             -DBHA_BUILD_TESTS=ON `
             -DBHA_BUILD_CLI=ON `

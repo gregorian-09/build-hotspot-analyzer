@@ -42,7 +42,7 @@ if (-not (Test-Path $toolchainFile)) {
 
 Write-Host "Using vcpkg executable: $vcpkgPath"
 Write-Host "Installing LLVM component dependencies with vcpkg root: $vcpkgRoot"
-& $vcpkgPath install --classic --vcpkg-root $vcpkgRoot --triplet x64-windows zlib zstd libxml2 2>&1 |
+& $vcpkgPath install --classic --vcpkg-root $vcpkgRoot --triplet x64-windows-static zlib zstd libxml2 2>&1 |
     Tee-Object 'ci\vcpkg-install.log'
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
