@@ -3,6 +3,7 @@
 
 #if BHA_HAVE_CLANG_TOOLING
 #include <clang/Tooling/DiagnosticsYaml.h>
+#include <llvm/Support/Program.h>
 #include <llvm/Support/YAMLTraits.h>
 #endif
 
@@ -10,9 +11,9 @@
 #include <array>
 #include <cctype>
 #include <chrono>
-#include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <optional>
 #include <string_view>
 #include <unordered_set>
 
@@ -23,32 +24,6 @@ namespace bha::suggestions {
             std::size_t line = 0;
             std::string header_name;
         };
-
-        std::string shell_quote(const std::string& input) {
-#ifdef _WIN32
-            std::string quoted = "\"";
-            for (const char character : input) {
-                if (character == '"') {
-                    quoted += "\\\"";
-                } else {
-                    quoted += character;
-                }
-            }
-            quoted += '"';
-            return quoted;
-#else
-            std::string quoted = "'";
-            for (const char character : input) {
-                if (character == '\'') {
-                    quoted += "'\\''";
-                } else {
-                    quoted += character;
-                }
-            }
-            quoted += '\'';
-            return quoted;
-#endif
-        }
 
         std::string trim(const std::string& value) {
             const auto first = value.find_first_not_of(" \t\r");
@@ -160,27 +135,16 @@ namespace bha::suggestions {
                    left_key == key(build_directory / right);
         }
 
-        FILE* open_pipe(const std::string& command_line) {
-#ifdef _WIN32
-            return _popen(command_line.c_str(), "r");
-#else
-            return popen(command_line.c_str(), "r");
-#endif
-        }
-
-        int close_pipe(FILE* pipe) {
-#ifdef _WIN32
-            return _pclose(pipe);
-#else
-            return pclose(pipe);
-#endif
-        }
-
         std::vector<IncludeDiagnostic> run_include_cleaner(
             const fs::path& build_dir,
             const CompilationUnit& command
         ) {
             std::vector<IncludeDiagnostic> diagnostics;
+#if !BHA_HAVE_CLANG_TOOLING
+            (void)build_dir;
+            (void)command;
+            return diagnostics;
+#else
             const fs::path source_file = command.source_file.lexically_normal();
             if (!fs::exists(source_file)) {
                 return diagnostics;
@@ -190,13 +154,6 @@ namespace bha::suggestions {
             const std::string binary = configured_binary != nullptr && *configured_binary != '\0'
                 ? configured_binary
                 : "clang-tidy";
-            std::string tidy = shell_quote(binary);
-#ifdef _WIN32
-            const auto extension = fs::path(binary).extension().string();
-            if (extension == ".cmd" || extension == ".bat") {
-                tidy = "cmd /d /q /c call " + tidy;
-            }
-#endif
 
             std::error_code temp_error;
             const fs::path fixes_directory = fs::temp_directory_path(temp_error);
@@ -206,40 +163,112 @@ namespace bha::suggestions {
             const auto unique_id = std::chrono::steady_clock::now().time_since_epoch().count();
             const fs::path fixes_file = fixes_directory /
                 ("bha-include-cleaner-" + std::to_string(unique_id) + ".yaml");
-            fs::remove(fixes_file, temp_error);
+            const fs::path output_file = fixes_directory /
+                ("bha-include-cleaner-" + std::to_string(unique_id) + ".out");
+            const fs::path error_file = fixes_directory /
+                ("bha-include-cleaner-" + std::to_string(unique_id) + ".err");
+            const auto remove_temporary_files = [&] {
+                std::error_code cleanup_error;
+                fs::remove(fixes_file, cleanup_error);
+                fs::remove(output_file, cleanup_error);
+                fs::remove(error_file, cleanup_error);
+            };
+            remove_temporary_files();
 
-            const std::string command_line = tidy +
-                " -checks=" + shell_quote("-*,misc-include-cleaner") +
+            std::vector<std::string> argument_storage;
+            argument_storage.reserve(12);
+            std::string program;
+            const auto add_argument = [&](std::string argument) {
+                argument_storage.push_back(std::move(argument));
+            };
+
 #ifdef _WIN32
-                " --extra-arg-before=--driver-mode=cl" +
+            std::string extension = fs::path(binary).extension().string();
+            std::ranges::transform(
+                extension,
+                extension.begin(),
+                [](const unsigned char character) { return static_cast<char>(std::tolower(character)); }
+            );
+            if (extension == ".cmd" || extension == ".bat") {
+                const auto command_shell = llvm::sys::findProgramByName("cmd.exe");
+                if (!command_shell) {
+                    remove_temporary_files();
+                    return diagnostics;
+                }
+                program = *command_shell;
+                add_argument(program);
+                add_argument("/d");
+                add_argument("/q");
+                add_argument("/c");
+                add_argument("call");
+                add_argument(binary);
+            } else {
+                const auto tidy_program = llvm::sys::findProgramByName(binary);
+                if (!tidy_program) {
+                    remove_temporary_files();
+                    return diagnostics;
+                }
+                program = *tidy_program;
+                add_argument(program);
+            }
+#else
+            const auto tidy_program = llvm::sys::findProgramByName(binary);
+            if (!tidy_program) {
+                remove_temporary_files();
+                return diagnostics;
+            }
+            program = *tidy_program;
+            add_argument(program);
 #endif
-                " -p " + shell_quote(build_dir.string()) +
-                " " + shell_quote(source_file.string()) +
-                " --export-fixes=" + shell_quote(fixes_file.string()) +
-                " --quiet 2>&1";
-            FILE* pipe = open_pipe(command_line);
-            if (pipe == nullptr) {
-                fs::remove(fixes_file, temp_error);
+
+            add_argument("-checks=-*,misc-include-cleaner");
+#ifdef _WIN32
+            add_argument("--extra-arg-before=--driver-mode=cl");
+#endif
+            add_argument("-p");
+            add_argument(build_dir.string());
+            add_argument("--export-fixes=" + fixes_file.string());
+            add_argument("--quiet");
+            add_argument(source_file.string());
+
+            std::vector<llvm::StringRef> arguments;
+            arguments.reserve(argument_storage.size());
+            for (const auto& argument : argument_storage) {
+                arguments.emplace_back(argument);
+            }
+            const std::string output_path = output_file.string();
+            const std::string error_path = error_file.string();
+            const std::array<std::optional<llvm::StringRef>, 3> redirects = {
+                std::nullopt,
+                llvm::StringRef(output_path),
+                llvm::StringRef(error_path)
+            };
+            std::string execution_error;
+            bool execution_failed = false;
+            const int exit_code = llvm::sys::ExecuteAndWait(
+                program,
+                arguments,
+                std::nullopt,
+                redirects,
+                0,
+                0,
+                &execution_error,
+                &execution_failed
+            );
+            if (exit_code != 0 || execution_failed) {
+                remove_temporary_files();
                 return diagnostics;
             }
 
-            std::array<char, 4096> buffer{};
-            while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
-            }
-            const int exit_code = close_pipe(pipe);
-            if (exit_code != 0) {
-                fs::remove(fixes_file, temp_error);
-                return diagnostics;
-            }
-
-#if BHA_HAVE_CLANG_TOOLING
             std::ifstream fixes_input(fixes_file, std::ios::binary);
             std::string fixes(
                 (std::istreambuf_iterator<char>(fixes_input)),
                 std::istreambuf_iterator<char>()
             );
-            fs::remove(fixes_file, temp_error);
-            if (!fixes_input || fixes.empty()) {
+            const bool fixes_read = static_cast<bool>(fixes_input);
+            fixes_input.close();
+            if (!fixes_read || fixes.empty()) {
+                remove_temporary_files();
                 return diagnostics;
             }
 
@@ -247,6 +276,7 @@ namespace bha::suggestions {
             llvm::yaml::Input yaml_input(fixes);
             yaml_input >> exported;
             if (yaml_input.error()) {
+                remove_temporary_files();
                 return diagnostics;
             }
 
@@ -289,10 +319,9 @@ namespace bha::suggestions {
                     }
                 }
             }
-#else
-            fs::remove(fixes_file, temp_error);
-#endif
+            remove_temporary_files();
             return diagnostics;
+#endif
         }
 
         Suggestion make_removal_suggestion(const IncludeDiagnostic& diagnostic) {
