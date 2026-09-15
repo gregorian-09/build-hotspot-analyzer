@@ -181,6 +181,21 @@ if(BHA_ENABLE_TEMPLATE_AST OR BHA_BUILD_REFACTOR_TOOLS)
         # package metadata, so make the C language available for that probe.
         enable_language(C)
     endif()
+
+    # vcpkg's zstd package exposes the generic zstd::libzstd target, while
+    # LLVM's static export metadata requires zstd::libzstd_static. With an
+    # explicitly selected static vcpkg triplet, the generic target is the
+    # static library and can satisfy LLVM's declared dependency directly.
+    if(DEFINED VCPKG_TARGET_TRIPLET AND
+            VCPKG_TARGET_TRIPLET MATCHES "-static$")
+        find_package(zstd CONFIG QUIET)
+        if(TARGET zstd::libzstd AND NOT TARGET zstd::libzstd_static)
+            add_library(zstd::libzstd_static INTERFACE IMPORTED)
+            set_property(TARGET zstd::libzstd_static PROPERTY
+                    INTERFACE_LINK_LIBRARIES zstd::libzstd)
+        endif()
+    endif()
+
     find_package(LLVM CONFIG QUIET
             HINTS
                 "${BHA_CLANG_TOOLING_ROOT}/lib/cmake/llvm"
