@@ -137,6 +137,23 @@ namespace bha::suggestions {
         }
 
 #if BHA_HAVE_CLANG_TOOLING && defined(_WIN32)
+        std::optional<fs::path> resolve_windows_program(const std::string& configured) {
+            const fs::path candidate(configured);
+            if (candidate.has_parent_path() || candidate.is_absolute()) {
+                std::error_code error;
+                if (fs::is_regular_file(candidate, error) && !error) {
+                    return candidate;
+                }
+                return std::nullopt;
+            }
+
+            const auto discovered = llvm::sys::findProgramByName(configured);
+            if (!discovered) {
+                return std::nullopt;
+            }
+            return fs::path(*discovered);
+        }
+
         bool uses_msvc_driver(const CompilationUnit& command) {
             if (command.command_line.empty()) {
                 return false;
@@ -158,6 +175,15 @@ namespace bha::suggestions {
                 return sibling;
             }
 
+            if (const char* configured_root = std::getenv("BHA_CLANG_TOOLING_ROOT");
+                configured_root != nullptr && *configured_root != '\0') {
+                const fs::path configured = fs::path(configured_root) / "bin" / "clang-cl.exe";
+                std::error_code configured_error;
+                if (fs::is_regular_file(configured, configured_error) && !configured_error) {
+                    return configured;
+                }
+            }
+
             const auto discovered = llvm::sys::findProgramByName("clang-cl.exe");
             if (!discovered) {
                 return std::nullopt;
@@ -177,7 +203,8 @@ namespace bha::suggestions {
 
             const fs::path database_directory = temporary_directory / "msvc-tooling-database";
             std::error_code directory_error;
-            if (!fs::create_directory(database_directory, directory_error) || directory_error) {
+            fs::create_directories(database_directory, directory_error);
+            if (directory_error) {
                 return std::nullopt;
             }
 
@@ -308,7 +335,7 @@ namespace bha::suggestions {
                 add_argument("call");
                 add_argument(binary);
             } else {
-                const auto tidy_program = llvm::sys::findProgramByName(binary);
+                const auto tidy_program = resolve_windows_program(binary);
                 if (!tidy_program) {
                     remove_temporary_files();
                     return diagnostics;
