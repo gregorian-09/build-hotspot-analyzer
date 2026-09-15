@@ -136,7 +136,7 @@ namespace bha::suggestions {
                    left_key == key(build_directory / right);
         }
 
-#ifdef _WIN32
+#if BHA_HAVE_CLANG_TOOLING && defined(_WIN32)
         bool uses_msvc_driver(const CompilationUnit& command) {
             if (command.command_line.empty()) {
                 return false;
@@ -256,6 +256,17 @@ namespace bha::suggestions {
                     fs::remove_all(*temporary_database_directory, cleanup_error);
                 }
             };
+            const auto publish_diagnostics = [&] {
+                const char* configured_path = std::getenv("BHA_CLANG_TIDY_DIAGNOSTICS");
+                if (configured_path == nullptr || *configured_path == '\0') {
+                    return;
+                }
+                std::ifstream input(error_file, std::ios::binary);
+                std::ofstream output(configured_path, std::ios::binary | std::ios::trunc);
+                if (input && output) {
+                    output << input.rdbuf();
+                }
+            };
             remove_temporary_files();
 
             std::vector<std::string> argument_storage;
@@ -363,6 +374,7 @@ namespace bha::suggestions {
                 &execution_failed
             );
             if (exit_code != 0 || execution_failed) {
+                publish_diagnostics();
                 remove_temporary_files();
                 return diagnostics;
             }
@@ -375,6 +387,7 @@ namespace bha::suggestions {
             const bool fixes_read = static_cast<bool>(fixes_input);
             fixes_input.close();
             if (!fixes_read || fixes.empty()) {
+                publish_diagnostics();
                 remove_temporary_files();
                 return diagnostics;
             }
@@ -383,6 +396,7 @@ namespace bha::suggestions {
             llvm::yaml::Input yaml_input(fixes);
             yaml_input >> exported;
             if (yaml_input.error()) {
+                publish_diagnostics();
                 remove_temporary_files();
                 return diagnostics;
             }

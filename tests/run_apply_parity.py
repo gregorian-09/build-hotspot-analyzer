@@ -175,6 +175,8 @@ def main() -> int:
         compiler = "msvc" if sys.platform == "win32" else "clang"
         environment = os.environ.copy()
         environment["BHA_SCRIPT_DIR"] = str(REPO_ROOT / "cmake")
+        clang_tidy_diagnostics = project_root / "clang-tidy-diagnostics.log"
+        environment["BHA_CLANG_TIDY_DIAGNOSTICS"] = str(clang_tidy_diagnostics)
         if sys.platform == "win32":
             environment["CMAKE_GENERATOR"] = "Ninja"
 
@@ -255,10 +257,17 @@ def main() -> int:
             "CLI analysis",
         )
         cli_suggestions = cli_analysis.get("suggestions") or []
+        diagnostic_text = ""
+        if clang_tidy_diagnostics.is_file():
+            diagnostic_text = clang_tidy_diagnostics.read_text(
+                encoding="utf-8",
+                errors="replace",
+            )[-4000:]
         require(
             cli_suggestions,
             "CLI produced no evidence-backed include suggestion\n"
-            f"analysis:\n{json.dumps(cli_analysis, indent=2)[-4000:]}"
+            f"analysis:\n{json.dumps(cli_analysis, indent=2)[-4000:]}\n"
+            f"clang-tidy diagnostics:\n{diagnostic_text}"
         )
         suggestion_id = cli_suggestions[0].get("id")
         require(isinstance(suggestion_id, str) and suggestion_id, "CLI suggestion has no ID")
