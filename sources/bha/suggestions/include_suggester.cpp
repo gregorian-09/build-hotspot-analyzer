@@ -256,15 +256,26 @@ namespace bha::suggestions {
                     fs::remove_all(*temporary_database_directory, cleanup_error);
                 }
             };
-            const auto publish_diagnostics = [&] {
+            const auto publish_diagnostics = [&](const std::string_view phase) {
                 const char* configured_path = std::getenv("BHA_CLANG_TIDY_DIAGNOSTICS");
                 if (configured_path == nullptr || *configured_path == '\0') {
                     return;
                 }
                 std::ifstream input(error_file, std::ios::binary);
+                std::ifstream fixes(fixes_file, std::ios::binary);
                 std::ofstream output(configured_path, std::ios::binary | std::ios::trunc);
-                if (input && output) {
+                if (!output) {
+                    return;
+                }
+                output << phase << '\n';
+                output << "fixes_file_exists=" << fs::exists(fixes_file) << '\n';
+                output << "clang_tidy_stderr:\n";
+                if (input) {
                     output << input.rdbuf();
+                }
+                output << "\nexported_fixes:\n";
+                if (fixes) {
+                    output << fixes.rdbuf();
                 }
             };
             remove_temporary_files();
@@ -374,7 +385,7 @@ namespace bha::suggestions {
                 &execution_failed
             );
             if (exit_code != 0 || execution_failed) {
-                publish_diagnostics();
+                publish_diagnostics("clang-tidy execution failed");
                 remove_temporary_files();
                 return diagnostics;
             }
@@ -387,7 +398,7 @@ namespace bha::suggestions {
             const bool fixes_read = static_cast<bool>(fixes_input);
             fixes_input.close();
             if (!fixes_read || fixes.empty()) {
-                publish_diagnostics();
+                publish_diagnostics("clang-tidy produced no exported fixes");
                 remove_temporary_files();
                 return diagnostics;
             }
@@ -396,7 +407,7 @@ namespace bha::suggestions {
             llvm::yaml::Input yaml_input(fixes);
             yaml_input >> exported;
             if (yaml_input.error()) {
-                publish_diagnostics();
+                publish_diagnostics("clang-tidy exported malformed fixes");
                 remove_temporary_files();
                 return diagnostics;
             }
