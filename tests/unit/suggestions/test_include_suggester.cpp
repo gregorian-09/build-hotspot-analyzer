@@ -19,6 +19,7 @@ namespace bha::suggestions {
             fs::create_directories(fake_root_, ec);
 #ifdef _WIN32
             fake_binary_ = fake_root_ / "clang-tidy.cmd";
+            write_file(fake_root_ / "clang-cl.exe", "");
             write_file(fake_binary_,
                 "@echo off\n"
                 "setlocal EnableDelayedExpansion\n"
@@ -145,9 +146,14 @@ namespace bha::suggestions {
             const auto line_end = content.find('\n', include_offset);
             const auto include_length =
                 (line_end == std::string::npos ? content.size() : line_end + 1) - include_offset;
+#ifdef _WIN32
+            const std::string compiler = "cl.exe";
+#else
+            const std::string compiler = "clang++";
+#endif
             write_file(build / "compile_commands.json",
                 "[{\"directory\":\"" + build.generic_string() +
-                "\",\"command\":\"clang++ -I" + (root_ / "include").generic_string() +
+                "\",\"command\":\"" + compiler + " -I" + (root_ / "include").generic_string() +
                 " -c " + source.generic_string() +
                 "\",\"file\":\"" + source.generic_string() + "\"}]\n");
             ASSERT_EQ(set_env("BHA_FAKE_CLANG_TIDY_SOURCE", source.generic_string()), 0);

@@ -5,6 +5,7 @@
 #include <clang/Tooling/DiagnosticsYaml.h>
 #include <llvm/Support/Program.h>
 #include <llvm/Support/YAMLTraits.h>
+#include <nlohmann/json.hpp>
 #endif
 
 #include <algorithm>
@@ -135,6 +136,84 @@ namespace bha::suggestions {
                    left_key == key(build_directory / right);
         }
 
+#ifdef _WIN32
+        bool uses_msvc_driver(const CompilationUnit& command) {
+            if (command.command_line.empty()) {
+                return false;
+            }
+
+            std::string compiler_name = fs::path(command.command_line.front()).stem().string();
+            std::ranges::transform(
+                compiler_name,
+                compiler_name.begin(),
+                [](const unsigned char character) { return static_cast<char>(std::tolower(character)); }
+            );
+            return compiler_name == "cl";
+        }
+
+        std::optional<fs::path> find_clang_cl(const fs::path& clang_tidy) {
+            const fs::path sibling = clang_tidy.parent_path() / "clang-cl.exe";
+            std::error_code sibling_error;
+            if (!sibling.parent_path().empty() && fs::is_regular_file(sibling, sibling_error)) {
+                return sibling;
+            }
+
+            const auto discovered = llvm::sys::findProgramByName("clang-cl.exe");
+            if (!discovered) {
+                return std::nullopt;
+            }
+            return fs::path(*discovered);
+        }
+
+        std::optional<fs::path> make_msvc_tooling_database(
+            const fs::path& temporary_directory,
+            const fs::path& source_file,
+            const CompilationUnit& command,
+            const fs::path& clang_cl
+        ) {
+            if (!uses_msvc_driver(command) || command.command_line.empty()) {
+                return std::nullopt;
+            }
+
+            const fs::path database_directory = temporary_directory / "msvc-tooling-database";
+            std::error_code directory_error;
+            if (!fs::create_directory(database_directory, directory_error) || directory_error) {
+                return std::nullopt;
+            }
+
+            std::vector<std::string> arguments = command.command_line;
+            arguments.front() = clang_cl.string();
+
+            nlohmann::json entry = {
+                {"directory", command.working_directory.generic_string()},
+                {"arguments", arguments},
+                {"file", source_file.generic_string()}
+            };
+            nlohmann::json database = nlohmann::json::array();
+            database.push_back(std::move(entry));
+
+            std::ofstream output(database_directory / "compile_commands.json", std::ios::binary);
+            if (!output) {
+                std::error_code cleanup_error;
+                fs::remove_all(database_directory, cleanup_error);
+                return std::nullopt;
+            }
+            output << database.dump();
+            if (!output) {
+                std::error_code cleanup_error;
+                fs::remove_all(database_directory, cleanup_error);
+                return std::nullopt;
+            }
+            output.close();
+            if (!output) {
+                std::error_code cleanup_error;
+                fs::remove_all(database_directory, cleanup_error);
+                return std::nullopt;
+            }
+            return database_directory;
+        }
+#endif
+
         std::vector<IncludeDiagnostic> run_include_cleaner(
             const fs::path& build_dir,
             const CompilationUnit& command
@@ -167,11 +246,15 @@ namespace bha::suggestions {
                 ("bha-include-cleaner-" + std::to_string(unique_id) + ".out");
             const fs::path error_file = fixes_directory /
                 ("bha-include-cleaner-" + std::to_string(unique_id) + ".err");
+            std::optional<fs::path> temporary_database_directory;
             const auto remove_temporary_files = [&] {
                 std::error_code cleanup_error;
                 fs::remove(fixes_file, cleanup_error);
                 fs::remove(output_file, cleanup_error);
                 fs::remove(error_file, cleanup_error);
+                if (temporary_database_directory.has_value()) {
+                    fs::remove_all(*temporary_database_directory, cleanup_error);
+                }
             };
             remove_temporary_files();
 
@@ -221,12 +304,36 @@ namespace bha::suggestions {
             add_argument(program);
 #endif
 
+            fs::path tidy_build_directory = build_dir;
+#ifdef _WIN32
+            if (uses_msvc_driver(command)) {
+                const auto clang_cl = find_clang_cl(fs::path(binary));
+                if (!clang_cl) {
+                    remove_temporary_files();
+                    return diagnostics;
+                }
+                temporary_database_directory = make_msvc_tooling_database(
+                    fixes_directory,
+                    source_file,
+                    command,
+                    *clang_cl
+                );
+                if (!temporary_database_directory.has_value()) {
+                    remove_temporary_files();
+                    return diagnostics;
+                }
+                tidy_build_directory = *temporary_database_directory;
+            }
+#endif
+
             add_argument("-checks=-*,misc-include-cleaner");
 #ifdef _WIN32
-            add_argument("--extra-arg-before=--driver-mode=cl");
+            if (!temporary_database_directory.has_value()) {
+                add_argument("--extra-arg-before=--driver-mode=cl");
+            }
 #endif
             add_argument("-p");
-            add_argument(build_dir.string());
+            add_argument(tidy_build_directory.string());
             add_argument("--export-fixes=" + fixes_file.string());
             add_argument("--quiet");
             add_argument(source_file.string());
