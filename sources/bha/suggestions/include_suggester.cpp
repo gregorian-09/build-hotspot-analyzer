@@ -340,7 +340,7 @@ namespace bha::suggestions {
                     remove_temporary_files();
                     return diagnostics;
                 }
-                program = *tidy_program;
+                program = tidy_program->string();
                 add_argument(program);
             }
 #else
