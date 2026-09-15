@@ -131,6 +131,28 @@ namespace bha::suggestions {
                     return std::nullopt;
                 }
             }
+
+#ifdef _WIN32
+            const std::array<std::string, 2> msvc_prefixes = {
+                source_file.string() + "(",
+                source_file.generic_string() + "("
+            };
+            for (const auto& prefix : msvc_prefixes) {
+                if (!output.starts_with(prefix)) {
+                    continue;
+                }
+                const auto comma = output.find(',', prefix.size());
+                if (comma == std::string::npos || comma == prefix.size()) {
+                    return std::nullopt;
+                }
+                try {
+                    const auto line = std::stoul(output.substr(prefix.size(), comma - prefix.size()));
+                    return line == 0 ? std::nullopt : std::optional<std::size_t>{line - 1};
+                } catch (const std::exception&) {
+                    return std::nullopt;
+                }
+            }
+#endif
             return std::nullopt;
         }
 

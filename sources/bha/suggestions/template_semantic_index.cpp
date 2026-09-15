@@ -129,15 +129,21 @@ namespace bha::suggestions {
             return rendered;
         }
 
-        std::string method_qualified_name(const clang::CXXMethodDecl& method) {
+        std::string method_qualified_name(
+            const clang::CXXMethodDecl& method,
+            const clang::ASTContext& context
+        ) {
             const auto declaration_name = method.getQualifiedNameAsString();
             const auto* parent = method.getParent();
-            if (parent != nullptr &&
-                llvm::isa<clang::ClassTemplateSpecializationDecl>(parent) &&
-                !parent->isDependentContext()) {
-                const auto owner_name = parent->getQualifiedNameAsString();
-                if (owner_name.find('<') != std::string::npos) {
-                    return owner_name + "::" + method.getNameAsString();
+            const auto* specialization = parent == nullptr
+                ? nullptr
+                : llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(parent);
+            if (specialization != nullptr && !specialization->isDependentContext()) {
+                const auto* primary = specialization->getSpecializedTemplate();
+                if (primary != nullptr) {
+                    return primary->getQualifiedNameAsString() +
+                        render_template_arguments(specialization->getTemplateArgs(), context) +
+                        "::" + method.getNameAsString();
                 }
             }
             return declaration_name;
@@ -151,7 +157,7 @@ namespace bha::suggestions {
         ) {
             std::string qualified_name = primary.getQualifiedNameAsString();
             if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
-                qualified_name = method_qualified_name(*method);
+                qualified_name = method_qualified_name(*method, context);
             }
             std::string rendered;
             llvm::raw_string_ostream output(rendered);
@@ -608,10 +614,17 @@ namespace bha::suggestions {
                 const auto* parent_record = llvm::dyn_cast<clang::CXXRecordDecl>(
                     primary.getDeclContext()
                 );
+                const auto* method_owner = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration);
+                const auto* concrete_method_parent = method_owner == nullptr
+                    ? nullptr
+                    : llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                        method_owner->getParent()
+                    );
                 const auto* class_specialization = parent_record == nullptr
                     ? nullptr
                     : llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(parent_record);
                 const bool dependent_member_owner = parent_record != nullptr &&
+                    concrete_method_parent == nullptr &&
                     (parent_record->isDependentContext() ||
                      (class_specialization == nullptr && parent_record->getDescribedClassTemplate()) ||
                      (class_specialization != nullptr && std::ranges::any_of(
@@ -685,7 +698,7 @@ namespace bha::suggestions {
             ) const {
                 std::string qualified_name = primary.getQualifiedNameAsString();
                 if (const auto* method = llvm::dyn_cast<clang::CXXMethodDecl>(&declaration)) {
-                    qualified_name = method_qualified_name(*method);
+                    qualified_name = method_qualified_name(*method, context);
                 }
                 return qualified_name + render_template_arguments(arguments, context);
             }

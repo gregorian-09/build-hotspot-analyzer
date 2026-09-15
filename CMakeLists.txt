@@ -90,6 +90,7 @@ endif()
 add_library(bha_sanitizers INTERFACE)
 add_library(bha::sanitizers ALIAS bha_sanitizers)
 set(BHA_SANITIZER_COMPILE_OPTIONS)
+set(BHA_SANITIZER_COMPILE_DEFINITIONS)
 
 if(BHA_ENABLE_SANITIZERS)
     if(MSVC)
@@ -100,9 +101,10 @@ if(BHA_ENABLE_SANITIZERS)
         # compiled with MSVC STL AddressSanitizer container annotations.
         # Keep BHA's STL ABI compatible with those libraries while retaining
         # AddressSanitizer instrumentation for BHA itself.
-        target_compile_definitions(bha_sanitizers INTERFACE
+        set(BHA_SANITIZER_COMPILE_DEFINITIONS
                 _DISABLE_STRING_ANNOTATION=1
-                _DISABLE_VECTOR_ANNOTATION=1)
+                _DISABLE_VECTOR_ANNOTATION=1
+        )
     else()
         set(BHA_SANITIZER_COMPILE_OPTIONS
                 -fsanitize=address,undefined
@@ -111,6 +113,8 @@ if(BHA_ENABLE_SANITIZERS)
 
     target_compile_options(bha_sanitizers INTERFACE
             ${BHA_SANITIZER_COMPILE_OPTIONS})
+    target_compile_definitions(bha_sanitizers INTERFACE
+            ${BHA_SANITIZER_COMPILE_DEFINITIONS})
     if(NOT MSVC)
         target_link_options(bha_sanitizers INTERFACE
                 -fsanitize=address,undefined
@@ -477,6 +481,16 @@ if(BHA_BUILD_TESTS)
         # interface target into GoogleTest's install export set.
         target_compile_options(gtest PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
         target_compile_options(gtest_main PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
+        target_compile_definitions(gtest PRIVATE ${BHA_SANITIZER_COMPILE_DEFINITIONS})
+        target_compile_definitions(gtest_main PRIVATE ${BHA_SANITIZER_COMPILE_DEFINITIONS})
+        if(TARGET gmock)
+            target_compile_options(gmock PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
+            target_compile_definitions(gmock PRIVATE ${BHA_SANITIZER_COMPILE_DEFINITIONS})
+        endif()
+        if(TARGET gmock_main)
+            target_compile_options(gmock_main PRIVATE ${BHA_SANITIZER_COMPILE_OPTIONS})
+            target_compile_definitions(gmock_main PRIVATE ${BHA_SANITIZER_COMPILE_DEFINITIONS})
+        endif()
     endif()
 
     include(GoogleTest)

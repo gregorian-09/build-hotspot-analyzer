@@ -23,7 +23,7 @@ namespace bha::suggestions {
                 "@echo off\n"
                 "setlocal EnableDelayedExpansion\n"
                 "set file=%BHA_FAKE_CLANG_TIDY_SOURCE%\n"
-                "if \"%BHA_FAKE_CLANG_TIDY_MODE%\"==\"unused\" echo !file!:2:1: warning: included header unused.hpp is not used directly [misc-include-cleaner]\n"
+                "if \"%BHA_FAKE_CLANG_TIDY_MODE%\"==\"unused\" echo !file!(2,1): warning: included header unused.hpp is not used directly [misc-include-cleaner]\n"
             );
 #else
             fake_binary_ = fake_root_ / "clang-tidy";
