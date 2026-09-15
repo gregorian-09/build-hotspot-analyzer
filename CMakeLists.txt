@@ -360,6 +360,11 @@ target_compile_definitions(bha_lib PRIVATE BHA_HAVE_CLANG_DEP_SCANNING=${BHA_HAV
 if(BHA_HAVE_CLANG_TOOLING)
     target_include_directories(bha_lib SYSTEM PRIVATE ${BHA_CLANG_TOOLING_INCLUDE_DIR})
     target_link_libraries(bha_lib PRIVATE ${BHA_CLANG_TOOLING_LINK_LIBRARIES})
+    if(MSVC)
+        # LLVM 23.1.1's clang/Basic/Module.h instantiates an STL conversion
+        # that emits C4267 under /W4 /WX; keep the suppression scoped to LLVM.
+        target_compile_options(bha_lib PRIVATE /wd4267)
+    endif()
 endif()
 
 # Ensure resources are generated before compiling bha_lib

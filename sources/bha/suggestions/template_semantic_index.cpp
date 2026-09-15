@@ -925,16 +925,22 @@ namespace bha::suggestions {
                 }
                 hash = fnv1a_append(hash, std::string_view{"\0", 1});
 #if BHA_HAVE_CLANG_DEP_SCANNING
+#if CLANG_VERSION_MAJOR >= 23
+                dependency_scanning::DependencyScanningServiceOptions service_options;
+                service_options.Mode = dependency_scanning::ScanningMode::DependencyDirectivesScan;
+                dependency_scanning::DependencyScanningService service(service_options);
+#else
                 dependency_scanning::DependencyScanningService service(
                     dependency_scanning::ScanningMode::DependencyDirectivesScan,
                     dependency_scanning::ScanningOutputFormat::Make
                 );
+#endif
                 DependencyScanningTool scanner(service);
 #if BHA_CLANG_DEP_SCANNING_SPLIT_NAMESPACE
                 clang::IgnoringDiagConsumer diagnostics;
 #if CLANG_VERSION_MAJOR >= 23
                 const auto lookup_module_output = [](
-                    const dependency_scanning::ModuleID&,
+                    const dependency_scanning::ModuleDeps&,
                     dependency_scanning::ModuleOutputKind
                 ) -> std::string {
                     return {};
