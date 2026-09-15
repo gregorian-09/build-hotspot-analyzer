@@ -541,6 +541,12 @@ namespace bha::suggestions {
                         validation_diagnostic
                     )) {
                     result.suggestions.push_back(make_removal_suggestion(diagnostic));
+                } else if (const char* configured_path = std::getenv("BHA_CLANG_TIDY_DIAGNOSTICS");
+                           configured_path != nullptr && *configured_path != '\0') {
+                    std::ofstream output(configured_path, std::ios::app);
+                    if (output) {
+                        output << "\ninclude-removal-validation:\n" << validation_diagnostic << '\n';
+                    }
                 }
             }
         }

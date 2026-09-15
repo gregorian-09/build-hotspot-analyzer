@@ -1068,7 +1068,7 @@ namespace bha::suggestions {
 
         std::optional<clang::tooling::Replacement> replacement;
         bool had_errors = false;
-        if (!clang::tooling::runToolOnCodeWithArgs(
+        const bool parsed = clang::tooling::runToolOnCodeWithArgs(
                 std::make_unique<IncludeValidationAction>(
                     source_file,
                     include_line,
@@ -1079,8 +1079,17 @@ namespace bha::suggestions {
                 *source,
                 tooling_arguments(command),
                 source_file.string()
-            ) || had_errors || !replacement.has_value()) {
-            diagnostic = "Clang could not resolve the diagnostic include range";
+            );
+        if (!parsed) {
+            diagnostic = "Clang could not parse the translation unit while locating the diagnostic include";
+            return false;
+        }
+        if (had_errors) {
+            diagnostic = "Clang reported an error while locating the diagnostic include";
+            return false;
+        }
+        if (!replacement.has_value()) {
+            diagnostic = "Clang did not reproduce the diagnostic include range";
             return false;
         }
 
@@ -1096,15 +1105,21 @@ namespace bha::suggestions {
         }
 
         bool modified_had_errors = false;
-        if (!clang::tooling::runToolOnCodeWithArgs(
+        const bool parsed_modified = clang::tooling::runToolOnCodeWithArgs(
                 std::make_unique<SyntaxValidationAction>(modified_had_errors),
                 *modified,
                 validation_filesystem(source_file, *modified),
                 tooling_arguments(command),
                 source_file.string(),
                 "bha-include-removal"
-            ) || modified_had_errors) {
-            diagnostic = "Clang rejected the include removal in " + source_file.string();
+            );
+        if (!parsed_modified) {
+            diagnostic = "Clang could not parse the modified translation unit for include-removal validation";
+            return false;
+        }
+        if (modified_had_errors) {
+            diagnostic = "Clang rejected the modified translation unit after include removal: " +
+                source_file.string();
             return false;
         }
         return true;
