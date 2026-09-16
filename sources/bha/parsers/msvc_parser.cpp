@@ -58,6 +58,7 @@ namespace bha::parsers {
 
         struct MSVCTimeLine {
             std::string target;
+            std::string source_file;
             Duration total_time = Duration::zero();
         };
 
@@ -102,6 +103,19 @@ namespace bha::parsers {
                 return {true, false, {}};
             }
             result.total_time = *duration;
+
+            const auto source_start = trimmed.find('[', time_end);
+            if (source_start != std::string_view::npos) {
+                const auto source_end = trimmed.rfind(']');
+                if (source_end == std::string_view::npos ||
+                    source_end <= source_start + 1 ||
+                    !utils::trim(trimmed.substr(source_end + 1)).empty()) {
+                    return {true, false, {}};
+                }
+                result.source_file = std::string(utils::trim(
+                    trimmed.substr(source_start + 1, source_end - source_start - 1)
+                ));
+            }
 
             return {true, true, std::move(result)};
         }
@@ -228,6 +242,11 @@ namespace bha::parsers {
                 unit.source_file = timing.target;
                 unit.metrics.path = timing.target;
                 unit.metrics.total_time = timing.total_time;
+            }
+
+            if (!timing.source_file.empty()) {
+                unit.source_file = timing.source_file;
+                unit.metrics.path = timing.source_file;
             }
         }
 

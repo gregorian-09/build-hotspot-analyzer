@@ -4,6 +4,7 @@
 
 #include "bha/parsers/msvc_parser.hpp"
 
+#include <filesystem>
 #include <gtest/gtest.h>
 
 namespace bha::parsers
@@ -102,6 +103,30 @@ time(C:\path\to\c2.dll)=1.000s
         EXPECT_EQ(unit.metrics.backend_time, std::chrono::duration_cast<Duration>(
             std::chrono::duration<double>(0.8)));
         EXPECT_EQ(unit.metrics.total_time, Duration::zero());
+    }
+
+    TEST_F(MSVCParserTest, UsesBracketedSourceIdentityFromCompilerRows) {
+        constexpr std::string_view content =
+            "time(C:\\path\\to\\c1xx.dll)=1.2s < 100 - 200 > BB [C:\\project\\src\\main.cpp]\n"
+            "time(C:\\path\\to\\c2.dll)=0.8s < 300 - 400 > BB [C:\\project\\src\\main.cpp]\n";
+
+        const auto result = parser_->parse_content(content, "timing.log");
+
+        ASSERT_TRUE(result.is_ok());
+        const auto& unit = result.value();
+        EXPECT_EQ(unit.source_file, std::filesystem::path("C:\\project\\src\\main.cpp"));
+        EXPECT_EQ(unit.metrics.path, std::filesystem::path("C:\\project\\src\\main.cpp"));
+        EXPECT_EQ(unit.metrics.total_time, Duration::zero());
+    }
+
+    TEST_F(MSVCParserTest, RejectsMalformedBracketedSourceIdentity) {
+        constexpr std::string_view content =
+            "time(c1xx.dll)=1.2s < 100 - 200 > BB [C:\\project\\src\\main.cpp\n"
+            "time(c2.dll)=0.8s\n";
+
+        const auto result = parser_->parse_content(content, "timing.log");
+
+        EXPECT_TRUE(result.is_err());
     }
 
     TEST_F(MSVCParserTest, RejectsMalformedDuration) {
