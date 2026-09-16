@@ -645,7 +645,8 @@ namespace bha::lsp
                 skip_next_value_flag("-MQ") || skip_next_value_flag("-MJ") ||
                 skip_next_value_flag("-include") || skip_next_value_flag("-include-pch") ||
                 skip_next_value_flag("/Fo") || skip_next_value_flag("/Fe") ||
-                skip_next_value_flag("/Fp") || skip_next_value_flag("/FI") ||
+                skip_next_value_flag("/Fp") || skip_next_value_flag("/Fd") ||
+                skip_next_value_flag("/FI") ||
                 skip_next_value_flag("/Yu") || skip_next_value_flag("/Yc")) {
                 if (i + 1 < args.size()) {
                     ++i;
@@ -676,7 +677,8 @@ namespace bha::lsp
                 arg.starts_with("-MQ") || arg.starts_with("-MJ") ||
                 arg.starts_with("-include") || arg.starts_with("-include-pch") ||
                 arg.starts_with("/Fo") || arg.starts_with("/Fe") ||
-                arg.starts_with("/Fp") || arg.starts_with("/FI") ||
+                arg.starts_with("/Fp") || arg.starts_with("/Fd") ||
+                arg.starts_with("/FI") ||
                 arg.starts_with("/Yu") || arg.starts_with("/Yc")) {
                 continue;
             }
