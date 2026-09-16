@@ -601,6 +601,10 @@ namespace bha::suggestions {
     Result<SuggestionResult, Error> IncludeSuggester::suggest(const SuggestionContext& context) const {
         SuggestionResult result;
         const auto started = std::chrono::steady_clock::now();
+        publish_include_cleaner_setup_failure(
+            "include-cleaner invoked",
+            context.project_root.string()
+        );
         if (!context.project_index) {
             publish_include_cleaner_setup_failure(
                 "include-cleaner skipped: project index is unavailable",
@@ -624,9 +628,26 @@ namespace bha::suggestions {
         }
 
         const auto commands = context.project_index->compile_commands();
+        if (commands.empty()) {
+            publish_include_cleaner_setup_failure(
+                "include-cleaner skipped: compilation database contains no commands",
+                context.project_root.string()
+            );
+        }
         std::unordered_set<std::string> seen_sources;
         for (const auto& command : commands) {
-            if (context.is_cancelled() || !is_source_file_path(command.source_file)) {
+            if (context.is_cancelled()) {
+                publish_include_cleaner_setup_failure(
+                    "include-cleaner skipped: analysis was cancelled",
+                    context.project_root.string()
+                );
+                break;
+            }
+            if (!is_source_file_path(command.source_file)) {
+                publish_include_cleaner_setup_failure(
+                    "include-cleaner skipped: compilation command is not a supported source",
+                    command.source_file.string()
+                );
                 break;
             }
             const fs::path source = command.source_file.lexically_normal();
