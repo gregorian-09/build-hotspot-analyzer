@@ -154,6 +154,20 @@ namespace bha::suggestions {
             }
         }
 
+        std::string_view compilation_database_status_name(const CompilationDatabaseStatus status) {
+            switch (status) {
+                case CompilationDatabaseStatus::NotConfigured:
+                    return "not-configured";
+                case CompilationDatabaseStatus::NotFound:
+                    return "not-found";
+                case CompilationDatabaseStatus::Invalid:
+                    return "invalid";
+                case CompilationDatabaseStatus::Loaded:
+                    return "loaded";
+            }
+            return "unknown";
+        }
+
 #if BHA_HAVE_CLANG_TOOLING && defined(_WIN32)
         std::optional<fs::path> resolve_windows_program(const std::string& configured) {
             const fs::path candidate(configured);
@@ -587,7 +601,22 @@ namespace bha::suggestions {
     Result<SuggestionResult, Error> IncludeSuggester::suggest(const SuggestionContext& context) const {
         SuggestionResult result;
         const auto started = std::chrono::steady_clock::now();
-        if (!context.project_index || context.project_index->compile_commands_status() != CompilationDatabaseStatus::Loaded) {
+        if (!context.project_index) {
+            publish_include_cleaner_setup_failure(
+                "include-cleaner skipped: project index is unavailable",
+                {}
+            );
+            result.generation_time = std::chrono::duration_cast<Duration>(
+                std::chrono::steady_clock::now() - started
+            );
+            return Result<SuggestionResult, Error>::success(std::move(result));
+        }
+        const auto compile_commands_status = context.project_index->compile_commands_status();
+        if (compile_commands_status != CompilationDatabaseStatus::Loaded) {
+            publish_include_cleaner_setup_failure(
+                "include-cleaner skipped: compilation database is unavailable",
+                compilation_database_status_name(compile_commands_status)
+            );
             result.generation_time = std::chrono::duration_cast<Duration>(
                 std::chrono::steady_clock::now() - started
             );
