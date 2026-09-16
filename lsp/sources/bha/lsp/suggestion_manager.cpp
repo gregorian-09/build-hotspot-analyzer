@@ -464,6 +464,70 @@ namespace bha::lsp
 
     std::vector<std::string> split_shell_command(const std::string& command) {
         std::vector<std::string> parts;
+#ifdef _WIN32
+        std::string current;
+        bool in_quotes = false;
+        bool argument_started = false;
+
+        // CMake stores Windows compile commands as command-line strings. Apply
+        // the MSVC argv rules here: backslashes are literal unless they precede
+        // a quote, where pairs encode one backslash and an odd remainder escapes
+        // the quote itself.
+        for (std::size_t i = 0; i < command.size();) {
+            const char ch = command[i];
+            if ((ch == ' ' || ch == '\t') && !in_quotes) {
+                if (argument_started) {
+                    parts.push_back(std::move(current));
+                    current.clear();
+                    argument_started = false;
+                }
+                ++i;
+                continue;
+            }
+
+            if (ch == '\\') {
+                std::size_t backslash_count = 0;
+                while (i + backslash_count < command.size() &&
+                       command[i + backslash_count] == '\\') {
+                    ++backslash_count;
+                }
+
+                const std::size_t next = i + backslash_count;
+                if (next < command.size() && command[next] == '"') {
+                    current.append(backslash_count / 2, '\\');
+                    if (backslash_count % 2 == 1) {
+                        current.push_back('"');
+                    } else {
+                        in_quotes = !in_quotes;
+                    }
+                    argument_started = true;
+                    i = next + 1;
+                    continue;
+                }
+
+                current.append(backslash_count, '\\');
+                argument_started = true;
+                i = next;
+                continue;
+            }
+
+            if (ch == '"') {
+                in_quotes = !in_quotes;
+                argument_started = true;
+                ++i;
+                continue;
+            }
+
+            current.push_back(ch);
+            argument_started = true;
+            ++i;
+        }
+
+        if (argument_started) {
+            parts.push_back(std::move(current));
+        }
+        return parts;
+#else
         std::string current;
         char quote = '\0';
         bool escaped = false;
@@ -504,6 +568,7 @@ namespace bha::lsp
             parts.push_back(std::move(current));
         }
         return parts;
+#endif
     }
 
     bool is_cpp_source_path(const fs::path& path) {
