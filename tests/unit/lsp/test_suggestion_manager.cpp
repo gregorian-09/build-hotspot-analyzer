@@ -154,6 +154,13 @@ namespace bha::lsp
             return SuggestionManager::apply_file_changes(suggestion, changed_files);
         }
 
+        static std::string create_backup(
+            SuggestionManager& manager,
+            const std::vector<fs::path>& files
+        ) {
+            return manager.create_backup(files);
+        }
+
         static void seed_source_state(
             SuggestionManager& manager,
             const fs::path& project_root,
@@ -1370,5 +1377,37 @@ namespace bha::lsp
         EXPECT_EQ(backups[1].id, "20260423-220000-1");
         EXPECT_EQ(backups[1].file_count, 1u);
         EXPECT_TRUE(backups[1].on_disk);
+    }
+
+    TEST_F(SuggestionManagerRollbackTest, CreatesAndRestoresDurableDiskBackup) {
+        const fs::path source = temp_root_ / "source.cpp";
+        {
+            std::ofstream out(source);
+            ASSERT_TRUE(out.good());
+            out << "before\n";
+        }
+
+        SuggestionManagerConfig config;
+        config.use_disk_backups = true;
+        config.workspace_root = temp_root_;
+        SuggestionManager manager(config);
+
+        const std::string backup_id = SuggestionManagerTestAccess::create_backup(manager, {source});
+        ASSERT_FALSE(backup_id.empty());
+        EXPECT_TRUE(fs::exists(temp_root_ / ".lsp-optimization-backup" / backup_id / "metadata.txt"));
+
+        {
+            std::ofstream out(source, std::ios::trunc);
+            ASSERT_TRUE(out.good());
+            out << "after\n";
+        }
+
+        ASSERT_TRUE(manager.revert_changes(backup_id));
+        std::ifstream in(source);
+        ASSERT_TRUE(in.good());
+        EXPECT_EQ(
+            std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()),
+            "before\n"
+        );
     }
 }

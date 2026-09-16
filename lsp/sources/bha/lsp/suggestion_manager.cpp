@@ -864,7 +864,9 @@ namespace bha::lsp
 
     bool sync_file_to_disk(const fs::path& path) {
 #ifdef _WIN32
-        const int fd = _open(path.string().c_str(), _O_RDONLY | _O_BINARY);
+        // FlushFileBuffers requires write access; use the wide API so durable
+        // backups also work when the workspace contains non-ASCII characters.
+        const int fd = _wopen(path.c_str(), _O_RDWR | _O_BINARY);
         if (fd < 0) {
             return false;
         }
