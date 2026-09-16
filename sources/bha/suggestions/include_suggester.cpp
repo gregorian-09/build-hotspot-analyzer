@@ -136,6 +136,24 @@ namespace bha::suggestions {
                    left_key == key(build_directory / right);
         }
 
+        void publish_include_cleaner_setup_failure(
+            const std::string_view phase,
+            const std::string_view detail
+        ) {
+            const char* configured_path = std::getenv("BHA_CLANG_TIDY_DIAGNOSTICS");
+            if (configured_path == nullptr || *configured_path == '\0') {
+                return;
+            }
+            std::ofstream output(configured_path, std::ios::binary | std::ios::trunc);
+            if (!output) {
+                return;
+            }
+            output << phase << '\n';
+            if (!detail.empty()) {
+                output << detail << '\n';
+            }
+        }
+
 #if BHA_HAVE_CLANG_TOOLING && defined(_WIN32)
         std::optional<fs::path> resolve_windows_program(const std::string& configured) {
             const fs::path candidate(configured);
@@ -165,10 +183,17 @@ namespace bha::suggestions {
                 compiler_name.begin(),
                 [](const unsigned char character) { return static_cast<char>(std::tolower(character)); }
             );
-            return compiler_name == "cl";
+            return compiler_name == "cl" || compiler_name == "clang-cl";
         }
 
         std::optional<fs::path> find_clang_cl(const fs::path& clang_tidy) {
+            if (const char* configured_binary = std::getenv("BHA_CLANG_CL");
+                configured_binary != nullptr && *configured_binary != '\0') {
+                if (const auto configured = resolve_windows_program(configured_binary); configured.has_value()) {
+                    return configured;
+                }
+            }
+
             const fs::path sibling = clang_tidy.parent_path() / "clang-cl.exe";
             std::error_code sibling_error;
             if (!sibling.parent_path().empty() && fs::is_regular_file(sibling, sibling_error)) {
@@ -253,6 +278,10 @@ namespace bha::suggestions {
 #else
             const fs::path source_file = command.source_file.lexically_normal();
             if (!fs::exists(source_file)) {
+                publish_include_cleaner_setup_failure(
+                    "include-cleaner setup failed: source file is missing",
+                    source_file.string()
+                );
                 return diagnostics;
             }
 
@@ -264,6 +293,10 @@ namespace bha::suggestions {
             std::error_code temp_error;
             const fs::path fixes_directory = fs::temp_directory_path(temp_error);
             if (temp_error) {
+                publish_include_cleaner_setup_failure(
+                    "include-cleaner setup failed: temporary directory unavailable",
+                    temp_error.message()
+                );
                 return diagnostics;
             }
             const auto unique_id = std::chrono::steady_clock::now().time_since_epoch().count();
@@ -324,6 +357,10 @@ namespace bha::suggestions {
             if (extension == ".cmd" || extension == ".bat") {
                 const auto command_shell = llvm::sys::findProgramByName("cmd.exe");
                 if (!command_shell) {
+                    publish_include_cleaner_setup_failure(
+                        "include-cleaner setup failed: cmd.exe was not found",
+                        binary
+                    );
                     remove_temporary_files();
                     return diagnostics;
                 }
@@ -337,6 +374,10 @@ namespace bha::suggestions {
             } else {
                 const auto tidy_program = resolve_windows_program(binary);
                 if (!tidy_program) {
+                    publish_include_cleaner_setup_failure(
+                        "include-cleaner setup failed: clang-tidy was not found",
+                        binary
+                    );
                     remove_temporary_files();
                     return diagnostics;
                 }
@@ -346,6 +387,10 @@ namespace bha::suggestions {
 #else
             const auto tidy_program = llvm::sys::findProgramByName(binary);
             if (!tidy_program) {
+                publish_include_cleaner_setup_failure(
+                    "include-cleaner setup failed: clang-tidy was not found",
+                    binary
+                );
                 remove_temporary_files();
                 return diagnostics;
             }
@@ -358,6 +403,10 @@ namespace bha::suggestions {
             if (uses_msvc_driver(command)) {
                 const auto clang_cl = find_clang_cl(fs::path(binary));
                 if (!clang_cl) {
+                    publish_include_cleaner_setup_failure(
+                        "include-cleaner setup failed: clang-cl was not found",
+                        binary
+                    );
                     remove_temporary_files();
                     return diagnostics;
                 }
@@ -368,6 +417,10 @@ namespace bha::suggestions {
                     *clang_cl
                 );
                 if (!temporary_database_directory.has_value()) {
+                    publish_include_cleaner_setup_failure(
+                        "include-cleaner setup failed: MSVC compilation database could not be created",
+                        source_file.string()
+                    );
                     remove_temporary_files();
                     return diagnostics;
                 }

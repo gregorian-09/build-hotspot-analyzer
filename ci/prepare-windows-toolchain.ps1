@@ -107,6 +107,10 @@ $clangTidy = Join-Path $llvmRoot 'bin\clang-tidy.exe'
 if (-not (Test-Path $clangTidy)) {
     throw "LLVM archive does not contain clang-tidy: $clangTidy"
 }
+$clangCl = Join-Path $llvmRoot 'bin\clang-cl.exe'
+if (-not (Test-Path $clangCl)) {
+    throw "LLVM archive does not contain clang-cl: $clangCl"
+}
 
 Get-ChildItem -Path (Join-Path $llvmRoot 'lib') -File |
     Sort-Object Name |
@@ -117,5 +121,6 @@ Get-ChildItem -Path (Join-Path $llvmRoot 'lib') -File |
 
 "$llvmRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 Add-EnvironmentLine -Name 'BHA_CLANG_TIDY' -Value $clangTidy
+Add-EnvironmentLine -Name 'BHA_CLANG_CL' -Value $clangCl
 Add-EnvironmentLine -Name 'BHA_CLANG_TOOLING_ROOT' -Value $llvmRoot
 Write-Host "LLVM LibTooling is ready at $llvmRoot"

@@ -81,10 +81,16 @@ namespace bha::suggestions {
                 fs::perms::owner_read | fs::perms::owner_write | fs::perms::owner_exec,
                 fs::perm_options::add, ec);
             ASSERT_EQ(set_env("BHA_CLANG_TIDY", fake_binary_.string()), 0);
+#ifdef _WIN32
+            ASSERT_EQ(set_env("BHA_CLANG_CL", (fake_root_ / "clang-cl.exe").string()), 0);
+#endif
         }
 
         static void TearDownTestSuite() {
             unset_env("BHA_CLANG_TIDY");
+#ifdef _WIN32
+            unset_env("BHA_CLANG_CL");
+#endif
             unset_env("BHA_FAKE_CLANG_TIDY_MODE");
             unset_env("BHA_FAKE_CLANG_TIDY_SOURCE");
             unset_env("BHA_FAKE_CLANG_TIDY_OFFSET");
