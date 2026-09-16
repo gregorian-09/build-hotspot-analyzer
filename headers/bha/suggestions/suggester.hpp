@@ -47,6 +47,7 @@
 #include <chrono>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -125,24 +126,47 @@ namespace bha::suggestions {
             fs::path normalized_file = project_index
                 ? project_index->resolve(file)
                 : file.lexically_normal();
+
+            const auto matches_target = [&](const fs::path& target) {
+                if (target.parent_path().empty()) {
+                    return normalized_file.filename() == target;
+                }
+
+                const fs::path normalized_target = project_index
+                    ? project_index->resolve(target)
+                    : target.lexically_normal();
+                if (normalized_file == normalized_target) {
+                    return true;
+                }
+
+                // Compilation databases and traces can spell the same Windows
+                // file differently (for example, a long user path versus its
+                // 8.3 short-name alias). Compare filesystem identity only after
+                // the portable lexical match has failed.
+                std::error_code ec;
+                return fs::equivalent(normalized_file, normalized_target, ec) && !ec;
+            };
+
             if (!target_files_lookup.empty()) {
                 if (normalized_file.parent_path().empty()) {
-                    return target_files_lookup.contains(normalized_file.filename().string());
-                }
-                return target_files_lookup.contains(normalized_file.generic_string());
-            }
-            return std::ranges::any_of(
-                target_files,
-                [&](const fs::path& target) {
-                    if (target.parent_path().empty()) {
-                        return normalized_file.filename() == target;
+                    if (target_files_lookup.contains(normalized_file.filename().string())) {
+                        return true;
                     }
-                    const fs::path normalized_target = project_index
-                        ? project_index->resolve(target)
-                        : target.lexically_normal();
-                    return normalized_file == normalized_target;
                 }
-            );
+
+                if (target_files_lookup.contains(normalized_file.generic_string())) {
+                    return true;
+                }
+
+                return std::ranges::any_of(
+                    target_files_lookup,
+                    [&](const std::string& target) {
+                        return matches_target(fs::path(target));
+                    }
+                );
+            }
+
+            return std::ranges::any_of(target_files, matches_target);
         }
     };
 #include "suggester_path_helpers.inc"
