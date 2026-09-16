@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <random>
+#include <system_error>
 
 namespace bha::lsp
 {
@@ -197,13 +199,30 @@ namespace bha::lsp
     class SuggestionManagerRollbackTest : public ::testing::Test {
     protected:
         void SetUp() override {
-            const auto unique_suffix = std::to_string(
-                std::chrono::steady_clock::now().time_since_epoch().count()
-            );
-            temp_root_ = fs::temp_directory_path() / ("bha-lsp-rollback-test-" + unique_suffix);
-            std::error_code ec;
-            fs::remove_all(temp_root_, ec);
-            fs::create_directories(temp_root_, ec);
+            const auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
+            std::random_device entropy;
+            const fs::path temp_directory = fs::temp_directory_path();
+
+            // CTest can run discovered tests in separate processes at the same time.
+            // Create the directory without removing an existing candidate so one test
+            // cannot delete another test's active workspace.
+            for (unsigned attempt = 0; attempt < 32; ++attempt) {
+                const auto unique_suffix = std::to_string(timestamp) + "-" +
+                    std::to_string(entropy()) + "-" + std::to_string(attempt);
+                temp_root_ = temp_directory / ("bha-lsp-rollback-test-" + unique_suffix);
+
+                std::error_code ec;
+                if (fs::create_directory(temp_root_, ec)) {
+                    return;
+                }
+                if (ec != std::errc::file_exists) {
+                    FAIL() << "Failed to create isolated test directory " << temp_root_
+                           << ": " << ec.message();
+                    return;
+                }
+            }
+
+            FAIL() << "Could not allocate a unique isolated test directory";
         }
 
         void TearDown() override {
