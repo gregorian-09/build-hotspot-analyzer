@@ -785,8 +785,8 @@
     ) {
         for (std::size_t i = 0; i < validation_cap; ++i) {
             const fs::path& source = candidate_sources[i];
-            auto compile_args = load_compile_command_args_for_source(compile_commands_path, source);
-            if (compile_args.empty()) {
+            const auto compile_command = load_compile_command_for_source(compile_commands_path, source);
+            if (!compile_command.has_value()) {
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
                 diag.source = "bha-lsp";
@@ -795,7 +795,7 @@
                 return false;
             }
 
-            const auto syntax_cmd = build_syntax_check_command(compile_args, source);
+            const auto syntax_cmd = build_syntax_check_command(compile_command->arguments, source);
             if (!syntax_cmd.has_value()) {
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
@@ -807,7 +807,12 @@
             }
 
             std::string syntax_output;
-            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
+            const int exit_code = run_command_collect_output(
+                *syntax_cmd,
+                timeout_seconds,
+                compile_command->working_directory,
+                syntax_output
+            );
             if (exit_code == 0) {
                 continue;
             }
@@ -886,8 +891,8 @@
         }
 
         const fs::path& reference_source = candidate_sources.front();
-        auto compile_args = load_compile_command_args_for_source(compile_commands_path, reference_source);
-        if (compile_args.empty()) {
+        const auto compile_command = load_compile_command_for_source(compile_commands_path, reference_source);
+        if (!compile_command.has_value()) {
             Diagnostic diag;
             diag.severity = DiagnosticSeverity::Error;
             diag.source = "bha-lsp";
@@ -899,7 +904,7 @@
 
         for (const auto& forward_header : forward_headers) {
             const auto syntax_cmd = build_header_syntax_check_command(
-                compile_args,
+                compile_command->arguments,
                 reference_source,
                 forward_header
             );
@@ -915,7 +920,12 @@
             }
 
             std::string syntax_output;
-            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
+            const int exit_code = run_command_collect_output(
+                *syntax_cmd,
+                timeout_seconds,
+                compile_command->working_directory,
+                syntax_output
+            );
             if (exit_code == 0) {
                 continue;
             }
@@ -956,8 +966,8 @@
 
         for (std::size_t i = 0; i < validation_cap; ++i) {
             const fs::path& source = candidate_sources[i];
-            auto compile_args = load_compile_command_args_for_source(compile_commands_path, source);
-            if (compile_args.empty()) {
+            const auto compile_command = load_compile_command_for_source(compile_commands_path, source);
+            if (!compile_command.has_value()) {
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
                 diag.source = "bha-lsp";
@@ -966,7 +976,11 @@
                 return false;
             }
 
-            const auto syntax_cmd = build_header_syntax_check_command(compile_args, source, *pch_header);
+            const auto syntax_cmd = build_header_syntax_check_command(
+                compile_command->arguments,
+                source,
+                *pch_header
+            );
             if (!syntax_cmd.has_value()) {
                 Diagnostic diag;
                 diag.severity = DiagnosticSeverity::Error;
@@ -979,7 +993,12 @@
             }
 
             std::string syntax_output;
-            const int exit_code = run_command_collect_output(*syntax_cmd, timeout_seconds, syntax_output);
+            const int exit_code = run_command_collect_output(
+                *syntax_cmd,
+                timeout_seconds,
+                compile_command->working_directory,
+                syntax_output
+            );
             if (exit_code == 0) {
                 continue;
             }

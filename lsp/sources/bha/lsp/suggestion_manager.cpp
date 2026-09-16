@@ -430,13 +430,23 @@ namespace bha::lsp
     std::string shell_quote(const std::string& input) {
 #ifdef _WIN32
         std::string escaped = "\"";
+        std::size_t backslashes = 0;
         for (const char c : input) {
-            if (c == '"') {
-                escaped += "\\\"";
-            } else {
-                escaped.push_back(c);
+            if (c == '\\') {
+                ++backslashes;
+                continue;
             }
+            if (c == '"') {
+                escaped.append(backslashes * 2 + 1, '\\');
+                escaped.push_back('"');
+                backslashes = 0;
+                continue;
+            }
+            escaped.append(backslashes, '\\');
+            backslashes = 0;
+            escaped.push_back(c);
         }
+        escaped.append(backslashes * 2, '\\');
         escaped.push_back('"');
         return escaped;
 #else
@@ -618,28 +628,32 @@ namespace bha::lsp
         return name == "cl" || name == "cl.exe";
     }
 
-    std::vector<std::string> load_compile_command_args_for_source(
+    struct LoadedCompileCommand {
+        std::vector<std::string> arguments;
+        fs::path working_directory;
+    };
+
+    std::optional<LoadedCompileCommand> load_compile_command_for_source(
         const std::optional<fs::path>& compile_commands_path,
         const fs::path& source_file
     ) {
-        std::vector<std::string> args;
         if (!compile_commands_path.has_value() || compile_commands_path->empty() || !fs::exists(*compile_commands_path)) {
-            return args;
+            return std::nullopt;
         }
 
         std::ifstream in(*compile_commands_path);
         if (!in) {
-            return args;
+            return std::nullopt;
         }
 
         nlohmann::json compile_db;
         try {
             in >> compile_db;
         } catch (const nlohmann::json::exception&) {
-            return args;
+            return std::nullopt;
         }
         if (!compile_db.is_array()) {
-            return args;
+            return std::nullopt;
         }
 
         const fs::path needle = normalize_path_for_match(source_file);
@@ -657,6 +671,16 @@ namespace bha::lsp
                 continue;
             }
 
+            fs::path working_directory = compile_commands_path->parent_path();
+            if (entry.contains("directory") && entry["directory"].is_string()) {
+                working_directory = fs::path(entry["directory"].get<std::string>());
+                if (working_directory.is_relative()) {
+                    working_directory = compile_commands_path->parent_path() / working_directory;
+                }
+            }
+            working_directory = normalize_path_for_match(working_directory);
+
+            std::vector<std::string> args;
             if (entry.contains("arguments") && entry["arguments"].is_array()) {
                 for (const auto& arg : entry["arguments"]) {
                     if (arg.is_string()) {
@@ -667,22 +691,22 @@ namespace bha::lsp
                 args = split_shell_command(entry["command"].get<std::string>());
             }
 
-            std::optional<fs::path> directory;
-            if (entry.contains("directory") && entry["directory"].is_string()) {
-                directory = fs::path(entry["directory"].get<std::string>());
+            if (args.empty()) {
+                return std::nullopt;
             }
-            if (!args.empty() && directory.has_value()) {
+
+            if (!working_directory.empty()) {
                 for (auto& arg : args) {
                     fs::path path_arg(arg);
                     if (path_arg.is_relative() && is_cpp_source_path(path_arg)) {
-                        arg = normalize_path_for_match(path_arg, directory).string();
+                        arg = normalize_path_for_match(path_arg, working_directory).string();
                     }
                 }
             }
-            return args;
+            return LoadedCompileCommand{std::move(args), std::move(working_directory)};
         }
 
-        return args;
+        return std::nullopt;
     }
 
     std::vector<std::string> filter_compile_args_for_syntax_check(
@@ -851,16 +875,25 @@ namespace bha::lsp
     int run_command_collect_output(
         const std::string& command,
         const int timeout_seconds,
+        const fs::path& working_directory,
         std::string& output
     ) {
         output.clear();
-        std::string effective_command = command;
+        std::string command_with_directory = command;
+        if (!working_directory.empty()) {
+#ifdef _WIN32
+            command_with_directory = "cd /d " + shell_quote(working_directory.string()) + " && " + command;
+#else
+            command_with_directory = "cd " + shell_quote(working_directory.string()) + " && " + command;
+#endif
+        }
+        std::string effective_command = command_with_directory;
 #ifdef _WIN32
         (void)timeout_seconds;
 #else
         if (timeout_seconds > 0 && std::system("command -v timeout >/dev/null 2>&1") == 0) {
             effective_command = "timeout --signal=TERM " +
-                std::to_string(timeout_seconds) + "s /bin/bash -lc " + shell_quote(command);
+                std::to_string(timeout_seconds) + "s /bin/bash -lc " + shell_quote(command_with_directory);
         }
 #endif
 
