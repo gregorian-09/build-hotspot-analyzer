@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "README.md"
-      - "docs/**"
+      - "assets/**"
       - ".markdownlint-cli2.jsonc"
       - ".vale.ini"
       - ".github/styles/**"
@@ -15,7 +15,7 @@ on:
       - main
     paths:
       - "README.md"
-      - "docs/**"
+      - "assets/**"
       - ".markdownlint-cli2.jsonc"
       - ".vale.ini"
       - ".github/styles/**"
@@ -32,9 +32,7 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v20
         with:
           config: ".markdownlint-cli2.jsonc"
-          globs: |
-            README.md
-            docs/**/*.md
+          globs: README.md
 
   vale:
     name: Vale Prose Lint
@@ -44,7 +42,7 @@ jobs:
       - name: Lint prose
         uses: errata-ai/vale-action@v2.1.1
         with:
-          files: '["README.md","docs"]'
+          files: '["README.md"]'
           fail_on_error: true
 
   links:
@@ -55,8 +53,7 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --config .lychee.toml README.md docs/**/*.md
+          args: --config .lychee.toml README.md
           fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

@@ -16,7 +16,6 @@ option(BHA_ENABLE_TEMPLATE_AST "Enable Clang AST-backed template indexing when L
 option(BHA_REQUIRE_CLANG_TOOLING
        "Fail configuration when requested AST indexing cannot locate Clang LibTooling"
        OFF)
-option(BHA_BUILD_DOCS "Build documentation" OFF)
 option(BHA_ENABLE_COVERAGE "Enable code coverage" OFF)
 option(BHA_ENABLE_SANITIZERS
        "Enable supported sanitizers (ASan+UBSan for Clang/GCC, ASan for MSVC)"
@@ -495,17 +494,6 @@ if(BHA_BUILD_TESTS)
 
     include(GoogleTest)
     add_subdirectory(tests)
-endif()
-
-# =============================================================================
-# Documentation
-# =============================================================================
-
-if(BHA_BUILD_DOCS)
-    find_package(Doxygen)
-    if(DOXYGEN_FOUND)
-        add_subdirectory(docs)
-    endif()
 endif()
 
 # =============================================================================
