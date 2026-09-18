@@ -90,6 +90,16 @@ endif()
 gtest_discover_tests(bha_tests)
 
 find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_Interpreter_FOUND AND BHA_ENABLE_LSP)
+    add_test(
+            NAME LspWireFraming
+            COMMAND ${Python3_EXECUTABLE}
+                    ${PROJECT_SOURCE_DIR}/tests/verify_lsp_framing.py
+                    --lsp-server $<TARGET_FILE:bha-lsp>
+    )
+    set_tests_properties(LspWireFraming PROPERTIES TIMEOUT 30)
+endif()
+
 if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI)
     add_test(
             NAME ExportCrossFormatFixture
