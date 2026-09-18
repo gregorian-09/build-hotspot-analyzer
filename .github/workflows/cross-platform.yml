@@ -210,6 +210,10 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          ctest --test-dir $env:BUILD_DIR -R '^ApplyCliLspParity$' `
+            --timeout 120 --output-on-failure 2>&1 |
+            Tee-Object 'ci\parity-ctest.log'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ctest --test-dir $env:BUILD_DIR --output-on-failure --parallel 2 2>&1 |
             Tee-Object 'ci\ctest.log'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

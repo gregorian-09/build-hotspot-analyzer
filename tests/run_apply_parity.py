@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +29,10 @@ def run_command(
     timeout: int,
     env: dict[str, str],
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    label = " ".join(command[1:3])
+    started = time.monotonic()
+    print(f"parity: start {label}", file=sys.stderr, flush=True)
+    result = subprocess.run(
         command,
         cwd=str(cwd),
         env=env,
@@ -37,6 +41,16 @@ def run_command(
         timeout=timeout,
         check=False,
     )
+    print(
+        f"parity: finish {label} exit={result.returncode} elapsed={time.monotonic() - started:.1f}s",
+        file=sys.stderr,
+        flush=True,
+    )
+    return result
+
+
+def phase(label: str) -> None:
+    print(f"parity: {label}", file=sys.stderr, flush=True)
 
 
 def parse_json_output(process: subprocess.CompletedProcess[str], label: str) -> dict[str, Any]:
@@ -180,6 +194,7 @@ def main() -> int:
         if sys.platform == "win32":
             environment["CMAKE_GENERATOR"] = "Ninja"
 
+        phase("initial build")
         build = run_command(
             [
                 str(args.binary),
@@ -203,6 +218,7 @@ def main() -> int:
             f"Initial fixture build failed\nstdout:\n{build.stdout[-4000:]}\nstderr:\n{build.stderr[-4000:]}",
         )
         if sys.platform == "win32":
+            phase("MSVC trace capture")
             source_file = project_root / "src" / "main.cpp"
             object_file = trace_dir / "main.obj"
             timing_file = trace_dir / "msvc-timing.log"
@@ -252,6 +268,7 @@ def main() -> int:
             "0",
             "--json",
         ]
+        phase("CLI analysis")
         cli_analysis = parse_json_output(
             run_command([str(args.binary), *analysis_args], project_root, args.timeout, environment),
             "CLI analysis",
@@ -272,6 +289,7 @@ def main() -> int:
         suggestion_id = cli_suggestions[0].get("id")
         require(isinstance(suggestion_id, str) and suggestion_id, "CLI suggestion has no ID")
 
+        phase("CLI apply")
         cli_apply = parse_json_output(
             run_command(
                 [
@@ -335,10 +353,12 @@ def main() -> int:
             }
         }
         try:
+            phase("LSP startup")
             client.start()
             initialized = client.initialize(project_root.as_uri(), settings)
             require(initialized is not None and "result" in initialized, "LSP initialize failed")
             client.send_notification("initialized")
+            phase("LSP analysis")
             lsp_analysis_response = execute_command_with_timeout(
                 client,
                 "bha.analyze",
@@ -364,6 +384,7 @@ def main() -> int:
             lsp_suggestion_id = lsp_suggestions[0].get("id")
             require(lsp_suggestion_id == suggestion_id, "CLI and LSP suggestion IDs diverged")
 
+            phase("LSP apply")
             lsp_apply_response = execute_command_with_timeout(
                 client,
                 "bha.applySuggestion",
@@ -389,6 +410,7 @@ def main() -> int:
 
             restore_snapshot(snapshot)
             shutil.rmtree(project_root / ".lsp-optimization-backup", ignore_errors=True)
+            phase("LSP raw edit apply")
             raw_apply_response = execute_command_with_timeout(
                 client,
                 "bha.applyDirectEdits",
@@ -422,6 +444,7 @@ def main() -> int:
                 f"Raw edit result mismatch:\nSuggestion: {lsp_normalized}\nRaw: {raw_normalized}",
             )
         finally:
+            phase("LSP shutdown")
             try:
                 client.shutdown()
             except Exception:

@@ -109,5 +109,5 @@ if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP AND BHA_HAVE_C
                     --binary $<TARGET_FILE:bha>
                     --lsp-server $<TARGET_FILE:bha-lsp>
     )
-    set_tests_properties(ApplyCliLspParity PROPERTIES TIMEOUT 900)
+    set_tests_properties(ApplyCliLspParity PROPERTIES TIMEOUT 120)
 endif()
