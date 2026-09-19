@@ -45,7 +45,8 @@ namespace bha::suggestions {
             std::ofstream(database)
                 << "[{\"directory\":\"" << root_.generic_string() << "\","
                 << "\"file\":\"src/main.cpp\","
-                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-c\",\"src/main.cpp\"]}]";
+                << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-ftime-trace\","
+                   "\"-ftime-trace-granularity=1000\",\"-c\",\"src/main.cpp\"]}]";
 
             ProjectIndex project_index(root_, database);
             TemplateSemanticIndex index(project_index);

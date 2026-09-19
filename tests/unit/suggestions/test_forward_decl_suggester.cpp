@@ -40,7 +40,7 @@ namespace bha::suggestions {
                 << "[{\"directory\":\"" << root.generic_string() << "\","
                 << "\"file\":\"src/use.cpp\","
                 << "\"arguments\":[\"clang++\",\"-std=c++20\",\"-I" << (root / "include").generic_string()
-                << "\",\"-c\",\"" << (root / "src/use.cpp").generic_string() << "\"]}]";
+                << "\",\"-ftime-trace\",\"-c\",\"" << (root / "src/use.cpp").generic_string() << "\"]}]";
             (void)source;
         }
 

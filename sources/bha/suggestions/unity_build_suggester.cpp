@@ -1,4 +1,5 @@
 #include "bha/suggestions/unity_build_suggester.hpp"
+#include "semantic_replay_flags.hpp"
 
 #include "bha/utils/cmake_parse_utils.hpp"
 #include "bha/utils/string_utils.hpp"
@@ -686,7 +687,7 @@ namespace bha::suggestions {
                     continue;
                 }
                 if (is_attached_output_option(argument) || argument == "-MD" || argument == "-MMD" ||
-                    argument == "-MP" || argument == "-fsyntax-only") {
+                    argument == "-MP" || argument == "-fsyntax-only" || is_trace_capture_argument(argument)) {
                     continue;
                 }
                 arguments.push_back(argument);

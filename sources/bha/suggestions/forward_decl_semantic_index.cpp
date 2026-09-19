@@ -1,4 +1,5 @@
 #include "bha/suggestions/forward_decl_semantic_index.hpp"
+#include "semantic_replay_flags.hpp"
 
 #include <algorithm>
 #include <array>
@@ -143,7 +144,7 @@ namespace bha::suggestions {
 #endif
             for (std::size_t index = 1; index < command.command_line.size(); ++index) {
                 const std::string& argument = command.command_line[index];
-                if (argument == "-c" || argument == "/c") {
+                if (argument == "-c" || argument == "/c" || is_trace_capture_argument(argument)) {
                     continue;
                 }
                 if (argument == "-o" || argument == "/Fo" || argument == "/Fe") {

@@ -1,6 +1,7 @@
 // PIMPL candidates require semantic evidence from a compile-command-backed AST.
 
 #include "bha/suggestions/pimpl_suggester.hpp"
+#include "semantic_replay_flags.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -70,8 +71,7 @@ namespace bha::suggestions {
             for (std::size_t index = 1; index < command.command_line.size(); ++index) {
                 const auto& argument = command.command_line[index];
                 if (argument == "-c" || argument == "/c" ||
-                    argument == "-Winvalid-pch" || argument == "-ftime-trace" ||
-                    argument.starts_with("-ftime-trace=") || argument == "/ftime-trace") {
+                    argument == "-Winvalid-pch" || is_trace_capture_argument(argument)) {
                     continue;
                 }
                 if (argument == "-o" || argument == "-MF" || argument == "-MT" ||
