@@ -180,6 +180,13 @@ def run_case(name: str, args: argparse.Namespace, run_dir: Path) -> dict[str, An
             REPO_ROOT, args.timeout_seconds, worktree_log, capture=False,
         )
         require_success(created, worktree_log)
+        if (worktree / ".gitmodules").is_file():
+            submodule_log = logs / "submodules.log"
+            initialized = run_process(
+                ["git", "-C", str(worktree), "submodule", "update", "--init", "--recursive"],
+                REPO_ROOT, args.timeout_seconds, submodule_log, capture=False,
+            )
+            require_success(initialized, submodule_log)
         source = worktree / PROJECT_CMAKE_SUBDIR.get(name, "")
         if not (source / "CMakeLists.txt").is_file():
             raise ExperimentError(f"No CMakeLists.txt in worktree source: {source}")
@@ -347,6 +354,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-confidence", type=float, default=0.5)
     parser.add_argument("--suggestion-id", help="Apply this analyzed ID if direct and eligible")
     parser.add_argument("--require-tests", action="store_true", help="Fail if the project has no CTest tests")
+    parser.add_argument("--require-applied", action="store_true", help="Fail unless a suggestion was applied and validated")
     args = parser.parse_args()
     if args.jobs < 1 or args.runs < 1 or args.timeout_seconds < 1 or args.analysis_timeout_seconds < 1:
         parser.error("jobs, runs, and timeouts must be positive")
@@ -412,7 +420,10 @@ def main() -> int:
     lines.append("")
     (run_dir / "summary.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"Summary: {run_dir / 'summary.json'}")
-    return 1 if any(record["status"].endswith("_failed") for record in records) else 0
+    failed = any(record["status"].endswith("_failed") for record in records)
+    if args.require_applied:
+        failed |= any(record["status"] != "validated" for record in records)
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

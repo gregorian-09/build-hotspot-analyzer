@@ -1,0 +1,210 @@
+name: BHA Repository Suggestion Apply Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Pinned upstream project to test on all three operating systems
+        type: choice
+        options:
+          - leveldb
+          - yaml-cpp
+          - all
+        default: leveldb
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  vscode-host:
+    name: VS Code extension host contracts
+    uses: ./.github/workflows/vscode-extension.yml
+
+  select-projects:
+    name: Select pinned project revisions
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify matrix completeness
+        run: python3 tests/test_ci_repo_apply_matrix.py
+      - name: Build complete project/OS matrix
+        id: plan
+        shell: bash
+        env:
+          SELECTED_PROJECT: ${{ inputs.project }}
+        run: python3 tests/ci_repo_apply_matrix.py "$SELECTED_PROJECT" >> "$GITHUB_OUTPUT"
+
+  apply-and-measure:
+    name: ${{ matrix.project }} / ${{ matrix.os }}
+    needs: select-projects
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.select-projects.outputs.matrix) }}
+    env:
+      CMAKE_GENERATOR: Ninja
+      BHA_SCRIPT_DIR: ${{ github.workspace }}/cmake
+      BUILD_DIR: build-repo-bha
+      LLVM_WINDOWS_RELEASE: llvmorg-23.1.1
+      LLVM_WINDOWS_ARCHIVE: clang+llvm-23.1.1-x86_64-pc-windows-msvc.tar.zst
+      LLVM_WINDOWS_SHA256: c8a12d754b5050c5668b56a5425c806792d46c70f7244b1216046164aa4b6462
+    steps:
+      - name: Check out BHA
+        uses: actions/checkout@v4
+
+      - name: Check out pinned upstream project
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          ref: ${{ matrix.revision }}
+          path: tests/cli/repos/${{ matrix.project }}
+          persist-credentials: false
+
+      - name: Verify upstream revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git -C 'tests/cli/repos/${{ matrix.project }}' rev-parse HEAD)"
+          test "$actual" = '${{ matrix.revision }}'
+          printf 'Project: %s\nRevision: %s\nRunner: %s\n' \
+            '${{ matrix.repository }}' "$actual" "$RUNNER_OS"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Linux compiler and AST dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes clang-18 clang-tools-18 cmake \
+            libclang-18-dev libclang-cpp18-dev llvm-18-dev ninja-build \
+            nlohmann-json3-dev
+
+      - name: Install macOS AST dependencies
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if ! command -v ninja >/dev/null 2>&1; then brew install ninja; fi
+          brew install llvm nlohmann-json
+          printf 'BHA_CLANG_TOOLING_ROOT=%s\n' "$(brew --prefix llvm)" >> "$GITHUB_ENV"
+
+      - name: Restore Windows LLVM archive
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\bha-llvm-cache
+          key: bha-windows-libtooling-${{ env.LLVM_WINDOWS_RELEASE }}-${{ env.LLVM_WINDOWS_ARCHIVE }}
+
+      - name: Prepare VS 2022 MSVC and Clang LibTooling
+        if: runner.os == 'Windows'
+        shell: pwsh
+        timeout-minutes: 45
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path 'ci' | Out-Null
+          & .\ci\prepare-windows-toolchain.ps1 `
+            -LlvmRelease $env:LLVM_WINDOWS_RELEASE `
+            -LlvmArchive $env:LLVM_WINDOWS_ARCHIVE `
+            -LlvmSha256 $env:LLVM_WINDOWS_SHA256
+
+      - name: Install Windows LLVM component dependencies
+        if: runner.os == 'Windows'
+        shell: pwsh
+        timeout-minutes: 30
+        run: .\ci\install-windows-llvm-dependencies.ps1
+
+      - name: Install Windows JSON dependency
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vcpkg = Join-Path $env:VCPKG_ROOT 'vcpkg.exe'
+          & $vcpkg install --classic --vcpkg-root $env:VCPKG_ROOT `
+            --triplet x64-windows-static nlohmann-json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Configure BHA on Linux or macOS
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cmake -S . -B "$BUILD_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER='${{ matrix.c_compiler }}' \
+            -DCMAKE_CXX_COMPILER='${{ matrix.cxx_compiler }}' \
+            -DBHA_BUILD_TESTS=OFF -DBHA_BUILD_CLI=ON \
+            -DBHA_ENABLE_LSP=ON -DBHA_BUILD_REFACTOR_TOOLS=OFF \
+            -DBHA_ENABLE_TEMPLATE_AST=ON -DBHA_REQUIRE_CLANG_TOOLING=ON \
+            "-DBHA_CLANG_TOOLING_ROOT=${BHA_CLANG_TOOLING_ROOT:-}"
+
+      - name: Configure BHA with VS 2022 MSVC
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          cmake -S . -B $env:BUILD_DIR -G Ninja `
+            -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DBHA_BUILD_TESTS=OFF -DBHA_BUILD_CLI=ON `
+            -DBHA_ENABLE_LSP=ON -DBHA_BUILD_REFACTOR_TOOLS=OFF `
+            -DBHA_ENABLE_TEMPLATE_AST=ON -DBHA_REQUIRE_CLANG_TOOLING=ON `
+            "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build BHA CLI
+        shell: bash
+        run: cmake --build "$BUILD_DIR" --target bha --parallel 2
+
+      - name: Verify benchmark harness behavior
+        shell: bash
+        run: python tests/test_repo_apply_benchmark.py
+
+      - name: Capture, analyze, apply, rebuild, and test upstream project
+        shell: bash
+        timeout-minutes: 100
+        run: |
+          set -euxo pipefail
+          bha_path="$BUILD_DIR/bha"
+          if [[ "$RUNNER_OS" == Windows ]]; then bha_path+=.exe; fi
+          python tests/run_repo_apply_benchmark.py \
+            --project '${{ matrix.project }}' \
+            --bha-path "$bha_path" \
+            --c-compiler '${{ matrix.c_compiler }}' \
+            --cxx-compiler '${{ matrix.cxx_compiler }}' \
+            --cmake-arg='${{ matrix.test_cmake_arg }}' \
+            --jobs 2 --runs 1 --timeout-seconds 2400 \
+            --analysis-timeout-seconds 900 \
+            --require-applied --require-tests
+
+      - name: Publish result summary
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          from pathlib import Path
+          for summary in sorted(Path('tests/cli/benchmarks').glob('*/summary.md')):
+              print(summary.read_text(encoding='utf-8'))
+          PY
+
+      - name: Upload benchmark diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-apply-${{ matrix.project }}-${{ matrix.os }}
+          if-no-files-found: warn
+          path: |
+            tests/cli/benchmarks/**/summary.json
+            tests/cli/benchmarks/**/summary.md
+            tests/cli/benchmarks/**/result.json
+            tests/cli/benchmarks/**/logs/*.log

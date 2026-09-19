@@ -109,9 +109,17 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
             "git", "-C", str(self.repo), "-c", "user.name=BHA Test",
             "-c", "user.email=bha@example.invalid", "commit", "--quiet", "-m", "fixture",
         ], check=True)
-        self.fake_bha = self.root / "fake-bha"
-        self.fake_bha.write_text(FAKE_BHA, encoding="utf-8")
-        self.fake_bha.chmod(0o755)
+        fake_script = self.root / "fake-bha.py" if os.name == "nt" else self.root / "fake-bha"
+        fake_script.write_text(FAKE_BHA, encoding="utf-8")
+        if os.name == "nt":
+            self.fake_bha = self.root / "fake-bha.cmd"
+            self.fake_bha.write_text(
+                f'@echo off\n"{sys.executable}" "{fake_script}" %*\n',
+                encoding="utf-8",
+            )
+        else:
+            self.fake_bha = fake_script
+            self.fake_bha.chmod(0o755)
 
     def run_experiment(self, mode="success", *extra, bha_path=None):
         output = self.root / "results"
@@ -121,6 +129,8 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
             "--bha-path", str(bha_path or self.fake_bha), "--runs", "1", "--jobs", "1",
             "--timeout-seconds", "120", "--analysis-timeout-seconds", "120", *extra,
         ]
+        if os.name == "nt":
+            command.extend(("--c-compiler", "cl", "--cxx-compiler", "cl"))
         process = subprocess.run(
             command, capture_output=True, text=True, check=False,
             timeout=180, env={**os.environ, "BHA_FAKE_MODE": mode},
@@ -155,6 +165,11 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
         self.assertIsNone(result["timing"])
         self.assertEqual(result["baselineBuildMs"], [])
         self.assertEqual(result["postBuildMs"], [])
+
+    def test_require_applied_refuses_no_applicable_suggestion(self):
+        process, result, _ = self.run_experiment("none", "--require-applied")
+        self.assertNotEqual(process.returncode, 0)
+        self.assertEqual(result["status"], "no_applicable_suggestion")
 
     def test_failed_apply_does_not_report_savings(self):
         process, result, _ = self.run_experiment("fail")
