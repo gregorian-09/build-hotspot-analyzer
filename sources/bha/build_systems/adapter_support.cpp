@@ -6,10 +6,12 @@
 #include <algorithm>
 #include <array>
 #include <cerrno>
+#include <cctype>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string_view>
 #include <thread>
 #include <tuple>
 
@@ -389,6 +391,24 @@ namespace bha::build_systems::detail {
             std::vector<std::string> all_lines;
             std::vector<std::string> error_lines;
 
+            const auto contains_diagnostic_word = [](const std::string& text, const std::string_view word) {
+                std::size_t pos = 0;
+                while ((pos = text.find(word, pos)) != std::string::npos) {
+                    const bool left_boundary = pos == 0 ||
+                        std::isspace(static_cast<unsigned char>(text[pos - 1])) != 0 ||
+                        text[pos - 1] == ':';
+                    const std::size_t end = pos + word.size();
+                    const bool right_boundary = end == text.size() ||
+                        std::isspace(static_cast<unsigned char>(text[end])) != 0 ||
+                        text[end] == ':';
+                    if (left_boundary && right_boundary) {
+                        return true;
+                    }
+                    pos = end;
+                }
+                return false;
+            };
+
             while (std::getline(stream, line)) {
                 all_lines.push_back(line);
                 std::string lower_line = line;
@@ -397,8 +417,8 @@ namespace bha::build_systems::detail {
                                           return static_cast<char>(std::tolower(c));
                                       });
 
-                if (lower_line.find("error") != std::string::npos ||
-                    lower_line.find("fatal") != std::string::npos ||
+                if (contains_diagnostic_word(lower_line, "error") ||
+                    contains_diagnostic_word(lower_line, "fatal") ||
                     lower_line.find("undefined reference") != std::string::npos ||
                     lower_line.find("cannot find") != std::string::npos) {
                     error_lines.push_back(line);

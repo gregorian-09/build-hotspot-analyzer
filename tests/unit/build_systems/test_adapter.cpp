@@ -1,4 +1,5 @@
 #include "bha/build_systems/adapter.hpp"
+#include "bha/build_systems/adapter_support.hpp"
 #include <gtest/gtest.h>
 #include <chrono>
 #include <cstdlib>
@@ -135,6 +136,21 @@ TEST(BuildOptionsTest, DefaultValues) {
     EXPECT_TRUE(options.compiler.empty());
     EXPECT_TRUE(options.c_compiler.empty());
     EXPECT_TRUE(options.cxx_compiler.empty());
+}
+
+TEST(BuildSystemErrorSummaryTest, DoesNotMistakeMsvcTimingSymbolsForDiagnostics) {
+    const std::string output =
+        "std::system_error: 0.01s\n"
+        "atl::support_error_info: 0.02s\n"
+        "source.cpp(12): error C2143: syntax error\n";
+    const std::string summary = bha::build_systems::detail::extract_error_summary(output);
+    EXPECT_EQ(summary, "source.cpp(12): error C2143: syntax error\n");
+}
+
+TEST(BuildSystemErrorSummaryTest, RetainsTailWhenNoDiagnosticCanBeClassified) {
+    const std::string output = "std::system_error: 0.01s\nerror.cpp: 0.02s\nlast build row\n";
+    const std::string summary = bha::build_systems::detail::extract_error_summary(output, 1);
+    EXPECT_EQ(summary, "last build row\n");
 }
 
 TEST(BuildOptionsTest, MemoryProfilingFlag) {

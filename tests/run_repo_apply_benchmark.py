@@ -247,7 +247,10 @@ def run_case(name: str, args: argparse.Namespace, run_dir: Path) -> dict[str, An
                 str(args.bha_path), "project", "record", "--json",
                 *project_args(args, source, build, traces), "--clean", *extra,
             ]
-            process = run_process(command, source, args.timeout_seconds, log)
+            process = run_process(
+                command, source, args.timeout_seconds, log,
+                env={**os.environ, "BHA_BUILD_LOG": str(logs / f"{stage}-build-output.log")},
+            )
             require_success(process, log)
             payload = json_result(process, log)
             duration = payload.get("buildTimeMs")
