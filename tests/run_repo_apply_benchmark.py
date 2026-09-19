@@ -293,7 +293,7 @@ def run_case(name: str, args: argparse.Namespace, run_dir: Path) -> dict[str, An
         phase = "analysis"
         analyze_log = logs / "analyze.log"
         analyzed = run_process(
-            [str(args.bha_path), "project", "analyze", "--json",
+            [str(args.bha_path), "project", "analyze", "--json", "--verbose",
              *project_args(args, source, build, last_traces), *extra,
              "--min-confidence", str(args.min_confidence)],
             source, args.analysis_timeout_seconds, analyze_log,

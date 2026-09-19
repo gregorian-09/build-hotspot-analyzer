@@ -97,9 +97,26 @@ else:
 
 
 class RepoApplyBenchmarkTest(unittest.TestCase):
+    def cleanup_fixture(self):
+        try:
+            self.temp.cleanup()
+        except PermissionError as error:
+            handle = os.environ.get("BHA_HANDLE_EXE")
+            if os.name == "nt" and handle and error.filename:
+                try:
+                    diagnostic = subprocess.run(
+                        [handle, "-accepteula", "-nobanner", self.root.name],
+                        capture_output=True, text=True, check=False, timeout=30,
+                    )
+                    print("Open handles for locked benchmark fixture:\n"
+                          + diagnostic.stdout + diagnostic.stderr, file=sys.stderr)
+                except (OSError, subprocess.TimeoutExpired) as diagnostic_error:
+                    print(f"Handle diagnostic failed: {diagnostic_error}", file=sys.stderr)
+            raise
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="bha-benchmark-test-")
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(self.cleanup_fixture)
         self.root = Path(self.temp.name).resolve()
         self.repo = self.root / "repos" / "fixture"
         self.repo.mkdir(parents=True)
