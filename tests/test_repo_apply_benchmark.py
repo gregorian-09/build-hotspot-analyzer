@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -16,7 +17,55 @@ sys.path.insert(0, str(SCRIPT.parent))
 from run_repo_apply_benchmark import ExperimentError, managed_pdb_server, select_suggestion  # noqa: E402
 
 
+def cleanup_with_sharing_retry(cleanup, *, windows, timeout_seconds=10):
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        try:
+            cleanup()
+            return
+        except PermissionError as error:
+            if not windows or getattr(error, "winerror", None) != 32 or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.2)
+
+
 class SuggestionSelectionTest(unittest.TestCase):
+    def test_windows_cleanup_retries_transient_sharing_violation(self):
+        attempts = []
+
+        def cleanup():
+            attempts.append(1)
+            if len(attempts) == 1:
+                error = PermissionError("transient sharing violation")
+                error.winerror = 32
+                raise error
+
+        cleanup_with_sharing_retry(cleanup, windows=True)
+        self.assertEqual(len(attempts), 2)
+
+    def test_cleanup_does_not_retry_other_permission_errors(self):
+        attempts = []
+
+        def cleanup():
+            attempts.append(1)
+            error = PermissionError("access denied")
+            error.winerror = 5
+            raise error
+
+        with self.assertRaises(PermissionError):
+            cleanup_with_sharing_retry(cleanup, windows=True)
+        self.assertEqual(len(attempts), 1)
+
+    def test_persistent_sharing_violation_still_fails(self):
+        error = PermissionError("persistent sharing violation")
+        error.winerror = 32
+
+        def cleanup():
+            raise error
+
+        with self.assertRaises(PermissionError):
+            cleanup_with_sharing_retry(cleanup, windows=True, timeout_seconds=0)
+
     @unittest.skipUnless(os.name == "nt", "Requires the Visual Studio developer environment")
     def test_msvc_pdb_server_is_scoped_to_the_benchmark(self):
         previous = os.environ.get("_MSPDBSRV_ENDPOINT_")
@@ -99,7 +148,7 @@ else:
 class RepoApplyBenchmarkTest(unittest.TestCase):
     def cleanup_fixture(self):
         try:
-            self.temp.cleanup()
+            cleanup_with_sharing_retry(self.temp.cleanup, windows=os.name == "nt")
         except PermissionError as error:
             handle = os.environ.get("BHA_HANDLE_EXE")
             if os.name == "nt" and handle and error.filename:
