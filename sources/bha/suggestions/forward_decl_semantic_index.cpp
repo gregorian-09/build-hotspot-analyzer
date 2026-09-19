@@ -4,11 +4,14 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <chrono>
 #include <filesystem>
 #include <map>
 #include <memory>
 #include <sstream>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
 
 #ifndef BHA_HAVE_CLANG_TOOLING
 #define BHA_HAVE_CLANG_TOOLING 0
@@ -54,6 +57,15 @@ namespace bha::suggestions {
         }
 
 #if BHA_HAVE_CLANG_TOOLING
+        std::string translation_unit_cache_key(const CompilationUnit& command) {
+            std::ostringstream key;
+            key << command.source_file.lexically_normal().generic_string() << '\0';
+            key << command.working_directory.lexically_normal().generic_string() << '\0';
+            for (const auto& argument : command.command_line) {
+                key << argument << '\0';
+            }
+            return key.str();
+        }
 
         fs::path spelling_path(
             const clang::SourceManager& source_manager,
@@ -168,10 +180,10 @@ namespace bha::suggestions {
         public:
             ForwardDeclVisitor(
                 clang::ASTContext& context,
-                const fs::path& header
+                const std::unordered_set<std::string>& candidate_headers
             )
                 : source_manager_(context.getSourceManager()),
-                  header_(header.lexically_normal()) {}
+                  candidate_headers_(candidate_headers) {}
 
             bool VisitCXXRecordDecl(clang::CXXRecordDecl* declaration) {
                 if (!declaration || !declaration->getIdentifier() ||
@@ -179,7 +191,8 @@ namespace bha::suggestions {
                     return true;
                 }
                 const auto location = declaration->getLocation();
-                if (spelling_path(source_manager_, location) != header_) {
+                const fs::path declaration_file = spelling_path(source_manager_, location);
+                if (!candidate_headers_.contains(declaration_file.generic_string())) {
                     return true;
                 }
                 const auto* canonical = declaration->getCanonicalDecl();
@@ -190,7 +203,7 @@ namespace bha::suggestions {
                 const bool file_or_namespace_scope = context &&
                     (context->isFileContext() || llvm::isa<clang::NamespaceDecl>(context));
                 ForwardDeclSemanticRecord record;
-                record.declaration_file = header_;
+                record.declaration_file = declaration_file;
                 record.qualified_name = canonical->getQualifiedNameAsString();
                 record.unqualified_name = canonical->getNameAsString();
                 record.keyword = record_keyword(*canonical);
@@ -201,6 +214,8 @@ namespace bha::suggestions {
                 record.namespaces = declaration_namespaces(context, record.unsupported_scope);
                 record.unsupported_scope = record.unsupported_scope ||
                     !file_or_namespace_scope || record.qualified_name.empty();
+                const std::string record_key = declaration_file.generic_string() + '\0' + record.qualified_name;
+                records_by_key_[record_key].push_back(records_.size());
                 records_.push_back(std::move(record));
                 return true;
             }
@@ -397,7 +412,7 @@ namespace bha::suggestions {
                     return;
                 }
                 const fs::path use_file = spelling_path(source_manager_, location);
-                if (use_file.empty() || use_file == header_) {
+                if (use_file.empty()) {
                     return;
                 }
                 const bool macro_expanded = source_manager_.isMacroBodyExpansion(location) ||
@@ -518,38 +533,44 @@ namespace bha::suggestions {
                 if (!declaration || !declaration->getCanonicalDecl()) {
                     return;
                 }
-                if (spelling_path(source_manager_, declaration->getCanonicalDecl()->getLocation()) != header_) {
+                const fs::path declaration_file =
+                    spelling_path(source_manager_, declaration->getCanonicalDecl()->getLocation());
+                if (!candidate_headers_.contains(declaration_file.generic_string()) ||
+                    use_file == declaration_file) {
                     return;
                 }
                 const std::string name = declaration->getCanonicalDecl()->getQualifiedNameAsString();
-                for (auto& record : records_) {
-                    if (record.qualified_name == name) {
-                        record.uses.push_back({
-                            use_file,
-                            requires_complete,
-                            in_dependent_context,
-                            through_alias,
-                            through_template,
-                            macro_expanded
-                        });
-                    }
+                const auto matches = records_by_key_.find(declaration_file.generic_string() + '\0' + name);
+                if (matches == records_by_key_.end()) {
+                    return;
+                }
+                for (const auto index : matches->second) {
+                    records_[index].uses.push_back({
+                        use_file,
+                        requires_complete,
+                        in_dependent_context,
+                        through_alias,
+                        through_template,
+                        macro_expanded
+                    });
                 }
             }
 
             clang::SourceManager& source_manager_;
-            fs::path header_;
+            const std::unordered_set<std::string>& candidate_headers_;
             std::vector<ForwardDeclSemanticRecord> records_;
+            std::unordered_map<std::string, std::vector<std::size_t>> records_by_key_;
         };
 
         class IncludeCollector final : public clang::PPCallbacks {
         public:
             IncludeCollector(
                 clang::SourceManager& source_manager,
-                const fs::path& target_header,
+                const std::unordered_set<std::string>& candidate_headers,
                 std::vector<ForwardDeclSemanticInclude>& includes
             )
                 : source_manager_(source_manager),
-                  target_header_(target_header.lexically_normal()),
+                  candidate_headers_(candidate_headers),
                   includes_(includes) {}
 
             void InclusionDirective(
@@ -572,7 +593,7 @@ namespace bha::suggestions {
                     return;
                 }
                 const fs::path included = fs::path(file->getName().str()).lexically_normal();
-                if (included != target_header_) {
+                if (!candidate_headers_.contains(included.generic_string())) {
                     return;
                 }
                 const fs::path including = spelling_path(source_manager_, hash_location);
@@ -599,20 +620,20 @@ namespace bha::suggestions {
 
         private:
             clang::SourceManager& source_manager_;
-            fs::path target_header_;
+            const std::unordered_set<std::string>& candidate_headers_;
             std::vector<ForwardDeclSemanticInclude>& includes_;
         };
 
         class SemanticIndexConsumer final : public clang::ASTConsumer {
         public:
             SemanticIndexConsumer(
-                const fs::path& header,
+                const std::unordered_set<std::string>& candidate_headers,
                 std::vector<ForwardDeclSemanticRecord>& records
             )
-                : header_(header), records_(records) {}
+                : candidate_headers_(candidate_headers), records_(records) {}
 
             void HandleTranslationUnit(clang::ASTContext& context) override {
-                ForwardDeclVisitor visitor(context, header_);
+                ForwardDeclVisitor visitor(context, candidate_headers_);
                 visitor.TraverseDecl(context.getTranslationUnitDecl());
                 auto parsed_records = visitor.take_records();
                 records_.insert(
@@ -623,19 +644,20 @@ namespace bha::suggestions {
             }
 
         private:
-            fs::path header_;
+            const std::unordered_set<std::string>& candidate_headers_;
             std::vector<ForwardDeclSemanticRecord>& records_;
         };
 
         class SemanticIndexAction final : public clang::ASTFrontendAction {
         public:
             SemanticIndexAction(
-                const fs::path& header,
+                const std::unordered_set<std::string>& candidate_headers,
                 std::vector<ForwardDeclSemanticRecord>& records,
                 std::vector<ForwardDeclSemanticInclude>& includes,
                 bool& had_errors
             )
-                : header_(header), records_(records), includes_(includes), had_errors_(had_errors) {}
+                : candidate_headers_(candidate_headers), records_(records),
+                  includes_(includes), had_errors_(had_errors) {}
 
             std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
                 clang::CompilerInstance& compiler,
@@ -645,12 +667,12 @@ namespace bha::suggestions {
                 compiler.getPreprocessor().addPPCallbacks(
                     std::make_unique<IncludeCollector>(
                         compiler.getSourceManager(),
-                        header_,
+                        candidate_headers_,
                         includes_
                     )
                 );
                 return std::make_unique<SemanticIndexConsumer>(
-                    header_,
+                    candidate_headers_,
                     records_
                 );
             }
@@ -660,12 +682,53 @@ namespace bha::suggestions {
             }
 
         private:
-            fs::path header_;
+            const std::unordered_set<std::string>& candidate_headers_;
             std::vector<ForwardDeclSemanticRecord>& records_;
             std::vector<ForwardDeclSemanticInclude>& includes_;
             bool& had_errors_;
             clang::CompilerInstance* compiler_ = nullptr;
         };
+
+        ForwardDeclSemanticCache::TranslationUnitEvidence replay_translation_unit(
+            ProjectIndex& project_index,
+            const CompilationUnit& command,
+            const std::unordered_set<std::string>& candidate_headers,
+            ForwardDeclSemanticCache* cache
+        ) {
+            ForwardDeclSemanticCache::TranslationUnitEvidence evidence;
+            const auto source = project_index.read_file(command.source_file);
+            if (!source.has_value()) {
+                evidence.diagnostic = "Failed to read a compile-command-backed translation unit";
+                return evidence;
+            }
+
+            bool had_errors = false;
+            const auto started = std::chrono::steady_clock::now();
+            const bool ran = clang::tooling::runToolOnCodeWithArgs(
+                std::make_unique<SemanticIndexAction>(
+                    candidate_headers,
+                    evidence.records,
+                    evidence.includes,
+                    had_errors
+                ),
+                *source,
+                tooling_arguments(command),
+                command.source_file.string(),
+                semantic_replay_tool_name(command.command_line)
+            );
+            if (cache != nullptr) {
+                ++cache->frontend_invocations;
+                cache->frontend_time +=
+                    std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now() - started);
+            }
+            evidence.parsed = ran && !had_errors;
+            if (!evidence.parsed) {
+                evidence.diagnostic = "Clang failed to build a diagnostic-free AST and include index";
+                evidence.records.clear();
+                evidence.includes.clear();
+            }
+            return evidence;
+        }
 
         class SyntaxValidationAction final : public clang::ASTFrontendAction {
         public:
@@ -818,6 +881,23 @@ namespace bha::suggestions {
 
     }  // namespace
 
+    void configure_forward_decl_semantic_headers(
+        ProjectIndex& project_index,
+        const std::vector<fs::path>& headers,
+        ForwardDeclSemanticCache& cache
+    ) {
+        bool changed = false;
+        for (const auto& header : headers) {
+            changed = cache.candidate_headers.insert(
+                project_index.resolve(header).lexically_normal().generic_string()
+            ).second || changed;
+        }
+        if (changed) {
+            cache.translation_units.clear();
+            cache.analyses.clear();
+        }
+    }
+
     ForwardDeclSemanticResult analyze_forward_declarations(
         ProjectIndex& project_index,
         const fs::path& header,
@@ -839,33 +919,47 @@ namespace bha::suggestions {
         return result;
 #else
         const fs::path normalized_header = project_index.resolve(header).lexically_normal();
+        const std::string header_key = normalized_header.generic_string();
+        const std::unordered_set<std::string> single_header{header_key};
+        const bool use_translation_unit_cache = cache != nullptr &&
+            cache->candidate_headers.contains(header_key);
+        const auto& candidate_headers = use_translation_unit_cache
+            ? cache->candidate_headers : single_header;
         for (const auto& command : commands) {
-            const auto source = project_index.read_file(command.source_file);
-            if (!source.has_value()) {
-                result.diagnostic = "Failed to read a compile-command-backed translation unit";
-                return result;
+            ForwardDeclSemanticCache::TranslationUnitEvidence fresh_evidence;
+            const ForwardDeclSemanticCache::TranslationUnitEvidence* evidence = nullptr;
+            if (use_translation_unit_cache) {
+                const auto key = translation_unit_cache_key(command);
+                auto cached = cache->translation_units.find(key);
+                if (cached == cache->translation_units.end()) {
+                    fresh_evidence = replay_translation_unit(
+                        project_index, command, candidate_headers, cache
+                    );
+                    cached = cache->translation_units.emplace(key, std::move(fresh_evidence)).first;
+                }
+                evidence = &cached->second;
+            } else {
+                fresh_evidence = replay_translation_unit(project_index, command, candidate_headers, cache);
+                evidence = &fresh_evidence;
             }
-            std::vector<ForwardDeclSemanticRecord> records;
-            bool had_errors = false;
-            const auto arguments = tooling_arguments(command);
-            if (!clang::tooling::runToolOnCodeWithArgs(
-                    std::make_unique<SemanticIndexAction>(
-                        normalized_header,
-                        records,
-                        result.includes,
-                        had_errors
-                    ),
-                    *source,
-                    arguments,
-                    command.source_file.string(),
-                    semantic_replay_tool_name(command.command_line)
-                ) || had_errors) {
-                result.diagnostic = "Clang failed to build a diagnostic-free AST and include index";
+            if (!evidence->parsed) {
+                result.diagnostic = evidence->diagnostic;
                 result.records.clear();
                 result.includes.clear();
+                if (cache != nullptr) {
+                    cache->analyses.insert_or_assign(cache_key, result);
+                }
                 return result;
             }
-            for (auto& record : records) {
+            for (const auto& include : evidence->includes) {
+                if (include.included_file == normalized_header) {
+                    result.includes.push_back(include);
+                }
+            }
+            for (const auto& record : evidence->records) {
+                if (record.declaration_file != normalized_header) {
+                    continue;
+                }
                 auto existing = std::ranges::find_if(
                     result.records,
                     [&](const auto& candidate) {
@@ -873,7 +967,7 @@ namespace bha::suggestions {
                     }
                 );
                 if (existing == result.records.end()) {
-                    result.records.push_back(std::move(record));
+                    result.records.push_back(record);
                     continue;
                 }
                 existing->macro_generated = existing->macro_generated || record.macro_generated;
@@ -882,7 +976,7 @@ namespace bha::suggestions {
                 existing->declaration_shape_conflict = existing->declaration_shape_conflict ||
                     existing->keyword != record.keyword ||
                     !same_namespace_context(existing->namespaces, record.namespaces);
-                for (auto& use : record.uses) {
+                for (const auto& use : record.uses) {
                     const bool duplicate = std::ranges::any_of(
                         existing->uses,
                         [&](const auto& candidate) {
@@ -895,7 +989,7 @@ namespace bha::suggestions {
                         }
                     );
                     if (!duplicate) {
-                        existing->uses.push_back(std::move(use));
+                        existing->uses.push_back(use);
                     }
                 }
             }
@@ -904,8 +998,8 @@ namespace bha::suggestions {
         if (!result.available && result.diagnostic.empty()) {
             result.diagnostic = "No AST declaration from the target header was observed";
         }
-        if (cache != nullptr && result.available) {
-            cache->analyses.emplace(cache_key, result);
+        if (cache != nullptr) {
+            cache->analyses.insert_or_assign(cache_key, result);
         }
         return result;
 #endif

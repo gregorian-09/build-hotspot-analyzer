@@ -134,6 +134,17 @@ namespace bha::suggestions {
             return left->total_parse_time > right->total_parse_time;
         });
 
+        if (context.forward_decl_semantic_cache != nullptr) {
+            std::vector<fs::path> candidate_paths;
+            candidate_paths.reserve(headers.size());
+            for (const auto* header : headers) {
+                candidate_paths.push_back(header->path);
+            }
+            configure_forward_decl_semantic_headers(
+                *context.project_index, candidate_paths, *context.forward_decl_semantic_cache
+            );
+        }
+
         const std::size_t limit = context.options.max_suggestions == 0
             ? headers.size()
             : std::min(headers.size(), context.options.max_suggestions);

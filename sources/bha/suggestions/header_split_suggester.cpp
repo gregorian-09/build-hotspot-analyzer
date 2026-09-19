@@ -119,6 +119,17 @@ namespace bha::suggestions {
             return left->total_parse_time > right->total_parse_time;
         });
 
+        if (context.forward_decl_semantic_cache != nullptr) {
+            std::vector<fs::path> candidate_paths;
+            candidate_paths.reserve(headers.size());
+            for (const auto* header : headers) {
+                candidate_paths.push_back(header->path);
+            }
+            configure_forward_decl_semantic_headers(
+                *context.project_index, candidate_paths, *context.forward_decl_semantic_cache
+            );
+        }
+
         const auto commands = context.project_index->compile_commands();
         for (const auto* header_info : headers) {
             if (context.is_cancelled()) {

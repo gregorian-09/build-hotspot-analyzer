@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace bha::suggestions {
@@ -57,14 +58,27 @@ namespace bha::suggestions {
         bool available = false;
     };
 
-    /**
-     * Per-analysis cache for AST evidence shared by ForwardDecl and
-     * HeaderSplit. The key includes the target header and exact compile
-     * command inputs, so evidence is never reused across configurations.
-     */
+    /** Per-analysis AST evidence shared by ForwardDecl and HeaderSplit. */
     struct ForwardDeclSemanticCache {
+        struct TranslationUnitEvidence {
+            std::vector<ForwardDeclSemanticRecord> records;
+            std::vector<ForwardDeclSemanticInclude> includes;
+            std::string diagnostic;
+            bool parsed = false;
+        };
+
         std::unordered_map<std::string, ForwardDeclSemanticResult> analyses;
+        std::unordered_map<std::string, TranslationUnitEvidence> translation_units;
+        std::unordered_set<std::string> candidate_headers;
+        std::size_t frontend_invocations = 0;
+        Duration frontend_time = Duration::zero();
     };
+
+    void configure_forward_decl_semantic_headers(
+        ProjectIndex& project_index,
+        const std::vector<fs::path>& headers,
+        ForwardDeclSemanticCache& cache
+    );
 
     [[nodiscard]] ForwardDeclSemanticResult analyze_forward_declarations(
         ProjectIndex& project_index,

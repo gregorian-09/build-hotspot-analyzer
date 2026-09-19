@@ -1,5 +1,6 @@
 #include "bha/suggestions/forward_decl_semantic_index.hpp"
 #include "bha/suggestions/forward_decl_suggester.hpp"
+#include "bha/suggestions/header_split_suggester.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -194,6 +195,173 @@ namespace bha::suggestions {
         ASSERT_EQ(cache.analyses.size(), 1u);
         EXPECT_EQ(second.records.size(), first.records.size());
         EXPECT_EQ(second.includes.size(), first.includes.size());
+#endif
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, SharesOneFrontendPassAcrossCandidateHeaders) {
+        const auto first_header = root_ / "include" / "first.hpp";
+        const auto second_header = root_ / "include" / "second.hpp";
+        std::ofstream(first_header) << "#pragma once\nstruct First { int value; };\n";
+        std::ofstream(second_header) << "#pragma once\nstruct Second { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"first.hpp\"\n"
+            << "#include \"second.hpp\"\n"
+            << "First* use_first();\n"
+            << "Second* use_second();\n";
+        write_compile_commands(root_, source);
+
+        ProjectIndex project_index(root_, root_ / "compile_commands.json");
+        const auto commands = project_index.compile_commands();
+        ASSERT_EQ(commands.size(), 1u);
+        ForwardDeclSemanticCache cache;
+        configure_forward_decl_semantic_headers(project_index, {first_header, second_header}, cache);
+        const auto first = analyze_forward_declarations(project_index, first_header, commands, &cache);
+        const auto second = analyze_forward_declarations(project_index, second_header, commands, &cache);
+
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_FALSE(first.available);
+        EXPECT_FALSE(second.available);
+#else
+        ASSERT_TRUE(first.available) << first.diagnostic;
+        ASSERT_TRUE(second.available) << second.diagnostic;
+        ASSERT_EQ(first.records.size(), 1u);
+        ASSERT_EQ(second.records.size(), 1u);
+        EXPECT_EQ(first.records.front().qualified_name, "First");
+        EXPECT_EQ(second.records.front().qualified_name, "Second");
+        ASSERT_EQ(first.includes.size(), 1u);
+        ASSERT_EQ(second.includes.size(), 1u);
+        EXPECT_EQ(first.includes.front().included_file, first_header);
+        EXPECT_EQ(second.includes.front().included_file, second_header);
+        EXPECT_EQ(cache.frontend_invocations, 1u);
+        EXPECT_EQ(cache.translation_units.size(), 1u);
+        EXPECT_GT(cache.frontend_time, Duration::zero());
+#endif
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, HeaderSplitReusesForwardDeclarationEvidence) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header) << "#pragma once\nstruct Box { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box();\n";
+        write_compile_commands(root_, source);
+
+        SuggesterOptions options;
+        options.compile_commands_path = root_ / "compile_commands.json";
+        BuildTrace trace;
+        const auto analysis = dependency_analysis(header, source);
+        const SuggestionContext context{trace, analysis, options, root_};
+        const auto forward = ForwardDeclSuggester{}.suggest(context);
+        const auto split = HeaderSplitSuggester{}.suggest(context);
+
+        ASSERT_TRUE(forward.is_ok());
+        ASSERT_TRUE(split.is_ok());
+#if BHA_HAVE_CLANG_TOOLING
+        ASSERT_EQ(forward.value().suggestions.size(), 1u);
+        ASSERT_EQ(split.value().suggestions.size(), 1u);
+        EXPECT_EQ(context.forward_decl_semantic_cache->frontend_invocations, 1u);
+#endif
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, KeepsDistinctCompileConfigurationsSeparate) {
+        const auto header = root_ / "include" / "box.hpp";
+        std::ofstream(header)
+            << "#pragma once\n"
+            << "#ifdef BHA_CLASS_FORM\n"
+            << "class Box { public: int value; };\n"
+            << "#else\n"
+            << "struct Box { int value; };\n"
+            << "#endif\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"box.hpp\"\n"
+            << "Box* make_box();\n";
+        write_compile_commands(root_, source);
+
+        ProjectIndex project_index(root_, root_ / "compile_commands.json");
+        auto commands = project_index.compile_commands();
+        ASSERT_EQ(commands.size(), 1u);
+        auto alternate = commands.front();
+        alternate.command_line.insert(alternate.command_line.begin() + 1, "-DBHA_CLASS_FORM");
+        commands.push_back(std::move(alternate));
+
+        ForwardDeclSemanticCache cache;
+        configure_forward_decl_semantic_headers(project_index, {header}, cache);
+        const auto result = analyze_forward_declarations(project_index, header, commands, &cache);
+
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_FALSE(result.available);
+#else
+        ASSERT_TRUE(result.available) << result.diagnostic;
+        ASSERT_EQ(result.records.size(), 1u);
+        EXPECT_TRUE(result.records.front().declaration_shape_conflict);
+        EXPECT_EQ(cache.frontend_invocations, 2u);
+        EXPECT_EQ(cache.translation_units.size(), 2u);
+#endif
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, CachesFailedTranslationUnitWithoutAcceptingEvidence) {
+        const auto first_header = root_ / "include" / "first.hpp";
+        const auto second_header = root_ / "include" / "second.hpp";
+        std::ofstream(first_header) << "#pragma once\nstruct First { int value; };\n";
+        std::ofstream(second_header) << "#pragma once\nstruct Second { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"first.hpp\"\n"
+            << "#include \"second.hpp\"\n"
+            << "#error Invalid translation unit\n";
+        write_compile_commands(root_, source);
+
+        ProjectIndex project_index(root_, root_ / "compile_commands.json");
+        const auto commands = project_index.compile_commands();
+        ASSERT_EQ(commands.size(), 1u);
+        ForwardDeclSemanticCache cache;
+        configure_forward_decl_semantic_headers(project_index, {first_header, second_header}, cache);
+        const auto first = analyze_forward_declarations(project_index, first_header, commands, &cache);
+        const auto second = analyze_forward_declarations(project_index, second_header, commands, &cache);
+
+        EXPECT_FALSE(first.available);
+        EXPECT_FALSE(second.available);
+        EXPECT_TRUE(first.records.empty());
+        EXPECT_TRUE(second.records.empty());
+#if BHA_HAVE_CLANG_TOOLING
+        EXPECT_EQ(cache.frontend_invocations, 1u);
+        ASSERT_EQ(cache.translation_units.size(), 1u);
+        EXPECT_FALSE(cache.translation_units.begin()->second.parsed);
+#endif
+    }
+
+    TEST_F(ForwardDeclSuggesterTest, ExpandingCandidatesInvalidatesTranslationUnitEvidence) {
+        const auto first_header = root_ / "include" / "first.hpp";
+        const auto second_header = root_ / "include" / "second.hpp";
+        std::ofstream(first_header) << "#pragma once\nstruct First { int value; };\n";
+        std::ofstream(second_header) << "#pragma once\nstruct Second { int value; };\n";
+        const auto source = root_ / "src" / "use.cpp";
+        std::ofstream(source)
+            << "#include \"first.hpp\"\n"
+            << "#include \"second.hpp\"\n"
+            << "First* use_first();\n"
+            << "Second* use_second();\n";
+        write_compile_commands(root_, source);
+
+        ProjectIndex project_index(root_, root_ / "compile_commands.json");
+        const auto commands = project_index.compile_commands();
+        ForwardDeclSemanticCache cache;
+        configure_forward_decl_semantic_headers(project_index, {first_header}, cache);
+        const auto first = analyze_forward_declarations(project_index, first_header, commands, &cache);
+        configure_forward_decl_semantic_headers(project_index, {second_header}, cache);
+        const auto second = analyze_forward_declarations(project_index, second_header, commands, &cache);
+
+#if !BHA_HAVE_CLANG_TOOLING
+        EXPECT_FALSE(first.available);
+        EXPECT_FALSE(second.available);
+#else
+        ASSERT_TRUE(first.available) << first.diagnostic;
+        ASSERT_TRUE(second.available) << second.diagnostic;
+        EXPECT_EQ(cache.frontend_invocations, 2u);
+        EXPECT_EQ(cache.translation_units.size(), 1u);
 #endif
     }
 
