@@ -31,7 +31,7 @@ set OUTPUT_FILE=
 set NEXT_IS_OUTPUT=0
 
 for %%a in (%*) do (
-    set arg=%%a
+    set "arg=%%~a"
 
     REM Check if this is an output file marker
     if "!arg!"=="/Fo" set NEXT_IS_OUTPUT=1
@@ -44,11 +44,11 @@ for %%a in (%*) do (
     )
 
     REM Check for source file extensions
-    if "!arg:~-4!"==".cpp" set SOURCE_FILE=%%a
-    if "!arg:~-3!"==".cc" set SOURCE_FILE=%%a
-    if "!arg:~-4!"==".cxx" set SOURCE_FILE=%%a
-    if "!arg:~-2!"==".c" set SOURCE_FILE=%%a
-    if "!arg:~-3!"==".cu" set SOURCE_FILE=%%a
+    if "!arg:~-4!"==".cpp" set "SOURCE_FILE=!arg!"
+    if "!arg:~-3!"==".cc" set "SOURCE_FILE=!arg!"
+    if "!arg:~-4!"==".cxx" set "SOURCE_FILE=!arg!"
+    if "!arg:~-2!"==".c" set "SOURCE_FILE=!arg!"
+    if "!arg:~-3!"==".cu" set "SOURCE_FILE=!arg!"
 )
 
 REM If no source file found, run compiler normally

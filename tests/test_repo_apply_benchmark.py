@@ -94,17 +94,16 @@ class SuggestionSelectionTest(unittest.TestCase):
 @unittest.skipUnless(os.name == "nt", "Requires Windows batch execution")
 class WindowsCaptureLauncherTest(unittest.TestCase):
     def test_parallel_compiles_keep_stderr_and_traces_isolated(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory(prefix="bha capture ") as directory:
             root = Path(directory)
             trace_dir = root / "traces"
             temp_dir = root / "temporary"
             trace_dir.mkdir()
             temp_dir.mkdir()
-            compiler = root / "fake-compiler.cmd"
+            compiler = root / "fake-compiler.ps1"
             compiler.write_text(
-                "@echo off\n"
-                "ping -n 2 127.0.0.1 >nul\n"
-                "echo Total: 0.010s 1>&2\n",
+                "Start-Sleep -Milliseconds 100\n"
+                "[Console]::Error.WriteLine('Total: 0.010s')\n",
                 encoding="utf-8",
             )
             environment = {
@@ -119,7 +118,9 @@ class WindowsCaptureLauncherTest(unittest.TestCase):
                 source.parent.mkdir()
                 source.write_text("int value = 1;\n", encoding="utf-8")
                 return subprocess.run(
-                    [str(WINDOWS_CAPTURE), str(compiler), str(source)],
+                    [str(WINDOWS_CAPTURE), "powershell.exe", "-NoProfile",
+                     "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+                     str(compiler), str(source)],
                     cwd=root, env=environment, capture_output=True, text=True, check=False,
                 )
 
