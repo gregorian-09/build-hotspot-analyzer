@@ -13,10 +13,20 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).with_name("run_repo_apply_benchmark.py")
 sys.path.insert(0, str(SCRIPT.parent))
-from run_repo_apply_benchmark import ExperimentError, select_suggestion  # noqa: E402
+from run_repo_apply_benchmark import ExperimentError, managed_pdb_server, select_suggestion  # noqa: E402
 
 
 class SuggestionSelectionTest(unittest.TestCase):
+    @unittest.skipUnless(os.name == "nt", "Requires the Visual Studio developer environment")
+    def test_msvc_pdb_server_is_scoped_to_the_benchmark(self):
+        previous = os.environ.get("_MSPDBSRV_ENDPOINT_")
+        with managed_pdb_server("cl") as server:
+            self.assertIsNotNone(server)
+            self.assertIsNone(server.poll())
+            self.assertNotEqual(os.environ["_MSPDBSRV_ENDPOINT_"], previous)
+        self.assertIsNotNone(server.poll())
+        self.assertEqual(os.environ.get("_MSPDBSRV_ENDPOINT_"), previous)
+
     def test_numeric_ids_break_equal_rank_ties(self):
         suggestions = [
             {"id": identifier, "priority": "high", "confidence": 0.9,

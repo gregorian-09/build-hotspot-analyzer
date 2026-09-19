@@ -7,11 +7,14 @@ import json
 import os
 import platform
 import shlex
+import shutil
 import statistics
 import subprocess
 import sys
 import time
+import uuid
 from collections import Counter
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -24,6 +27,44 @@ from lsp_test_client import PROJECT_CMAKE_FLAGS, PROJECT_CMAKE_SUBDIR  # noqa: E
 
 class ExperimentError(RuntimeError):
     pass
+
+
+@contextmanager
+def managed_pdb_server(cxx_compiler: str):
+    if os.name != "nt" or Path(cxx_compiler).name.lower() not in {"cl", "cl.exe"}:
+        yield None
+        return
+
+    executable = shutil.which("mspdbsrv.exe")
+    if executable is None:
+        raise ExperimentError("MSVC PDB server was not found in the developer environment")
+
+    endpoint_key = "_MSPDBSRV_ENDPOINT_"
+    previous_endpoint = os.environ.get(endpoint_key)
+    os.environ[endpoint_key] = uuid.uuid4().hex
+    server = None
+    try:
+        # Keep the server's working directory outside disposable build trees.
+        server = subprocess.Popen(
+            [executable, "-start", "-shutdowntime", "-1"],
+            cwd=REPO_ROOT, stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        yield server
+    finally:
+        try:
+            if server is not None and server.poll() is None:
+                server.terminate()
+                try:
+                    server.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    server.kill()
+                    server.wait()
+        finally:
+            if previous_endpoint is None:
+                os.environ.pop(endpoint_key, None)
+            else:
+                os.environ[endpoint_key] = previous_endpoint
 
 
 def run_process(
@@ -423,8 +464,7 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def main() -> int:
-    args = parse_args()
+def run_benchmark(args: argparse.Namespace) -> int:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     run_dir = args.output_root / timestamp
     run_dir.mkdir(parents=True)
@@ -474,6 +514,12 @@ def main() -> int:
     if args.require_applied:
         failed |= any(record["status"] not in {"validated", "build_only"} for record in records)
     return 1 if failed else 0
+
+
+def main() -> int:
+    args = parse_args()
+    with managed_pdb_server(args.cxx_compiler):
+        return run_benchmark(args)
 
 
 if __name__ == "__main__":
