@@ -33,6 +33,7 @@ add_executable(bha_tests
         unit/suggestions/test_consolidator.cpp
         unit/suggestions/test_template_suggester.cpp
         unit/suggestions/test_template_semantic_index.cpp
+        unit/suggestions/test_semantic_replay_flags.cpp
         unit/suggestions/test_unity_build_suggester.cpp
         unit/suggestions/test_project_root.cpp
         unit/suggestions/test_suggester_catalog.cpp
@@ -81,6 +82,7 @@ target_link_libraries(bha_tests
 )
 
 target_compile_definitions(bha_tests PRIVATE BHA_HAVE_CLANG_TOOLING=${BHA_HAVE_CLANG_TOOLING})
+target_include_directories(bha_tests PRIVATE ${PROJECT_SOURCE_DIR}/sources/bha/suggestions)
 
 if(BHA_ENABLE_LSP)
     target_link_libraries(bha_tests PRIVATE bha::lsp_core)

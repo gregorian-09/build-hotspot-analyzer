@@ -159,6 +159,7 @@ namespace bha::suggestions {
                 }
                 arguments.push_back(argument);
             }
+            append_semantic_replay_resource_dir(arguments);
             arguments.push_back("-fsyntax-only");
             return arguments;
         }

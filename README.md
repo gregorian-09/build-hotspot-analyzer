@@ -99,7 +99,7 @@ cmake --build build-msvc --config Release --parallel 2
 ctest --test-dir build-msvc -C Release --output-on-failure
 ```
 
-An installed LLVM CMake package or an explicitly supplied `BHA_CLANG_TOOLING_ROOT` provides LibTooling. `vcpkg` is an optional dependency provider, not a required hardcoded path. On macOS, use AppleClang for the host build and an installed LLVM/Clang LibTooling package for AST-backed features; configure with a suitable prefix when CMake cannot discover it.
+An installed LLVM CMake package or an explicitly supplied `BHA_CLANG_TOOLING_ROOT` provides LibTooling. `vcpkg` is an optional dependency provider, not a required hardcoded path. On macOS, use AppleClang for the host build and an installed LLVM/Clang LibTooling package for AST-backed features; configure with a suitable prefix when CMake cannot discover it. If LibTooling cannot find compiler builtin headers during AST replay, set `BHA_CLANG_RESOURCE_DIR` to the installed tooling compiler's `clang++ -print-resource-dir` result; an explicit `-resource-dir` in a compile command takes precedence.
 
 | CMake option | Default | Effect |
 | --- | --- | --- |

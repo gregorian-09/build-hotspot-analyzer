@@ -692,6 +692,7 @@ namespace bha::suggestions {
                 }
                 arguments.push_back(argument);
             }
+            append_semantic_replay_resource_dir(arguments);
             return arguments;
         }
 

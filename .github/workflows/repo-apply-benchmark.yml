@@ -142,12 +142,16 @@ jobs:
           sdk_root="$(xcrun --show-sdk-path)"
           apple_cc="$(xcrun --find clang)"
           apple_cxx="$(xcrun --find clang++)"
+          tooling_root="$(brew --prefix llvm)"
+          resource_dir="$("$tooling_root/bin/clang++" -print-resource-dir)"
           test -d "$sdk_root"
           test -x "$apple_cc"
           test -x "$apple_cxx"
+          test -f "$resource_dir/include/stdarg.h"
           printf 'SDKROOT=%s\nBHA_APPLE_CC=%s\nBHA_APPLE_CXX=%s\n' \
             "$sdk_root" "$apple_cc" "$apple_cxx" >> "$GITHUB_ENV"
-          printf 'BHA_CLANG_TOOLING_ROOT=%s\n' "$(brew --prefix llvm)" >> "$GITHUB_ENV"
+          printf 'BHA_CLANG_TOOLING_ROOT=%s\nBHA_CLANG_RESOURCE_DIR=%s\n' \
+            "$tooling_root" "$resource_dir" >> "$GITHUB_ENV"
 
       - name: Install VS Code on macOS
         if: runner.os == 'macOS'
