@@ -5,6 +5,7 @@ build
 # Ignore Temporary Testing Folder
 Testing
 tests/temp/
+tests/cli/benchmarks/
 
 # Ignore bha config files and database
 .bha-config.toml

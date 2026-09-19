@@ -121,3 +121,15 @@ if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP AND BHA_HAVE_C
     )
     set_tests_properties(ApplyCliLspParity PROPERTIES TIMEOUT 120)
 endif()
+
+if(Python3_Interpreter_FOUND AND BHA_BUILD_CLI AND BHA_ENABLE_LSP AND UNIX)
+    add_test(
+            NAME RepoApplyBenchmarkHarness
+            COMMAND ${Python3_EXECUTABLE}
+                    ${PROJECT_SOURCE_DIR}/tests/test_repo_apply_benchmark.py
+    )
+    set_tests_properties(RepoApplyBenchmarkHarness PROPERTIES
+            TIMEOUT 240
+            ENVIRONMENT "BHA_TEST_BINARY=$<TARGET_FILE:bha>"
+    )
+endif()
