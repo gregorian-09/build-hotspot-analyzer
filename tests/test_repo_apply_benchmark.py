@@ -9,10 +9,12 @@ import sys
 import tempfile
 import time
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 
 SCRIPT = Path(__file__).with_name("run_repo_apply_benchmark.py")
+WINDOWS_CAPTURE = Path(__file__).resolve().parent.parent / "cmake" / "bha-capture.bat"
 sys.path.insert(0, str(SCRIPT.parent))
 from run_repo_apply_benchmark import ExperimentError, managed_pdb_server, select_suggestion  # noqa: E402
 
@@ -87,6 +89,49 @@ class SuggestionSelectionTest(unittest.TestCase):
     def test_requested_advisory_cannot_be_benchmarked_as_applied(self):
         with self.assertRaises(ExperimentError):
             select_suggestion({"suggestions": [{"id": "ana-1", "applicationMode": "advisory"}]}, "ana-1")
+
+
+@unittest.skipUnless(os.name == "nt", "Requires Windows batch execution")
+class WindowsCaptureLauncherTest(unittest.TestCase):
+    def test_parallel_compiles_keep_stderr_and_traces_isolated(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            trace_dir = root / "traces"
+            temp_dir = root / "temporary"
+            trace_dir.mkdir()
+            temp_dir.mkdir()
+            compiler = root / "fake-compiler.cmd"
+            compiler.write_text(
+                "@echo off\n"
+                "ping -n 2 127.0.0.1 >nul\n"
+                "echo Total: 0.010s 1>&2\n",
+                encoding="utf-8",
+            )
+            environment = {
+                **os.environ,
+                "BHA_TRACE_DIR": str(trace_dir),
+                "TEMP": str(temp_dir),
+                "TMP": str(temp_dir),
+            }
+
+            def compile_source(index):
+                source = root / str(index) / "unit.cpp"
+                source.parent.mkdir()
+                source.write_text("int value = 1;\n", encoding="utf-8")
+                return subprocess.run(
+                    [str(WINDOWS_CAPTURE), str(compiler), str(source)],
+                    cwd=root, env=environment, capture_output=True, text=True, check=False,
+                )
+
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                results = list(executor.map(compile_source, range(8)))
+            for result in results:
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            traces = list(trace_dir.glob("*.bha.txt"))
+            self.assertEqual(len(traces), 8)
+            for trace in traces:
+                self.assertIn("Total: 0.010s", trace.read_text(encoding="utf-8"))
+            self.assertEqual(list(temp_dir.iterdir()), [])
 
 
 FAKE_BHA = r'''#!/usr/bin/env python3

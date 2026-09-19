@@ -60,34 +60,31 @@ if "%SOURCE_FILE%"=="" (
 
 if "%BHA_VERBOSE%"=="1" echo [bha-capture] Capturing trace for: %SOURCE_FILE% 1>&2
 
-REM Create unique trace filename using timestamp to avoid collisions
-REM Get timestamp components
-for /f "tokens=1-4 delims=:.," %%a in ("%time%") do (
-    set HOUR=%%a
-    set MIN=%%b
-    set SEC=%%c
-    set MSEC=%%d
-)
-REM Pad hour with zero if needed
-if "%HOUR:~0,1%"==" " set HOUR=0%HOUR:~1,1%
-
-REM Get basename and create unique filename
+REM Get basename for the trace filename
 for %%f in ("%SOURCE_FILE%") do (
     set BASENAME=%%~nf
-    set EXTENSION=%%~xf
 )
 
-REM Remove extension dot from EXTENSION if present
-if not "!EXTENSION!"=="" set EXTENSION=!EXTENSION:~1!
+REM GetTempFileName atomically reserves the stderr file, even for parallel builds.
+REM The GUID also keeps trace names distinct after temporary files are removed.
+set "TEMP_STDERR="
+set "TRACE_ID="
+for /f "tokens=1,2 delims=|" %%a in ('powershell.exe -NoProfile -NonInteractive -Command "$tmp = [System.IO.Path]::GetTempFileName(); [Console]::WriteLine($tmp + [char]124 + [Guid]::NewGuid())"') do (
+    set "TEMP_STDERR=%%a"
+    set "TRACE_ID=%%b"
+)
+if not defined TEMP_STDERR (
+    echo [bha-capture] Failed to reserve a unique stderr file 1>&2
+    exit /b 1
+)
+if not defined TRACE_ID (
+    del "%TEMP_STDERR%" 2>nul
+    echo [bha-capture] Failed to create a unique trace identifier 1>&2
+    exit /b 1
+)
 
-REM Create timestamp-based unique suffix
-set TIMESTAMP=%HOUR%%MIN%%SEC%%MSEC%
-set TRACE_FILE=%BHA_TRACE_DIR%\!BASENAME!_!TIMESTAMP!.bha.txt
-
+set "TRACE_FILE=%BHA_TRACE_DIR%\!BASENAME!_!TRACE_ID!.bha.txt"
 if "%BHA_VERBOSE%"=="1" echo [bha-capture] Trace file: %TRACE_FILE% 1>&2
-
-REM Create temporary file for stderr capture
-set TEMP_STDERR=%TEMP%\bha_stderr_%RANDOM%.tmp
 
 REM Run compiler and capture stderr to temporary file
 %* 2>"%TEMP_STDERR%"
