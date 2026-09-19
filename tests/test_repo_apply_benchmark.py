@@ -121,7 +121,7 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
             self.fake_bha = fake_script
             self.fake_bha.chmod(0o755)
 
-    def run_experiment(self, mode="success", *extra, bha_path=None):
+    def run_experiment(self, mode="success", *extra, bha_path=None, extra_env=None):
         output = self.root / "results"
         command = [
             sys.executable, str(SCRIPT), "--project", "fixture",
@@ -133,7 +133,7 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
             command.extend(("--c-compiler", "cl", "--cxx-compiler", "cl"))
         process = subprocess.run(
             command, capture_output=True, text=True, check=False,
-            timeout=180, env={**os.environ, "BHA_FAKE_MODE": mode},
+            timeout=180, env={**os.environ, "BHA_FAKE_MODE": mode, **(extra_env or {})},
         )
         runs = list(output.iterdir())
         self.assertEqual(len(runs), 1, process.stdout + process.stderr)
@@ -179,7 +179,7 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
         self.assertEqual(result["postBuildMs"], [])
         self.assertEqual((self.repo / "main.cpp").read_text(encoding="utf-8"), self.original)
 
-    def test_require_tests_refuses_build_only_result(self):
+    def commit_without_tests(self):
         (self.repo / "CMakeLists.txt").write_text(
             "cmake_minimum_required(VERSION 3.28)\n"
             "project(fixture LANGUAGES CXX)\n"
@@ -191,10 +191,48 @@ class RepoApplyBenchmarkTest(unittest.TestCase):
             "git", "-C", str(self.repo), "-c", "user.name=BHA Test",
             "-c", "user.email=bha@example.invalid", "commit", "--quiet", "-m", "without tests",
         ], check=True)
+
+    def test_require_tests_refuses_build_only_result(self):
+        self.commit_without_tests()
         process, result, _ = self.run_experiment("success", "--require-tests")
         self.assertNotEqual(process.returncode, 0)
         self.assertEqual(result["status"], "tests_failed")
         self.assertEqual(result["projectTests"], "unavailable")
+
+    def test_require_applied_keeps_build_only_status_distinct(self):
+        self.commit_without_tests()
+        process, result, _ = self.run_experiment("success", "--require-applied")
+        self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+        self.assertEqual(result["status"], "build_only")
+        self.assertEqual(result["projectTests"], "unavailable")
+
+    @unittest.skipIf(os.name == "nt", "The fake npm executable uses a Unix shebang")
+    def test_vscode_mode_consumes_host_result_and_preserves_original_clone(self):
+        fake_bin = self.root / "bin"
+        fake_bin.mkdir()
+        fake_npm = fake_bin / "npm"
+        fake_npm.write_text(
+            "#!/usr/bin/env python3\n"
+            "import json, os, pathlib, sys\n"
+            "assert sys.argv[1:] == ['run', 'test:host']\n"
+            "assert json.loads(os.environ['BHA_HOST_REAL_BUILD_PROFILE'])['buildSystem'] == 'CMake'\n"
+            "source = pathlib.Path(os.environ['BHA_HOST_REAL_PROJECT_ROOT']) / 'main.cpp'\n"
+            "source.write_text(source.read_text() + '// applied in host\\n')\n"
+            "result = {'apply': {'success': True, 'changedFiles': [str(source)], "
+            "'buildValidation': {'ran': True, 'success': True}}, 'suggestionCount': 1}\n"
+            "pathlib.Path(os.environ['BHA_HOST_REAL_RESULT_PATH']).write_text(json.dumps(result))\n",
+            encoding="utf-8",
+        )
+        fake_npm.chmod(0o755)
+        process, record, _ = self.run_experiment(
+            "success", "--apply-mode", "vscode", "--lsp-path", str(self.fake_bha),
+            "--require-applied", "--require-tests",
+            extra_env={"PATH": str(fake_bin) + os.pathsep + os.environ["PATH"]},
+        )
+        self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+        self.assertEqual(record["status"], "validated")
+        self.assertEqual(record["vscodeHost"]["suggestionCount"], 1)
+        self.assertEqual((self.repo / "main.cpp").read_text(encoding="utf-8"), self.original)
 
     @unittest.skipUnless(os.environ.get("BHA_TEST_BINARY"), "Set BHA_TEST_BINARY for a real CLI smoke test")
     def test_real_bha_record_and_analysis(self):

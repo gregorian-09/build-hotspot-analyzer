@@ -116,6 +116,11 @@
           "default": false,
           "description": "Automatically analyze project on startup"
         },
+        "buildHotspotAnalyzer.confirmBeforeApply": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for confirmation before applying a suggestion. Disable only for unattended automation in an isolated workspace."
+        },
         "buildHotspotAnalyzer.trace.server": {
           "type": "string",
           "enum": [

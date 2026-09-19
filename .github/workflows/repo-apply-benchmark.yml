@@ -4,11 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       project:
-        description: Pinned upstream project to test on all three operating systems
+        description: Pinned upstream project to test on supported native runners
         type: choice
         options:
+          - benchmark
+          - mimalloc
+          - rocksdb
+          - zstd
+          - abseil
+          - catch2
           - leveldb
           - yaml-cpp
+          - libjpeg-turbo
+          - glfw
+          - redis
+          - curl
+          - zlib
+          - libpng
+          - weston
           - all
         default: leveldb
         required: true
@@ -17,29 +30,43 @@ permissions:
   contents: read
 
 jobs:
-  vscode-host:
-    name: VS Code extension host contracts
-    uses: ./.github/workflows/vscode-extension.yml
-
   select-projects:
     name: Select pinned project revisions
     runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
+      has_supported: ${{ steps.plan.outputs.has_supported }}
     steps:
       - uses: actions/checkout@v4
       - name: Verify matrix completeness
         run: python3 tests/test_ci_repo_apply_matrix.py
-      - name: Build complete project/OS matrix
+      - name: Build native project/OS matrix
         id: plan
         shell: bash
         env:
           SELECTED_PROJECT: ${{ inputs.project }}
-        run: python3 tests/ci_repo_apply_matrix.py "$SELECTED_PROJECT" >> "$GITHUB_OUTPUT"
+        run: |
+          python3 tests/ci_repo_apply_matrix.py "$SELECTED_PROJECT" >> "$GITHUB_OUTPUT"
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          import sys
+          sys.path.insert(0, 'tests')
+          from ci_repo_apply_matrix import build_matrix
+          plan = build_matrix(os.environ['SELECTED_PROJECT'])
+          print('has_supported=' + str(bool(plan['include'])).lower())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+              summary.write('## Native upstream coverage\n\n')
+              summary.write(f"{len(plan['include'])} supported cells; {len(plan['unsupported'])} unsupported cells.\n\n")
+              for row in plan['unsupported']:
+                  summary.write(f"- {row['project']} / {row['os']}: {row['reason']}\n")
+          if not plan['include']:
+              raise SystemExit('No supported end-to-end cells exist for the selected project')
+          PY
 
   apply-and-measure:
     name: ${{ matrix.project }} / ${{ matrix.os }}
     needs: select-projects
+    if: needs.select-projects.outputs.has_supported == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 150
     strategy:
@@ -85,9 +112,25 @@ jobs:
         run: |
           set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install --yes clang-18 clang-tools-18 cmake \
+          sudo apt-get install --yes clang-18 clang-tools-18 cmake gpg xvfb zlib1g-dev \
             libclang-18-dev libclang-cpp18-dev llvm-18-dev ninja-build \
             nlohmann-json3-dev
+          if [[ '${{ matrix.project }}' == glfw ]]; then
+            sudo apt-get install --yes libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+          fi
+
+      - name: Install VS Code on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          curl --fail --silent --show-error https://packages.microsoft.com/keys/microsoft.asc |
+            gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-vscode.gpg >/dev/null
+          echo 'deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-vscode.gpg] https://packages.microsoft.com/repos/code stable main' |
+            sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install --yes code
+          printf 'VSCODE_EXECUTABLE=%s\n' "$(command -v code)" >> "$GITHUB_ENV"
 
       - name: Install macOS AST dependencies
         if: runner.os == 'macOS'
@@ -97,6 +140,20 @@ jobs:
           if ! command -v ninja >/dev/null 2>&1; then brew install ninja; fi
           brew install llvm nlohmann-json
           printf 'BHA_CLANG_TOOLING_ROOT=%s\n' "$(brew --prefix llvm)" >> "$GITHUB_ENV"
+
+      - name: Install VS Code on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if ! command -v code >/dev/null 2>&1; then brew install --cask visual-studio-code; fi
+          vscode_executable="$(command -v code || true)"
+          if [[ -z "$vscode_executable" ]]; then
+            app_path="$(mdfind 'kMDItemCFBundleIdentifier == "com.microsoft.VSCode"' | head -n 1)"
+            vscode_executable="$app_path/Contents/Resources/app/bin/code"
+          fi
+          test -x "$vscode_executable"
+          printf 'VSCODE_EXECUTABLE=%s\n' "$vscode_executable" >> "$GITHUB_ENV"
 
       - name: Restore Windows LLVM archive
         if: runner.os == 'Windows'
@@ -129,9 +186,52 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $vcpkg = Join-Path $env:VCPKG_ROOT 'vcpkg.exe'
+          $packages = @('nlohmann-json')
+          if ('${{ matrix.project }}' -eq 'libpng') { $packages += 'zlib' }
           & $vcpkg install --classic --vcpkg-root $env:VCPKG_ROOT `
-            --triplet x64-windows-static nlohmann-json
+            --triplet x64-windows-static @packages
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install VS Code on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $command = Get-Command code.cmd -ErrorAction SilentlyContinue
+          if (-not $command) {
+            choco install vscode --yes --no-progress
+            $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+            $env:Path = "$machinePath;$userPath"
+            $command = Get-Command code.cmd -ErrorAction SilentlyContinue
+          }
+          if (-not $command) { throw 'VS Code CLI was not found after installation' }
+          "VSCODE_EXECUTABLE=$($command.Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Export upstream Windows CMake toolchain
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path $env:BHA_VCPKG_TOOLCHAIN_FILE)) {
+            throw 'The discovered vcpkg CMake toolchain file does not exist'
+          }
+          "CMAKE_TOOLCHAIN_FILE=$env:BHA_VCPKG_TOOLCHAIN_FILE" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: lsp/ide-integrations/vscode/package-lock.json
+
+      - name: Build extension
+        shell: bash
+        working-directory: lsp/ide-integrations/vscode
+        run: |
+          npm ci --no-audit --no-fund
+          npm run typecheck
+          npm run bundle
 
       - name: Configure BHA on Linux or macOS
         if: runner.os != 'Windows'
@@ -162,30 +262,44 @@ jobs:
             "-DBHA_CLANG_TOOLING_ROOT=$env:BHA_CLANG_TOOLING_ROOT"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build BHA CLI
+      - name: Build BHA CLI and real LSP
         shell: bash
-        run: cmake --build "$BUILD_DIR" --target bha --parallel 2
+        run: cmake --build "$BUILD_DIR" --target bha bha-lsp --parallel 2
 
       - name: Verify benchmark harness behavior
         shell: bash
         run: python tests/test_repo_apply_benchmark.py
 
-      - name: Capture, analyze, apply, rebuild, and test upstream project
+      - name: Capture, analyze, apply in VS Code, rebuild, and test upstream project
         shell: bash
         timeout-minutes: 100
         run: |
           set -euxo pipefail
           bha_path="$BUILD_DIR/bha"
-          if [[ "$RUNNER_OS" == Windows ]]; then bha_path+=.exe; fi
+          lsp_path="$BUILD_DIR/lsp/bha-lsp"
+          if [[ "$RUNNER_OS" == Windows ]]; then bha_path+=.exe; lsp_path+=.exe; fi
+          host_prefix=''
+          if [[ "$RUNNER_OS" == Linux ]]; then host_prefix='xvfb-run --auto-servernum'; fi
+          test_gate=()
+          if [[ '${{ matrix.require_tests }}' == true ]]; then test_gate+=(--require-tests); fi
+          windows_cmake=()
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            windows_cmake+=(--cmake-arg=-DVCPKG_TARGET_TRIPLET=x64-windows-static)
+            if [[ '${{ matrix.project }}' == rocksdb ]]; then
+              windows_cmake+=(--cmake-arg=-DWIN_CI=ON)
+            fi
+          fi
           python tests/run_repo_apply_benchmark.py \
             --project '${{ matrix.project }}' \
             --bha-path "$bha_path" \
+            --lsp-path "$lsp_path" --apply-mode vscode --ci-profile \
+            --host-prefix "$host_prefix" \
             --c-compiler '${{ matrix.c_compiler }}' \
             --cxx-compiler '${{ matrix.cxx_compiler }}' \
-            --cmake-arg='${{ matrix.test_cmake_arg }}' \
+            "${windows_cmake[@]}" "${test_gate[@]}" \
             --jobs 2 --runs 1 --timeout-seconds 2400 \
             --analysis-timeout-seconds 900 \
-            --require-applied --require-tests
+            --require-applied
 
       - name: Publish result summary
         if: always()
@@ -207,4 +321,5 @@ jobs:
             tests/cli/benchmarks/**/summary.json
             tests/cli/benchmarks/**/summary.md
             tests/cli/benchmarks/**/result.json
+            tests/cli/benchmarks/**/vscode-apply-result.json
             tests/cli/benchmarks/**/logs/*.log

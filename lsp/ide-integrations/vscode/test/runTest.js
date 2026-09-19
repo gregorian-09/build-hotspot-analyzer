@@ -6,7 +6,8 @@ const path = require('path');
 const { spawn, spawnSync } = require('child_process');
 
 const extensionDevelopmentPath = path.resolve(__dirname, '..');
-const extensionTestsPath = path.resolve(__dirname, 'suite', 'index.js');
+const realProjectMode = Boolean(process.env.BHA_HOST_REAL_PROJECT_ROOT);
+const extensionTestsPath = path.resolve(__dirname, 'suite', realProjectMode ? 'realProject.js' : 'index.js');
 const fakeServerPath = path.resolve(__dirname, 'fixtures', 'fake-lsp-server.js');
 
 function findOnPath(names) {
@@ -97,6 +98,30 @@ function createFixture() {
     return { workspaceRoot, userDataRoot, targetPath, markerPath, originalContent };
 }
 
+function createRealProjectFixture() {
+    const workspaceRoot = path.resolve(process.env.BHA_HOST_REAL_PROJECT_ROOT);
+    const serverPath = path.resolve(process.env.BHA_HOST_REAL_SERVER_PATH || '');
+    const buildDir = path.resolve(process.env.BHA_HOST_REAL_BUILD_DIR || '');
+    const traceDir = path.resolve(process.env.BHA_HOST_REAL_TRACE_DIR || '');
+    if (!fs.statSync(workspaceRoot).isDirectory() || !fs.statSync(serverPath).isFile()
+        || !fs.statSync(buildDir).isDirectory() || !fs.statSync(traceDir).isDirectory()) {
+        throw new Error('Real host mode requires an upstream worktree, bha-lsp, build directory, and trace directory.');
+    }
+    if (!process.env.BHA_HOST_REAL_SUGGESTION_ID || !process.env.BHA_HOST_REAL_RESULT_PATH) {
+        throw new Error('Real host mode requires a suggestion ID and result path.');
+    }
+    const userDataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bha-vscode-real-profile-'));
+    const userDirectory = path.join(userDataRoot, 'User');
+    fs.mkdirSync(userDirectory, { recursive: true });
+    fs.writeFileSync(path.join(userDirectory, 'settings.json'), `${JSON.stringify({
+        'buildHotspotAnalyzer.serverPath': serverPath,
+        'buildHotspotAnalyzer.autoAnalyze': false,
+        'buildHotspotAnalyzer.confirmBeforeApply': false,
+        'security.workspace.trust.enabled': false
+    }, null, 2)}\n`);
+    return { workspaceRoot, userDataRoot };
+}
+
 function runHost(executable, fixture) {
     const args = [
         `--extensionDevelopmentPath=${extensionDevelopmentPath}`,
@@ -109,8 +134,8 @@ function runHost(executable, fixture) {
     ];
     const environment = {
         ...process.env,
-        BHA_HOST_TEST_TARGET: fixture.targetPath,
-        BHA_HOST_TEST_APPLY_MARKER: fixture.markerPath
+        BHA_HOST_TEST_TARGET: fixture.targetPath || '',
+        BHA_HOST_TEST_APPLY_MARKER: fixture.markerPath || ''
     };
 
     return new Promise((resolve, reject) => {
@@ -153,12 +178,14 @@ function removeTree(target, required) {
 
 async function main() {
     const executable = findCodeExecutable();
-    const fixture = createFixture();
+    const fixture = realProjectMode ? createRealProjectFixture() : createFixture();
     try {
         await runHost(executable, fixture);
     } finally {
         try {
-            removeTree(fixture.workspaceRoot, true);
+            if (!realProjectMode) {
+                removeTree(fixture.workspaceRoot, true);
+            }
         } finally {
             removeTree(fixture.userDataRoot, false);
         }

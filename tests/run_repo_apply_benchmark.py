@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Measure BHA suggestion application in isolated Clang/CMake project worktrees."""
+"""Measure CLI or VS Code suggestion application in isolated CMake worktrees."""
 
 import argparse
 import json
@@ -28,6 +28,7 @@ class ExperimentError(RuntimeError):
 
 def run_process(
     command: list[str], cwd: Path, timeout: int, log: Path, *, capture: bool = True,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     log.parent.mkdir(parents=True, exist_ok=True)
     if not capture:
@@ -37,7 +38,7 @@ def run_process(
             try:
                 result = subprocess.run(
                     command, cwd=cwd, stdout=output, stderr=subprocess.STDOUT,
-                    text=True, timeout=timeout, check=False,
+                    text=True, timeout=timeout, check=False, env=env,
                 )
             except subprocess.TimeoutExpired as error:
                 output.write(f"\nTimed out after {timeout}s\n")
@@ -47,7 +48,7 @@ def run_process(
     try:
         result = subprocess.run(
             command, cwd=cwd, capture_output=True, text=True,
-            timeout=timeout, check=False,
+            timeout=timeout, check=False, env=env,
         )
     except subprocess.TimeoutExpired as error:
         log.write_text(
@@ -187,11 +188,12 @@ def run_case(name: str, args: argparse.Namespace, run_dir: Path) -> dict[str, An
                 REPO_ROOT, args.timeout_seconds, submodule_log, capture=False,
             )
             require_success(initialized, submodule_log)
-        source = worktree / PROJECT_CMAKE_SUBDIR.get(name, "")
+        source_subdir = args.profile_source_subdir if args.ci_profile else PROJECT_CMAKE_SUBDIR.get(name, "")
+        source = worktree / source_subdir
         if not (source / "CMakeLists.txt").is_file():
             raise ExperimentError(f"No CMakeLists.txt in worktree source: {source}")
         result["source"] = str(source)
-        result["cmakeArgs"] = cmake_args(name) + args.cmake_arg
+        result["cmakeArgs"] = (args.profile_cmake_args if args.ci_profile else cmake_args(name)) + args.cmake_arg
 
         build = case_dir / "build"
         plain_build = case_dir / "plain-build"
@@ -274,14 +276,45 @@ def run_case(name: str, args: argparse.Namespace, run_dir: Path) -> dict[str, An
 
         phase = "apply"
         apply_log = logs / "apply.log"
-        applied = run_process(
-            [str(args.bha_path), "project", "apply", "--json",
-             *project_args(args, source, build, last_traces), *extra,
-             "--min-confidence", str(args.min_confidence),
-             "--suggestion-id", candidate["id"]],
-            source, args.timeout_seconds, apply_log,
-        )
-        application = json_result(applied, apply_log)
+        if args.apply_mode == "vscode":
+            host_result = case_dir / "vscode-apply-result.json"
+            host_env = {
+                **os.environ,
+                "BHA_HOST_REAL_PROJECT_ROOT": str(source),
+                "BHA_HOST_REAL_SERVER_PATH": str(args.lsp_path),
+                "BHA_HOST_REAL_BUILD_DIR": str(build),
+                "BHA_HOST_REAL_TRACE_DIR": str(last_traces),
+                "BHA_HOST_REAL_SUGGESTION_ID": candidate["id"],
+                "BHA_HOST_REAL_RESULT_PATH": str(host_result),
+                "BHA_HOST_REAL_BUILD_PROFILE": json.dumps({
+                    "buildSystem": "CMake", "buildDir": str(build),
+                    "traceOutputDir": str(last_traces), "buildType": args.build_type,
+                    "cCompiler": args.c_compiler, "cxxCompiler": args.cxx_compiler,
+                    "parallelJobs": args.jobs, "extraArgs": result["cmakeArgs"],
+                }),
+            }
+            npm_executable = "npm.cmd" if os.name == "nt" else "npm"
+            host_command = [*args.host_prefix, npm_executable, "run", "test:host"]
+            applied = run_process(host_command, args.extension_path, args.timeout_seconds,
+                                  apply_log, capture=False, env=host_env)
+            require_success(applied, apply_log)
+            if not host_result.is_file():
+                raise ExperimentError(f"VS Code host produced no apply result; see {apply_log}")
+            host_payload = json.loads(host_result.read_text(encoding="utf-8"))
+            application = host_payload.get("apply")
+            if not isinstance(application, dict):
+                raise ExperimentError(f"VS Code host returned no apply object; see {host_result}")
+            result["vscodeHost"] = {key: host_payload.get(key) for key in
+                                    ("analysisId", "suggestionCount", "gitStatus")}
+        else:
+            applied = run_process(
+                [str(args.bha_path), "project", "apply", "--json",
+                 *project_args(args, source, build, last_traces), *extra,
+                 "--min-confidence", str(args.min_confidence),
+                 "--suggestion-id", candidate["id"]],
+                source, args.timeout_seconds, apply_log,
+            )
+            application = json_result(applied, apply_log)
         result["application"] = application
         result["buildValidation"] = application.get("buildValidation")
         if (applied.returncode != 0 or application.get("success") is not True
@@ -347,6 +380,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cxx-compiler", default="clang++")
     parser.add_argument("--build-type", default="Release")
     parser.add_argument("--cmake-arg", action="append", default=[], help="Extra CMake option; repeatable")
+    parser.add_argument("--ci-profile", action="store_true", help="Use the pinned CI project's CMake profile")
+    parser.add_argument("--apply-mode", choices=("cli", "vscode"), default="cli")
+    parser.add_argument("--lsp-path", type=Path)
+    parser.add_argument("--extension-path", type=Path, default=REPO_ROOT / "lsp" / "ide-integrations" / "vscode")
+    parser.add_argument("--host-prefix", default="", help="Command prefix for the VS Code host, such as xvfb-run")
     parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--runs", type=int, default=3, help="Untraced clean builds per state")
     parser.add_argument("--timeout-seconds", type=int, default=3600)
@@ -363,6 +401,18 @@ def parse_args() -> argparse.Namespace:
     args.repos_root = args.repos_root.resolve()
     args.output_root = args.output_root.resolve()
     args.bha_path = args.bha_path.resolve()
+    args.extension_path = args.extension_path.resolve()
+    args.host_prefix = shlex.split(args.host_prefix)
+    if args.apply_mode == "vscode":
+        if not args.lsp_path or not args.lsp_path.is_file():
+            parser.error("--apply-mode vscode requires an existing --lsp-path")
+        args.lsp_path = args.lsp_path.resolve()
+    if args.ci_profile:
+        from ci_repo_apply_matrix import PROJECTS
+        if len(args.project) != 1 or args.project[0] not in PROJECTS:
+            parser.error("--ci-profile requires exactly one pinned project")
+        args.profile_cmake_args = PROJECTS[args.project[0]].get("cmake_args", [])
+        args.profile_source_subdir = PROJECTS[args.project[0]].get("source_subdir", "")
     if not args.bha_path.is_file():
         parser.error(f"BHA CLI does not exist: {args.bha_path}")
     for name in args.project:
@@ -422,7 +472,7 @@ def main() -> int:
     print(f"Summary: {run_dir / 'summary.json'}")
     failed = any(record["status"].endswith("_failed") for record in records)
     if args.require_applied:
-        failed |= any(record["status"] != "validated" for record in records)
+        failed |= any(record["status"] not in {"validated", "build_only"} for record in records)
     return 1 if failed else 0
 
 

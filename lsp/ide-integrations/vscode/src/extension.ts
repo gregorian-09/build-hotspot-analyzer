@@ -462,6 +462,7 @@ function resolveAnalysisBuildTiming(result: AnalysisResult): { totalBuildTimeMs:
 // ============================================================================
 
 let client: LanguageClient;
+let clientReady: Promise<void>;
 let lastBackupId: string | undefined;
 let outputChannel: vscode.OutputChannel;
 let traceOutputChannel: vscode.OutputChannel;
@@ -1167,7 +1168,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('buildHotspotAnalyzer.previewSuggestion', cmdPreviewSuggestion)
     );
 
-    void client.start().then(async () => {
+    clientReady = client.start();
+    void clientReady.then(async () => {
         const traceSetting = config.get<string>('trace.server', 'off');
         await client.setTrace(traceSettingToProtocol(traceSetting));
         logLine(`Language client ready (trace=${traceSetting})`);
@@ -1596,6 +1598,7 @@ async function runAnalysis(
         : 'Analyzing traces and generating suggestions...');
 
     try {
+        await clientReady;
         const result = await runAsyncLspCommand<unknown>(
             rebuild ? 'BHA: Rebuilding and analyzing build performance' : 'BHA: Analyzing build performance',
             'bha.analyze',
@@ -1745,14 +1748,25 @@ async function cmdRecordBuildTracesAdvanced(): Promise<void> {
     await recordBuildTraces(true);
 }
 
-async function cmdAnalyzeProject(): Promise<void> {
+async function cmdAnalyzeProject(options?: {
+    buildDir?: string;
+    traceDir?: string;
+    buildProfile?: Omit<PersistedBuildProfile, 'projectRoot' | 'recordedAt'>;
+}): Promise<AnalysisResult | undefined> {
     const workspaceRoot = getWorkspaceRootPath();
-    const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : 'build');
+    if (workspaceRoot && options?.buildProfile) {
+        await persistBuildProfile(workspaceRoot, {
+            ...options.buildProfile,
+            projectRoot: workspaceRoot,
+            recordedAt: new Date().toISOString()
+        });
+    }
+    const buildDir = options?.buildDir ?? await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : 'build');
     if (buildDir === undefined) {
         return;
     }
-    const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : undefined;
-    await runAnalysis(buildDir || undefined, false, traceDir);
+    const traceDir = options?.traceDir ?? (workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : undefined);
+    return runAnalysis(buildDir || undefined, false, traceDir);
 }
 
 async function cmdShowSuggestions(): Promise<void> {
@@ -1786,7 +1800,7 @@ async function cmdShowSuggestions(): Promise<void> {
     }
 }
 
-async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Promise<void> {
+async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Promise<ApplyResult | undefined> {
     const operationId = generateOperationId('apply');
     let suggestionId = typeof suggestionIdOrItem === 'string'
         ? suggestionIdOrItem
@@ -1871,13 +1885,16 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
     }
     const suggestionFiles = collectSuggestionFiles(workspaceRoot, suggestionDetails) ?? [];
 
-    const confirm = await vscode.window.showWarningMessage(
-        'Apply this suggestion? This will modify your code.',
-        { modal: true },
-        'Apply'
-    );
-
-    if (confirm !== 'Apply') return;
+    const confirmBeforeApply = vscode.workspace.getConfiguration('buildHotspotAnalyzer')
+        .get<boolean>('confirmBeforeApply', true);
+    if (confirmBeforeApply) {
+        const confirm = await vscode.window.showWarningMessage(
+            'Apply this suggestion? This will modify your code.',
+            { modal: true },
+            'Apply'
+        );
+        if (confirm !== 'Apply') return;
+    }
     if (!(await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails]))) {
         return;
     }
@@ -1929,11 +1946,13 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
             const synchronizationSuffix = editorSynchronized
                 ? ''
                 : ' One or more open documents could not be synchronized; reload them before editing.';
-            const action = await (trustLoopSummary?.regressedOrFlat
-                ? vscode.window.showWarningMessage(message + synchronizationSuffix, 'OK', 'Revert')
-                : vscode.window.showInformationMessage(message + synchronizationSuffix, 'OK', 'Revert'));
-            if (action === 'Revert' && lastBackupId) {
-                await cmdRevertChanges();
+            if (confirmBeforeApply) {
+                const action = await (trustLoopSummary?.regressedOrFlat
+                    ? vscode.window.showWarningMessage(message + synchronizationSuffix, 'OK', 'Revert')
+                    : vscode.window.showInformationMessage(message + synchronizationSuffix, 'OK', 'Revert'));
+                if (action === 'Revert' && lastBackupId) {
+                    await cmdRevertChanges();
+                }
             }
         } else {
             bhaViewProvider?.setState(
@@ -1962,6 +1981,7 @@ async function cmdApplySuggestion(suggestionIdOrItem?: string | BhaTreeItem): Pr
                 `Failed to apply suggestion: ${errorMsgs.join(', ') || 'Unknown error'}.${rollbackSuffix}${synchronizationSuffix}`
             );
         }
+        return applyResult;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logLine(`Failed to apply suggestion: ${errorMessage}`);
@@ -2301,7 +2321,8 @@ async function cmdRestartServer(): Promise<void> {
         try {
             logLine('Restarting language server');
             await client.stop();
-            await client.start();
+            clientReady = client.start();
+            await clientReady;
             const traceSetting = vscode.workspace.getConfiguration('buildHotspotAnalyzer').get<string>('trace.server', 'off');
             await client.setTrace(traceSettingToProtocol(traceSetting));
             logLine(`Language server restarted (trace=${traceSetting})`);

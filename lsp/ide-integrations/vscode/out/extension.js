@@ -76,8 +76,8 @@ var require_is = __commonJS({
       if (value instanceof Promise) {
         return value;
       } else if (thenable(value)) {
-        return new Promise((resolve, reject) => {
-          value.then((resolved) => resolve(resolved), (error2) => reject(error2));
+        return new Promise((resolve2, reject) => {
+          value.then((resolved) => resolve2(resolved), (error2) => reject(error2));
         });
       } else {
         return Promise.resolve(value);
@@ -1088,8 +1088,8 @@ var require_semaphore = __commonJS({
         this._waiting = [];
       }
       lock(thunk) {
-        return new Promise((resolve, reject) => {
-          this._waiting.push({ thunk, resolve, reject });
+        return new Promise((resolve2, reject) => {
+          this._waiting.push({ thunk, resolve: resolve2, reject });
           this.runNext();
         });
       }
@@ -2579,9 +2579,9 @@ ${JSON.stringify(message, null, 4)}`);
           if (typeof cancellationStrategy.sender.enableCancellation === "function") {
             cancellationStrategy.sender.enableCancellation(requestMessage);
           }
-          return new Promise(async (resolve, reject) => {
+          return new Promise(async (resolve2, reject) => {
             const resolveWithCleanup = (r) => {
-              resolve(r);
+              resolve2(r);
               cancellationStrategy.sender.cleanup(id);
               disposable?.dispose();
             };
@@ -2992,10 +2992,10 @@ var require_ril = __commonJS({
         return api_1.Disposable.create(() => this.stream.off("end", listener));
       }
       write(data, encoding) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve2, reject) => {
           const callback = (error) => {
             if (error === void 0 || error === null) {
-              resolve();
+              resolve2();
             } else {
               reject(error);
             }
@@ -3247,10 +3247,10 @@ var require_main = __commonJS({
     exports2.generateRandomPipeName = generateRandomPipeName;
     function createClientPipeTransport(pipeName, encoding = "utf-8") {
       let connectResolve;
-      const connected = new Promise((resolve, _reject) => {
-        connectResolve = resolve;
+      const connected = new Promise((resolve2, _reject) => {
+        connectResolve = resolve2;
       });
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve2, reject) => {
         let server = (0, net_1.createServer)((socket) => {
           server.close();
           connectResolve([
@@ -3261,7 +3261,7 @@ var require_main = __commonJS({
         server.on("error", reject);
         server.listen(pipeName, () => {
           server.removeListener("error", reject);
-          resolve({
+          resolve2({
             onConnected: () => {
               return connected;
             }
@@ -3280,10 +3280,10 @@ var require_main = __commonJS({
     exports2.createServerPipeTransport = createServerPipeTransport;
     function createClientSocketTransport(port, encoding = "utf-8") {
       let connectResolve;
-      const connected = new Promise((resolve, _reject) => {
-        connectResolve = resolve;
+      const connected = new Promise((resolve2, _reject) => {
+        connectResolve = resolve2;
       });
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve2, reject) => {
         const server = (0, net_1.createServer)((socket) => {
           server.close();
           connectResolve([
@@ -3294,7 +3294,7 @@ var require_main = __commonJS({
         server.on("error", reject);
         server.listen(port, "127.0.0.1", () => {
           server.removeListener("error", reject);
-          resolve({
+          resolve2({
             onConnected: () => {
               return connected;
             }
@@ -3388,8 +3388,8 @@ var require_main2 = __commonJS({
         }
         uinteger2.is = is;
       })(uinteger || (exports3.uinteger = uinteger = {}));
-      var Position;
-      (function(Position2) {
+      var Position2;
+      (function(Position3) {
         function create(line, character) {
           if (line === Number.MAX_VALUE) {
             line = uinteger.MAX_VALUE;
@@ -3399,31 +3399,31 @@ var require_main2 = __commonJS({
           }
           return { line, character };
         }
-        Position2.create = create;
+        Position3.create = create;
         function is(value) {
           var candidate = value;
           return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
         }
-        Position2.is = is;
-      })(Position || (exports3.Position = Position = {}));
-      var Range;
-      (function(Range2) {
+        Position3.is = is;
+      })(Position2 || (exports3.Position = Position2 = {}));
+      var Range2;
+      (function(Range3) {
         function create(one, two, three, four) {
           if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
-            return { start: Position.create(one, two), end: Position.create(three, four) };
-          } else if (Position.is(one) && Position.is(two)) {
+            return { start: Position2.create(one, two), end: Position2.create(three, four) };
+          } else if (Position2.is(one) && Position2.is(two)) {
             return { start: one, end: two };
           } else {
             throw new Error("Range#create called with invalid arguments[".concat(one, ", ").concat(two, ", ").concat(three, ", ").concat(four, "]"));
           }
         }
-        Range2.create = create;
+        Range3.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
+          return Is.objectLiteral(candidate) && Position2.is(candidate.start) && Position2.is(candidate.end);
         }
-        Range2.is = is;
-      })(Range || (exports3.Range = Range = {}));
+        Range3.is = is;
+      })(Range2 || (exports3.Range = Range2 = {}));
       var Location;
       (function(Location2) {
         function create(uri, range) {
@@ -3432,7 +3432,7 @@ var require_main2 = __commonJS({
         Location2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
+          return Is.objectLiteral(candidate) && Range2.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
         }
         Location2.is = is;
       })(Location || (exports3.Location = Location = {}));
@@ -3444,7 +3444,7 @@ var require_main2 = __commonJS({
         LocationLink2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Range.is(candidate.targetRange) && Is.string(candidate.targetUri) && Range.is(candidate.targetSelectionRange) && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
+          return Is.objectLiteral(candidate) && Range2.is(candidate.targetRange) && Is.string(candidate.targetUri) && Range2.is(candidate.targetSelectionRange) && (Range2.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
         }
         LocationLink2.is = is;
       })(LocationLink || (exports3.LocationLink = LocationLink = {}));
@@ -3476,7 +3476,7 @@ var require_main2 = __commonJS({
         ColorInformation2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Range.is(candidate.range) && Color.is(candidate.color);
+          return Is.objectLiteral(candidate) && Range2.is(candidate.range) && Color.is(candidate.color);
         }
         ColorInformation2.is = is;
       })(ColorInformation || (exports3.ColorInformation = ColorInformation = {}));
@@ -3587,7 +3587,7 @@ var require_main2 = __commonJS({
         function is(value) {
           var _a;
           var candidate = value;
-          return Is.defined(candidate) && Range.is(candidate.range) && Is.string(candidate.message) && (Is.number(candidate.severity) || Is.undefined(candidate.severity)) && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code)) && (Is.undefined(candidate.codeDescription) || Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)) && (Is.string(candidate.source) || Is.undefined(candidate.source)) && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
+          return Is.defined(candidate) && Range2.is(candidate.range) && Is.string(candidate.message) && (Is.number(candidate.severity) || Is.undefined(candidate.severity)) && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code)) && (Is.undefined(candidate.codeDescription) || Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)) && (Is.string(candidate.source) || Is.undefined(candidate.source)) && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
         }
         Diagnostic2.is = is;
       })(Diagnostic || (exports3.Diagnostic = Diagnostic = {}));
@@ -3627,7 +3627,7 @@ var require_main2 = __commonJS({
         TextEdit2.del = del;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Is.string(candidate.newText) && Range.is(candidate.range);
+          return Is.objectLiteral(candidate) && Is.string(candidate.newText) && Range2.is(candidate.range);
         }
         TextEdit2.is = is;
       })(TextEdit || (exports3.TextEdit = TextEdit = {}));
@@ -3757,8 +3757,8 @@ var require_main2 = __commonJS({
         }
         DeleteFile2.is = is;
       })(DeleteFile || (exports3.DeleteFile = DeleteFile = {}));
-      var WorkspaceEdit;
-      (function(WorkspaceEdit2) {
+      var WorkspaceEdit2;
+      (function(WorkspaceEdit3) {
         function is(value) {
           var candidate = value;
           return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every(function(change) {
@@ -3769,8 +3769,8 @@ var require_main2 = __commonJS({
             }
           }));
         }
-        WorkspaceEdit2.is = is;
-      })(WorkspaceEdit || (exports3.WorkspaceEdit = WorkspaceEdit = {}));
+        WorkspaceEdit3.is = is;
+      })(WorkspaceEdit2 || (exports3.WorkspaceEdit = WorkspaceEdit2 = {}));
       var TextEditChangeImpl = (
         /** @class */
         (function() {
@@ -4171,7 +4171,7 @@ var require_main2 = __commonJS({
         InsertReplaceEdit2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+          return candidate && Is.string(candidate.newText) && Range2.is(candidate.insert) && Range2.is(candidate.replace);
         }
         InsertReplaceEdit2.is = is;
       })(InsertReplaceEdit || (exports3.InsertReplaceEdit = InsertReplaceEdit = {}));
@@ -4218,7 +4218,7 @@ var require_main2 = __commonJS({
       (function(Hover2) {
         function is(value) {
           var candidate = value;
-          return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) || MarkedString.is(candidate.contents) || Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
+          return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) || MarkedString.is(candidate.contents) || Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range2.is(value.range));
         }
         Hover2.is = is;
       })(Hover || (exports3.Hover = Hover = {}));
@@ -4339,7 +4339,7 @@ var require_main2 = __commonJS({
         DocumentSymbol2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is.string(candidate.name) && Is.number(candidate.kind) && Range.is(candidate.range) && Range.is(candidate.selectionRange) && (candidate.detail === void 0 || Is.string(candidate.detail)) && (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
+          return candidate && Is.string(candidate.name) && Is.number(candidate.kind) && Range2.is(candidate.range) && Range2.is(candidate.selectionRange) && (candidate.detail === void 0 || Is.string(candidate.detail)) && (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
         }
         DocumentSymbol2.is = is;
       })(DocumentSymbol || (exports3.DocumentSymbol = DocumentSymbol = {}));
@@ -4400,7 +4400,7 @@ var require_main2 = __commonJS({
         CodeAction2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is.string(candidate.title) && (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) && (candidate.kind === void 0 || Is.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command.is(candidate.command)) && (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
+          return candidate && Is.string(candidate.title) && (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) && (candidate.kind === void 0 || Is.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command.is(candidate.command)) && (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit2.is(candidate.edit));
         }
         CodeAction2.is = is;
       })(CodeAction || (exports3.CodeAction = CodeAction = {}));
@@ -4416,7 +4416,7 @@ var require_main2 = __commonJS({
         CodeLens2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
+          return Is.defined(candidate) && Range2.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
         }
         CodeLens2.is = is;
       })(CodeLens || (exports3.CodeLens = CodeLens = {}));
@@ -4440,7 +4440,7 @@ var require_main2 = __commonJS({
         DocumentLink2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
+          return Is.defined(candidate) && Range2.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
         }
         DocumentLink2.is = is;
       })(DocumentLink || (exports3.DocumentLink = DocumentLink = {}));
@@ -4452,7 +4452,7 @@ var require_main2 = __commonJS({
         SelectionRange2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === void 0 || SelectionRange2.is(candidate.parent));
+          return Is.objectLiteral(candidate) && Range2.is(candidate.range) && (candidate.parent === void 0 || SelectionRange2.is(candidate.parent));
         }
         SelectionRange2.is = is;
       })(SelectionRange || (exports3.SelectionRange = SelectionRange = {}));
@@ -4511,7 +4511,7 @@ var require_main2 = __commonJS({
         InlineValueText2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.string(candidate.text);
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is.string(candidate.text);
         }
         InlineValueText2.is = is;
       })(InlineValueText || (exports3.InlineValueText = InlineValueText = {}));
@@ -4523,7 +4523,7 @@ var require_main2 = __commonJS({
         InlineValueVariableLookup2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.boolean(candidate.caseSensitiveLookup) && (Is.string(candidate.variableName) || candidate.variableName === void 0);
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is.boolean(candidate.caseSensitiveLookup) && (Is.string(candidate.variableName) || candidate.variableName === void 0);
         }
         InlineValueVariableLookup2.is = is;
       })(InlineValueVariableLookup || (exports3.InlineValueVariableLookup = InlineValueVariableLookup = {}));
@@ -4535,7 +4535,7 @@ var require_main2 = __commonJS({
         InlineValueEvaluatableExpression2.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && (Is.string(candidate.expression) || candidate.expression === void 0);
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && (Is.string(candidate.expression) || candidate.expression === void 0);
         }
         InlineValueEvaluatableExpression2.is = is;
       })(InlineValueEvaluatableExpression || (exports3.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression = {}));
@@ -4547,7 +4547,7 @@ var require_main2 = __commonJS({
         InlineValueContext2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.defined(candidate) && Range.is(value.stoppedLocation);
+          return Is.defined(candidate) && Range2.is(value.stoppedLocation);
         }
         InlineValueContext2.is = is;
       })(InlineValueContext || (exports3.InlineValueContext = InlineValueContext = {}));
@@ -4584,7 +4584,7 @@ var require_main2 = __commonJS({
         InlayHint2.create = create;
         function is(value) {
           var candidate = value;
-          return Is.objectLiteral(candidate) && Position.is(candidate.position) && (Is.string(candidate.label) || Is.typedArray(candidate.label, InlayHintLabelPart.is)) && (candidate.kind === void 0 || InlayHintKind.is(candidate.kind)) && candidate.textEdits === void 0 || Is.typedArray(candidate.textEdits, TextEdit.is) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is.boolean(candidate.paddingRight));
+          return Is.objectLiteral(candidate) && Position2.is(candidate.position) && (Is.string(candidate.label) || Is.typedArray(candidate.label, InlayHintLabelPart.is)) && (candidate.kind === void 0 || InlayHintKind.is(candidate.kind)) && candidate.textEdits === void 0 || Is.typedArray(candidate.textEdits, TextEdit.is) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is.boolean(candidate.paddingRight));
         }
         InlayHint2.is = is;
       })(InlayHint || (exports3.InlayHint = InlayHint = {}));
@@ -4773,7 +4773,7 @@ var require_main2 = __commonJS({
             var lineOffsets = this.getLineOffsets();
             var low = 0, high = lineOffsets.length;
             if (high === 0) {
-              return Position.create(0, offset);
+              return Position2.create(0, offset);
             }
             while (low < high) {
               var mid = Math.floor((low + high) / 2);
@@ -4784,7 +4784,7 @@ var require_main2 = __commonJS({
               }
             }
             var line = low - 1;
-            return Position.create(line, offset - lineOffsets[line]);
+            return Position2.create(line, offset - lineOffsets[line]);
           };
           FullTextDocument2.prototype.offsetAt = function(position) {
             var lineOffsets = this.getLineOffsets();
@@ -6390,8 +6390,8 @@ var require_async = __commonJS({
           this.cancelTimeout();
         }
         if (!this.completionPromise) {
-          this.completionPromise = new Promise((resolve) => {
-            this.onSuccess = resolve;
+          this.completionPromise = new Promise((resolve2) => {
+            this.onSuccess = resolve2;
           }).then(() => {
             this.completionPromise = void 0;
             this.onSuccess = void 0;
@@ -6444,8 +6444,8 @@ var require_async = __commonJS({
         this._waiting = [];
       }
       lock(thunk) {
-        return new Promise((resolve, reject) => {
-          this._waiting.push({ thunk, resolve, reject });
+        return new Promise((resolve2, reject) => {
+          this._waiting.push({ thunk, resolve: resolve2, reject });
           this.runNext();
         });
       }
@@ -6560,9 +6560,9 @@ var require_async = __commonJS({
         if (token !== void 0 && token.isCancellationRequested) {
           break;
         }
-        index = await new Promise((resolve) => {
+        index = await new Promise((resolve2) => {
           (0, vscode_languageserver_protocol_1.RAL)().timer.setImmediate(() => {
-            resolve(convertBatch(index));
+            resolve2(convertBatch(index));
           });
         });
       }
@@ -6591,9 +6591,9 @@ var require_async = __commonJS({
         if (token !== void 0 && token.isCancellationRequested) {
           break;
         }
-        index = await new Promise((resolve) => {
+        index = await new Promise((resolve2) => {
           (0, vscode_languageserver_protocol_1.RAL)().timer.setImmediate(() => {
-            resolve(convertBatch(index));
+            resolve2(convertBatch(index));
           });
         });
       }
@@ -6621,9 +6621,9 @@ var require_async = __commonJS({
         if (token !== void 0 && token.isCancellationRequested) {
           break;
         }
-        index = await new Promise((resolve) => {
+        index = await new Promise((resolve2) => {
           (0, vscode_languageserver_protocol_1.RAL)().timer.setImmediate(() => {
-            resolve(runBatch(index));
+            resolve2(runBatch(index));
           });
         });
       }
@@ -8867,8 +8867,8 @@ var require_progressPart = __commonJS({
             this._client.sendNotification(vscode_languageserver_protocol_1.WorkDoneProgressCancelNotification.type, { token: this._token });
           });
           this.report(params);
-          return new Promise((resolve, reject) => {
-            this._resolve = resolve;
+          return new Promise((resolve2, reject) => {
+            this._resolve = resolve2;
             this._reject = reject;
           });
         });
@@ -15367,7 +15367,7 @@ var require_client = __commonJS({
         if (this._onStart !== void 0) {
           return this._onStart;
         }
-        const [promise, resolve, reject] = this.createOnStartPromise();
+        const [promise, resolve2, reject] = this.createOnStartPromise();
         this._onStart = promise;
         if (this._diagnostics === void 0) {
           this._diagnostics = this._clientOptions.diagnosticCollectionName ? vscode_1.languages.createDiagnosticCollection(this._clientOptions.diagnosticCollectionName) : vscode_1.languages.createDiagnosticCollection();
@@ -15477,7 +15477,7 @@ var require_client = __commonJS({
           });
           connection.listen();
           await this.initialize(connection);
-          resolve();
+          resolve2();
         } catch (error) {
           this.$state = ClientState.StartFailed;
           this.error(`${this._name} client: couldn't create connection to server.`, error, "force");
@@ -15486,13 +15486,13 @@ var require_client = __commonJS({
         return this._onStart;
       }
       createOnStartPromise() {
-        let resolve;
+        let resolve2;
         let reject;
         const promise = new Promise((_resolve, _reject) => {
-          resolve = _resolve;
+          resolve2 = _resolve;
           reject = _reject;
         });
-        return [promise, resolve, reject];
+        return [promise, resolve2, reject];
       }
       async initialize(connection) {
         this.refreshTrace(connection, false);
@@ -16997,12 +16997,12 @@ var require_comparator = __commonJS({
           if (this.value === "") {
             return true;
           }
-          return new Range(comp.value, options).test(this.value);
+          return new Range2(comp.value, options).test(this.value);
         } else if (comp.operator === "") {
           if (comp.value === "") {
             return true;
           }
-          return new Range(this.value, options).test(comp.semver);
+          return new Range2(this.value, options).test(comp.semver);
         }
         options = parseOptions(options);
         if (options.includePrerelease && (this.value === "<0.0.0-0" || comp.value === "<0.0.0-0")) {
@@ -17035,7 +17035,7 @@ var require_comparator = __commonJS({
     var cmp = require_cmp();
     var debug = require_debug();
     var SemVer = require_semver();
-    var Range = require_range();
+    var Range2 = require_range();
   }
 });
 
@@ -17044,7 +17044,7 @@ var require_range = __commonJS({
   "node_modules/semver/classes/range.js"(exports2, module2) {
     "use strict";
     var SPACE_CHARACTERS = /\s+/g;
-    var Range = class _Range {
+    var Range2 = class _Range {
       constructor(range, options) {
         options = parseOptions(options);
         if (range instanceof _Range) {
@@ -17182,7 +17182,7 @@ var require_range = __commonJS({
         return false;
       }
     };
-    module2.exports = Range;
+    module2.exports = Range2;
     var LRU = require_lrucache();
     var cache = new LRU();
     var parseOptions = require_parse_options();
@@ -17420,10 +17420,10 @@ var require_range = __commonJS({
 var require_satisfies = __commonJS({
   "node_modules/semver/functions/satisfies.js"(exports2, module2) {
     "use strict";
-    var Range = require_range();
+    var Range2 = require_range();
     var satisfies = (version, range, options) => {
       try {
-        range = new Range(range, options);
+        range = new Range2(range, options);
       } catch (er) {
         return false;
       }
@@ -17602,7 +17602,7 @@ var require_main4 = __commonJS({
       async restart() {
         await this.stop();
         if (this.isInDebugMode) {
-          await new Promise((resolve) => setTimeout(resolve, 1e3));
+          await new Promise((resolve2) => setTimeout(resolve2, 1e3));
           await this.start();
         } else {
           await this.start();
@@ -17785,7 +17785,7 @@ var require_main4 = __commonJS({
               }
             } else {
               let pipeName = void 0;
-              return new Promise((resolve, reject) => {
+              return new Promise((resolve2, reject) => {
                 const args = (node.args && node.args.slice()) ?? [];
                 if (transport === TransportKind2.ipc) {
                   args.push("--node-ipc");
@@ -17810,9 +17810,9 @@ var require_main4 = __commonJS({
                   sp.stderr.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
                   if (transport === TransportKind2.ipc) {
                     sp.stdout.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
-                    resolve({ reader: new node_1.IPCMessageReader(this._serverProcess), writer: new node_1.IPCMessageWriter(this._serverProcess) });
+                    resolve2({ reader: new node_1.IPCMessageReader(this._serverProcess), writer: new node_1.IPCMessageWriter(this._serverProcess) });
                   } else {
-                    resolve({ reader: new node_1.StreamMessageReader(sp.stdout), writer: new node_1.StreamMessageWriter(sp.stdin) });
+                    resolve2({ reader: new node_1.StreamMessageReader(sp.stdout), writer: new node_1.StreamMessageWriter(sp.stdin) });
                   }
                 } else if (transport === TransportKind2.pipe) {
                   (0, node_1.createClientPipeTransport)(pipeName).then((transport2) => {
@@ -17822,7 +17822,7 @@ var require_main4 = __commonJS({
                     sp.stderr.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
                     sp.stdout.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
                     transport2.onConnected().then((protocol) => {
-                      resolve({ reader: protocol[0], writer: protocol[1] });
+                      resolve2({ reader: protocol[0], writer: protocol[1] });
                     }, reject);
                   }, reject);
                 } else if (Transport.isSocket(transport)) {
@@ -17833,7 +17833,7 @@ var require_main4 = __commonJS({
                     sp.stderr.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
                     sp.stdout.on("data", (data) => this.outputChannel.append(Is.string(data) ? data : data.toString(encoding)));
                     transport2.onConnected().then((protocol) => {
-                      resolve({ reader: protocol[0], writer: protocol[1] });
+                      resolve2({ reader: protocol[0], writer: protocol[1] });
                     }, reject);
                   }, reject);
                 }
@@ -18180,6 +18180,7 @@ function resolveAnalysisBuildTiming(result) {
   return { totalBuildTimeMs, source };
 }
 var client;
+var clientReady;
 var lastBackupId;
 var outputChannel;
 var traceOutputChannel;
@@ -18261,6 +18262,9 @@ var BhaTreeDataProvider = class {
     this.state = "ready";
     this.stateDetail = this.result.suggestions.length === 0 ? "Analysis completed without actionable suggestions." : "Analysis completed; review the evidence before applying changes.";
     this.changeEmitter.fire();
+  }
+  getAnalysisId() {
+    return this.result?.analysisId;
   }
   async refresh() {
     if (this.refreshing || !client) {
@@ -18756,7 +18760,8 @@ function activate(context) {
     vscode.commands.registerCommand("buildHotspotAnalyzer.refreshView", () => bhaViewProvider?.refresh()),
     vscode.commands.registerCommand("buildHotspotAnalyzer.previewSuggestion", cmdPreviewSuggestion)
   );
-  void client.start().then(async () => {
+  clientReady = client.start();
+  void clientReady.then(async () => {
     const traceSetting = config.get("trace.server", "off");
     await client.setTrace(traceSettingToProtocol(traceSetting));
     logLine(`Language client ready (trace=${traceSetting})`);
@@ -18808,7 +18813,7 @@ async function withBhaProgress(title, cancellable, task) {
   );
 }
 async function delay(ms) {
-  await new Promise((resolve) => setTimeout(resolve, ms));
+  await new Promise((resolve2) => setTimeout(resolve2, ms));
 }
 async function runAsyncLspCommand(title, command, argumentsPayload, startedMessage) {
   const accepted = await client.sendRequest("workspace/executeCommand", {
@@ -18822,7 +18827,7 @@ async function runAsyncLspCommand(title, command, argumentsPayload, startedMessa
   let cancelRequested = false;
   return withBhaProgress(title, true, async (progress, token) => {
     progress.report({ message: startedMessage });
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve2, reject) => {
       let finished = false;
       const onCancel = async () => {
         if (cancelRequested || finished) {
@@ -18858,7 +18863,7 @@ async function runAsyncLspCommand(title, command, argumentsPayload, startedMessa
             progress.report({ message: cancelRequested ? "Cancelling..." : "Running..." });
           } else if (status === "completed") {
             finished = true;
-            resolve(result);
+            resolve2(result);
             return;
           } else if (status === "cancelled") {
             finished = true;
@@ -19112,6 +19117,7 @@ async function runAnalysis(buildDir, rebuild, traceDir) {
   const operationId = generateOperationId(rebuild ? "build-and-analyze" : "analyze");
   bhaViewProvider?.setState("analyzing", rebuild ? "Rebuilding and analyzing build performance..." : "Analyzing traces and generating suggestions...");
   try {
+    await clientReady;
     const result = await runAsyncLspCommand(
       rebuild ? "BHA: Rebuilding and analyzing build performance" : "BHA: Analyzing build performance",
       "bha.analyze",
@@ -19248,14 +19254,21 @@ async function cmdRecordBuildTraces() {
 async function cmdRecordBuildTracesAdvanced() {
   await recordBuildTraces(true);
 }
-async function cmdAnalyzeProject() {
+async function cmdAnalyzeProject(options) {
   const workspaceRoot = getWorkspaceRootPath();
-  const buildDir = await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : "build");
+  if (workspaceRoot && options?.buildProfile) {
+    await persistBuildProfile(workspaceRoot, {
+      ...options.buildProfile,
+      projectRoot: workspaceRoot,
+      recordedAt: (/* @__PURE__ */ new Date()).toISOString()
+    });
+  }
+  const buildDir = options?.buildDir ?? await promptForBuildDir(workspaceRoot ? getWorkspaceBuildDir(workspaceRoot) : "build");
   if (buildDir === void 0) {
     return;
   }
-  const traceDir = workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : void 0;
-  await runAnalysis(buildDir || void 0, false, traceDir);
+  const traceDir = options?.traceDir ?? (workspaceRoot ? lastTraceDirByWorkspace.get(workspaceRoot) : void 0);
+  return runAnalysis(buildDir || void 0, false, traceDir);
 }
 async function cmdShowSuggestions() {
   try {
@@ -19287,6 +19300,7 @@ async function cmdShowSuggestions() {
 async function cmdApplySuggestion(suggestionIdOrItem) {
   const operationId = generateOperationId("apply");
   let suggestionId = typeof suggestionIdOrItem === "string" ? suggestionIdOrItem : suggestionIdOrItem?.suggestionId;
+  let analysisId;
   if (!suggestionId) {
     const result = await client.sendRequest("workspace/executeCommand", {
       command: "bha.showMetrics",
@@ -19296,6 +19310,7 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
       vscode.window.showInformationMessage("No suggestions available");
       return;
     }
+    analysisId = result.analysisId;
     const validSuggestions = result.suggestions.filter(isValidSuggestion);
     if (validSuggestions.length === 0) {
       vscode.window.showInformationMessage("No valid suggestions available");
@@ -19331,27 +19346,54 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
     vscode.window.showErrorMessage("Invalid suggestion ID");
     return;
   }
-  const confirm = await vscode.window.showWarningMessage(
-    "Apply this suggestion? This will modify your code.",
-    { modal: true },
-    "Apply"
-  );
-  if (confirm !== "Apply") return;
+  const workspaceRoot = getWorkspaceRootPath();
+  if (!workspaceRoot) {
+    vscode.window.showErrorMessage("BHA: A workspace is required to apply a suggestion.");
+    return;
+  }
+  analysisId ??= bhaViewProvider?.getAnalysisId();
+  const suggestionDetails = await fetchSuggestionDetails(suggestionId);
+  if (!suggestionDetails) {
+    logLine(`Apply blocked: details unavailable for suggestion ${suggestionId}`);
+    vscode.window.showErrorMessage(
+      `Cannot apply suggestion ${suggestionId}: details are unavailable. Re-run analysis before applying.`
+    );
+    return;
+  }
+  if (!await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails])) {
+    return;
+  }
+  const suggestionFiles = collectSuggestionFiles(workspaceRoot, suggestionDetails) ?? [];
+  const confirmBeforeApply = vscode.workspace.getConfiguration("buildHotspotAnalyzer").get("confirmBeforeApply", true);
+  if (confirmBeforeApply) {
+    const confirm = await vscode.window.showWarningMessage(
+      "Apply this suggestion? This will modify your code.",
+      { modal: true },
+      "Apply"
+    );
+    if (confirm !== "Apply") return;
+  }
+  if (!await ensureNoDirtyAffectedDocuments(workspaceRoot, [suggestionDetails])) {
+    return;
+  }
   try {
     logLine(`Applying suggestion: id=${suggestionId}`);
     bhaViewProvider?.setState("applying", "Applying the selected suggestion...");
-    const workspaceRoot = getWorkspaceRootPath();
-    const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : void 0;
+    const buildProfile = getReusableBuildProfile(workspaceRoot);
     const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestion",
       "bha.applySuggestion",
-      { suggestionId, operationId, buildProfile },
+      { suggestionId, analysisId, operationId, buildProfile },
       "Applying edits and validating result..."
     );
     if (!isValidApplyResult(applyResult)) {
       logLine("Apply suggestion returned an invalid result");
       vscode.window.showErrorMessage("Apply returned invalid result");
       return;
+    }
+    const editorSynchronized = applyResult.success || applyResult.rollback?.success === true ? await refreshOpenDocumentsFromDisk(suggestionFiles) : true;
+    if (!editorSynchronized) {
+      logLine("Suggestion applied but one or more open documents could not be synchronized with disk");
     }
     if (applyResult.backupId && workspaceRoot) {
       await persistLastBackupId(workspaceRoot, applyResult.backupId);
@@ -19370,9 +19412,12 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
         `Suggestion applied successfully: id=${suggestionId}, changedFiles=${numFiles}, backupId=${applyResult.backupId ?? "<none>"}${trustLoopSummary ? trustLoopSummary.logSuffix : ""}`
       );
       const message = trustLoopSummary ? `Suggestion applied successfully. Modified ${numFiles} files. ${trustLoopSummary.message}` : `Suggestion applied successfully. Modified ${numFiles} files.`;
-      const action = await (trustLoopSummary?.regressedOrFlat ? vscode.window.showWarningMessage(message, "OK", "Revert") : vscode.window.showInformationMessage(message, "OK", "Revert"));
-      if (action === "Revert" && lastBackupId) {
-        await cmdRevertChanges();
+      const synchronizationSuffix = editorSynchronized ? "" : " One or more open documents could not be synchronized; reload them before editing.";
+      if (confirmBeforeApply) {
+        const action = await (trustLoopSummary?.regressedOrFlat ? vscode.window.showWarningMessage(message + synchronizationSuffix, "OK", "Revert") : vscode.window.showInformationMessage(message + synchronizationSuffix, "OK", "Revert"));
+        if (action === "Revert" && lastBackupId) {
+          await cmdRevertChanges();
+        }
       }
     } else {
       bhaViewProvider?.setState(
@@ -19387,11 +19432,13 @@ async function cmdApplySuggestion(suggestionIdOrItem) {
         rollback?.attempted && rollback.success ? "Validation failed; the workspace was restored." : errorMsgs.join("; ") || "No validation result was available."
       );
       const rollbackSuffix = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
+      const synchronizationSuffix = editorSynchronized ? "" : " Open documents could not be synchronized with disk.";
       logLine(`Apply suggestion failed: id=${suggestionId}, errors=${errorMsgs.join("; ") || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
-        `Failed to apply suggestion: ${errorMsgs.join(", ") || "Unknown error"}.${rollbackSuffix}`
+        `Failed to apply suggestion: ${errorMsgs.join(", ") || "Unknown error"}.${rollbackSuffix}${synchronizationSuffix}`
       );
     }
+    return applyResult;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logLine(`Failed to apply suggestion: ${errorMessage}`);
@@ -19410,6 +19457,7 @@ async function cmdApplyAllSuggestions() {
     vscode.window.showInformationMessage("No suggestions available to apply");
     return;
   }
+  const analysisId = result.analysisId ?? bhaViewProvider?.getAnalysisId();
   const validSuggestions = result.suggestions.filter(isValidSuggestion);
   if (validSuggestions.length === 0) {
     vscode.window.showInformationMessage("No valid suggestions available");
@@ -19437,59 +19485,87 @@ async function cmdApplyAllSuggestions() {
       safeOnly = true;
       break;
   }
-  const affectedCount = validSuggestions.filter((s) => {
+  const selectedSuggestions = validSuggestions.filter((s) => {
     if (!hasBulkApplyPath(s)) return false;
     if (safeOnly && !s.autoApplicable) return false;
     return s.priority <= minPriority;
-  }).length;
+  });
+  const affectedCount = selectedSuggestions.length;
   if (affectedCount === 0) {
     logLine("Apply all aborted: no suggestions matched selected criteria");
     vscode.window.showInformationMessage("No suggestions match the selected criteria");
     return;
   }
-  const modeChoice = await vscode.window.showWarningMessage(
+  const workspaceRoot = getWorkspaceRootPath();
+  if (!workspaceRoot) {
+    vscode.window.showErrorMessage("BHA: A workspace is required to apply suggestions.");
+    return;
+  }
+  const selectedDetails = await Promise.all(
+    selectedSuggestions.map((suggestion) => fetchSuggestionDetails(suggestion.id))
+  );
+  if (selectedDetails.some((details) => details === void 0)) {
+    logLine("Apply all blocked: details unavailable for one or more selected suggestions");
+    vscode.window.showErrorMessage(
+      "Cannot apply all suggestions: details are unavailable for one or more selections. Re-run analysis before applying."
+    );
+    return;
+  }
+  const completeSelectedDetails = selectedDetails;
+  if (!await ensureNoDirtyAffectedDocuments(workspaceRoot, completeSelectedDetails)) {
+    return;
+  }
+  const selectedFiles = [...new Set(
+    completeSelectedDetails.flatMap((details) => collectSuggestionFiles(workspaceRoot, details) ?? [])
+  )];
+  const confirmation = await vscode.window.showWarningMessage(
     `Apply ${affectedCount} suggestions? This will modify your code. A backup will be created for rollback.`,
     {
       modal: true,
-      detail: "Keep successful edits is recommended for bulk apply. Atomic apply rolls back everything if rebuild validation fails."
+      detail: "The operation is transactional: if rebuild validation fails, all edits are rolled back."
     },
-    "Keep Successful Edits",
-    "Atomic Apply"
+    "Apply All",
+    "Cancel"
   );
-  if (!modeChoice) return;
-  const atomic = modeChoice === "Atomic Apply";
+  if (confirmation !== "Apply All") return;
+  if (!await ensureNoDirtyAffectedDocuments(workspaceRoot, completeSelectedDetails)) {
+    return;
+  }
   try {
     logLine(
-      `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}, atomic=${atomic}`
+      `Applying suggestions in bulk: affectedCount=${affectedCount}, safeOnly=${safeOnly}, minPriority=${minPriority}`
     );
     bhaViewProvider?.setState("applying", "Applying selected suggestions and validating the result...");
     bhaViewProvider?.setOperationStatus(
       "Bulk apply planned",
-      `${affectedCount} suggestion(s) selected by the current filter; ${atomic ? "atomic" : "fault-isolating"} validation requested.`,
+      `${affectedCount} suggestion(s) selected by the current filter; transactional validation requested.`,
       [
         `Selection filter: ${filterChoice.label}`,
         `Safe-only: ${safeOnly ? "yes" : "no"}`,
-        `Validation mode: ${atomic ? "atomic rollback" : "keep valid edits with fault isolation"}`
+        "Validation mode: transactional rollback"
       ]
     );
-    const workspaceRoot = getWorkspaceRootPath();
-    const buildProfile = workspaceRoot ? getReusableBuildProfile(workspaceRoot) : void 0;
+    const buildProfile = getReusableBuildProfile(workspaceRoot);
     const applyResult = await runAsyncLspCommand(
       "BHA: Applying suggestions",
       "bha.applyAllSuggestions",
       {
         minPriority,
         safeOnly,
-        atomic,
+        analysisId,
         operationId,
         buildProfile
       },
-      atomic ? "Applying edits and validating atomically..." : "Applying edits, isolating failures, and validating survivors..."
+      "Applying edits and validating transactionally..."
     );
     if (!isValidApplyAllResult(applyResult)) {
       logLine("Apply all returned an invalid result");
       vscode.window.showErrorMessage("Apply all returned invalid result");
       return;
+    }
+    const editorSynchronized = applyResult.success || applyResult.rollback?.success === true ? await refreshOpenDocumentsFromDisk(selectedFiles) : true;
+    if (!editorSynchronized) {
+      logLine("Bulk apply completed but one or more open documents could not be synchronized with disk");
     }
     if (applyResult.backupId && workspaceRoot) {
       await persistLastBackupId(workspaceRoot, applyResult.backupId);
@@ -19508,6 +19584,7 @@ async function cmdApplyAllSuggestions() {
         `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${applyResult.failedCount}.`,
         `Validation: ${validation?.ran ? validation.success ? "passed" : "failed" : "not run"}.`,
         `Rollback: ${applyResult.rollback?.attempted ? applyResult.rollback.success ? "succeeded" : "failed" : "not required"}`,
+        `Editor synchronization: ${editorSynchronized ? "complete" : "incomplete; reload affected documents"}.`,
         ...appliedIds.length > 0 ? [`Applied IDs: ${appliedIds.join(", ")}`] : [],
         ...errors.slice(0, 6).map((error) => safeGetString(error?.message, "Unknown apply warning"))
       ];
@@ -19528,6 +19605,9 @@ async function cmdApplyAllSuggestions() {
       }
       if (trustLoopSummary) {
         message += ` ${trustLoopSummary.message}`;
+      }
+      if (!editorSynchronized) {
+        message += " One or more open documents could not be synchronized; reload them before editing.";
       }
       const action = await (hasWarnings ? vscode.window.showWarningMessage(message, "OK", "Revert All") : trustLoopSummary?.regressedOrFlat ? vscode.window.showWarningMessage(message, "OK", "Revert All") : vscode.window.showInformationMessage(message, "OK", "Revert All"));
       if (action === "Revert All" && lastBackupId) {
@@ -19557,13 +19637,14 @@ async function cmdApplyAllSuggestions() {
           `Applied: ${applyResult.appliedCount}; skipped: ${applyResult.skippedCount}; failed: ${failedCount}.`,
           `Validation: ${validation?.ran ? validation.success ? "passed" : "failed" : "not run"}.`,
           `Rollback: ${rollback?.attempted ? rollback.success ? "succeeded" : "failed" : "not required"}`,
+          `Editor synchronization: ${editorSynchronized ? "complete" : "incomplete; reload affected documents"}.`,
           ...errors.slice(0, 8).map((error) => safeGetString(error?.message, "Unknown apply error"))
         ]
       );
       const rollbackDetails = rollback?.attempted ? ` Rollback ${rollback.success ? "succeeded" : "failed"} (${safeGetString(rollback.reason, "unknown")}).` : "";
       logLine(`Apply all failed: failed=${failedCount}, errors=${errorDetails || "unknown"}, rollback=${rollback?.attempted ? safeGetString(rollback.reason, "unknown") : "not-attempted"}`);
       vscode.window.showErrorMessage(
-        `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}`
+        `Apply all failed: ${failedCount} errors. ${errorDetails}.${rollbackDetails}${editorSynchronized ? "" : " Open documents could not be synchronized with disk."}`
       );
     }
   } catch (error) {
@@ -19645,7 +19726,8 @@ async function cmdRestartServer() {
     try {
       logLine("Restarting language server");
       await client.stop();
-      await client.start();
+      clientReady = client.start();
+      await clientReady;
       const traceSetting = vscode.workspace.getConfiguration("buildHotspotAnalyzer").get("trace.server", "off");
       await client.setTrace(traceSettingToProtocol(traceSetting));
       logLine(`Language server restarted (trace=${traceSetting})`);
@@ -19682,6 +19764,113 @@ function resolveSuggestionFilePath(workspaceRoot, candidate) {
     }
   }
   return normalizeWorkspaceRelativePath(workspaceRoot, trimmed);
+}
+function normalizeLocalPath(filePath) {
+  const normalized = path.normalize(path.resolve(filePath));
+  return process.platform === "win32" ? normalized.toLowerCase() : normalized;
+}
+function collectSuggestionFiles(workspaceRoot, details) {
+  const candidates = [];
+  for (const files2 of [details.filesToModify, details.filesToCreate]) {
+    if (files2 !== void 0) {
+      if (!Array.isArray(files2)) {
+        return void 0;
+      }
+      candidates.push(...files2);
+    }
+  }
+  if (details.textEdits !== void 0) {
+    if (!Array.isArray(details.textEdits)) {
+      return void 0;
+    }
+    candidates.push(...details.textEdits.map((edit) => edit?.file));
+  }
+  if (candidates.length === 0) {
+    return void 0;
+  }
+  const files = /* @__PURE__ */ new Set();
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string") {
+      return void 0;
+    }
+    const resolved = resolveSuggestionFilePath(workspaceRoot, candidate);
+    if (!resolved) {
+      return void 0;
+    }
+    files.add(normalizeLocalPath(resolved));
+  }
+  return [...files].sort();
+}
+async function ensureNoDirtyAffectedDocuments(workspaceRoot, suggestionDetails) {
+  const affectedFiles = /* @__PURE__ */ new Set();
+  for (const details of suggestionDetails) {
+    const files = collectSuggestionFiles(workspaceRoot, details);
+    if (!files) {
+      logLine(`Apply blocked: suggestion ${details.id} has incomplete affected-file metadata`);
+      await vscode.window.showErrorMessage(
+        `Cannot apply suggestion ${details.id}: affected files could not be determined. Re-run analysis before applying.`
+      );
+      return false;
+    }
+    for (const file of files) {
+      affectedFiles.add(file);
+    }
+  }
+  const dirtyDocuments = vscode.workspace.textDocuments.filter(
+    (document) => document.uri.scheme === "file" && document.isDirty && affectedFiles.has(normalizeLocalPath(document.uri.fsPath))
+  );
+  if (dirtyDocuments.length === 0) {
+    return true;
+  }
+  const dirtyFiles = dirtyDocuments.map((document) => vscode.workspace.asRelativePath(document.uri, false)).sort();
+  const fileList = dirtyFiles.join(", ");
+  logLine(`Apply blocked: affected files have unsaved editor changes: ${fileList}`);
+  await vscode.window.showErrorMessage(
+    `Cannot apply while affected files have unsaved changes: ${fileList}. Save or discard those changes, then re-run analysis.`
+  );
+  return false;
+}
+async function refreshOpenDocumentsFromDisk(filePaths) {
+  const affectedFiles = new Set(filePaths.map(normalizeLocalPath));
+  let synchronized = true;
+  for (const document of vscode.workspace.textDocuments) {
+    if (document.uri.scheme !== "file" || !affectedFiles.has(normalizeLocalPath(document.uri.fsPath))) {
+      continue;
+    }
+    if (document.isDirty) {
+      logLine(`Editor synchronization skipped for dirty document: ${document.uri.fsPath}`);
+      synchronized = false;
+      continue;
+    }
+    let diskContent;
+    try {
+      diskContent = fs.readFileSync(document.uri.fsPath, "utf8");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logLine(`Editor synchronization failed for ${document.uri.fsPath}: ${errorMessage}`);
+      synchronized = false;
+      continue;
+    }
+    if (document.getText() === diskContent) {
+      continue;
+    }
+    const workspaceEdit = new vscode.WorkspaceEdit();
+    const fullDocumentRange = new vscode.Range(
+      new vscode.Position(0, 0),
+      document.positionAt(document.getText().length)
+    );
+    workspaceEdit.replace(document.uri, fullDocumentRange, diskContent);
+    if (!await vscode.workspace.applyEdit(workspaceEdit)) {
+      logLine(`Editor synchronization rejected for ${document.uri.fsPath}`);
+      synchronized = false;
+      continue;
+    }
+    if (!await document.save()) {
+      logLine(`Editor synchronization could not save ${document.uri.fsPath}`);
+      synchronized = false;
+    }
+  }
+  return synchronized;
 }
 function lineColumnToOffset(content, line, column) {
   if (!Number.isInteger(line) || !Number.isInteger(column) || line < 0 || column < 0) {
