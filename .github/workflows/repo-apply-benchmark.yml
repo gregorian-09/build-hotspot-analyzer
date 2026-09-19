@@ -280,26 +280,24 @@ jobs:
           if [[ "$RUNNER_OS" == Windows ]]; then bha_path+=.exe; lsp_path+=.exe; fi
           host_prefix=''
           if [[ "$RUNNER_OS" == Linux ]]; then host_prefix='xvfb-run --auto-servernum'; fi
-          test_gate=()
-          if [[ '${{ matrix.require_tests }}' == true ]]; then test_gate+=(--require-tests); fi
-          windows_cmake=()
+          benchmark_args=(
+            --project '${{ matrix.project }}'
+            --bha-path "$bha_path"
+            --lsp-path "$lsp_path" --apply-mode vscode --ci-profile
+            --host-prefix "$host_prefix"
+            --c-compiler '${{ matrix.c_compiler }}'
+            --cxx-compiler '${{ matrix.cxx_compiler }}'
+            --jobs 2 --runs 1 --timeout-seconds 2400
+            --analysis-timeout-seconds 900 --require-applied
+          )
+          if [[ '${{ matrix.require_tests }}' == true ]]; then benchmark_args+=(--require-tests); fi
           if [[ "$RUNNER_OS" == Windows ]]; then
-            windows_cmake+=(--cmake-arg=-DVCPKG_TARGET_TRIPLET=x64-windows-static)
+            benchmark_args+=(--cmake-arg=-DVCPKG_TARGET_TRIPLET=x64-windows-static)
             if [[ '${{ matrix.project }}' == rocksdb ]]; then
-              windows_cmake+=(--cmake-arg=-DWIN_CI=ON)
+              benchmark_args+=(--cmake-arg=-DWIN_CI=ON)
             fi
           fi
-          python tests/run_repo_apply_benchmark.py \
-            --project '${{ matrix.project }}' \
-            --bha-path "$bha_path" \
-            --lsp-path "$lsp_path" --apply-mode vscode --ci-profile \
-            --host-prefix "$host_prefix" \
-            --c-compiler '${{ matrix.c_compiler }}' \
-            --cxx-compiler '${{ matrix.cxx_compiler }}' \
-            "${windows_cmake[@]}" "${test_gate[@]}" \
-            --jobs 2 --runs 1 --timeout-seconds 2400 \
-            --analysis-timeout-seconds 900 \
-            --require-applied
+          python tests/run_repo_apply_benchmark.py "${benchmark_args[@]}"
 
       - name: Publish result summary
         if: always()
