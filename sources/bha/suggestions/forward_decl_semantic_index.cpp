@@ -856,7 +856,8 @@ namespace bha::suggestions {
                     ),
                     *source,
                     arguments,
-                    command.source_file.string()
+                    command.source_file.string(),
+                    semantic_replay_tool_name(command.command_line)
                 ) || had_errors) {
                 result.diagnostic = "Clang failed to build a diagnostic-free AST and include index";
                 result.records.clear();
@@ -961,7 +962,8 @@ namespace bha::suggestions {
                     *modified,
                     validation_filesystem(file, *modified),
                     tooling_arguments(command),
-                    file.string()
+                    file.string(),
+                    semantic_replay_tool_name(command.command_line)
                 ) || had_errors) {
                 diagnostic = "Clang rejected the forward-declaration replacement in " + file.string();
                 return false;
@@ -1034,7 +1036,7 @@ namespace bha::suggestions {
                     ),
                     tooling_arguments(command),
                     file.string(),
-                    "bha-header-split"
+                    semantic_replay_tool_name(command.command_line)
                 ) || had_errors) {
                 diagnostic = "Clang rejected the header-split replacement in " + file.string();
                 return false;
@@ -1079,7 +1081,8 @@ namespace bha::suggestions {
                 ),
                 *source,
                 tooling_arguments(command),
-                source_file.string()
+                source_file.string(),
+                semantic_replay_tool_name(command.command_line)
             );
         if (!parsed) {
             diagnostic = "Clang could not parse the translation unit while locating the diagnostic include";
@@ -1112,7 +1115,7 @@ namespace bha::suggestions {
                 validation_filesystem(source_file, *modified),
                 tooling_arguments(command),
                 source_file.string(),
-                "bha-include-removal"
+                semantic_replay_tool_name(command.command_line)
             );
         if (!parsed_modified) {
             diagnostic = "Clang could not parse the modified translation unit for include-removal validation";

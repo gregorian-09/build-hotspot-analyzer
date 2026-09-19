@@ -734,8 +734,11 @@ namespace bha::suggestions {
             const bool clang_cl =
                 compiler.find("clang-cl") != std::string::npos || compiler == "cl.exe" || compiler == "cl";
             const bool valid =
-                clang::tooling::runToolOnCodeWithArgs(std::make_unique<clang::SyntaxOnlyAction>(), code, *arguments,
-                                                      virtual_file.string(), clang_cl ? "clang-cl" : "clang++");
+                clang::tooling::runToolOnCodeWithArgs(
+                    std::make_unique<clang::SyntaxOnlyAction>(), code, *arguments,
+                    virtual_file.string(), clang_cl ? "clang-cl" :
+                        semantic_replay_tool_name(evidence.front().command.command_line)
+                );
             if (!valid) {
                 diagnostic = "Clang rejected the proposed unity translation unit";
             }

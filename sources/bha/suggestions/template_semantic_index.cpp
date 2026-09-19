@@ -1308,7 +1308,8 @@ namespace bha::suggestions {
             auto ast = clang::tooling::buildASTFromCodeWithArgs(
                 *source,
                 arguments,
-                command.source_file.string()
+                command.source_file.string(),
+                semantic_replay_tool_name(command.command_line)
             );
             if (!ast || ast->getDiagnostics().hasErrorOccurred()) {
                 status_ = TemplateSemanticStatus::Failed;
