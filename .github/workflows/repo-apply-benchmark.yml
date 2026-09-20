@@ -304,6 +304,8 @@ jobs:
       - name: Capture, analyze, apply in VS Code, rebuild, and test upstream project
         shell: bash
         timeout-minutes: 100
+        env:
+          BHA_VERBOSE: '1'
         run: |
           set -euxo pipefail
           bha_path="$BUILD_DIR/bha"
