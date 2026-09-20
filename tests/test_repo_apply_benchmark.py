@@ -103,7 +103,8 @@ class WindowsCaptureLauncherTest(unittest.TestCase):
             compiler = root / "fake-compiler.ps1"
             compiler.write_text(
                 "Start-Sleep -Milliseconds 100\n"
-                "[Console]::Error.WriteLine('Total: 0.010s')\n",
+                "[Console]::WriteLine('Total: 0.010s')\n"
+                "[Console]::Error.WriteLine('compiler diagnostic')\n",
                 encoding="utf-8",
             )
             environment = {
@@ -128,10 +129,13 @@ class WindowsCaptureLauncherTest(unittest.TestCase):
                 results = list(executor.map(compile_source, range(8)))
             for result in results:
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn("Total: 0.010s", result.stdout)
+                self.assertIn("compiler diagnostic", result.stderr)
             traces = list(trace_dir.glob("*.bha.txt"))
             self.assertEqual(len(traces), 8)
             for trace in traces:
                 self.assertIn("Total: 0.010s", trace.read_text(encoding="utf-8"))
+                self.assertIn("compiler diagnostic", trace.read_text(encoding="utf-8"))
             self.assertEqual(list(temp_dir.iterdir()), [])
 
 

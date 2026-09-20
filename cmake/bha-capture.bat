@@ -65,19 +65,27 @@ for %%f in ("%SOURCE_FILE%") do (
     set BASENAME=%%~nf
 )
 
-REM GetTempFileName atomically reserves the stderr file, even for parallel builds.
-REM The GUID also keeps trace names distinct after temporary files are removed.
+REM GetTempFileName atomically reserves both stream files, even for parallel builds.
+REM The GUID keeps trace names distinct after temporary files are removed.
+set "TEMP_STDOUT="
 set "TEMP_STDERR="
 set "TRACE_ID="
-for /f "tokens=1,2 delims=|" %%a in ('powershell.exe -NoProfile -NonInteractive -Command "$tmp = [System.IO.Path]::GetTempFileName(); [Console]::WriteLine($tmp + [char]124 + [Guid]::NewGuid())"') do (
-    set "TEMP_STDERR=%%a"
-    set "TRACE_ID=%%b"
+for /f "tokens=1,2,3 delims=|" %%a in ('powershell.exe -NoProfile -NonInteractive -Command "$stdout = [System.IO.Path]::GetTempFileName(); $stderr = [System.IO.Path]::GetTempFileName(); [Console]::WriteLine($stdout + [char]124 + $stderr + [char]124 + [Guid]::NewGuid())"') do (
+    set "TEMP_STDOUT=%%a"
+    set "TEMP_STDERR=%%b"
+    set "TRACE_ID=%%c"
+)
+if not defined TEMP_STDOUT (
+    echo [bha-capture] Failed to reserve a unique stdout file 1>&2
+    exit /b 1
 )
 if not defined TEMP_STDERR (
+    del "%TEMP_STDOUT%" 2>nul
     echo [bha-capture] Failed to reserve a unique stderr file 1>&2
     exit /b 1
 )
 if not defined TRACE_ID (
+    del "%TEMP_STDOUT%" 2>nul
     del "%TEMP_STDERR%" 2>nul
     echo [bha-capture] Failed to create a unique trace identifier 1>&2
     exit /b 1
@@ -86,42 +94,51 @@ if not defined TRACE_ID (
 set "TRACE_FILE=%BHA_TRACE_DIR%\!BASENAME!_!TRACE_ID!.bha.txt"
 if "%BHA_VERBOSE%"=="1" echo [bha-capture] Trace file: %TRACE_FILE% 1>&2
 
-REM Run compiler and capture stderr to temporary file
-%* 2>"%TEMP_STDERR%"
+REM MSVC /Bt+ writes timing records to stdout. Capture both streams so the
+REM trace contains compiler timings while replaying each stream unchanged.
+%* 1>"%TEMP_STDOUT%" 2>"%TEMP_STDERR%"
 set EXIT_CODE=!ERRORLEVEL!
 
-REM Check if temp file has content
-if exist "%TEMP_STDERR%" (
-    for %%A in ("%TEMP_STDERR%") do set TEMP_SIZE=%%~zA
+REM Check if either captured stream has content.
+set "STDOUT_SIZE=0"
+set "STDERR_SIZE=0"
+if exist "%TEMP_STDOUT%" for %%A in ("%TEMP_STDOUT%") do set STDOUT_SIZE=%%~zA
+if exist "%TEMP_STDERR%" for %%A in ("%TEMP_STDERR%") do set STDERR_SIZE=%%~zA
 
-    if !TEMP_SIZE! GTR 0 (
-        REM Preserve raw producer output. The parser, not the launcher, decides
-        REM whether the artifact is a supported timing report.
-        (
-            echo # BHA Trace
-            echo # Source: %SOURCE_FILE%
-            echo # Output: %OUTPUT_FILE%
-            echo # Command: %*
-            echo # Timestamp: %date% %time%
-            echo # Exit code: !EXIT_CODE!
-            echo # ---
-            echo.
-            type "%TEMP_STDERR%"
-        ) > "%TRACE_FILE%"
+if !STDOUT_SIZE! GTR 0 if !STDERR_SIZE! GTR 0 goto write_trace
+if !STDOUT_SIZE! GTR 0 goto write_trace
+if !STDERR_SIZE! GTR 0 goto write_trace
+goto cleanup
 
-        if "%BHA_VERBOSE%"=="1" (
-            for %%F in ("%TRACE_FILE%") do (
-                set TRACE_SIZE=%%~zF
-                echo [bha-capture] Trace saved: !TRACE_SIZE! bytes 1>&2
-            )
-        )
+:write_trace
+REM Preserve raw producer output. The parser, not the launcher, decides
+REM whether the artifact is a supported timing report.
+(
+    echo # BHA Trace
+    echo # Source: %SOURCE_FILE%
+    echo # Output: %OUTPUT_FILE%
+    echo # Command: %*
+    echo # Timestamp: %date% %time%
+    echo # Exit code: !EXIT_CODE!
+    echo # --- stdout ---
+    if !STDOUT_SIZE! GTR 0 type "%TEMP_STDOUT%"
+    echo # --- stderr ---
+    if !STDERR_SIZE! GTR 0 type "%TEMP_STDERR%"
+) > "%TRACE_FILE%"
 
-        REM Always output stderr to preserve error messages
-        type "%TEMP_STDERR%" 1>&2
+if "%BHA_VERBOSE%"=="1" (
+    for %%F in ("%TRACE_FILE%") do (
+        set TRACE_SIZE=%%~zF
+        echo [bha-capture] Trace saved: !TRACE_SIZE! bytes 1>&2
     )
-
-    REM Clean up temp file
-    del "%TEMP_STDERR%" 2>nul
 )
+
+REM Replay each stream on its original descriptor.
+if !STDOUT_SIZE! GTR 0 type "%TEMP_STDOUT%"
+if !STDERR_SIZE! GTR 0 type "%TEMP_STDERR%" 1>&2
+
+:cleanup
+del "%TEMP_STDOUT%" 2>nul
+del "%TEMP_STDERR%" 2>nul
 
 exit /b !EXIT_CODE!
