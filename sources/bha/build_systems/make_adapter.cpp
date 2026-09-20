@@ -401,7 +401,7 @@ namespace bha::build_systems {
                 std::error_code ec;
                 fs::create_directories(trace_output_dir, ec);
 #ifdef _WIN32
-                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
+                cmd << "set \"BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << "\" && ";
 #else
                 cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
 #endif

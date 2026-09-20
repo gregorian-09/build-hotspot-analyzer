@@ -69,7 +69,7 @@ namespace bha::build_systems {
             if (options.enable_tracing && !trace_output_dir.empty() && needs_capture_script(type)) {
                 fs::create_directories(trace_output_dir);
 #ifdef _WIN32
-                cmd << "set BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << " && ";
+                cmd << "set \"BHA_TRACE_DIR=" << fs::absolute(trace_output_dir).string() << "\" && ";
 #else
                 cmd << "BHA_TRACE_DIR=\"" << fs::absolute(trace_output_dir).string() << "\" ";
 #endif
