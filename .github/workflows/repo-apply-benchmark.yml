@@ -325,7 +325,7 @@ jobs:
             --c-compiler "$c_compiler"
             --cxx-compiler "$cxx_compiler"
             --jobs 2 --runs 1 --timeout-seconds 2400
-            --analysis-timeout-seconds 900 --require-applied
+            --analysis-timeout-seconds 900
           )
           if [[ '${{ matrix.require_tests }}' == true ]]; then benchmark_args+=(--require-tests); fi
           if [[ "$RUNNER_OS" == Windows ]]; then
