@@ -118,10 +118,12 @@ class WindowsCaptureLauncherTest(unittest.TestCase):
                 source = root / str(index) / "unit.cpp"
                 source.parent.mkdir()
                 source.write_text("int value = 1;\n", encoding="utf-8")
+                response = source.with_suffix(".rsp")
+                response.write_text(str(source) + "\n", encoding="utf-8")
                 return subprocess.run(
                     [str(WINDOWS_CAPTURE), "powershell.exe", "-NoProfile",
                      "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                     str(compiler), str(source)],
+                     str(compiler), "@" + str(response)],
                     cwd=root, env=environment, capture_output=True, text=True, check=False,
                 )
 

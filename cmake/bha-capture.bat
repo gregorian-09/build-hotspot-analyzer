@@ -25,7 +25,9 @@ if not exist "%BHA_TRACE_DIR%" (
     )
 )
 
-REM Find the source file and output file from arguments
+REM Find the source file and output file from arguments. Ninja commonly passes
+REM MSVC options through an @response-file, so the source may not be present
+REM as a direct argument. The timing records still carry the source path.
 set SOURCE_FILE=
 set OUTPUT_FILE=
 set NEXT_IS_OUTPUT=0
@@ -51,18 +53,14 @@ for %%a in (%*) do (
     if "!arg:~-3!"==".cu" set "SOURCE_FILE=!arg!"
 )
 
-REM If no source file found, run compiler normally
-if "%SOURCE_FILE%"=="" (
-    if "%BHA_VERBOSE%"=="1" echo [bha-capture] No source file detected, running normally 1>&2
-    %*
-    exit /b !ERRORLEVEL!
-)
-
-if "%BHA_VERBOSE%"=="1" echo [bha-capture] Capturing trace for: %SOURCE_FILE% 1>&2
-
-REM Get basename for the trace filename
-for %%f in ("%SOURCE_FILE%") do (
-    set BASENAME=%%~nf
+REM Use a stable fallback when the compiler arguments are an @response-file.
+REM MSVC timing rows remain the authoritative source attribution.
+if defined SOURCE_FILE (
+    if "%BHA_VERBOSE%"=="1" echo [bha-capture] Capturing trace for: %SOURCE_FILE% 1>&2
+    for %%f in ("%SOURCE_FILE%") do set BASENAME=%%~nf
+) else (
+    set BASENAME=compiler
+    if "%BHA_VERBOSE%"=="1" echo [bha-capture] Capturing response-file compiler invocation 1>&2
 )
 
 REM GetTempFileName atomically reserves both stream files, even for parallel builds.
