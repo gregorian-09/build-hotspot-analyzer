@@ -93,6 +93,7 @@ namespace bha::build_systems::detail {
     CompilerInfo get_compiler_info(const BuildOptions& options);
     bool needs_capture_script(CompilerType type);
     fs::path find_capture_script(const fs::path& project_path);
+    std::string cmake_compiler_launcher(const fs::path& capture_script);
     std::string extract_error_summary(const std::string& output, std::size_t max_lines = 50);
     std::vector<fs::path> find_trace_files(const fs::path& directory);
     std::vector<fs::path> find_memory_files(const fs::path& directory);

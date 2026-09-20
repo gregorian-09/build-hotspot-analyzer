@@ -101,8 +101,16 @@ function(bha_setup_tracing_directory)
         endif()
 
         if(EXISTS "${BHA_CAPTURE_SCRIPT}")
+            if(WIN32)
+                # Ninja launches compiler launchers with CreateProcess; route
+                # the batch capture script through cmd.exe explicitly.
+                set(BHA_CAPTURE_COMMAND
+                        "cmd.exe" "/d" "/c" "call" "${BHA_CAPTURE_SCRIPT}")
+            else()
+                set(BHA_CAPTURE_COMMAND "${BHA_CAPTURE_SCRIPT}")
+            endif()
             set(CMAKE_CXX_COMPILER_LAUNCHER
-                    "${CMAKE_COMMAND}" "-E" "env" "BHA_TRACE_DIR=${BHA_TRACE_DIR}" "${BHA_CAPTURE_SCRIPT}"
+                    "${CMAKE_COMMAND}" "-E" "env" "BHA_TRACE_DIR=${BHA_TRACE_DIR}" "${BHA_CAPTURE_COMMAND}"
                     CACHE STRING "BHA compiler launcher" FORCE)
             set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_CXX_COMPILER_LAUNCHER}" CACHE STRING "" FORCE)
             message(STATUS "BHA: Compiler launcher enabled - traces auto-saved to ${BHA_TRACE_DIR}")

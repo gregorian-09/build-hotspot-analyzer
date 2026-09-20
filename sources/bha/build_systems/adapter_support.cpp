@@ -385,6 +385,18 @@ namespace bha::build_systems::detail {
             return {};
         }
 
+        std::string cmake_compiler_launcher(const fs::path& capture_script) {
+#ifdef _WIN32
+            // Ninja starts launcher commands with CreateProcess, which cannot
+            // execute a batch file directly. Keep the interpreter in the
+            // CMake launcher list so compiler arguments are appended after the
+            // batch script by the generator.
+            return "cmd.exe;/d;/c;call;" + capture_script.string();
+#else
+            return capture_script.string();
+#endif
+        }
+
         std::string extract_error_summary(const std::string& output, size_t max_lines) {
             std::istringstream stream(output);
             std::string line;

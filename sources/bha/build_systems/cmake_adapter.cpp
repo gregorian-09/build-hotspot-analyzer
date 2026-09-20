@@ -61,8 +61,9 @@ namespace bha::build_systems {
 
             if (options.enable_tracing && needs_capture_script(type)) {
                 if (auto script = find_capture_script(project_path); !script.empty()) {
-                    cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << script.string() << "\"";
-                    cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << script.string() << "\"";
+                    const auto launcher = cmake_compiler_launcher(script);
+                    cmd << " -DCMAKE_CXX_COMPILER_LAUNCHER=\"" << launcher << "\"";
+                    cmd << " -DCMAKE_C_COMPILER_LAUNCHER=\"" << launcher << "\"";
                 } else {
                     std::cerr << "Warning: bha-capture script not found. "
                               << "GCC tracing requires this script.\n"
