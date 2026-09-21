@@ -167,6 +167,21 @@ namespace bha::suggestions {
         EXPECT_EQ(pch_descriptor->abi_sensitivity, SuggesterAbiSensitivity::BuildConfiguration);
     }
 
+    TEST(SuggesterCatalogTest, IdentifiesAdvisoryOnlySuggesters) {
+        register_all_suggesters();
+
+        const auto* pch = SuggesterRegistry::instance().find("PCHSuggester");
+        const auto* pimpl = SuggesterRegistry::instance().find("PIMPLSuggester");
+        const auto* forward_decl = SuggesterRegistry::instance().find("ForwardDeclSuggester");
+        ASSERT_NE(pch, nullptr);
+        ASSERT_NE(pimpl, nullptr);
+        ASSERT_NE(forward_decl, nullptr);
+
+        EXPECT_TRUE(pch->requires_unsafe_opt_in());
+        EXPECT_TRUE(pimpl->requires_unsafe_opt_in());
+        EXPECT_FALSE(forward_decl->requires_unsafe_opt_in());
+    }
+
     TEST(SuggesterCatalogTest, DetectsSourceLanguageFromCompileCommands) {
         CompilationUnit c_unit;
         c_unit.source_file = "src/example.c";

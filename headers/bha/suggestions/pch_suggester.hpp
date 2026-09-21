@@ -38,6 +38,11 @@ namespace bha::suggestions {
             return SuggestionType::PCHOptimization;
         }
 
+        /// PCH output is advisory until a build-system-specific configuration is validated.
+        [[nodiscard]] bool requires_unsafe_opt_in() const noexcept override {
+            return true;
+        }
+
         /**
          * @brief Generate precompiled-header optimization suggestions.
          *

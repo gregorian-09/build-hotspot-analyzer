@@ -41,6 +41,11 @@ namespace bha::suggestions {
             return SuggestionType::PIMPLPattern;
         }
 
+        /// PIMPL output is advisory until the structural refactor is explicitly validated.
+        [[nodiscard]] bool requires_unsafe_opt_in() const noexcept override {
+            return true;
+        }
+
         /**
          * @brief Generate AST-backed advisory PIMPL candidates.
          *

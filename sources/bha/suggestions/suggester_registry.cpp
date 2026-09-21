@@ -145,6 +145,10 @@ namespace bha::suggestions
                 continue;
             }
 
+            if (!options.include_unsafe && suggester->requires_unsafe_opt_in()) {
+                continue;
+            }
+
             if (options.max_total_time != Duration::zero()) {
                 const auto total_elapsed = std::chrono::steady_clock::now() - total_start;
                 if (total_elapsed >= options.max_total_time) {

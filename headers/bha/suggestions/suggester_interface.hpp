@@ -72,6 +72,17 @@ namespace bha::suggestions {
         }
 
         /**
+         * @brief Report whether this suggester requires explicit unsafe opt-in.
+         *
+         * A `true` result means every emitted suggestion is advisory or
+         * otherwise unsafe for the default pipeline. The registry can skip
+         * the expensive generation pass when unsafe suggestions are disabled.
+         */
+        [[nodiscard]] virtual bool requires_unsafe_opt_in() const noexcept {
+            return false;
+        }
+
+        /**
          * Generates suggestions from the analysis context.
          *
          * @param context The analysis context with trace and results
