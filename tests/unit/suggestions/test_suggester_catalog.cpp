@@ -2,6 +2,7 @@
 #include "bha/suggestions/suggester_catalog.hpp"
 
 #include <chrono>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -115,6 +116,35 @@ namespace bha::suggestions {
         const auto by_type = find_suggester_descriptor("include-removal");
         ASSERT_TRUE(by_type.has_value());
         EXPECT_EQ(by_type->id, "include-removal");
+    }
+
+    TEST(SuggesterCatalogTest, BuiltinRegistrationIsIdempotent) {
+        register_all_suggesters();
+        const auto& registry = SuggesterRegistry::instance().suggesters();
+        const auto registered_count = registry.size();
+
+        register_all_suggesters();
+
+        EXPECT_EQ(SuggesterRegistry::instance().suggesters().size(), registered_count);
+
+        constexpr std::array<std::string_view, 7> builtin_names = {
+            "PCHSuggester",
+            "ForwardDeclSuggester",
+            "IncludeSuggester",
+            "TemplateSuggester",
+            "HeaderSplitSuggester",
+            "UnityBuildSuggester",
+            "PIMPLSuggester"
+        };
+        for (const auto name : builtin_names) {
+            EXPECT_EQ(
+                std::ranges::count_if(
+                    registry,
+                    [name](const auto& suggester) { return suggester->name() == name; }
+                ),
+                1u
+            ) << "duplicate builtin suggester: " << name;
+        }
     }
 
     TEST(SuggesterCatalogTest, ParsesSuggestionTypeTokens) {

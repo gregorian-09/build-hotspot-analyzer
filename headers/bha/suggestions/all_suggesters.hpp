@@ -23,16 +23,22 @@ namespace bha::suggestions {
     /**
      * @brief Register all builtin suggesters with the global suggester registry.
      *
-     * Intended for one-time initialization during startup.
+     * Safe to call from multiple application entry points. Registration is
+     * performed once per process so embedding the LSP manager in a CLI does not
+     * execute every builtin suggester more than once.
      */
     inline void register_all_suggesters() {
-        register_pch_suggester();
-        register_forward_decl_suggester();
-        register_include_suggester();
-        register_template_suggester();
-        register_header_split_suggester();
-        register_unity_build_suggester();
-        register_pimpl_pattern_suggester();
+        static const bool registered = [] {
+            register_pch_suggester();
+            register_forward_decl_suggester();
+            register_include_suggester();
+            register_template_suggester();
+            register_header_split_suggester();
+            register_unity_build_suggester();
+            register_pimpl_pattern_suggester();
+            return true;
+        }();
+        (void)registered;
     }
 
 }  // namespace bha::suggestions
