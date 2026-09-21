@@ -358,3 +358,5 @@ jobs:
             tests/cli/benchmarks/**/result.json
             tests/cli/benchmarks/**/vscode-apply-result.json
             tests/cli/benchmarks/**/logs/*.log
+            tests/cli/benchmarks/**/baseline/traces/
+            tests/cli/benchmarks/**/post/traces/
